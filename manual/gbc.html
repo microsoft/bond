@@ -1,0 +1,31 @@
+<table class='cmdargs'>
+<tr><td colspan='3'>Bond Compiler 3.02, (C) Microsoft</td></tr>
+<tr><td colspan='3'>&nbsp;</tr>
+<tr><td colspan='3'>gbc [COMMAND] ... [OPTIONS]</td></tr>
+<tr><td colspan='3' style='padding-left:2ex;'>Compile Bond schema definition file and generate specified output</td></tr>
+<tr><td colspan='3'>&nbsp;</tr>
+<tr><td colspan='3'>Common flags:</td></tr>
+<tr><td style='padding-left:2ex;'>-i</td><td style='padding-left:1ex;'>--import-dir=DIR</td><td style='padding-left:2ex;'>Add the directory to import search path</td></tr>
+<tr><td style='padding-left:2ex;'>-o</td><td style='padding-left:1ex;'>--output-dir=DIR</td><td style='padding-left:2ex;'>Output generated files into the specified directory</td></tr>
+<tr><td style='padding-left:2ex;'>-u</td><td style='padding-left:1ex;'>--using=MAPPING</td><td style='padding-left:2ex;'>Custom type alias mapping in the form alias=type</td></tr>
+<tr><td style='padding-left:2ex;'>-n</td><td style='padding-left:1ex;'>--namespace=MAPPING</td><td style='padding-left:2ex;'>Custom namespace mapping in the from bond_namespace=language_namespace</td></tr>
+<tr><td style='padding-left:2ex;'>-?</td><td style='padding-left:1ex;'>--help</td><td style='padding-left:2ex;'>Display help message</td></tr>
+<tr><td style='padding-left:2ex;'>-V</td><td style='padding-left:1ex;'>--version</td><td style='padding-left:2ex;'>Print version information</td></tr>
+<tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex;'>--numeric-version</td><td style='padding-left:2ex;'>Print just the version number</td></tr>
+<tr><td colspan='3'>&nbsp;</tr>
+<tr><td colspan='3'>gbc c++ [OPTIONS] [FILE]</td></tr>
+<tr><td colspan='3' style='padding-left:2ex;'>Generate C++ code</td></tr>
+<tr><td colspan='3'>&nbsp;</tr>
+<tr><td style='padding-left:2ex;'>-h</td><td style='padding-left:1ex;'>--header=HEADER</td><td style='padding-left:2ex;'>Emit #include HEADER into the generated files</td></tr>
+<tr><td style='padding-left:2ex;'>-e</td><td style='padding-left:1ex;'>--enum-header</td><td style='padding-left:2ex;'>Generate enums into a separate header file</td></tr>
+<tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex;'>--allocator=ALLOCATOR</td><td style='padding-left:2ex;'>Generate types using the specified  allocator</td></tr>
+<tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex;'>--apply=PROTOCOL</td><td style='padding-left:2ex;'>Generate Apply function overloads for the specified protocol only; supported protocols: compact, fast and simple</td></tr>
+<tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex;'>--apply-attribute=ATTRIBUTE</td><td style='padding-left:2ex;'>Prefix the declarations of Apply functions with the specified C++ attribute/declspec</td></tr>
+<tr><td colspan='3'>&nbsp;</tr>
+<tr><td colspan='3'>gbc c# [OPTIONS] [FILE]</td></tr>
+<tr><td colspan='3' style='padding-left:2ex;'>Generate C# code</td></tr>
+<tr><td colspan='3'>&nbsp;</tr>
+<tr><td style='padding-left:2ex;'>-c</td><td style='padding-left:1ex;'>--collection-interfaces</td><td style='padding-left:2ex;'>Use interfaces rather than concrete collection types</td></tr>
+<tr><td style='padding-left:2ex;'>-r</td><td style='padding-left:1ex;'>--readonly-properties</td><td style='padding-left:2ex;'>Generate private property setters</td></tr>
+<tr><td style='padding-left:2ex;'>-f</td><td style='padding-left:1ex;'>--fields</td><td style='padding-left:2ex;'>Generate public fields rather than properties</td></tr>
+</table>

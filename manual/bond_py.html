@@ -1,0 +1,370 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Python bindings for Bond</title>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; }
+code > span.dt { color: #204a87; }
+code > span.dv { color: #0000cf; }
+code > span.bn { color: #0000cf; }
+code > span.fl { color: #0000cf; }
+code > span.ch { color: #4e9a06; }
+code > span.st { color: #4e9a06; }
+code > span.co { color: #8f5902; font-style: italic; }
+code > span.ot { color: #8f5902; }
+code > span.al { color: #ef2929; }
+code > span.fu { color: #000000; }
+code > span.er { font-weight: bold; }
+  body {
+      line-height: 1.5; 
+      font-family: Helvetica, Arial, sans-serif; 
+      color: #333333;
+      font-size: 0.9em;
+  }
+  code {
+      font-size: 1em;
+  }
+  td.lineNumbers { width: 40px; }
+  div#all {
+    width: 1120px;
+    background-color: #ffffff;
+    margin: 0 auto;
+    padding: 25px;
+    overflow: auto;
+  }
+  code > span.co { color: #4E9A06; font-style: normal; }
+  code > span.st { color: #8A0303; font-style: normal; }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    border-bottom: 1px solid black;
+  }
+
+  #toc {
+    width: 300px; 
+    position:fixed;
+    overflow: auto;
+    height: 100%;
+  }
+
+  #main {
+    float: right;
+    width: 800px;
+  }
+  a {
+    text-decoration: none;
+  }
+  #toc a:visited {
+    color: #99c;
+  }
+  #main a:visited {
+    color: #36c;
+  }
+  a:link {
+    color: #36c;
+  }
+  </style>
+</head>
+<body>
+<nav id="TOC"></nav>
+<div id="all">
+<div id="toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#basic-example">Basic example</a></li>
+<li><a href="#building-extensions">Building extensions</a></li>
+<li><a href="#exposing-types">Exposing types</a><ul>
+<li><a href="#structs">Structs</a></li>
+<li><a href="#enums">Enums</a></li>
+<li><a href="#containers">Containers</a></li>
+<li><a href="#blob">Blob</a></li>
+<li><a href="#nullable-and-nothing">Nullable and <code>nothing</code></a></li>
+<li><a href="#generics">Generics</a></li>
+</ul></li>
+<li><a href="#exposed-apis">Exposed APIs</a></li>
+<li><a href="#references">References</a><ul>
+<li><a href="#c-users-manual"><a href="bond_cpp.html">C++ User’s Manual</a></a></li>
+<li><a href="#c-users-manual-1"><a href="bond_cs.html">C# User’s Manual</a></a></li>
+<li><a href="#boost-python"><a href="http://www.boost.org/doc/libs/1_54_0/libs/python/doc/index.html">Boost Python</a></a></li>
+</ul></li>
+</ul>
+</div>
+<div id="main">
+<div id="header">    
+<h1 class="title">Python bindings for Bond</h1>
+</div>
+<h1 id="introduction"><a href="#TOC">Introduction</a></h1>
+<p>The Python support is implemented as a library for building C++ extensions exposing Bond generated types and associated APIs to Python.</p>
+<h1 id="basic-example"><a href="#TOC">Basic example</a></h1>
+<p>We start with defining a data schema using Bond idl language:</p>
+<table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">namespace</span> example
+
+<span class="kw">struct</span> Record
+{
+    <span class="dv">0</span>: string          name;
+    <span class="dv">1</span>: vector&lt;<span class="dt">double</span>&gt;  items;
+};</code></pre></td></tr></table>
+<p>In order to use the schema in a Python program we need to implement a Python extension that exposes types representing the schema. The first step is to generate Bond C++ bindings for the schema using the Bond compiler:</p>
+<table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">gbc c++ example.bond</code></pre></td></tr></table>
+<p>With the generated C++ code (<code>example_reflection.h</code> in this case) implementing the Python extension is as simple as specifying which structs we want to expose to Python:</p>
+<table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ot">#include &quot;example_reflection.h&quot;</span>
+<span class="ot">#include &lt;bond/python/struct.h&gt;</span>
+
+BOOST_PYTHON_MODULE(example)
+{
+    bond::python::struct_&lt;example::Record&gt;()
+        .def();
+} </code></pre></td></tr></table>
+<p>Finally, we can import the extension as a module that can be used in a Python program:</p>
+<table class="sourceCode python numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="ch">import</span> example
+
+    src = example.Record()
+
+    src.name = <span class="st">&quot;test&quot;</span>
+    src.items = [<span class="fl">3.14</span>, <span class="fl">6.28</span>]
+
+    data = example.Serialize(src)
+
+    dst = example.Record()
+    example.Deserialize(data, dst)</code></pre></td></tr></table>
+<h1 id="building-extensions"><a href="#TOC">Building extensions</a></h1>
+<p>Python extensions are simply shared libraries with the same file name as the module name. On Windows the extension should have .pyd file extension. Bond extensions depend on <a href="http://www.boost.org/doc/libs/1_54_0/libs/python/doc/index.html">Boost Python</a> library, and thus need to be linked with both the Boost Python library and the Python library. Refer to <a href="http://www.boost.org/doc/libs/1_54_0/libs/python/doc/building.html">Boost documentation</a> for details.</p>
+<h1 id="exposing-types"><a href="#TOC">Exposing types</a></h1>
+<h2 id="structs"><a href="#TOC">Structs</a></h2>
+<p>Structs generated from Bond schemas can be exposed by calling <code>def</code> method of the <code>bond::python::struct_</code> class template within a <code>BOOST_PYTHON_MODULE</code> block. The template takes one parameter: the C++ struct to be exposed. The <code>def</code> method has two overloads. When <code>def</code> if called without any arguments the struct is exposed using unqualified name. To expose a struct using the fully qualified name, the <code>def</code> method can be called with <code>bond::qualified_name</code> as argument.</p>
+<p>If a struct is exposed, all of its dependencies are implicitly exposed as well and often don’t need to be exposed explicitly. Note however that <a href="#exposed-apis">APIs</a> are defined only for explicitly exposed types. Implicitly exposed types always use unqualified name. If it is necessary to use the qualified name for a struct, it should be explicitly exposed <em>before</em> its dependent structs.</p>
+<table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">BOOST_PYTHON_MODULE(example)
+{
+    <span class="kw">using</span> <span class="kw">namespace</span> bond::python;
+
+    struct_&lt;example::Nested&gt;()
+        .def(bond::qualified_name);
+
+    struct_&lt;example::Example&gt;()
+        .def();
+}</code></pre></td></tr></table>
+<h2 id="enums"><a href="#TOC">Enums</a></h2>
+<p>Since enums are almost always used in exposed structs, usually it is not necessary to expose them explicitly. One common exception, as was the case with structs, is when we want to explicitly expose an enum using the qualified name.</p>
+<p>Enumerator types generated from Bond schema can be exposed by calling <code>def</code> method of the <code>bond::python::enum_</code> class template from a <code>BOOST_PYTHON_MODULE</code> block. The template takes one parameter: the C++ enum to be exposed. The <code>def</code> method has two overloads. When <code>def</code> is called without any arguments the enum is exposed using unqualified name. To expose an enum using the fully qualified name, the <code>def</code> method can be called with <code>bond::qualified_name</code> as argument.</p>
+<table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">BOOST_PYTHON_MODULE(example)
+{
+    <span class="kw">using</span> <span class="kw">namespace</span> bond::python;
+
+    enum_&lt;example::Colors&gt;()
+        .def(bond::qualified_name);
+
+    struct_&lt;example::Example&gt;()
+        .def();
+}</code></pre></td></tr></table>
+<h2 id="containers"><a href="#TOC">Containers</a></h2>
+<p>Any container classes used in exposed schema structs are automatically exposed to Python. The exposed types behave just like Python built-in equivalent containers, supporting Python style indexing, including slices and negative indices, list/set/dictionary comprehension as well as many of the built-in functions and operations like <code>len()</code>, <code>del</code> and <code>in</code>. Built-in container objects also are implicitly convertible to containers exposed by Bond.</p>
+<p>There is a noteworthy difference between Bond <code>map</code> and Python <code>dictionary</code>: iterating over elements of a <code>map</code> doesn’t yield tuples <code>(key, value)</code> but instead objects with two methods: <code>key()</code> and <code>data()</code>.</p>
+<h2 id="blob"><a href="#TOC">Blob</a></h2>
+<p>Bond <code>blob</code> is represented as Python string object. Initializing a <code>blob</code> from a Python string does not involve memory copy, it just increases reference count on the underlying Python object.</p>
+<h2 id="nullable-and-nothing"><a href="#TOC">Nullable and <code>nothing</code></a></h2>
+<p>The <code>null</code> value for nullable types and default value of <code>nothing</code> are both mapped to the Python <code>None</code> object. For example, given the schema:</p>
+<table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Record
+{
+    <span class="dv">0</span>: int32 x = nothing;
+    <span class="dv">1</span>: nullable&lt;string&gt; s;
+}</code></pre></td></tr></table>
+<p>We can write the following Python program:</p>
+<table class="sourceCode python numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    obj = example.Record()
+
+    <span class="kw">assert</span>(obj.x is <span class="ot">None</span>)
+    <span class="kw">assert</span>(obj.s is <span class="ot">None</span>)
+
+    x = <span class="dv">100</span>
+    s = <span class="st">&quot;test&quot;</span>
+
+    <span class="kw">assert</span>(obj.x is not <span class="ot">None</span>)
+    <span class="kw">assert</span>(obj.s is not <span class="ot">None</span>)</code></pre></td></tr></table>
+<h2 id="generics"><a href="#TOC">Generics</a></h2>
+<p>While generic Bond schemas can not be instantiated from within a Python program, specific instances of generic schemas can be used like any other concrete structs. In fact any instances of a generic schema used within exposed structs are also implicitly exposed, just like any other nested struct.</p>
+<table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">namespace</span> generic
+
+<span class="kw">struct</span> Generic&lt;T&gt;
+{
+    <span class="dv">0</span>: T field;
+}
+
+<span class="kw">struct</span> Example
+{
+    <span class="dv">0</span>: Generic&lt;string&gt; field;
+}</code></pre></td></tr></table>
+<p>For example, an extension exposing the struct <code>Example</code> will also automatically expose the instance <code>Generic&lt;string&gt;</code>. Additionally, we can explicitly expose other instances of <code>Generic&lt;T&gt;</code>:</p>
+<table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">BOOST_PYTHON_MODULE(example)
+{
+    <span class="co">// Expose Example and implicitly Generic&lt;string&gt;</span>
+    bond::python::struct_&lt;generic.Example&gt;()
+        .def();
+
+    <span class="co">// Explicitly expose Generic&lt;bond.GUID&gt;</span>
+    bond::python::struct_&lt;generic.Generic&lt;bond::GUID&gt; &gt;()
+        .def();
+}</code></pre></td></tr></table>
+<p>The name of a generic schema instance is converted to a valid Python identifier by replacing all non-alphanumeric characters with an underscore. The names of type parameters that are Bond-defined structs are used in their fully qualified form. For example, using the extension defined above we can use the following types:</p>
+<table class="sourceCode python numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="ch">import</span> example
+
+    <span class="co"># The instance Generic&lt;string&gt;</span>
+    obj1 = example.Generic_string_()
+
+    <span class="co"># The instance Generic&lt;bond.GUID&gt;</span>
+    obj2 = example.Generic_bond_GUID_()</code></pre></td></tr></table>
+<h1 id="exposed-apis"><a href="#TOC">Exposed APIs</a></h1>
+<p>For every exposed schema struct Bond exposes appropriate overloads of the following API functions:</p>
+<ul>
+<li><p><code>Serialize</code> and <code>Marshal</code></p>
+<p>Take as an argument instance of Bond struct and return a Python string with serialized/marshaled data.</p></li>
+<li><p><code>Deserialize</code> and <code>Unmarshal</code></p>
+<p>Take two arguments, a Python string object containing serialized/marshaled data and a reference to a Bond struct to which the data should be deserialized.</p></li>
+<li><p><code>GetRuntimeSchema</code></p>
+<p>Takes as an argument a Bond struct and returns an instance of SchemaDef for that struct.</p></li>
+</ul>
+<p>The <code>Serialize</code>, <code>Deserialize</code> and <code>Marshal</code> APIs use the Compact Binary protocol by default but they also take an optional argument of type <code>bond::ProtocolType</code> to specify a different protocol.</p>
+<p>The <code>Deserialize</code> and <code>Unmarshal</code> APIs take an optional argument of type <code>SchemaDef</code> to specify the schema of the serialized data.</p>
+<table class="sourceCode python numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="ch">import</span> example
+
+    obj = example.Record()
+
+    <span class="co"># serialize to Compact Binary</span>
+    data = example.Serialize(obj)
+
+    <span class="co"># serialize to JSON</span>
+    json = example.Serialize(obj, example.ProtocolType.PRETTY_JSON_PROTOCOL)
+
+    <span class="co"># marshal schema to Compact Binary</span>
+    data = example.Marshal(example.GetRuntimeSchema(obj))
+
+    <span class="co"># unmarshal SchemaDef</span>
+    schema = example.SchemaDef()
+    example.Unmarshal(data, schema)
+
+    <span class="co"># deserialize from Simple Protocol with runtime schema</span>
+    example.Deserialize(data, obj, schema, example.ProtocolType.SIMPLE_PROTOCOL)</code></pre></td></tr></table>
+<h1 id="references"><a href="#TOC">References</a></h1>
+<h2 id="c-users-manual"><a href="#TOC"><a href="bond_cpp.html">C++ User’s Manual</a></a></h2>
+<h2 id="c-users-manual-1"><a href="#TOC"><a href="bond_cs.html">C# User’s Manual</a></a></h2>
+<h2 id="boost-python"><a href="#TOC"><a href="http://www.boost.org/doc/libs/1_54_0/libs/python/doc/index.html">Boost Python</a></a></h2>
+</div>    
+</div>
+</body>
+</html>
