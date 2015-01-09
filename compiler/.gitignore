@@ -1,0 +1,4 @@
+# Cabal build artifacts
+dist
+.cabal-sandbox
+cabal.sandbox.config

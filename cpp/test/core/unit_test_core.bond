@@ -1,0 +1,206 @@
+
+///
+/// this is test file
+///
+
+namespace unittest;
+
+
+enum EnumType1
+{
+    EnumValue1 = 5,
+    EnumValue2 = 10,
+    EnumValue3 = -10,
+    EnumValue4 = 0x2A,
+    EnumValue5 = 0XFFFFFFFFFFFFFFF6, //-10 in two's complement
+};
+
+
+struct SimpleStruct
+{
+    0: required_optional bool m_bool;
+    2: required_optional string m_str;
+    3: required_optional wstring m_wstr;
+    14: required_optional int8 m_int8;
+    15: required_optional int16 m_int16;
+    16: required_optional int32 m_int32;
+    17: required_optional int64 m_int64;
+    13: required_optional uint8 m_uint8;
+    11: required_optional uint16 m_uint16;
+    12: required_optional uint32 m_uint32;
+    10: required_optional uint64 m_uint64;
+    18: required_optional double m_double;
+    20: required_optional float  m_float;
+    21: required_optional EnumType1 m_enum1 = EnumValue1;
+    22: required_optional  blob m_blob;
+};
+
+struct SimpleStructView view_of SimpleStruct
+{
+    m_bool, m_str, m_int8, m_uint64, m_float, m_enum1;
+};
+
+
+struct SimpleBase : SimpleStruct
+{
+    [JsonName("SimpleBase_int32")]
+    16: required_optional int32 m_int32;
+    [JsonName("SimpleBase_enum1")]
+    21: required_optional EnumType1 m_enum1 = EnumValue1;
+};
+
+
+struct StructWithBase : SimpleBase
+{
+    [JsonName("StructWithBase_str")]
+    0: required_optional  string   m_str;
+    [JsonName("StructWithBase_int32")]
+    16: required_optional int32    m_int32;
+    [JsonName("StructWithBase_uint32")]
+    17: required_optional uint32   m_uint32;
+    [JsonName("StructWithBase_uint8")]
+    13: required_optional uint8    m_uint8;
+};
+
+
+struct NestedWithBase1
+{
+    1: required_optional  StructWithBase s1;
+    2: required_optional  StructWithBase s2;
+};
+
+
+struct NestedWithBase2
+{
+    1: required_optional  NestedWithBase1 n1;
+    2: required_optional  NestedWithBase1 n2;
+};
+
+
+struct NestedWithBase : NestedWithBase2
+{
+    [JsonName("NestedWithBase_n1")]
+    1: required_optional  NestedWithBase2 n1;
+    [JsonName("NestedWithBase_n2")]
+    2: required_optional  NestedWithBase2 n2;
+    3: required_optional  double          d;
+};
+
+
+struct NestedWithBaseView view_of NestedWithBase
+{
+    n2, d;
+};
+
+
+struct NestedStruct1
+{
+    1: required_optional SimpleStruct s;
+};
+
+struct NestedStruct2
+{
+    1: required_optional NestedStruct1 n1;
+};
+
+struct NestedStruct3
+{
+    1: required_optional NestedStruct2 n2;
+};
+
+struct NestedStruct
+{
+    1: required_optional NestedStruct3 n3;
+    23: required_optional bool m_bool;
+    2: required_optional NestedStruct2 n2;
+    24: required_optional int8 m_int8;
+    3: required_optional NestedStruct1 n1;
+    25: required_optional int16 m_int16;
+    26: required_optional int32 m_int32;
+    27: required_optional int64 m_int64;
+    28: required_optional uint8 m_uint8;
+    29: required_optional uint16 m_uint16;
+    30: required_optional uint32 m_uint32;
+    31: required_optional uint64 m_uint64;
+    32: required_optional double m_double;
+    33: required_optional float  m_float;
+    34: required_optional EnumType1 m_enum1 = EnumValue1;
+    35: required_optional string m_str;
+};
+
+
+struct NestedStructView view_of NestedStruct
+{
+    m_int8, n1, m_int16;
+};
+
+
+struct NestedStruct1BondedView
+{
+    1: required_optional bonded<SimpleStruct> s;
+};
+
+struct NestedStructBondedView
+{
+    1: required_optional bonded<NestedStruct3> n3;
+    23: required_optional bool m_bool;
+    2: required_optional bonded<NestedStruct2> n2;
+    24: required_optional int8 m_int8;
+    3: required_optional NestedStruct1BondedView n1;
+};
+
+
+struct SimpleListsStruct
+{
+    1: required_optional   list<bool>          l_bool;
+    4: required_optional   list<uint32>        l_uint32;
+    7: required_optional   list<int16>         l_int16;
+    9: required_optional   list<int64>         l_int64;
+    10: required_optional  list<float>         l_float;
+    12: required_optional  list<string>        l_string;
+    21: required_optional  vector<bool>        v_bool;
+    22: required_optional  vector<uint8>       v_uint8;
+    27: required_optional  vector<int16>       v_int16;
+    29: required_optional  vector<int64>       v_int64;
+    31: required_optional  vector<double>      v_double;
+    32: required_optional  vector<string>      v_string;
+    41: required_optional  set<bool>           s_bool;
+    45: required_optional  set<uint64>         s_uint64;
+    50: required_optional  set<float>          s_float;
+    52: required_optional  set<string>         s_string;
+    60: required_optional  map<int8, string>   m_int8_string;
+    61: required_optional  map<string, bool>   m_string_bool;
+    62: required_optional  map<float, uint16>  m_float_uint16;
+};
+
+
+struct SimpleListsStructView view_of SimpleListsStruct
+{
+    l_bool;
+    l_int64;
+    l_float;
+    l_string;
+    v_int16;
+    v_double;
+    v_string;
+    s_uint64;
+    s_string;
+    m_int8_string;
+    m_string_bool;
+};
+
+
+struct NestedListsStruct
+{
+    1: required_optional   list<list<int8>>                ll8;
+    2: required_optional   list<vector<list<string>>>      lvls;
+    3: required_optional   list<SimpleListsStruct>         lSLS;
+    4: required_optional   vector<list<SimpleListsStruct>> vlSLS;
+    5: required_optional   SimpleListsStruct               SLS;
+    6: required_optional   vector<float>                   vf;
+    7: required_optional   vector<vector<NestedStruct>>    vvNS;
+    8: required_optional   vector<set<string>>             vss;
+    9: required_optional   list<set<bool>>                 lsb;
+    10: required_optional  map<int64, list<string>>        m64ls;
+    11: required_optional  vector<map<double, string>>     vmds;
+};

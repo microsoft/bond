@@ -1,0 +1,12 @@
+namespace unittest.compat.another
+
+enum EnumType
+{
+    EnumValue1 = 6,
+};
+
+
+struct Another
+{
+    10: double d;
+};

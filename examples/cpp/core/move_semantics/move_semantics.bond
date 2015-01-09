@@ -1,0 +1,12 @@
+namespace examples.move_semantics
+
+struct Item
+{
+    0: string name;
+}
+
+struct Struct
+{
+    0: uint32 value;
+    1: optional vector<Item> items;
+}

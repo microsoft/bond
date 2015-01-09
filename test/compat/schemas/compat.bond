@@ -1,0 +1,57 @@
+import "compat_common.bond"
+
+namespace unittest.compat
+
+struct Generic1<T>
+{
+    1: T                                    m_T;
+    2: list<T>                              m_listT;
+};
+
+struct Generic2<T : value> : Generic1<T>
+{
+    1: Generic1<int32>                      m_generic1;
+    2: map<bool, T>                         m_mapT;
+    3: nullable<T>                          m_nullableT;
+    4: Generic1<T>                          m_generic1_T;
+    5: Generic1<wstring>                    m_generic1_wstring;
+};
+
+
+struct Generic4<T> : Generic1<T>
+{
+    1: Generic1<int32>                      m_generic1;
+    2: map<bool, T>                         m_mapT;
+    3: nullable<T>                          m_nullableT;
+    4: Generic1<T>                          m_generic1_T;
+    5: Generic1<wstring>                    m_generic1_wstring;
+};
+
+[bar("foo")]
+[qux("baz")]
+struct Compat : WithBase
+{
+       0:  BasicTypes                      m_basicTypes;
+       1:  Containers                      m_containers;
+       2:  WithBase                        m_withBase;
+       4:  nullable<string>                m_nullable_string;
+       5:  nullable<uint64>                m_nullable_uint64;
+       6:  Generic2<float>                 m_generic2;
+       7:  Generic1<bool>                  m_generic1;
+       8:  Generic4<WithBase>              m_generic0;
+       9:  Generic4<unittest.compat.another.Another> m_generic_another_struct;
+      10:  Generic2<unittest.compat.another.EnumType> m_generic_another_enum;
+      11:  nullable<Compat>                m_defaults;
+      12:  bonded<BasicTypesUninitialized> m_basicUnintialized;
+      [JsonName("enum1")]
+      13:  EnumType2                       m_enum1 = EnumValue1;
+      [JsonName("enum2")]
+      14:  EnumType2                       m_enum2 = EnumValue2;
+      [JsonName("enum3")]
+      15:  EnumType2                       m_enum3 = EnumValue3;
+      16:  EnumType2                       m_enum4 = EnumValue4;
+      17:  EnumType2                       m_enum5 = EnumValue5;
+      18:  EnumType2                       m_enum6 = EnumValue6;
+    8191:  nullable<BasicTypes>            m_nullable;
+};
+

@@ -1,0 +1,28 @@
+namespace examples.access_control
+
+struct Person
+{
+    [ACL("identity")]
+    0: string name;
+}
+
+struct Employee : Person
+{
+    [ACL("location")]
+    0: string address;
+}
+
+struct Company
+{
+    [ACL("identity")]
+    0: string ticker;
+    
+    [ACL("location")]
+    1: string city;
+    
+    [ACL("all")]
+    2: vector<Employee> employees;
+
+    [ACL("identity")]
+    3: Employee ceo;
+}

@@ -1,0 +1,708 @@
+import "bond\core\bond.bond"
+import "Aliases.bond"
+
+namespace UnitTest
+
+using DateTime = int64;
+
+enum EnumType1
+{
+    EnumValue1 = 5,
+    EnumValue2 = 10,
+    EnumValue3 = -10,
+    EnumValue4 = 0x2A,
+    EnumValue5 = 0XFFFFFFFFFFFFFFF6, //-10 in two's complement
+};
+
+[Foo("foo")]
+[Bar("bar")]
+struct BasicTypes
+{
+     [Name("Boolean")]
+     0: bool _bool;
+     2: string _str;
+     3: wstring _wstr;
+    14: int8 _int8;
+    15: int16 _int16;
+    16: int32 _int32;
+    17: int64 _int64;
+    13: uint8 _uint8;
+    11: uint16 _uint16;
+    12: uint32 _uint32;
+    10: uint64 _uint64;
+    18: double _double;
+    20: float _float;
+    21: EnumType1 _enum1 = EnumValue1;
+    22: DateTime dt;
+};
+
+struct FieldOfStructWithAliases
+{
+    0: UnitTest.Aliases.BlobAlias b;
+    1: DateTime dt;
+}
+
+struct ContainerOfStructWithAliases
+{
+    0: map<string, vector<nullable<UnitTest.Aliases.BlobAlias>>> m;
+}
+
+struct BaseWithAliases : UnitTest.Aliases.BlobAlias
+{
+}
+
+struct NestedWithAliases
+{
+    0: FieldOfStructWithAliases f;
+}
+
+struct RequiredOptional
+{
+    [JsonName("OptionalX")]
+    7: required_optional uint32 x;
+};
+
+struct Required
+{
+    [JsonName("RequiredX")]
+    7: required uint32 x;
+    [JsonName("RequiredY")]
+    9: required BasicTypes y;
+};
+
+struct DerivedRequired : Required
+{
+    1: required uint32 foo;
+    2: required string bar;
+    3: bool flag;
+    4: required double bla;
+};
+
+struct Optional
+{
+    [JsonName("OptionalX")]
+    7: optional uint32 x;
+    [JsonName("OptionalY")]
+    9: optional BasicTypes y;
+};
+
+struct RequiredInDerived : Optional
+{
+    7: required uint32 x;
+    9: required BasicTypes y;
+}
+
+struct RequiredInBase : Required
+{
+    7: optional uint32 x;
+    9: optional BasicTypes y;
+}
+
+struct RequiredInBaseAndDerived : Required
+{
+    7: required uint32 x;
+    9: required BasicTypes y;
+}
+
+[xmlns("urn:UnitTest.BasicTypes")]
+struct BasicTypesView view_of BasicTypes
+{
+    _bool, _int8, _float;
+};
+
+struct Nested1
+{
+    0: BasicTypes basic1;
+    1: BasicTypes basic2;
+    2: bond.GUID guid;
+};
+
+struct Nested
+{
+    0: BasicTypes basic;
+    1: Nested1 nested;
+};
+
+struct EmptyBase : Nested
+{
+};
+
+struct Derived : EmptyBase
+{
+    0: string derived;
+    [JsonName("nestedDerived")]
+    1: Nested1 nested;
+};
+
+struct B 
+{
+    0: int32 b;
+}
+
+struct B1 : B 
+{
+    [JsonName("b1")]
+    0: int32 b;
+}
+
+struct B2 : B1
+{
+    [JsonName("b2")]
+    0: int32 b;
+}
+
+struct B3 : B2
+{
+    [JsonName("b3")]
+    0: int32 b;
+}
+
+struct B4 : B3
+{
+    [JsonName("b4")]
+    0: int32 b;
+}
+
+struct B5 : B4
+{
+    [JsonName("b5")]
+    0: int32 b;
+}
+
+struct Deep : B5 {}
+
+[xmlns("urn:UnitTest.Derived")]
+struct DerivedView view_of Derived
+{
+    derived;
+}; 
+
+struct Nothing
+{
+     0: bool _bool = nothing;
+     2: string _str = nothing;
+     3: wstring _wstr = nothing;
+    14: int8 _int8 = nothing;
+    15: int16 _int16 = nothing;
+    16: int32 _int32 = nothing;
+    17: int64 _int64 = nothing;
+    13: uint8 _uint8 = nothing;
+    11: uint16 _uint16 = nothing;
+    12: uint32 _uint32 = nothing;
+    10: uint64 _uint64 = nothing;
+    18: double _double = nothing;
+    20: float _float = nothing;
+    21: EnumType1 _enum1 = nothing;
+    30: list<string> l = nothing;
+    31: set<double> s = nothing;
+    32: vector<list<int32>> vl = nothing;
+    33: blob b = nothing;
+    34: map<string, double> m = nothing;
+};
+
+struct NotNothingView
+{
+    20: required float _float;
+    21: required EnumType1 _enum1 = EnumValue4;
+    30: required list<string> l;
+    31: required set<double> s;
+    32: required vector<list<int32>> vl;
+};
+
+struct NullableBasicTypes
+{
+     0: nullable<bool> _bool;
+     2: nullable<string> _str;
+     3: nullable<wstring> _wstr;
+    14: nullable<int8> _int8;
+    15: nullable<int16> _int16;
+    16: nullable<int32> _int32;
+    17: nullable<int64> _int64;
+    13: nullable<uint8> _uint8;
+    11: nullable<uint16> _uint16;
+    12: nullable<uint32> _uint32;
+    10: nullable<uint64> _uint64;
+    18: nullable<double> _double;
+    20: nullable<float> _float;
+    21: nullable<EnumType1> _enum1;
+};
+
+struct NullableStruct
+{
+    0: nullable<BasicTypes> basic;
+    1: nullable<Nested1> nested;
+};
+
+struct SimpleContainers
+{
+    0: vector<string> strings;
+    1: vector<BasicTypes> basics;    
+    2: map<int32, string> numbers;
+};
+
+struct Lists
+{
+     0: list<bool> _bool;
+     2: list<string> _str;
+     3: list<wstring> _wstr;
+    14: list<int8> _int8;
+    15: list<int16> _int16;
+    16: list<int32> _int32;
+    17: list<int64> _int64;
+    13: list<uint8> _uint8;
+    11: list<uint16> _uint16;
+    12: list<uint32> _uint32;
+    10: list<uint64> _uint64;
+    18: list<double> _double;
+    20: list<float> _float;
+    21: list<EnumType1> _enum1;
+    30: list<BasicTypes> basic;
+    31: list<Nested1> nested;
+};
+
+struct Vectors
+{
+     0: vector<bool> _bool;
+     2: vector<string> _str;
+     3: vector<wstring> _wstr;
+    14: vector<int8> _int8;
+    15: vector<int16> _int16;
+    16: vector<int32> _int32;
+    17: vector<int64> _int64;
+    13: vector<uint8> _uint8;
+    11: vector<uint16> _uint16;
+    12: vector<uint32> _uint32;
+    10: vector<uint64> _uint64;
+    18: vector<double> _double;
+    20: vector<float> _float;
+    21: vector<EnumType1> _enum1;
+    30: vector<BasicTypes> basic;
+    31: vector<Nested1> nested;
+};
+
+struct Sets
+{
+     0: set<bool> _bool;
+     2: set<string> _str;
+     3: set<wstring> _wstr;
+    14: set<int8> _int8;
+    15: set<int16> _int16;
+    16: set<int32> _int32;
+    17: set<int64> _int64;
+    13: set<uint8> _uint8;
+    11: set<uint16> _uint16;
+    12: set<uint32> _uint32;
+    10: set<uint64> _uint64;
+    18: set<double> _double;
+    20: set<float> _float;
+    21: set<EnumType1> _enum1;
+};
+
+struct Maps
+{
+     0: map<string, bool> _bool;
+     2: map<string, string> _str;
+     3: map<string, wstring> _wstr;
+    14: map<string, int8> _int8;
+    15: map<string, int16> _int16;
+    16: map<string, int32> _int32;
+    17: map<string, int64> _int64;
+    13: map<string, uint8> _uint8;
+    11: map<string, uint16> _uint16;
+    12: map<string, uint32> _uint32;
+    10: map<string, uint64> _uint64;
+    18: map<string, double> _double;
+    20: map<string, float> _float;
+    21: map<string, EnumType1> _enum1;
+    22: map<string, BasicTypes> _basic;
+};
+
+struct Containers
+{
+    0: Lists l;
+    1: Sets s;
+    2: Vectors v;
+    3: Maps m;
+};
+
+struct VectorsOfNullable
+{
+     0: vector<nullable<bool>> _bool;
+     2: vector<nullable<string>> _str;
+     3: vector<nullable<wstring>> _wstr;
+    14: vector<nullable<int8>> _int8;
+    15: vector<nullable<int16>> _int16;
+    16: vector<nullable<int32>> _int32;
+    17: vector<nullable<int64>> _int64;
+    13: vector<nullable<uint8>> _uint8;
+    11: vector<nullable<uint16>> _uint16;
+    12: vector<nullable<uint32>> _uint32;
+    10: vector<nullable<uint64>> _uint64;
+    18: vector<nullable<double>> _double;
+    20: vector<nullable<float>> _float;
+    21: vector<nullable<EnumType1>> _enum1;
+    30: vector<nullable<BasicTypes>> basic;
+    31: vector<nullable<Nested1>> nested;
+    32: vector<nullable<blob>> _blob;
+};
+
+struct MapsOfNullable
+{
+     0: map<string, nullable<bool>> _bool;
+     2: map<string, nullable<string>> _str;
+     3: map<string, nullable<wstring>> _wstr;
+    14: map<string, nullable<int8>> _int8;
+    15: map<string, nullable<int16>> _int16;
+    16: map<string, nullable<int32>> _int32;
+    17: map<string, nullable<int64>> _int64;
+    13: map<string, nullable<uint8>> _uint8;
+    11: map<string, nullable<uint16>> _uint16;
+    12: map<string, nullable<uint32>> _uint32;
+    10: map<string, nullable<uint64>> _uint64;
+    18: map<string, nullable<double>> _double;
+    20: map<string, nullable<float>> _float;
+    21: map<string, nullable<EnumType1>> _enum1;
+    22: map<string, nullable<BasicTypes>> _basic;
+    23: map<string, nullable<blob>> _blob;
+};
+
+struct ContainersOfNullable
+{
+    0: VectorsOfNullable vn;
+    1: MapsOfNullable mn;
+};
+
+struct NullableVectors
+{
+     0: nullable<vector<bool>> _bool;
+     2: nullable<vector<string>> _str;
+     3: nullable<vector<wstring>> _wstr;
+    14: nullable<vector<int8>> _int8;
+    15: nullable<vector<int16>> _int16;
+    16: nullable<vector<int32>> _int32;
+    17: nullable<vector<int64>> _int64;
+    13: nullable<vector<uint8>> _uint8;
+    11: nullable<vector<uint16>> _uint16;
+    12: nullable<vector<uint32>> _uint32;
+    10: nullable<vector<uint64>> _uint64;
+    18: nullable<vector<double>> _double;
+    20: nullable<vector<float>> _float;
+    21: nullable<vector<EnumType1>> _enum1;
+    30: nullable<vector<BasicTypes>> basic;
+    31: nullable<vector<Nested1>> nested;
+};
+
+struct NullableLists
+{
+     0: nullable<list<bool>> _bool;
+     2: nullable<list<string>> _str;
+     3: nullable<list<wstring>> _wstr;
+    14: nullable<list<int8>> _int8;
+    15: nullable<list<int16>> _int16;
+    16: nullable<list<int32>> _int32;
+    17: nullable<list<int64>> _int64;
+    13: nullable<list<uint8>> _uint8;
+    11: nullable<list<uint16>> _uint16;
+    12: nullable<list<uint32>> _uint32;
+    10: nullable<list<uint64>> _uint64;
+    18: nullable<list<double>> _double;
+    20: nullable<list<float>> _float;
+    21: nullable<list<EnumType1>> _enum1;
+    30: nullable<list<BasicTypes>> basic;
+    31: nullable<list<Nested1>> nested;
+};
+
+struct NullableSets
+{
+     0: nullable<set<bool>> _bool;
+     2: nullable<set<string>> _str;
+     3: nullable<set<wstring>> _wstr;
+    14: nullable<set<int8>> _int8;
+    15: nullable<set<int16>> _int16;
+    16: nullable<set<int32>> _int32;
+    17: nullable<set<int64>> _int64;
+    13: nullable<set<uint8>> _uint8;
+    11: nullable<set<uint16>> _uint16;
+    12: nullable<set<uint32>> _uint32;
+    10: nullable<set<uint64>> _uint64;
+    18: nullable<set<double>> _double;
+    20: nullable<set<float>> _float;
+    21: nullable<set<EnumType1>> _enum1;
+};
+
+struct NullableMaps
+{
+     0: nullable<map<float, bool>> _bool;
+     2: nullable<map<float, string>> _str;
+     3: nullable<map<float, wstring>> _wstr;
+    14: nullable<map<float, int8>> _int8;
+    15: nullable<map<float, int16>> _int16;
+    16: nullable<map<float, int32>> _int32;
+    17: nullable<map<float, int64>> _int64;
+    13: nullable<map<float, uint8>> _uint8;
+    11: nullable<map<float, uint16>> _uint16;
+    12: nullable<map<float, uint32>> _uint32;
+    10: nullable<map<float, uint64>> _uint64;
+    18: nullable<map<float, double>> _double;
+    20: nullable<map<float, float>> _float;
+    21: nullable<map<float, EnumType1>> _enum1;
+    22: nullable<map<float, BasicTypes>> _basic;
+};
+
+struct NullableContainers
+{
+    0: NullableVectors nv;
+    1: NullableLists nl;
+    2: NullableSets ns;
+    3: NullableMaps nm;
+};
+
+struct NestedContainers
+{
+    0: vector<vector<uint64>> vvb;
+    1: list<NullableContainers> vnc;
+    2: vector<vector<BasicTypes>> vvbt;
+    3: vector<list<Nested>> vln;
+    4: list<vector<string>> lvs;
+    5: list<set<float>> lsf;
+    6: vector<set<bool>> vsb;
+    7: map<string, list<bool>> mslb;
+    8: map<int32, map<int64, Nested>> mimbn;
+};
+
+struct TreeNode;
+
+struct Tree
+{
+    0: nullable<TreeNode> root;
+};
+
+struct TreeNode
+{
+    0: nullable<TreeNode> left;
+    1: nullable<TreeNode> right;
+    2: BasicTypes value;
+    3: list<Tree> trees;
+};
+
+struct StructWithDefaults
+{
+    0:bool m_bool_1 = true;
+    1:bool m_bool_2 = false;
+    2:bool m_bool_3;
+    
+    3:string m_str_1 = "default string value";
+    4:string m_str_2;
+
+    5:int8 m_int8_4 = -127;
+    6:int8 m_int8_5;
+
+    7:int16 m_int16_4 = -32767; 
+    8:int16 m_int16_5;
+
+    9:int32 m_int32_4;
+    10:int32 m_int32_max = 2147483647;
+
+    11:int64 m_int64_4;
+    12:int64 m_int64_max = 9223372036854775807;
+
+    13:uint8 m_uint8_2 = 255;
+    14:uint8 m_uint8_3;
+
+    15:uint16 m_uint16_2 = 65535;
+    16:uint16 m_uint16_3;
+
+    17:uint32 m_uint32_3;
+    18:uint32 m_uint32_max = 4294967295;
+
+    19:uint64 m_uint64_3;
+    20:uint64 m_uint64_max = 0xFFFFFFFFFFFFFFFF;
+
+    21:double m_double_3;
+    22:double m_double_4 = -123.4567890;
+    23:double m_double_5 = -0.0;
+
+    24:float  m_float_3;
+    25:float  m_float_4 = 2.71828183;
+    26:float  m_float_7 = +0.0;
+
+    27:EnumType1 m_enum1 = EnumValue1;
+    28:EnumType1 m_enum2 = EnumValue3;
+
+    29:wstring m_wstr_1 = L"default wstring value";
+    30:wstring m_wstr_2;
+};
+
+struct StructWithBonded
+{
+    0: bonded<Nested> field;
+    1: vector<bonded<Nested>> poly;
+};
+
+struct StructWithBlobs
+{
+    0: blob b;
+    1: vector<blob> lb;
+    2: nullable<blob> nb;
+};
+
+struct StructWithByteLists
+{
+    0: vector<int8> b;
+    1: vector<vector<int8>> lb;
+    2: nullable<vector<int8>> nb;
+};
+
+struct GenericNothingClass<T>
+{
+    4: T nothingField = nothing;
+};
+
+struct GenericNothingScalar<T : value>
+{
+    4: T nothingField = nothing;
+};
+
+struct GenericClass<T>
+{
+    0: T field;
+    1: vector<T> vectorField;
+    2: list<GenericClass<T>> listGeneric;
+    3: nullable<T> nullableField;
+    4: map<string, T> mapField;
+};
+
+struct GenericScalar<T : value>
+{
+    0: T field;
+    1: vector<T> vectorField;
+    2: list<GenericScalar<T>> listGeneric;
+    3: nullable<T> nullableField;
+    4: map<T, T> mapField;
+};
+
+struct GenericBonded<T>
+{
+    0: bonded<T> field;
+    1: vector<bonded<T>> poly;
+};
+
+struct BondedGeneric
+{
+    0: GenericClass<bonded<Nested>> cbt;
+    1: GenericClass<bonded<GenericClass<wstring>>> cbgws;
+};
+
+struct GenericDerived<T> : GenericClass<T>
+{
+};
+
+struct Generics
+{
+    10: GenericScalar<bool> sb;
+    11: GenericScalar<float> sf;
+    12: GenericScalar<uint64> sui64;
+    13: GenericScalar<EnumType1> se;
+
+    20: GenericClass<set<int32>> ci32;
+    21: GenericClass<blob> cblob;
+    22: GenericClass<string> cs;
+    23: GenericClass<vector<blob>> cvblob;
+    24: GenericClass<BasicTypes> cbt;
+    25: GenericClass<wstring> cws;
+    26: GenericClass<nullable<wstring>> cnws;
+    27: GenericClass<nullable<uint64>> snui64;
+    28: GenericClass<list<wstring>> slws;
+    29: GenericClass<map<wstring, nullable<int16>>> smwsni;
+};
+
+struct GenericInheritance
+{
+    0: GenericDerived<BasicTypes> bbt;
+    1: GenericDerived<GenericClass<wstring>> bgws;
+};
+
+struct GenericsWithNothing
+{
+    10: GenericNothingScalar<bool> sb;
+    11: GenericNothingScalar<float> sf;
+    12: GenericNothingScalar<uint64> sui64;
+    13: GenericNothingScalar<EnumType1> se;
+
+    20: GenericNothingClass<set<int32>> ci32;
+    21: GenericNothingClass<blob> cblob;
+    22: GenericNothingClass<string> cs;
+    23: GenericNothingClass<vector<blob>> cvblob;
+    24: GenericNothingClass<wstring> cws;
+    25: GenericNothingClass<vector<wstring>> cvws;
+};
+
+struct BoxWstring
+{
+    0: wstring value;
+};
+
+struct Box<T>
+{
+    0: T value;
+};
+
+struct GenericWString
+{
+    0: Box<wstring> wstr;
+};
+
+struct NonGenericWString
+{
+    0: BoxWstring wstr;
+};
+
+// Name conflicts
+enum TypeAttribute {DefaultAttribute}
+struct IdAttribute 
+{
+    0: TypeAttribute field = DefaultAttribute;
+}
+struct classT {}
+struct structT {}
+struct GenericConflict<structT : value> 
+{
+    0: structT field;
+}
+
+struct Foo<classT> 
+{
+    0: classT field;
+}
+
+[polymorphic("")]
+struct WithPolymorphic
+{
+    0: bond_meta::full_name _bond_meta;
+    1: string a = "a";
+}
+
+struct DerivedPolymorphic : WithPolymorphic
+{
+    2: string b = "b";
+}
+
+struct WithMeta
+{
+    1: bond_meta::name theName;
+	2: bond_meta::full_name theFullName;
+	3: string a = "a";
+}
+
+struct DerivedWithMeta : WithMeta
+{
+    1: bond_meta::full_name anotherName;
+	2: string b = "b";
+}
+
+struct WithConflictingMeta
+{
+    1: string name = "Foo";
+	2: string fullName = "Bar";
+	3: bond_meta::full_name meta;
+}

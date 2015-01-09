@@ -1,0 +1,14 @@
+namespace import2
+
+enum ImportedEnum
+{
+    ImportedEnum1 = 13,
+    ImportedEnum2 = 23
+}
+
+struct Recursive<A, B : value>;
+
+struct Recursive<T, U : value>
+{
+    0: nullable<Recursive<T, U>> next;
+}

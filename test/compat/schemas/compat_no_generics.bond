@@ -1,0 +1,26 @@
+import "compat.bond"
+
+namespace unittest.compat
+
+struct CompatNoGenerics view_of Compat
+{
+    m_basicTypes;
+    m_containers;
+    m_withBase;
+    m_nullable_string;
+    m_nullable_uint64;
+    // m_generic2;
+    // m_generic1;
+    // m_generic0;
+    // m_generic_another_struct;
+    // m_generic_another_enum;
+    // m_defaults;
+    m_basicUnintialized;
+    m_enum1;
+    m_enum2;
+    m_enum3;
+    m_enum4;
+    m_enum5;
+    m_enum6;
+    m_nullable;
+};

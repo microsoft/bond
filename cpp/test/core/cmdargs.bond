@@ -1,0 +1,105 @@
+namespace unit_test
+
+enum EnumType
+{
+    Value1,
+    Value2,
+    Value3
+};
+
+
+struct Option<T>
+{
+    [abbr("b")]
+    10: int32 before1;
+
+    11: string before2;
+    
+    12: bool before3;
+
+    [abbr("x")]
+    13: bool extra;
+
+    [abbr("f")]
+    20: T field;
+
+    [abbr("a")]
+    30: double after1;
+
+    31: EnumType after2 = Value1;
+};
+
+
+struct Naked<T>
+{
+    [abbr("b")]
+    10: int32 before1;
+
+    11: string before2;
+    
+    12: bool before3;
+
+    [abbr("x")]
+    13: bool extra;
+
+    [abbr("f")]
+    [naked("")]
+    20: T field;
+
+    [abbr("a")]
+    30: double after1;
+
+    31: EnumType after2 = Value1;
+};
+
+
+struct Failure
+{
+    [abbr("n")]
+    10: required string need;
+
+    [naked("")]
+    11: required string naked;
+
+    20: bool flag;
+
+    30: int32 i32;
+
+    40: EnumType en = Value1;
+
+    50: double d;
+
+    60: string error;
+
+};
+
+
+struct Base
+{
+    [help("this is an example of Usage output from CmdArg library")]
+    10: string what;
+};
+
+
+[help("[options] [NAKED]")]
+struct Usage : Base
+{
+    [help("boolean flag")]
+    10: bool flag;
+
+    [abbr("e")]
+    20: EnumType enumerator = Value1;
+
+    30: list<EnumType> items;
+
+    40: double num;
+
+    [help("long help string that will need to be wrapped because it won't fit in one line")]
+    [abbr("l")]
+    50: string longish;
+
+    [naked("")]
+    [help("naked parameter doesn't need --flag in front of it")]
+    60: uint8 naked;
+};
+

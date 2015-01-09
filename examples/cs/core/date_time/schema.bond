@@ -1,0 +1,9 @@
+﻿namespace Examples
+
+using DateTime = int64;
+
+struct Example
+{
+    0: DateTime Now;
+    1: vector<DateTime> Dates;
+}

@@ -1,0 +1,111 @@
+namespace unittest;
+
+enum EnumType1
+{
+    EnumValue1 = 5,
+    EnumValue3 = -10,
+    EnumValue4 = 0x2A,
+    EnumValue5 = 0XFFFFFFFFFFFFFFF6, //-10 in two's complement
+};
+
+
+struct SimpleStruct
+{
+     0: bool m_bool;
+     2: string m_str;
+     3: wstring m_wstr;
+    14: int8 m_int8;
+    15: int16 m_int16;
+    16: int32 m_int32;
+    17: int64 m_int64;
+    13: uint8 m_uint8;
+    11: uint16 m_uint16;
+    12: uint32 m_uint32;
+    10: uint64 m_uint64;
+    18: double m_double;
+    20: float m_float;
+    21: EnumType1 m_enum1 = EnumValue1;
+    22: blob m_blob;
+};
+
+
+struct SimpleWithBase : SimpleStruct
+{
+    16: int32 m_int32;
+    21: EnumType1 m_enum1 = EnumValue1;
+};
+
+
+struct Nested
+{
+    2: SimpleWithBase n2;
+};
+
+
+struct Bonded
+{
+    2: bonded<SimpleStruct> n2;
+};
+
+
+struct NestedWithBase : Nested
+{
+    2: Nested n2;
+    3: double d;
+};
+
+
+struct SimpleContainers
+{
+     1: list<bool>          l_bool;
+     4: list<uint32>        l_uint32;
+    12: list<string>        l_string;
+    21: vector<bool>        v_bool;
+    22: vector<uint8>       v_uint8;
+    31: vector<double>      v_double;
+    32: vector<string>      v_string;
+    45: set<uint64>         s_uint64;
+    52: set<string>         s_string;
+    60: map<int8, string>   m_int8_string;
+    61: map<string, bool>   m_string_bool;
+    62: map<float, uint16>  m_float_uint16;
+};
+
+
+struct NestedContainers
+{
+     2: list<vector<list<string>>>     lvls;
+     4: vector<list<SimpleContainers>> vlSLS;
+     7: vector<vector<NestedWithBase>> vvNS;
+     8: vector<set<string>>            vss;
+    11: vector<map<double, string>>    vmds;
+};
+
+
+struct Nullable
+{
+     2: nullable<list<float>>      nullable_list;
+     3: nullable<SimpleStruct>     nullable_struct;
+     4: nullable<map<int8, int8>>  nullable_map;
+     5: nullable<string>           nullable_string;
+	10: nullable<nullable<uint32>> nullable_nullable_uint32;
+};
+
+struct Nothing
+{
+    10: int16                   x = nothing;
+    20: EnumType1               e = nothing;
+    30: list<string>            l = nothing;
+    40: wstring                 ws = nothing;
+    50: blob                    b = nothing;
+    60: nullable<SimpleStruct>  n = nothing;
+};
+
+
+struct Generic<T> : T
+{
+    10: T           x;
+    30: nullable<T> z;
+    40: list<T>     l;
+};
+

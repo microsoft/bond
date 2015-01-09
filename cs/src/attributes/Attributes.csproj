@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Portable.Internal.props" />  
+  <PropertyGroup>
+    <ProjectGuid>{92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Bond</RootNamespace>
+    <AssemblyName>Bond.Attributes</AssemblyName>
+    <BondRedistributable>true</BondRedistributable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Attributes.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
+</Project>

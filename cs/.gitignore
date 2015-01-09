@@ -1,0 +1,23 @@
+# Build and test artifacts
+bin/
+obj/
+TestResults/
+Debug
+Release
+
+# Nuget packages 
+packages/Newtonsoft.Json.*/
+
+# Profiler artifacts
+*.exe.manifest
+*.vsp
+
+# Resharper cache
+_ReSharper.*
+
+# Visual Studio
+*.sdf
+*.suo
+*.user
+*.opensdf
+*.psess

@@ -1,0 +1,15 @@
+namespace examples.protocol_transcoding
+
+struct User
+{
+    0: string              name;
+    1: string              address;
+}
+
+struct Struct
+{
+    0: uint32              n;
+    1: string              str;
+    2: vector<double>      items;
+    3: map<int16, User>    users;
+}

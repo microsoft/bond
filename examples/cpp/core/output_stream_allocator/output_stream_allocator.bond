@@ -1,0 +1,8 @@
+namespace examples.output_stream_allocator
+
+struct Struct
+{
+    0: uint32          num;
+    1: string          str;
+    2: vector<double>  items;
+}

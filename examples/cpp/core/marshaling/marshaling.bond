@@ -1,0 +1,14 @@
+namespace examples.marshaling
+
+struct A
+{
+    0: int32 x;
+}
+
+struct Struct
+{
+    0: uint32          n;
+    1: string          str;
+    2: vector<double>  items;
+    3: bonded<A>       a;
+}

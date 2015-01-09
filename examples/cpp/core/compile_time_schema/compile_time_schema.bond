@@ -1,0 +1,16 @@
+namespace examples.compile_time_schema
+
+struct Struct1
+{
+    0: uint32          n;
+    1: string          str = "this is a string";
+    2: vector<double>  items;
+}
+
+
+struct Struct2
+{
+    [MyAttribute("Value of the attribute")]
+    0: map<uint32, Struct1> mapStruct1;
+    1: nullable<Struct1>    nullableStruct1;
+}

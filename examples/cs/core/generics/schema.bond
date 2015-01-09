@@ -1,0 +1,16 @@
+﻿namespace Examples
+
+struct Generic1<T>
+{
+    0: nullable<T> Field;
+}
+
+struct Generic2<T : value>
+{
+    0: T Field = nothing;
+}
+
+struct Example
+{
+    0: Generic1<Generic2<int32>> Field;
+}

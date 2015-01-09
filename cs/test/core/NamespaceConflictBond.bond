@@ -1,0 +1,8 @@
+﻿namespace SomeNamespace.Bond
+
+// Having both namespaces UnitTest and UnitTest.Bond might cause compilation failures if the 
+// codegen does not handle the global::Bond namespace correctly. The purpose of this file is
+// to ensure that this does not happen.
+struct Foo
+{
+}

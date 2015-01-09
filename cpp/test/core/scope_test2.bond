@@ -1,0 +1,18 @@
+import "scope_test1.bond"
+
+namespace a.x.y
+
+enum Enumeration
+{
+    standard = 2,
+};
+
+struct Struct
+{
+    1: Enumeration member = standard;
+};
+
+struct Derived : x.y.Struct
+{
+    1: x.y.Enumeration thing = custom;
+};

@@ -1,0 +1,97 @@
+namespace InternalTest
+
+enum EnumType1
+{
+    EnumValue1 = 5,
+    EnumValue2 = 10,
+    EnumValue3 = -10,
+    EnumValue4 = 0x2A,
+    EnumValue5 = 0XFFFFFFFFFFFFFFF6, //-10 in two's complement
+};
+
+[Foo("foo")]
+[Bar("bar")]
+struct BasicTypes
+{
+     [Name("Boolean")]
+     0: bool _bool;
+     2: string _str;
+     3: wstring _wstr;
+    14: int8 _int8;
+    15: int16 _int16;
+    16: int32 _int32;
+    17: int64 _int64;
+    13: uint8 _uint8;
+    11: uint16 _uint16;
+    12: uint32 _uint32;
+    10: uint64 _uint64;
+    18: double _double;
+    20: float _float;
+    21: EnumType1 _enum1 = EnumValue1;
+};
+
+
+struct Required
+{
+    0: required uint32 x;
+};
+
+struct StructWithDefaults
+{
+    0:bool m_bool_1 = true;
+    1:bool m_bool_2 = false;
+    2:bool m_bool_3;
+    
+    3:string m_str_1 = "default string value";
+    4:string m_str_2;
+
+    5:int8 m_int8_4 = -127;
+    6:int8 m_int8_5;
+
+    7:int16 m_int16_4 = -32767; 
+    8:int16 m_int16_5;
+
+    9:int32 m_int32_4;
+    10:int32 m_int32_max = 2147483647;
+
+    11:int64 m_int64_4;
+    12:int64 m_int64_max = 9223372036854775807;
+
+    13:uint8 m_uint8_2 = 255;
+    14:uint8 m_uint8_3;
+
+    15:uint16 m_uint16_2 = 65535;
+    16:uint16 m_uint16_3;
+
+    17:uint32 m_uint32_3;
+    18:uint32 m_uint32_max = 4294967295;
+
+    19:uint64 m_uint64_3;
+    20:uint64 m_uint64_max = 0xFFFFFFFFFFFFFFFF;
+
+    21:double m_double_3;
+    22:double m_double_4 = -123.4567890;
+    23:double m_double_5 = -0.0;
+
+    24:float  m_float_3;
+    25:float  m_float_4 = 2.71828183;
+    26:float  m_float_7 = +0.0;
+
+    27:EnumType1 m_enum1 = EnumValue1;
+    28:EnumType1 m_enum2 = EnumValue3;
+
+    29:wstring m_wstr_1 = L"default wstring value";
+    30:wstring m_wstr_2;
+};
+
+struct Generic<T>
+{
+}
+
+struct Names
+{
+    0: Generic<blob> gb;
+    1: Generic<wstring> gws;
+    2: Generic<nullable<BasicTypes>> gnb;
+    3: Generic<map<int8, EnumType1>> gmie;
+}

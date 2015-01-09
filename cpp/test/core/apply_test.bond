@@ -1,0 +1,38 @@
+
+///
+/// this is test file
+///
+
+import "import_test1.bond"
+import "import_test2.bond"
+
+namespace unittest.apply;
+
+
+struct Struct : import1.ImportedStruct
+{
+    55: required_optional bool m_bool;
+    52: required_optional string m_str;
+    53: required_optional wstring m_wstr;
+    44: required_optional int8 m_int8;
+    45: required_optional int16 m_int16;
+    16: required_optional int32 m_int32;
+    17: required_optional int64 m_int64;
+    13: required_optional uint8 m_uint8;
+    11: required_optional uint16 m_uint16;
+    12: required_optional uint32 m_uint32;
+    10: required_optional uint64 m_uint64;
+    18: required_optional double m_double;
+    20: required_optional float  m_float;
+};
+
+
+struct Derived : Struct
+{
+    30: list<Struct> l;
+    20: Struct s;
+    10: map<int8, Struct> m;
+    50: import1.ImportedStruct nested;
+    60: import2.ImportedEnum   enum_field = ImportedEnum1;
+};
+

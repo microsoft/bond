@@ -1,0 +1,14 @@
+/* Customize doxygen CSS for Bond */
+
+.memTemplParams {
+	font-size: 100%;
+} 
+
+.memtemplate {
+	font-size: 100%;
+}
+
+.memItemLeft, .memItemRight, .memTemplItemLeft, .memTemplItemRight, .memTemplParams, .memname, .memtemplate {
+    font-family: monospace;
+}
+

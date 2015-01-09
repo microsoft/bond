@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildFramework Condition="'$(Configuration)' == 'Net40'">net40</BuildFramework>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.props" />
+  <PropertyGroup>
+    <ProjectGuid>{FF056B62-225A-47BC-B177-550FADDA4B41}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UnitTest</RootNamespace>
+    <AssemblyName>Bond.UnitTest</AssemblyName>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <DependentOutputPath>$(OutputPath)</DependentOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IntermediateOutputPath>$(IntermediateOutputPath)\Properties\</IntermediateOutputPath>
+    <OutputPath>$(OutputPath)\Properties\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Net40' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Fields' ">
+    <IntermediateOutputPath>$(IntermediateOutputPath)\Fields\</IntermediateOutputPath>
+    <OutputPath>$(OutputPath)\Fields\</OutputPath>
+    <BondOptions>--fields</BondOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'CollectionInterfaces' ">
+    <IntermediateOutputPath>$(IntermediateOutputPath)\CollectionInterfaces\</IntermediateOutputPath>
+    <OutputPath>$(OutputPath)\CollectionInterfaces\</OutputPath>
+    <BondOptions>--collection-interfaces</BondOptions>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AttributesTests.cs" />
+    <Compile Include="BondClass.cs" />
+    <Compile Include="BondedTests.cs" />
+    <Compile Include="CloningTests.cs" />
+    <Compile Include="EnumString.cs" />
+    <Compile Include="Equal.cs" />
+    <Compile Include="InterfaceTests.cs" />
+    <Compile Include="JsonParsingTests.cs" />
+    <Compile Include="MetaInitializationTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Random.cs" />
+    <Compile Include="SerializationTests.cs" />
+    <Compile Include="SerializerGeneratorFactoryTests.cs" />
+    <Compile Include="GenericsTests.cs" />
+    <Compile Include="StreamTests.cs" />
+    <Compile Include="TypeAliasTests.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="XmlTests.cs" />
+    <BondCodegen Include="Aliases.bond">
+      <Options Condition=" '$(Configuration)' != 'Net40' ">$(BondOptions) --using="SynchronizedList=SynchronizedCollection&lt;{0}&gt;" --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]"</Options>
+      <Options Condition=" '$(Configuration)' == 'Net40' ">$(BondOptions) --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]"</Options>
+    </BondCodegen>
+    <BondCodegen Include="NamespaceConflict.bond">
+      <Options>$(BondOptions)</Options>
+    </BondCodegen>
+    <BondCodegen Include="NamespaceConflictBond.bond">
+      <Options>$(BondOptions)</Options>
+    </BondCodegen>
+    <BondCodegen Include="ReadOnly.bond">
+      <Options Condition=" '$(Configuration)' != 'Fields' ">$(BondOptions) --readonly-properties</Options>
+      <Options Condition=" '$(Configuration)' == 'Fields' ">--readonly-properties</Options>
+    </BondCodegen>
+    <BondCodegen Include="UnitTest.bond">
+      <Options>$(BondOptions) --using="DateTime=System.DateTime"</Options>
+    </BondCodegen>
+    <!-- Resharper Workaround -->
+    <Compile Include="$(IntermediateOutputPath)\UnitTest_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\Aliases_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\ReadOnly_types.cs" Condition="False" />
+    <!-- End Resharper Workaround -->
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+    <Reference Include="Newtonsoft.Json" Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json" Condition="'$(TargetFrameworkVersion)' == 'v4.0'">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Bond.Attributes">
+      <HintPath>..\..\src\attributes\$(DependentOutputPath)\Bond.Attributes.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond">
+      <HintPath>..\..\src\core\$(DependentOutputPath)\Bond.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.Precompiler">
+      <HintPath>..\..\src\precompiler\$(DependentOutputPath)\Bond.Precompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.IO">
+      <HintPath>..\..\src\io\$(DependentOutputPath)\Bond.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.Json">
+      <HintPath>..\..\src\json\$(DependentOutputPath)\Bond.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
+</Project>

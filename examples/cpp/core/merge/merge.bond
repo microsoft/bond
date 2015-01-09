@@ -1,0 +1,23 @@
+namespace examples.merge
+
+struct Base
+{
+    0: string str;
+}
+
+struct Item : Base
+{
+    0: float f;
+}
+
+struct Struct
+{
+    0: vector<Item> items;
+    1: Item item;
+}
+
+struct StructView
+{
+    0: vector<Base> items;
+    1: bonded<Base> item;
+}

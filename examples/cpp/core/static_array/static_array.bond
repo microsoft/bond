@@ -1,0 +1,14 @@
+namespace examples.static_array
+
+// Define array as an alias of vector
+using array<T, N> = vector<T>;
+
+struct Example
+{
+    // Static array of 64 32-bit integers
+    // Since std::array does not have a concept of default value we need to
+    // make the field required in order to avoid debug assert saying that we
+    // are trying to deserialize into non-clean object.
+    0: required array<uint32, 64> features;
+}
+

@@ -1,0 +1,29 @@
+﻿import "bond\core\bond.bond"
+
+namespace ExpressionsTest
+
+struct Base
+{
+    0: vector<vector<uint64>> vvb;
+}
+
+struct Nested
+{
+    0: double _double;
+}
+
+struct Example : Base
+{
+     0: bool _bool;
+     2: string _str;
+    14: int8 _int8;
+    17: required int64 _int64;
+    [JsonName("JsonUint32")]
+    12: uint32 _uint32;
+    18: double _double;
+    20: bond.GUID guid;
+    30: vector<int32> _int32Vector;
+    40: list<Nested> _nestedVector;
+    50: blob b;
+    60: map<int32, double> _map;
+};

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*   Consume .bond files and produce C# types
+*
+*   (Dependencies are defined by bond.cs.props.  Be sure to import that first)
+*   Dependencies:
+*     $BOND_INCLUDE_PATH   : Bond provided imports
+*     $BOND_COMPILER_PATH  : Path to directory containing gbc.exe
+*
+*   User-Defines:
+*     @BondCodegen         : A bond idl file (usually with a .bond extension) to compile
+*       %Options           : Any gbc options unique to this file (prefer $BondOptions than per-file)
+*     @BondImportDirectory : Directory for other schemas imported within a .bond file
+*     $BondOutputDirectory : Output directory for the generated files, by default IntermediateOutputPath
+*     $BondOptions         : Additional options to pass to the gbc generator
+*     $BondCodegenMode     : Code generation mode for gbc.exe to use (default c#)
+*
+-->
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- A set of properties that users of these targets can use to control whether proxies, services,
+       and types are included in compilation. The default for all is false, as including them via
+       these targets breaks ReSharper. -->
+  <PropertyGroup>
+    <BondOptions Condition=" '$(BondOptions)' == '' "></BondOptions>
+    <BondOutputDirectory Condition=" '$(BondOutputDirectory)' == '' ">$(IntermediateOutputPath)</BondOutputDirectory>
+    <BondCodegenMode Condition="'$(BondCodegenMode)' == ''">c#</BondCodegenMode>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <!-- Hide these from the VS project view -->
+    <BondImportDirectory>
+      <Visible>false</Visible>
+    </BondImportDirectory>
+
+    <!-- set the default compilation settings per bond file -->
+    <BondCodegen>
+      <Options>$(BondOptions)</Options>
+    </BondCodegen>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <AvailableItemName Include="BondCodegen" />
+  </ItemGroup>
+
+  <!--
+    * BondCodegenCs - transform .bond files into .cs files
+    *    If we use output transforms from BondCodegen to the resulting targets we can get partial/minimal rebuilds
+    *    on change, but this doesn't reflect the internal import logic of bond.  A change to common.bond would
+    *    only rebuild common*cs, not all the others that import common.bond.  Without a bond parser prepass we
+    *    must rebuild all .bond files when any of them change.  We force that by putting a non-transform output
+    *    (bondfiles.tmp) in the list so IFF any input changes, then all inputs rebuild since MSBuild can't
+    *    know what should create the unmapped output item and so can't be selective.
+    *    NOTE - this still won't catch changes to files outside declared BondCodegen elements.
+  -->
+  <Target Name="BondCodegenCs"
+          Inputs="@(BondCodegen)"
+          Outputs="$(BondOutputDirectory)bondfiles.tmp;@(BondCodegen -> '$(BondOutputDirectory)%(FileName)_types.cs')"
+          BeforeTargets="CoreCompile"
+          Condition="'@(BondCodegen)' != ''">
+      
+    <Error Text="bond.cs.props not imported"
+           Condition="'$(_bond_cs_props_imported)' != 'true'" />
+
+    <MakeDir Directories="$(BondOutputDirectory)" />
+
+    <!-- just for a simpler commandline read -->
+    <PropertyGroup>
+      <_BondImportDirs>--import-dir="$(BOND_INCLUDE_PATH)" @(BondImportDirectory -> '--import-dir=%(Identity)',' ')</_BondImportDirs>
+      <_BondCommand>"$(BOND_COMPILER_PATH)\gbc.exe" $(BondCodegenMode) $(_BondImportDirs) --namespace=bond=Bond --output-dir="$(BondOutputDirectory)\."</_BondCommand>
+    </PropertyGroup>
+
+    <!-- We'll optimize to generate in a single command where possible -->
+    <ItemGroup>
+      <_BondCodegenWithDefaultOptions Include="@(BondCodegen)" Condition="'%(Options)' == ''" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(BondOutputDirectory)bondfiles.tmp"
+                      Lines="@(_BondCodegenWithDefaultOptions)"
+                      Overwrite="true" />
+
+    <Exec Command="$(_BondCommand) @&quot;$(BondOutputDirectory)bondfiles.tmp&quot;"
+          Condition="'@(_BondCodegenWithDefaultOptions)' != ''" />
+
+    <!-- And for any files needing custom options we'll have to generate one by one -->
+    <Exec Command="$(_BondCommand) %(BondCodegen.Options) &quot;%(BondCodegen.Identity)&quot;"
+          Condition="'%(BondCodegen.Options)' != ''" />
+  </Target>
+
+  <!--
+    * BondCompileCs - whether or not we are rebuilding bond sources, we still need them compiled,
+    *                      so this target should always run.
+  -->
+  <Target Name="BondCompileCs"
+          BeforeTargets="CoreCompile"
+          Condition="'@(BondCodegen)' != ''">
+
+    <ItemGroup>
+      <_BondGeneratedFiles Include="@(BondCodegen -> '$(BondOutputDirectory)%(FileName)_types.cs')">
+        <AutoGen>true</AutoGen>
+        <DependentUpon>%(Identity)</DependentUpon>
+      </_BondGeneratedFiles>
+
+      <_BondGeneratedFileNames Include="@(_BondGeneratedFiles)"/>
+      <Compile Include="@(_BondGeneratedFileNames)" />
+
+      <!--
+        * MsBuild wants to keep track of all our outputs, to understand how to clean build.  It seems it
+        * needs to know all of them regardless of what we actually produced THIS build, so adding always.
+      -->
+      <FileWrites Include="$(BondOutputDirectory)bondfiles.tmp;
+                           @(_BondGeneratedFileNames)" />
+    </ItemGroup>
+  </Target>
+</Project>

@@ -1,0 +1,1 @@
+add_bond_test (modifying_transform modifying_transform.bond modifying_transform.cpp)

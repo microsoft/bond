@@ -1,0 +1,9 @@
+namespace examples.string_ref
+
+using string_ref = string;
+
+struct Example
+{
+    0: vector<string_ref> words;
+}
+

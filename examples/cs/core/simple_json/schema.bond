@@ -1,0 +1,8 @@
+﻿namespace Examples
+
+struct Config
+{
+    0: string Variant;
+    1: bool Enabled;
+    3: vector<string> Urls;
+}

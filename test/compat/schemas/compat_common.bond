@@ -1,0 +1,142 @@
+import "compat2.bond"
+
+namespace unittest.compat
+
+enum EnumType1
+{
+    EnumValue1 = 5,
+    EnumValue2 = 10,
+    EnumValue3 = -10,
+};
+
+
+enum EnumType2
+{
+    EnumValue1,
+    EnumValue2 = 3,
+    EnumValue3 = -3,
+    EnumValue4,
+    EnumValue5,
+    EnumValue6 = 100
+};
+
+
+struct BasicTypesUninitialized
+{
+    10:  bool m_bool;
+    12:  int8 m_int8;
+    23:  int16 m_int16;
+    34:  int32 m_int32;
+    45:  int64 m_int64;
+    56:  uint8 m_uint8;
+    67:  uint16 m_uint16;
+    78:  uint32 m_uint32;
+    89:  uint64 m_uint64;
+    99:  double m_double;
+    100: float  m_float;
+    101: string m_string;
+    102: wstring m_wstring;
+};
+
+
+struct BasicTypes : unittest.compat.another.Another
+{
+     [foo("bar")]
+     0: bool                                m_bool = true;
+     2: string                              m_str = "foo";
+     3: wstring                             m_wstr = L"bar";
+    14: int8                                m_int8 = -14;
+    15: int16                               m_int16 = nothing;
+    16: required int32                      m_int32 = -16;
+    17: optional int64                      m_int64 = -17;
+    13: required_optional uint8             m_uint8 = 13;
+    11: uint16                              m_uint16 = 11;
+    12: uint32                              m_uint32 = 12;
+    10: uint64                              m_uint64 = 10;
+    18: double                              m_double = 18;
+    20: float                               m_float = 20;
+    21: EnumType1                           m_enum1 = EnumValue3;
+    22: unittest.compat.another.EnumType    m_enum2 = EnumValue1;
+    23: unittest.compat.another.EnumType    m_enum3 = nothing;
+};
+
+
+struct Containers
+{
+     0: list<bool>                          l_bool;
+     1: list<string>                        l_str;
+     2: list<int8>                          l_int8;
+     3: list<int16>                         l_int16;
+     4: list<int32>                         l_int32;
+     5: list<int64>                         l_int64;
+     6: list<uint8>                         l_uint8;
+     7: list<uint16>                        l_uint16;
+     8: list<uint32>                        l_uint32;
+     9: list<uint64>                        l_uint64;
+    10: list<double>                        l_double;
+    11: list<float>                         l_float;
+    12: list<EnumType1>                     l_enum1;
+    13: list<BasicTypes>                    l_basic;
+    14: list<unittest.compat.another.EnumType> l_another_enum;
+    15: list<unittest.compat.another.Another> l_another_struct;
+
+    20: set<bool>                           s_bool;
+    21: set<string>                         s_str;
+    22: set<int8>                           s_int8;
+    23: set<int16>                          s_int16;
+    24: set<int32>                          s_int32;
+    25: set<int64>                          s_int64 = nothing;
+    26: set<uint8>                          s_uint8;
+    27: set<uint16>                         s_uint16;
+    28: set<uint32>                         s_uint32;
+    29: set<uint64>                         s_uint64;
+    30: set<double>                         s_double;
+    31: set<float>                          s_float;
+    32: set<EnumType1>                      s_enum1;
+
+    40: map<string, bool>                   m_bool;
+    41: map<string, string>                 m_str;
+    42: map<string, int8>                   m_int8;
+    43: map<string, int16>                  m_int16;
+    44: map<string, int32>                  m_int32;
+    45: map<string, int64>                  m_int64;
+    46: map<string, uint8>                  m_uint8 = nothing;
+    47: map<string, uint16>                 m_uint16;
+    48: map<string, uint32>                 m_uint32;
+    49: map<string, uint64>                 m_uint64;
+    50: map<string, double>                 m_double;
+    51: map<string, float>                  m_float;
+    52: map<string, EnumType1>              m_enum1;
+
+    60: map<bool, double>                   n_bool;
+    61: map<string, double>                 n_str;
+    62: map<int8, double>                   n_int8;
+    63: map<int16, double>                  n_int16;
+    64: map<int32, double>                  n_int32;
+    65: map<int64, double>                  n_int64;
+    66: map<uint8, double>                  n_uint8;
+    67: map<uint16, double>                 n_uint16;
+    68: map<uint32, double>                 n_uint32;
+    69: map<uint64, double>                 n_uint64;
+    70: map<double, double>                 n_double;
+    71: map<float, double>                  n_float;
+    72: map<EnumType1, double>              n_enum1;
+    73: map<EnumType1, BasicTypes>          n_basic;
+
+    80: list<vector<uint64>>                lv_uint64;
+    81: vector<set<uint64>>                 vs_uint64;
+    82: vector<map<string, set<uint64>>>    vm_uint64 = nothing;
+
+    [bar("foo")]
+    [qux("baz")]
+    83: map<int8, map<uint8, list<float>>>  mml_float;
+    
+    90: blob                                m_blob;
+    91: list<blob>                          l_blob;
+    92: map<string, blob>                   n_blob;
+};
+
+
+struct WithBase : BasicTypes
+{
+};

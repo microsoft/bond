@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Portable.Internal.props" />
+  <PropertyGroup>
+    <ProjectGuid>{C001C79F-D289-4CF3-BB59-5F5A72F70D0E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Bond</RootNamespace>
+    <AssemblyName>Bond.JSON</AssemblyName>
+    <BondRedistributable>true</BondRedistributable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Expressions\Json\JsonParser.cs" />
+    <Compile Include="Expressions\Json\SimpleJsonParser.cs" />
+    <Compile Include="Expressions\Json\JsonReader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Protocols\IJsonReader.cs" />
+    <Compile Include="Protocols\SimpleJsonReader.cs" />
+    <Compile Include="Protocols\SimpleJsonWriter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Bond">
+      <HintPath>..\core\$(OutputPath)\Bond.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.Attributes">
+      <HintPath>..\attributes\$(OutputPath)\Bond.Attributes.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json" Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json" Condition="'$(TargetFrameworkVersion)' == 'v4.0'">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
+</Project>

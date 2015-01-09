@@ -1,0 +1,9 @@
+﻿namespace Examples
+
+using decimal = blob;
+
+struct Example
+{
+    0: decimal Price;
+    1: vector<decimal> Numbers;
+}

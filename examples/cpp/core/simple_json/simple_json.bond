@@ -1,0 +1,20 @@
+namespace examples.simple_json
+
+struct Window
+{
+    0: string title = "Sample Konfabulator Widget";
+    2: int16 width = 500;
+    3: int16 height = 500;
+}
+
+enum Mode
+{
+    on,
+    off
+}
+
+struct Widget 
+{
+    0: Mode debug = on;
+    1: vector<Window> windows;
+}      

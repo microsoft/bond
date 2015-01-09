@@ -1,0 +1,15 @@
+﻿namespace Examples
+
+struct Document
+{
+    0: string Title;
+    1: set<string> Authors;
+    2: vector<string> Tags;
+    3: vector<string> Content;
+}
+
+struct Outline
+{
+    0: string Title;
+    2: list<string> Tags;
+}

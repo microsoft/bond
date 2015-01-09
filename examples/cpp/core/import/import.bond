@@ -1,0 +1,8 @@
+import "bond/core/bond.bond"
+
+namespace examples.imports
+
+struct Struct
+{
+    0: bond.TypeDef type;
+}

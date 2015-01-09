@@ -1,0 +1,28 @@
+import "UnitTest.bond"
+
+namespace UnitTest.Readonly
+
+struct BasicTypes view_of UnitTest.BasicTypes
+{
+     _bool;
+     _str;
+     _wstr;
+    _int8;
+    _int16;
+    _int32;
+    _int64;
+    _uint8;
+    _uint16;
+    _uint32;
+    _uint64;
+    _double;
+    _float;
+    _enum1;
+};
+
+struct SimpleContainers view_of UnitTest.SimpleContainers
+{
+    strings;
+    basics;    
+    numbers;
+};

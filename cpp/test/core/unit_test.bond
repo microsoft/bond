@@ -1,0 +1,696 @@
+
+///
+/// this is test file
+///
+
+import "import_test1.bond"
+import "import_test2.bond"
+import "unit_test_core.bond"
+
+namespace unittest;
+
+
+struct UsingImport : import1.ImportedStruct
+{
+    10: required_optional import1.ImportedStruct nested;
+    11: required_optional Microsoft.Import1.ImportedStruct nested1;
+    20: required_optional import2.ImportedEnum   enum_field = ImportedEnum1;
+};
+
+
+struct TestReaderStruct view_of SimpleStruct
+{
+    // View fields
+    m_bool;
+    m_str;
+    m_wstr;
+    m_int8;
+    m_int16;
+    m_int32;
+    m_int64;
+    m_uint8;
+    m_uint16;
+    m_uint32;
+    m_uint64;
+    m_double;
+    m_float;
+    m_enum1;
+    m_blob;
+};
+
+struct SimpleBaseView : SimpleStructView
+{
+    [JsonName("SimpleBase_int32")]
+    16: required_optional int32 m_int32;
+    [JsonName("SimpleBase_enum1")]
+    21: required_optional EnumType1 m_enum1 = EnumValue1;
+};
+
+
+struct StructWithBaseView : SimpleBaseView
+{
+    [JsonName("StructWithBase_str")]
+    0: required_optional  string   m_str;
+    [JsonName("StructWithBase_uint32")]
+    17: required_optional uint32   m_uint32;
+};
+
+
+struct NestedWithBase1BondedBaseView
+{
+    1: required_optional  bonded<SimpleBase> s1;
+    2: required_optional  bonded<SimpleStruct> s2;
+};
+
+
+struct ForwardDeclarationOnly;
+
+
+struct NestedWithBase1BaseView
+{
+    1: required_optional  SimpleBase s1;
+    2: required_optional  SimpleStruct s2;
+};
+
+
+struct ListWithBase
+{
+    1: required_optional  list<StructWithBase>             l1;
+    2: required_optional  vector<list<StructWithBase>>     vl2;
+    3: required_optional  vector<StructWithBase>           v3;
+    4: required_optional  vector<NestedWithBase>           v4;
+};
+
+
+struct ListWithBaseView view_of ListWithBase
+{
+    l1;
+    v3;
+};
+
+
+struct ListOfBase
+{
+    1: required_optional  list<SimpleBase>                 l1;
+    2: required_optional  vector<list<SimpleStruct>>       vl2;
+    4: required_optional  vector<NestedWithBase2>          v4;
+};
+
+
+struct NestedStruct1OptionalBondedView
+{
+    1: bonded<SimpleStruct> s;
+};
+
+
+struct NestedListsView
+{
+    3: required_optional   list<SimpleListsStructView>         lSLS;
+    4: required_optional   vector<list<SimpleListsStructView>> vlSLS;
+    7: required_optional   vector<vector<NestedStructView>>    vvNS;
+};
+
+
+struct NestedMaps
+{
+    3: required_optional   map<string, SimpleListsStruct>       msSLS;
+    4: required_optional   map<int32, list<NestedStruct>>       m32lNS;
+    10: required_optional  map<int64, list<string>>             m64ls;
+};
+
+
+struct NestedMapsView
+{
+    3: required_optional   map<string, SimpleListsStructView>   msSLS;
+    4: required_optional   map<int32, list<NestedStructView>>   m32lNS;
+};
+
+
+struct NestedListsStructPassThrough
+{
+    1: required_optional   list<list<int8>>                                 ll8;
+    2: required_optional   list<vector<list<string>>>                       lvls;
+    3: required_optional   list<bonded<SimpleListsStructView>>              lSLS;
+    4: required_optional   vector<list<bonded<ForwardDeclarationOnly>>>     vlSLS;
+    5: required_optional   bonded<SimpleListsStructView>                    SLS;
+    6: required_optional   vector<float>                                    vf;
+    7: required_optional   vector<vector<bonded<NestedStruct1BondedView>>>  vvNS;
+    8: required_optional   vector<set<string>>                              vss;
+    9: required_optional   list<set<bool>>                                  lsb;
+    10: required_optional  map<int64, list<string>>                         m64ls;
+    11: required_optional  vector<map<double, string>>                      vmds;
+};
+
+
+struct NestedListsStructBondedView
+{
+    3: required_optional   list<bonded<SimpleListsStruct>>         lSLS;
+    4: required_optional   vector<list<bonded<SimpleListsStruct>>> vlSLS;
+    7: required_optional   vector<vector<bonded<NestedStruct>>>    vvNS;
+    10: required_optional  map<int64, list<string>>                m64ls;
+};
+
+
+struct NestedListsStructBondedViewView view_of NestedListsStructBondedView
+{
+    lSLS, vlSLS;
+};
+
+
+struct NestedListsStructView view_of NestedListsStruct
+{
+    vlSLS;
+    SLS;
+    vvNS;
+    lsb;
+    vmds;
+};
+
+
+struct StructWithNullables
+{
+    1: required_optional   nullable<uint32>            nullable_uint32;
+    2: required_optional   nullable<list<float>>       nullable_list;
+    3: required_optional   nullable<SimpleStruct>      nullable_struct;
+    4: required_optional   nullable<map<int8, int8>>   nullable_map;
+	5: required_optional   nullable<string>            nullable_string;
+	10: required_optional  nullable<nullable<uint32>>            nullable_nullable_uint32;
+    20: required_optional  nullable<nullable<list<float>>>       nullable_nullable_list;
+    30: required_optional  nullable<nullable<SimpleStruct>>      nullable_nullable_struct;
+    40: required_optional  nullable<nullable<map<int8, int8>>>   nullable_nullable_map;
+	50: required_optional  nullable<nullable<string>>            nullable_nullable_string;
+    60: required_optional  nullable<bonded<SimpleStruct>>        nullable_bonded;
+};
+
+struct StructWithMeta
+{
+    10  : required_optional    bond_meta::name         name;
+};
+
+struct StructWithFullMeta
+{
+    10  : required_optional    bond_meta::full_name    full_name;
+};
+
+struct BaseWithMeta
+{
+    10  : required_optional    bond_meta::full_name    _base_meta_full_name_10;
+    20  : required_optional    bond_meta::name         _base_meta_name_20;
+    30  : required_optional    string _str;
+};
+
+
+struct DeriverFromBaseWithMeta : BaseWithMeta
+{
+    10  : required_optional    uint32 _derived_uint32;
+};
+
+
+[polymorphic("")]
+struct WithPolymorphic
+{
+    // TODO: gbc doesn't support [polymorphic]
+    0: bond_meta::full_name _bond_meta;
+};
+
+struct DerivedFromPolymorphic : WithPolymorphic
+{
+};
+
+[struct_name("NestedWithMetadata")]
+[struct_attribute("attr_value")]
+struct NestedWithMetadata
+{
+    [field_name("Nested1")]
+    [field_modifier("Optional")]
+    1: string Nested1;
+
+    [field_name("Nested2")] 
+    [field_modifier("Required")]
+    2: required string Nested2;
+
+    [field_name("Nested3")]
+    [field_modifier("RequiredOptional")]
+    3: required_optional string Nested3;
+
+    [field_name("Nested4")] 
+    [field_modifier("Optional")]
+    4: optional string Nested4;
+};
+
+
+struct __BaseWithMetadata
+{
+    [field_name("Base1")]
+    [field_modifier("Optional")]
+    1: string Base1;
+
+    [field_name("Base2")] 
+    [field_modifier("Required")]
+    2: required string Base2;
+
+    [field_name("Base3")]
+    [field_modifier("RequiredOptional")]
+    3: required_optional string Base3;
+
+    [field_name("Base4")] 
+    [field_modifier("Optional")]
+    4: optional string Base4;
+};
+
+
+[struct_name("BaseWithMetadata")]
+[struct_last_name("Metadata")]
+[struct_address("0xDEADBEEF")]
+struct BaseWithMetadata view_of __BaseWithMetadata
+{
+    Base1, Base2, Base3, Base4;
+};
+
+
+
+[struct_name("StructWithMetadata")]
+struct StructWithMetadata : BaseWithMetadata
+{
+    [field_name("Struct1")]
+    [field_modifier("Optional")]
+    1: NestedWithMetadata Struct1;
+
+    [field_name("Struct2")] 
+    [field_modifier("Required")]
+    2: required NestedWithMetadata Struct2;
+
+    [field_name("Struct3")]
+    [field_modifier("RequiredOptional")]
+    3: required_optional NestedWithMetadata Struct3;
+
+    [field_name("Struct4")] 
+    [field_modifier("Optional")]
+    4: optional NestedWithMetadata Struct4;
+};
+
+
+struct StructWithDefaults
+{
+    1:bool m_bool_1 = true;
+    2:bool m_bool_2 = false;
+    3:bool m_bool_3;
+    
+    5:string m_str_1 = "default string value";
+    6:string m_str_2;
+
+    7:wstring m_wstr_1 = L"default string value";
+    8:wstring m_wstr_2;
+
+    14:int8 m_int8_1 = 0;
+    15:int8 m_int8_2 = -1;
+    16:int8 m_int8_3 = 127;
+    17:int8 m_int8_4 = -127;
+    18:int8 m_int8_5;
+
+    20:int16 m_int16_1 = 0;
+    21:int16 m_int16_2 = -1;
+    22:int16 m_int16_3 = 0x7FFF; //  32767 in hex
+    23:int16 m_int16_4 = -32767; 
+    24:int16 m_int16_5;
+
+    30:int32 m_int32_1 = 0;
+    31:int32 m_int32_2 = -1;
+    32:int32 m_int32_min = -2147483648;
+    33:int32 m_int32_4;
+    34:int32 m_int32_max = 2147483647;
+
+    40:int64 m_int64_1 = 0;
+    41:int64 m_int64_2 = -1;
+    42:int64 m_int64_min = -9223372036854775808;
+    43:int64 m_int64_4;
+    44:int64 m_int64_max = 9223372036854775807;
+
+    50:uint8 m_uint8_1 = 0;
+    51:uint8 m_uint8_2 = 255;
+    52:uint8 m_uint8_3;
+
+    60:uint16 m_uint16_1 = 0;
+    61:uint16 m_uint16_2 = 65535;
+    62:uint16 m_uint16_3;
+
+    71:uint32 m_uint32_min = 0;
+    72:uint32 m_uint32_2 = 432542353;
+    73:uint32 m_uint32_3;
+    74:uint32 m_uint32_max = 4294967295;
+
+    81:uint64 m_uint64_min = 0;
+    82:uint64 m_uint64_2 = 52538908;
+    83:uint64 m_uint64_3;
+    84:uint64 m_uint64_max = 0xFFFFFFFFFFFFFFFF;
+
+    91:double m_double_1 = 0;
+    92:double m_double_2 = 3.1415926;
+    93:double m_double_3;
+    94:double m_double_4 = -123.4567890;
+    95:double m_double_5 = -0.0;
+    96:double m_double_6 = 0.0;
+    97:double m_double_7 = +0.0;
+
+    101:float  m_float_1 = 0;
+    102:float  m_float_2 = 2.71828183;
+    103:float  m_float_3;
+    104:float  m_float_4 = -123.4567890;
+    105:float  m_float_5 = -0.0;
+    106:float  m_float_6 = 0.0;
+    107:float  m_float_7 = +0.0;
+
+    110:EnumType1 m_enum1 = EnumValue1;
+    111:EnumType1 m_enum2 = EnumValue3;
+};
+
+
+struct OptionalContainers : StructWithDefaults
+{
+    1:   list<bool>          l_bool;
+    4:   list<uint32>        l_uint32;
+    7:   list<int16>         l_int16;
+    9:   list<int64>         l_int64;
+    10:  list<float>         l_float;
+    12:  list<string>        l_string;
+    21:  vector<bool>        v_bool;
+    22:  vector<uint8>       v_uint8;
+    27:  vector<int16>       v_int16;
+    29:  vector<int64>       v_int64;
+    31:  vector<double>      v_double;
+    32:  vector<string>      v_string;
+    41:  set<bool>           s_bool;
+    45:  set<uint64>         s_uint64;
+    50:  set<float>          s_float;
+    52:  set<string>         s_string;
+    60:  map<int8, string>   m_int8_string;
+    61:  map<string, bool>   m_string_bool;
+    62:  map<float, uint16>  m_float_uint16;
+    70:  nullable<uint16>    m_null_uin16;
+    71:  nullable<SimpleStruct> m_null_simple;
+    72:  blob                m_blob;
+};
+
+
+struct OptionalNothing : OptionalContainers
+{
+    0: set<bool>               s = nothing;
+    1: int16                   x = nothing;
+    2: EnumType1               e = nothing;
+    3: list<string>            l = nothing;
+    4: wstring                 ws = nothing;
+    5: blob                    b = nothing;
+    6: nullable<SimpleStruct>  n = nothing;
+    7: map<int32, int32>       m = nothing;
+};
+
+
+struct RequiredNested
+{
+    1: required         uint32 x;
+};
+
+
+struct Required
+{
+    1: required          float x;
+    2: optional          float y;
+    3: required_optional float z;
+    4: required          SimpleStruct x2;
+    5: optional          float y2;
+    6: required_optional uint8 z2;
+    7: optional          RequiredNested n;
+};
+
+
+struct RequiredViewGood
+{
+    // new field, but optional
+    0: optional          int16 x0;
+    
+    // required field from struct Required
+    1: required          float x;
+    
+    // type mismatch, but field is required_optional
+    3: required_optional bool z;
+
+    // different struct, but all its fields are optional
+    4: required          SimpleStructView x2;
+
+    // required field with different but compatible type
+    6: required_optional uint64 z2;
+
+    // optional field with required fields present in struct Required
+    7: optional          RequiredNested n;
+
+    // new field with required fields, but the field itself is optional 
+    8: optional          RequiredNested x3;
+
+    // new field, but required_optional
+    9: required_optional float z3;
+};
+
+
+struct RequiredViewMissingLast
+{
+    1: required          float x;
+    4: required          SimpleStruct x2;
+    7: optional          RequiredNested n;
+    
+    // new required field
+    9: required          list<float> z3;
+};
+
+
+struct RequiredViewMissingFirst
+{
+    // new required field
+    0: required          SimpleStruct z3;
+
+    1: required          float x;
+    4: required          SimpleStruct x2;
+    7: optional          RequiredNested n;
+};
+
+
+struct RequiredViewMismatchType
+{
+    // required field with mismatched type
+    1: required          bool x;
+
+    4: required          SimpleStruct x2;
+    7: optional          RequiredNested n;
+};
+
+
+struct RequiredViewMissingInNested
+{
+    1: required          float x;
+    
+    // required field with required fields not present in struct Required
+    4: required          Required x2;
+    7: optional          RequiredNested n;
+};
+
+
+struct MaybeStruct<T>
+{
+    1: required_optional T field = nothing;
+};
+
+
+struct MaybeStructOptional<T>
+{
+    1: optional T field = nothing;
+};
+
+
+struct Nothing
+{
+    10: required int16          x = nothing;
+    20: EnumType1               e = nothing;
+    30: list<string>            l = nothing;
+    40: wstring                 ws = nothing;
+    50: required_optional blob  b = nothing;
+    60: nullable<SimpleStruct>  n = nothing;
+};
+
+
+struct BondStruct<T>
+{
+    1: required_optional T field;
+};
+
+
+struct BondStructOptional<T>
+{
+    1: optional T field1;
+    2: optional T field2;
+};
+
+
+struct BondStructRequired<T>
+{
+    1: required T field1;
+    2: required T field2;
+};
+
+
+struct SkipStruct<T>
+{
+    1:  required_optional T field1;
+    10: required_optional double field2;
+};
+
+
+struct SkipStruct2<T>
+{
+    2:  required_optional T field1;
+    10: required_optional double field2;
+};
+
+
+struct __GenericBase<T> : T
+{
+    [JsonName("base_x")]
+    10: required_optional T           x;
+    30: required_optional nullable<T> z;
+    40: required_optional list<T>     l;
+    50: required_optional vector<T>   v;
+};
+
+
+struct GenericBase view_of __GenericBase
+{
+    x, z, l, v;
+};
+
+
+struct Generic<T1, T2, T3, T4> : GenericBase<T1>
+{
+    10: required T1 x;
+    20: required_optional map<T2, T1> m;
+    40: required_optional set<T3> s;
+    50: required_optional T4 t;
+};
+
+
+struct Generic1<T1, T2, T3, T4> : T1
+{
+    10: required T1 x1;
+    20: required_optional map<T2, T1> m1;
+    40: required_optional set<T3> s1;
+    50: required_optional T4 t1;
+};
+
+
+struct Generic2<T>
+{
+    // Can't use Generic<Generic<...>...> with Simple JSON because it flattens inheritance hierarchy
+    // and having a generic struct inherit another instance of self leads to obvious field name conflicts. 
+    10: required_optional list<Generic1<Generic<SimpleBase, int8, T, blob>, string, wstring, list<nullable<blob>>>> gg;
+};
+
+
+enum Color
+{
+    Orange = 1,
+    Yellow = 2,
+};
+
+
+enum Fruit
+{
+    Orange = 6,
+    Grape  = 5,
+};
+
+
+struct Image
+{
+    1: Color color1 = Yellow;
+    2: Color color2 = Orange;
+    3: Fruit fruit1 = Grape;
+    4: Fruit fruit2 = Orange;
+};
+
+
+struct ImportedStruct
+{
+};
+
+enum ImportedEnum
+{
+    Value = 0
+};
+
+struct GenericMetadata
+{
+    0: BondStruct<import1.ImportedStruct> s1;
+    1: BondStruct<ImportedStruct>         s2;
+    2: BondStruct<import2.ImportedEnum>   e1;
+    3: BondStruct<ImportedEnum>           e2;
+};
+
+// Enums that have the same names as generated enum helper functions
+// This test actually causes ambiguity on Clang - need to investigate
+/*enum ToEnum{x=13};
+
+enum ToString{x=13};
+
+enum FromString{x=13};
+
+enum GetTypeName{x=13};
+
+enum GetValueToNameMap{x=13};*/
+enum SomeEnum{x=13};
+
+using static_string<N> = string;
+using static_wstring<N> = wstring;
+using simple_list<T> = list<T>;
+
+struct WithStaticString
+{
+    1: required_optional static_string<50> field;
+};
+
+struct WithStaticWString
+{
+    1: required_optional static_wstring<50> field;
+};
+
+struct WithSimpleList<T>
+{
+    1: required_optional simple_list<T> field;
+};
+
+struct Blobs
+{
+    0: list<blob> blobs;
+    1: bool b;
+};
+
+[polymorphic("")]
+struct Polymorphic
+{
+    // TODO: gbc doesn't support [polymorphic]
+    0: bond_meta::full_name _bond_meta;
+};
+
+
+struct NameConflicts : SimpleBase
+{
+    // fields hide struct and enum types
+    0: string SimpleBase;
+    1: string SimpleStruct;
+    3: string EnumTypes;
+    4: string EnumValue5;
+
+    // fields using hiden types
+    10: SimpleBase f1;
+    11: SimpleStruct f2;
+    12: vector<SimpleBase> f3;
+    13: nullable<SimpleStruct> f4;
+    14: EnumType1 e1 = EnumValue5;
+    15: set<EnumType1> e2;
+}

@@ -1,0 +1,23 @@
+function (cxx_target_compile_options compiler)
+    list (REMOVE_AT ARGV 0)
+    if (${CMAKE_CXX_COMPILER_ID} STREQUAL ${compiler})
+        target_compile_options (${ARGV})
+    endif()
+endfunction()
+
+function (cxx_add_compile_options compiler)
+    list (REMOVE_AT ARGV 0)
+    if (${CMAKE_CXX_COMPILER_ID} STREQUAL ${compiler})
+        add_compile_options (${ARGV})
+    endif()
+endfunction()
+
+function (use_cxx11)
+    cxx_add_compile_options (Clang -std=c++11)
+    cxx_add_compile_options (GNU -std=c++11)
+endfunction()
+
+function (target_use_cxx11 name)
+    cxx_target_compile_options (Clang ${name} PRIVATE -std=c++11)
+    cxx_target_compile_options (GNU ${name} PRIVATE -std=c++11)
+endfunction()

@@ -1,0 +1,10 @@
+namespace examples.time
+
+// Define time to be an alias of int64
+using time = int64;
+
+struct Example
+{
+    0: time when;
+    1: map<string, time> bdays;
+}

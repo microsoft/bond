@@ -1,0 +1,19 @@
+namespace examples.modifying_transform
+
+struct Nested
+{
+    1: string str;
+}
+
+
+struct Base
+{
+    2: string str;
+}
+
+
+struct Struct : Base
+{
+    0: Nested n;
+    1: string str;
+}

@@ -1,0 +1,16 @@
+namespace examples.runtime_binding
+
+struct Struct
+{
+    0: uint32  number;
+    1: string  name;
+    2: string  address;
+    3: int16   age;
+}
+
+
+struct MyView
+{
+    5: string   some_string;
+    8: int32    some_number;
+}

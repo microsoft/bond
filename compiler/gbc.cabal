@@ -1,0 +1,61 @@
+-- The name of the package.
+name:               gbc
+
+-- The package version.  See the Haskell package versioning policy (PVP) 
+-- for standards guiding when and how versions should be incremented.
+-- http://www.haskell.org/haskellwiki/Package_versioning_policy
+-- PVP summary:     +-+------- breaking API changes
+--                  | | +----- non-breaking API additions
+--                  | | | +--- code changes with no API change
+version:            3.0.2.0
+
+-- A short (one-line) description of the package.
+synopsis:           The Glorious Bond Compilation System
+
+-- A longer description of the package.
+-- description:         
+
+-- URL for the project homepage or repository.
+homepage:           https://github.com/Microsoft/bond
+
+-- The license under which the package is released.
+license:            MIT
+
+-- The file containing the license text.
+-- license-file:    LICENSE
+
+-- The package author(s).
+author:             Adam Sapek
+
+-- An email address to which users can send suggestions, bug reports, and 
+-- patches.
+maintainer:         adamsap@microsoft.com
+
+-- A copyright notice.
+copyright:          Copyright (C) Microsoft. All rights reserved.
+
+category:           Language
+
+build-type:         Simple
+
+-- Constraint on the version of Cabal needed to build this package.
+cabal-version:      >=1.8
+
+
+executable gbc
+  -- .hs or .lhs file containing the Main module.
+  main-is:          Main.hs
+  
+  -- Modules included in this executable, other than Main.
+  -- other-modules:       
+  
+  -- Other library packages from which modules are imported.
+  build-depends:    base >=4.5, 
+                    shakespeare >= 2.0,
+                    text >=0.11,
+                    parsec >=3.1,
+                    filepath >=1.0,
+                    cmdargs >= 0.10.10,
+                    mtl >= 2.1,
+                    directory >= 1.1,
+                    monad-loops >= 0.4

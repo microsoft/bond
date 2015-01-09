@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="$(ProjectDir)\..\compiler\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(ProjectDir)..\compiler\gbc.cabal" />
+    <None Include="$(ProjectDir)..\compiler\Options.hs" />
+    <None Include="$(ProjectDir)..\compiler\Main.hs" />
+    <None Include="$(ProjectDir)..\compiler\Bond\Lexer.hs">
+      <Filter>Bond</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Parser.hs">
+      <Filter>Bond</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Schema.hs">
+      <Filter>Bond</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Version.hs">
+      <Filter>Bond</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Util.hs">
+      <Filter>Bond</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\CustomMapping.hs">
+      <Filter>Bond\Template</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\TypeMapping.hs">
+      <Filter>Bond\Template</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\Util.hs">
+      <Filter>Bond\Template</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Reflection_h.hs">
+      <Filter>Bond\Template\Cpp</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Types_cpp.hs">
+      <Filter>Bond\Template\Cpp</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Types_h.hs">
+      <Filter>Bond\Template\Cpp</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Enum_h.hs">
+      <Filter>Bond\Template\Cpp</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Apply_h.hs">
+      <Filter>Bond\Template\Cpp</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Apply_cpp.hs">
+      <Filter>Bond\Template\Cpp</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Util.hs">
+      <Filter>Bond\Template\Cpp</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cs\Types_cs.hs">
+      <Filter>Bond\Template\Cs</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cs\Util.hs">
+      <Filter>Bond\Template\Cs</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Bond">
+      <UniqueIdentifier>{585b26a1-2a98-4a75-80d5-b9218a71ba2d}</UniqueIdentifier>
+      <Extensions>
+      </Extensions>
+    </Filter>
+    <Filter Include="Bond\Template">
+      <UniqueIdentifier>{6136aa59-3761-4878-85e7-efda39785ecb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bond\Template\Cpp">
+      <UniqueIdentifier>{0e5652ef-f06f-42d0-a5ba-7ed015eb92f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bond\Template\Cs">
+      <UniqueIdentifier>{4fb77bee-4379-4717-8bc0-721644d44d5f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

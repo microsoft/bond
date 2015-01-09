@@ -1,0 +1,11 @@
+import "import_test2.bond"
+
+namespace import1
+namespace csharp Microsoft.Import1
+
+struct ImportedStruct
+{
+    10: required_optional int32 x;
+    20: required_optional import2.ImportedEnum e = ImportedEnum2;
+};
+                                              

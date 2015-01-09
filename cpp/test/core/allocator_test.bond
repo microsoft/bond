@@ -1,0 +1,97 @@
+namespace allocator_test
+
+using Vector<T> = vector<T>;
+
+struct Base<T>
+{
+    10: string               str;
+    20: vector<T>            vec;
+    30: bond_meta::name      self;
+    40: bond_meta::full_name full;
+};
+
+struct Struct : Base<string>
+{
+    10: uint64                              n;
+    20: string                              str;
+    30: wstring                             wstr;
+    31: list<bool>                          list_of_bool;
+    32: list<string>                        list_of_string;
+    33: list<Vector<float>>                 list_of_vector;
+    34: bond_meta::name                     self;
+    35: bond_meta::full_name                full;
+    36: set<int16>                          set_of_int16;
+    37: set<string>                         set_of_string;
+    38: map<int16, int32>                   map_int_int;
+    39: map<int16, string>                  map_int_string;
+    40: map<wstring, list<int8>>            map_wstring_list;
+    41: vector<Base<vector<uint32>>>        vector_base;
+    42: map<double, Base<Base<wstring>>>    map_bool_base;
+    43: map<wstring, list<vector<string>>>  map_wstring_vector_list_string;
+    44: vector<int64>                       vector_int64;
+    45: Base<vector<bool>>                  base;
+    46: list<set<int16>>                    list_set;
+    47: map<string, map<int64, set<string>>> map_map;
+    48: vector<set<int32>>                  vector_set;
+    49: vector<map<int16, vector<list<bool>>>> vector_map;
+    50: wstring                             maybe_wstr = nothing;
+    51: map<double, Base<Base<wstring>>>    maybe_map_bool_base = nothing;
+    52: nullable<int32>                     nullable_int;
+    53: nullable<list<string>>              nullable_list;
+    54: nullable<set<bool>>                 nullable_set;
+    55: nullable<map<string, float>>        nullable_map;
+};
+
+enum EnumType
+{
+    enum_value1 = 5,
+    enum_value2 = 10,
+    enum_value3 = -10,
+    enum_value4 = 0x2A,
+    enum_value5 = 0XFFFFFFFFFFFFFFF6,
+};
+
+struct SimpleType
+{
+    0: required_optional bool m_bool;
+    2: required_optional string m_str;
+    3: required_optional wstring m_wstr;
+    14: required_optional int8 m_int8;
+    15: required_optional int16 m_int16;
+    16: required_optional int32 m_int32;
+    17: required_optional int64 m_int64;
+    13: required_optional uint8 m_uint8;
+    11: required_optional uint16 m_uint16;
+    12: required_optional uint32 m_uint32;
+    10: required_optional uint64 m_uint64;
+    18: required_optional double m_double;
+    20: required_optional float  m_float;
+    21: required_optional EnumType m_enum = enum_value1;
+    22: required_optional blob m_blob;
+};
+
+struct NullableFields
+{
+    1: required_optional nullable<uint32>            nullable_uint32;
+    2: required_optional nullable<string>            nullable_string;
+    3: required_optional nullable<list<float>>       nullable_list;
+    4: required_optional nullable<SimpleType>       nullable_struct;
+    5: required_optional nullable<map<int8, int8>>   nullable_map;
+    10: required_optional nullable<nullable<uint32>>            nullable_nullable_uint32;
+    20: required_optional nullable<nullable<string>>            nullable_nullable_string;
+    30: required_optional nullable<nullable<list<float>>>       nullable_nullable_list;
+    40: required_optional nullable<nullable<SimpleType>>       nullable_nullable_struct;
+    50: required_optional nullable<nullable<map<int8, int8>>>   nullable_nullable_map;
+};
+
+struct NullableSwappable
+{
+    1: required_optional nullable<uint32>            nullable_uint32;
+    2: required_optional nullable<string>            nullable_string;
+    3: required_optional nullable<list<float>>       nullable_list;
+    4: required_optional nullable<SimpleType>       nullable_struct;
+    10: required_optional nullable<nullable<uint32>>            nullable_nullable_uint32;
+    20: required_optional nullable<nullable<string>>            nullable_nullable_string;
+    30: required_optional nullable<nullable<list<float>>>       nullable_nullable_list;
+    40: required_optional nullable<nullable<SimpleType>>       nullable_nullable_struct;
+};

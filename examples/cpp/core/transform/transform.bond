@@ -1,0 +1,17 @@
+namespace examples.transform
+
+struct Struct_1_0
+{
+    10: uint32          n;
+    20: string          name;
+    30: vector<double>  items;
+};
+
+
+struct Struct_2_0
+{
+    10: uint32          n;
+    21: string          first_name;
+    22: string          last_name;
+    30: vector<double>  items;
+};

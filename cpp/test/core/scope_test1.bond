@@ -1,0 +1,13 @@
+namespace x.y
+
+enum Enumeration
+{
+    standard = 1,
+    custom = 2,
+};
+
+struct Struct
+{
+    1: double value;
+    2: Enumeration field = standard;
+};

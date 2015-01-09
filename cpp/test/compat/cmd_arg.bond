@@ -1,0 +1,43 @@
+namespace unittest.compat
+
+enum Test
+{
+    compact, 
+    compact2, 
+    fast, 
+    json, 
+    simple,
+    simple2,
+    schema
+};
+
+
+[help("TEST [options]")]
+struct Options
+{
+    [help("show this help text")]
+    [abbr("?")]
+    0: bool help;
+
+    [naked("")]
+    10: required Test test = compact;
+
+    [help("serialize expected value to specified file")]
+    [abbr("s")]
+    20: string serialize;
+
+    [help("deserialize object from specified file and compare it against expected value")]
+    [abbr("d")]
+    30: string deserialize;
+
+    [help("use a subset of the schema that doesn't include generics")]
+    35: bool no_generics;
+
+    [naked("")]
+    [help("if deserialized object doesn't match expected value, optional path of a file to dump the expected value")]
+    40: string expected;
+
+    [naked("")]
+    [help("optional path of a file to dump the actual deserialized object")]
+    50: string actual;
+};

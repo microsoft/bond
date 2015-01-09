@@ -1,0 +1,155 @@
+import "bond/core/bond.bond"
+
+namespace unit_tests.validation
+
+struct type1
+{
+    1: required int16 field1;
+    2: int32 field2;
+};
+
+struct type1_different_field
+{
+    1: required int16 field1;
+    2: string field2;
+};
+
+struct type1_downgrade_fields
+{
+    1: required int8 field1;
+    2: int16 field2;
+};
+
+struct type1_upgrade_fields
+{
+    1: required int32 field1;
+    2: int64 field2;
+};
+
+struct type1_identical
+{
+    1: required int16 field1;
+    2: int32 field2;
+};
+
+struct type1_removed_required_field
+{
+    2: int32 field2;
+};
+
+struct type1_removed_optional_field
+{
+    1: required int16 field1;
+};
+
+struct type1_required_to_optional
+{
+    1: int16 field1;
+    2: int32 field2;
+};
+
+struct type1_optional_to_required
+{
+    1: required int16 field1;
+    2: required int32 field2;
+};
+
+struct type1_derived 
+    : type1
+{
+    1: bool field3;
+};
+
+struct type2 
+    : type1
+{
+    1: string field3;
+};
+
+struct type2_identical
+    : type1_identical
+{
+    1: string field3;
+};
+
+struct type2_incompatible_base 
+    : type1_different_field
+{
+    1: string field3;
+};
+
+struct type2_compatible_base 
+    : type1_downgrade_fields
+{
+    1: string field3;
+};
+
+struct type2_no_base
+{
+    1: string field3;
+};
+
+struct type3
+{
+    1: nullable<type3> field1;
+};
+
+struct type3_identical
+{
+    1: nullable<type3_identical> field1;
+};
+
+struct type4
+{
+    1: int16 field1;
+    2: int32 field2;
+    3: int64 field3;
+};
+
+struct type4_compatible
+{
+    1: int32 field1;
+    2: int64 field2;
+    3: int64 field3;
+};
+
+struct empty
+{
+};
+
+struct depth1
+{
+    1: string field1;
+    2: double field2;
+};
+
+struct depth2 : depth1
+{
+    1: uint32 field3;
+    2: string field4;
+};
+
+struct depth3 : depth2
+{
+    1: string field5;
+    2: uint16 field6;
+};
+
+//
+// A type like SchemaDef but with an additional field to simulate an incompatible
+// version of SchemaDef
+//
+struct IncompatibleStructDef
+{
+    0: bond.Metadata metadata;
+    1: nullable<bond.TypeDef> base_def;
+    2: vector<bond.FieldDef> fields;
+    5: bool extra_field;
+};
+
+
+struct IncompatibleSchemaDef
+{
+    0: vector<IncompatibleStructDef> structs;
+    1: bond.TypeDef root;
+};

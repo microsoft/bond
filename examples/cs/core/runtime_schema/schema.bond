@@ -1,0 +1,13 @@
+﻿namespace Examples
+
+struct Struct
+{
+    0: string String = "this is a string";
+}
+
+[StructAttribute("Value of the attribute")]
+struct Example
+{
+    [FieldAttribute("Value of the attribute")]
+    0: map<uint32, Struct> mapStruct1;
+}

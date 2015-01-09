@@ -1,0 +1,10 @@
+namespace examples.generic_tree
+
+struct Node<T>;
+
+struct Node<T>
+{
+    0: nullable<Node<T>> left;
+    1: nullable<Node<T>> right;
+    2: T                 data;
+}

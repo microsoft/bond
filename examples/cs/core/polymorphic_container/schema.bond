@@ -1,0 +1,29 @@
+﻿namespace Examples
+
+enum Type
+{
+    Unknown,
+    Circle,
+    Rectange
+}
+
+struct Shape
+{
+    0: Type Type = Unknown;
+}
+
+struct Circle : Shape
+{
+    0: double Radius;
+}
+
+struct Rectangle : Shape
+{
+    0: double Width;
+    1: double Height;
+}
+
+struct Polymorphic
+{
+    0: vector<bonded<Shape>> Shapes;
+} 

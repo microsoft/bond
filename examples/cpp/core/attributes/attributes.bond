@@ -1,0 +1,23 @@
+namespace examples.attributes
+
+struct Nested
+{
+    [Min("10")]
+    [Max("20")]
+    0: uint32 n;
+
+    [Min("-3")]
+    [Max("+3")]
+    1: int16 f;
+}
+
+
+struct Base
+{
+    2: Nested s;
+}
+
+
+struct Struct : Base
+{
+}

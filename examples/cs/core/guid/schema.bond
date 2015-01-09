@@ -1,0 +1,8 @@
+﻿namespace Examples
+
+using guid = string;
+
+struct Example
+{
+    0: guid id;
+}

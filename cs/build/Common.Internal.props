@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == ''">
+    <Configuration Condition="'$(BuildType)' == 'debug'">Debug</Configuration>
+    <Configuration Condition="'$(BuildType)' == 'retail'">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <PropertyGroup>
+      <BOND_INCLUDE_PATH Condition="'$(BOND_INCLUDE_PATH)' == ''">$(MSBuildThisFileDirectory)..\..\cpp\inc</BOND_INCLUDE_PATH>
+  </PropertyGroup>
+  <Import Project="bond.cs.props" />
+  <PropertyGroup Condition="'$(BuildFramework)' == ''">
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <BuildFramework>net45</BuildFramework>
+    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BuildFramework)' == 'net40'">
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <DefineConstants>$(DefineConstants);NET40</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputPath>bin\$(BuildType)\$(BuildFramework)</OutputPath>
+    <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
+    <FileAlignment>512</FileAlignment>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <NoWarn>1591</NoWarn>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' != 'Release|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>$(DefineConstants)</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(DELAY_SIGN) == ''">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)bond.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(DELAY_SIGN) == '1'">
+    <DelaySign>true</DelaySign>
+    <SignAssembly>true</SignAssembly>
+    <KeyFile>$(MSBuildThisFileDirectory)35MSSharedLib1024.snk</KeyFile>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <DefineConstants>$(DefineConstants);DELAY_SIGN</DefineConstants>
+  </PropertyGroup>
+</Project> 
+

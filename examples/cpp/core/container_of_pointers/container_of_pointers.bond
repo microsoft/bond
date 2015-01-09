@@ -1,0 +1,14 @@
+namespace examples.container_of_pointers
+
+struct Item
+{
+    1: string foo;
+    2: uint16 bar;
+}
+
+using PtrList<T>=list<T>;
+
+struct Struct
+{
+    2: PtrList<Item> items;
+}

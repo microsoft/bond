@@ -1,0 +1,12 @@
+macro (_debug_none var)
+    string (REPLACE /debug /debug:None ${var} ${${var}})
+endmacro()
+
+macro (no_pdb)
+    if (MSVC)
+        _debug_none (CMAKE_EXE_LINKER_FLAGS_DEBUG) 
+        _debug_none (CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO)
+        _debug_none (CMAKE_MODULE_LINKER_FLAGS_DEBUG)
+        _debug_none (CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO) 
+    endif()
+endmacro()

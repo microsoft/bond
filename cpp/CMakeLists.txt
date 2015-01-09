@@ -1,0 +1,75 @@
+set (sources
+    ${BOND_INCLUDE}/bond/core/bond.bond
+    ${BOND_INCLUDE}/bond/core/bond_const.bond)
+
+add_bond_codegen (${sources}
+    ENUM_HEADER
+    OUTPUT_DIR ${BOND_GENERATED}/bond/core)
+
+# Generate again into intermediate dir so that we can build libraries 
+# concurrently.
+# Despite what documentation says, there doesn't seem to be a way to build
+# multiple targets from one set of generated files without serializing them.
+# Even when using add_custom_target to define an intermediate target the custom
+# command rules are added to each target and VS forces execution of all rules
+# in a clean build, leading to collisions in multi-processor build.
+add_bond_codegen (${sources}
+    ENUM_HEADER
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/core)
+
+file (GLOB core_headers "inc/bond/core/*.h")
+source_group ("core" FILES ${core_headers})
+
+file (GLOB core_detail_headers "inc/bond/core/detail/*.h")
+source_group ("core\\detail" FILES ${core_detail_headers})
+
+file (GLOB protocol_headers "inc/bond/protocol/*.h")
+source_group ("protocol" FILES ${protocol_headers})
+
+file (GLOB protocol_detail_headers "inc/bond/protocol/detail/*.h")
+source_group ("protocol\\detail" FILES ${protocol_detail_headers})
+
+file (GLOB stream_headers "inc/bond/stream/*.h")
+source_group ("stream" FILES ${stream_headers})
+
+set (generated_files 
+    ${BOND_GENERATED}/bond/core/bond_types.cpp 
+    ${BOND_GENERATED}/bond/core/bond_const_types.cpp)
+
+source_group ("generated" FILES ${generated_files})
+
+add_library (bond
+    STATIC
+    ${sources}
+    ${generated_files}
+    ${core_headers}
+    ${core_detail_headers}
+    ${protocol_headers}
+    ${protocol_detail_headers}
+    ${stream_headers})
+
+# Boost thread is only needed if the C++ standard library doesn't support
+# std::call_once. However std::once seems problematic on Linux
+# (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=60662) so for now we use
+# std::call_once only on MSVC.
+if (Boost_SYSTEM_FOUND AND Boost_THREAD_FOUND OR NOT MSVC)
+    target_link_libraries (bond INTERFACE
+        ${Boost_SYSTEM_LIBRARY}
+        ${Boost_THREAD_LIBRARY})
+endif()
+
+add_library (bond_apply
+    STATIC
+    ${sources}
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/core/bond_apply.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/core/bond_const_apply.cpp)
+
+target_include_directories (bond_apply BEFORE PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
+
+install (TARGETS bond bond_apply
+    EXPORT bond
+    ARCHIVE DESTINATION lib/bond
+    INCLUDES DESTINATION include)
+
+add_subdirectory (test)

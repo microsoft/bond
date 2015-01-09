@@ -1,0 +1,1 @@
+add_bond_test (polymorphic_container polymorphic_container.bond polymorphic_container.cpp)

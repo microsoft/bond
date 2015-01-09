@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(BuildType)' == ''">
+    <BuildType Condition="'$(Configuration)' != 'Release'">debug</BuildType>
+    <BuildType Condition="'$(Configuration)' == 'Release'">retail</BuildType>
+  </PropertyGroup>
+  <PropertyGroup>
+      <BOND_PATH Condition="'$(BOND_PATH)' == ''">$(MSBuildThisFileDirectory)..</BOND_PATH>
+      <BOND_COMPILER_PATH Condition="'$(BOND_COMPILER_PATH)' == ''">$(BOND_PATH)\bin</BOND_COMPILER_PATH>
+      <BOND_BINARY_PATH Condition="'$(BOND_BINARY_PATH)' == ''">$(BOND_PATH)\bin\$(BuildType)</BOND_BINARY_PATH>
+      <BOND_INCLUDE_PATH Condition="'$(BOND_INCLUDE_PATH)' == ''">$(BOND_PATH)\inc</BOND_INCLUDE_PATH>
+      <_bond_cs_props_imported>true</_bond_cs_props_imported>
+  </PropertyGroup>
+</Project> 

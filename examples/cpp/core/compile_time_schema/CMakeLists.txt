@@ -1,0 +1,1 @@
+add_bond_test (compile_time_schema compile_time_schema.bond compile_time_schema.cpp)

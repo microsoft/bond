@@ -1,0 +1,66 @@
+﻿namespace UnitTest.Aliases
+
+using SynchronizedList<T> = list<T>;
+using OrderedSet<T> = set<T>;
+using Decimal = blob;
+using EnumString<T> = string;
+using Array<T> = vector<T>;
+
+enum Bar
+{
+    One,
+    Two
+}
+
+struct Foo
+{
+     0: bool _bool;
+     2: string _str;
+     3: wstring _wstr;
+    14: int8 _int8;
+}
+
+struct ContainerAlias
+{
+    0: SynchronizedList<string> syncListString;
+    1: nullable<SynchronizedList<Foo>> syncListFoo;
+    2: SynchronizedList<OrderedSet<string>> syncListOrderedSetString;
+	// Don't get rid of the `nothing` here. Bond will attempt to use "normal"
+	// C# init syntax here. Arrays have irregular syntax though, so
+	// `new bool[]()` won't work. To compensate, we just leave it null.
+    3: Array<bool> arrayContainer = nothing;
+    4: Array<nullable<bool>> arrayNullableContainer = nothing;
+    5: Array<vector<bool>> arrayVectorContainer = nothing;
+    6: Array<Array<bool>> arrayArrayContainer = nothing;
+}
+
+struct ContainerNotAliased
+{
+    0: list<string> listString;
+    1: nullable<vector<Foo>> vectorFoo;
+    2: list<set<string>> listSetString;
+	// Don't get rid of `nothing` here. See comment in `ContainerAlias`.
+    3: vector<bool> arrayContainer = nothing;
+    4: vector<nullable<bool>> arrayNullableContainer = nothing;
+    5: vector<vector<bool>> arrayVectorContainer = nothing;
+    6: vector<vector<bool>> arrayArrayContainer = nothing;
+}
+
+struct BlobAlias
+{
+    0: Decimal x;
+    1: vector<Decimal> y;
+    2: nullable<Decimal> z;
+}
+
+struct BlobNotAliased
+{
+    0: blob x;
+    1: vector<blob> y;
+    2: nullable<blob> z;
+}
+
+struct GenericAlias
+{
+    0: EnumString<Bar> bar;
+}

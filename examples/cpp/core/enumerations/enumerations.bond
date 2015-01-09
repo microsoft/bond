@@ -1,0 +1,13 @@
+namespace examples.enumerations
+
+enum Color
+{
+    Orange = 1,
+    Yellow = 2,
+}
+
+enum Fruit
+{
+    Apple = 1,
+    Orange = 2,
+}
