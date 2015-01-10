@@ -1,5 +1,23 @@
 % Python bindings for Bond
 
+About
+=====
+
+Bond is an extensible framework for working with schematized data. It is 
+suitable for scenarios ranging from service communications to Big Data storage 
+and processing.
+
+Bond defines a rich type system and schema versioning rules which allow
+forward and backward compatibility. The core Bond features include high 
+performance serialization/deserialization and a very powerful, generic data 
+transform mechanism. The framework is highly extensible via pluggable 
+serialization protocols, data streams, user defined type aliases and more.
+
+By design Bond is language and platform independent and is currently supported 
+for C++, C#, and Python on Linux, OS X and Windows.
+
+Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
+
 Introduction
 ============
 
