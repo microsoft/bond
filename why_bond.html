@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">
+  body {
+      line-height: 1.5; 
+      font-family: Helvetica, Arial, sans-serif; 
+      color: #333333;
+      font-size: 0.9em;
+  }
+  code {
+      font-size: 1em;
+  }
+  td.lineNumbers { width: 40px; }
+  div#all {
+    width: 1120px;
+    background-color: #ffffff;
+    margin: 0 auto;
+    padding: 25px;
+    overflow: auto;
+  }
+  code > span.co { color: #4E9A06; font-style: normal; }
+  code > span.st { color: #8A0303; font-style: normal; }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    border-bottom: 1px solid black;
+  }
+
+  #toc {
+    width: 300px; 
+    position:fixed;
+    overflow: auto;
+    height: 100%;
+  }
+
+  #main {
+    margin-left: auto;
+    margin-right: auto;
+    width: 800px;
+  }
+  a {
+    text-decoration: none;
+  }
+  #toc a:visited {
+    color: #99c;
+  }
+  #main a:visited {
+    color: #36c;
+  }
+  a:link {
+    color: #36c;
+  }
+  </style>
+</head>
+<body>
+<nav id="TOC"></nav>
+<div id="all">
+<div id="main">
+<h1 id="why-bond">Why Bond</h1>
+<p>Bond is an <a href="https://github.com/Microsoft/bond/">open source framework</a> which addresses similar scenarios to Protocol Buffers, Thrift and Avro. In this document we try to address similarities and differences between Bond and other solutions. We try to keep it objective and uncolored by opinions but inevitably our perspective is surely informed by specific uses we most care about and the depth of knowledge we have of the various frameworks. If you find factual inaccuracies, or if you have written your own informed comparison and would like to include a link to it in this document, please send a pull request.</p>
+<h2 id="meta-schema">Meta schema</h2>
+<p>Bond has a very rich <a href="manual/bond_cpp.html#idl-syntax">type system</a>. It is probably most similar to Thrift in this respect. Some notable additions in Bond are inheritance, <a href="manual/bond_cpp.html#type-aliases">type aliases</a> and <a href="manual/bond_cpp.html#generics">generics</a>. One type system feature not present in Bond that Avro, and recently Protocol Buffers, have are unions. We use schemas with optional fields to represent unions.</p>
+<h2 id="programming-model">Programming model</h2>
+<p>In terms of mapping to target languages Bond is again much more similar to Thrift than Protocol Buffers. Like Thrift, Bond generates native types in the target language to represent schemas and uses native language collections. Bond however doesn’t hard-code specific type mappings. For example for C++ the defaults are STL containers like <code>std::vector</code> however user can easily map custom types (e.g. use <code>boost::multi_index_container</code> in the generated C++ struct or map a <code>uint64</code> schema field to a <code>System.DateTime</code> field in the generated C# class). Bond generated types can also use custom allocators. See <a href="manual/bond_cpp.html#custom-type-mappings">custom type mappings</a> for <a href="manual/bond_cs.html#custom-type-mappings">more details</a>.</p>
+<h2 id="protocols">Protocols</h2>
+<p>Bond support three kinds of protocols. Tagged binary protocols are very similar to Thrift protocol and Protocol Buffers wire format. We use those in RPC scenarios because they don’t require any schema pre-negotiation. Untagged protocols are like Avro wire format. The payload is compact because it doesn’t contain any schema information, only data, but you need to provide schema of the payload at runtime in order to support schema versioning. We use these protocols for data storage and many records using the same schema are stored in a file/stream. Bond also has first class support for text protocol like JSON and Xml.</p>
+<p>In Bond protocols are pluggable like in Thrift. Where possible Bond implements protocols through generics so that there is no performance overhead: neither C++ or C# implementation incurs virtual dispatch cost when calling protocol implementation.</p>
+<h2 id="architecture">Architecture</h2>
+<p>One unique feature of Bond is that serialization and deserialization are not fundamental operations hard-coded in the generated code. In fact there is no code generated that is specific to serialization and deserialization. Instead Bond programming model exposes parsers and <a href="manual/bond_cpp.html#transforms">transform</a> which are composable by the user using meta-programming techniques. Some examples how this is used internally should give a taste of the flexibility of the architecture:</p>
+<ul>
+<li><p>Bond Python implementation doesn’t involve <em>any</em> Python specific generated code. It is fully build by driving Boost Python library using meta-programming interfaces in Bond C++ implementation. A basic Python <a href="manual/bond_py.html#basic-example">example</a> is literally 7 lines of code.</p></li>
+<li><p>Bond can serialize and deserialize arbitrary instances of <code>std::tuple&lt;T...&gt;</code> without any generated code. This is possible because serializer and deserializer are constructed at C++ compile time and the C++ parameter pack expansion effectively gives us compile-time C++ reflection for <a href="manual/bond_cpp.html#tuples">tuples</a>.</p></li>
+<li><p>In C# implementation we have parsers for payload and for objects and we have transforms that can consume data from a parser and serialize or deserialize it. These primitives are internally composed into multiple high level APIs:</p></li>
+</ul>
+<pre><code>    ObjectParser + Serializer -&gt; Serialization
+    PayloadParser + Deserializer -&gt; Deserialization
+    ObjectParser + Deserializer -&gt; Cloning
+    PayloadParser + Serializer -&gt; Transcoding</code></pre>
+</div>    
+</div>
+</body>
+</html>
