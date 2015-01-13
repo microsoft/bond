@@ -36,15 +36,20 @@ set (completion ${output_dir}/gbc.comp)
 set (GBC_EXECUTABLE ${output} PARENT_SCOPE)
 
 add_custom_command (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} sandbox init
+    COMMAND ${CMAKE_COMMAND} 
+        ${CMAKE_BINARY_DIR} 
+        -N
+        -P sandbox_init.cmake
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/cabal.sandbox.config)
 
 add_custom_command (
     DEPENDS ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/cabal.sandbox.config
-    COMMAND ${Haskell_CABAL_EXECUTABLE} --require-sandbox install   --with-compiler="${Haskell_GHC_EXECUTABLE}" --only-dependencies --jobs
-    COMMAND ${Haskell_CABAL_EXECUTABLE} --require-sandbox configure --with-compiler="${Haskell_GHC_EXECUTABLE}" --builddir=${output_dir}
-    COMMAND ${Haskell_CABAL_EXECUTABLE} --require-sandbox build     --with-ghc="${Haskell_GHC_EXECUTABLE}" --ghc-option=-O2 --jobs --builddir=${output_dir}
+    COMMAND ${CMAKE_COMMAND} 
+        ${CMAKE_BINARY_DIR}
+        -N
+        -Doutput_dir=${output_dir} 
+        -P cabal_build.cmake
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     OUTPUT ${output})
 
