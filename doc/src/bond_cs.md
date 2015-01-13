@@ -263,7 +263,7 @@ known at compile-time:
     // transcoding w/o schema
     Transcode.FromTo(reader, writer);
 
-    // transcodign with compile-time schema Foo
+    // transcoding with compile-time schema Foo
     Transcode<Foo>.FromTo(reader, writer);
 
 When an application calls this API for the first time, a static instance of 
