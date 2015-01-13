@@ -58,7 +58,7 @@ add_custom_target (compiler
     DEPENDS ${output} ${completion})
 
 install (FILES ${output}
-    PERMISSIONS WORLD_EXECUTE
+    PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE
     DESTINATION bin)
 
 if(EXISTS "${completion_dir}" AND IS_DIRECTORY "${completion_dir}")
