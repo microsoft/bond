@@ -285,7 +285,7 @@ The input and output for binary protocols is provided by `IInputStream` and
 interfaces for memory buffers and `System.IO.Stream`, and applications can 
 provide their own custom implementations.
 
-The `OutputBuffer` class implements `IOutputBuffer` interface on top of 
+The `OutputBuffer` class implements `IOutputStream` interface on top of 
 a memory buffer. It comes in two variants. `Bond.IO.Safe.OutputBuffer` uses 
 only safe managed code and is included in `Bond.dll` assembly which is 
 compatible with Portable Class Library. `Bond.IO.Unsafe.OutputBuffer` uses 
