@@ -93,9 +93,6 @@
     <Reference Include="Bond">
       <HintPath>..\..\src\core\$(DependentOutputPath)\Bond.dll</HintPath>
     </Reference>
-    <Reference Include="Bond.Precompiler">
-      <HintPath>..\..\src\precompiler\$(DependentOutputPath)\Bond.Precompiler.dll</HintPath>
-    </Reference>
     <Reference Include="Bond.IO">
       <HintPath>..\..\src\io\$(DependentOutputPath)\Bond.IO.dll</HintPath>
     </Reference>

@@ -33,9 +33,6 @@
     <Reference Include="Bond">
       <HintPath>..\..\src\core\$(OutputPath)\Bond.dll</HintPath>
     </Reference>
-    <Reference Include="Bond.Precompiler">
-      <HintPath>..\..\src\precompiler\$(OutputPath)\Bond.Precompiler.dll</HintPath>
-    </Reference>
     <Reference Include="Bond.IO">
       <HintPath>..\..\src\io\$(OutputPath)\Bond.IO.dll</HintPath>
     </Reference>
