@@ -74,6 +74,8 @@
     <Compile Include="$(IntermediateOutputPath)\UnitTest_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\Aliases_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\ReadOnly_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\NamespaceConflict_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\NamespaceConflictBond_types.cs" Condition="False" />
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>

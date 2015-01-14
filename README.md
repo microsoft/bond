@@ -112,6 +112,11 @@ by running make in the build directory:
 
 ### Windows
 
+Pre-built C# binaries signed by Microsoft are available as NuGet package from:
+[https://www.nuget.org/packages/Bond.cs/](https://www.nuget.org/packages/Bond.cs/)
+
+In order to build Bond on your machine:
+
 - Install Visual Studio 2013
 - Install CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
 - Install Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
