@@ -29,9 +29,9 @@
           <Command>
 setlocal
 cd $(OutDir)
-cmake $(ProjectDir)\..\compiler -Wno-dev
+call cmake $(ProjectDir)\..\compiler -Wno-dev
 if %errorlevel% neq 0 goto :cmEnd
-cmake --build $(OutDir) --target compiler
+call cmake --build $(OutDir) --target compiler
 if %errorlevel% neq 0 goto :cmEnd
 copy $(OutDir)\build\gbc\gbc.exe $(ProjectDir)\bin\
 if %errorlevel% neq 0 goto :cmEnd
