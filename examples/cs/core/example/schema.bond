@@ -1,7 +1,0 @@
-﻿namespace Examples
-
- struct Record
-{
-    0: string          name;
-    1: vector<double>  items;
-}
