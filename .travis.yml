@@ -1,0 +1,15 @@
+language: cpp
+compiler: clang
+before_install:
+    - brew update
+    - brew install ghc cabal-install
+    - brew unlink boost
+    - brew install boost boost-python
+    - cabal update
+script:
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make --jobs 2 check
+os: osx
+osx_image: xcode61
