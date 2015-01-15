@@ -81,18 +81,15 @@ assuming you have enough memory)
 
 ### OS X
 
-- Install XCode 6.1
-- Install CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
-- Install Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
+Install XCode and then run the following command to install required packages 
+using Homebrew ([http://brew.sh/](http://brew.sh/)):
 
-Update cabal to the latest version:
-
-    cabal update
-    cabal install cabal-install
-
-Install Boost using Homebrew ([http://brew.sh/](http://brew.sh/)):
-
-    brew install boost boost-python
+    brew install \
+        cmake \
+        ghc \
+        cabal-install \
+        boost \
+        boost-python
 
 (boost-python is optional and only needed for Python support)
 
@@ -105,23 +102,25 @@ order to generate and build makefiles, in the root `bond` directory run:
     make
     sudo make install
 
-Alternatively you can use the CMake application to generate either *nix 
-makefiles or XCode project into a directory of your choice (it doesn't have to 
-be called `build`).
+Alternatively you can generate XCode project by passing `-G Xcode` option to 
+cmake:
 
-You can build and run unit tests by building the `check` target in XCode or 
-by running make in the build directory:
+    cmake -G Xcode ..
+
+You can build and run unit tests by building the `check` target in XCode or by 
+running make in the build directory:
 
     make --jobs 8 check
 
-Note that if you are using homebrew's python, you'll need to build
+Note that if you are using Homebrew's Python, you'll need to build
 boost-python from source:
 
     brew install --build-from-source boost-python
 
-And tell cmake the location of homebrew's libpython by setting `PYTHON_LIBRARY` variable, e.g.:
+and tell cmake the location of Homebrew's libpython by setting `PYTHON_LIBRARY` 
+variable, e.g.:
 
-     cmake .. -DPYTHON_LIBRARY=/usr/local/Cellar/python/2.7.9/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib
+    cmake .. -DPYTHON_LIBRARY=/usr/local/Cellar/python/2.7.9/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib
 
 ### Windows
 
