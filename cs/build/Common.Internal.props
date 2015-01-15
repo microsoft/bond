@@ -8,7 +8,7 @@
   <PropertyGroup>
       <BOND_INCLUDE_PATH Condition="'$(BOND_INCLUDE_PATH)' == ''">$(MSBuildThisFileDirectory)..\..\cpp\inc</BOND_INCLUDE_PATH>
   </PropertyGroup>
-  <Import Project="bond.cs.props" />
+  <Import Project="Bond.CSharp.props" />
   <PropertyGroup Condition="'$(BuildFramework)' == ''">
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <BuildFramework>net45</BuildFramework>

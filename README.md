@@ -124,8 +124,7 @@ variable, e.g.:
 
 ### Windows
 
-Pre-built C# binaries signed by Microsoft are available as NuGet package from:
-[https://www.nuget.org/packages/Bond.cs/](https://www.nuget.org/packages/Bond.cs/)
+Pre-built C# binaries signed by Microsoft are available from [NuGet](https://www.nuget.org/packages/Bond.CSharp/)
 
 In order to build Bond on your machine:
 

@@ -2,7 +2,7 @@
 <!--
 *   Consume .bond files and produce C# types
 *
-*   (Dependencies are defined by bond.cs.props.  Be sure to import that first)
+*   (Dependencies are defined by Bond.CSharp.props.  Be sure to import that first)
 *   Dependencies:
 *     $BOND_INCLUDE_PATH   : Bond provided imports
 *     $BOND_COMPILER_PATH  : Path to directory containing gbc.exe
@@ -59,7 +59,7 @@
           BeforeTargets="CoreCompile"
           Condition="'@(BondCodegen)' != ''">
       
-    <Error Text="bond.cs.props not imported"
+    <Error Text="Bond.CSharp.props not imported"
            Condition="'$(_bond_cs_props_imported)' != 'true'" />
 
     <MakeDir Directories="$(BondOutputDirectory)" />

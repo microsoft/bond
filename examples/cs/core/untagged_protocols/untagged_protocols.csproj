@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="..\..\..\..\cs\build\bond.cs.props" />
+  <Import Project="..\..\..\..\cs\build\Bond.CSharp.props" />
   <PropertyGroup>
     <ProjectGuid>{65B9537D-2E7B-424a-9EBB-8E85FEB65F6F}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -56,5 +56,5 @@
     </Reference>    
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(BOND_PATH)\build\bond.cs.targets" />
+  <Import Project="$(BOND_PATH)\build\Bond.CSharp.targets" />
 </Project>
