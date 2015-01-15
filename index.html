@@ -41,8 +41,18 @@ code > span.er { font-weight: bold; }
     padding: 25px;
     overflow: auto;
   }
-  code > span.co { color: #4E9A06; font-style: normal; }
-  code > span.st { color: #8A0303; font-style: normal; }
+  code > span.kw { color: #000000; font-style:normal; }
+  code > span.dt { color: #000000; font-style:normal; }
+  code > span.dv { color: #000000; font-style:normal; }
+  code > span.bn { color: #000000; font-style:normal; }
+  code > span.fl { color: #000000; font-style:normal; }
+  code > span.ch { color: #000000; font-style:normal; }
+  code > span.st { color: #000000; font-style:normal; }
+  code > span.co { color: #000000; font-style:normal; }
+  code > span.ot { color: #000000; font-style:normal; }
+  code > span.al { color: #000000; font-style:normal; }
+  code > span.fu { color: #000000; font-style:normal; }
+  code > span.er { color: #000000; font-style:normal; }
 
   h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
@@ -121,16 +131,13 @@ sudo make install</code></pre>
 <pre class="sourceCode python"><code class="sourceCode python">make --jobs <span class="dv">8</span> check</code></pre>
 <p>(unit tests are large so you may want to run 4-8 build jobs in parallel, assuming you have enough memory)</p>
 <h3 id="os-x">OS X</h3>
-<ul>
-<li>Install XCode 6.1</li>
-<li>Install CMake (<a href="http://www.cmake.org/download/">http://www.cmake.org/download/</a>)</li>
-<li>Install Haskell Platform (<a href="http://haskell.org/platform/">http://haskell.org/platform/</a>)</li>
-</ul>
-<p>Update cabal to the latest version:</p>
-<pre class="sourceCode python"><code class="sourceCode python">cabal update
-cabal install cabal-install</code></pre>
-<p>Install Boost using Homebrew (<a href="http://brew.sh/">http://brew.sh/</a>):</p>
-<pre class="sourceCode python"><code class="sourceCode python">brew install boost boost-python</code></pre>
+<p>Install XCode and then run the following command to install required packages using Homebrew (<a href="http://brew.sh/">http://brew.sh/</a>):</p>
+<pre class="sourceCode python"><code class="sourceCode python">brew install \
+    cmake \
+    ghc \
+    cabal-install \
+    boost \
+    boost-python</code></pre>
 <p>(boost-python is optional and only needed for Python support)</p>
 <p>Bond can be built on OS X using either standard *nix makefiles or XCode. In order to generate and build makefiles, in the root <code>bond</code> directory run:</p>
 <pre class="sourceCode python"><code class="sourceCode python">mkdir build
@@ -138,9 +145,14 @@ cd build
 cmake ..
 make
 sudo make install</code></pre>
-<p>Alternatively you can use the CMake application to generate either *nix makefiles or XCode project into a directory of your choice (it doesn’t have to be called <code>build</code>).</p>
+<p>Alternatively you can generate XCode project by passing <code>-G Xcode</code> option to cmake:</p>
+<pre class="sourceCode python"><code class="sourceCode python">cmake -G Xcode ..</code></pre>
 <p>You can build and run unit tests by building the <code>check</code> target in XCode or by running make in the build directory:</p>
 <pre class="sourceCode python"><code class="sourceCode python">make --jobs <span class="dv">8</span> check</code></pre>
+<p>Note that if you are using Homebrew’s Python, you’ll need to build boost-python from source:</p>
+<pre class="sourceCode python"><code class="sourceCode python">brew install --build-<span class="ch">from</span>-source boost-python</code></pre>
+<p>and tell cmake the location of Homebrew’s libpython by setting <code>PYTHON_LIBRARY</code> variable, e.g.:</p>
+<pre class="sourceCode python"><code class="sourceCode python">cmake .. -DPYTHON_LIBRARY=/usr/local/Cellar/python/<span class="fl">2.7.9</span>/Frameworks/Python.framework/Versions/<span class="fl">2.7</span>/lib/libpython2<span class="fl">.7</span>.dylib</code></pre>
 <h3 id="windows">Windows</h3>
 <p>Pre-built C# binaries signed by Microsoft are available as NuGet package from: <a href="https://www.nuget.org/packages/Bond.cs/">https://www.nuget.org/packages/Bond.cs/</a></p>
 <p>In order to build Bond on your machine:</p>
