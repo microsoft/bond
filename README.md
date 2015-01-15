@@ -114,6 +114,15 @@ by running make in the build directory:
 
     make --jobs 8 check
 
+Note that if you are using homebrew's python, you'll need to build
+boost-python from source:
+
+    brew install --build-from-source boost-python
+
+And tell cmake the location of homebrew's libpython by setting `PYTHON_LIBRARY` variable, e.g.:
+
+     cmake .. -DPYTHON_LIBRARY=/usr/local/Cellar/python/2.7.9/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib
+
 ### Windows
 
 Pre-built C# binaries signed by Microsoft are available as NuGet package from:
