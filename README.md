@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/Microsoft/bond.svg?branch=master)](https://travis-ci.org/Microsoft/bond)
+[![Issue Stats](http://issuestats.com/github/Microsoft/bond/badge/pr)](http://issuestats.com/github/microsoft/bond)
+[![Issue Stats](http://issuestats.com/github/Microsoft/bond/badge/issue)](http://issuestats.com/github/microsoft/bond)
+
 Bond
 ====
 
