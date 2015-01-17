@@ -1,0 +1,17 @@
+# Build and test artifacts
+bin/
+obj/
+TestResults/
+
+# Nuget packages 
+packages/
+
+# Resharper cache
+_ReSharper.*
+
+# Visual Studio
+*.sdf
+*.suo
+*.user
+*.opensdf
+*.psess

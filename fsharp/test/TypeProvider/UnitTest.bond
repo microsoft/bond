@@ -1,0 +1,103 @@
+namespace unittest.schema
+
+struct NoFields
+{
+};
+
+struct SingleField
+{
+    0: string name;  
+};
+
+enum EnumType1
+{
+    EnumValue1 = 5,
+    EnumValue2 = 10,
+    EnumValue3 = -10,
+};
+
+struct BasicTypes1
+{
+    [foo("bar")]
+     0: bool                    m_bool = true;
+     2: string                  m_str = "foo";
+     3: wstring                 m_wstr = L"bar";
+    14: int8                    m_int8 = -14;
+    15: int16                   m_int16 = 15;
+    16: required int32          m_int32 = -16;
+    17: optional int64          m_int64 = -17;
+};
+
+struct BasicTypes2
+{
+    10: required_optional uint8 m_uint8 = 10;
+    11: uint16                  m_uint16 = 11;
+    12: uint32                  m_uint32 = 12;
+    13: uint64                  m_uint64 = 13;
+    18: double                  m_double = 18;
+    20: float                   m_float = 20;
+    21: EnumType1               m_enum1 = EnumValue3;
+};
+
+
+struct BasicTypes
+{
+     0: bool                    m_bool = true;
+     2: string                  m_str = "foo";
+     3: wstring                 m_wstr = L"bar";
+    14: int8                    m_int8 = -14;
+    15: int16                   m_int16 = 15;
+    16: required int32          m_int32 = -16;
+    17: optional int64          m_int64 = -17;
+    10: required_optional uint8 m_uint8 = 10;
+    11: uint16                  m_uint16 = 11;
+    12: uint32                  m_uint32 = 12;
+    13: uint64                  m_uint64 = 13;
+    18: double                  m_double = 18;
+    20: float                   m_float = 20;
+    21: EnumType1               m_enum1 = EnumValue3;
+};
+
+
+struct Lists
+{
+    0: list<string>         ls;
+    1: list<list<int32>>    lli32;
+    2: list<BasicTypes1>    lbt;
+};
+
+
+struct Containers
+{
+    0: map<string, uint32>      msui32;
+    1: set<string>              ss;
+};
+
+struct Nullable
+{
+    0: nullable<list<double>>   nld;
+    1: nullable<EnumType1>      ne;
+    2: nullable<string>         ns;
+    3: nullable<bool>           nb;
+    4: nullable<BasicTypes1>    nbt;
+};
+
+
+struct Tests
+{ 
+    0: SingleField  t1;
+    1: BasicTypes1  t2;
+    2: BasicTypes2  t3;
+    3: Lists        t4;
+    4: Nullable     t5;
+    5: BasicTypes   t6;
+    7: Containers   t7;
+};
+
+
+struct All
+{
+    0: Tests        t1
+    1: NoFields     t2;
+};
+

@@ -1,0 +1,14 @@
+﻿namespace example.schema.serialize;
+
+struct Const
+{
+    0: string name;  
+    1: double value;
+}
+
+struct Example
+{ 
+    0: string name;
+    1: list<Const> consts;
+}
+
