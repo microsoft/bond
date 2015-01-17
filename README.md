@@ -124,7 +124,7 @@ variable, e.g.:
 
 ### Windows
 
-Pre-built C# binaries signed by Microsoft are available from [NuGet](https://www.nuget.org/packages/Bond.CSharp/)
+Pre-built C# binaries signed by Microsoft are available from [NuGet](https://www.nuget.org/packages/Bond.CSharp/).
 
 In order to build Bond on your machine:
 
@@ -141,7 +141,7 @@ Update cabal to the latest version (if behind a proxy, set environment variable
 
 Now you are ready to build the C# version of Bond. Open the solution file 
 `cs\cs.sln` in Visual Studio 2013 and build as usual. The C# unit tests can 
-also be run from with the solution.
+also be run from within the solution.
 
 The C++ and Python versions of Bond additionally require:
 
