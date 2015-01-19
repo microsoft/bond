@@ -124,6 +124,8 @@ variable, e.g.:
 
 ### Windows
 
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&passingText=C%23%20passing&pendingText=C%23%20pending&failingText=C%23%20failing)](https://ci.appveyor.com/project/sapek/bond/branch/master)
+
 Pre-built C# binaries signed by Microsoft are available from [NuGet](https://www.nuget.org/packages/Bond.CSharp/).
 
 In order to build Bond on your machine:
