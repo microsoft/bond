@@ -216,7 +216,7 @@ field = makeField <$> attributes <*> ordinal <*> modifier <*> ftype <*> identifi
                     (keyword "true" *> pure (DefaultBool True)
                  <|> keyword "false" *> pure (DefaultBool False)
                  <|> keyword "nothing" *> pure DefaultNothing
-                 <|> DefaultString <$ optional (char 'L') <*> stringLiteral
+                 <|> DefaultString <$> try (optional (char 'L') *> stringLiteral)
                  <|> DefaultEnum <$> identifier
                  <|> DefaultFloat <$> try float
                  <|> DefaultInteger <$> fromIntegral <$> integer)

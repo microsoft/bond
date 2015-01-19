@@ -11,6 +11,7 @@ enum EnumType1
     EnumValue2 = 10,
     EnumValue3 = -10,
     EnumValue4 = 0x2A,
+    Low = 1,
     EnumValue5 = 0XFFFFFFFFFFFFFFF6, //-10 in two's complement
 };
 
@@ -32,7 +33,7 @@ struct BasicTypes
     10: uint64 _uint64;
     18: double _double;
     20: float _float;
-    21: EnumType1 _enum1 = EnumValue1;
+    21: EnumType1 _enum1 = Low;
     22: DateTime dt;
 };
 
