@@ -5,6 +5,7 @@ using OrderedSet<T> = set<T>;
 using Decimal = blob;
 using EnumString<T> = string;
 using Array<T> = vector<T>;
+using ArrayBlob = blob;
 
 enum Bar
 {
@@ -32,6 +33,10 @@ struct ContainerAlias
     4: Array<nullable<bool>> arrayNullableContainer = nothing;
     5: Array<vector<bool>> arrayVectorContainer = nothing;
     6: Array<Array<bool>> arrayArrayContainer = nothing;
+    7: Array<uint8> arrayByte = nothing;
+    8: ArrayBlob arrayBlob = nothing;
+    9: Array<ArrayBlob> blobArray = nothing;
+    10: Array<Array<uint8>> arrayArrayByte = nothing;
 }
 
 struct ContainerNotAliased
@@ -44,6 +49,10 @@ struct ContainerNotAliased
     4: vector<nullable<bool>> arrayNullableContainer = nothing;
     5: vector<vector<bool>> arrayVectorContainer = nothing;
     6: vector<vector<bool>> arrayArrayContainer = nothing;
+    7: vector<uint8> arrayByte = nothing;
+    8: blob arrayBlob = nothing;
+    9: vector<blob> blobArray = nothing;
+    10: vector<list<uint8>> arrayArrayByte = nothing;
 }
 
 struct BlobAlias

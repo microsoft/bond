@@ -133,11 +133,17 @@ namespace Bond.Protocols
 
         #region ITextProtocolWriter
 
+#if NET45
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif     
         public void WriteItemBegin()
         {
             writer.WriteStartElement("Item");
         }
 
+#if NET45
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif        
         public void WriteItemEnd()
         {
             writer.WriteEndElement();

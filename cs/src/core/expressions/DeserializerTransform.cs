@@ -30,6 +30,8 @@ namespace Bond.Expressions
             Reflection.GenericMethodInfoOf((object[] o) => Array.Resize(ref o, default(int)));
         static readonly ConstructorInfo arraySegmentCtor =
             typeof(ArraySegment<byte>).GetConstructor(typeof(byte[]), typeof(int), typeof(int));
+        static readonly MethodInfo bufferBlockCopy =
+            Reflection.MethodInfoOf((byte[] a) => Buffer.BlockCopy(a, default(int), a, default(int), default(int)));
 
         public DeserializerTransform(
             Expression<Func<R, int, object>> deferredDeserialize,
@@ -244,19 +246,38 @@ namespace Bond.Expressions
                         var arrayElemType = container.Type.GetValueType();
                         var containerResizeMethod = arrayResize.MakeGenericMethod(arrayElemType);
 
-                        var i = Expression.Variable(typeof(int), "i");
-
                         if (initialize)
                         {
-                            beforeLoop = Expression.Block(
-                                Expression.Assign(container, newContainer(container.Type, schemaType, count)),
-                                Expression.Assign(i, Expression.Constant(0)));
+                            beforeLoop = 
+                                Expression.Assign(container, newContainer(container.Type, schemaType, count));
                         }
-                        else
+
+                        if (arrayElemType == typeof(byte))
                         {
-                            beforeLoop = Expression.Block(
-                                Expression.Assign(i, Expression.Constant(0)));
+                            var parseBlob = parser.Blob(count);
+                            if (parseBlob != null)
+                            {
+                                var blob = Expression.Variable(typeof(ArraySegment<byte>), "blob");
+                                return Expression.Block(
+                                    new[] { blob },
+                                    beforeLoop,
+                                    Expression.Assign(blob, parseBlob),
+                                    Expression.Call(null, bufferBlockCopy, new[]
+                                    {
+                                        Expression.Property(blob, "Array"),
+                                        Expression.Property(blob, "Offset"),
+                                        container,
+                                        Expression.Constant(0),
+                                        count
+                                    }));
+                            }
                         }
+
+                        var i = Expression.Variable(typeof(int), "i");
+
+                        beforeLoop = Expression.Block(
+                            beforeLoop,
+                            Expression.Assign(i, Expression.Constant(0)));
 
                         // Resize the array if we've run out of room
                         var maybeResize =
