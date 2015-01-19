@@ -188,7 +188,8 @@ World""
 
             var target = ParseJson<BasicTypes>(json);
 
-            Assert.AreEqual("Hello\r\nWorld", target._str);
+            Assert.AreEqual(@"Hello
+World", target._str);
         }
 
         [TestMethod]
