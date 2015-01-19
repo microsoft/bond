@@ -18,21 +18,10 @@ install:
 build_script:
 - nuget restore cs\cs.sln
 # default codegen with properties
-- msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Debug >
-  /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+- msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 # codegen with public fields
-- msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields >
-  /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+- msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 # codegen with interfaces used to represent collections
-- msbuild cs\cs.sln /verbosity:minimal /p:Configuration=CollectionInterfaces >
-  /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+- msbuild cs\cs.sln /verbosity:minimal /p:Configuration=CollectionInterfaces /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 test_script:
-- vstest.console /logger:Appveyor >
-  cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll >
-  cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll >
-  cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll >
-  cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll >
-  cs\test\core\bin\debug\net40\CollectionInterfaces\Bond.UnitTest.dll >
-  cs\test\core\bin\debug\net45\CollectionInterfaces\Bond.UnitTest.dll >
-  cs\test\internal\bin\debug\net40\Bond.InternalTest.dll >
-  cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+- vstest.console /logger:Appveyor cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net40\CollectionInterfaces\Bond.UnitTest.dll cs\test\core\bin\debug\net45\CollectionInterfaces\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
