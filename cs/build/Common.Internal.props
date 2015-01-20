@@ -43,15 +43,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="$(DELAY_SIGN) == ''">
+  <PropertyGroup Condition="$(DELAY_SIGN_KEY) == ''">
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)bond.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <PropertyGroup Condition="$(DELAY_SIGN) == '1'">
+  <PropertyGroup Condition="$(DELAY_SIGN_KEY) != ''">
     <DelaySign>true</DelaySign>
     <SignAssembly>true</SignAssembly>
-    <KeyFile>$(MSBuildThisFileDirectory)35MSSharedLib1024.snk</KeyFile>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <KeyFile>$(DELAY_SIGN_KEY)</KeyFile>
+    <AssemblyOriginatorKeyFile>$(DELAY_SIGN_KEY)</AssemblyOriginatorKeyFile>
     <DefineConstants>$(DefineConstants);DELAY_SIGN</DefineConstants>
   </PropertyGroup>
 </Project> 
