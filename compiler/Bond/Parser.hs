@@ -106,15 +106,20 @@ findSymbol name = doFind <?> "qualified name"
     doFind = do
         namespaces <- asks currentNamespaces
         symbols <- getState
-        case find (isDecl namespaces name) symbols of
+        case find (delcMatching namespaces name) symbols of
             Just decl -> return decl
             Nothing -> fail $ "Unknown symbol: " ++ showQualifiedName name
-    isDecl namespaces [name] decl =
-        name == declName decl
-     && any (`elem` namespaces) (declNamespaces decl)
-    isDecl _ qualifiedName decl =
+    delcMatching namespaces [unqualifiedName] decl =
+        unqualifiedName == declName decl
+     && (not $ null $ intersectBy nsMatching namespaces (declNamespaces decl))
+    delcMatching _ qualifiedName decl =
         takeName qualifiedName == declName decl
      && any ((takeNamespace qualifiedName ==) . nsName) (declNamespaces decl)
+    nsMatching ns1 ns2 =
+        nsName ns1 == nsName ns2 && (lang1 == lang2 || lang1 == Nothing || lang2 == Nothing)
+      where
+        lang1 = nsLanguage ns1
+        lang2 = nsLanguage ns2 
 
 findStruct :: QualifiedName -> Parser Declaration
 findStruct name = doFind <?> "qualified struct name"
