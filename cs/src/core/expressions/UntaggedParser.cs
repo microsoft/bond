@@ -166,15 +166,15 @@ namespace Bond.Expressions
         {
             Debug.Assert(valueType is ConstantExpression);
             var dataType = (BondDataType)(valueType as ConstantExpression).Value;
+            Debug.Assert(schema.TypeDef.id == dataType);
 
-            if (schema.IsBlob)
-                return reader.SkipBytes(reader.ReadContainerBegin());
-            
             switch (dataType)
             {
                 case BondDataType.BT_SET:
+                    return SkipSet();
+
                 case BondDataType.BT_LIST:
-                    return SkipContainer();
+                    return SkipList();
 
                 case BondDataType.BT_MAP:
                     return SkipMap();
@@ -187,10 +187,24 @@ namespace Bond.Expressions
             }
         }
 
-        Expression SkipContainer()
+        Expression SkipSet()
         {
             return Container(null, (valueParser, elementType, next, count) =>
                 ControlExpression.While(next, valueParser.Skip(elementType)));
+        }
+
+        Expression SkipList()
+        {
+            return Container(null, (valueParser, elementType, next, count) =>
+            {
+                Debug.Assert(elementType is ConstantExpression);
+                var elementDataType = (BondDataType)(elementType as ConstantExpression).Value;
+
+                if (elementDataType == BondDataType.BT_UINT8 || elementDataType == BondDataType.BT_INT8)
+                    return reader.SkipBytes(count);
+                else
+                    return ControlExpression.While(next, valueParser.Skip(elementType));
+            });
         }
 
         Expression SkipMap()
@@ -198,7 +212,7 @@ namespace Bond.Expressions
             return Map(null, null, (keyParser, valueParser, keyType, valueType, nextKey, nextValue, count) =>
                 ControlExpression.While(nextKey, 
                     Expression.Block(
-                        valueParser.Skip(keyType),
+                        keyParser.Skip(keyType),
                         valueParser.Skip(valueType))));
         }
 

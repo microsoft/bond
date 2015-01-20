@@ -14,6 +14,7 @@ namespace Bond.Expressions
     public class ObjectParser : IParser
     {
         static readonly MethodInfo moveNext = Reflection.MethodInfoOf((IEnumerator e) => e.MoveNext());
+        static readonly ConstructorInfo arraySegmentCtor = typeof(ArraySegment<byte>).GetConstructor(typeof(byte[]));
         delegate Expression ContainerItemHandler(Expression value, Expression next, Expression count);
         readonly ParameterExpression objParam;
         readonly TypeAlias typeAlias;
@@ -192,6 +193,9 @@ namespace Bond.Expressions
         {
             if (schemaType.IsBondBlob())
                 return typeAlias.Convert(value, schemaType);
+
+            if (objectType == typeof(byte[]))
+                return Expression.New(arraySegmentCtor, value);
 
             // TODO: convert List<sbyte> to ArraySegment<byte> for faster serialization?
             return null;

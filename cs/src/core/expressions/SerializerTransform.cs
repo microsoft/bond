@@ -100,6 +100,10 @@ namespace Bond.Expressions
         readonly ProtocolWriter<W> writer = new ProtocolWriter<W>();
         readonly Dictionary<RuntimeSchema, Serialize> serializeDelegates = 
             new Dictionary<RuntimeSchema, Serialize>(new TypeDefComparer());
+        static readonly bool binaryWriter =
+            typeof(IUntaggedProtocolReader).IsAssignableFrom(typeof(W).GetAttribute<ReaderAttribute>().ReaderType)
+         || typeof(ITaggedProtocolReader).IsAssignableFrom(typeof(W).GetAttribute<ReaderAttribute>().ReaderType);
+
 
         public SerializerTransform(Expression<Action<R, W, int>> deferredSerialize, RuntimeSchema schema)
             : base(deferredSerialize)
@@ -211,6 +215,14 @@ namespace Bond.Expressions
                             Expression.Equal(elementType, Expression.Constant(BondDataType.BT_INT8)),
                             writer.WriteBytes(blob),
                             body);
+
+                        // For binary protocols we can write blob directly using protocols's WriteBytes
+                        // even if the the container is not a blob (blob is BT_LIST of BT_INT8).
+                        if (binaryWriter)
+                            body = PrunedExpression.IfThenElse(
+                                Expression.Equal(elementType, Expression.Constant(BondDataType.BT_UINT8)),
+                                writer.WriteBytes(blob),
+                                body);
                     }
 
                     return Expression.Block(
