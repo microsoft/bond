@@ -8,5 +8,10 @@
 # cache to get access to variables set during configuration.
 execute_process (
     COMMAND ${Haskell_CABAL_EXECUTABLE} sandbox init
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    RESULT_VARIABLE error)
+
+if (error)
+    message (FATAL_ERROR)
+endif()
 
