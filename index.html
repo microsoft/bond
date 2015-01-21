@@ -84,6 +84,16 @@ code > span.er { font-weight: bold; }
     color: #36c;
   }
   </style>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58775439-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
 </head>
 <body>
 <nav id="TOC"/>
@@ -154,7 +164,8 @@ sudo make install</code></pre>
 <p>and tell cmake the location of Homebrew’s libpython by setting <code>PYTHON_LIBRARY</code> variable, e.g.:</p>
 <pre class="sourceCode python"><code class="sourceCode python">cmake .. -DPYTHON_LIBRARY=/usr/local/Cellar/python/<span class="fl">2.7.9</span>/Frameworks/Python.framework/Versions/<span class="fl">2.7</span>/lib/libpython2<span class="fl">.7</span>.dylib</code></pre>
 <h3 id="windows">Windows</h3>
-<p>Pre-built C# binaries signed by Microsoft are available from <a href="https://www.nuget.org/packages/Bond.CSharp/">NuGet</a></p>
+<p><a href="https://ci.appveyor.com/project/sapek/bond/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&amp;passingText=C%23%20passing&amp;pendingText=C%23%20pending&amp;failingText=C%23%20failing" alt="Build Status" /></a></p>
+<p>Pre-built C# binaries signed by Microsoft are available from <a href="https://www.nuget.org/packages/Bond.CSharp/">NuGet</a>.</p>
 <p>In order to build Bond on your machine:</p>
 <ul>
 <li>Install Visual Studio 2013</li>
@@ -164,7 +175,7 @@ sudo make install</code></pre>
 <p>Update cabal to the latest version (if behind a proxy, set environment variable <code>HTTP_PROXY=http://proxy:port</code> before running cabal):</p>
 <pre class="sourceCode python"><code class="sourceCode python">cabal update
 cabal install cabal-install</code></pre>
-<p>Now you are ready to build the C# version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio 2013 and build as usual. The C# unit tests can also be run from with the solution.</p>
+<p>Now you are ready to build the C# version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio 2013 and build as usual. The C# unit tests can also be run from within the solution.</p>
 <p>The C++ and Python versions of Bond additionally require:</p>
 <ul>
 <li>Boost 1.54+ (<a href="http://www.boost.org/users/download/">http://www.boost.org/users/download/</a>)</li>
