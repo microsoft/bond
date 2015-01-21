@@ -104,12 +104,32 @@
         }
 
         [TestMethod]
-        public void Containers()
+        public void Lists()
         {
             TestSerialization<Lists>();
+        }
+
+        [TestMethod]
+        public void Vectors()
+        {
             TestSerialization<Vectors>();
+        }
+
+        [TestMethod]
+        public void Sets()
+        {
             TestSerialization<Sets>();
+        }
+
+        [TestMethod]
+        public void Maps()
+        {
             TestSerialization<Maps>();
+        }
+
+        [TestMethod]
+        public void Containers()
+        {
             TestSerialization<BondClass<SortedSet<string>>>();
             TestSerialization<Containers>();
         }
@@ -125,8 +145,18 @@
         {
             TestSerialization<Deep>();
             TestSerialization<Derived>();
+        }
+
+        [TestMethod]
+        public void Inheritance_SliceToBase()
+        {
             TestSerialization<Derived, Nested>();
             TestSerialization<Derived, EmptyBase>();
+        }
+
+        [TestMethod]
+        public void Inheritance_SliceFieldToBase()
+        {
             TestFieldSerialization<EmptyBase, Nested>();
             TestFieldSerialization<DerivedView, EmptyBase>();
         }
