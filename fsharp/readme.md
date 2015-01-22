@@ -1,4 +1,4 @@
-% Bond F# Type Provider
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&branch=fsharp&passingText=F%23%20passing&pendingText=F%23%20pending&failingText=F%23%20failing)](https://ci.appveyor.com/project/sapek/bond/branch/fsharp)
 
 Introduction
 ============

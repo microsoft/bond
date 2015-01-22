@@ -6,48 +6,60 @@ branches:
 clone_depth: 15
 install:
 - ps: >-
-  if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
+    if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-    choco install cmake
+        choco install cmake
 
-    choco install haskellplatform -version 2014.2.0.0
+        choco install haskellplatform -version 2014.2.0.0
 
-    $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\bin"
+        # Haskell Platfrom package doesn't update PATH for the current shell instance
+    
+        $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\bin"
 
-    $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\lib\extralibs\bin"
+        $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\lib\extralibs\bin"
 
-    cabal update
+        cabal update
 
-    cabal install cabal-install
+        cabal install cabal-install
 
-  }
+    }
+# Majority of build time is spent installing dependencies and then building
+# cabal and the sandbox. Using build matrix support we would have to do this
+# for every configuration. Instead we manually build the configurations we want
+# to test. This way all the Haskell prerequisites are resued.
 build_script:
 - ps: >-
-  if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
+    if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-    nuget restore cs\cs.sln
+        nuget restore cs\cs.sln
 
-    msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+        # default codegen with properties
+    
+        msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-    msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+        # codegen with public fields
 
-    msbuild cs\cs.sln /verbosity:minimal /p:Configuration=CollectionInterfaces /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+        msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-  } else {
+        # codegen with interfaces used to represent collections
 
-    nuget restore fsharp\fsharp.sln
+        msbuild cs\cs.sln /verbosity:minimal /p:Configuration=CollectionInterfaces /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-    msbuild fsharp\fsharp.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+    } else {
 
-  }
+        nuget restore fsharp\fsharp.sln
+
+        msbuild fsharp\fsharp.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+    }
 test_script:
 - ps: >-
-  if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
+    if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-    vstest.console /logger:Appveyor cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net40\CollectionInterfaces\Bond.UnitTest.dll cs\test\core\bin\debug\net45\CollectionInterfaces\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+        vstest.console /logger:Appveyor cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net40\CollectionInterfaces\Bond.UnitTest.dll cs\test\core\bin\debug\net45\CollectionInterfaces\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
 
-  } else {
+    } else {
 
-    vstest.console /logger:Appveyor fsharp\test\TypeProvider\bin\Debug\BondFsharpUnitTest.dll
+        vstest.console /logger:Appveyor fsharp\test\TypeProvider\bin\Debug\BondFsharpUnitTest.dll
 
-  }
+    }
