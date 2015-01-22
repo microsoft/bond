@@ -21,12 +21,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unsafe\InputBuffer.cs" />
-    <Compile Include="Unsafe\InputStream.cs" />
-    <Compile Include="Unsafe\OutputBuffer.cs" />
-    <Compile Include="Unsafe\OutputStream.cs" />
-    <Compile Include="Unsafe\StreamCloning.cs" />
+    <Compile Include="properties\AssemblyInfo.cs" />
+    <Compile Include="unsafe\InputBuffer.cs" />
+    <Compile Include="unsafe\InputStream.cs" />
+    <Compile Include="unsafe\OutputBuffer.cs" />
+    <Compile Include="unsafe\OutputStream.cs" />
+    <Compile Include="unsafe\StreamCloning.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Bond">

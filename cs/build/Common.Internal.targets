@@ -8,14 +8,15 @@
   <Import Condition="'$(TargetFrameworkProfile)' != 'Profile78'" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="Bond.CSharp.targets"/>
   <PropertyGroup>
-    <DocumentationFile>$(TargetDir)\$(TargetName).xml</DocumentationFile>
+    <DocumentationFile>$(OutDir)\$(TargetName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <FileToCopy Include="$(TargetDir)\$(TargetName).pdb" />
-    <FileToCopy Include="$(TargetDir)\$(TargetName).xml" />
+    <FileToCopy Include="$(TargetDir)\$(TargetName).pdb" Condition="'$(OS)' != 'Unix'" />
+    <FileToCopy Include="$(TargetPath).mdb" Condition="'$(OS)' == 'Unix'" />
+    <FileToCopy Include="$(OutDir)\$(TargetName).xml" />
   </ItemGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetPath);@(FileToCopy)" DestinationFolder="$(BOND_BINARY_PATH)\$(BuildFramework)" Condition="'$(BondRedistributable)' == 'true'" />
-    <MSBuild Condition="'$(BuildFramework)' == 'net45'" Projects="$(MSBuildProjectFile)" Properties="BuildFramework=net40" RunEachTargetSeparately="true"  />
+    <MSBuild Condition="'$(BuildFramework)' == 'net45' And '$(OS)' != 'Unix'" Projects="$(MSBuildProjectFile)" Properties="BuildFramework=net40" RunEachTargetSeparately="true"  />
   </Target>
 </Project>

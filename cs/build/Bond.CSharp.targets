@@ -66,14 +66,18 @@
 
     <!-- just for a simpler commandline read -->
     <PropertyGroup>
+      <_BondExe Condition="'$(OS)' != 'Unix' Or Exists('$(BOND_COMPILER_PATH)\gbc.exe')">"$(BOND_COMPILER_PATH)\gbc.exe"</_BondExe>
+      <_BondExe Condition="'$(OS)' == 'Unix' And !Exists('$(BOND_COMPILER_PATH)\gbc.exe')">gbc</_BondExe>
       <_BondImportDirs>--import-dir="$(BOND_INCLUDE_PATH)" @(BondImportDirectory -> '--import-dir=%(Identity)',' ')</_BondImportDirs>
-      <_BondCommand>"$(BOND_COMPILER_PATH)\gbc.exe" $(BondCodegenMode) $(_BondImportDirs) --namespace=bond=Bond --output-dir="$(BondOutputDirectory)\."</_BondCommand>
+      <_BondCommand>$(_BondExe) $(BondCodegenMode) $(_BondImportDirs) --namespace=bond=Bond --output-dir="$(BondOutputDirectory)\."</_BondCommand>
     </PropertyGroup>
 
     <!-- We'll optimize to generate in a single command where possible -->
+    <!-- Workaround for xbuild. It does not support ItemDefinitionGroup, so use Options only with MSBuild -->
     <ItemGroup>
-      <_BondCodegenWithDefaultOptions Include="@(BondCodegen)" Condition="'%(Options)' == ''" />
+      <_BondCodegenWithDefaultOptions Include="@(BondCodegen)" Condition="'%(BondCodegen.Options)' == ''" />
     </ItemGroup>
+
     <WriteLinesToFile File="$(BondOutputDirectory)bondfiles.tmp"
                       Lines="@(_BondCodegenWithDefaultOptions)"
                       Overwrite="true" />
@@ -97,7 +101,7 @@
     <ItemGroup>
       <_BondGeneratedFiles Include="@(BondCodegen -> '$(BondOutputDirectory)%(FileName)_types.cs')">
         <AutoGen>true</AutoGen>
-        <DependentUpon>%(Identity)</DependentUpon>
+        <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
       </_BondGeneratedFiles>
 
       <_BondGeneratedFileNames Include="@(_BondGeneratedFiles)"/>
