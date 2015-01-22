@@ -11,11 +11,13 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <summary>Bond is an open source, cross-platform, cross-language framework for working with schematized data.</summary>
         <description>
-            Bond is an extensible framework suitable for scenarios ranging from service communications to Big Data storage and processing.
+            Bond is an open source, cross-platform framework for working with schematized data. It supports cross-language serialization/deserialization and powerful generic mechanisms for efficiently manipulating data.
 
-            Bond defines a rich type system and schema versioning rules which allow forward and backward compatibility. The core Bond features include high performance serialization/deserialization and a very powerful, generic data transform mechanism. The framework is highly extensible via pluggable serialization protocols, data streams, user defined type aliases and more.
+            Bond is published on GitHub at https://github.com/Microsoft/bond/
 
-            By design Bond is language and platform independent and is currently supported for C++, C#, and Python on Linux, OS X and Windows.
+            The C# documentation is available at https://microsoft.github.io/bond/manual/bond_cs.html
+
+            This package contains Bond runtime assemblies and can be specified as a dependency for other NuGet packages using Bond. The full Bond C# distribution is in the Bond.CSharp package.
         </description>
         <copyright>Copyright (c) Microsoft</copyright>
         <tags>Bond .NET C# serialization</tags>
