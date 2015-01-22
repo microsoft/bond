@@ -54,8 +54,8 @@
     <Reference Include="Bond.IO">
       <HintPath>$(BOND_BINARY_PATH)\net45\Bond.IO.dll</HintPath>
     </Reference>    
-    <Reference Include="Bond.Json">
-      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.Json.dll</HintPath>
+    <Reference Include="Bond.JSON">
+      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.JSON.dll</HintPath>
     </Reference>    
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\..\cs\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>

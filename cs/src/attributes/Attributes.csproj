@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Portable.Internal.props" />  
   <PropertyGroup>
     <ProjectGuid>{92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89}</ProjectGuid>
@@ -12,7 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
 </Project>

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <BuildFramework Condition="'$(Configuration)' == 'Net40'">net40</BuildFramework>
   </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.props" />
   <PropertyGroup>
     <ProjectGuid>{FF056B62-225A-47BC-B177-550FADDA4B41}</ProjectGuid>
