@@ -21,10 +21,6 @@ install:
     cabal install cabal-install
 
   }
-# Majority of build time is spent installing dependencies and then building
-# cabal and the sandbox. Using build matrix support we would have to do this
-# for every configuration. Instead we manually build the configurations we want
-# to test. This way all the Haskell prerequisites are resued.
 build_script:
 - ps: >-
   if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
