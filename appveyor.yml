@@ -12,8 +12,6 @@ install:
 
     choco install haskellplatform -version 2014.2.0.0
 
-    # Haskell Platfrom package doesn't update PATH for the current shell instance
-    
     $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\bin"
 
     $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\lib\extralibs\bin"
@@ -33,15 +31,9 @@ build_script:
 
     nuget restore cs\cs.sln
 
-    # default codegen with properties
-    
     msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-    # codegen with public fields
-
     msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-    # codegen with interfaces used to represent collections
 
     msbuild cs\cs.sln /verbosity:minimal /p:Configuration=CollectionInterfaces /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
