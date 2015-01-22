@@ -27,7 +27,6 @@ to obtain and serialize/marshal runtime schema ([C#](https://microsoft.github.io
 Assuming a file named `example.Record` containing a marshalled `SchemaDef` for 
 the following schema: 
 
-~~~{.cpp .numberLines}
     namespace example.schema.serialize;
 
     struct Const
@@ -41,7 +40,6 @@ the following schema:
         0: string name;
         1: list<Const> consts;
     }
-~~~
 
 The type provider can be used to operate on the data:
 
@@ -78,19 +76,14 @@ Provided types
 A Bond schema with fields f~1~, f~2~, f~3~, ... is represented as the type 
 `Tuple<f1',f2',f3',...>`, where `fi'` is derived from f~i~ as follows:
 
-+------------------+------------------------------------------------------------------------------+
+
 | Bond type        | F# type                                                                      |
-+==================+==============================================================================+
+|------------------|------------------------------------------------------------------------------|
 | Bond structs     | `Tuple<...>`                                                                 |
-+------------------+------------------------------------------------------------------------------+
 | Primitive type   | Equivalent CLR primitive type                                                |
-+------------------+------------------------------------------------------------------------------+
 | list<T>          | `FSharp.Collections.List<(F# representation of T)>`                          |
-+------------------+------------------------------------------------------------------------------+
 | set<T>           | `FSharp.Collections.Set<(F# representation of T)>`                           |
-+------------------+------------------------------------------------------------------------------+
 | map<K, V>        | `FSharp.Collections.Map<(F# representation of K), (F# representation of V)>` |
-+------------------+------------------------------------------------------------------------------+
 
 The provided types have a default constructor, which initializes all fields to 
 their defaults defined in the schema, as well as constructor taking an argument 
