@@ -36,8 +36,8 @@
     <Reference Include="Bond.IO">
       <HintPath>..\..\src\io\$(OutputPath)\Bond.IO.dll</HintPath>
     </Reference>
-    <Reference Include="Bond.Json">
-      <HintPath>..\..\src\json\$(OutputPath)\Bond.Json.dll</HintPath>
+    <Reference Include="Bond.JSON">
+      <HintPath>..\..\src\json\$(OutputPath)\Bond.JSON.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
