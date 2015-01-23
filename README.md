@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/Microsoft/bond.svg?branch=master)](https://travis-ci.org/Microsoft/bond)
-[![Issue Stats](http://issuestats.com/github/Microsoft/bond/badge/pr)](http://issuestats.com/github/microsoft/bond)
-[![Issue Stats](http://issuestats.com/github/Microsoft/bond/badge/issue)](http://issuestats.com/github/microsoft/bond)
+[![NuGet](https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.CSharp/)
 
 Bond
 ====
@@ -126,13 +125,11 @@ variable, e.g.:
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&branch=master&passingText=C%23%20passing&pendingText=C%23%20pending&failingText=C%23%20failing)](https://ci.appveyor.com/project/sapek/bond/branch/master)
 
-Pre-built C# binaries signed by Microsoft are available from [NuGet](https://www.nuget.org/packages/Bond.CSharp/).
+Install the following tools:
 
-In order to build Bond on your machine:
-
-- Install Visual Studio 2013
-- Install CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
-- Install Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
+- Visual Studio 2013
+- CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
+- Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
 
 
 Update cabal to the latest version (if behind a proxy, set environment variable 
