@@ -1,4 +1,4 @@
-﻿import "bond\core\bond.bond"
+﻿import "bond/core/bond.bond"
 
 namespace ExpressionsTest
 

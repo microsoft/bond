@@ -82,7 +82,7 @@
                       Lines="@(_BondCodegenWithDefaultOptions)"
                       Overwrite="true" />
 
-    <Exec Command="$(_BondCommand) @&quot;$(BondOutputDirectory)bondfiles.tmp&quot;"
+    <Exec Command="$(_BondCommand) $(BondOptions) @&quot;$(BondOutputDirectory)bondfiles.tmp&quot;"
           Condition="'@(_BondCodegenWithDefaultOptions)' != ''" />
 
     <!-- And for any files needing custom options we'll have to generate one by one -->
