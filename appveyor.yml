@@ -2,26 +2,107 @@ version: 1.0.{build}
 branches:
   only:
   - master
+  - fsharp
 clone_depth: 15
 install:
-- choco install cmake
-- choco install haskellplatform -version 2014.2.0.0
-# Haskell Platfrom package doesn't update PATH for the current shell instance
-- set PATH=%PATH%;%ProgramFiles%\Haskell Platform\2014.2.0.0\bin
-- set PATH=%PATH%;%ProgramFiles%\Haskell Platform\2014.2.0.0\lib\extralibs\bin
-- cabal update
-- cabal install cabal-install
+- cmd: git submodule update --init
+- ps: >-
+    if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
+
+        echo "Downloading Boost 1.57 ..."
+
+        Start-FileDownload "http://softlayer-dal.dl.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.zip"
+
+        echo "Extracting Boost..."
+
+        $shell = New-Object -ComObject Shell.Application
+
+        $item = $shell.NameSpace("${env:APPVEYOR_BUILD_FOLDER}\boost_1_57_0.zip\boost_1_57_0\boost")
+
+        $shell.NameSpace("${env:APPVEYOR_BUILD_FOLDER}").CopyHere($item)
+
+        choco install haskellplatform -version 2014.2.0.0
+
+        # Haskell Platfrom package doesn't update PATH for the current shell instance
+    
+        $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\bin"
+
+        $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\lib\extralibs\bin"
+
+        cabal update
+
+        cabal install cabal-install
+
+    }
 # Majority of build time is spent installing dependencies and then building
 # cabal and the sandbox. Using build matrix support we would have to do this
 # for every configuration. Instead we manually build the configurations we want
 # to test. This way all the Haskell prerequisites are resued.
 build_script:
-- nuget restore cs\cs.sln
-# default codegen with properties
-- msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-# codegen with public fields
-- msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-# codegen with interfaces used to represent collections
-- msbuild cs\cs.sln /verbosity:minimal /p:Configuration=CollectionInterfaces /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+- ps: >-
+    if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
+
+        nuget restore cs\cs.sln
+
+        # default codegen with properties
+    
+        msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+        if (-not $?) { throw "build failed" }
+
+        # codegen with public fields
+
+        msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+        if (-not $?) { throw "build failed" }
+
+        # codegen with interfaces used to represent collections
+
+        msbuild cs\cs.sln /verbosity:minimal /p:Configuration=CollectionInterfaces /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+        if (-not $?) { throw "build failed" }
+
+        $env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}"
+
+        mkdir build
+
+        cd build
+
+        cmake ..
+
+        $env:PreferredToolArchitecture = "x64"
+
+        # Building Release configuration to prevent assert message boxes
+
+        msbuild bond.sln /verbosity:minimal /p:Configuration=Release /p:Optimization=Disabled /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" 
+        
+        if (-not $?) { throw "build failed" }
+
+        cd ..
+
+    } else {
+
+        nuget restore fsharp\fsharp.sln
+
+        msbuild fsharp\fsharp.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+    }
 test_script:
-- vstest.console /logger:Appveyor cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net40\CollectionInterfaces\Bond.UnitTest.dll cs\test\core\bin\debug\net45\CollectionInterfaces\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+- ps: >-
+    $ErrorActionPreference = "Stop"
+
+    if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
+
+        vstest.console /logger:Appveyor cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net40\CollectionInterfaces\Bond.UnitTest.dll cs\test\core\bin\debug\net45\CollectionInterfaces\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+
+        cd build 
+
+        ctest -C Release --output-on-failure
+
+        cd ..
+
+    } else {
+
+        vstest.console /logger:Appveyor fsharp\test\TypeProvider\bin\Debug\BondFsharpUnitTest.dll
+
+    }
