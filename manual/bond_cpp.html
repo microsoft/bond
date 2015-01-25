@@ -28,14 +28,14 @@ code > span.er { font-weight: bold; }
       line-height: 1.5; 
       font-family: Helvetica, Arial, sans-serif; 
       color: #333333;
-      font-size: 0.9em;
+      font-size: 1em;
   }
   code {
-      font-size: 1em;
+      font-size: 1.1em;
   }
   td.lineNumbers { width: 40px; }
   div#all {
-    width: 1120px;
+    max-width: 1130px;
     background-color: #ffffff;
     margin: 0 auto;
     padding: 25px;
@@ -52,13 +52,15 @@ code > span.er { font-weight: bold; }
   #toc {
     width: 300px; 
     position:fixed;
+    left: 0px;
     overflow: auto;
     height: 95%;
   }
 
   #main {
-    float: right;
-    width: 800px;
+    margin-left: 330px;  
+    margin-rigth: auto;
+    max-width: 800px;
   }
   a {
     text-decoration: none;
@@ -71,6 +73,14 @@ code > span.er { font-weight: bold; }
   }
   a:link {
     color: #36c;
+  }
+  @media screen and (max-width: 768px){
+  #main {
+    margin-left: 0px;
+  }
+  #toc {
+    left: -300px; 
+  }
   }
   </style>
 <script>
