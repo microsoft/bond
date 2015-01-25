@@ -278,7 +278,7 @@ The `Deserialize` and `Unmarshal` APIs take an optional argument of type
     data = example.Serialize(obj)
 
     # serialize to JSON
-    json = example.Serialize(obj, example.ProtocolType.PRETTY_JSON_PROTOCOL)
+    json = example.Serialize(obj, example.ProtocolType.SIMPLE_JSON_PROTOCOL)
 
     # marshal schema to Compact Binary
     data = example.Marshal(example.GetRuntimeSchema(obj))

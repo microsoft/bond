@@ -666,45 +666,46 @@ Bonus explainer: parallels between `bonded<T>` and C++ pointers
 The rules of casting and slicing that apply to `bonded<T>` are by design very 
 similar to the standard C++ rules for pointers:
 
-+------------------------------+---------------------------------------------+--------------------------------------+
-|                              | bonded\<T\>                                 | C++ pointer                          |
-+==============================+=============================================+======================================+
-|                              | ```cpp                                      | ```cpp                               |
-| Slicing to base              | bonded<Derived> b;                          | Derived* p;                          |
-|                              | Base obj;                                   | Base obj;                            |
-|                              | b.Deserialize(obj);                         | obj = *p;                            |
-|                              | ```                                         | ```                                  |
-+------------------------------+---------------------------------------------+--------------------------------------+
-|                              | ```cpp                                      | ```cpp                               |
-| Assigning to base part       | bonded<Base> b;                             | Base* p;                             |
-|                              | Derived obj;                                | Derived obj;                         |
-|                              | b.Deserialize(obj);                         | static_cast<Base&>(obj) = *p;        |
-|                              | ```                                         | ```                                  |
-+------------------------------+---------------------------------------------+--------------------------------------+
-|                              | ```cpp                                      | ```cpp                               |
-| Implicit up-casting          | void foo(bonded<Base>);                     | void foo(Base*)                      |
-|                              | bonded<Derived> b;                          | Derived* p;                          |
-|                              | foo(b);                                     | foo(p);                              |
-|                              | ```                                         | ```                                  |
-+------------------------------+---------------------------------------------+--------------------------------------+
-|                              | ```cpp                                      | ```cpp                               |
-| Explicit down-casting        | bonded<Base> b;                             | Base* p;                             |
-|                              | Derived obj;                                | Derived obj;                         |
-|                              | bonded<Derived>(b).Deserialize(obj);        | obj = *static_cast<Derived*>(p);     |
-|                              | ```                                         | ```                                  |
-+------------------------------+---------------------------------------------+--------------------------------------+
-|                              | ```cpp                                      | ```cpp                               |
-| Implicit cast to void        | void foo(bonded<void>);                     | void foo(void*);                     |
-|                              | bonded<Bar> b;                              | Bar* p;                              |
-|                              | foo(b);                                     | foo(p);                              |
-|                              | ```                                         | ```                                  |
-+------------------------------+---------------------------------------------+--------------------------------------+
-|                              | ```cpp                                      | ```cpp                               |
-| Explicit cast from void      | bonded<void> b(data, schema);               | void* p = &obj                       |
-|                              | bonded<Bar> bb;                             | Bar* pp;                             |
-|                              | bb = bonded<Bar>(b);                        | pp = static_cast<Bar*>(p);           |
-|                              | ```                                         | ```                                  |
-+------------------------------+---------------------------------------------+--------------------------------------+
++---------------------------+---------------------------------+-----------------------------------+
+|                           | bonded\<T\>                     | C++ pointer                       |
++===========================+=================================+===================================+
+|                           | ```cpp                          | ```cpp                            |
+| Slicing to base           | bonded<Derived> b;              | Derived* p;                       |
+|                           | Base obj;                       | Base obj;                         |
+|                           | b.Deserialize(obj);             | obj = *p;                         |
+|                           | ```                             | ```                               |
++---------------------------+---------------------------------+-----------------------------------+
+|                           | ```cpp                          | ```cpp                            |
+| Assigning to base part    | bonded<Base> b;                 | Base* p;                          |
+|                           | Derived obj;                    | Derived obj;                      |
+|                           | b.Deserialize(obj);             | static_cast<Base&>(obj) = *p;     |
+|                           | ```                             | ```                               |
++---------------------------+---------------------------------+-----------------------------------+
+|                           | ```cpp                          | ```cpp                            |
+| Implicit up-casting       | void foo(bonded<Base>);         | void foo(Base*)                   |
+|                           | bonded<Derived> b;              | Derived* p;                       |
+|                           | foo(b);                         | foo(p);                           |
+|                           | ```                             | ```                               |
++---------------------------+---------------------------------+-----------------------------------+
+|                           | ```cpp                          | ```cpp                            |
+| Explicit down-casting     | bonded<Base> b;                 | Base* p;                          |
+|                           | Derived obj;                    | Derived obj;                      |
+|                           | bonded<Derived>(b)              | obj = *static_cast<Derived*>(p);  |
+|                           |     .Deserialize(obj);          |                                   |
+|                           | ```                             | ```                               |
++---------------------------+---------------------------------+-----------------------------------+
+|                           | ```cpp                          | ```cpp                            |
+| Implicit cast to void     | void foo(bonded<void>);         | void foo(void*);                  |
+|                           | bonded<Bar> b;                  | Bar* p;                           |
+|                           | foo(b);                         | foo(p);                           |
+|                           | ```                             | ```                               |
++---------------------------+---------------------------------+-----------------------------------+
+|                           | ```cpp                          | ```cpp                            |
+| Explicit cast from void   | bonded<void> b(data, schema);   | void* p = &obj                    |
+|                           | bonded<Bar> bb;                 | Bar* pp;                          |
+|                           | bb = bonded<Bar>(b);            | pp = static_cast<Bar*>(p);        |
+|                           | ```                             | ```                               |
++---------------------------+---------------------------------+-----------------------------------+
 
 
 Merge
@@ -979,8 +980,7 @@ A transform class has to implement the following concept:
         template <typename T>
         bool UnknownField(uint16_t id, T& value) const;
 
-        bool OmittedField(uint16_t id, const bond::Metadata& metadata,
-            bond::BondDataType type) const;
+        bool OmittedField(uint16_t id, const bond::Metadata& metadata, bond::BondDataType type) const;
 
         // Only serializing transforms
         template <typename T>
@@ -1471,8 +1471,7 @@ Generated code using custom types usually has to include a header file with
 appropriate declarations. The `gbc` compiler supports the `--header` parameter 
 for that purpose:
 
-    gbc c++ --header="<time_alias.h>" --using="time=boost::posix_time::ptime" 
-    time.bond
+    gbc c++ --header="<time_alias.h>" --using="time=boost::posix_time::ptime" time.bond
 
 The above command will add the following statement at the top of the generated
 header file `time_types.h`:

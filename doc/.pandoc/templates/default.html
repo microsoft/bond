@@ -18,14 +18,14 @@ $highlighting-css$
       line-height: 1.5; 
       font-family: Helvetica, Arial, sans-serif; 
       color: #333333;
-      font-size: 0.9em;
+      font-size: 1em;
   }
   code {
       font-size: 1em;
   }
   td.lineNumbers { width: 40px; }
   div#all {
-    width: 1120px;
+    max-width: 1120px;
     background-color: #ffffff;
     margin: 0 auto;
     padding: 25px;
@@ -39,6 +39,10 @@ $highlighting-css$
     border-bottom: 1px solid black;
   }
 
+  div.sourceCode {
+    overflow-x: auto;
+  }
+
   #toc {
     width: 300px; 
     position:fixed;
@@ -47,8 +51,9 @@ $highlighting-css$
   }
 
   #main {
-    float: right;
-    width: 800px;
+    margin-left: 320px;  
+    margin-rigth: auto;
+    max-width: 800px;
   }
   a {
     text-decoration: none;
@@ -61,6 +66,15 @@ $highlighting-css$
   }
   a:link {
     color: #36c;
+  }
+  @media screen and (max-width: 979px){
+  #main {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #toc {
+    left: -300px; 
+  }
   }
   </style>
 $endif$
