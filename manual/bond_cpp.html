@@ -31,11 +31,11 @@ code > span.er { font-weight: bold; }
       font-size: 1em;
   }
   code {
-      font-size: 1.1em;
+      font-size: 1em;
   }
   td.lineNumbers { width: 40px; }
   div#all {
-    max-width: 1130px;
+    max-width: 1100px;
     background-color: #ffffff;
     margin: 0 auto;
     padding: 25px;
@@ -49,8 +49,16 @@ code > span.er { font-weight: bold; }
     border-bottom: 1px solid black;
   }
 
+  table.sourceCode {
+    overflow: hidden;
+    table-layout: fixed;
+  }
+  td.sourceCode {
+    overflow-x: hidden;
+  }
+
   #toc {
-    width: 300px; 
+    width: 280px; 
     position:fixed;
     left: 0px;
     overflow: auto;
@@ -58,7 +66,7 @@ code > span.er { font-weight: bold; }
   }
 
   #main {
-    margin-left: 330px;  
+    margin-left: 300px;  
     margin-rigth: auto;
     max-width: 800px;
   }
@@ -74,7 +82,7 @@ code > span.er { font-weight: bold; }
   a:link {
     color: #36c;
   }
-  @media screen and (max-width: 768px){
+  @media screen and (max-width: 979px){
   #main {
     margin-left: 0px;
   }
@@ -316,7 +324,9 @@ T Deserialize(Reader input, <span class="dt">const</span> RuntimeSchema&amp; sch
 7
 8
 9
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">boost::shared_ptr&lt;bond::SchemaDef&gt; schema(boost::make_shared&lt;bond::SchemaDef&gt;());
+10
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">boost::shared_ptr&lt;bond::SchemaDef&gt;
+    schema(boost::make_shared&lt;bond::SchemaDef&gt;());
 
 <span class="co">// Deserialize the runtime schema</span>
 bond::CompactBinaryReader&lt;bond::InputBuffer&gt; cb_reader(schema_data);
@@ -773,9 +783,9 @@ Serialize(payload, writer);</code></pre></td></tr></table>
 <h2 id="bonus-explainer-parallels-between-bondedt-and-c-pointers"><a href="#TOC">Bonus explainer: parallels between <code>bonded&lt;T&gt;</code> and C++ pointers</a></h2>
 <p>The rules of casting and slicing that apply to <code>bonded&lt;T&gt;</code> are by design very similar to the standard C++ rules for pointers:</p>
 <table>
-<col width="26%"></col>
-<col width="39%"></col>
-<col width="33%"></col>
+<col width="28%"></col>
+<col width="34%"></col>
+<col width="36%"></col>
 <thead>
 <tr class="header">
 <th align="left"></th>
@@ -815,7 +825,8 @@ foo(p);</code></pre></td>
 <td align="left">Explicit down-casting</td>
 <td align="left"><pre class="sourceCode cpp"><code class="sourceCode cpp">bonded&lt;Base&gt; b;
 Derived obj;
-bonded&lt;Derived&gt;(b).Deserialize(obj);</code></pre></td>
+bonded&lt;Derived&gt;(b)
+    .Deserialize(obj);</code></pre></td>
 <td align="left"><pre class="sourceCode cpp"><code class="sourceCode cpp">Base* p;
 Derived obj;
 obj = *<span class="kw">static_cast</span>&lt;Derived*&gt;(p);</code></pre></td>
@@ -1070,9 +1081,11 @@ Unpack(reader, str2, n);</code></pre></td></tr></table>
 6
 7
 8
+9
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T, <span class="kw">typename</span> Reader&gt;
 <span class="kw">typename</span> boost::enable_if&lt;bond::is_basic_type&lt;T&gt;&gt;::type
-Field(<span class="dt">uint16_t</span>, <span class="dt">const</span> bond::Metadata&amp;, <span class="dt">const</span> bond::value&lt;T, Reader&gt;&amp; value) <span class="dt">const</span>
+Field(<span class="dt">uint16_t</span>, <span class="dt">const</span> bond::Metadata&amp;,
+      <span class="dt">const</span> bond::value&lt;T, Reader&gt;&amp; value) <span class="dt">const</span>
 {
     T x;
     value.Deserialize(x);

@@ -31,11 +31,11 @@ code > span.er { font-weight: bold; }
       font-size: 1em;
   }
   code {
-      font-size: 1.1em;
+      font-size: 1em;
   }
   td.lineNumbers { width: 40px; }
   div#all {
-    max-width: 1130px;
+    max-width: 1100px;
     background-color: #ffffff;
     margin: 0 auto;
     padding: 25px;
@@ -49,8 +49,16 @@ code > span.er { font-weight: bold; }
     border-bottom: 1px solid black;
   }
 
+  table.sourceCode {
+    overflow: hidden;
+    table-layout: fixed;
+  }
+  td.sourceCode {
+    overflow-x: hidden;
+  }
+
   #toc {
-    width: 300px; 
+    width: 280px; 
     position:fixed;
     left: 0px;
     overflow: auto;
@@ -58,7 +66,7 @@ code > span.er { font-weight: bold; }
   }
 
   #main {
-    margin-left: 330px;  
+    margin-left: 300px;  
     margin-rigth: auto;
     max-width: 800px;
   }
@@ -74,7 +82,7 @@ code > span.er { font-weight: bold; }
   a:link {
     color: #36c;
   }
-  @media screen and (max-width: 768px){
+  @media screen and (max-width: 979px){
   #main {
     margin-left: 0px;
   }
@@ -224,9 +232,9 @@ code > span.er { font-weight: bold; }
             <span class="dt">var</span> output = <span class="kw">new</span> <span class="fu">OutputBuffer</span>();
             <span class="dt">var</span> writer = <span class="kw">new</span> CompactBinaryWriter&lt;OutputBuffer&gt;(output);
 
-            <span class="co">// The first calls to Serialize.To and Deserialize&lt;T&gt;.From can take</span>
-            <span class="co">// a relatively long time because they generate the de/serializer </span>
-            <span class="co">// for a given type and protocol.</span>
+            <span class="co">// The first calls to Serialize.To and Deserialize&lt;T&gt;.From</span>
+            <span class="co">// can take a relatively long time because they generate</span>
+            <span class="co">// the de/serializer for a given type and protocol.</span>
             Serialize.<span class="fu">To</span>(writer, src);
 
             <span class="dt">var</span> input = <span class="kw">new</span> <span class="fu">InputBuffer</span>(output.<span class="fu">Data</span>);
@@ -277,9 +285,11 @@ code > span.er { font-weight: bold; }
 2
 3
 4
+5
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cs">RuntimeSchema schema;
 <span class="co">// ...</span>
-<span class="dt">var</span> d = <span class="kw">new</span> Deserializer&lt;SimpleReader&lt;InputStream&gt;&gt;(<span class="kw">typeof</span>(Record), schema);
+<span class="dt">var</span> d = <span class="kw">new</span> Deserializer&lt;SimpleReader&lt;InputStream&gt;&gt;(
+    <span class="kw">typeof</span>(Record), schema);
 <span class="dt">var</span> obj = d.<span class="fu">Deserialize</span>&lt;Record&gt;(reader);</code></pre></td></tr></table>
 <p>An instance of <code>Deserializer</code> created this way is tied to the triplet of protocol, object type and payload schema. In order to deserialize from payload in another schema a new instance of <code>Deserializer</code> needs to be created.</p>
 <p>Bond provides a helper static API for applications that use schema types known at compile-time, don’t need to specify payload schema and don’t need to manage lifetime of the <code>Deserializer</code>:</p>
@@ -334,9 +344,11 @@ Marshal.<span class="fu">To</span>(writer, src);
 <table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
+4
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cs">RuntimeSchema schema;
 <span class="co">// ...</span>
-<span class="dt">var</span> t = <span class="kw">new</span> Transcoder&lt;&lt;SimpleReader&lt;InputStream&gt;, CompactBinaryWriter&lt;OutputStream&gt;&gt;(schema);</code></pre></td></tr></table>
+<span class="dt">var</span> t = <span class="kw">new</span> Transcoder&lt;SimpleReader&lt;InputStream&gt;,
+                       CompactBinaryWriter&lt;OutputStream&gt;&gt;(schema);</code></pre></td></tr></table>
 <p>The <code>Transcoder</code> constructor is non-trivial so application usually should create an instance of <code>Transcoder</code> outside of the inner loop and reuse it.</p>
 <p>The <code>Transcoder</code> class exposes one public method <code>Transcode</code> which takes two arguments, protocol reader representing payload to transcode from, and protocol writer to be used to write the result.</p>
 <table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -443,8 +455,12 @@ ArraySegment&lt;<span class="dt">byte</span>&gt; data = output.<span class="fu">
 10
 11
 12
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="dt">var</span> exampleSerializer = <span class="kw">new</span> Serializer&lt;CompactBinaryWriter&lt;OutputBuffer&gt;&gt;(<span class="kw">typeof</span>(Example));
-<span class="dt">var</span> exampleDeserializer = <span class="kw">new</span> Deserializer&lt;CompactBinaryReader&lt;InputBuffer&gt;&gt;(<span class="kw">typeof</span>(Example));
+13
+14
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs">var exampleSerializer
+    = <span class="kw">new</span> Serializer&lt;CompactBinaryWriter&lt;OutputBuffer&gt;&gt;(<span class="kw">typeof</span>(Example));
+var exampleDeserializer
+    = <span class="kw">new</span> Deserializer&lt;CompactBinaryReader&lt;InputBuffer&gt;&gt;(<span class="kw">typeof</span>(Example));
 
 <span class="dt">var</span> output = <span class="kw">new</span> <span class="fu">OutputBuffer</span>();
 <span class="dt">var</span> writer = <span class="kw">new</span> CompactBinaryWriter&lt;OutputBuffer&gt;(output);
@@ -467,7 +483,9 @@ exampleSerializer.<span class="fu">Serialize</span>(src, writer);
 9
 10
 11
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="dt">var</span> serializerCache = <span class="kw">new</span> Dictionary&lt;Type, Serializer&lt;CompactBinaryWriter&lt;OutputBuffer&gt;&gt;&gt;
+12
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs">var serializerCache
+    = <span class="kw">new</span> Dictionary&lt;Type, Serializer&lt;CompactBinaryWriter&lt;OutputBuffer&gt;&gt;&gt;
     {
         {
             <span class="kw">typeof</span>(Foo),
@@ -652,12 +670,14 @@ exampleSerializer.<span class="fu">Serialize</span>(src, writer);
 6
 7
 8
+9
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="dt">var</span> src = <span class="kw">new</span> Example
 {
     shapes = 
     {
         <span class="kw">new</span> Bonded&lt;Circle&gt;(<span class="kw">new</span> Circle {kind = Kind.<span class="fu">circle</span>, radius = <span class="dv">10</span>),
-        <span class="kw">new</span> Bonded&lt;Rectangle&gt;(<span class="kw">new</span> Rectangle {kind = Kind.<span class="fu">rectangle</span>, width = <span class="dv">4</span>, height = <span class="dv">5</span>)
+        <span class="kw">new</span> Bonded&lt;Rectangle&gt;(
+            <span class="kw">new</span> Rectangle {kind = Kind.<span class="fu">rectangle</span>, width = <span class="dv">4</span>, height = <span class="dv">5</span>)
     }
 };</code></pre></td></tr></table>
 <p>See also the following example:</p>
@@ -750,7 +770,15 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 2
 3
 4
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cs">var xmlString = <span class="st">&quot;&lt;Record&gt;&lt;Name&gt;test&lt;/Name&gt;&lt;Numbers&gt;&lt;Item&gt;3.14&lt;/Item&gt;&lt;/Numbers&gt;&lt;/Record&gt;&quot;</span>;
+5
+6
+7
+8
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs">var xmlString = @<span class="st">&quot;</span>
+&lt;Record&gt;
+  &lt;Name&gt;test&lt;/Name&gt;
+  &lt;Numbers&gt;&lt;Item&gt;<span class="fl">3.14</span>&lt;/Item&gt;&lt;/Numbers&gt;
+&lt;/Record&gt;<span class="st">&quot;;</span>
 
 <span class="dt">var</span> reader = <span class="kw">new</span> <span class="fu">SimpleXmlReader</span>(XmlReader.<span class="fu">Create</span>(<span class="kw">new</span> <span class="fu">StringReader</span>(xmlString)));
 <span class="dt">var</span> record = Deserialize&lt;Record&gt;.<span class="fu">From</span>(reader);</code></pre></td></tr></table>
@@ -1076,6 +1104,8 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 16
 17
 18
+19
+20
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cs">[Bond.<span class="fu">Serializer</span>(<span class="kw">typeof</span>(CustomSerializer&lt;,&gt;))]
 <span class="kw">public</span> <span class="kw">struct</span> SimpleXmlWriter : IProtocolWriter
 {
@@ -1084,12 +1114,14 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 
 <span class="kw">public</span> <span class="kw">class</span> CustomSerializer&lt;R, W&gt; : ISerializerGenerator&lt;R, W&gt;
 {
-    <span class="kw">public</span> <span class="fu">CustomSerializer</span>(Expression&lt;Action&lt;R, W, <span class="dt">int</span>&gt;&gt; deferredSerialize, RuntimeSchema schema)
+    <span class="kw">public</span> <span class="fu">CustomSerializer</span>(Expression&lt;Action&lt;R, W, <span class="dt">int</span>&gt;&gt; deferredSerialize,
+                            RuntimeSchema schema)
     {
         <span class="co">// ...</span>
     }
 
-    <span class="kw">public</span> <span class="fu">CustomSerializer</span>(Expression&lt;Action&lt;R, W, <span class="dt">int</span>&gt;&gt; deferredSerialize, Type type)
+    <span class="kw">public</span> <span class="fu">CustomSerializer</span>(Expression&lt;Action&lt;R, W, <span class="dt">int</span>&gt;&gt; deferredSerialize,
+                            Type type)
     {
         <span class="co">// ...</span>
     }

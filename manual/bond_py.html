@@ -31,11 +31,11 @@ code > span.er { font-weight: bold; }
       font-size: 1em;
   }
   code {
-      font-size: 1.1em;
+      font-size: 1em;
   }
   td.lineNumbers { width: 40px; }
   div#all {
-    max-width: 1130px;
+    max-width: 1100px;
     background-color: #ffffff;
     margin: 0 auto;
     padding: 25px;
@@ -49,8 +49,16 @@ code > span.er { font-weight: bold; }
     border-bottom: 1px solid black;
   }
 
+  table.sourceCode {
+    overflow: hidden;
+    table-layout: fixed;
+  }
+  td.sourceCode {
+    overflow-x: hidden;
+  }
+
   #toc {
-    width: 300px; 
+    width: 280px; 
     position:fixed;
     left: 0px;
     overflow: auto;
@@ -58,7 +66,7 @@ code > span.er { font-weight: bold; }
   }
 
   #main {
-    margin-left: 330px;  
+    margin-left: 300px;  
     margin-rigth: auto;
     max-width: 800px;
   }
@@ -74,7 +82,7 @@ code > span.er { font-weight: bold; }
   a:link {
     color: #36c;
   }
-  @media screen and (max-width: 768px){
+  @media screen and (max-width: 979px){
   #main {
     margin-left: 0px;
   }
@@ -375,7 +383,7 @@ BOOST_PYTHON_MODULE(example)
     data = example.Serialize(obj)
 
     <span class="co"># serialize to JSON</span>
-    json = example.Serialize(obj, example.ProtocolType.PRETTY_JSON_PROTOCOL)
+    json = example.Serialize(obj, example.ProtocolType.SIMPLE_JSON_PROTOCOL)
 
     <span class="co"># marshal schema to Compact Binary</span>
     data = example.Marshal(example.GetRuntimeSchema(obj))
