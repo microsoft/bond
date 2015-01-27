@@ -40,6 +40,10 @@ let inline deserialize p (data:ArraySegment<byte>) =
     let reader = mkTaggedReader data p
     (^t : (static member DeserializeFrom : ITaggedProtocolReader -> ^t) reader)
 
+let inline deserializeUntagged p (data:ArraySegment<byte>) =
+    let reader = mkUntaggedReader data p
+    (^t : (static member DeserializeFrom : IUntaggedProtocolReader -> ^t) reader)
+
 let inline serializeCB obj =
     serialize ProtocolType.COMPACT_PROTOCOL obj
 
@@ -56,10 +60,25 @@ let inline serializeSP obj =
     serialize ProtocolType.SIMPLE_PROTOCOL obj
 
 let inline deserializeSP (data:ArraySegment<byte>) = 
-    deserialize ProtocolType.SIMPLE_PROTOCOL data
+    deserializeUntagged ProtocolType.SIMPLE_PROTOCOL data
 
-let inline roundtrip src =
+let inline roundtripCB src =
     serializeCB src |> deserializeCB
+
+let inline roundtripFB src =
+    serializeFB src |> deserializeFB
+
+let inline roundtripSP src =
+    serializeSP src |> deserializeSP
+
+let inline testRoundtripCB (src : 'a) =
+    Assert.AreEqual(src, (roundtripCB src : 'a))
+
+let inline testRoundtripFB (src : 'a) =
+    Assert.AreEqual(src, (roundtripFB src : 'a))
+
+let inline testRoundtripSP (src : 'a) =
+    Assert.AreEqual(src, (roundtripSP src : 'a))
 
 [<TestClass>]
 type UnitTest() = 
@@ -90,73 +109,99 @@ type UnitTest() =
     // TODO: no-fields schemas not supported
     
 
+    // SingleField
     [<TestMethod>]
-    member x.TestSingleField () = 
-        let src = initSingleField
-        let dst = roundtrip src : Ty.SingleField
-        Assert.AreEqual(src, dst)
+    member x.CB_TestSingleField () = 
+        testRoundtripCB initSingleField
 
     [<TestMethod>]
-    member x.TestBasicTypes1 () = 
-        let src = initBasicTypes1
-        let dst = roundtrip src : Ty.BasicTypes1
-        Assert.AreEqual(src, dst)
-        Assert.AreEqual(src.m_bool, dst.m_bool)
-        Assert.AreEqual(src.m_str, dst.m_str)
-        Assert.AreEqual(src.m_wstr, dst.m_wstr)
-        Assert.AreEqual(src.m_int8, dst.m_int8)
-        Assert.AreEqual(src.m_int16, dst.m_int16)
-        Assert.AreEqual(src.m_int32, dst.m_int32)
-        Assert.AreEqual(src.m_int64, dst.m_int64)
-        
-    [<TestMethod>]
-    member x.TestBasicTypes2 () = 
-        let src = initBasicTypes2
-        let dst = roundtrip src : Ty.BasicTypes2
-        Assert.AreEqual(src, dst)
-        Assert.AreEqual(src.m_uint8, dst.m_uint8)
-        Assert.AreEqual(src.m_uint16, dst.m_uint16)
-        Assert.AreEqual(src.m_uint32, dst.m_uint32)
-        Assert.AreEqual(src.m_uint64, dst.m_uint64)
-        Assert.AreEqual(src.m_double, dst.m_double)
-        Assert.AreEqual(src.m_float, dst.m_float)
-        Assert.AreEqual(src.m_enum1, dst.m_enum1)
+    member x.SP_TestSingleField () = 
+        testRoundtripSP initSingleField
 
     [<TestMethod>]
-    member x.TestLists () = 
-        let src = initLists
-        let dst = roundtrip src : Ty.Lists
-        Assert.AreEqual(src, dst)
+    member x.FB_TestSingleField () = 
+        testRoundtripFB initSingleField
+
+    // BasicTypes
+    [<TestMethod>]
+    member x.CB_TestBasicTypes () = 
+        testRoundtripCB initBasicTypes
 
     [<TestMethod>]
-    member x.TestNullable () = 
-        let src = initNullable
-        let dst = roundtrip src : Ty.Nullable
-        Assert.AreEqual(src, dst)
-        Assert.AreEqual(src.nld, dst.nld)
-        Assert.AreEqual(src.ne, dst.ne)
-        Assert.AreEqual(src.ns, dst.ns)
-        Assert.AreEqual(src.nb, dst.nb)
-        Assert.AreEqual(src.nbt, dst.nbt)
-
+    member x.SP_TestBasicTypes () = 
+        testRoundtripSP initBasicTypes
 
     [<TestMethod>]
-    member x.TestAll () = 
-        let src = initTests
-        let dst = roundtrip src : Ty.Tests
-        Assert.AreEqual(src, dst)
+    member x.FB_TestBasicTypes () = 
+        testRoundtripFB initBasicTypes
     
+    // Lists
     [<TestMethod>]
-    member x.TestContainers () = 
-        // serialize/deserialize empty
-        let initEmpty = Ty.Containers()
-        serializeCB initEmpty |> deserializeCB : Ty.Containers |> ignore
-        let src = initContainers
-        let dst = roundtrip src : Ty.Containers
-        Assert.AreEqual(src, dst)
+    member x.CB_TestLists () = 
+        testRoundtripCB initLists
+
+    [<TestMethod>]
+    member x.SP_TestLists () = 
+        testRoundtripSP initLists
+
+    [<TestMethod>]
+    member x.FB_TestLists () = 
+        testRoundtripFB initLists
+
+    // Nullable
+    [<TestMethod>]
+    member x.CB_TestNullable () = 
+        testRoundtripCB initNullable
+
+    [<TestMethod>]
+    member x.SP_TestNullable () = 
+        testRoundtripSP initNullable
+
+    [<TestMethod>]
+    member x.FB_TestNullable () = 
+        testRoundtripFB initNullable
+
+    // Tests
+    [<TestMethod>]
+    member x.CB_TestTests () = 
+        testRoundtripCB initTests
+
+    [<TestMethod>]
+    member x.SP_TestTests () = 
+        testRoundtripSP initTests
+
+    [<TestMethod>]
+    member x.FB_TestTests () = 
+        testRoundtripFB initTests
+    
+    // Containers
+    [<TestMethod>]
+    member x.CB_TestContainers () = 
+        testRoundtripCB initContainers
+
+    [<TestMethod>]
+    member x.SP_TestContainers () = 
+        testRoundtripSP initContainers
+
+    [<TestMethod>]
+    member x.FB_TestContainers () = 
+        testRoundtripFB initContainers
+
+    // Empty Containers
+    [<TestMethod>]
+    member x.CB_TestEmptyContainers () = 
+        testRoundtripCB (Ty.Containers())
+
+    [<TestMethod>]
+    member x.SP_TestEmptyContainers () = 
+        testRoundtripSP (Ty.Containers())
+
+    [<TestMethod>]
+    member x.FB_TestEmptyContainers () = 
+        testRoundtripFB (Ty.Containers())
         
     [<TestMethod>]
-    member x.TestBasicTypes () = 
+    member x.TestDefaultValues () = 
         // Verify Fs default values
         let initDefault = Ty.BasicTypes()
         Assert.AreEqual(true, initDefault.m_bool)
@@ -173,17 +218,11 @@ type UnitTest() =
         Assert.AreEqual(18.0, initDefault.m_double)
         Assert.AreEqual(20.0f, initDefault.m_float)
         Assert.AreEqual(int32 -10, initDefault.m_enum1)
-        let src = initBasicTypes
-        let dst = roundtrip src : Ty.BasicTypes
-        Assert.AreEqual(src, dst)
 
     [<TestMethod>]
-    member x.TestViews () = 
-        let src = initBasicTypes1
-        let dst = roundtrip src : Ty.BasicTypes1
-        Assert.AreEqual(src, dst)
+    member x.CB_TestViews () = 
         let src = initBasicTypes
-        let dst = roundtrip src : Ty.BasicTypes2
+        let dst = roundtripCB src : Ty.BasicTypes2
         Assert.AreEqual(src.m_uint8, dst.m_uint8)
         Assert.AreEqual(src.m_uint16, dst.m_uint16)
         Assert.AreEqual(src.m_uint32, dst.m_uint32)
@@ -191,3 +230,31 @@ type UnitTest() =
         Assert.AreEqual(src.m_double, dst.m_double)
         Assert.AreEqual(src.m_float, dst.m_float)
         Assert.AreEqual(src.m_enum1, dst.m_enum1)
+        let dst = roundtripCB src : Ty.BasicTypes1
+        Assert.AreEqual(src.m_bool, dst.m_bool)
+        Assert.AreEqual(src.m_str, dst.m_str)
+        Assert.AreEqual(src.m_wstr, dst.m_wstr)
+        Assert.AreEqual(src.m_int8, dst.m_int8)
+        Assert.AreEqual(src.m_int16, dst.m_int16)
+        Assert.AreEqual(src.m_int32, dst.m_int32)
+        Assert.AreEqual(src.m_int64, dst.m_int64)
+
+    [<TestMethod>]
+    member x.FB_TestViews () = 
+        let src = initBasicTypes
+        let dst = roundtripFB src : Ty.BasicTypes2
+        Assert.AreEqual(src.m_uint8, dst.m_uint8)
+        Assert.AreEqual(src.m_uint16, dst.m_uint16)
+        Assert.AreEqual(src.m_uint32, dst.m_uint32)
+        Assert.AreEqual(src.m_uint64, dst.m_uint64)
+        Assert.AreEqual(src.m_double, dst.m_double)
+        Assert.AreEqual(src.m_float, dst.m_float)
+        Assert.AreEqual(src.m_enum1, dst.m_enum1)
+        let dst = roundtripFB src : Ty.BasicTypes1
+        Assert.AreEqual(src.m_bool, dst.m_bool)
+        Assert.AreEqual(src.m_str, dst.m_str)
+        Assert.AreEqual(src.m_wstr, dst.m_wstr)
+        Assert.AreEqual(src.m_int8, dst.m_int8)
+        Assert.AreEqual(src.m_int16, dst.m_int16)
+        Assert.AreEqual(src.m_int32, dst.m_int32)
+        Assert.AreEqual(src.m_int64, dst.m_int64)
