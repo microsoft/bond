@@ -554,17 +554,16 @@ type public BondTypeProvider(cfg:TypeProviderConfig) =
                                                     fun wrtr e -> 
                                                         Quotations.Expr.Application(Quotations.Expr.Application(Quotations.Expr.Var writeVars.[i], wrtr), Quotations.Expr.Coerce(e, tupTys.[i].Value))] |> dict
 //                          let write (ipw : IProtocolWriter) = 
-//                              let writeAllFields = not ipw.MayOmitFields
 //                              ipw.WriteStructBegin(structMeta)
 //
-//                              if writeAllFields || tupGet 1 <> def then
+//                              if tupGet 1 <> def then
 //                                  ipw.WriteFieldBegin(BondDataType.BT_INT32, 1, valueMeta)
 //                                  ipw.WriteInt32(tupGet n)
 //                                  ipw.WriteFieldEnd()
 //                              else
 //                                  ipw.WriteFieldOmitted(BondDataType.BT_INT32, 1, valueMeta)
 //
-//                              if writeAllFields || (tupGet 2).Count <> 0 then
+//                              if (tupGet 2).Count <> 0 then
 //                                  ipw.WriteFieldBegin(BondDataType.BT_LIST, 2, childrenMeta)
 //                                  // loop
 //                                  ipw.WriteFieldEnd()
@@ -572,13 +571,7 @@ type public BondTypeProvider(cfg:TypeProviderConfig) =
 //                                  ipw.WriteFieldOmitted(BondDataType.BT_INT32, 2, childrenMeta)
 //
 //                              ipw.WriteStructEnd(false)
-//                          let pass0 = wrtr.GetPass0Writer()
-//                          if pass0 <> null then 
-//                              write pass0
-//                              write wrtr
-//                              wrtr.EndDoublePass()
-//                          else
-//                              write wrtr
+//                          write wrtr
 
 
                             let writer = Quotations.Var("wrtr", typeof<IProtocolWriter>)
@@ -593,48 +586,46 @@ type public BondTypeProvider(cfg:TypeProviderConfig) =
                                             (let ipw = Quotations.Var("ipw", typeof<IProtocolWriter>)
                                              Quotations.Expr.Lambda(ipw,
                                                 let ipw = Quotations.Expr.Cast<IProtocolWriter>(Quotations.Expr.Var ipw)
-                                                // TODO: writeAllFields not needed 
-                                                let writeAllFields = Quotations.Var("writeAllFields", typeof<bool>)
-                                                Quotations.Expr.Let(writeAllFields, <@ true @>,
-                                                    Quotations.Expr.Sequential(
-                                                        let writeBegin = <@ (%ipw).WriteStructBegin((%SchemaQuotation.quoteMetadata schemaContents.structs.[int idx].metadata)) @>
-                                                        let writeFields =
-                                                            fieldsFor (int idx)
-                                                            |> List.mapi (fun idx fieldInfo -> 
-                                                                            let id = fieldInfo.id
-                                                                            let elt = Quotations.Expr.TupleGet(Quotations.Expr.Var value, idx)
-                                                                            let cond =  // val <> default  (or val.Count <> 0)
-                                                                                if not (bondTyIsContainer fieldInfo.fieldType.id) then
-                                                                                    let (Quotations.Patterns.Call(_,neq,[_;_])) = <@ 1 <> 2 @>
-                                                                                    Quotations.Expr.Call(neq.GetGenericMethodDefinition().MakeGenericMethod(fieldInfo.defaultExpr.Type), [elt; fieldInfo.defaultExpr])
-                                                                                else 
-                                                                                    // not {List,Set,Map}.isEmpty
-                                                                                    let (Quotations.Patterns.Call(None,m,[_])) =
-                                                                                        match fieldInfo.fieldType.id with
-                                                                                        | BondDataType.BT_LIST -> <@ List.isEmpty [] @>
-                                                                                        | BondDataType.BT_SET -> <@ Set.isEmpty Set.empty @>
-                                                                                        | BondDataType.BT_MAP -> <@ Map.isEmpty Map.empty @>
-                                                                                    <@@ not (%%Quotations.Expr.Call(m.GetGenericMethodDefinition().MakeGenericMethod(elt.Type.GetGenericArguments()), [elt])) @@>
-                                                                                                
-                                                                            let bondTy = fieldInfo.fieldType.id
-                                                                            let writeField = 
-                                                                                <@ (%ipw).WriteFieldBegin(bondTy, id, %SchemaQuotation.quoteMetadata fieldInfo.metadata)
-                                                                                   (%%writerForBondType fieldInfo.fieldType ipw elt writeVarExprs)
-                                                                                   (%ipw).WriteFieldEnd() @>
-                                                                            if fieldInfo.metadata.modifier <> Modifier.Optional then
-                                                                                // if the field is required, always write it
-                                                                                writeField
-                                                                            else
-                                                                                // otherwise, perform (writeAllFields + default) check to see if we must write it
-                                                                                <@ if %%Quotations.Expr.Var writeAllFields || %%cond then
-                                                                                        %writeField
-                                                                                    else
-                                                                                        (%ipw).WriteFieldOmitted(bondTy, id, %SchemaQuotation.quoteMetadata fieldInfo.metadata) @>)
-                                                        writeBegin :: writeFields |> List.reduce (fun q1 q2 -> <@ %q1; %q2 @>), 
-                                                        <@ (%ipw).WriteStructEnd() @>)))),
-                                                                                                           
+                                                
+                                                Quotations.Expr.Sequential(
+                                                    let writeBegin = <@ (%ipw).WriteStructBegin((%SchemaQuotation.quoteMetadata schemaContents.structs.[int idx].metadata)) @>
+                                                    let writeFields =
+                                                        fieldsFor (int idx)
+                                                        |> List.mapi (fun idx fieldInfo -> 
+                                                                        let id = fieldInfo.id
+                                                                        let elt = Quotations.Expr.TupleGet(Quotations.Expr.Var value, idx)
+                                                                        let cond =  // val <> default  (or val.Count <> 0)
+                                                                            if not (bondTyIsContainer fieldInfo.fieldType.id) then
+                                                                                let (Quotations.Patterns.Call(_,neq,[_;_])) = <@ 1 <> 2 @>
+                                                                                Quotations.Expr.Call(neq.GetGenericMethodDefinition().MakeGenericMethod(fieldInfo.defaultExpr.Type), [elt; fieldInfo.defaultExpr])
+                                                                            else 
+                                                                                // not {List,Set,Map}.isEmpty
+                                                                                let (Quotations.Patterns.Call(None,m,[_])) =
+                                                                                    match fieldInfo.fieldType.id with
+                                                                                    | BondDataType.BT_LIST -> <@ List.isEmpty [] @>
+                                                                                    | BondDataType.BT_SET -> <@ Set.isEmpty Set.empty @>
+                                                                                    | BondDataType.BT_MAP -> <@ Map.isEmpty Map.empty @>
+                                                                                <@@ not (%%Quotations.Expr.Call(m.GetGenericMethodDefinition().MakeGenericMethod(elt.Type.GetGenericArguments()), [elt])) @@>
+                                                                                            
+                                                                        let bondTy = fieldInfo.fieldType.id
+                                                                        let writeField = 
+                                                                            <@ (%ipw).WriteFieldBegin(bondTy, id, %SchemaQuotation.quoteMetadata fieldInfo.metadata)
+                                                                               (%%writerForBondType fieldInfo.fieldType ipw elt writeVarExprs)
+                                                                               (%ipw).WriteFieldEnd() @>
+                                                                        if fieldInfo.metadata.modifier <> Modifier.Optional then
+                                                                            // if the field is required, always write it
+                                                                            writeField
+                                                                        else
+                                                                            // otherwise, perform default check to see if we must write it
+                                                                            <@ if %%cond then
+                                                                                    %writeField
+                                                                                else
+                                                                                    (%ipw).WriteFieldOmitted(bondTy, id, %SchemaQuotation.quoteMetadata fieldInfo.metadata) @>)
+                                                    writeBegin :: writeFields |> List.reduce (fun q1 q2 -> <@ %q1; %q2 @>), 
+                                                    <@ (%ipw).WriteStructEnd() @>))),
+
                                             let write = Quotations.Expr.Cast<IProtocolWriter->unit>(Quotations.Expr.Var write)
-                                            <@ (%write) %writer @>)))                                                                    
+                                            <@ (%write) %writer @>)))
                             wrVar, expr]
 
                     let NewTuple_ (expr : Quotations.Expr list) =
@@ -653,28 +644,20 @@ type public BondTypeProvider(cfg:TypeProviderConfig) =
                                                     fun rdr -> 
                                                         Quotations.Expr.Application(Quotations.Expr.Var readVars.[i], rdr)] |> dict
 
-//                          ipr.ReadStructBegin()
-//                          if ipr.HasCapability(Protocol.Tagged) then
-//                              let rec loop() =
-//                                  let ty,id = Helpers.ReadFieldBegin ipr
-//                                  if ty <> BondDataType.BT_STOP && ty <> BondDataType.BT_STOP_BASE then
-//                                      if id = 1us then
-//                                          readValue()
-//                                      elif id = 2us then
-//                                          readChildren()
-//                                      else
-//                                          ipr.Skip(ty)
-//                                      ipr.ReadFieldEnd()
-//                                      loop()
-//                                  else printfn "Stopped with: %A" ty
-//                              loop()
-//                          else
-//                              let canOmit = ipr.HasCapability(Protocol.CanOmitFields)
-//                              if not (canOmit || ipr.ReadFieldOmitted()) then
-//                                  readValue()
-//                              if not (canOmit || ipr.ReadFieldOmitted()) then
-//                                  readChildren()
-//                          ipr.ReadStructEnd()
+//                          rdr.ReadStructBegin()
+//                          let rec loop() =
+//                              let ty,id = Helpers.ReadFieldBegin rdr
+//                              if ty <> BondDataType.BT_STOP && ty <> BondDataType.BT_STOP_BASE then
+//                                  if id = 1us then
+//                                      readValue()
+//                                  elif id = 2us then
+//                                      readChildren()
+//                                  else
+//                                      rdr.Skip(ty)
+//                                  rdr.ReadFieldEnd()
+//                                  loop()
+//                              else printfn "Stopped with: %A" ty
+//                          loop()
 
 
 // TODO: need to handle required fields: 
@@ -707,6 +690,7 @@ type public BondTypeProvider(cfg:TypeProviderConfig) =
                                                 let (var,_,_) = fieldVarsAndVals.[fldIdx]
                                                 Quotations.Expr.Call(refSet.GetGenericMethodDefinition().MakeGenericMethod(fst (typeForBondType fieldInfo.fieldType)), [Quotations.Expr.Var var; read])))
                                     |> List.toArray
+
                                 let fieldSwitch =
                                     let tyVar = Quotations.Var("ty", typeof<BondDataType>)
                                     let idVar = Quotations.Var("id", typeof<uint16>)
