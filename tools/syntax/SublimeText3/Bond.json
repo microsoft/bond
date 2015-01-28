@@ -1,0 +1,88 @@
+//# [PackageDev] target_format: plist, ext: tmLanguage
+{
+    "name": "Bond",
+    "scopeName": "source.bond",
+    "fileTypes": ["bond"],
+    "patterns": [ 
+        { "include": "#commonStuff" },
+        {
+            "match": "^(namespace)\\s+(.+)$",
+            "name": "meta.namespace.source.cs",
+            "captures": {
+                "1": { "name": "keyword.other.namespace.source.bond" },
+                "2": { "name": "storage.type.bond" },
+            }
+        },
+        {
+            "match": "^import\\s+",
+            "name": "keyword.other.import.source.bond"
+        },
+
+        // ENUM
+        {
+            "begin": "(enum)\\s+(.+)$",
+            "name": "meta.enum.source.bond",
+            "captures": {
+                "1": { "name": "keyword.other.enum.source.bond" },
+                "2": { "name": "storage.type.source.enum.bond" }
+            },
+            "patterns": [
+                { "include": "#commonStuff" },
+                {
+                    "match": "^\\s*([^\\s]*)\\s",
+                    "name": "entity.name.type.enum.value.bond",
+                    "captures": {
+                        "1": { "name": "entity.name.bond" }
+                    }
+                }
+            ],
+            "end":"\\}"
+        },
+
+        // STRUCT
+        {
+            "begin": "(struct)\\s+(.+)",
+            "name": "meta.struct.source.bond",
+            "captures": {
+                "1": { "name": "keyword.other.struct.source.bond" },
+                "2": { "name": "storage.type.source.struct.bond" }
+            },
+            "patterns":[
+                {
+                    "name": "constant.numeric.bond",
+                    "match":"^\\s*(\\d+)"        
+                },
+                { "include": "#commonStuff" }
+            ],
+            "end": "\\}"
+        }
+    ],
+    "repository": {
+              "commonStuff": {
+                  "patterns": [
+                      {
+                        "match": "u?int(8|16|32|64)|double|bool|wstring|map|set|vector|nullable",
+                        "name": "constant.language.source"
+                    },
+                    {
+                        "match": "\\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b",
+                        "name": "constant.numeric.bond"
+                    },
+                    {
+                        "match": "\\b(true|false|nothing)\\b",
+                        "name": "constant.language.source"
+                    },
+                    {
+                        "match": "//.+", 
+                        "name": "comment.line.double-slash.bond"
+                    },
+                    {
+                        "match": "\"[^\"]+\"",
+                        "name": "string.quoted.double.source.cs"
+                    }
+                ]
+              }
+          },
+    
+    "uuid": "d902f5e0-8df4-4bd1-b0e8-e5915501d0cc"
+}
