@@ -1,15 +1,15 @@
 ﻿namespace UnitTest
 {
     using System.IO;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
 
-    [TestClass]
+    [TestFixture]
     public class StreamTests
     {
-        [TestMethod]
+        [Test]
         public void StreamPositionLengthTest()
         {
             const int _50MB = 50*1024*1024;
