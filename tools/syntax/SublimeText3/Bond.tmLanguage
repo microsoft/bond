@@ -57,7 +57,7 @@
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.type.enum.source.bond</string>
+					<string>storage.type.source.enum.bond</string>
 				</dict>
 			</dict>
 			<key>end</key>
@@ -99,7 +99,7 @@
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.type.struct.source.bond</string>
+					<string>storage.type.source.struct.bond</string>
 				</dict>
 			</dict>
 			<key>end</key>
@@ -109,32 +109,14 @@
 			<key>patterns</key>
 			<array>
 				<dict>
-					<key>include</key>
-					<string>#commonStuff</string>
+					<key>match</key>
+					<string>^\s*(\d+)</string>
+					<key>name</key>
+					<string>constant.numeric.bond</string>
 				</dict>
 				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>constant.numeric.bond</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>storage.type.bond</string>
-						</dict>
-						<key>3</key>
-						<dict>
-							<key>name</key>
-							<string>entity.name.function.bond</string>
-						</dict>
-					</dict>
-					<key>match</key>
-					<string>^\s*(\d+):\s*(.*?)(?&lt;!,)\s+([^;\s]+)</string>
-					<key>name</key>
-					<string>field.source.bond</string>
+					<key>include</key>
+					<string>#commonStuff</string>
 				</dict>
 			</array>
 		</dict>
@@ -147,13 +129,19 @@
 			<array>
 				<dict>
 					<key>match</key>
+					<string>u?int(8|16|32|64)|double|bool|wstring|map|set|vector|nullable</string>
+					<key>name</key>
+					<string>constant.language.source</string>
+				</dict>
+				<dict>
+					<key>match</key>
 					<string>\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\b</string>
 					<key>name</key>
 					<string>constant.numeric.bond</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(true|false|null|this|base|nothing)\b</string>
+					<string>\b(true|false|nothing)\b</string>
 					<key>name</key>
 					<string>constant.language.source</string>
 				</dict>

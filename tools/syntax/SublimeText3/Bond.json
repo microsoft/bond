@@ -6,12 +6,11 @@
   	"patterns": [ 
 		{ "include": "#commonStuff" },
 		{
-			"match": "^(namespace)\\s+(cpp|csharp) (.+)$",
+			"match": "^(namespace)\\s+(.+)$",
 			"name": "meta.namespace.source.cs",
 			"captures": {
 				"1": { "name": "keyword.other.namespace.source.bond" },
 				"2": { "name": "storage.type.bond" },
-				"3": { "name": "entity.name.type.namespace.source.bond" }
 			}
 		},
 		{
@@ -25,7 +24,7 @@
 			"name": "meta.enum.source.bond",
 			"captures": {
 				"1": { "name": "keyword.other.enum.source.bond" },
-				"2": { "name": "entity.name.type.enum.source.bond" }
+				"2": { "name": "storage.type.source.enum.bond" }
 			},
 			"patterns": [
 				{ "include": "#commonStuff" },
@@ -46,21 +45,14 @@
 			"name": "meta.struct.source.bond",
 			"captures": {
 				"1": { "name": "keyword.other.struct.source.bond" },
-				"2": { "name": "entity.name.type.struct.source.bond" }
+				"2": { "name": "storage.type.source.struct.bond" }
 			},
 			"patterns":[
-				{ "include": "#commonStuff" },
-
-				// Field
 				{
-					"match": "^\\s*(\\d+):\\s*(.*?)(?<!,)\\s+([^;\\s]+)", 
-					"name": "field.source.bond",
-					"captures": {
-					    "1": { "name": "constant.numeric.bond" },
-					   	"2": { "name": "storage.type.bond" },
-					   	"3": { "name": "entity.name.function.bond"}
-					}
-				}
+					"name": "constant.numeric.bond",
+					"match":"^\\s*(\\d+)"		
+				},
+				{ "include": "#commonStuff" }
 			],
 			"end": "\\}"
 		}
@@ -68,12 +60,16 @@
 	"repository": {
   			"commonStuff": {
   				"patterns": [
+  					{
+						"match": "u?int(8|16|32|64)|double|bool|wstring|map|set|vector|nullable",
+						"name": "constant.language.source"
+					},
 					{
 						"match": "\\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b",
 						"name": "constant.numeric.bond"
 					},
 					{
-						"match": "\\b(true|false|null|this|base|nothing)\\b",
+						"match": "\\b(true|false|nothing)\\b",
 						"name": "constant.language.source"
 					},
 					{
