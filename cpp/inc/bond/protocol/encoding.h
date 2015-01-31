@@ -199,7 +199,7 @@ inline ReadStringData(Buffer& input, T& value, uint32_t length)
     resize_string(value, length);
     typename element_type<T>::type* data = string_data(value);
     typename string_char_int_type<T>::type ch;
-    for (int i = 0; i < length; ++i)
+    for (uint32_t i = 0; i < length; ++i)
     {
         input.Read(ch);
         data[i] = static_cast<typename element_type<T>::type>(ch);
@@ -219,7 +219,7 @@ inline WriteStringData(Buffer& output, const T& value, uint32_t length)
 {
     const typename element_type<T>::type* data = string_data(value);
     typename string_char_int_type<T>::type ch;
-    for (int i = 0; i < length; ++i)
+    for (uint32_t i = 0; i < length; ++i)
     {
         ch = static_cast<typename string_char_int_type<T>::type>(data[i]);
         output.Write(ch);
