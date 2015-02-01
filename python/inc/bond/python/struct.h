@@ -331,11 +331,11 @@ private:
         }
 
     private:
-        BOOST_PYTHON_FUNCTION_OVERLOADS(marshal_overloads, marshal, 1, 2);
-        BOOST_PYTHON_FUNCTION_OVERLOADS(serialize_overloads, serialize, 1, 2);
-        BOOST_PYTHON_FUNCTION_OVERLOADS(serialize_bonded_overloads, serialize_bonded, 1, 2);
-        BOOST_PYTHON_FUNCTION_OVERLOADS(deserialize_overloads, deserialize, 2, 3);
-        BOOST_PYTHON_FUNCTION_OVERLOADS(deserialize_schema_overloads, deserialize_schema, 3, 4);
+        BOOST_PYTHON_FUNCTION_OVERLOADS(marshal_overloads, marshal, 1, 2)
+        BOOST_PYTHON_FUNCTION_OVERLOADS(serialize_overloads, serialize, 1, 2)
+        BOOST_PYTHON_FUNCTION_OVERLOADS(serialize_bonded_overloads, serialize_bonded, 1, 2)
+        BOOST_PYTHON_FUNCTION_OVERLOADS(deserialize_overloads, deserialize, 2, 3)
+        BOOST_PYTHON_FUNCTION_OVERLOADS(deserialize_schema_overloads, deserialize_schema, 3, 4)
     
         static const bond::SchemaDef& schema(const U&)
         {

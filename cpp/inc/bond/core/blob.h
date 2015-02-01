@@ -381,5 +381,5 @@ inline T blob_cast(const blob& from)
     }
 }
 
-}; // bond namespace
+} // namespace bond
 

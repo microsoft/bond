@@ -337,6 +337,4 @@ template <typename Output> struct
 may_omit_fields<SimpleBinaryWriter<Output> >
     : false_type {};
 
-};
-
-
+} // namespace bond

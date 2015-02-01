@@ -251,7 +251,7 @@ bond::Metadata MetadataInit(const char* name, const char* qualified_name, const 
 }
 
 
-}; // namespace reflection
+} // namespace reflection
 
 
 const reflection::nothing nothing = {};
@@ -809,4 +809,4 @@ public:
     }
 };
 
-};
+} // namespace bond

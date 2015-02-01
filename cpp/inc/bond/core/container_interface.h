@@ -121,4 +121,4 @@ template<typename T>
 void resize_string(T& str, uint32_t size);
 #endif
 
-};
+} // namespace bond

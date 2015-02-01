@@ -214,4 +214,4 @@ struct ProtocolReader
 };
 
 
-};
+} // namespace bond

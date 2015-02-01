@@ -10,7 +10,7 @@ namespace bond
     {
         static const uint16_t value = v2;
     };
-};
+}
 
 #include "protocol_versions_reflection.h"
 

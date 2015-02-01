@@ -183,4 +183,4 @@ private:
     const bool _base;
 };
 
-};
+} // namespace bond
