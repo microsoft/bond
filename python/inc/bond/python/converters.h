@@ -129,7 +129,7 @@ struct list_container_from_python_list
     static unaryfunc* convertible(PyObject* obj)
     {
         return (PyList_Check(obj)) ? &py_object_identity : 0;
-    };
+    }
 
     static void extract(T& dst, const boost::python::object& src)
     {
@@ -309,7 +309,7 @@ struct blob_converter
     static unaryfunc* convertible(PyObject* obj)
     {
         return (PyString_Check(obj)) ? &obj->ob_type->tp_str : 0;
-    };
+    }
 
     static void extract(bond::blob& dst, const boost::python::object& src)
     {

@@ -87,4 +87,4 @@ is_modifying_transform
     : is_base_of<ModifyingTransform, T> {};
 
 
-};
+} // namespace bond

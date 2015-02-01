@@ -276,4 +276,4 @@ private:
 
 #pragma warning(pop)
 
-};
+} // namespace bond
