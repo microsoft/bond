@@ -1002,5 +1002,5 @@ inline DeserializeMap(X& var, BondDataType keyType, const T& element, Reader& in
     input.ReadContainerEnd();
 }
 
-};
+} // namespace bond
     

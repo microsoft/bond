@@ -352,4 +352,4 @@ inline const std::map<std::string, T>& GetEnumNames()
 }
 
 
-}; // namespace bond
+} // namespace bond

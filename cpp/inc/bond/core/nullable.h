@@ -651,5 +651,5 @@ is_list_container<nullable<T, Allocator, useValue> >
     : true_type {};
 
 
-}; // namespace bond
+} // namespace bond
 

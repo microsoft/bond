@@ -186,6 +186,6 @@ protected:
     const bool _base;
 };
 
-}; // namespace detail
+} // namespace detail
 
-}; // namespace bond
+} // namespace bond

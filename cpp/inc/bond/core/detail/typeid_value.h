@@ -800,7 +800,6 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
 }
 
 
+} // namespace detail
 
-}; // namespace detail
-
-}; // namespace bond
+} // namespace bond

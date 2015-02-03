@@ -261,7 +261,6 @@ inline void Merge(const T& var, ProtocolReader<Buffer>& reader)
 }
 
 
-}; // namespace detail
+} // namespace detail
 
-
-}; // namespace bond
+} // namespace bond

@@ -778,4 +778,4 @@ bool is_protocol_version_same(const bond::CompactBinaryReader<Input>& reader,
     return reader._version == writer._version;
 }
 
-}; // namespace bond
+} // namespace bond

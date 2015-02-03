@@ -687,7 +687,7 @@ protected:
         {
             return AssignToField(typename boost::mpl::next<Fields>::type(), var, id, value);
         }
-    };
+    }
 
     
     template <typename V, typename X>
@@ -775,4 +775,4 @@ private:
     const Mappings&  _mappings;
 };
 
-}
+} // namespace bond
