@@ -7,7 +7,7 @@
 # As a workaround we execute this .cmake script as a custom command and use CMake
 # cache to get access to variables set during configuration.
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} --require-sandbox install   --with-compiler=${Haskell_GHC_EXECUTABLE} --only-dependencies --jobs
+    COMMAND ${Haskell_CABAL_EXECUTABLE} install   --with-compiler=${Haskell_GHC_EXECUTABLE} --only-dependencies --jobs
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 
@@ -16,7 +16,7 @@ if (error)
 endif()
 
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} --require-sandbox configure --with-compiler=${Haskell_GHC_EXECUTABLE} --builddir=${output_dir}
+    COMMAND ${Haskell_CABAL_EXECUTABLE} configure --with-compiler=${Haskell_GHC_EXECUTABLE} --builddir=${output_dir}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 
@@ -25,7 +25,7 @@ if (error)
 endif()
     
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} --require-sandbox build     --with-ghc=${Haskell_GHC_EXECUTABLE} --ghc-option=-O2 --jobs --builddir=${output_dir}
+    COMMAND ${Haskell_CABAL_EXECUTABLE} build     --with-ghc=${Haskell_GHC_EXECUTABLE} --ghc-option=-O2 --jobs --builddir=${output_dir}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 

@@ -4,7 +4,7 @@ set (CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
 
 # required Haskell components
-find_package (Cabal 1.20.0.0 REQUIRED)
+find_package (Cabal 1.18.0.0 REQUIRED)
 find_package (GHC 7.4.1.0 REQUIRED)
 
 set (sources

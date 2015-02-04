@@ -24,7 +24,7 @@ The Bond repository uses Git submodules and should be cloned with the
     git clone --recursive https://github.com/Microsoft/bond.git
 
 In order to build Bond you will need CMake (2.8.12+), Haskell (ghc 7.4+ and 
-cabal-install 1.20+) and Boost (1.54+). The core Bond C++ library can be used 
+cabal-install 1.18+) and Boost (1.54+). The core Bond C++ library can be used 
 with C++03 compilers, although Python support, unit tests and various examples 
 require some C++11 features.
 
@@ -131,12 +131,7 @@ Install the following tools:
 - CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
 - Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
 
-
-Update cabal to the latest version (if behind a proxy, set environment variable 
-`HTTP_PROXY=http://proxy:port` before running cabal):
-
-    cabal update
-    cabal install cabal-install
+If behind a proxy, set environment variable `HTTP_PROXY=http://proxy:port`.
 
 Now you are ready to build the C# version of Bond. Open the solution file 
 `cs\cs.sln` in Visual Studio 2013 and build as usual. The C# unit tests can 
