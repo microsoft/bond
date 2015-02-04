@@ -483,7 +483,9 @@ exampleSerializer.<span class="fu">Serialize</span>(src, writer);
         }
     };</code></pre></td></tr></table></div></li>
 <li><p>Prefer <code>InputBuffer</code> and <code>OutputBuffer</code> over <code>MemoryStream</code></p>
-<p>When working with Bond payloads in a memory buffer (<code>byte[]</code> or <code>ArraySegment&lt;byte&gt;</code>) Bond-defined <code>InputBuffer</code> and <code>OutputBuffer</code> classes will provide significantly better performance than <code>InputStream</code> and <code>OutputStream</code> used together with <code>System.MemoryStream</code>.</p></li>
+<p>When working with Bond payloads in a memory buffer (<code>byte[]</code> or <code>ArraySegment&lt;byte&gt;</code>) Bond-defined <code>InputBuffer</code> and <code>OutputBuffer</code> classes will provide significantly better performance than <code>InputStream</code> and <code>OutputStream</code> used together with <code>System.MemoryStream</code>.</p>
+<p><code>OutputBuffer</code> by default preallocates 64 KB of memory. When serializing small objects the cost of allocating and zeroing the memory may dominate the actual cost of serialization. Conversely, when serializing very large objects the initial buffer of 64KB may be too small, leading to unnecessary reallocations and memory copying.</p>
+<p>The <code>OutputBuffer</code> constructor accepts an argument specifying the size of initial buffer in bytes. For optimal performance the size should be set to be a little bigger than expect size of serialized data.</p></li>
 <li><p>Prefer <code>using Bond.IO.Unsafe;</code> over <code>using Bond.IO.Safe;</code></p>
 <p>Bond defines two variants of <code>InputBuffer</code> and <code>OutputBuffer</code> in two namespaces <code>Bond.IO.Safe</code> and <code>Bond.IO.Unsafe</code>. The classes have identical interface and can be used interchangeably. The only difference is that the latter uses some low level memory access constructs and is implemented in <code>Bond.IO.dll</code> assembly which is compiled with <code>/unsafe</code> flag. The unsafe version is faster.</p></li>
 <li><p>Pool memory buffers</p>
