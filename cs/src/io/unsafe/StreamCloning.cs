@@ -33,9 +33,25 @@ namespace Bond.IO.Unsafe
             var stream = Expression.Parameter(typeof(MemoryStream));
             var origin = Expression.Parameter(typeof(int).MakeByRefType());
             var length = Expression.Parameter(typeof(int).MakeByRefType());
-            getOriginAndLength = Expression.Lambda<GetOriginAndLength>(
-                Expression.Call(stream, internalGetOriginAndLength, origin, length), stream, origin, length)
-                .Compile();
+
+            //internal method InternalGetOriginAndLength exists in .NET
+            if (internalGetOriginAndLength != null)
+            {
+                getOriginAndLength = Expression.Lambda<GetOriginAndLength>(
+                    Expression.Call(stream, internalGetOriginAndLength, origin, length), stream, origin, length)
+                    .Compile();
+            }
+            else
+            {
+                //Mono uses 'initialIndex' and 'length' fields in memory stream to handle the data
+                //see ref: https://github.com/mono/mono/blob/989301647e7cdf93acb69aacabcbb2bb2884e041/mcs/class/corlib/System.IO/MemoryStream.cs#L122-L126
+                var assign1 = Expression.Assign(origin, Expression.Field(stream, "initialIndex")); //origin = stream.initialIndex
+                var assign2 = Expression.Assign(length, Expression.Field(stream, "length")); //length = stream.length
+
+                getOriginAndLength = Expression.Lambda<GetOriginAndLength>(
+                    Expression.Block(assign1, assign2), stream, origin, length)
+                    .Compile();
+            }
         }
 
         public static Stream Clone(this Stream stream)
