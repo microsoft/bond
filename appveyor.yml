@@ -31,9 +31,8 @@ install:
 
         cabal update
 
-        cabal install cabal-install
-
     }
+- cmd: cabal install cabal-install
 # Majority of build time is spent installing dependencies and then building
 # cabal and the sandbox. Using build matrix support we would have to do this
 # for every configuration. Instead we manually build the configurations we want
