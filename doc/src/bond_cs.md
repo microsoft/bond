@@ -437,6 +437,16 @@ how to achieve the best performance.
     will provide significantly better performance than `InputStream` and 
     `OutputStream` used together with `System.MemoryStream`.
 
+    `OutputBuffer` by default preallocates 64 KB of memory. When serializing small 
+    objects the cost of allocating and zeroing the memory may dominate the actual 
+    cost of serialization. Conversely, when serializing very large objects the 
+    initial buffer of 64KB may be too small, leading to unnecessary reallocations 
+    and memory copying.
+
+    The `OutputBuffer` constructor accepts an argument specifying the size of 
+    initial buffer in bytes. For optimal performance the size should be set to be 
+    a little bigger than expect size of serialized data.
+
 3. Prefer `using Bond.IO.Unsafe;` over `using Bond.IO.Safe;`
 
     Bond defines two variants of `InputBuffer` and `OutputBuffer` in two 
