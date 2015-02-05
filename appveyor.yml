@@ -1,30 +1,32 @@
 version: 1.0.{build}
-branches:
-  only:
-  - master
-  - fsharp
 clone_depth: 15
 install:
 - cmd: git submodule update --init
 - ps: >-
     if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-        echo "Downloading Boost 1.57 ..."
+        choco install 7zip
 
-        Start-FileDownload "http://softlayer-dal.dl.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.zip"
+        $env:Path += ";${env:ProgramFiles}\7-Zip"
+
+        if (!(Test-Path boost_1_57_0.7z)) {
+
+            echo "Downloading Boost 1.57 ..."
+
+            appveyor DownloadFile "http://softlayer-dal.dl.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.7z" -Timeout 1200000
+
+        }
 
         echo "Extracting Boost..."
 
-        $shell = New-Object -ComObject Shell.Application
+        7z x boost_1_57_0.7z -y -o"${env:APPVEYOR_BUILD_FOLDER}" boost_1_57_0\boost > $null
 
-        $item = $shell.NameSpace("${env:APPVEYOR_BUILD_FOLDER}\boost_1_57_0.zip\boost_1_57_0\boost")
-
-        $shell.NameSpace("${env:APPVEYOR_BUILD_FOLDER}").CopyHere($item)
+        $env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}\boost_1_57_0"
 
         choco install haskellplatform -version 2014.2.0.0
 
         # Haskell Platfrom package doesn't update PATH for the current shell instance
-    
+
         $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\bin"
 
         $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\lib\extralibs\bin"
@@ -34,6 +36,9 @@ install:
         cabal update
 
     }
+cache:
+- compiler\.cabal-sandbox
+- boost_1_57_0.7z
 # Majority of build time is spent installing dependencies and then building
 # cabal and the sandbox. Using build matrix support we would have to do this
 # for every configuration. Instead we manually build the configurations we want
@@ -45,7 +50,7 @@ build_script:
         nuget restore cs\cs.sln
 
         # default codegen with properties
-    
+
         msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
         if (-not $?) { throw "build failed" }
@@ -62,23 +67,23 @@ build_script:
 
         if (-not $?) { throw "build failed" }
 
-        $env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}"
+        # AppVeyor open source plan runs on very slow VMs, disable C++ until VC14 is fully supported
 
-        mkdir build
+        #mkdir build
 
-        cd build
+        #cd build
 
-        cmake ..
+        #cmake ..
 
-        $env:PreferredToolArchitecture = "x64"
+        #$env:PreferredToolArchitecture = "x64"
 
         # Building Release configuration to prevent assert message boxes
 
-        msbuild bond.sln /verbosity:minimal /p:Configuration=Release /p:Optimization=Disabled /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" 
-        
-        if (-not $?) { throw "build failed" }
+        # msbuild bond.sln /verbosity:minimal /p:Configuration=Release /p:Optimization=Disabled /target:bond_compatibility_test /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-        cd ..
+        #if (-not $?) { throw "build failed" }
+
+        #cd ..
 
     } else {
 
@@ -95,11 +100,11 @@ test_script:
 
         vstest.console /logger:Appveyor cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net40\CollectionInterfaces\Bond.UnitTest.dll cs\test\core\bin\debug\net45\CollectionInterfaces\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
 
-        cd build 
+        #cd build
 
-        ctest -C Release --output-on-failure
+        #ctest -C Release -R compatibility --output-on-failure
 
-        cd ..
+        #cd ..
 
     } else {
 
