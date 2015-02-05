@@ -58,7 +58,7 @@
           Outputs="$(BondOutputDirectory)bondfiles.tmp;@(BondCodegen -> '$(BondOutputDirectory)%(FileName)_types.cs')"
           BeforeTargets="CoreCompile"
           Condition="'@(BondCodegen)' != ''">
-      
+
     <Error Text="Bond.CSharp.props not imported"
            Condition="'$(_bond_cs_props_imported)' != 'true'" />
 
@@ -68,7 +68,7 @@
     <PropertyGroup>
       <_BondExe Condition="'$(OS)' != 'Unix' Or Exists('$(BOND_COMPILER_PATH)\gbc.exe')">"$(BOND_COMPILER_PATH)\gbc.exe"</_BondExe>
       <_BondExe Condition="'$(OS)' == 'Unix' And !Exists('$(BOND_COMPILER_PATH)\gbc.exe')">gbc</_BondExe>
-      <_BondImportDirs>--import-dir="$(BOND_INCLUDE_PATH)" @(BondImportDirectory -> '--import-dir=%(Identity)',' ')</_BondImportDirs>
+      <_BondImportDirs>--import-dir="$(BOND_INCLUDE_PATH)" @(BondImportDirectory -> '--import-dir=&quot;%(Identity)&quot;',' ')</_BondImportDirs>
       <_BondCommand>$(_BondExe) $(BondCodegenMode) $(_BondImportDirs) --namespace=bond=Bond --output-dir="$(BondOutputDirectory)\."</_BondCommand>
     </PropertyGroup>
 
