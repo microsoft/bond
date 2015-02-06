@@ -415,6 +415,11 @@
             TestSerialization<Bond.Box<double>>();
         }
 
+        [TestMethod]
+        public void TypeFromFileWithSpaces()
+        {
+            Assert.IsNotNull(new EnsureSpacesInPathsWork());
+        }
 
         private void TestTypePromotion<From, To>()
         {
