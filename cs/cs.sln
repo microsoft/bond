@@ -157,6 +157,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "untagged_protocols", "..\ex
 		{43CBBA9B-C4BC-4E64-8733-7B72562D2E91} = {43CBBA9B-C4BC-4E64-8733-7B72562D2E91}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "import", "..\examples\cs\core\import\import.csproj", "{2962BDD2-D939-4059-BC89-EAC4E83A24AA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2E6E238C-9017-445C-9611-66DA780609BE} = {2E6E238C-9017-445C-9611-66DA780609BE}
+		{43CBBA9B-C4BC-4E64-8733-7B72562D2E91} = {43CBBA9B-C4BC-4E64-8733-7B72562D2E91}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CollectionInterfaces|Any CPU = CollectionInterfaces|Any CPU
@@ -826,6 +832,31 @@ Global
 		{65B9537D-2E7B-424A-9EBB-8E85FEB65F6F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{65B9537D-2E7B-424A-9EBB-8E85FEB65F6F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{65B9537D-2E7B-424A-9EBB-8E85FEB65F6F}.Release|Win32.ActiveCfg = Release|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.CollectionInterfaces|Any CPU.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.CollectionInterfaces|Any CPU.Build.0 = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.CollectionInterfaces|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.CollectionInterfaces|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.CollectionInterfaces|Win32.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Fields|Any CPU.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Fields|Any CPU.Build.0 = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Fields|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Fields|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Fields|Win32.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Net40|Any CPU.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Net40|Any CPU.Build.0 = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Net40|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Net40|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Net40|Win32.ActiveCfg = Debug|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -852,5 +883,6 @@ Global
 		{BC61F8E8-D536-49FC-A1B4-11AD57B9B3FF} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
 		{ADAD1274-18F2-4E45-85B6-792CE91A2D2D} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
 		{65B9537D-2E7B-424A-9EBB-8E85FEB65F6F} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
+		{2962BDD2-D939-4059-BC89-EAC4E83A24AA} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
 	EndGlobalSection
 EndGlobal
