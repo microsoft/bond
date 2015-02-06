@@ -1,5 +1,6 @@
 import "bond/core/bond.bond"
 import "Aliases.bond"
+import "Bond File With Spaces.bond"
 
 namespace UnitTest
 
