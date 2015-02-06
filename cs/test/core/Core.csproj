@@ -35,6 +35,9 @@
     <BondOptions>--collection-interfaces</BondOptions>
   </PropertyGroup>
   <ItemGroup>
+    <BondImportDirectory Include="import dir with spaces" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="AttributesTests.cs" />
     <Compile Include="BondClass.cs" />
     <Compile Include="BondedTests.cs" />
@@ -70,12 +73,14 @@
     <BondCodegen Include="UnitTest.bond">
       <Options>$(BondOptions) --using="DateTime=System.DateTime"</Options>
     </BondCodegen>
+    <BondCodegen Include="import dir with spaces\Bond File With Spaces.bond" />
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\UnitTest_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\Aliases_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\ReadOnly_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\NamespaceConflict_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\NamespaceConflictBond_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\Bond File With Spaces_types.cs" Condition="False" />
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
