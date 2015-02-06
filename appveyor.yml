@@ -37,6 +37,7 @@ install:
 
     }
 cache:
+- cs\packages
 - compiler\.cabal-sandbox
 - boost_1_57_0.7z
 # Majority of build time is spent installing dependencies and then building
