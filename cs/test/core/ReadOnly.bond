@@ -23,6 +23,6 @@ struct BasicTypes view_of UnitTest.BasicTypes
 struct SimpleContainers view_of UnitTest.SimpleContainers
 {
     strings;
-    basics;    
+    basics;
     numbers;
 };
