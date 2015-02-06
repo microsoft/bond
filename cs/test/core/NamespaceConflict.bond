@@ -6,12 +6,12 @@
 [someAttribute("foo")]
 struct Foo<T>
 {
-	[someAttribute("bar")]
-	1: wstring wstring_field;
+    [someAttribute("bar")]
+    1: wstring wstring_field;
 
-	2: nullable<int32> nullable_field;
+    2: nullable<int32> nullable_field;
 
-	3: required bonded<T> generic_field;
+    3: required bonded<T> generic_field;
 
-	4: required_optional bool required_optional_field;
+    4: required_optional bool required_optional_field;
 }

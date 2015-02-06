@@ -26,9 +26,9 @@ struct ContainerAlias
     0: SynchronizedList<string> syncListString;
     1: nullable<SynchronizedList<Foo>> syncListFoo;
     2: SynchronizedList<OrderedSet<string>> syncListOrderedSetString;
-	// Don't get rid of the `nothing` here. Bond will attempt to use "normal"
-	// C# init syntax here. Arrays have irregular syntax though, so
-	// `new bool[]()` won't work. To compensate, we just leave it null.
+    // Don't get rid of the `nothing` here. Bond will attempt to use "normal"
+    // C# init syntax here. Arrays have irregular syntax though, so
+    // `new bool[]()` won't work. To compensate, we just leave it null.
     3: Array<bool> arrayContainer = nothing;
     4: Array<nullable<bool>> arrayNullableContainer = nothing;
     5: Array<vector<bool>> arrayVectorContainer = nothing;
@@ -44,7 +44,7 @@ struct ContainerNotAliased
     0: list<string> listString;
     1: nullable<vector<Foo>> vectorFoo;
     2: list<set<string>> listSetString;
-	// Don't get rid of `nothing` here. See comment in `ContainerAlias`.
+    // Don't get rid of `nothing` here. See comment in `ContainerAlias`.
     3: vector<bool> arrayContainer = nothing;
     4: vector<nullable<bool>> arrayNullableContainer = nothing;
     5: vector<vector<bool>> arrayVectorContainer = nothing;
