@@ -17,7 +17,7 @@ module Bond.Schema
     , Language(..)
     , Namespace(..)
     , Attribute(..)
-    , QualifiedName(..)
+    , QualifiedName
     , takeName
     , takeNamespace
     , showQualifiedName
@@ -43,9 +43,6 @@ import Data.Word
 import Data.List
 import Data.Foldable (foldMap)
 import Data.Monoid
-import System.FilePath
-import Data.Text.Lazy.Builder
-import Text.Shakespeare.Text
 import Bond.Util
 
 type QualifiedName = [String]
@@ -81,6 +78,7 @@ data Type =
     BT_UserDefined Declaration [Type]
     deriving Eq
 
+scalarType :: Type -> Bool
 scalarType BT_Int8 = True
 scalarType BT_Int16 = True
 scalarType BT_Int32 = True
@@ -96,31 +94,39 @@ scalarType (BT_TypeParam (TypeParam _ (Just Value))) = True
 scalarType (BT_UserDefined Enum {..} _) = True
 scalarType _ = False
 
+metaType :: Type -> Bool
 metaType BT_MetaName = True
 metaType BT_MetaFullName = True
 metaType _ = False
 
+stringType :: Type -> Bool
 stringType BT_String = True
 stringType BT_WString = True
 stringType _ = False
 
+listType :: Type -> Bool
 listType (BT_List _) = True
 listType (BT_Vector _) = True
 listType _ = False
 
+associativeType :: Type -> Bool
 associativeType (BT_Set _) = True
 associativeType (BT_Map _ _) = True
 associativeType _ = False
 
+containerType :: Type -> Bool
 containerType f = listType f || associativeType f
 
+structType :: Type -> Bool
 structType (BT_UserDefined Struct {} _) = True
 structType (BT_UserDefined a@Alias {} args) = structType $ resolveAlias a args
 structType _ = False
 
+nullableType :: Type -> Bool
 nullableType (BT_Nullable _) = True
 nullableType _ = False
 
+metaField :: Field -> Any
 metaField Field {..} = Any $ metaType fieldType
 
 data Default =
@@ -150,6 +156,13 @@ data Field =
         }
     deriving Eq
 
+makeField :: [Attribute]
+          -> Word16
+          -> Modifier
+          -> Type
+          -> String
+          -> Maybe Default
+          -> Field
 makeField a o m t n d@(Just DefaultNothing) = Field a o m (BT_Maybe t) n d
 makeField a o m t n d = Field a o m t n d
 
@@ -206,6 +219,7 @@ data Declaration =
         }
     deriving Eq
 
+showTypeParams :: [TypeParam] -> String
 showTypeParams = angles . sepBy ", " show
 
 instance Show Declaration where
@@ -226,14 +240,16 @@ mapType f x = f x
 
 foldMapFields :: (Monoid m) => (Field -> m) -> Type -> m
 foldMapFields f t = case t of
-    (BT_UserDefined s@Struct {..} _) -> optional (foldMapFields f) structBase <> foldMap f structFields
+    (BT_UserDefined   Struct {..} _) -> optional (foldMapFields f) structBase <> foldMap f structFields
     (BT_UserDefined a@Alias {..} args) -> foldMapFields f $ resolveAlias a args
     _ -> mempty
 
+foldMapStructFields :: Monoid m
+                    => (Field -> m) -> Declaration -> m
 foldMapStructFields f s = foldMapFields f $ BT_UserDefined s []
 
 foldMapType :: (Monoid m) => (Type -> m) -> Type -> m
-foldMapType f t@(BT_UserDefined decl args) = f t <> foldMap (foldMapType f) args
+foldMapType f t@(BT_UserDefined _decl args) = f t <> foldMap (foldMapType f) args
 foldMapType f t@(BT_Map key value) = f t <> foldMapType f key <> foldMapType f value
 foldMapType f t@(BT_List element) = f t <> foldMapType f element
 foldMapType f t@(BT_Vector element) = f t <> foldMapType f element
@@ -249,6 +265,7 @@ resolveAlias Alias {..} args = mapType resolveParam $ resolveParam aliasType
     resolveParam (BT_TypeParam param) = snd.fromJust $ find ((param ==).fst) paramsArgs
     resolveParam x = x
     paramsArgs = zip declParams args
+resolveAlias _ _ = error "resolveAlias: impossible happened."
 
 duplicateDeclaration :: Declaration -> Declaration -> Bool
 duplicateDeclaration left right = 
@@ -260,7 +277,7 @@ isBaseField name = getAny . optional (foldMapFields (Any.(name==).fieldName))
 
 data Import = Import FilePath
 
-data Language = Cpp | Cs | CSharp | Java deriving (Eq)
+data Language = Cpp | Cs | CSharp | Java | Haskell deriving (Eq, Show)
 
 data Namespace = 
     Namespace 

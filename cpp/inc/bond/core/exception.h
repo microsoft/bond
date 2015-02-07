@@ -19,21 +19,21 @@ class Exception
       public SerializableExceptionBase
 {
 public:
-    const char* what() const throw()
+    const char* what() const BOND_NOEXCEPT
     {
         return message.c_str();
     }
 
-    virtual ~Exception() throw()
+    virtual ~Exception() BOND_NOEXCEPT
     {}
 
 protected:
-    Exception(const char* msg) throw()
+    Exception(const char* msg) BOND_NOEXCEPT
     {
         message = msg;
     }
 
-    Exception() throw()
+    Exception() BOND_NOEXCEPT
     {}
 };
 

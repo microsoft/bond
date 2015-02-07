@@ -15,8 +15,10 @@ import Control.Monad.Reader
 import Control.Monad.Loops (firstM)
 import Control.Concurrent.Async
 import GHC.Conc (getNumProcessors, setNumCapabilities)
+import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy.IO as L
 import Bond.Parser
+import Bond.Schema (Declaration, Import)
 import Bond.Template.Util
 import Bond.Template.Cpp.Reflection_h
 import Bond.Template.Cpp.Types_h
@@ -25,6 +27,7 @@ import Bond.Template.Cpp.Apply_cpp
 import Bond.Template.Cpp.Enum_h
 import Bond.Template.Cpp.Types_cpp
 import Bond.Template.Cs.Types_cs
+import Bond.Template.Haskell.Decl
 import Bond.Template.TypeMapping
 import Bond.Template.CustomMapping
 import Options
@@ -37,8 +40,10 @@ main = do
     case options of
         Cpp {..}    -> cppCodegen options
         Cs {..}     -> csCodegen options
+        Haskell {..} -> hsCodegen options
         _           -> print options
 
+setJobs :: Maybe Int -> IO ()
 setJobs Nothing = return ()
 setJobs (Just n)
     | n > 0     = setNumCapabilities n
@@ -47,16 +52,17 @@ setJobs (Just n)
         -- if n is less than 0 use that many fewer jobs than processors
         setNumCapabilities $ max 1 (numProc + n)
 
+concurrentlyFor_ :: [a] -> (a -> IO b) -> IO ()
 concurrentlyFor_ = (void .) . flip mapConcurrently
 
 cppCodegen :: Options -> IO()
 cppCodegen (Cpp {..}) = do
-    aliasMapping <- parseAliasMapping using
-    namespaceMapping <- parseNamespaceMapping namespace
+    aliasMapping <- parseAliasMappings using
+    namespaceMapping <- parseNamespaceMappings namespace
     let typeMapping = case allocator of 
             Nothing -> cppTypeMapping
             Just a -> cppCustomAllocTypeMapping a
-    let mappingContext = newMappingContext typeMapping aliasMapping namespaceMapping []
+    let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping []
     concurrentlyFor_ files $ codeGen output_dir import_dir mappingContext $
         [ reflection_h
         , types_cpp
@@ -73,19 +79,47 @@ cppCodegen (Cpp {..}) = do
         , (Fast, Protocol "FastBinaryReader" "FastBinaryWriter")
         , (Simple, Protocol "SimpleBinaryReader" "SimpleBinaryWriter")
         ]
+cppCodegen _ = error "cppCodegen: impossible happened."
 
-    
 csCodegen :: Options -> IO()
 csCodegen (Cs {..}) = do
-    aliasMapping <- parseAliasMapping using
-    namespaceMapping <- parseNamespaceMapping namespace
+    aliasMapping <- parseAliasMappings using
+    namespaceMapping <- parseNamespaceMappings namespace
     let typeMapping = if collection_interfaces then csInterfaceTypeMapping else csTypeMapping
-    let mappingContext = newMappingContext typeMapping aliasMapping namespaceMapping []
+    let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping []
     concurrentlyFor_ files $ codeGen output_dir import_dir mappingContext 
         [ types_cs readonly_properties fields
         ]
+csCodegen _ = error "csCodegen: impossible happened."
 
+hsCodegen :: Options -> IO()
+hsCodegen (Haskell {..}) = do
+    aliasMapping <- parseAliasMappings using
+    namespaceMapping <- parseNamespaceMappings namespace
 
+    let mappingContext = MappingContext csTypeMapping aliasMapping namespaceMapping []
+    cwd <- getCurrentDirectory
+    forM_ files $ \file -> do
+        input <- readFileUtf8 file
+        result <- runReaderT (parseBond file input) (newEnvironment (cwd </> file) (readImportFile import_dir))
+        case result of
+            Left error -> do
+                print error
+                exitFailure
+            Right (Bond imports namespaces declarations) -> do
+                let mapping = setNamespaces mappingContext namespaces
+                forM_ declarations $ \decl -> do
+                    let (filename, code) = mkHaskellDecl mapping decl
+                    let fullname = output_dir </> filename
+                    createDirectoryIfMissing True (dropFileName fullname)
+                    writeFile fullname code
+
+codeGen :: FilePath
+        -> [FilePath]
+        -> MappingContext
+        -> [MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)]
+        -> FilePath
+        -> IO ()
 codeGen outputDir importDirs mappingContext templates file = do
     cwd <- getCurrentDirectory
     input <- readFileUtf8 file

@@ -113,14 +113,14 @@ uses_marshaled_bonded
 
 struct ValueReader
 {
-    // Constructors that explicitly declared throw() are needed for 
+    // Constructors that explicitly declared noexcept are needed for
     // boost::variant to use optimized code path. 
-    ValueReader() throw()
+    ValueReader() BOND_NOEXCEPT
         : pointer(NULL)
     {}
 
     template <typename U>
-    ValueReader(boost::reference_wrapper<U> value) throw()
+    ValueReader(boost::reference_wrapper<U> value) BOND_NOEXCEPT
         : pointer(&static_cast<const U&>(value))
     {}
 
@@ -131,12 +131,12 @@ struct ValueReader
     {}
 
     template <typename U>
-    ValueReader(boost::shared_ptr<U> value) throw()
+    ValueReader(boost::shared_ptr<U> value) BOND_NOEXCEPT
         : instance(boost::static_pointer_cast<const void>(value)),
           pointer(instance.get())
     {}
     
-    ValueReader(const ValueReader& value) throw()
+    ValueReader(const ValueReader& value) BOND_NOEXCEPT
         : instance(value.instance),
           pointer(value.pointer)
     {}
