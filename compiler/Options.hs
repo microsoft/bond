@@ -41,6 +41,13 @@ data Options
         , readonly_properties :: Bool
         , fields :: Bool
         }
+    | Haskell
+        { files :: [FilePath]
+        , import_dir :: [FilePath]
+        , output_dir :: FilePath
+        , using :: [String]
+        , namespace :: [String]
+        }
       deriving (Show, Data, Typeable)
 
 cpp = Cpp 
@@ -66,7 +73,12 @@ cs = Cs
     name "c#" &= 
     help "Generate C# code"
 
-mode = cmdArgsMode $ modes [cpp, cs] &= 
+haskell = Haskell { }
+    &=
+    name "haskell" &=
+    help "Generate Haskell code"
+
+mode = cmdArgsMode $ modes [cpp, cs, haskell] &=
     program "gbc" &= 
     help "Compile Bond schema definition file and generate specified output" &=
     summary ("Bond Compiler " ++ majorVersion ++ "." ++ minorVersion ++ ", (C) Microsoft")

@@ -23,6 +23,7 @@ import Bond.Template.Cpp.Apply_cpp
 import Bond.Template.Cpp.Enum_h
 import Bond.Template.Cpp.Types_cpp
 import Bond.Template.Cs.Types_cs
+import Bond.Template.Haskell.Decl
 import Bond.Template.TypeMapping
 import Bond.Template.CustomMapping
 import Options
@@ -34,6 +35,7 @@ main = do
     case options of
         Cpp {..}    -> cppCodegen options
         Cs {..}     -> csCodegen options
+        Haskell {..} -> hsCodegen options
         _           -> print options
 
 cppCodegen :: Options -> IO()
@@ -61,7 +63,6 @@ cppCodegen (Cpp {..}) = do
         , (Simple, Protocol "SimpleBinaryReader" "SimpleBinaryWriter")
         ]
 
-    
 csCodegen :: Options -> IO()
 csCodegen (Cs {..}) = do
     aliasMapping <- parseAliasMapping using
@@ -72,6 +73,28 @@ csCodegen (Cs {..}) = do
         [ types_cs readonly_properties fields
         ]
 
+hsCodegen :: Options -> IO()
+hsCodegen (Haskell {..}) = do
+    aliasMapping <- parseAliasMapping using
+    namespaceMapping <- parseNamespaceMapping namespace
+
+    let mappingContext = newMappingContext csTypeMapping aliasMapping namespaceMapping []
+    cwd <- getCurrentDirectory
+    forM_ files $ \file -> do
+        input <- readFileUtf8 file
+        result <- runReaderT (parseBond file input) (newEnvironment (cwd </> file) (readImportFile import_dir))
+        case result of
+            Left error -> do
+                print error
+                exitFailure
+            Right (Bond imports namespaces declarations) -> do
+                print imports
+                let mapping = setNamespaces mappingContext namespaces
+                forM_ declarations $ \decl -> do
+                    let (filename, code) = mkHaskellDecl mapping decl
+                    let fullname = output_dir </> filename
+                    createDirectoryIfMissing True (dropFileName fullname)
+                    writeFile fullname code
 
 codeGen outputDir importDirs mappingContext templates file = do
     cwd <- getCurrentDirectory
