@@ -4,6 +4,7 @@ module Bond.Template.Haskell.Decl (mkHaskellDecl) where
 
 import Data.Char
 import Data.List (sort, group, intercalate, mapAccumL)
+import Data.Maybe
 import Language.Haskell.Exts
 import Language.Haskell.Exts.SrcLoc
 import System.FilePath
@@ -100,7 +101,9 @@ mkHaskellDecl mapping Enum{..} = (filename, prettyPrint code)
     typeName = Ident $ convertTypeName declName
     code = Module noLoc moduleName [] Nothing Nothing [defaultImport] decls
     decls = datadecl : typesig : values
-    datadecl = DataDecl noLoc NewType [] typeName [] [QualConDecl noLoc [] [] (ConDecl typeName [TyCon $ UnQual $ Ident "Int"])] [(UnQual $ Ident "Show", []), (UnQual $ Ident "Eq", []), (UnQual $ Ident "Ord", [])]
+    datadecl = DataDecl noLoc NewType [] typeName []
+                [QualConDecl noLoc [] [] (ConDecl typeName [TyCon $ UnQual $ Ident "Int"])]
+                [(UnQual $ Ident "Show", []), (UnQual $ Ident "Eq", []), (UnQual $ Ident "Ord", [])]
     typesig = TypeSig noLoc (map (mkVar . constantName) enumConstants) (TyCon $ UnQual typeName)
     values = let mkval _ Constant{constantName, constantValue = Just i} = (i + 1, (constantName, i))
                  mkval i Constant{constantName} = (i + 1, (constantName, i))
@@ -118,11 +121,12 @@ mkHaskellDecl mapping s@Struct{..} = traceShow s $ (filename, prettyPrint code)
     decls = datadecl : []
     datadecl = DataDecl noLoc DataType [] typeName typeParams [QualConDecl noLoc [] [] (RecDecl typeName fields)] [(UnQual (Ident "Show"),[])]
     typeParams = map mkTypeParam declParams
+    -- FIXME see if type params T and t accepted in C++/C#, make smart conversion to t/t'
     mkTypeParam TypeParam{..} = UnkindedVar $ mkVar paramName
     fields = map mkField structFields
     mkField Field{..} = ([mkVar fieldName], hsType fieldType)
     types = map head $ group $ sort $ foldMapStructFields extractTypes s
-    imports = defaultImport : map (\m -> defaultImport{importModule = m}) types
+    imports = defaultImport : mapMaybe (\m -> if m == moduleName then Nothing else Just defaultImport{importModule = m}) types
 
 mkHaskellDecl _ _ = ("/dev/null", "empty")
 
