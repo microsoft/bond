@@ -15,6 +15,9 @@ import Bond.Template.TypeMapping
 
 import Debug.Trace
 
+internalModule :: ModuleName
+internalModule = ModuleName "B'"
+
 capitalize :: String -> String
 capitalize s = (toUpper $ head s) : tail s
 
@@ -30,51 +33,61 @@ mkVar = Ident . uncapitalize
 tyCon :: String -> Language.Haskell.Exts.Type
 tyCon = TyCon . UnQual . mkIdent
 
+tyInt :: String -> Language.Haskell.Exts.Type
+tyInt = TyCon . Qual internalModule . mkIdent
+
 intLit :: Integral a => a -> Exp
 intLit n | n >= 0 = Lit $ Int $ fromIntegral n
 intLit n = Paren $ NegApp $ intLit $ abs n
 
 -- C# type mapping
 hsType :: Bond.Schema.Type -> Language.Haskell.Exts.Type
-hsType BT_Int8 = tyCon "Int8"
-hsType BT_Int16 = tyCon "Int16"
-hsType BT_Int32 = tyCon "Int32"
-hsType BT_Int64 = tyCon "Int64"
-hsType BT_UInt8 = tyCon "Word8"
-hsType BT_UInt16 = tyCon "Word16"
-hsType BT_UInt32 = tyCon "Word32"
-hsType BT_UInt64 = tyCon "Word64"
+hsType BT_Int8 = tyInt "Int8"
+hsType BT_Int16 = tyInt "Int16"
+hsType BT_Int32 = tyInt "Int32"
+hsType BT_Int64 = tyInt "Int64"
+hsType BT_UInt8 = tyInt "Word8"
+hsType BT_UInt16 = tyInt "Word16"
+hsType BT_UInt32 = tyInt "Word32"
+hsType BT_UInt64 = tyInt "Word64"
 hsType BT_Float = tyCon "Float"
 hsType BT_Double = tyCon "Double"
 hsType BT_Bool = tyCon "Bool"
-hsType BT_String = tyCon "ByteString"
-hsType BT_WString = tyCon "ByteString"
+hsType BT_String = tyInt "ByteString"
+hsType BT_WString = tyInt "ByteString"
 hsType BT_MetaName = tyCon "String"
 hsType BT_MetaFullName = tyCon "String"
-hsType BT_Blob = tyCon "ByteString"
+hsType BT_Blob = tyInt "ByteString"
 hsType (BT_IntTypeArg _) = error "BT_IntTypeArg"
 hsType (BT_Maybe type_) = hsType (BT_Nullable type_)
 hsType (BT_Nullable element) = TyApp (tyCon "Maybe") (hsType element)
 hsType (BT_List element) = TyList $ hsType element
-hsType (BT_Vector element) = TyApp (tyCon "Vector") (hsType element)
-hsType (BT_Set element) = TyApp (tyCon "HashSet") (hsType element)
-hsType (BT_Map key value) = TyApp (TyApp (tyCon "Map") (hsType key)) (hsType value)
-hsType (BT_Bonded type_) = TyApp (tyCon "Bonded") (hsType type_)
+hsType (BT_Vector element) = TyApp (tyInt "Vector") (hsType element)
+hsType (BT_Set element) = TyApp (tyInt "HashSet") (hsType element)
+hsType (BT_Map key value) = TyApp (TyApp (tyInt "Map") (hsType key)) (hsType value)
+hsType (BT_Bonded type_) = TyApp (tyInt "Bonded") (hsType type_)
 hsType (BT_TypeParam type_) = TyVar $ mkVar $ paramName type_
 hsType (BT_UserDefined Alias {..} _) = error "BT_UserDefined Alias"
 hsType (BT_UserDefined decl []) = tyCon $ declName decl
 hsType (BT_UserDefined decl params) = TyApp (tyCon $ declName decl) $ foldr1 TyApp $ map hsType params
 
-defaultImport :: ImportDecl
-defaultImport = ImportDecl {
+importTemplate :: ImportDecl
+importTemplate = ImportDecl {
                     importLoc = noLoc,
-                    importModule = ModuleName "Bond.Internal",
+                    importModule = undefined,
                     importQualified = False,
                     importSrc = False,
                     importSafe = False,
                     importPkg = Nothing,
                     importAs = Nothing,
                     importSpecs = Nothing
+                }
+
+defaultImport :: ImportDecl
+defaultImport = importTemplate {
+                    importModule = ModuleName "Bond.Internal",
+                    importQualified = True,
+                    importAs = Just internalModule
                 }
 
 convertNamespace :: QualifiedName -> [String]
@@ -125,13 +138,17 @@ mkHaskellDecl mapping s@Struct{..} = traceShow s $ (filename, prettyPrint code)
     mkTypeParam TypeParam{..} = UnkindedVar $ mkVar paramName
     fields = map mkField structFields
     mkField Field{..} = ([mkVar fieldName], hsType fieldType)
-    types = map head $ group $ sort $ foldMapStructFields extractTypes s
-    imports = defaultImport : mapMaybe (\m -> if m == moduleName then Nothing else Just defaultImport{importModule = m}) types
+    types = map head $ group $ sort $ filter (/= moduleName) $ concatMap (getUserImports . fieldType) structFields
+    imports = defaultImport : map (\m -> importTemplate{importModule = m}) types
 
 mkHaskellDecl _ _ = ("/dev/null", "empty")
 
-extractTypes :: Field -> [ModuleName]
-extractTypes f = foldMapType go $ fieldType f
-    where
-    go (BT_UserDefined d _) = [mkModuleName (nsName $ head $ declNamespaces d) (declName d)]
-    go _ = []
+getUserImports :: Bond.Schema.Type -> [ModuleName]
+getUserImports (BT_UserDefined decl args) = mkModuleName (nsName $ head $ declNamespaces decl) (declName decl) : concatMap getUserImports args
+getUserImports (BT_Map key value) = getUserImports key ++ getUserImports value
+getUserImports (BT_List element) = getUserImports element
+getUserImports (BT_Vector element) = getUserImports element
+getUserImports (BT_Set element) = getUserImports element
+getUserImports (BT_Nullable element) = getUserImports element
+getUserImports (BT_Bonded element) = getUserImports element
+getUserImports _ = []
