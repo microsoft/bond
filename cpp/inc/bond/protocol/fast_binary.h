@@ -115,11 +115,11 @@ public:
     {}
 
 
-    // This identical to compiler generated ctor except for throw() declaration.
+    // This identical to compiler generated ctor except for noexcept declaration.
     // Copy ctor that is explicitly declared throw() is needed for boost::variant
     // to use optimized code path. 
     /// @brief Copy constructor
-    FastBinaryReader(const FastBinaryReader& that) throw()
+    FastBinaryReader(const FastBinaryReader& that) BOND_NOEXCEPT
         : _input(that._input)
     {}
 
