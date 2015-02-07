@@ -21,5 +21,5 @@ import Data.ByteString
 import Data.HashSet
 import Data.Vector
 
-data Bonded a = Bonded a
+newtype Bonded a = Bonded a
     deriving Show

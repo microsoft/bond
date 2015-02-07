@@ -4,7 +4,6 @@ module Bond.Template.Haskell.Decl (mkHaskellDecl) where
 
 import Data.Char
 import Data.List (sort, group, intercalate, mapAccumL)
-import Data.Maybe
 import Language.Haskell.Exts
 import Language.Haskell.Exts.SrcLoc
 import System.FilePath
@@ -55,8 +54,8 @@ hsType BT_Double = tyCon "Double"
 hsType BT_Bool = tyCon "Bool"
 hsType BT_String = tyInt "ByteString"
 hsType BT_WString = tyInt "ByteString"
-hsType BT_MetaName = tyCon "String"
-hsType BT_MetaFullName = tyCon "String"
+hsType BT_MetaName = error "BT_MetaName" -- tyCon "String"
+hsType BT_MetaFullName = error "BT_MetaFullName" -- tyCon "String"
 hsType BT_Blob = tyInt "ByteString"
 hsType (BT_IntTypeArg _) = error "BT_IntTypeArg"
 hsType (BT_Maybe type_) = hsType (BT_Nullable type_)
@@ -112,7 +111,7 @@ mkHaskellDecl mapping Enum{..} = (filename, prettyPrint code)
     filename = mkFileName namespace declName
     moduleName = mkModuleName namespace declName
     typeName = Ident $ convertTypeName declName
-    code = Module noLoc moduleName [] Nothing Nothing [defaultImport] decls
+    code = Module noLoc moduleName [] Nothing Nothing [] decls
     decls = datadecl : typesig : values
     datadecl = DataDecl noLoc NewType [] typeName []
                 [QualConDecl noLoc [] [] (ConDecl typeName [TyCon $ UnQual $ Ident "Int"])]
