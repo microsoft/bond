@@ -35,7 +35,7 @@
     <BondOptions>--collection-interfaces</BondOptions>
   </PropertyGroup>
   <ItemGroup>
-    <BondImportDirectory Include="import dir with spaces" />
+    <BondImportDirectory Include="import dir with spaces\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttributesTests.cs" />
