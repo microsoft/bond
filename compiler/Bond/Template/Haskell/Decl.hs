@@ -1,12 +1,14 @@
-{-# LANGUAGE NamedFieldPuns, RecordWildCards #-}
+{-# LANGUAGE PatternGuards, NamedFieldPuns, RecordWildCards #-}
 
 module Bond.Template.Haskell.Decl (mkHaskellDecl) where
 
 import Data.Char
-import Data.List (sort, group, intercalate, mapAccumL)
+import Data.List (intercalate, mapAccumL)
 import Language.Haskell.Exts
 import Language.Haskell.Exts.SrcLoc
 import System.FilePath
+
+import qualified Data.Set as S
 
 import Bond.Schema
 import Bond.Template.TypeMapping
@@ -17,11 +19,16 @@ import Debug.Trace
 internalModule :: ModuleName
 internalModule = ModuleName "B'"
 
+baseStructField :: Name
+baseStructField = Ident "base'"
+
 capitalize :: String -> String
-capitalize s = (toUpper $ head s) : tail s
+capitalize (h:t) = toUpper h : t
+capitalize [] = error "capitalize: empty string"
 
 uncapitalize :: String -> String
-uncapitalize s = (toLower $ head s) : tail s
+uncapitalize (h:t) = toLower h : t
+uncapitalize [] = error "uncapitalize: empty string"
 
 mkIdent :: String -> Name
 mkIdent = Ident . capitalize
@@ -96,10 +103,10 @@ convertTypeName :: String -> String
 convertTypeName  = capitalize
 
 mkModuleName :: QualifiedName -> String -> ModuleName
-mkModuleName ns t = ModuleName $ intercalate "." $ (convertNamespace ns) ++ [convertTypeName t]
+mkModuleName ns t = ModuleName $ intercalate "." $ convertNamespace ns ++ [convertTypeName t]
 
 mkFileName :: QualifiedName -> String -> FilePath
-mkFileName ns t = (foldr1 (</>) $ convertNamespace ns) </> (convertTypeName t ++ ".hs")
+mkFileName ns t = foldr1 (</>) (convertNamespace ns) </> (convertTypeName t ++ ".hs")
 
 --declModule :: Declaration -> ModuleName
 --declModule t = mkModuleName (nsName $ head $ declNamespaces t) (declName t)
@@ -123,7 +130,7 @@ mkHaskellDecl mapping Enum{..} = (filename, prettyPrint code)
               in map mkConst constVals
     mkConst (constName, val) = PatBind noLoc (PVar $ mkVar constName) (UnGuardedRhs $ App (Con $ UnQual typeName) (intLit val)) (BDecls [])
 
-mkHaskellDecl mapping s@Struct{..} = traceShow s $ (filename, prettyPrint code)
+mkHaskellDecl mapping s@Struct{..} = traceShow s (filename, prettyPrint code)
     where
     namespace = getIdlNamespace mapping
     filename = mkFileName namespace declName
@@ -134,20 +141,24 @@ mkHaskellDecl mapping s@Struct{..} = traceShow s $ (filename, prettyPrint code)
     datadecl = DataDecl noLoc DataType [] typeName typeParams [QualConDecl noLoc [] [] (RecDecl typeName fields)] [(UnQual (Ident "Show"),[])]
     typeParams = map mkTypeParam declParams
     -- FIXME see if type params T and t accepted in C++/C#, make smart conversion to t/t'
-    mkTypeParam TypeParam{..} = UnkindedVar $ mkVar paramName
-    fields = map mkField structFields
-    mkField Field{..} = ([mkVar fieldName], hsType fieldType)
-    types = map head $ group $ sort $ filter (/= moduleName) $ concatMap (getUserImports . fieldType) structFields
-    imports = defaultImport : map (\m -> importTemplate{importModule = m}) types
+    mkTypeParam TypeParam{paramName} = UnkindedVar $ mkVar paramName
+    mkField Field{fieldName, fieldType} = ([mkVar fieldName], hsType fieldType)
+    ownFields = map mkField structFields
+    fields | Just base <- structBase = ([baseStructField], hsType base) : ownFields
+           | otherwise = ownFields
+    fieldModules = S.fromList $ concatMap (getTypeModules . fieldType) structFields
+    modules | Just base <- structBase = foldr S.insert fieldModules (getTypeModules base)
+            | otherwise = fieldModules
+    imports = defaultImport : map (\m -> importTemplate{importModule = m}) (S.toList $ S.delete moduleName modules)
 
 mkHaskellDecl _ _ = ("/dev/null", "empty")
 
-getUserImports :: Bond.Schema.Type -> [ModuleName]
-getUserImports (BT_UserDefined decl args) = mkModuleName (nsName $ head $ declNamespaces decl) (declName decl) : concatMap getUserImports args
-getUserImports (BT_Map key value) = getUserImports key ++ getUserImports value
-getUserImports (BT_List element) = getUserImports element
-getUserImports (BT_Vector element) = getUserImports element
-getUserImports (BT_Set element) = getUserImports element
-getUserImports (BT_Nullable element) = getUserImports element
-getUserImports (BT_Bonded element) = getUserImports element
-getUserImports _ = []
+getTypeModules :: Bond.Schema.Type -> [ModuleName]
+getTypeModules (BT_UserDefined decl args) = mkModuleName (nsName $ head $ declNamespaces decl) (declName decl) : concatMap getTypeModules args
+getTypeModules (BT_Map key value) = getTypeModules key ++ getTypeModules value
+getTypeModules (BT_List element) = getTypeModules element
+getTypeModules (BT_Vector element) = getTypeModules element
+getTypeModules (BT_Set element) = getTypeModules element
+getTypeModules (BT_Nullable element) = getTypeModules element
+getTypeModules (BT_Bonded element) = getTypeModules element
+getTypeModules _ = []
