@@ -45,7 +45,7 @@ import Data.Foldable (foldMap)
 import Data.Monoid
 import System.FilePath
 import Data.Text.Lazy.Builder
-import Text.Shakespeare.Text
+--import Text.Shakespeare.Text
 import Bond.Util
 
 type QualifiedName = [String]
@@ -59,7 +59,7 @@ takeNamespace = subtract 1 . length >>= take
 showQualifiedName  :: QualifiedName -> String
 showQualifiedName  = sepBy "." id
 
-data Modifier = Optional | Required | RequiredOptional deriving Eq
+data Modifier = Optional | Required | RequiredOptional deriving (Eq, Show)
 
 data Type =
     BT_Int8 | BT_Int16 | BT_Int32 | BT_Int64 |
@@ -79,7 +79,7 @@ data Type =
     BT_IntTypeArg Int |
     BT_TypeParam TypeParam |
     BT_UserDefined Declaration [Type]
-    deriving Eq
+    deriving (Eq, Show)
 
 scalarType BT_Int8 = True
 scalarType BT_Int16 = True
@@ -130,14 +130,14 @@ data Default =
     DefaultString String |
     DefaultEnum String|
     DefaultNothing
-    deriving Eq
+    deriving (Eq, Show)
 
 data Attribute =
     Attribute                                                                                                                               
         { attrName :: QualifiedName         -- attribute name
         , attrValue :: String               -- value
         }
-    deriving Eq
+    deriving (Eq, Show)
 
 data Field =
     Field
@@ -148,7 +148,7 @@ data Field =
         , fieldName :: String               -- field name
         , fieldDefault :: Maybe Default     -- optional default value
         }
-    deriving Eq
+    deriving (Eq, Show)
 
 makeField a o m t n d@(Just DefaultNothing) = Field a o m (BT_Maybe t) n d
 makeField a o m t n d = Field a o m t n d
@@ -158,22 +158,26 @@ data Constant =
         { constantName :: String            -- enum constant name
         , constantValue :: Maybe Int        -- optional value
         }
-    deriving Eq
+    deriving (Eq, Show)
 
-data Constraint = Value deriving Eq
+data Constraint = Value deriving (Eq, Show)
 
+{-
 instance Show Constraint where
     show Value = ": value"
+-}
 
 data TypeParam =
     TypeParam
         { paramName :: String
         , paramConstraint :: Maybe Constraint
         }
-        deriving Eq
+        deriving (Eq, Show)
 
+{-
 instance Show TypeParam where
     show TypeParam {..} = paramName ++ optional show paramConstraint
+-}
 
 data Declaration =
     Struct
@@ -204,8 +208,9 @@ data Declaration =
         , declParams :: [TypeParam]         -- type parameters for generics
         , aliasType :: Type                 -- aliased type
         }
-    deriving Eq
+    deriving (Eq, Show)
 
+{-
 showTypeParams = angles . sepBy ", " show
 
 instance Show Declaration where
@@ -213,6 +218,7 @@ instance Show Declaration where
     show Enum {..} = "enum " ++ declName
     show Forward {..} = "struct declaration " ++ declName ++ showTypeParams declParams
     show Alias {..} = "alias " ++ declName ++ showTypeParams declParams
+-}
 
 mapType :: (Type -> Type) -> Type -> Type
 mapType f (BT_UserDefined decl args) = BT_UserDefined decl $ map f args
@@ -259,14 +265,15 @@ isBaseField :: String -> Maybe Type -> Bool
 isBaseField name = getAny . optional (foldMapFields (Any.(name==).fieldName))
 
 data Import = Import FilePath
+    deriving Show
 
-data Language = Cpp | Cs | CSharp | Java deriving (Eq)
+data Language = Cpp | Cs | CSharp | Java | Haskell deriving (Eq, Show)
 
 data Namespace = 
     Namespace 
         { nsLanguage :: Maybe Language
         , nsName :: QualifiedName
         }
-        deriving Eq
+        deriving (Eq, Show)
 
 
