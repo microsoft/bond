@@ -9,7 +9,9 @@ module Bond.Internal (
     Word64,
     Map,
     ByteString,
-    HashSet
+    HashSet,
+    Vector,
+    Bonded
   ) where
 
 import Data.Int
@@ -17,3 +19,7 @@ import Data.Word
 import Data.Map
 import Data.ByteString
 import Data.HashSet
+import Data.Vector
+
+data Bonded a = Bonded a
+    deriving Show
