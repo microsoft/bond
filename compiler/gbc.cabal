@@ -43,6 +43,7 @@ cabal-version:      >=1.8
 
 
 executable gbc
+  ghc-options:      -Wall
   -- .hs or .lhs file containing the Main module.
   main-is:          Main.hs
   
@@ -58,4 +59,5 @@ executable gbc
                     cmdargs >= 0.10.10,
                     mtl >= 2.1,
                     directory >= 1.1,
-                    monad-loops >= 0.4
+                    monad-loops >= 0.4,
+                    haskell-src-exts >= 1.15
