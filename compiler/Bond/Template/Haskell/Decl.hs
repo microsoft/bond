@@ -61,6 +61,12 @@ parenIntLit :: Integral a => a -> Exp
 parenIntLit n | n >= 0 = intLit n
 parenIntLit n = Paren $ intLit n
 
+declTypeInfo :: Declaration -> (QualifiedName, String)
+declTypeInfo decl = (nsName $ head $ declNamespaces decl, declName decl)
+
+declModule :: Declaration -> ModuleName
+declModule = uncurry mkModuleName . declTypeInfo
+
 -- C# type mapping
 hsType :: Bond.Schema.Type -> Language.Haskell.Exts.Type
 hsType BT_Int8 = tyInt "Int8"
@@ -89,8 +95,8 @@ hsType (BT_Map key value) = TyApp (TyApp (tyInt "Map") (hsType key)) (hsType val
 hsType (BT_Bonded type_) = TyApp (tyInt "Bonded") (hsType type_)
 hsType (BT_TypeParam type_) = TyVar $ mkVar $ paramName type_
 hsType (BT_UserDefined Alias {..} _) = error "BT_UserDefined Alias"
-hsType (BT_UserDefined decl []) = tyQualCon (nsName $ head $ declNamespaces decl) (declName decl)
-hsType (BT_UserDefined decl params) = TyApp (tyQualCon (nsName $ head $ declNamespaces decl) (declName decl)) $ foldr1 TyApp $ map hsType params
+hsType (BT_UserDefined decl []) = uncurry tyQualCon $ declTypeInfo decl
+hsType (BT_UserDefined decl params) = TyApp (uncurry tyQualCon $ declTypeInfo decl) $ foldr1 TyApp $ map hsType params
 
 importTemplate :: ImportDecl
 importTemplate = ImportDecl {
@@ -121,9 +127,6 @@ mkModuleName ns t = ModuleName $ intercalate "." $ convertNamespace ns ++ [conve
 
 mkFileName :: QualifiedName -> String -> FilePath
 mkFileName ns t = foldr1 (</>) (convertNamespace ns) </> (convertTypeName t ++ ".hs")
-
---declModule :: Declaration -> ModuleName
---declModule t = mkModuleName (nsName $ head $ declNamespaces t) (declName t)
 
 mkHaskellDecl :: Bond.Template.TypeMapping.Context -> Declaration -> (FilePath, String)
 mkHaskellDecl mapping e@Enum{..} = (filename, prettyPrint code)
@@ -189,13 +192,11 @@ mkDefaultValue Field{fieldName, fieldType, fieldDefault} = FieldUpdate (UnQual $
     defValue (Just (DefaultFloat v)) = floatLit v
     defValue (Just (DefaultString v)) = App (Var $ qualInt "pack") (Lit $ String v)
     defValue (Just (DefaultEnum v)) = let BT_UserDefined decl [] = fieldType
-                                          m = nsName $ head $ declNamespaces decl
-                                          t = declName decl
-                                       in Var $ Qual (mkModuleName m t) (mkVar v)
+                                       in Var $ Qual (declModule decl) (mkVar v)
     defValue (Just DefaultNothing) = Con $ UnQual $ Ident "Nothing"
 
 getTypeModules :: Bond.Schema.Type -> [ModuleName]
-getTypeModules (BT_UserDefined decl args) = mkModuleName (nsName $ head $ declNamespaces decl) (declName decl) : concatMap getTypeModules args
+getTypeModules (BT_UserDefined decl args) = declModule decl : concatMap getTypeModules args
 getTypeModules (BT_Map key value) = getTypeModules key ++ getTypeModules value
 getTypeModules (BT_List element) = getTypeModules element
 getTypeModules (BT_Vector element) = getTypeModules element
