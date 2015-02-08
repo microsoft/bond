@@ -80,8 +80,8 @@ hsType BT_UInt64 = tyInt "Word64"
 hsType BT_Float = tyInt "Float"
 hsType BT_Double = tyInt "Double"
 hsType BT_Bool = tyInt "Bool"
-hsType BT_String = tyInt "ByteString"
-hsType BT_WString = tyInt "ByteString"
+hsType BT_String = tyInt "Utf8"
+hsType BT_WString = tyInt "Utf16"
 hsType BT_MetaName = error "BT_MetaName" -- tyCon "String"
 hsType BT_MetaFullName = error "BT_MetaFullName" -- tyCon "String"
 hsType BT_Blob = tyInt "ByteString"
@@ -190,7 +190,7 @@ mkDefaultValue Field{fieldName, fieldType, fieldDefault} = FieldUpdate (UnQual $
     defValue (Just (DefaultBool v)) = Con $ UnQual $ Ident $ show v
     defValue (Just (DefaultInteger v)) = intLit v
     defValue (Just (DefaultFloat v)) = floatLit v
-    defValue (Just (DefaultString v)) = App (Var $ qualInt "pack") (Lit $ String v)
+    defValue (Just (DefaultString v)) = App (Var $ qualInt "fromString") (Lit $ String v)
     defValue (Just (DefaultEnum v)) = let BT_UserDefined decl [] = fieldType
                                        in Var $ Qual (declModule decl) (mkVar v)
     defValue (Just DefaultNothing) = Con $ UnQual $ Ident "Nothing"
