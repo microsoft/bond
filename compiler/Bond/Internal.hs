@@ -9,6 +9,7 @@ module Bond.Internal (
     Word64,
     M.Map,
     BS.ByteString,
+    BS.pack,
     H.HashSet,
     V.Vector,
     Bonded,
@@ -18,7 +19,7 @@ module Bond.Internal (
 import Data.Int
 import Data.Word
 import qualified Data.Map as M
-import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BS
 import qualified Data.HashSet as H
 import qualified Data.Vector as V
 
