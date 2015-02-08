@@ -1,4 +1,5 @@
 module Bond.Internal (
+    Int,
     Int8,
     Int16,
     Int32,
@@ -7,6 +8,10 @@ module Bond.Internal (
     Word16,
     Word32,
     Word64,
+    Double,
+    Float,
+    Bool,
+    Maybe,
     M.Map,
     BS.ByteString,
     BS.pack,

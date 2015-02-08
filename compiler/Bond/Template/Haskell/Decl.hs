@@ -37,8 +37,8 @@ mkIdent = Ident . capitalize
 mkVar :: String -> Name
 mkVar = Ident . uncapitalize
 
-tyCon :: String -> Language.Haskell.Exts.Type
-tyCon = TyCon . UnQual . mkIdent
+-- tyCon :: String -> Language.Haskell.Exts.Type
+-- tyCon = TyCon . UnQual . mkIdent
 
 tyQualCon :: QualifiedName -> String -> Language.Haskell.Exts.Type
 tyQualCon m t = TyCon $ Qual (mkModuleName m t) (mkIdent t)
@@ -71,9 +71,9 @@ hsType BT_UInt8 = tyInt "Word8"
 hsType BT_UInt16 = tyInt "Word16"
 hsType BT_UInt32 = tyInt "Word32"
 hsType BT_UInt64 = tyInt "Word64"
-hsType BT_Float = tyCon "Float"
-hsType BT_Double = tyCon "Double"
-hsType BT_Bool = tyCon "Bool"
+hsType BT_Float = tyInt "Float"
+hsType BT_Double = tyInt "Double"
+hsType BT_Bool = tyInt "Bool"
 hsType BT_String = tyInt "ByteString"
 hsType BT_WString = tyInt "ByteString"
 hsType BT_MetaName = error "BT_MetaName" -- tyCon "String"
@@ -81,7 +81,7 @@ hsType BT_MetaFullName = error "BT_MetaFullName" -- tyCon "String"
 hsType BT_Blob = tyInt "ByteString"
 hsType (BT_IntTypeArg _) = error "BT_IntTypeArg"
 hsType (BT_Maybe type_) = hsType (BT_Nullable type_)
-hsType (BT_Nullable element) = TyApp (tyCon "Maybe") (hsType element)
+hsType (BT_Nullable element) = TyApp (tyInt "Maybe") (hsType element)
 hsType (BT_List element) = TyList $ hsType element
 hsType (BT_Vector element) = TyApp (tyInt "Vector") (hsType element)
 hsType (BT_Set element) = TyApp (tyInt "HashSet") (hsType element)
@@ -135,7 +135,7 @@ mkHaskellDecl mapping e@Enum{..} = (filename, prettyPrint code)
     code = Module noLoc moduleName [] Nothing Nothing [defaultImport] decls
     decls = dataDecl : defaultDecl : typesig : values
     dataDecl = DataDecl noLoc NewType [] typeName []
-                [QualConDecl noLoc [] [] (ConDecl typeName [TyCon $ UnQual $ Ident "Int"])]
+                [QualConDecl noLoc [] [] (ConDecl typeName [tyInt "Int"])]
                 [(UnQual $ Ident "Show", []), (UnQual $ Ident "Eq", []), (UnQual $ Ident "Ord", [])]
     defaultDecl = defaultInstance typeName e
     typesig = TypeSig noLoc (map (mkVar . constantName) enumConstants) (TyCon $ UnQual typeName)
