@@ -3,6 +3,7 @@
 module Bond.Template.Haskell.Decl (mkHaskellDecl) where
 
 import Data.Char
+import Data.Maybe
 import Data.List (intercalate, mapAccumL)
 import Language.Haskell.Exts
 import Language.Haskell.Exts.SrcLoc
@@ -39,8 +40,11 @@ mkVar = Ident . uncapitalize
 tyCon :: String -> Language.Haskell.Exts.Type
 tyCon = TyCon . UnQual . mkIdent
 
+qualInt :: String -> QName
+qualInt = Qual internalModule . Ident
+
 tyInt :: String -> Language.Haskell.Exts.Type
-tyInt = TyCon . Qual internalModule . mkIdent
+tyInt = TyCon . qualInt
 
 intLit :: Integral a => a -> Exp
 intLit n | n >= 0 = Lit $ Int $ fromIntegral n
@@ -112,17 +116,18 @@ mkFileName ns t = foldr1 (</>) (convertNamespace ns) </> (convertTypeName t ++ "
 --declModule t = mkModuleName (nsName $ head $ declNamespaces t) (declName t)
 
 mkHaskellDecl :: Bond.Template.TypeMapping.Context -> Declaration -> (FilePath, String)
-mkHaskellDecl mapping Enum{..} = (filename, prettyPrint code)
+mkHaskellDecl mapping e@Enum{..} = (filename, prettyPrint code)
     where
     namespace = getIdlNamespace mapping
     filename = mkFileName namespace declName
     moduleName = mkModuleName namespace declName
     typeName = Ident $ convertTypeName declName
-    code = Module noLoc moduleName [] Nothing Nothing [] decls
-    decls = datadecl : typesig : values
-    datadecl = DataDecl noLoc NewType [] typeName []
+    code = Module noLoc moduleName [] Nothing Nothing [defaultImport] decls
+    decls = dataDecl : defaultDecl : typesig : values
+    dataDecl = DataDecl noLoc NewType [] typeName []
                 [QualConDecl noLoc [] [] (ConDecl typeName [TyCon $ UnQual $ Ident "Int"])]
                 [(UnQual $ Ident "Show", []), (UnQual $ Ident "Eq", []), (UnQual $ Ident "Ord", [])]
+    defaultDecl = defaultInstance typeName e
     typesig = TypeSig noLoc (map (mkVar . constantName) enumConstants) (TyCon $ UnQual typeName)
     values = let mkval _ Constant{constantName, constantValue = Just i} = (i + 1, (constantName, i))
                  mkval i Constant{constantName} = (i + 1, (constantName, i))
@@ -137,8 +142,8 @@ mkHaskellDecl mapping s@Struct{..} = traceShow s (filename, prettyPrint code)
     moduleName = mkModuleName namespace declName
     typeName = Ident $ convertTypeName declName
     code = Module noLoc moduleName [] Nothing Nothing imports decls
-    decls = datadecl : []
-    datadecl = DataDecl noLoc DataType [] typeName typeParams [QualConDecl noLoc [] [] (RecDecl typeName fields)] [(UnQual (Ident "Show"),[])]
+    decls = [dataDecl, defaultDecl]
+    dataDecl = DataDecl noLoc DataType [] typeName typeParams [QualConDecl noLoc [] [] (RecDecl typeName fields)] [(UnQual (Ident "Show"),[])]
     typeParams = map mkTypeParam declParams
     -- FIXME see if type params T and t accepted in C++/C#, make smart conversion to t/t'
     mkTypeParam TypeParam{paramName} = UnkindedVar $ mkVar paramName
@@ -149,12 +154,30 @@ mkHaskellDecl mapping s@Struct{..} = traceShow s (filename, prettyPrint code)
     fieldModules = S.fromList $ concatMap (getTypeModules . fieldType) structFields
     modules | Just base <- structBase = foldr S.insert fieldModules (getTypeModules base)
             | otherwise = fieldModules
-    imports = defaultImport : map (\m -> importTemplate{importModule = m}) (S.toList $ S.delete moduleName modules)
+    imports = defaultImport : map (\(m, sp) -> importTemplate{importModule = m, importSpecs = Just (False, [sp])}) (filter (\(m, _) -> m /= moduleName) $ S.toList modules)
+    defaultDecl = defaultInstance typeName s
 
 mkHaskellDecl _ _ = ("/dev/null", "empty")
 
-getTypeModules :: Bond.Schema.Type -> [ModuleName]
-getTypeModules (BT_UserDefined decl args) = mkModuleName (nsName $ head $ declNamespaces decl) (declName decl) : concatMap getTypeModules args
+defaultInstance :: Name -> Declaration -> Decl
+defaultInstance typeName Enum{} = InstDecl noLoc Nothing [] [] (qualInt "Default") [TyCon $ UnQual typeName] [InsDecl $ PatBind noLoc (PVar $ Ident "defaultValue") (UnGuardedRhs $ App (Con $ UnQual typeName) (intLit (0 :: Int))) (BDecls [])]
+defaultInstance typeName Struct{declParams, structBase, structFields} = InstDecl noLoc Nothing [] constraints (qualInt "Default") [typeId] [InsDecl $ PatBind noLoc (PVar $ Ident "defaultValue") (UnGuardedRhs $ RecConstr (UnQual typeName) defaults) (BDecls [])]
+    where
+    constraints = map (\t -> ClassA (qualInt "Default") [TyVar $ mkVar $ paramName t]) declParams
+    typeExpr = foldl (\v t -> TyApp v (TyVar $ mkVar $ paramName t)) (TyCon $ UnQual typeName) declParams
+    typeId = if null declParams then typeExpr else TyParen typeExpr
+    fields = map mkDefaultValue structFields
+    defaults = if isNothing structBase then fields else FieldUpdate (UnQual baseStructField) (Var $ qualInt "defaultValue") : fields
+defaultInstance _ _ = error "defaultInstance not implemented"
+
+mkDefaultValue :: Bond.Schema.Field -> FieldUpdate
+mkDefaultValue Field{..} | isNothing fieldDefault = FieldUpdate (UnQual $ mkVar fieldName) (Var $ qualInt "defaultValue")
+mkDefaultValue Field{..} = FieldUpdate (UnQual $ mkVar fieldName) (Var $ qualInt "defaultValue")
+
+getTypeModules :: Bond.Schema.Type -> [(ModuleName, ImportSpec)]
+getTypeModules (BT_UserDefined decl args) = let modname = mkModuleName (nsName $ head $ declNamespaces decl) (declName decl) 
+                                                spec = IAbs $ mkIdent $ declName decl
+                                             in (modname, spec) : concatMap getTypeModules args
 getTypeModules (BT_Map key value) = getTypeModules key ++ getTypeModules value
 getTypeModules (BT_List element) = getTypeModules element
 getTypeModules (BT_Vector element) = getTypeModules element
