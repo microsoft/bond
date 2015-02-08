@@ -40,15 +40,26 @@ mkVar = Ident . uncapitalize
 tyCon :: String -> Language.Haskell.Exts.Type
 tyCon = TyCon . UnQual . mkIdent
 
+tyQualCon :: QualifiedName -> String -> Language.Haskell.Exts.Type
+tyQualCon m t = TyCon $ Qual (mkModuleName m t) (mkIdent t)
+
 qualInt :: String -> QName
 qualInt = Qual internalModule . Ident
 
 tyInt :: String -> Language.Haskell.Exts.Type
 tyInt = TyCon . qualInt
 
+floatLit :: Real a => a -> Exp
+floatLit n | n >= 0 = Lit $ Frac $ toRational n
+floatLit n = NegApp $ floatLit $ abs n
+
 intLit :: Integral a => a -> Exp
 intLit n | n >= 0 = Lit $ Int $ fromIntegral n
-intLit n = Paren $ NegApp $ intLit $ abs n
+intLit n = NegApp $ intLit $ abs n
+
+parenIntLit :: Integral a => a -> Exp
+parenIntLit n | n >= 0 = intLit n
+parenIntLit n = Paren $ intLit n
 
 -- C# type mapping
 hsType :: Bond.Schema.Type -> Language.Haskell.Exts.Type
@@ -78,14 +89,14 @@ hsType (BT_Map key value) = TyApp (TyApp (tyInt "Map") (hsType key)) (hsType val
 hsType (BT_Bonded type_) = TyApp (tyInt "Bonded") (hsType type_)
 hsType (BT_TypeParam type_) = TyVar $ mkVar $ paramName type_
 hsType (BT_UserDefined Alias {..} _) = error "BT_UserDefined Alias"
-hsType (BT_UserDefined decl []) = tyCon $ declName decl
-hsType (BT_UserDefined decl params) = TyApp (tyCon $ declName decl) $ foldr1 TyApp $ map hsType params
+hsType (BT_UserDefined decl []) = tyQualCon (nsName $ head $ declNamespaces decl) (declName decl)
+hsType (BT_UserDefined decl params) = TyApp (tyQualCon (nsName $ head $ declNamespaces decl) (declName decl)) $ foldr1 TyApp $ map hsType params
 
 importTemplate :: ImportDecl
 importTemplate = ImportDecl {
                     importLoc = noLoc,
                     importModule = undefined,
-                    importQualified = False,
+                    importQualified = True,
                     importSrc = False,
                     importSafe = False,
                     importPkg = Nothing,
@@ -96,7 +107,6 @@ importTemplate = ImportDecl {
 defaultImport :: ImportDecl
 defaultImport = importTemplate {
                     importModule = ModuleName "Bond.Internal",
-                    importQualified = True,
                     importAs = Just internalModule
                 }
 
@@ -133,7 +143,7 @@ mkHaskellDecl mapping e@Enum{..} = (filename, prettyPrint code)
                  mkval i Constant{constantName} = (i + 1, (constantName, i))
                  constVals = snd $ mapAccumL mkval 0 enumConstants
               in map mkConst constVals
-    mkConst (constName, val) = PatBind noLoc (PVar $ mkVar constName) (UnGuardedRhs $ App (Con $ UnQual typeName) (intLit val)) (BDecls [])
+    mkConst (constName, val) = PatBind noLoc (PVar $ mkVar constName) (UnGuardedRhs $ App (Con $ UnQual typeName) (parenIntLit val)) (BDecls [])
 
 mkHaskellDecl mapping s@Struct{..} = traceShow s (filename, prettyPrint code)
     where
@@ -154,7 +164,7 @@ mkHaskellDecl mapping s@Struct{..} = traceShow s (filename, prettyPrint code)
     fieldModules = S.fromList $ concatMap (getTypeModules . fieldType) structFields
     modules | Just base <- structBase = foldr S.insert fieldModules (getTypeModules base)
             | otherwise = fieldModules
-    imports = defaultImport : map (\(m, sp) -> importTemplate{importModule = m, importSpecs = Just (False, [sp])}) (filter (\(m, _) -> m /= moduleName) $ S.toList modules)
+    imports = defaultImport : map (\m -> importTemplate{importModule = m}) (S.toList $ S.delete moduleName modules)
     defaultDecl = defaultInstance typeName s
 
 mkHaskellDecl _ _ = ("/dev/null", "empty")
@@ -171,13 +181,21 @@ defaultInstance typeName Struct{declParams, structBase, structFields} = InstDecl
 defaultInstance _ _ = error "defaultInstance not implemented"
 
 mkDefaultValue :: Bond.Schema.Field -> FieldUpdate
-mkDefaultValue Field{..} | isNothing fieldDefault = FieldUpdate (UnQual $ mkVar fieldName) (Var $ qualInt "defaultValue")
-mkDefaultValue Field{..} = FieldUpdate (UnQual $ mkVar fieldName) (Var $ qualInt "defaultValue")
+mkDefaultValue Field{fieldName, fieldType, fieldDefault} = FieldUpdate (UnQual $ mkVar fieldName) (defValue fieldDefault)
+    where
+    defValue Nothing = Var $ qualInt "defaultValue"
+    defValue (Just (DefaultBool v)) = Con $ UnQual $ Ident $ show v
+    defValue (Just (DefaultInteger v)) = intLit v
+    defValue (Just (DefaultFloat v)) = floatLit v
+    defValue (Just (DefaultString v)) = App (Var $ qualInt "pack") (Lit $ String v)
+    defValue (Just (DefaultEnum v)) = let BT_UserDefined decl [] = fieldType
+                                          m = nsName $ head $ declNamespaces decl
+                                          t = declName decl
+                                       in Var $ Qual (mkModuleName m t) (mkVar v)
+    defValue (Just DefaultNothing) = Con $ UnQual $ Ident "Nothing"
 
-getTypeModules :: Bond.Schema.Type -> [(ModuleName, ImportSpec)]
-getTypeModules (BT_UserDefined decl args) = let modname = mkModuleName (nsName $ head $ declNamespaces decl) (declName decl) 
-                                                spec = IAbs $ mkIdent $ declName decl
-                                             in (modname, spec) : concatMap getTypeModules args
+getTypeModules :: Bond.Schema.Type -> [ModuleName]
+getTypeModules (BT_UserDefined decl args) = mkModuleName (nsName $ head $ declNamespaces decl) (declName decl) : concatMap getTypeModules args
 getTypeModules (BT_Map key value) = getTypeModules key ++ getTypeModules value
 getTypeModules (BT_List element) = getTypeModules element
 getTypeModules (BT_Vector element) = getTypeModules element
