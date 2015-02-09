@@ -84,7 +84,7 @@ hsType BT_String = tyInt "Utf8"
 hsType BT_WString = tyInt "Utf16"
 hsType BT_MetaName = error "BT_MetaName" -- tyCon "String"
 hsType BT_MetaFullName = error "BT_MetaFullName" -- tyCon "String"
-hsType BT_Blob = tyInt "ByteString"
+hsType BT_Blob = tyInt "Blob"
 hsType (BT_IntTypeArg _) = error "BT_IntTypeArg"
 hsType (BT_Maybe type_) = hsType (BT_Nullable type_)
 hsType (BT_Nullable element) = TyApp (tyInt "Maybe") (hsType element)
@@ -136,11 +136,13 @@ mkHaskellDecl mapping e@Enum{..} = (filename, prettyPrint code)
     moduleName = mkModuleName namespace declName
     typeName = Ident $ convertTypeName declName
     code = Module noLoc moduleName [] Nothing Nothing [defaultImport] decls
-    decls = dataDecl : defaultDecl : typesig : values
+    decls = dataDecl : defaultDecl : wiretypeDecl : fastBinaryDecl : typesig : values
     dataDecl = DataDecl noLoc NewType [] typeName []
-                [QualConDecl noLoc [] [] (ConDecl typeName [tyInt "Int"])]
+                [QualConDecl noLoc [] [] (ConDecl typeName [tyInt "Int32"])]
                 [(UnQual $ Ident "Show", []), (UnQual $ Ident "Eq", []), (UnQual $ Ident "Ord", [])]
     defaultDecl = defaultInstance typeName e
+    wiretypeDecl = wiretypeInstance typeName "BT_INT32" e
+    fastBinaryDecl = InstDecl noLoc Nothing [] [] (qualInt "FastBinary") [TyCon $ UnQual typeName] [InsDecl (FunBind [Match noLoc (Ident "fastBinaryPut") [PParen (PApp (UnQual typeName) [PVar $ Ident "v"])] Nothing (UnGuardedRhs (App (Var $ qualInt "putInt32le") (Var $ UnQual $ Ident "v"))) (BDecls [])])]
     typesig = TypeSig noLoc (map (mkVar . constantName) enumConstants) (TyCon $ UnQual typeName)
     values = let mkval _ Constant{constantName, constantValue = Just i} = (i + 1, (constantName, i))
                  mkval i Constant{constantName} = (i + 1, (constantName, i))
@@ -194,6 +196,10 @@ mkDefaultValue Field{fieldName, fieldType, fieldDefault} = FieldUpdate (UnQual $
     defValue (Just (DefaultEnum v)) = let BT_UserDefined decl [] = fieldType
                                        in Var $ Qual (declModule decl) (mkVar v)
     defValue (Just DefaultNothing) = Con $ UnQual $ Ident "Nothing"
+
+wiretypeInstance :: Name -> String -> Declaration -> Decl
+wiretypeInstance typeName wireType Enum{} = InstDecl noLoc Nothing [] [] (qualInt "WireType") [TyCon $ UnQual typeName] [InsDecl $ FunBind [Match noLoc (Ident "getWireType") [PWildCard] Nothing (UnGuardedRhs (Con $ qualInt wireType)) (BDecls [])]]
+
 
 getTypeModules :: Bond.Schema.Type -> [ModuleName]
 getTypeModules (BT_UserDefined decl args) = declModule decl : concatMap getTypeModules args

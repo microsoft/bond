@@ -15,7 +15,7 @@ module Bond.Types (
     Bonded(..),
     Utf8(..),
     Utf16(..),
-    BS.ByteString,
+    Blob(..),
     H.HashSet,
     M.Map,
     V.Vector,
@@ -38,6 +38,9 @@ newtype Utf8 = Utf8 BS.ByteString
     deriving Show
 
 newtype Utf16 = Utf16 BS.ByteString
+    deriving Show
+
+newtype Blob = Blob BS.ByteString
     deriving Show
 
 class EncodedString a where
