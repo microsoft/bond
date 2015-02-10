@@ -9,13 +9,13 @@ install:
 
         #$env:Path += ";${env:ProgramFiles}\7-Zip"
 
-        if (!(Test-Path boost_1_57_0.7z)) {
+        #if (!(Test-Path boost_1_57_0.7z)) {
 
-            echo "Downloading Boost 1.57 ..."
+        #    echo "Downloading Boost 1.57 ..."
 
-            appveyor DownloadFile "http://softlayer-dal.dl.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.7z" -Timeout 1200000
+        #    appveyor DownloadFile "http://softlayer-dal.dl.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.7z" -Timeout 1200000
 
-        }
+        #}
 
         #echo "Extracting Boost..."
 
