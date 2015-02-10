@@ -1,7 +1,10 @@
 {-# LANGUAGE FlexibleContexts, ScopedTypeVariables #-}
 module Bond.FastBinary (
     FastBinary(..),
-    FastBinaryM
+    FastBinaryM,
+    putInt32le,
+    putStopBase,
+    putField
   ) where
 
 import Bond.Types
@@ -90,7 +93,8 @@ instance (FastBinary a, WireType a) => FastBinary (Vector a) where
         putWord8 $ wireType (undefined :: a)
         putVarInt $ V.length xs
         V.mapM_ fastBinaryPut xs
---instance FastBinary a => Default (Bonded a) where defaultValue = Bonded defaultValue
+instance FastBinary a => FastBinary (Bonded a) where
+    fastBinaryPut (Bonded v) = fastBinaryPut v
 
 {-
 {-# INLINE wordToFloat #-}
@@ -127,3 +131,17 @@ putVarInt i = do
     let iLow = fromIntegral $ i .&. 0x7F
     putWord8 $ iLow .|. 0x80
     putVarInt $ i `shiftR` 7
+
+putInt32le :: Int32 -> FastBinaryM
+putInt32le = putWord32le . fromIntegral
+
+putStopBase :: FastBinaryM
+putStopBase = putWord8 $ fromIntegral $ fromEnum BT_STOP_BASE
+
+putField :: (FastBinary t, WireType t) => Word16 -> t -> FastBinaryM
+putField n f = do
+    let t = getWireType f
+    putWord8 $ fromIntegral $ fromEnum t
+    putWord16le n
+    fastBinaryPut f
+    when (t == BT_STRUCT) $ putWord8 $ fromIntegral $ fromEnum BT_STOP

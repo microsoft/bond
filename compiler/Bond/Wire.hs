@@ -25,7 +25,7 @@ data ItemType =
     | BT_INT32
     | BT_INT64
     | BT_WSTRING
-    deriving (Show, Enum)
+    deriving (Show, Enum, Eq)
 
 class WireType a where
     getWireType :: a -> ItemType
@@ -41,12 +41,12 @@ instance WireType Word8 where getWireType _ = BT_UINT8
 instance WireType Word16 where getWireType _ = BT_UINT16
 instance WireType Word32 where getWireType _ = BT_UINT32
 instance WireType Word64 where getWireType _ = BT_UINT64
---instance WireType (Maybe a) where getWireType _ = Nothing
+instance WireType (Maybe a) where getWireType _ = BT_LIST
 instance WireType [a] where getWireType _ = BT_LIST
---instance WireType ByteString where getWireType _ = 
+instance WireType Blob where getWireType _ = BT_LIST
 instance WireType Utf8 where getWireType _ = BT_STRING
 instance WireType Utf16 where getWireType _ = BT_WSTRING
 instance WireType (Map a b) where getWireType _ = BT_MAP
 instance WireType (HashSet a) where getWireType _ = BT_SET
---instance WireType (Vector a) where getWireType _ = V.empty
---instance WireType a _ => WireType (Bonded a) where getWireType = Bonded defaultValue
+instance WireType (Vector a) where getWireType _ = BT_LIST
+instance WireType (Bonded a) where getWireType _ = BT_STRUCT
