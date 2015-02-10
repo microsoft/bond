@@ -161,7 +161,7 @@ namespace Bond
 
         internal static ArraySegment<byte> Marshal(IBonded bonded)
         {
-            var output = new OutputBuffer();
+            var output = new OutputBuffer(4096);
             var writer = new CompactBinaryWriter<OutputBuffer>(output);
 
             writer.WriteVersion();
