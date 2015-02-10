@@ -224,9 +224,7 @@ namespace Bond.IO.Safe
             length += length >> 1;
             if (length < minLength) length = minLength;
 
-            var oldBuffer = buffer;
-            buffer = new byte[length];
-            Buffer.BlockCopy(oldBuffer, 0, buffer, 0, position);
+            Array.Resize(ref buffer, length);
         }
 
         #region layouts
