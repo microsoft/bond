@@ -30,6 +30,7 @@ data Options
         , allocator :: Maybe String
         , apply :: [ApplyOptions]
         , apply_attribute :: Maybe String
+        , jobs :: Maybe Int
         }
     | Cs 
         { files :: [FilePath]
@@ -40,6 +41,7 @@ data Options
         , collection_interfaces :: Bool
         , readonly_properties :: Bool
         , fields :: Bool
+        , jobs :: Maybe Int
         }
       deriving (Show, Data, Typeable)
 
@@ -54,6 +56,7 @@ cpp = Cpp
     , allocator = def &= typ "ALLOCATOR" &= help "Generate types using the specified  allocator"
     , apply = def &= typ "PROTOCOL" &= help "Generate Apply function overloads for the specified protocol only; supported protocols: compact, fast and simple"
     , apply_attribute = def &= typ "ATTRIBUTE" &= help "Prefix the declarations of Apply functions with the specified C++ attribute/declspec"
+    , jobs = def &= opt "0" &= typ "NUM" &= help "Run NUM jobs simultaneously (or '$ncpus' if no NUM is not given)"
     } &= 
     name "c++" &=    
     help "Generate C++ code" 

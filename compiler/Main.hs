@@ -13,6 +13,8 @@ import Data.Monoid
 import Control.Monad
 import Control.Monad.Reader
 import Control.Monad.Loops (firstM)
+import Control.Concurrent.Async
+import GHC.Conc (getNumProcessors, setNumCapabilities)
 import qualified Data.Text.Lazy.IO as L
 import Bond.Parser
 import Bond.Template.Util
@@ -31,10 +33,20 @@ main :: IO()
 main = do
     args <- getArgs
     options <- (if null args then withArgs ["--help"] else id) getOptions
+    setJobs $ jobs options
     case options of
         Cpp {..}    -> cppCodegen options
         Cs {..}     -> csCodegen options
         _           -> print options
+
+setJobs Nothing = return ()
+setJobs (Just n)
+    | n > 0 = setNumCapabilities n
+    | otherwise = do
+        numProc <- getNumProcessors
+        setNumCapabilities $ max 1 (numProc + n)
+
+concurrentlyFor_ = (void .) . flip mapConcurrently
 
 cppCodegen :: Options -> IO()
 cppCodegen (Cpp {..}) = do
@@ -44,7 +56,7 @@ cppCodegen (Cpp {..}) = do
             Nothing -> cppTypeMapping
             Just a -> cppCustomAllocTypeMapping a
     let mappingContext = newMappingContext typeMapping aliasMapping namespaceMapping []
-    forM_ files $ codeGen output_dir import_dir mappingContext $ 
+    concurrentlyFor_ files $ codeGen output_dir import_dir mappingContext $
         [ reflection_h
         , types_cpp
         , types_h header enum_header allocator
@@ -68,7 +80,7 @@ csCodegen (Cs {..}) = do
     namespaceMapping <- parseNamespaceMapping namespace
     let typeMapping = if collection_interfaces then csInterfaceTypeMapping else csTypeMapping
     let mappingContext = newMappingContext typeMapping aliasMapping namespaceMapping []
-    forM_ files $ codeGen output_dir import_dir mappingContext 
+    concurrentlyFor_ files $ codeGen output_dir import_dir mappingContext 
         [ types_cs readonly_properties fields
         ]
 
