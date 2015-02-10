@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts, ScopedTypeVariables #-}
 module Bond.FastBinary (
     FastBinary(..),
-    FastBinaryM,
     putInt32le,
     putStopBase,
     putField
@@ -14,16 +13,17 @@ import Control.Monad.ST (runST, ST)
 import Data.Array.ST (newArray, readArray, MArray, STUArray)
 import Data.Array.Unsafe (castSTUArray)
 import Data.Binary.Put
+import Data.Binary.Get
 import Data.Bits
 import qualified Data.ByteString as BS
 import qualified Data.HashSet as H
 import qualified Data.Map as M
 import qualified Data.Vector as V
 
-type FastBinaryM = Put
+type FastBinaryPutM = Put
 
 class FastBinary a where
-    fastBinaryPut :: a -> FastBinaryM
+    fastBinaryPut :: a -> FastBinaryPutM
 
 instance FastBinary Bool where
     fastBinaryPut v = if v then putWord8 1 else putWord8 0
@@ -124,7 +124,7 @@ cast x = newArray (0 :: Int, 0) x >>= castSTUArray >>= flip readArray 0
 wireType :: WireType a => a -> Word8
 wireType = fromIntegral . fromEnum . getWireType
 
-putVarInt :: Int -> FastBinaryM
+putVarInt :: Int -> FastBinaryPutM
 putVarInt i | i < 0 = error "putVarInt called with negative value"
 putVarInt i | i < 128 = putWord8 $ fromIntegral i
 putVarInt i = do
@@ -132,13 +132,13 @@ putVarInt i = do
     putWord8 $ iLow .|. 0x80
     putVarInt $ i `shiftR` 7
 
-putInt32le :: Int32 -> FastBinaryM
+putInt32le :: Int32 -> FastBinaryPutM
 putInt32le = putWord32le . fromIntegral
 
-putStopBase :: FastBinaryM
+putStopBase :: FastBinaryPutM
 putStopBase = putWord8 $ fromIntegral $ fromEnum BT_STOP_BASE
 
-putField :: (FastBinary t, WireType t) => Word16 -> t -> FastBinaryM
+putField :: (FastBinary t, WireType t) => Word16 -> t -> FastBinaryPutM
 putField n f = do
     let t = getWireType f
     putWord8 $ fromIntegral $ fromEnum t
