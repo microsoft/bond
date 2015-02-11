@@ -226,7 +226,10 @@ fastBinaryInstance :: Name -> Declaration -> Decl
 fastBinaryInstance typeName Enum{} = InstDecl noLoc Nothing [] []
     (qualInt "FastBinary")
     [TyCon $ UnQual typeName]
-    [InsDecl (FunBind [Match noLoc (Ident "fastBinaryPut") [PParen (PApp (UnQual typeName) [PVar $ Ident "v"])] Nothing (UnGuardedRhs (App (Var $ qualInt "putInt32le") (Var $ UnQual $ Ident "v"))) (BDecls [])])]
+    [
+        InsDecl $ FunBind [Match noLoc (Ident "fastBinaryPut") [PParen (PApp (UnQual typeName) [PVar $ Ident "v"])] Nothing (UnGuardedRhs (App (Var $ qualInt "putInt32le") (Var $ UnQual $ Ident "v"))) (BDecls [])],
+        InsDecl $ PatBind noLoc (PVar $ Ident "fastBinaryGet") (UnGuardedRhs (App (App (Var $ UnQual $ Ident "fmap") (Con $ UnQual typeName)) (Var $ qualInt "getInt32le"))) (BDecls [])
+    ]
 
 fastBinaryInstance typeName Struct{declParams, structFields, structBase} = InstDecl noLoc Nothing [] constraints
     (qualInt "FastBinary")

@@ -1,9 +1,10 @@
 {-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf #-}
 module Bond.FastBinary (
     FastBinary(..),
+    getInt32le,
+    putField,
     putInt32le,
-    putStopBase,
-    putField
+    putStopBase
   ) where
 
 import Bond.Types
@@ -212,6 +213,9 @@ getVarInt = step 0
 
 putInt32le :: Int32 -> FastBinaryPutM
 putInt32le = putWord32le . fromIntegral
+
+getInt32le :: FastBinaryGetM Int32
+getInt32le = fromIntegral <$> getWord32le
 
 putStopBase :: FastBinaryPutM
 putStopBase = putWord8 $ fromIntegral $ fromEnum BT_STOP_BASE
