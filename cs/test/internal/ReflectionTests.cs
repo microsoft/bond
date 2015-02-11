@@ -4,25 +4,25 @@
     using System.Collections.Generic;
     using System.Linq;
     using Bond;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using Bond.Tag;
 
-    [TestClass]
+    [TestFixture]
     public class ReflectionTests
     {
-        [TestMethod]
+        [Test]
         public void Reflection_Interface_Base()
         {
             Assert.AreEqual(typeof(IBase), typeof(ISub).GetBaseSchemaType());
         }
 
-        [TestMethod]
+        [Test]
         public void Reflection_Interface_Chain_Base()
         {
             Assert.AreEqual(typeof(ISub), typeof(ISubSub).GetBaseSchemaType());
         }
 
-        [TestMethod]
+        [Test]
         public void GenericSchemaType()
         {
             GenericSchemaStructTest<int>();

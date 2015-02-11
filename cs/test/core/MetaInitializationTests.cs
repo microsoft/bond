@@ -1,11 +1,11 @@
 ﻿namespace UnitTest
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class MetaInitializationTests
     {
-        [TestMethod]
+        [Test]
         public void MetaInitialization_Polymorphic_Initialized()
         {
             var polymorphic = new WithPolymorphic();
@@ -18,7 +18,7 @@
             Assert.AreEqual("b", derived.b);
         }
 
-        [TestMethod]
+        [Test]
         public void MetaInitialization_Meta_Initialized()
         {
             var withMeta = new WithMeta();

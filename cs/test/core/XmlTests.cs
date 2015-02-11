@@ -7,9 +7,9 @@
     using Bond;
     using Bond.Protocols;
 
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class XmlTests
     {
         private static readonly XmlReaderSettings xmlReaderSettings =
@@ -21,7 +21,7 @@
                 ValidationFlags = XmlSchemaValidationFlags.None,
             };
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_EmptyStruct()
         {
             const string xml = @"<BasicTypes/>";
@@ -29,7 +29,7 @@
             Assert.IsNotNull(target);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_BasicModel()
         {
             const string xml = @"
@@ -46,7 +46,7 @@
             Assert.AreEqual(13.2, target._double);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_InvalidScalar()
         {
             const string xml = @"
@@ -65,7 +65,7 @@
             }
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_BasicModelWithUnknownElement()
         {
             const string xml = @"
@@ -83,7 +83,7 @@
             Assert.AreEqual(13.2, target._double);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_BasicModelWithUnknownEmptyElement()
         {
             const string xml = @"
@@ -101,7 +101,7 @@
             Assert.AreEqual(13.2, target._double);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_MultilineString()
         {
             const string xml = @"
@@ -115,7 +115,7 @@ World</_str>
             Assert.AreEqual("Hello\nWorld", target._str);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_WhitespaceString()
         {
             const string xml = @"
@@ -128,7 +128,7 @@ World</_str>
             Assert.AreEqual(" ", target._str);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_EmptyStringField()
         {
             const string xml = @"
@@ -147,7 +147,7 @@ World</_str>
             Assert.AreEqual(13.2, target._double);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_FailOnEmptyField()
         {
             const string xml = @"<BasicTypes><_bool/></BasicTypes>";
@@ -162,7 +162,7 @@ World</_str>
             }
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_Nested()
         {
             const string xml = @"
@@ -191,7 +191,7 @@ World</_str>
             Assert.AreEqual(-101, target.nested.basic2._int16);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_Derived()
         {
             const string xml = @"
@@ -230,7 +230,7 @@ World</_str>
             Assert.AreEqual("foo", target.derived);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_EmptyNested()
         {
             const string xml = @"
@@ -252,7 +252,7 @@ World</_str>
             Assert.AreEqual(-101, target.nested.basic2._int16);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_MultipleEmptyNested()
         {
             const string xml = @"
@@ -278,7 +278,7 @@ World</_str>
             Assert.AreEqual("Test", target.basic._str);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_StructPropertyWithoutContent()
         {
             const string xml = @"
@@ -297,7 +297,7 @@ World</_str>
             }
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_RequiredFieldEmptyRoot()
         {
             const string xml = "<Required/>";
@@ -313,7 +313,7 @@ World</_str>
             }
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_MissingRequiredScalarField()
         {
             const string xml = @"
@@ -334,7 +334,7 @@ World</_str>
             }
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_MissingRequiredStructField()
         {
             const string xml = @"
@@ -355,7 +355,7 @@ World</_str>
             }
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_MissingRequiredInBase()
         {
             const string xml = @"
@@ -375,7 +375,7 @@ World</_str>
             }
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_MissingRequiredInDerived()
         {
             const string xml = @"
@@ -395,7 +395,7 @@ World</_str>
             }
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_MissingRequiredInBasePresentInDerived()
         {
             const string xml = @"
@@ -415,7 +415,7 @@ World</_str>
             }
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_MissingRequiredInDerivedPresentInBase()
         {
             const string xml = @"
@@ -435,7 +435,7 @@ World</_str>
             }
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_PresentRequiredInBaseInDerived()
         {
             const string xml = @"
@@ -451,7 +451,7 @@ World</_str>
             Assert.AreEqual(5u, target.x);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_Containers()
         {
             const string xml = @"
@@ -498,7 +498,7 @@ World</_str>
             Assert.AreEqual("five", target.numbers[5]);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_EmptyContainers()
         {
             const string xml = @"
@@ -531,7 +531,7 @@ World</_str>
             Assert.AreEqual("third", target.basics[2]._str);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_NestedContainers()
         {
             const string xml = @"
@@ -562,7 +562,7 @@ World</_str>
             Assert.AreEqual((uint)9, target.vvb[2][0]);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_EmptyNestedContainers()
         {
             const string xml = @"
@@ -592,7 +592,7 @@ World</_str>
             Assert.AreEqual((uint)9, target.vvb[2][0]);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParsing_EmptyStructsInContainer()
         {
             const string xml = @"
@@ -618,7 +618,7 @@ World</_str>
             Assert.AreEqual("Hello", target.strings[0]);
         }
 
-        [TestMethod]
+        [Test]
         public void XmlParing_Recursive()
         {
             const string xml = @"
