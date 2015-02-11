@@ -27,12 +27,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Fields' ">
     <IntermediateOutputPath>$(IntermediateOutputPath)\Fields\</IntermediateOutputPath>
     <OutputPath>$(OutputPath)\Fields\</OutputPath>
-    <BondOptions>--fields</BondOptions>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'CollectionInterfaces' ">
-    <IntermediateOutputPath>$(IntermediateOutputPath)\CollectionInterfaces\</IntermediateOutputPath>
-    <OutputPath>$(OutputPath)\CollectionInterfaces\</OutputPath>
-    <BondOptions>--collection-interfaces</BondOptions>
+    <BondOptions>--fields --collection-interfaces</BondOptions>
   </PropertyGroup>
   <ItemGroup>
     <BondImportDirectory Include="import dir with spaces\" />
@@ -60,15 +55,15 @@
       <Options Condition="'$(TargetFrameworkVersion)' == 'v4.5'">$(BondOptions) --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[] --using="SynchronizedList=SynchronizedCollection&lt;{0}&gt;"</Options>
       <Options Condition="'$(TargetFrameworkVersion)' == 'v4.0'">$(BondOptions) --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[]</Options>
     </BondCodegen>
-    <BondCodegen Include="NamespaceConflict.bond">
-      <Options>$(BondOptions)</Options>
-    </BondCodegen>
-    <BondCodegen Include="NamespaceConflictBond.bond">
-      <Options>$(BondOptions)</Options>
-    </BondCodegen>
+    <BondCodegen Include="NamespaceConflict.bond" />
+    <BondCodegen Include="NamespaceConflictBond.bond" />
     <BondCodegen Include="ReadOnly.bond">
       <Options Condition=" '$(Configuration)' != 'Fields' ">$(BondOptions) --readonly-properties</Options>
-      <Options Condition=" '$(Configuration)' == 'Fields' ">--readonly-properties</Options>
+      <Options Condition=" '$(Configuration)' == 'Fields' ">--readonly-properties --collection-interfaces</Options>
+    </BondCodegen>
+    <BondCodegen Include="Containers.bond">
+      <Options Condition=" '$(Configuration)' != 'Fields' ">$(BondOptions) --collection-interfaces</Options>
+      <Options Condition=" '$(Configuration)' == 'Fields' ">--fields</Options>
     </BondCodegen>
     <BondCodegen Include="UnitTest.bond">
       <Options>$(BondOptions) --using="DateTime=System.DateTime"</Options>

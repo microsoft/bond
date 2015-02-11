@@ -1,0 +1,16 @@
+﻿import "UnitTest.bond"
+
+namespace UnitTest
+
+struct NestedContainers
+{
+    0: vector<vector<uint64>> vvb;
+    1: list<nullable<map<string, bool>>> vnc;
+    2: vector<vector<BasicTypes>> vvbt;
+    3: vector<list<Nested>> vln;
+    4: list<vector<string>> lvs;
+    5: list<set<float>> lsf;
+    6: vector<set<bool>> vsb;
+    7: map<string, list<bool>> mslb;
+    8: map<int32, map<int64, BasicTypesView>> mimbn;
+}
