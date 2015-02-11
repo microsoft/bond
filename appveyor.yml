@@ -99,8 +99,8 @@ test_script:
 
     if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-        vstest.console /Framework:framework40 /logger:Appveyor cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net40\CollectionInterfaces\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
-        vstest.console /Framework:framework45 /logger:Appveyor cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net45\CollectionInterfaces\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+        vstest.console /Framework:framework40 /logger:Appveyor cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
+        vstest.console /Framework:framework45 /logger:Appveyor cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
 
         #cd build
 
