@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Bond;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using System.Linq;
 
     public static class BondTypeAliasConverter
@@ -36,10 +36,10 @@
         }
     }
 
-    [TestClass]
+    [TestFixture]
     public class TypeAliasTests
     {
-        [TestMethod]
+        [Test]
         public void GenericTypeAlias()
         {
             var from = UnitTest.Random.Init<GenericAlias>();
@@ -53,14 +53,14 @@
             TestTypeAliases(from);
         }
         
-        [TestMethod]
+        [Test]
         public void AliasContainer()
         {
             var from = UnitTest.Random.Init<ContainerAlias>();
             TestTypeAliases<ContainerAlias, ContainerNotAliased>(from);
         }
 
-        [TestMethod]
+        [Test]
         public void ArrayResize()
         {
             // Generate an array so that it has to be resized twice when we
@@ -91,7 +91,7 @@
             TestTypeAliases<ContainerAlias, ContainerNotAliased>(data);
         }
 
-        [TestMethod]
+        [Test]
         public void AliasBlob()
         {
             var from = InitBlobAlias();
@@ -99,7 +99,7 @@
             TestTypeAliases<BlobAlias, BlobNotAliased>(from);
         }
 
-        [TestMethod]
+        [Test]
         public void AliasesInField()
         {
             var from = new FieldOfStructWithAliases
@@ -110,7 +110,7 @@
             TestTypeAliases(from);
         }
 
-        [TestMethod]
+        [Test]
         public void AliasesInContainer()
         {
             var from = new ContainerOfStructWithAliases
@@ -120,7 +120,7 @@
             TestTypeAliases(from);
         }
 
-        [TestMethod]
+        [Test]
         public void AliasesInBase()
         {
             var from = new BaseWithAliases
@@ -132,7 +132,7 @@
             TestTypeAliases(from);
         }
 
-        [TestMethod]
+        [Test]
         public void AliasesInNested()
         {
             var from = new NestedWithAliases

@@ -79,7 +79,9 @@
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json" Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -98,8 +100,8 @@
     <Reference Include="Bond.IO">
       <HintPath>..\..\src\io\$(DependentOutputPath)\Bond.IO.dll</HintPath>
     </Reference>
-    <Reference Include="Bond.Json">
-      <HintPath>..\..\src\json\$(DependentOutputPath)\Bond.Json.dll</HintPath>
+    <Reference Include="Bond.JSON">
+      <HintPath>..\..\src\json\$(DependentOutputPath)\Bond.JSON.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
