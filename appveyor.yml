@@ -56,15 +56,9 @@ build_script:
 
         if (-not $?) { throw "build failed" }
 
-        # codegen with public fields
+        # codegen with public fields and interfaces used to represent collections
 
         msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-        if (-not $?) { throw "build failed" }
-
-        # codegen with interfaces used to represent collections
-
-        msbuild cs\cs.sln /verbosity:minimal /p:Configuration=CollectionInterfaces /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
         if (-not $?) { throw "build failed" }
 
