@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts, ScopedTypeVariables #-}
+{-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf #-}
 module Bond.FastBinary (
     FastBinary(..),
     putInt32le,
@@ -15,38 +15,55 @@ import Data.Array.Unsafe (castSTUArray)
 import Data.Binary.Put
 import Data.Binary.Get
 import Data.Bits
+import Data.Functor
+import Data.Hashable
 import qualified Data.ByteString as BS
 import qualified Data.HashSet as H
 import qualified Data.Map as M
 import qualified Data.Vector as V
 
 type FastBinaryPutM = Put
+type FastBinaryGetM = Get
 
 class FastBinary a where
     fastBinaryPut :: a -> FastBinaryPutM
+    fastBinaryGet :: FastBinaryGetM a
 
 instance FastBinary Bool where
     fastBinaryPut v = if v then putWord8 1 else putWord8 0
+    fastBinaryGet = do
+        v <- getWord8
+        return (v /= 0)
 instance FastBinary Double where
     fastBinaryPut = putWord64le . doubleToWord
+    fastBinaryGet = wordToDouble <$> getWord64le
 instance FastBinary Float where
     fastBinaryPut = putWord32le . floatToWord
+    fastBinaryGet = wordToFloat <$> getWord32le
 instance FastBinary Int8 where
     fastBinaryPut = putWord8 . fromIntegral
+    fastBinaryGet = fromIntegral <$> getWord8
 instance FastBinary Int16 where
     fastBinaryPut = putWord16le . fromIntegral
+    fastBinaryGet = fromIntegral <$> getWord16le
 instance FastBinary Int32 where
     fastBinaryPut = putWord32le . fromIntegral
+    fastBinaryGet = fromIntegral <$> getWord32le
 instance FastBinary Int64 where
     fastBinaryPut = putWord64le . fromIntegral
+    fastBinaryGet = fromIntegral <$> getWord64le
 instance FastBinary Word8 where
     fastBinaryPut = putWord8
+    fastBinaryGet = getWord8
 instance FastBinary Word16 where
     fastBinaryPut = putWord16le
+    fastBinaryGet = getWord16le
 instance FastBinary Word32 where
     fastBinaryPut = putWord32le
+    fastBinaryGet = getWord32le
 instance FastBinary Word64 where
     fastBinaryPut = putWord64le
+    fastBinaryGet = getWord64le
 instance (FastBinary a, WireType a) => FastBinary (Maybe a) where
     fastBinaryPut Nothing = do
         putWord8 $ wireType (undefined :: a)
@@ -55,32 +72,64 @@ instance (FastBinary a, WireType a) => FastBinary (Maybe a) where
         putWord8 $ wireType v
         putVarInt 1
         fastBinaryPut v
+    fastBinaryGet = do
+        t <- getWord8
+        when (toWireType t /= getWireType (undefined :: a)) $ error "fastBinaryGet (Maybe a): type mismatch"
+        n <- getVarInt
+        if | n == 0 -> return Nothing
+           | n == 1 -> Just <$> fastBinaryGet
+           | otherwise -> error "fastBinaryGet (Maybe a): count isn't 0 or 1"
 instance (FastBinary a, WireType a) => FastBinary [a] where
     fastBinaryPut xs = do
         putWord8 $ wireType (undefined :: a)
         putVarInt $ length xs
         mapM_ fastBinaryPut xs
+    fastBinaryGet = do
+        t <- getWord8
+        when (toWireType t /= getWireType (undefined :: a)) $ error "fastBinaryGet [a]: type mismatch"
+        n <- getVarInt
+        replicateM n fastBinaryGet
 instance FastBinary Blob where
     fastBinaryPut (Blob s) = do
-        putWord8 $ wireType (undefined :: Word8)
+        putWord8 $ fromWireType BT_INT8
         putVarInt $ BS.length s
         putByteString s
+    fastBinaryGet = do
+        t <- getWord8
+        when (toWireType t /= BT_INT8) $ error "fastBinaryGet Blob: type mismatch"
+        n <- getVarInt
+        Blob <$> getByteString n
 instance FastBinary Utf8 where
     fastBinaryPut v@(Utf8 s) = do
         putWord8 $ wireType v
         putVarInt $ BS.length s
         putByteString s
+    fastBinaryGet = do
+        t <- getWord8
+        when (toWireType t /= getWireType (undefined :: Utf8)) $ error "fastBinaryGet Utf8: type mismatch"
+        n <- getVarInt
+        Utf8 <$> getByteString n
 instance FastBinary Utf16 where
     fastBinaryPut v@(Utf16 s) = do
         putWord8 $ wireType v
         putVarInt $ BS.length s `div` 2
         putByteString s
-instance (FastBinary a, WireType a) => FastBinary (HashSet a) where
+    fastBinaryGet = do
+        t <- getWord8
+        when (toWireType t /= getWireType (undefined :: Utf16)) $ error "fastBinaryGet Utf16: type mismatch"
+        n <- getVarInt
+        Utf16 <$> getByteString (n * 2)
+instance (Hashable a, Eq a, FastBinary a, WireType a) => FastBinary (HashSet a) where
     fastBinaryPut xs = do
         putWord8 $ wireType (undefined :: a)
         putVarInt $ H.size xs
         mapM_ fastBinaryPut $ H.toList xs
-instance (FastBinary a, WireType a, FastBinary b, WireType b) => FastBinary (Map a b) where
+    fastBinaryGet = do
+        t <- getWord8
+        when (toWireType t /= getWireType (undefined :: a)) $ error "fastBinaryGet (HashSet a): type mismatch"
+        n <- getVarInt
+        H.fromList <$> replicateM n fastBinaryGet
+instance (Ord a, FastBinary a, WireType a, FastBinary b, WireType b) => FastBinary (Map a b) where
     fastBinaryPut xs = do
         putWord8 $ wireType (undefined :: a)
         putWord8 $ wireType (undefined :: b)
@@ -88,28 +137,41 @@ instance (FastBinary a, WireType a, FastBinary b, WireType b) => FastBinary (Map
         forM_ (M.toList xs) $ \(k, v) -> do
             fastBinaryPut k
             fastBinaryPut v
+    fastBinaryGet = do
+        tkey <- getWord8
+        tval <- getWord8
+        when (toWireType tkey /= getWireType (undefined :: a)) $ error "fastBinaryGet (Map a b): key type mismatch"
+        when (toWireType tval /= getWireType (undefined :: b)) $ error "fastBinaryGet (Map a b): value type mismatch"
+        n <- getVarInt
+        fmap M.fromList $ replicateM n $ do
+            k <- fastBinaryGet
+            v <- fastBinaryGet
+            return (k, v)
 instance (FastBinary a, WireType a) => FastBinary (Vector a) where
     fastBinaryPut xs = do
         putWord8 $ wireType (undefined :: a)
         putVarInt $ V.length xs
         V.mapM_ fastBinaryPut xs
+    fastBinaryGet = do
+        t <- getWord8
+        when (toWireType t /= getWireType (undefined :: a)) $ error "fastBinaryGet (Vector a): type mismatch"
+        n <- getVarInt
+        V.replicateM n fastBinaryGet
 instance FastBinary a => FastBinary (Bonded a) where
     fastBinaryPut (Bonded v) = fastBinaryPut v
+    fastBinaryGet = Bonded <$> fastBinaryGet
 
-{-
 {-# INLINE wordToFloat #-}
 wordToFloat :: Word32 -> Float
 wordToFloat x = runST (cast x)
--}
+
 {-# INLINE floatToWord #-}
 floatToWord :: Float -> Word32
 floatToWord x = runST (cast x)
 
-{-
 {-# INLINE wordToDouble #-}
 wordToDouble :: Word64 -> Double
 wordToDouble x = runST (cast x)
--}
 
 {-# INLINE doubleToWord #-}
 doubleToWord :: Double -> Word64
@@ -122,15 +184,31 @@ cast :: (MArray (STUArray s) a (ST s),
 cast x = newArray (0 :: Int, 0) x >>= castSTUArray >>= flip readArray 0
 
 wireType :: WireType a => a -> Word8
-wireType = fromIntegral . fromEnum . getWireType
+wireType = fromWireType . getWireType
+
+toWireType :: Word8 -> ItemType
+toWireType = toEnum . fromIntegral
+
+fromWireType :: ItemType -> Word8
+fromWireType = fromIntegral . fromEnum
 
 putVarInt :: Int -> FastBinaryPutM
 putVarInt i | i < 0 = error "putVarInt called with negative value"
 putVarInt i | i < 128 = putWord8 $ fromIntegral i
 putVarInt i = do
     let iLow = fromIntegral $ i .&. 0x7F
-    putWord8 $ iLow .|. 0x80
+    putWord8 $ iLow `setBit` 7
     putVarInt $ i `shiftR` 7
+
+getVarInt :: FastBinaryGetM Int
+getVarInt = step 0
+    where
+    step :: Int -> FastBinaryGetM Int
+    step n | n > 4 = error "getVarInt: sequence too long"
+    step n = do
+        b <- fromIntegral <$> getWord8
+        rest <- if b `testBit` 7 then step (n + 1)  else return (0 :: Int)
+        return $ b .&. (rest `shiftL` 7)
 
 putInt32le :: Int32 -> FastBinaryPutM
 putInt32le = putWord32le . fromIntegral

@@ -1,3 +1,4 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Bond.Types (
     Int,
     Int8,
@@ -24,6 +25,7 @@ module Bond.Types (
 
 import Data.Int
 import Data.Word
+import Data.Hashable
 import qualified Data.ByteString as BS
 import qualified Data.HashSet as H
 import qualified Data.Map as M
@@ -35,13 +37,13 @@ newtype Bonded a = Bonded a
     deriving Show
 
 newtype Utf8 = Utf8 BS.ByteString
-    deriving Show
+    deriving (Show, Eq, Ord, Hashable)
 
 newtype Utf16 = Utf16 BS.ByteString
-    deriving Show
+    deriving (Show, Eq, Ord, Hashable)
 
 newtype Blob = Blob BS.ByteString
-    deriving Show
+    deriving (Show, Eq, Ord, Hashable)
 
 class EncodedString a where
     fromString :: String -> a

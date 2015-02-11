@@ -135,11 +135,11 @@ mkHaskellDecl mapping e@Enum{..} = (filename, prettyPrint code)
     filename = mkFileName namespace declName
     moduleName = mkModuleName namespace declName
     typeName = Ident $ convertTypeName declName
-    code = Module noLoc moduleName [] Nothing Nothing [defaultImport] decls
+    code = Module noLoc moduleName [LanguagePragma noLoc [Ident "GeneralizedNewtypeDeriving"]] Nothing Nothing [defaultImport] decls
     decls = dataDecl : defaultDecl : wiretypeDecl : fastBinaryDecl : typesig : values
     dataDecl = DataDecl noLoc NewType [] typeName []
                 [QualConDecl noLoc [] [] (ConDecl typeName [tyInt "Int32"])]
-                [(UnQual $ Ident "Show", []), (UnQual $ Ident "Eq", []), (UnQual $ Ident "Ord", [])]
+                [(UnQual $ Ident "Show", []), (UnQual $ Ident "Eq", []), (UnQual $ Ident "Ord", []), (qualInt "Hashable", [])]
     defaultDecl = defaultInstance typeName e
     wiretypeDecl = wiretypeInstance typeName e
     fastBinaryDecl = fastBinaryInstance typeName e
@@ -234,7 +234,7 @@ fastBinaryInstance typeName Struct{declParams, structFields, structBase} = InstD
     [InsDecl (FunBind [Match noLoc (Ident "fastBinaryPut") [PVar recVar] Nothing (UnGuardedRhs $ Do code) (BDecls [])])]
     where
     recVar = Ident "v"
-    saveField Field{fieldName} = Qualifier $ App (App (Var $ qualInt "putField") (intLit 1)) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar))
+    saveField Field{fieldName} = Qualifier $ App (App (Var $ qualInt "putField") (intLit (1 :: Int))) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar))
     fieldsCode = map saveField structFields
     baseCode = Qualifier $ App (Var $ qualInt "fastBinaryPut") (Paren $ App (Var $ UnQual baseStructField) (Var $ UnQual recVar))
     baseStopCode = Qualifier $ Var $ qualInt "putStopBase"
