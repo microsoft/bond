@@ -1,5 +1,4 @@
 {-# LANGUAGE PatternGuards, NamedFieldPuns, RecordWildCards #-}
-
 module Bond.Template.Haskell.Decl (mkHaskellDecl) where
 
 import Data.Char
@@ -249,7 +248,10 @@ fastBinaryInstance typeName Struct{declParams, structFields, structBase} = InstD
     fieldVar = Ident "f'"
     typeVar = Ident "t'"
     baseVar = Ident "b'"
-    saveField Field{fieldName, fieldOrdinal} = Qualifier $ App (App (Var $ qualInt "putField") (intLit fieldOrdinal)) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar))
+    saveFunc fieldName fieldOrdinal func = Qualifier $ App (App (Var $ qualInt func) (intLit fieldOrdinal)) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar))
+    saveField Field{fieldType, fieldName, fieldOrdinal}
+        | BT_Maybe _ <- fieldType = saveFunc fieldName fieldOrdinal "putMaybeField"
+        | otherwise = saveFunc fieldName fieldOrdinal "putField"
     putFieldsCode = map saveField structFields
     putBaseCode = Qualifier $ App (Var $ qualInt "fastBinaryPut") (Paren $ App (Var $ UnQual baseStructField) (Var $ UnQual recVar))
     putBaseStopCode = Qualifier $ Var $ qualInt "putStopBase"
@@ -262,9 +264,10 @@ fastBinaryInstance typeName Struct{declParams, structFields, structBase} = InstD
     getNoBaseCode = App (App (Var $ qualInt "getFieldsWith") (Var $ unqual "update")) (Var $ qualInt "defaultValue")
     getCode | isNothing structBase = getNoBaseCode
             | otherwise = getWithBaseCode
+    readFunc fieldName fieldOrdinal fieldMod = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) fieldMod])))) (Paren $ App (Var $ qualInt "fastBinaryGetField") (Var $ UnQual typeVar))) (BDecls [])
     readField Field{fieldType, fieldName, fieldOrdinal}
-        | BT_Maybe _ <- fieldType = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) (App (Con $ unqual "Just") (Var $ UnQual fieldVar))])))) (Paren $ App (Var $ qualInt "fastBinaryGetField") (Var $ UnQual typeVar))) (BDecls [])
-        | otherwise = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) (Var $ UnQual fieldVar)])))) (Paren $ App (Var $ qualInt "fastBinaryGetField") (Var $ UnQual typeVar))) (BDecls [])
+        | BT_Maybe _ <- fieldType = readFunc fieldName fieldOrdinal (App (Con $ unqual "Just") (Var $ UnQual fieldVar))
+        | otherwise = readFunc fieldName fieldOrdinal (Var $ UnQual fieldVar)
     skipReadCode = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PWildCard] Nothing (UnGuardedRhs $ Do [
                     Qualifier (App (Var $ qualInt "skipValue") (Var $ UnQual typeVar)),
                     Qualifier (App (Var $ unqual "return") (Var $ UnQual recVar))]) (BDecls [])

@@ -6,6 +6,7 @@ module Bond.FastBinary (
     getInt32le,
     putField,
     putInt32le,
+    putMaybeField,
     putStopBase,
     skipValue
   ) where
@@ -105,16 +106,14 @@ instance FastBinary Blob where
         n <- getVarInt
         Blob <$> getByteString n
 instance FastBinary Utf8 where
-    fastBinaryPut v@(Utf8 s) = do
-        putWord8 $ wireType v
+    fastBinaryPut (Utf8 s) = do
         putVarInt $ BS.length s
         putByteString s
     fastBinaryGet = do
         n <- getVarInt
         Utf8 <$> getByteString n
 instance FastBinary Utf16 where
-    fastBinaryPut v@(Utf16 s) = do
-        putWord8 $ wireType v
+    fastBinaryPut (Utf16 s) = do
         putVarInt $ BS.length s `div` 2
         putByteString s
     fastBinaryGet = do
@@ -227,6 +226,10 @@ putField n f = do
     putWord16le n
     fastBinaryPut f
     when (t == BT_STRUCT) $ putWord8 $ fromIntegral $ fromEnum BT_STOP
+
+putMaybeField :: (FastBinary t, WireType t) => Word16 -> (Maybe t) -> FastBinaryPutM
+putMaybeField _ Nothing = return ()
+putMaybeField n (Just f) = putField n f
 
 getFieldsWith :: Default a => (a -> ItemType -> Word16 -> FastBinaryGetM a) -> a -> FastBinaryGetM a
 getFieldsWith updateFunc = loop
