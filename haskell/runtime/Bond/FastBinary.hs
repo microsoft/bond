@@ -227,7 +227,7 @@ putField n f = do
     fastBinaryPut f
     when (t == BT_STRUCT) $ putWord8 $ fromIntegral $ fromEnum BT_STOP
 
-putMaybeField :: (FastBinary t, WireType t) => Word16 -> (Maybe t) -> FastBinaryPutM
+putMaybeField :: (FastBinary t, WireType t) => Word16 -> Maybe t -> FastBinaryPutM
 putMaybeField _ Nothing = return ()
 putMaybeField n (Just f) = putField n f
 
