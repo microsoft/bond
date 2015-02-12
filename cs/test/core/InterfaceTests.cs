@@ -3,12 +3,12 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
 
-    [TestClass]
+    [TestFixture]
     public class InterfaceTests
     {
         [Schema]
@@ -72,7 +72,7 @@
             }
         }
 
-        [TestMethod]
+        [Test]
         public void DeserializeInterfaces()
         {
             var factory = new Factory();
@@ -90,7 +90,7 @@
             Assert.IsTrue(Comparer.Equal(from, to));
         }
 
-        [TestMethod]
+        [Test]
         public void CloningInterfaces()
         {
             var factory = new Factory();

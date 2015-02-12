@@ -26,15 +26,18 @@
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="Attributes">
       <HintPath>..\..\src\attributes\$(OutputPath)\Bond.Attributes.dll</HintPath>
     </Reference>
     <Reference Include="Bond">
       <HintPath>..\..\src\core\$(OutputPath)\Bond.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
