@@ -1,13 +1,46 @@
-language: cpp
-compiler: clang
+language: csharp
+os:
+    - linux
+    - osx
+
 before_install:
-    - brew update
-    - brew install ghc cabal-install
-    - cabal update
+    - echo $TRAVIS_OS_NAME
+    - export CC=clang
+    #linux prereqisite packages
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository ppa:smspillaz/cmake-2.8.12 -y; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository ppa:boost-latest/ppa -y; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository ppa:hvr/ghc -y; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update -qq; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install -y cmake cmake-data make libboost1.55-all-dev cabal-install-1.22 ghc; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CABAL_PATH=/opt/cabal/1.22/bin; fi
+    #OS X prerequisite packages
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install ghc cabal-install; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then curl -s -o mono.pkg http://download.mono-project.com/archive/3.12.0/macos-10-x86/MonoFramework-MDK-3.12.0.macos10.xamarin.x86.pkg; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then sudo installer -pkg "mono.pkg" -target /; fi
+    #show versions of cmake and clang
+    - cmake --version && clang --version
+    #nuget installation
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install nuget && export NUGET=nuget; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then curl -s -o "cs/nuget/nuget.exe" -L "http://www.nuget.org/nuget.exe" && export NUGET="mono cs/nuget/nuget.exe"; fi
+    #nunit installation
+    - $NUGET install NUnit.Runners -version 2.6.4
+    #cabal-install from ppa is installed into /opt
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then /opt/cabal/1.22/bin/cabal update; else cabal update; fi
+
+before_script:
+    #restore nuget packages for solution
+    - $NUGET restore cs/cs.sln
+
 script:
-    - mkdir build
-    - cd build
+    - mkdir build && cd build
     - cmake ..
-    - make --jobs 2 check
-os: osx
-osx_image: xcode61
+    #linux build is throwed out by out of memory or travis timeout with "make check" so do only make
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then make; else make --jobs 2 check; fi
+    - sudo make install
+    - cd ..
+    - xbuild /p:Configuration=Debug cs/cs.sln
+    - xbuild /p:Configuration=Fields cs/cs.sln
+after_script:
+    #do unit-testing only on linux platform, due to script execution time limits
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll; fi
