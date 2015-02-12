@@ -1,13 +1,17 @@
 {-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf #-}
 module Bond.FastBinary (
     FastBinary(..),
+    fastBinaryGetField,
+    getFieldsWith,
     getInt32le,
     putField,
     putInt32le,
-    putStopBase
+    putStopBase,
+    skipValue
   ) where
 
 import Bond.Types
+import Bond.Default
 import Bond.Wire
 import Control.Monad
 import Control.Monad.ST (runST, ST)
@@ -227,3 +231,64 @@ putField n f = do
     putWord16le n
     fastBinaryPut f
     when (t == BT_STRUCT) $ putWord8 $ fromIntegral $ fromEnum BT_STOP
+
+getFieldsWith :: Default a => (a -> ItemType -> Word16 -> FastBinaryGetM a) -> a -> FastBinaryGetM a
+getFieldsWith updateFunc = loop
+    where
+    loop v = do
+        t <- fmap (toEnum . fromIntegral) getWord8
+        process v t
+    process v BT_STOP = return v
+    process v BT_STOP_BASE = return v
+    process v t = do
+        n <- getWord16le
+        v' <- updateFunc v t n
+        loop v'
+
+skipValue :: ItemType -> FastBinaryGetM ()
+skipValue BT_STOP = error "skipValue BT_STOP"
+skipValue BT_STOP_BASE = error "skipValue BT_STOP_BASE"
+skipValue BT_BOOL = skip 1
+skipValue BT_UINT8 = skip 1
+skipValue BT_UINT16 = skip 2
+skipValue BT_UINT32 = skip 4
+skipValue BT_UINT64 = skip 8
+skipValue BT_FLOAT = skip 4
+skipValue BT_DOUBLE = skip 8
+skipValue BT_INT8 = skip 1
+skipValue BT_INT16 = skip 2
+skipValue BT_INT32 = skip 4
+skipValue BT_INT64 = skip 8
+skipValue BT_STRING = do
+    n <- getVarInt
+    skip n
+skipValue BT_WSTRING = do
+    n <- getVarInt
+    skip (n * 2)
+skipValue BT_LIST = do
+    t <- toWireType <$> getWord8
+    n <- getVarInt
+    replicateM_ n (skipValue t)
+skipValue BT_SET = skipValue BT_LIST
+skipValue BT_MAP = do
+    tkey <- toWireType <$> getWord8
+    tvalue <- toWireType <$> getWord8
+    n <- getVarInt
+    replicateM_ n $ do
+        skipValue tkey
+        skipValue tvalue
+skipValue BT_STRUCT = loop
+    where
+    loop = do
+        t <- fmap (toEnum . fromIntegral) getWord8
+        process t
+    process BT_STOP = return ()
+    process BT_STOP_BASE = loop -- base fields finished, keep going
+    process t = do
+        skip 2 -- skip ordinal
+        skipValue t
+        loop
+
+fastBinaryGetField :: forall a . (FastBinary a, WireType a) => ItemType -> FastBinaryGetM a
+fastBinaryGetField t | t == getWireType (undefined :: a) = fastBinaryGet
+fastBinaryGetField _ = error "invalid field type"

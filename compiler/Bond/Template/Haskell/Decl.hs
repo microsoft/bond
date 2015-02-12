@@ -46,6 +46,9 @@ tyQualCon m t = TyCon $ Qual (mkModuleName m t) (mkIdent t)
 qualInt :: String -> QName
 qualInt = Qual internalModule . Ident
 
+vuqi :: String -> Exp
+vuqi = Var . UnQual . Ident
+
 tyInt :: String -> Language.Haskell.Exts.Type
 tyInt = TyCon . qualInt
 
@@ -234,18 +237,32 @@ fastBinaryInstance typeName Enum{} = InstDecl noLoc Nothing [] []
 fastBinaryInstance typeName Struct{declParams, structFields, structBase} = InstDecl noLoc Nothing [] constraints
     (qualInt "FastBinary")
     [makeType typeName declParams]
-    [InsDecl (FunBind [Match noLoc (Ident "fastBinaryPut") [PVar recVar] Nothing (UnGuardedRhs $ Do code) (BDecls [])])]
+    [
+        InsDecl (FunBind [Match noLoc (Ident "fastBinaryPut") [PVar recVar] Nothing (UnGuardedRhs $ Do putCode) (BDecls [])]),
+        InsDecl $ PatBind noLoc (PVar $ Ident "fastBinaryGet") (UnGuardedRhs $ App (App (Var $ qualInt "getFieldsWith") (vuqi "update")) (Var $ qualInt "defaultValue"))
+            (BDecls [FunBind updateFuncCode])
+        ]
     where
-    recVar = Ident "v"
-    saveField Field{fieldName} = Qualifier $ App (App (Var $ qualInt "putField") (intLit (1 :: Int))) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar))
-    fieldsCode = map saveField structFields
-    baseCode = Qualifier $ App (Var $ qualInt "fastBinaryPut") (Paren $ App (Var $ UnQual baseStructField) (Var $ UnQual recVar))
-    baseStopCode = Qualifier $ Var $ qualInt "putStopBase"
-    code | isNothing structBase = fieldsCode
-         | otherwise = baseCode : baseStopCode : fieldsCode
+    recVar = Ident "v'"
+    fieldVar = Ident "f'"
+    typeVar = Ident "t'"
+    saveField Field{fieldName, fieldOrdinal} = Qualifier $ App (App (Var $ qualInt "putField") (intLit fieldOrdinal)) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar))
+    putFieldsCode = map saveField structFields
+    putBaseCode = Qualifier $ App (Var $ qualInt "fastBinaryPut") (Paren $ App (Var $ UnQual baseStructField) (Var $ UnQual recVar))
+    putBaseStopCode = Qualifier $ Var $ qualInt "putStopBase"
+    putCode | isNothing structBase = putFieldsCode
+            | otherwise = putBaseCode : putBaseStopCode : putFieldsCode
+    readField Field{fieldName, fieldOrdinal} =
+        Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ UnQual $ Ident "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) (Var $ UnQual fieldVar)])))) (Paren $ App (Var $ qualInt "fastBinaryGetField") (Var $ UnQual typeVar))) (BDecls [])
+    skipReadCode = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PWildCard] Nothing (UnGuardedRhs $ Do [
+                    Qualifier (App (Var $ qualInt "skipValue") (Var $ UnQual typeVar)),
+                    Qualifier (App (vuqi "return") (Var $ UnQual recVar))]) (BDecls [])
+    readFieldsCode = map readField structFields
+    updateFuncCode = readFieldsCode ++ [skipReadCode]
     paramConstraint t = [
         ClassA (qualInt "FastBinary") [TyVar $ mkVar $ paramName t],
-        ClassA (qualInt "WireType") [TyVar $ mkVar $ paramName t]
+        ClassA (qualInt "WireType") [TyVar $ mkVar $ paramName t],
+        ClassA (qualInt "Default") [TyVar $ mkVar $ paramName t]
       ]
     constraints = concatMap paramConstraint declParams
 
