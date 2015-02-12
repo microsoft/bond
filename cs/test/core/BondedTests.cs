@@ -2,13 +2,13 @@
 {
     using System;
     using System.IO;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using Bond;
     using Bond.Protocols;
     using Bond.IO;
     using Bond.IO.Unsafe;
 
-    [TestClass]
+    [TestFixture]
     public class BondedTests
     {
         // Deserialize T from IBonded<T> containing an instance or payload of derived class.
@@ -295,7 +295,7 @@
                 Util.DeserializeXml<BondClass<To, double>>);
         }
 
-        [TestMethod]
+        [Test]
         public void BondedInterface()
         {
             BondedDeserialize<Nested, Derived>();
@@ -303,7 +303,7 @@
             BondedSerialize<Nested, Derived>();
         }
 
-        [TestMethod]
+        [Test]
         public void LazyDeserialize()
         {
             LazyDeserializationAll<BasicTypes, BasicTypes>();
@@ -312,7 +312,7 @@
             LazyDeserializationAll<Derived, DerivedView>();
         }
 
-        [TestMethod]
+        [Test]
         public void NonLazyDeserialize()
         {
             NonLazyDeserializationAll<BasicTypes, BasicTypes>();
@@ -321,7 +321,7 @@
             NonLazyDeserializationAll<Derived, DerivedView>();
         }
 
-        [TestMethod]
+        [Test]
         public void PolymorphicDeserialize()
         {
             PolymorphicDeserializationAll<Derived, Nested, Derived>();
@@ -332,7 +332,7 @@
             PolymorphicDeserializationAll<DerivedView, EmptyBase, Nested>();
         }
 
-        [TestMethod]
+        [Test]
         public void Passthrough()
         {
             PassthroughAll<BasicTypes, BasicTypes, BasicTypes>();
@@ -342,7 +342,7 @@
             PassthroughAll<Derived, EmptyBase, Nested>();
         }
 
-        [TestMethod]
+        [Test]
         public void BondedEquals()
         {
             var obj1 = new StructWithBonded();
@@ -359,7 +359,7 @@
             Assert.IsFalse(Comparer.Equal(obj1, obj2));
         }
 
-        [TestMethod]
+        [Test]
         public void SerializeBonded()
         {
             var obj = new StructWithBonded();
