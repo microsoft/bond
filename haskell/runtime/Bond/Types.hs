@@ -37,10 +37,10 @@ newtype Bonded a = Bonded a
     deriving Show
 
 newtype Utf8 = Utf8 BS.ByteString
-    deriving (Show, Eq, Ord, Hashable)
+    deriving (Eq, Ord, Hashable)
 
 newtype Utf16 = Utf16 BS.ByteString
-    deriving (Show, Eq, Ord, Hashable)
+    deriving (Eq, Ord, Hashable)
 
 newtype Blob = Blob BS.ByteString
     deriving (Show, Eq, Ord, Hashable)
@@ -50,3 +50,6 @@ class EncodedString a where
 
 instance EncodedString Utf8 where fromString = Utf8 . T.encodeUtf8 . T.pack
 instance EncodedString Utf16 where fromString = Utf16 . T.encodeUtf16LE . T.pack
+
+instance Show Utf8 where show (Utf8 s) = show $ T.unpack $ T.decodeUtf8 s
+instance Show Utf16 where show (Utf16 s) = show $ T.unpack $ T.decodeUtf16LE s

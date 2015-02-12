@@ -262,8 +262,9 @@ fastBinaryInstance typeName Struct{declParams, structFields, structBase} = InstD
     getNoBaseCode = App (App (Var $ qualInt "getFieldsWith") (Var $ unqual "update")) (Var $ qualInt "defaultValue")
     getCode | isNothing structBase = getNoBaseCode
             | otherwise = getWithBaseCode
-    readField Field{fieldName, fieldOrdinal} =
-        Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) (Var $ UnQual fieldVar)])))) (Paren $ App (Var $ qualInt "fastBinaryGetField") (Var $ UnQual typeVar))) (BDecls [])
+    readField Field{fieldType, fieldName, fieldOrdinal}
+        | BT_Maybe _ <- fieldType = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) (App (Con $ unqual "Just") (Var $ UnQual fieldVar))])))) (Paren $ App (Var $ qualInt "fastBinaryGetField") (Var $ UnQual typeVar))) (BDecls [])
+        | otherwise = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) (Var $ UnQual fieldVar)])))) (Paren $ App (Var $ qualInt "fastBinaryGetField") (Var $ UnQual typeVar))) (BDecls [])
     skipReadCode = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PWildCard] Nothing (UnGuardedRhs $ Do [
                     Qualifier (App (Var $ qualInt "skipValue") (Var $ UnQual typeVar)),
                     Qualifier (App (Var $ unqual "return") (Var $ UnQual recVar))]) (BDecls [])

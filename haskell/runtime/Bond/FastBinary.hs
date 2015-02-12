@@ -79,11 +79,11 @@ instance (FastBinary a, WireType a) => FastBinary (Maybe a) where
         fastBinaryPut v
     fastBinaryGet = do
         t <- getWord8
-        when (toWireType t /= getWireType (undefined :: a)) $ error "fastBinaryGet (Maybe a): type mismatch"
+        when (toWireType t /= getWireType (undefined :: a)) $ error "nullable: type mismatch"
         n <- getVarInt
         if | n == 0 -> return Nothing
            | n == 1 -> Just <$> fastBinaryGet
-           | otherwise -> error "fastBinaryGet (Maybe a): count isn't 0 or 1"
+           | otherwise -> error "fastBinaryGet nullable: count isn't 0 or 1"
 instance (FastBinary a, WireType a) => FastBinary [a] where
     fastBinaryPut xs = do
         putWord8 $ wireType (undefined :: a)
@@ -110,8 +110,6 @@ instance FastBinary Utf8 where
         putVarInt $ BS.length s
         putByteString s
     fastBinaryGet = do
-        t <- getWord8
-        when (toWireType t /= getWireType (undefined :: Utf8)) $ error "fastBinaryGet Utf8: type mismatch"
         n <- getVarInt
         Utf8 <$> getByteString n
 instance FastBinary Utf16 where
@@ -120,8 +118,6 @@ instance FastBinary Utf16 where
         putVarInt $ BS.length s `div` 2
         putByteString s
     fastBinaryGet = do
-        t <- getWord8
-        when (toWireType t /= getWireType (undefined :: Utf16)) $ error "fastBinaryGet Utf16: type mismatch"
         n <- getVarInt
         Utf16 <$> getByteString (n * 2)
 instance (Hashable a, Eq a, FastBinary a, WireType a) => FastBinary (HashSet a) where
@@ -213,7 +209,7 @@ getVarInt = step 0
     step n = do
         b <- fromIntegral <$> getWord8
         rest <- if b `testBit` 7 then step (n + 1)  else return (0 :: Int)
-        return $ b .&. (rest `shiftL` 7)
+        return $ (b `clearBit` 7) .|. (rest `shiftL` 7)
 
 putInt32le :: Int32 -> FastBinaryPutM
 putInt32le = putWord32le . fromIntegral
@@ -291,4 +287,4 @@ skipValue BT_STRUCT = loop
 
 fastBinaryGetField :: forall a . (FastBinary a, WireType a) => ItemType -> FastBinaryGetM a
 fastBinaryGetField t | t == getWireType (undefined :: a) = fastBinaryGet
-fastBinaryGetField _ = error "invalid field type"
+fastBinaryGetField t = error $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (undefined :: a))
