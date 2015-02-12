@@ -219,17 +219,20 @@ getInt32le = fromIntegral <$> getWord32le
 putStopBase :: FastBinaryPutM
 putStopBase = putWord8 $ fromIntegral $ fromEnum BT_STOP_BASE
 
-putField :: (FastBinary t, WireType t) => Word16 -> t -> FastBinaryPutM
-putField n f = do
+putField' :: (FastBinary t, WireType t) => Word16 -> t -> FastBinaryPutM
+putField' n f = do
     let t = getWireType f
     putWord8 $ fromIntegral $ fromEnum t
     putWord16le n
     fastBinaryPut f
     when (t == BT_STRUCT) $ putWord8 $ fromIntegral $ fromEnum BT_STOP
 
+putField :: (Default t, FastBinary t, WireType t) => Word16 -> t -> FastBinaryPutM
+putField n f = unless (f == defaultValue) $ putField' n f
+
 putMaybeField :: (FastBinary t, WireType t) => Word16 -> Maybe t -> FastBinaryPutM
 putMaybeField _ Nothing = return ()
-putMaybeField n (Just f) = putField n f
+putMaybeField n (Just f) = putField' n f
 
 getFieldsWith :: Default a => (a -> ItemType -> Word16 -> FastBinaryGetM a) -> a -> FastBinaryGetM a
 getFieldsWith updateFunc = loop

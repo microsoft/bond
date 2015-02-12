@@ -34,7 +34,7 @@ import qualified Data.Text.Encoding as T
 import qualified Data.Vector as V
 
 newtype Bonded a = Bonded a
-    deriving Show
+    deriving (Show, Eq)
 
 newtype Utf8 = Utf8 BS.ByteString
     deriving (Eq, Ord, Hashable)

@@ -162,7 +162,7 @@ mkHaskellDecl mapping s@Struct{..} = traceShow s (filename, prettyPrint code)
     typeName = Ident $ convertTypeName declName
     code = Module noLoc moduleName [] Nothing Nothing imports decls
     decls = [dataDecl, defaultDecl, wiretypeDecl, fastBinaryDecl]
-    dataDecl = DataDecl noLoc DataType [] typeName typeParams [QualConDecl noLoc [] [] (RecDecl typeName fields)] [(UnQual (Ident "Show"),[])]
+    dataDecl = DataDecl noLoc DataType [] typeName typeParams [QualConDecl noLoc [] [] (RecDecl typeName fields)] [(unqual "Show",[]), (unqual "Eq", [])]
     typeParams = map mkTypeParam declParams
     -- FIXME see if type params T and t accepted in C++/C#, make smart conversion to t/t'
     mkTypeParam TypeParam{paramName} = UnkindedVar $ mkVar paramName
