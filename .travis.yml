@@ -23,6 +23,8 @@ before_install:
     #nuget installation
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install nuget && export NUGET=nuget; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then curl -s -o "cs/nuget/nuget.exe" -L "http://www.nuget.org/nuget.exe" && export NUGET="mono cs/nuget/nuget.exe"; fi
+    #nunit installation
+    - $NUGET install NUnit.Runners -version 2.6.4
     #cabal-install from ppa is installed into /opt
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then /opt/cabal/1.22/bin/cabal update; else cabal update; fi
 
@@ -36,7 +38,9 @@ script:
     #linux build is throwed out by out of memory or travis timeout with "make check" so do only make
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then make; else make --jobs 2 check; fi
     - sudo make install
-    - cd ../cs
-    - xbuild /p:Configuration=Release cs.sln
-    #to enable unit-testing we need to convert tests from MSTest to NUnit 
-    #- nunit-console <list_of_test_dlls>
+    - cd ..
+    - xbuild /p:Configuration=Debug cs/cs.sln
+    - xbuild /p:Configuration=Fields cs/cs.sln
+after_script:
+    #do unit-testing only on linux platform, due to secript execution time limits 
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll; fi
