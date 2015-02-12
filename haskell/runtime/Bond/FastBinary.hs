@@ -1,12 +1,15 @@
 {-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf #-}
 module Bond.FastBinary (
     FastBinary(..),
-    fastBinaryGetField,
+    FastBinaryStruct(..),
+    FastBinaryPutM,
+    getField,
     getFieldsWith,
     getInt32le,
     putField,
     putInt32le,
     putMaybeField,
+    putStop,
     putStopBase,
     skipValue
   ) where
@@ -30,6 +33,9 @@ import qualified Data.Vector as V
 
 type FastBinaryPutM = Put
 type FastBinaryGetM = Get
+
+class FastBinaryStruct a where
+    fastBinaryPutBase :: a -> FastBinaryPutM
 
 class FastBinary a where
     fastBinaryPut :: a -> FastBinaryPutM
@@ -216,6 +222,9 @@ putInt32le = putWord32le . fromIntegral
 getInt32le :: FastBinaryGetM Int32
 getInt32le = fromIntegral <$> getWord32le
 
+putStop :: FastBinaryPutM
+putStop = putWord8 $ fromIntegral $ fromEnum BT_STOP
+
 putStopBase :: FastBinaryPutM
 putStopBase = putWord8 $ fromIntegral $ fromEnum BT_STOP_BASE
 
@@ -291,6 +300,6 @@ skipValue BT_STRUCT = loop
                     skipValue t
                     loop
 
-fastBinaryGetField :: forall a . (FastBinary a, WireType a) => ItemType -> FastBinaryGetM a
-fastBinaryGetField t | t == getWireType (undefined :: a) = fastBinaryGet
-fastBinaryGetField t = error $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (undefined :: a))
+getField :: forall a . (FastBinary a, WireType a) => ItemType -> FastBinaryGetM a
+getField t | t == getWireType (undefined :: a) = fastBinaryGet
+getField t = error $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (undefined :: a))
