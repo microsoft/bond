@@ -28,6 +28,11 @@ properties/items in your project:
     $BondOptions         : Additional options to pass to the gbc compiler for this project
     $BondCodegenMode     : Code generation mode for gbc to use (default c#)
 
+By default gbc is executed with `--jobs=-2` option to compile multiple .bond
+files concurrently, using 2 fewer jobs than there are processor cores. You can
+override this behaviour by setting a different value for `--jobs` option via
+the `BondOptions` property.
+
 For details see http://microsoft.github.io/bond/manual/bond_cs.html#code-generation
 
 ReSharper
