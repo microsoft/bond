@@ -46,8 +46,8 @@ tyQualCon m t = TyCon $ Qual (mkModuleName m t) (mkIdent t)
 qualInt :: String -> QName
 qualInt = Qual internalModule . Ident
 
-vuqi :: String -> Exp
-vuqi = Var . UnQual . Ident
+unqual :: String -> QName
+unqual = UnQual . Ident
 
 tyInt :: String -> Language.Haskell.Exts.Type
 tyInt = TyCon . qualInt
@@ -66,6 +66,9 @@ parenIntLit n = Paren $ intLit n
 
 declTypeInfo :: Declaration -> (QualifiedName, String)
 declTypeInfo decl = (nsName $ head $ declNamespaces decl, declName decl)
+
+typeParamConstraint :: String -> TypeParam -> Asst
+typeParamConstraint className t = ClassA (qualInt className) [TyVar $ mkVar $ paramName t]
 
 declModule :: Declaration -> ModuleName
 declModule = uncurry mkModuleName . declTypeInfo
@@ -142,7 +145,7 @@ mkHaskellDecl mapping e@Enum{..} = (filename, prettyPrint code)
     decls = dataDecl : defaultDecl : wiretypeDecl : fastBinaryDecl : typesig : values
     dataDecl = DataDecl noLoc NewType [] typeName []
                 [QualConDecl noLoc [] [] (ConDecl typeName [tyInt "Int32"])]
-                [(UnQual $ Ident "Show", []), (UnQual $ Ident "Eq", []), (UnQual $ Ident "Ord", []), (qualInt "Hashable", [])]
+                [(unqual "Show", []), (unqual "Eq", []), (unqual "Ord", []), (qualInt "Hashable", [])]
     defaultDecl = defaultInstance typeName e
     wiretypeDecl = wiretypeInstance typeName e
     fastBinaryDecl = fastBinaryInstance typeName e
@@ -187,7 +190,7 @@ defaultInstance :: Name -> Declaration -> Decl
 defaultInstance typeName Enum{} = InstDecl noLoc Nothing [] [] (qualInt "Default") [TyCon $ UnQual typeName] [InsDecl $ PatBind noLoc (PVar $ Ident "defaultValue") (UnGuardedRhs $ App (Con $ UnQual typeName) (intLit (0 :: Int))) (BDecls [])]
 defaultInstance typeName Struct{declParams, structBase, structFields} = InstDecl noLoc Nothing [] constraints (qualInt "Default") [makeType typeName declParams] [InsDecl $ PatBind noLoc (PVar $ Ident "defaultValue") (UnGuardedRhs $ RecConstr (UnQual typeName) defaults) (BDecls [])]
     where
-    constraints = map (\t -> ClassA (qualInt "Default") [TyVar $ mkVar $ paramName t]) declParams
+    constraints = map (typeParamConstraint "Default") declParams
     fields = map mkDefaultValue structFields
     defaults = if isNothing structBase then fields else FieldUpdate (UnQual baseStructField) (Var $ qualInt "defaultValue") : fields
 defaultInstance _ _ = error "defaultInstance not implemented"
@@ -196,13 +199,13 @@ mkDefaultValue :: Bond.Schema.Field -> FieldUpdate
 mkDefaultValue Field{fieldName, fieldType, fieldDefault} = FieldUpdate (UnQual $ mkVar fieldName) (defValue fieldDefault)
     where
     defValue Nothing = Var $ qualInt "defaultValue"
-    defValue (Just (DefaultBool v)) = Con $ UnQual $ Ident $ show v
+    defValue (Just (DefaultBool v)) = Con $ unqual $ show v
     defValue (Just (DefaultInteger v)) = intLit v
     defValue (Just (DefaultFloat v)) = floatLit v
     defValue (Just (DefaultString v)) = App (Var $ qualInt "fromString") (Lit $ String v)
     defValue (Just (DefaultEnum v)) = let BT_UserDefined decl [] = fieldType
                                        in Var $ Qual (declModule decl) (mkVar v)
-    defValue (Just DefaultNothing) = Con $ UnQual $ Ident "Nothing"
+    defValue (Just DefaultNothing) = Con $ unqual "Nothing"
 
 getTypeModules :: Bond.Schema.Type -> [ModuleName]
 getTypeModules (BT_UserDefined decl args) = declModule decl : concatMap getTypeModules args
@@ -230,18 +233,17 @@ fastBinaryInstance typeName Enum{} = InstDecl noLoc Nothing [] []
     (qualInt "FastBinary")
     [TyCon $ UnQual typeName]
     [
-        InsDecl $ FunBind [Match noLoc (Ident "fastBinaryPut") [PParen (PApp (UnQual typeName) [PVar $ Ident "v"])] Nothing (UnGuardedRhs (App (Var $ qualInt "putInt32le") (Var $ UnQual $ Ident "v"))) (BDecls [])],
-        InsDecl $ PatBind noLoc (PVar $ Ident "fastBinaryGet") (UnGuardedRhs (App (App (Var $ UnQual $ Ident "fmap") (Con $ UnQual typeName)) (Var $ qualInt "getInt32le"))) (BDecls [])
+        InsDecl $ FunBind [Match noLoc (Ident "fastBinaryPut") [PParen (PApp (UnQual typeName) [PVar $ Ident "v"])] Nothing (UnGuardedRhs (App (Var $ qualInt "putInt32le") (Var $ unqual "v"))) (BDecls [])],
+        InsDecl $ PatBind noLoc (PVar $ Ident "fastBinaryGet") (UnGuardedRhs (App (App (Var $ unqual "fmap") (Con $ UnQual typeName)) (Var $ qualInt "getInt32le"))) (BDecls [])
     ]
 
 fastBinaryInstance typeName Struct{declParams, structFields, structBase} = InstDecl noLoc Nothing [] constraints
     (qualInt "FastBinary")
     [makeType typeName declParams]
     [
-        InsDecl (FunBind [Match noLoc (Ident "fastBinaryPut") [PVar recVar] Nothing (UnGuardedRhs $ Do putCode) (BDecls [])]),
-        InsDecl $ PatBind noLoc (PVar $ Ident "fastBinaryGet") getCode
-            (BDecls [FunBind updateFuncCode])
-        ]
+        InsDecl $ FunBind [Match noLoc (Ident "fastBinaryPut") [PVar recVar] Nothing (UnGuardedRhs $ Do putCode) (BDecls [])],
+        InsDecl $ PatBind noLoc (PVar $ Ident "fastBinaryGet") (UnGuardedRhs getCode) (BDecls [FunBind updateFuncCode])
+      ]
     where
     recVar = Ident "v'"
     fieldVar = Ident "f'"
@@ -253,24 +255,24 @@ fastBinaryInstance typeName Struct{declParams, structFields, structBase} = InstD
     putBaseStopCode = Qualifier $ Var $ qualInt "putStopBase"
     putCode | isNothing structBase = putFieldsCode
             | otherwise = putBaseCode : putBaseStopCode : putFieldsCode
-    getWithBaseCode = UnGuardedRhs $ Do [
+    getWithBaseCode = Do [
         Generator noLoc (PVar baseVar) (Var $ qualInt "fastBinaryGet"),
-        Qualifier $ App (App (Var $ qualInt "getFieldsWith") (Var $ UnQual $ Ident "update")) (Paren $ RecUpdate (Var $ qualInt "defaultValue") [FieldUpdate (UnQual $ baseStructField) (Var $ UnQual baseVar)])
+        Qualifier $ App (App (Var $ qualInt "getFieldsWith") (Var $ unqual "update")) (Paren $ RecUpdate (Var $ qualInt "defaultValue") [FieldUpdate (UnQual baseStructField) (Var $ UnQual baseVar)])
       ]
-    getNoBaseCode = UnGuardedRhs $ App (App (Var $ qualInt "getFieldsWith") (vuqi "update")) (Var $ qualInt "defaultValue")
+    getNoBaseCode = App (App (Var $ qualInt "getFieldsWith") (Var $ unqual "update")) (Var $ qualInt "defaultValue")
     getCode | isNothing structBase = getNoBaseCode
             | otherwise = getWithBaseCode
     readField Field{fieldName, fieldOrdinal} =
-        Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ UnQual $ Ident "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) (Var $ UnQual fieldVar)])))) (Paren $ App (Var $ qualInt "fastBinaryGetField") (Var $ UnQual typeVar))) (BDecls [])
+        Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) (Var $ UnQual fieldVar)])))) (Paren $ App (Var $ qualInt "fastBinaryGetField") (Var $ UnQual typeVar))) (BDecls [])
     skipReadCode = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PWildCard] Nothing (UnGuardedRhs $ Do [
                     Qualifier (App (Var $ qualInt "skipValue") (Var $ UnQual typeVar)),
-                    Qualifier (App (vuqi "return") (Var $ UnQual recVar))]) (BDecls [])
+                    Qualifier (App (Var $ unqual "return") (Var $ UnQual recVar))]) (BDecls [])
     readFieldsCode = map readField structFields
     updateFuncCode = readFieldsCode ++ [skipReadCode]
     paramConstraint t = [
-        ClassA (qualInt "FastBinary") [TyVar $ mkVar $ paramName t],
-        ClassA (qualInt "WireType") [TyVar $ mkVar $ paramName t],
-        ClassA (qualInt "Default") [TyVar $ mkVar $ paramName t]
+        typeParamConstraint "FastBinary" t,
+        typeParamConstraint "WireType" t,
+        typeParamConstraint "Default" t
       ]
     constraints = concatMap paramConstraint declParams
 
