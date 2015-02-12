@@ -239,13 +239,13 @@ getFieldsWith updateFunc = loop
     where
     loop v = do
         t <- fmap (toEnum . fromIntegral) getWord8
-        process v t
-    process v BT_STOP = return v
-    process v BT_STOP_BASE = return v
-    process v t = do
-        n <- getWord16le
-        v' <- updateFunc v t n
-        loop v'
+        case t of
+            BT_STOP -> return v
+            BT_STOP_BASE -> return v
+            _ -> do
+                    n <- getWord16le
+                    v' <- updateFunc v t n
+                    loop v'
 
 skipValue :: ItemType -> FastBinaryGetM ()
 skipValue BT_STOP = error "skipValue BT_STOP"
@@ -283,13 +283,13 @@ skipValue BT_STRUCT = loop
     where
     loop = do
         t <- fmap (toEnum . fromIntegral) getWord8
-        process t
-    process BT_STOP = return ()
-    process BT_STOP_BASE = loop -- base fields finished, keep going
-    process t = do
-        skip 2 -- skip ordinal
-        skipValue t
-        loop
+        case t of
+            BT_STOP -> return ()
+            BT_STOP_BASE -> return ()
+            _ -> do
+                    skip 2 -- skip ordinal
+                    skipValue t
+                    loop
 
 fastBinaryGetField :: forall a . (FastBinary a, WireType a) => ItemType -> FastBinaryGetM a
 fastBinaryGetField t | t == getWireType (undefined :: a) = fastBinaryGet
