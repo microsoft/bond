@@ -239,19 +239,27 @@ fastBinaryInstance typeName Struct{declParams, structFields, structBase} = InstD
     [makeType typeName declParams]
     [
         InsDecl (FunBind [Match noLoc (Ident "fastBinaryPut") [PVar recVar] Nothing (UnGuardedRhs $ Do putCode) (BDecls [])]),
-        InsDecl $ PatBind noLoc (PVar $ Ident "fastBinaryGet") (UnGuardedRhs $ App (App (Var $ qualInt "getFieldsWith") (vuqi "update")) (Var $ qualInt "defaultValue"))
+        InsDecl $ PatBind noLoc (PVar $ Ident "fastBinaryGet") getCode
             (BDecls [FunBind updateFuncCode])
         ]
     where
     recVar = Ident "v'"
     fieldVar = Ident "f'"
     typeVar = Ident "t'"
+    baseVar = Ident "b'"
     saveField Field{fieldName, fieldOrdinal} = Qualifier $ App (App (Var $ qualInt "putField") (intLit fieldOrdinal)) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar))
     putFieldsCode = map saveField structFields
     putBaseCode = Qualifier $ App (Var $ qualInt "fastBinaryPut") (Paren $ App (Var $ UnQual baseStructField) (Var $ UnQual recVar))
     putBaseStopCode = Qualifier $ Var $ qualInt "putStopBase"
     putCode | isNothing structBase = putFieldsCode
             | otherwise = putBaseCode : putBaseStopCode : putFieldsCode
+    getWithBaseCode = UnGuardedRhs $ Do [
+        Generator noLoc (PVar baseVar) (Var $ qualInt "fastBinaryGet"),
+        Qualifier $ App (App (Var $ qualInt "getFieldsWith") (Var $ UnQual $ Ident "update")) (Paren $ RecUpdate (Var $ qualInt "defaultValue") [FieldUpdate (UnQual $ baseStructField) (Var $ UnQual baseVar)])
+      ]
+    getNoBaseCode = UnGuardedRhs $ App (App (Var $ qualInt "getFieldsWith") (vuqi "update")) (Var $ qualInt "defaultValue")
+    getCode | isNothing structBase = getNoBaseCode
+            | otherwise = getWithBaseCode
     readField Field{fieldName, fieldOrdinal} =
         Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ UnQual $ Ident "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) (Var $ UnQual fieldVar)])))) (Paren $ App (Var $ qualInt "fastBinaryGetField") (Var $ UnQual typeVar))) (BDecls [])
     skipReadCode = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PWildCard] Nothing (UnGuardedRhs $ Do [
