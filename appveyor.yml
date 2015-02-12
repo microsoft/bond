@@ -56,15 +56,9 @@ build_script:
 
         if (-not $?) { throw "build failed" }
 
-        # codegen with public fields
+        # codegen with public fields and interfaces used to represent collections
 
         msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-        if (-not $?) { throw "build failed" }
-
-        # codegen with interfaces used to represent collections
-
-        msbuild cs\cs.sln /verbosity:minimal /p:Configuration=CollectionInterfaces /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
         if (-not $?) { throw "build failed" }
 
@@ -99,8 +93,8 @@ test_script:
 
     if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-        vstest.console /Framework:framework40 /logger:Appveyor cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net40\CollectionInterfaces\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
-        vstest.console /Framework:framework45 /logger:Appveyor cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\core\bin\debug\net45\CollectionInterfaces\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+        vstest.console /Framework:framework40 /logger:Appveyor cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
+        vstest.console /Framework:framework45 /logger:Appveyor cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
 
         #cd build
 
