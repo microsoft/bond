@@ -3,16 +3,16 @@
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using Bond;
     using Bond.Expressions;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
 
-    [TestClass]
+    [TestFixture]
     public class SerializerGeneratorFactoryTests
     {
-        [TestMethod]
+        [Test]
         public void CustomWriterWithStandardSerializer()
         {
             SerializerTest<TestWriter>();
@@ -20,7 +20,7 @@
             TypedTranscoderTest<TestWriter>();
         }
 
-        [TestMethod]
+        [Test]
         public void CustomWriterWithCustomSerializer()
         {
             SerializerTest<WriterWithAttribute>();

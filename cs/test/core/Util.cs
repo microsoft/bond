@@ -7,7 +7,7 @@ namespace UnitTest
     using System.Reflection;
     using System.Text;
     using System.Xml;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
