@@ -6,7 +6,7 @@ Debug
 Release
 
 # Nuget packages 
-packages/Newtonsoft.Json.*/
+packages/
 
 # Profiler artifacts
 *.exe.manifest
