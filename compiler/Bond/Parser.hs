@@ -22,8 +22,11 @@ import Bond.Lexer
 import Bond.Schema
 
 -- parser state, mutable and global
--- list of structs, enums and aliases declared in the current and all imported files
-type Symbols = [Declaration]
+data Symbols =
+    Symbols
+    { symbols :: [Declaration] -- list of structs, enums and aliases declared in the current and all imported files
+    , imports :: [FilePath]    -- list of imported files
+    }
 
 -- parser environment, immutable but contextual
 data Environment =
@@ -39,7 +42,7 @@ newEnvironment = Environment [] []
 
 type Parser a = ParsecT String Symbols (ReaderT Environment IO) a
 
-parseBond = runParserT bond []
+parseBond = runParserT bond $ Symbols [] []
 
 data Bond = Bond [Import] [Namespace] [Declaration]
 
@@ -63,13 +66,16 @@ import_ = do
     setPosition pos
     return i
 
-processImport :: Import -> Parser Bond
+processImport :: Import -> Parser()
 processImport (Import file) = do
     Environment { currentFile = currentFile, resolveImport = resolveImport } <- ask
     (path, content) <- liftIO $ resolveImport currentFile file
-    setInput content
-    setPosition $ initialPos path
-    local (\e -> e { currentFile = path }) bond
+    Symbols { imports = imports } <- getState
+    if path `elem` imports then return () else do
+            modifyState (\u -> u { imports = path:imports } ) 
+            setInput content
+            setPosition $ initialPos path
+            void $ local (\e -> e { currentFile = path }) bond
 
 -- parser for struct, enum or type alias declaration/definition
 declaration :: Parser Declaration
@@ -83,7 +89,7 @@ declaration = do
     return decl
 
 updateSymbols decl = do
-    (previous, symbols) <- partition (duplicateDeclaration decl) <$> getState
+    (previous, symbols) <- partition (duplicateDeclaration decl) <$> symbols <$> getState
     case reconcile previous decl of
         (False, _) -> fail $ "The " ++ show decl ++ " has been previously defined as " ++ show (head previous)
         (True, f) -> modifyState (f symbols)
@@ -98,14 +104,14 @@ updateSymbols decl = do
     -- paths which are unreliable.
     reconcile [x] y = (x == y, const id)
     paramsMatch = (==) `on` (map paramConstraint . declParams)
-    add x xs _ = x:xs
+    add x xs u = u { symbols = x:xs }
 
 findSymbol :: QualifiedName -> Parser Declaration
 findSymbol name = doFind <?> "qualified name"
   where
     doFind = do
         namespaces <- asks currentNamespaces
-        symbols <- getState
+        Symbols { symbols = symbols } <- getState
         case find (delcMatching namespaces name) symbols of
             Just decl -> return decl
             Nothing -> fail $ "Unknown symbol: " ++ showQualifiedName name

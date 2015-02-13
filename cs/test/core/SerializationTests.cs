@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using Bond;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
     // Name conflicts with Bond.Tag
     public abstract class wstring { }
@@ -28,16 +28,16 @@
         }
     }
 
-    [TestClass]
+    [TestFixture]
     public class SerializationTests
     {
-        [TestMethod]
+        [Test]
         public void BasicTypes()
         {
             TestSerialization<BasicTypes>();
         }
 
-        [TestMethod]
+        [Test]
         public void IntegerLimits()
         {
             var limits = new[] { 
@@ -79,102 +79,102 @@
             memoryRoundtrip(Util.SerializeSP, Util.DeserializeUnsafeSP<BasicTypes, BasicTypes>);
         }
 
-        [TestMethod]
+        [Test]
         public void ReadonlyBasicTypes()
         {
             TestSerialization<Readonly.BasicTypes>();
         }
 
-        [TestMethod]
+        [Test]
         public void ReadonlySimpleContainers()
         {
             TestSerialization<Readonly.SimpleContainers>();
         }
 
-        [TestMethod]
+        [Test]
         public void Nested()
         {
             TestSerialization<Nested>();
         }
 
-        [TestMethod]
+        [Test]
         public void Void()
         {
             TestSerialization<Bond.Void>();
         }
 
-        [TestMethod]
+        [Test]
         public void Lists()
         {
             TestSerialization<Lists>();
         }
 
-        [TestMethod]
+        [Test]
         public void Vectors()
         {
             TestSerialization<Vectors>();
         }
 
-        [TestMethod]
+        [Test]
         public void Sets()
         {
             TestSerialization<Sets>();
         }
 
-        [TestMethod]
+        [Test]
         public void Maps()
         {
             TestSerialization<Maps>();
         }
 
-        [TestMethod]
+        [Test]
         public void Containers()
         {
             TestSerialization<BondClass<SortedSet<string>>>();
             TestSerialization<Containers>();
         }
 
-        [TestMethod]
+        [Test]
         public void NestedContainers()
         {
             TestSerialization<NestedContainers>();
         }
 
-        [TestMethod]
+        [Test]
         public void Inheritance()
         {
             TestSerialization<Deep>();
             TestSerialization<Derived>();
         }
 
-        [TestMethod]
+        [Test]
         public void Inheritance_SliceToBase()
         {
             TestSerialization<Derived, Nested>();
             TestSerialization<Derived, EmptyBase>();
         }
 
-        [TestMethod]
+        [Test]
         public void Inheritance_SliceFieldToBase()
         {
             TestFieldSerialization<EmptyBase, Nested>();
             TestFieldSerialization<DerivedView, EmptyBase>();
         }
 
-        [TestMethod]
+        [Test]
         public void Nothing()
         {
             TestSerialization<Nothing>();
             TestSerialization<NotNothingView, Nothing>();
         }
         
-        [TestMethod]
+        [Test]
         public void NullableBasicTypes()
         {
             TestSerialization<NullableBasicTypes>();
         }
 
-        [TestMethod]
+        [Test]
         public void NullableStruct()
         {
             TestSerialization<NullableStruct>();
@@ -200,7 +200,7 @@
             test(Util.SerializeCB, Util.DeserializeCB<BondClass<To>>);
         }
 
-        [TestMethod]
+        [Test]
         public void TypeMismatch()
         {
             TypeMismatch<List<int>, List<HashSet<int>>>();
@@ -218,7 +218,7 @@
             TypeMismatch<Dictionary<int, int>, HashSet<string>>();
         }
 
-        [TestMethod]
+        [Test]
         public void ContainersOfNullable()
         {
             TestSerialization<ContainersOfNullable>();
@@ -257,13 +257,13 @@
             Util.AllSerializeDeserialize<ContainersOfNullable, ContainersOfNullable>(from);
         }
         
-        [TestMethod]
+        [Test]
         public void NullableContainers()
         {
             TestSerialization<NullableContainers>();
         }
 
-        [TestMethod]
+        [Test]
         public void Blobs()
         {
             TestSerialization<StructWithBlobs>();
@@ -271,13 +271,13 @@
             TestSerialization<StructWithByteLists, StructWithBlobs>();
         }
 
-        [TestMethod]
+        [Test]
         public void Recursive()
         {
             TestSerialization<Tree>();
         }
 
-        [TestMethod]
+        [Test]
         public void TypePromotion()
         {
             TestTypePromotion<byte, UInt16>();
@@ -299,7 +299,7 @@
             TestTypePromotion<Int32, Int32?>();
         }
 
-        [TestMethod]
+        [Test]
         public void Views()
         {
             TestSerialization<BasicTypes, BasicTypesView>();
@@ -307,7 +307,7 @@
         }
 
 
-        [TestMethod]
+        [Test]
         public void Omit()
         {
             // Omit optional fields set to default value
@@ -336,7 +336,7 @@
             TestPayloadSize(Util.SerializeCB, Util.TranscodeCBCB, new RequiredOptional(), 4);
         }
 
-        [TestMethod]
+        [Test]
         public void Skip()
         {
             TestFieldSkip<bool>();
@@ -387,7 +387,7 @@
             //testRequired(Util.SerializeSP, Util.DeserializeSP<From, To>);
         }
 
-        [TestMethod]
+        [Test]
         public void Required()
         {
             TestSerialization<Required>();
@@ -399,7 +399,7 @@
             TestRequired<BondClass<double>, BondClass<BasicTypes, double>>();
         }
 
-        [TestMethod]
+        [Test]
         public void Box()
         {
             TestSerialization<Bond.Box<bool>>();
@@ -415,7 +415,7 @@
             TestSerialization<Bond.Box<double>>();
         }
 
-        [TestMethod]
+        [Test]
         public void TypeFromFileWithSpaces()
         {
             Assert.IsNotNull(new EnsureSpacesInPathsWork());

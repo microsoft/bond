@@ -59,5 +59,6 @@ executable gbc
                     cmdargs >= 0.10.10,
                     mtl >= 2.1,
                     directory >= 1.1,
+                    async >= 2.0.1.0,
                     monad-loops >= 0.4,
                     haskell-src-exts >= 1.15

@@ -1,9 +1,9 @@
 ﻿namespace UnitTest
 {
     using Bond;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class CloningTests
     {
         public void TestCloning<T, U>() 
@@ -16,7 +16,7 @@
             Assert.IsTrue(source.IsEqual(target));
         }
 
-        [TestMethod]
+        [Test]
         public void Cloning()
         {
             TestCloning<BasicTypes, BasicTypes>();
@@ -41,7 +41,7 @@
             TestCloning<Tree, Tree>();
         }
 
-        [TestMethod]
+        [Test]
         public void CloningBonded()
         {
             var source = new StructWithBonded();

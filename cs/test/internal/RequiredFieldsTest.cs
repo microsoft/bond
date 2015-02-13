@@ -1,9 +1,9 @@
 ﻿namespace InternalTest
 {
     using Bond.Expressions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class RequiredFieldsTest
     {
         void TestBitmap(int count)
@@ -20,7 +20,7 @@
             Assert.IsFalse(b.IsAnySet);
         }
         
-        [TestMethod]
+        [Test]
         public void BitmapTest()
         {
             for (var i = 1; i < 129; ++i)

@@ -3,32 +3,32 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using Bond;
     using Bond.Tag;
 
-    [TestClass]
+    [TestFixture]
     public class ReflectionDefaultValueTests
     {
-        [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+        [Test]
         public void ReflectionDefaultAttribute_Absent_On_Interface()
         {
-            GetDefaultValue<IFoo>("NoDefault");
+            Assert.Throws<InvalidOperationException>(() => GetDefaultValue<IFoo>("NoDefault"));
         }
 
-        [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+        [Test]
         public void ReflectionDefaultAttribute_Non_Null_On_Nullable_Property()
         {
-            GetDefaultValue<IFoo>("NullableNonNullDefault");
+            Assert.Throws<InvalidOperationException>(() => GetDefaultValue<IFoo>("NullableNonNullDefault"));
         }
 
-        [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+        [Test]
         public void ReflectionDefaultAttribute_On_Class()
         {
-            GetDefaultValue<Foo>("HasDefault");
+            Assert.Throws<InvalidOperationException>(() => GetDefaultValue<Foo>("HasDefault"));
         }
 
-        [TestMethod]
+        [Test]
         public void ReflectionDefaultAttribute_On_Interface()
         {
             Assert.AreEqual(7, GetDefaultValue<IFoo>("IntField"));

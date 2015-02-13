@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\Bond.CSharp.3.0.2\build\Bond.CSharp.props" Condition="Exists('packages\Bond.CSharp.3.0.2\build\bond.CSharp.props')" />    
+  <Import Project="packages\Bond.CSharp.3.0.4\build\Bond.CSharp.props" Condition="Exists('packages\Bond.CSharp.3.0.4\build\bond.CSharp.props')" />    
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -44,6 +44,9 @@
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
   </ItemGroup>
   <ItemGroup>
+    <BondImportDirectory Include="..\test\core\import dir with spaces\" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\test\core\AttributesTests.cs" />
     <Compile Include="..\test\core\BondClass.cs" />
     <Compile Include="..\test\core\BondedTests.cs" />
@@ -70,11 +73,16 @@
     <BondCodegen Include="..\test\core\ReadOnly.bond">
       <Options>--readonly-properties</Options>
     </BondCodegen>
+    <BondCodegen Include="..\test\core\Containers.bond">
+      <Options>--collection-interfaces</Options>
+    </BondCodegen>
     <BondCodegen Include="..\test\core\UnitTest.bond">
       <Options>--using="DateTime=System.DateTime"</Options>
     </BondCodegen>
+    <BondCodegen Include="..\test\core\import dir with spaces\Bond File With Spaces.bond" />
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\UnitTest_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\Containers_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\Aliases_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\ReadOnly_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\NamespaceConflict_types.cs" Condition="False" />
@@ -83,19 +91,22 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Bond">
-      <HintPath>packages\Bond.Runtime.CSharp.3.0.2\lib\net45\Bond.dll</HintPath>
+      <HintPath>packages\Bond.Runtime.CSharp.3.0.4\lib\net45\Bond.dll</HintPath>
     </Reference>
     <Reference Include="Bond.Attributes">
-      <HintPath>packages\Bond.Runtime.CSharp.3.0.2\lib\net45\Bond.Attributes.dll</HintPath>
+      <HintPath>packages\Bond.Runtime.CSharp.3.0.4\lib\net45\Bond.Attributes.dll</HintPath>
     </Reference>
     <Reference Include="Bond.IO">
-      <HintPath>packages\Bond.Runtime.CSharp.3.0.2\lib\net45\Bond.IO.dll</HintPath>
+      <HintPath>packages\Bond.Runtime.CSharp.3.0.4\lib\net45\Bond.IO.dll</HintPath>
     </Reference>
     <Reference Include="Bond.JSON">
-      <HintPath>packages\Bond.Runtime.CSharp.3.0.2\lib\net45\Bond.JSON.dll</HintPath>
+      <HintPath>packages\Bond.Runtime.CSharp.3.0.4\lib\net45\Bond.JSON.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -103,5 +114,5 @@
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="packages\Bond.CSharp.3.0.2\build\Bond.CSharp.targets" Condition="Exists('packages\Bond.CSharp.3.0.2\build\Bond.CSharp.targets')" />
+  <Import Project="packages\Bond.CSharp.3.0.4\build\Bond.CSharp.targets" Condition="Exists('packages\Bond.CSharp.3.0.4\build\Bond.CSharp.targets')" />
 </Project>

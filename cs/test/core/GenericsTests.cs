@@ -2,44 +2,44 @@
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
     using System.IO;
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
 
-    [TestClass]
+    [TestFixture]
     public class GenericsTests
     {
-        [TestMethod]
+        [Test]
         public void Generics()
         {
             Util.AllSerializeDeserialize<Generics, Generics>(new Generics());
             Util.AllSerializeDeserialize<Generics, Generics>(Random.Init<Generics>());
         }
 
-        [TestMethod]
+        [Test]
         public void GenericsNothing()
         {
             Util.AllSerializeDeserialize<GenericsWithNothing, GenericsWithNothing>(new GenericsWithNothing());
             Util.AllSerializeDeserialize<GenericsWithNothing, GenericsWithNothing>(Random.Init<GenericsWithNothing>());
         }
 
-        [TestMethod]
+        [Test]
         public void GenericInheritance()
         {
             Util.AllSerializeDeserialize<GenericInheritance, GenericInheritance>(new GenericInheritance());
             Util.AllSerializeDeserialize<GenericInheritance, GenericInheritance>(Random.Init<GenericInheritance>());
         }
 
-        [TestMethod]
+        [Test]
         public void GenericWString()
         {
             Util.AllSerializeDeserialize<GenericWString, NonGenericWString>(new GenericWString());
             Util.AllSerializeDeserialize<GenericWString, NonGenericWString>(Random.Init<GenericWString>());
         }
 
-        [TestMethod]
+        [Test]
         public void GenericsBonded()
         {
             var obj = new GenericBonded<Nested>();
@@ -77,7 +77,7 @@
             Assert.IsTrue(Comparer.Equal(poly2, obj.poly[2].Deserialize<Derived>()));
         }
 
-        [TestMethod]
+        [Test]
         public void BondedGeneric()
         {
             var obj = new BondedGeneric();
@@ -98,7 +98,7 @@
             Assert.IsTrue(Comparer.Equal(field2, obj.cbgws.field.Deserialize<GenericDerived<string>>()));
         }
 
-        [TestMethod]
+        [Test]
         public void GenericConstraintViolation()
         {
             try
@@ -121,6 +121,18 @@
             GenericCompareTrue(nullable, default(T?));
         }
 
+        //NUnit workaround. It can't compare two null arrays
+        void GenericHelperArraySegment()
+        {
+            var value = GenericFactory.Create<ArraySegment<byte>>();
+            var nullable = GenericFactory.Create<ArraySegment<byte>?>();
+
+            Assert.IsNull(value.Array);
+            Assert.AreEqual(0, value.Count);
+            Assert.AreEqual(0, value.Offset);
+            Assert.IsNull(nullable);
+        }
+
         void GenericHelperClass<T>() where T : class, new()
         {
             var value = GenericFactory.Create<T>();
@@ -139,7 +151,7 @@
             Assert.IsTrue(Comparer.Equal(right, left));
         }
 
-        [TestMethod]
+        [Test]
         public void GenericHelpers()
         {
             GenericHelperScalar<bool>();
@@ -153,7 +165,7 @@
             GenericHelperScalar<ulong>();
             GenericHelperScalar<float>();
             GenericHelperScalar<double>();
-            GenericHelperScalar<ArraySegment<byte>>();
+            GenericHelperArraySegment();
 
             GenericHelperClass<BasicTypes>();
             GenericHelperClass<List<BasicTypes>>();

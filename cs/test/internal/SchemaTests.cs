@@ -2,12 +2,12 @@
 {
     using System;
     using Bond;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class SchemaTests
     {
-        [TestMethod]
+        [Test]
         public void Schema_Metadata()
         {
             Assert.AreEqual("BasicTypes", Schema<BasicTypes>.Metadata.name);
@@ -21,7 +21,7 @@
             Assert.AreEqual("Generic<map<int8, InternalTest.EnumType1>>", Schema<Names>.RuntimeSchema.SchemaDef.structs[4].metadata.name);
         }
 
-        [TestMethod]
+        [Test]
         public void Schema_Fields()
         {
             Assert.AreEqual("_bool", Schema<BasicTypes>.Fields[0].name);
@@ -32,7 +32,7 @@
             Assert.AreEqual(Modifier.Required, Schema<Required>.Fields[0].modifier);
         }
 
-        [TestMethod]
+        [Test]
         public void Schema_DefaultValues()
         {
             Assert.AreEqual(1ul, Schema<StructWithDefaults>.Fields[0].default_value.uint_value);

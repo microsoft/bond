@@ -66,10 +66,11 @@
 
     <!-- just for a simpler commandline read -->
     <PropertyGroup>
-      <_BondExe Condition="'$(OS)' != 'Unix' Or Exists('$(BOND_COMPILER_PATH)\gbc.exe')">"$(BOND_COMPILER_PATH)\gbc.exe"</_BondExe>
-      <_BondExe Condition="'$(OS)' == 'Unix' And !Exists('$(BOND_COMPILER_PATH)\gbc.exe')">gbc</_BondExe>
+      <_BondExe>gbc</_BondExe>
+      <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc.exe')">"$(BOND_COMPILER_PATH)\gbc.exe"</_BondExe>
+      <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc')">"$(BOND_COMPILER_PATH)\gbc"</_BondExe>
       <_BondImportDirs>--import-dir="$(BOND_INCLUDE_PATH)" @(BondImportDirectory -> '--import-dir=&quot;%(Identity)\.&quot;',' ')</_BondImportDirs>
-      <_BondCommand>$(_BondExe) $(BondCodegenMode) $(_BondImportDirs) --namespace=bond=Bond --output-dir="$(BondOutputDirectory)\."</_BondCommand>
+      <_BondCommand>$(_BondExe) $(BondCodegenMode) $(_BondImportDirs) --jobs=-2 --namespace=bond=Bond --output-dir="$(BondOutputDirectory)\."</_BondCommand>
     </PropertyGroup>
 
     <!-- We'll optimize to generate in a single command where possible -->

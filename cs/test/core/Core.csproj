@@ -12,8 +12,6 @@
     <RootNamespace>UnitTest</RootNamespace>
     <AssemblyName>Bond.UnitTest</AssemblyName>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
     <DependentOutputPath>$(OutputPath)</DependentOutputPath>
@@ -71,6 +69,7 @@
     <BondCodegen Include="import dir with spaces\Bond File With Spaces.bond" />
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\UnitTest_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\Containers_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\Aliases_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\ReadOnly_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\NamespaceConflict_types.cs" Condition="False" />
@@ -79,7 +78,9 @@
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json" Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -98,13 +99,12 @@
     <Reference Include="Bond.IO">
       <HintPath>..\..\src\io\$(DependentOutputPath)\Bond.IO.dll</HintPath>
     </Reference>
-    <Reference Include="Bond.Json">
-      <HintPath>..\..\src\json\$(DependentOutputPath)\Bond.Json.dll</HintPath>
+    <Reference Include="Bond.JSON">
+      <HintPath>..\..\src\json\$(DependentOutputPath)\Bond.JSON.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
 </Project>
