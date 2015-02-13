@@ -306,9 +306,11 @@ putFieldsImpl Struct{structFields, structBase} = FunBind [Match noLoc (Ident "pu
     where
     recVar = Ident "v'"
     saveFunc fieldName fieldOrdinal func = Qualifier $ App (App (Var $ qualInt func) (intLit fieldOrdinal)) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar))
+    saveUnlessDefaultFunc fieldName fieldOrdinal func = Qualifier $ App (App (Var $ qualInt "unless") (Paren (InfixApp (App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar)) (QVarOp $ UnQual $ Symbol "==") (App (Var $ UnQual $ mkVar fieldName) (Var $ qualInt "defaultValue"))))) (Paren $ App (App (Var $ qualInt func) (intLit fieldOrdinal)) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar)))
     saveField Field{fieldType, fieldName, fieldOrdinal}
         | BT_Maybe _ <- fieldType = saveFunc fieldName fieldOrdinal "putMaybeField"
-        | otherwise = saveFunc fieldName fieldOrdinal "putField"
+        | BT_UserDefined _ _ <- fieldType = saveFunc fieldName fieldOrdinal "putField"
+        | otherwise = saveUnlessDefaultFunc fieldName fieldOrdinal "putField"
     putFieldsCode = map saveField structFields
     putBaseCode = Qualifier $ App (Var $ qualInt "fastBinaryPutBase") (Paren $ App (Var $ UnQual baseStructField) (Var $ UnQual recVar))
     putCode | isNothing structBase = putFieldsCode

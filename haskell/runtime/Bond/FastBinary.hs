@@ -15,7 +15,6 @@ module Bond.FastBinary (
   ) where
 
 import Bond.Types
-import Bond.Default
 import Bond.Wire
 import Control.Monad
 import Control.Monad.ST (runST, ST)
@@ -228,21 +227,18 @@ putStop = putWord8 $ fromIntegral $ fromEnum BT_STOP
 putStopBase :: FastBinaryPutM
 putStopBase = putWord8 $ fromIntegral $ fromEnum BT_STOP_BASE
 
-putField' :: (FastBinary t, WireType t) => Word16 -> t -> FastBinaryPutM
-putField' n f = do
+putField :: (FastBinary t, WireType t) => Word16 -> t -> FastBinaryPutM
+putField n f = do
     let t = getWireType f
     putWord8 $ fromIntegral $ fromEnum t
     putWord16le n
     fastBinaryPut f
 
-putField :: (Default t, FastBinary t, WireType t) => Word16 -> t -> FastBinaryPutM
-putField n f = unless (f == defaultValue) $ putField' n f
-
 putMaybeField :: (FastBinary t, WireType t) => Word16 -> Maybe t -> FastBinaryPutM
 putMaybeField _ Nothing = return ()
-putMaybeField n (Just f) = putField' n f
+putMaybeField n (Just f) = putField n f
 
-getFieldsWith :: Default a => (a -> ItemType -> Word16 -> FastBinaryGetM a) -> a -> FastBinaryGetM a
+getFieldsWith :: (a -> ItemType -> Word16 -> FastBinaryGetM a) -> a -> FastBinaryGetM a
 getFieldsWith updateFunc = loop
     where
     loop v = do
