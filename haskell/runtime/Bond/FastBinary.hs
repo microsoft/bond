@@ -234,7 +234,6 @@ putField' n f = do
     putWord8 $ fromIntegral $ fromEnum t
     putWord16le n
     fastBinaryPut f
-    when (t == BT_STRUCT) $ putWord8 $ fromIntegral $ fromEnum BT_STOP
 
 putField :: (Default t, FastBinary t, WireType t) => Word16 -> t -> FastBinaryPutM
 putField n f = unless (f == defaultValue) $ putField' n f
