@@ -49,6 +49,7 @@ data Options
         , output_dir :: FilePath
         , using :: [String]
         , namespace :: [String]
+        , jobs :: Maybe Int
         }
       deriving (Show, Data, Typeable)
 
