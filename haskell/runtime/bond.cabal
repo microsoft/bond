@@ -43,9 +43,15 @@ cabal-version:      >=1.8
 
 
 library
-  ghc-options:      -W -Wall
+  ghc-options:      -O2 -W -Wall
   
-  exposed-modules:  Bond.Imports
+  exposed-modules:  Bond.Imports,
+                    Bond.API
+
+  other-modules:    Bond.Default,
+                    Bond.FastBinary,
+                    Bond.Types,
+                    Bond.Wire
   
   build-depends:    base >=4.5,
                     array >= 0.4,
@@ -56,3 +62,15 @@ library
                     text >= 1.2,
                     unordered-containers >= 0.2,
                     vector >= 0.10
+
+test-suite compat
+  type:             exitcode-stdio-1.0
+  main-is:          CompatTest.hs
+  hs-source-dirs:   tests, generated
+  build-depends:    base >= 4.5,
+                    binary >= 0.7,
+                    bytestring >= 0.10,
+                    HUnit >= 1.2,
+                    test-framework >= 0.8,
+                    test-framework-hunit >= 0.2,
+                    bond
