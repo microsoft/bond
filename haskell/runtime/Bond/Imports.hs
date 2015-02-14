@@ -1,4 +1,4 @@
-module Bond.Internal (
+module Bond.Imports (
     module X,
     Hashable,
     unless

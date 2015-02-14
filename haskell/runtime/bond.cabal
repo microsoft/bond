@@ -1,5 +1,5 @@
 -- The name of the package.
-name:               gbc
+name:               bond
 
 -- The package version.  See the Haskell package versioning policy (PVP) 
 -- for standards guiding when and how versions should be incremented.
@@ -10,7 +10,7 @@ name:               gbc
 version:            3.0.2.0
 
 -- A short (one-line) description of the package.
-synopsis:           The Glorious Bond Compilation System
+synopsis:           Bond Library
 
 -- A longer description of the package.
 -- description:         
@@ -25,11 +25,11 @@ license:            MIT
 -- license-file:    LICENSE
 
 -- The package author(s).
-author:             Adam Sapek
+author:             Andrey Sverdlichenko
 
 -- An email address to which users can send suggestions, bug reports, and 
 -- patches.
-maintainer:         adamsap@microsoft.com
+maintainer:         andreys@microsoft.com
 
 -- A copyright notice.
 copyright:          Copyright (C) Microsoft. All rights reserved.
@@ -42,23 +42,17 @@ build-type:         Simple
 cabal-version:      >=1.8
 
 
-executable gbc
-  -- .hs or .lhs file containing the Main module.
-  main-is:          Main.hs
+library
+  ghc-options:      -W -Wall
   
-  -- Modules included in this executable, other than Main.
-  -- other-modules:       
+  exposed-modules:  Bond.Imports
   
-  -- Other library packages from which modules are imported.
-  build-depends:    base >=4.5, 
-                    shakespeare >= 2.0,
-                    text >=0.11,
-                    parsec >=3.1,
-                    filepath >=1.0,
-                    cmdargs >= 0.10.10,
-                    mtl >= 2.1,
-                    directory >= 1.1,
-                    async >= 2.0.1.0,
-                    monad-loops >= 0.4,
-                    haskell-src-exts,
-                    containers
+  build-depends:    base >=4.5,
+                    array >= 0.4,
+                    binary >= 0.7,
+                    bytestring >= 0.10,
+                    containers >= 0.5,
+                    hashable >= 1.2,
+                    text >= 1.2,
+                    unordered-containers >= 0.2,
+                    vector >= 0.10

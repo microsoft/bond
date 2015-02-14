@@ -125,7 +125,7 @@ importTemplate = ImportDecl {
 
 defaultImport :: ImportDecl
 defaultImport = importTemplate {
-                    importModule = ModuleName "Bond.Internal",
+                    importModule = ModuleName "Bond.Imports",
                     importAs = Just internalModule
                 }
 

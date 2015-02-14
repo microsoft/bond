@@ -27,7 +27,8 @@ set (sources
     Bond/Template/Cpp/Types_h.hs
     Bond/Template/Cpp/Util.hs
     Bond/Template/Cs/Types_cs.hs
-    Bond/Template/Cs/Util.hs)
+    Bond/Template/Cs/Util.hs
+    Bond/Template/Haskell/Decl.hs)
 
 set (output_dir ${CMAKE_CURRENT_BINARY_DIR})
 set (output ${output_dir}/build/gbc/gbc${CMAKE_EXECUTABLE_SUFFIX})
