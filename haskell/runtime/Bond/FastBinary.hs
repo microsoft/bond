@@ -85,11 +85,11 @@ instance (FastBinary a, WireType a) => FastBinary (Maybe a) where
         fastBinaryPut v
     fastBinaryGet = do
         t <- getWord8
-        when (toWireType t /= getWireType (undefined :: a)) $ error "nullable: type mismatch"
+        when (toWireType t /= getWireType (undefined :: a)) $ fail "nullable: type mismatch"
         n <- getVarInt
         if | n == 0 -> return Nothing
            | n == 1 -> Just <$> fastBinaryGet
-           | otherwise -> error "fastBinaryGet nullable: count isn't 0 or 1"
+           | otherwise -> fail "fastBinaryGet nullable: count isn't 0 or 1"
 instance (FastBinary a, WireType a) => FastBinary [a] where
     fastBinaryPut xs = do
         putWord8 $ wireType (undefined :: a)
@@ -97,7 +97,7 @@ instance (FastBinary a, WireType a) => FastBinary [a] where
         mapM_ fastBinaryPut xs
     fastBinaryGet = do
         t <- getWord8
-        when (toWireType t /= getWireType (undefined :: a)) $ error "fastBinaryGet [a]: type mismatch"
+        when (toWireType t /= getWireType (undefined :: a)) $ fail "fastBinaryGet [a]: type mismatch"
         n <- getVarInt
         replicateM n fastBinaryGet
 instance FastBinary Blob where
@@ -107,7 +107,7 @@ instance FastBinary Blob where
         putByteString s
     fastBinaryGet = do
         t <- getWord8
-        when (toWireType t /= BT_INT8) $ error "fastBinaryGet Blob: type mismatch"
+        when (toWireType t /= BT_INT8) $ fail "fastBinaryGet Blob: type mismatch"
         n <- getVarInt
         Blob <$> getByteString n
 instance FastBinary Utf8 where
@@ -131,7 +131,7 @@ instance (Hashable a, Eq a, FastBinary a, WireType a) => FastBinary (HashSet a) 
         mapM_ fastBinaryPut $ H.toList xs
     fastBinaryGet = do
         t <- getWord8
-        when (toWireType t /= getWireType (undefined :: a)) $ error "fastBinaryGet (HashSet a): type mismatch"
+        when (toWireType t /= getWireType (undefined :: a)) $ fail "fastBinaryGet (HashSet a): type mismatch"
         n <- getVarInt
         H.fromList <$> replicateM n fastBinaryGet
 instance (Ord a, FastBinary a, WireType a, FastBinary b, WireType b) => FastBinary (Map a b) where
@@ -145,8 +145,8 @@ instance (Ord a, FastBinary a, WireType a, FastBinary b, WireType b) => FastBina
     fastBinaryGet = do
         tkey <- getWord8
         tval <- getWord8
-        when (toWireType tkey /= getWireType (undefined :: a)) $ error "fastBinaryGet (Map a b): key type mismatch"
-        when (toWireType tval /= getWireType (undefined :: b)) $ error "fastBinaryGet (Map a b): value type mismatch"
+        when (toWireType tkey /= getWireType (undefined :: a)) $ fail "fastBinaryGet (Map a b): key type mismatch"
+        when (toWireType tval /= getWireType (undefined :: b)) $ fail "fastBinaryGet (Map a b): value type mismatch"
         n <- getVarInt
         fmap M.fromList $ replicateM n $ do
             k <- fastBinaryGet
@@ -159,7 +159,7 @@ instance (FastBinary a, WireType a) => FastBinary (Vector a) where
         V.mapM_ fastBinaryPut xs
     fastBinaryGet = do
         t <- getWord8
-        when (toWireType t /= getWireType (undefined :: a)) $ error "fastBinaryGet (Vector a): type mismatch"
+        when (toWireType t /= getWireType (undefined :: a)) $ fail "fastBinaryGet (Vector a): type mismatch"
         n <- getVarInt
         V.replicateM n fastBinaryGet
 instance FastBinary a => FastBinary (Bonded a) where
@@ -198,7 +198,7 @@ fromWireType :: ItemType -> Word8
 fromWireType = fromIntegral . fromEnum
 
 putVarInt :: Int -> Put
-putVarInt i | i < 0 = error "putVarInt called with negative value"
+putVarInt i | i < 0 = fail "putVarInt called with negative value"
 putVarInt i | i < 128 = putWord8 $ fromIntegral i
 putVarInt i = do
     let iLow = fromIntegral $ i .&. 0x7F
@@ -209,7 +209,7 @@ getVarInt :: Get Int
 getVarInt = step 0
     where
     step :: Int -> Get Int
-    step n | n > 4 = error "getVarInt: sequence too long"
+    step n | n > 4 = fail "getVarInt: sequence too long"
     step n = do
         b <- fromIntegral <$> getWord8
         rest <- if b `testBit` 7 then step (n + 1)  else return (0 :: Int)
@@ -257,8 +257,8 @@ readBaseFieldsWith :: (a -> ItemType -> Word16 -> Get a) -> a -> Get a
 readBaseFieldsWith = readFieldsWith' BT_STOP_BASE
 
 skipValue :: ItemType -> Get ()
-skipValue BT_STOP = error "skipValue BT_STOP"
-skipValue BT_STOP_BASE = error "skipValue BT_STOP_BASE"
+skipValue BT_STOP = fail "internal error: skipValue BT_STOP"
+skipValue BT_STOP_BASE = fail "internal error: skipValue BT_STOP_BASE"
 skipValue BT_BOOL = skip 1
 skipValue BT_UINT8 = skip 1
 skipValue BT_UINT16 = skip 2
@@ -302,4 +302,4 @@ skipValue BT_STRUCT = loop
 
 getField :: forall a . (FastBinary a, WireType a) => ItemType -> Get a
 getField t | t == getWireType (undefined :: a) = fastBinaryGet
-getField t = error $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (undefined :: a))
+getField t = fail $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (undefined :: a))
