@@ -187,7 +187,7 @@ mkHaskellDecl mapping s@Struct{..} = traceShow s (filename, prettyPrint code)
     wiretypeDecl = wiretypeInstance s
     fastBinaryDecl = fastBinaryInstance s
     fastBinaryStructDecl = fastBinaryStructInstance s
-    putFieldsTypeSig = TypeSig noLoc [Ident "putStruct"] (TyForall Nothing (stdConstraints declParams) (TyFun (makeType False typeName declParams) (TyCon $ qualInt "FastBinaryPutM")))
+    putFieldsTypeSig = TypeSig noLoc [Ident "putStruct"] (TyForall Nothing (stdConstraints declParams) (TyFun (makeType False typeName declParams) (TyCon $ qualInt "Put")))
     putFieldsCode = putFieldsImpl s
 
 mkHaskellDecl _ _ = ("/dev/null", "empty")
@@ -259,7 +259,7 @@ fastBinaryInstance Struct{declName, declParams, structFields, structBase} = Inst
     [
         InsDecl $ FunBind [Match noLoc (Ident "fastBinaryPut") [PVar recVar] Nothing (UnGuardedRhs $ Do [
             Qualifier (App (Var $ UnQual $ Ident "putStruct") (Var $ UnQual recVar)),
-            Qualifier (Var $ qualInt "putStop")
+            Qualifier (Var $ qualInt "putStructStop")
           ]) (BDecls [])],
         InsDecl $ PatBind noLoc (PVar $ Ident "fastBinaryGet") (UnGuardedRhs getCode) (BDecls [FunBind updateFuncCode])
       ]
@@ -270,9 +270,9 @@ fastBinaryInstance Struct{declName, declParams, structFields, structBase} = Inst
     baseVar = Ident "b'"
     getWithBaseCode = Do [
         Generator noLoc (PVar baseVar) (Var $ qualInt "fastBinaryGet"),
-        Qualifier $ App (App (Var $ qualInt "getFieldsWith") (Var $ unqual "update")) (Paren $ RecUpdate (Var $ qualInt "defaultValue") [FieldUpdate (UnQual baseStructField) (Var $ UnQual baseVar)])
+        Qualifier $ App (App (Var $ qualInt "readFieldsWith") (Var $ unqual "update")) (Paren $ RecUpdate (Var $ qualInt "defaultValue") [FieldUpdate (UnQual baseStructField) (Var $ UnQual baseVar)])
       ]
-    getNoBaseCode = App (App (Var $ qualInt "getFieldsWith") (Var $ unqual "update")) (Var $ qualInt "defaultValue")
+    getNoBaseCode = App (App (Var $ qualInt "readFieldsWith") (Var $ unqual "update")) (Var $ qualInt "defaultValue")
     getCode | isNothing structBase = getNoBaseCode
             | otherwise = getWithBaseCode
     readFunc fieldName fieldOrdinal fieldMod = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) fieldMod])))) (Paren $ App (Var $ qualInt "getField") (Var $ UnQual typeVar))) (BDecls [])
@@ -294,7 +294,7 @@ fastBinaryStructInstance Struct{declName, declParams} = InstDecl noLoc Nothing [
     [
         InsDecl $ FunBind [Match noLoc (Ident "fastBinaryPutBase") [PVar recVar] Nothing (UnGuardedRhs $ Do [
             Qualifier (App (Var $ UnQual $ Ident "putStruct") (Var $ UnQual recVar)),
-            Qualifier (Var $ qualInt "putStopBase")
+            Qualifier (Var $ qualInt "putStructStopBase")
           ]) (BDecls [])]
     ]
     where

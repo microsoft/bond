@@ -2,15 +2,16 @@
 module Bond.FastBinary (
     FastBinary(..),
     FastBinaryStruct(..),
-    FastBinaryPutM,
+    Put,
+    Get,
     getField,
-    getFieldsWith,
     getInt32le,
     putField,
     putInt32le,
     putMaybeField,
-    putStop,
-    putStopBase,
+    putStructStop,
+    putStructStopBase,
+    readFieldsWith,
     skipValue
   ) where
 
@@ -30,15 +31,12 @@ import qualified Data.HashSet as H
 import qualified Data.Map as M
 import qualified Data.Vector as V
 
-type FastBinaryPutM = Put
-type FastBinaryGetM = Get
-
 class FastBinaryStruct a where
-    fastBinaryPutBase :: a -> FastBinaryPutM
+    fastBinaryPutBase :: a -> Put
 
 class FastBinary a where
-    fastBinaryPut :: a -> FastBinaryPutM
-    fastBinaryGet :: FastBinaryGetM a
+    fastBinaryPut :: a -> Put
+    fastBinaryGet :: Get a
 
 instance FastBinary Bool where
     fastBinaryPut v = if v then putWord8 1 else putWord8 0
@@ -197,7 +195,7 @@ toWireType = toEnum . fromIntegral
 fromWireType :: ItemType -> Word8
 fromWireType = fromIntegral . fromEnum
 
-putVarInt :: Int -> FastBinaryPutM
+putVarInt :: Int -> Put
 putVarInt i | i < 0 = error "putVarInt called with negative value"
 putVarInt i | i < 128 = putWord8 $ fromIntegral i
 putVarInt i = do
@@ -205,41 +203,41 @@ putVarInt i = do
     putWord8 $ iLow `setBit` 7
     putVarInt $ i `shiftR` 7
 
-getVarInt :: FastBinaryGetM Int
+getVarInt :: Get Int
 getVarInt = step 0
     where
-    step :: Int -> FastBinaryGetM Int
+    step :: Int -> Get Int
     step n | n > 4 = error "getVarInt: sequence too long"
     step n = do
         b <- fromIntegral <$> getWord8
         rest <- if b `testBit` 7 then step (n + 1)  else return (0 :: Int)
         return $ (b `clearBit` 7) .|. (rest `shiftL` 7)
 
-putInt32le :: Int32 -> FastBinaryPutM
+putInt32le :: Int32 -> Put
 putInt32le = putWord32le . fromIntegral
 
-getInt32le :: FastBinaryGetM Int32
+getInt32le :: Get Int32
 getInt32le = fromIntegral <$> getWord32le
 
-putStop :: FastBinaryPutM
-putStop = putWord8 $ fromIntegral $ fromEnum BT_STOP
+putStructStop :: Put
+putStructStop = putWord8 $ fromIntegral $ fromEnum BT_STOP
 
-putStopBase :: FastBinaryPutM
-putStopBase = putWord8 $ fromIntegral $ fromEnum BT_STOP_BASE
+putStructStopBase :: Put
+putStructStopBase = putWord8 $ fromIntegral $ fromEnum BT_STOP_BASE
 
-putField :: (FastBinary t, WireType t) => Word16 -> t -> FastBinaryPutM
+putField :: (FastBinary t, WireType t) => Word16 -> t -> Put
 putField n f = do
     let t = getWireType f
     putWord8 $ fromIntegral $ fromEnum t
     putWord16le n
     fastBinaryPut f
 
-putMaybeField :: (FastBinary t, WireType t) => Word16 -> Maybe t -> FastBinaryPutM
+putMaybeField :: (FastBinary t, WireType t) => Word16 -> Maybe t -> Put
 putMaybeField _ Nothing = return ()
 putMaybeField n (Just f) = putField n f
 
-getFieldsWith :: (a -> ItemType -> Word16 -> FastBinaryGetM a) -> a -> FastBinaryGetM a
-getFieldsWith updateFunc = loop
+readFieldsWith :: (a -> ItemType -> Word16 -> Get a) -> a -> Get a
+readFieldsWith updateFunc = loop
     where
     loop v = do
         t <- fmap (toEnum . fromIntegral) getWord8
@@ -251,7 +249,7 @@ getFieldsWith updateFunc = loop
                     v' <- updateFunc v t n
                     loop v'
 
-skipValue :: ItemType -> FastBinaryGetM ()
+skipValue :: ItemType -> Get ()
 skipValue BT_STOP = error "skipValue BT_STOP"
 skipValue BT_STOP_BASE = error "skipValue BT_STOP_BASE"
 skipValue BT_BOOL = skip 1
@@ -295,6 +293,6 @@ skipValue BT_STRUCT = loop
                     skipValue t
                     loop
 
-getField :: forall a . (FastBinary a, WireType a) => ItemType -> FastBinaryGetM a
+getField :: forall a . (FastBinary a, WireType a) => ItemType -> Get a
 getField t | t == getWireType (undefined :: a) = fastBinaryGet
 getField t = error $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (undefined :: a))
