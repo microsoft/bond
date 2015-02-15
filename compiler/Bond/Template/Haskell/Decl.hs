@@ -170,7 +170,7 @@ mkHaskellDecl mapping s@Struct{..} = traceShow s (filename, prettyPrint code)
     moduleName = mkModuleName namespace declName
     typeName = Ident $ convertTypeName declName
     code = Module noLoc moduleName [] Nothing (Just [EThingAll $ UnQual typeName]) imports decls
-    decls = [dataDecl, defaultDecl, wiretypeDecl, fastBinaryDecl, fastBinaryStructDecl, putFieldsTypeSig, putFieldsCode]
+    decls = [dataDecl, defaultDecl, wiretypeDecl, fastBinaryDecl, fastBinaryStructDecl, putFieldsTypeSig, putFieldsCode, updateTypeSig, updateCode]
     dataDecl = DataDecl noLoc DataType [] typeName typeParams [QualConDecl noLoc [] [] (RecDecl typeName fields)] [(unqual "Show",[]), (unqual "Eq", [])]
     typeParams = map mkTypeParam declParams
     -- FIXME see if type params T and t accepted in C++/C#, make smart conversion to t/t'
@@ -189,6 +189,8 @@ mkHaskellDecl mapping s@Struct{..} = traceShow s (filename, prettyPrint code)
     fastBinaryStructDecl = fastBinaryStructInstance s
     putFieldsTypeSig = TypeSig noLoc [Ident "putStruct"] (TyForall Nothing (stdConstraints declParams) (TyFun (makeType False typeName declParams) (TyCon $ qualInt "Put")))
     putFieldsCode = putFieldsImpl s
+    updateTypeSig = TypeSig noLoc [Ident "update"] (TyForall Nothing (stdConstraints declParams) (TyFun (makeType False typeName declParams) (TyFun (TyCon $ qualInt "ItemType") (TyFun (TyCon $ qualInt "Word16") (TyApp (TyCon $ qualInt "Get") (makeType True typeName declParams))))))
+    updateCode = updateImpl s
 
 mkHaskellDecl _ _ = ("/dev/null", "empty")
 
@@ -252,54 +254,35 @@ fastBinaryInstance Enum{declName} = InstDecl noLoc Nothing [] []
         InsDecl $ FunBind [Match noLoc (Ident "fastBinaryPut") [PParen (PApp (unqual $ convertTypeName declName) [PVar $ Ident "v"])] Nothing (UnGuardedRhs (App (Var $ qualInt "putInt32le") (Var $ unqual "v"))) (BDecls [])],
         InsDecl $ PatBind noLoc (PVar $ Ident "fastBinaryGet") (UnGuardedRhs (App (App (Var $ unqual "fmap") (Con $ unqual $ convertTypeName declName)) (Var $ qualInt "getInt32le"))) (BDecls [])
     ]
-
-fastBinaryInstance Struct{declName, declParams, structFields, structBase} = InstDecl noLoc Nothing [] (stdConstraints declParams)
-    (qualInt "FastBinary")
-    [makeType True (Ident $ convertTypeName declName) declParams]
-    [
-        InsDecl $ FunBind [Match noLoc (Ident "fastBinaryPut") [PVar recVar] Nothing (UnGuardedRhs $ Do [
-            Qualifier (App (Var $ UnQual $ Ident "putStruct") (Var $ UnQual recVar)),
-            Qualifier (Var $ qualInt "putStructStop")
-          ]) (BDecls [])],
-        InsDecl $ PatBind noLoc (PVar $ Ident "fastBinaryGet") (UnGuardedRhs getCode) (BDecls [FunBind updateFuncCode])
-      ]
-    where
-    recVar = Ident "v'"
-    fieldVar = Ident "f'"
-    typeVar = Ident "t'"
-    baseVar = Ident "b'"
-    getWithBaseCode = Do [
-        Generator noLoc (PVar baseVar) (Var $ qualInt "fastBinaryGet"),
-        Qualifier $ App (App (Var $ qualInt "readFieldsWith") (Var $ unqual "update")) (Paren $ RecUpdate (Var $ qualInt "defaultValue") [FieldUpdate (UnQual baseStructField) (Var $ UnQual baseVar)])
-      ]
-    getNoBaseCode = App (App (Var $ qualInt "readFieldsWith") (Var $ unqual "update")) (Var $ qualInt "defaultValue")
-    getCode | isNothing structBase = getNoBaseCode
-            | otherwise = getWithBaseCode
-    readFunc fieldName fieldOrdinal fieldMod = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) fieldMod])))) (Paren $ App (Var $ qualInt "getField") (Var $ UnQual typeVar))) (BDecls [])
-    readField Field{fieldType, fieldName, fieldOrdinal}
-        | BT_Maybe _ <- fieldType = readFunc fieldName fieldOrdinal (App (Con $ unqual "Just") (Var $ UnQual fieldVar))
-        | otherwise = readFunc fieldName fieldOrdinal (Var $ UnQual fieldVar)
-    skipReadCode = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PWildCard] Nothing (UnGuardedRhs $ Do [
-                    Qualifier (App (Var $ qualInt "skipValue") (Var $ UnQual typeVar)),
-                    Qualifier (App (Var $ unqual "return") (Var $ UnQual recVar))]) (BDecls [])
-    readFieldsCode = map readField structFields
-    updateFuncCode = readFieldsCode ++ [skipReadCode]
-
+fastBinaryInstance decl@Struct{} = fastBinaryInstanceImpl decl (qualInt "FastBinary") (Ident "fastBinaryPut") (Ident "fastBinaryGet") (qualInt "putStructStop") (qualInt "readFieldsWith")
 fastBinaryInstance _ = error "fastBinaryInstance not implemented"
 
 fastBinaryStructInstance :: Declaration -> Decl
-fastBinaryStructInstance Struct{declName, declParams} = InstDecl noLoc Nothing [] (stdConstraints declParams)
-    (qualInt "FastBinaryStruct")
+fastBinaryStructInstance decl = fastBinaryInstanceImpl decl (qualInt "FastBinaryStruct") (Ident "fastBinaryPutBase") (Ident "fastBinaryGetBase") (qualInt "putStructStopBase") (qualInt "readBaseFieldsWith")
+
+fastBinaryInstanceImpl :: Declaration -> QName -> Name -> Name -> QName -> QName -> Decl
+fastBinaryInstanceImpl Struct{declName, declParams, structBase} className putFunc getFunc putStopFunc readFieldsFunc = InstDecl noLoc Nothing [] (stdConstraints declParams)
+    className
     [makeType True (Ident $ convertTypeName declName) declParams]
     [
-        InsDecl $ FunBind [Match noLoc (Ident "fastBinaryPutBase") [PVar recVar] Nothing (UnGuardedRhs $ Do [
+        InsDecl $ FunBind [Match noLoc putFunc [PVar recVar] Nothing (UnGuardedRhs $ Do [
             Qualifier (App (Var $ UnQual $ Ident "putStruct") (Var $ UnQual recVar)),
-            Qualifier (Var $ qualInt "putStructStopBase")
-          ]) (BDecls [])]
-    ]
+            Qualifier (Var putStopFunc)
+          ]) (BDecls [])],
+        InsDecl $ PatBind noLoc (PVar getFunc) (UnGuardedRhs getCode) (BDecls [])
+      ]
     where
     recVar = Ident "v'"
-fastBinaryStructInstance _ = error "fastBinaryStructInstance not implemented"
+    baseVar = Ident "b'"
+    getWithBaseCode = Do [
+        Generator noLoc (PVar baseVar) (Var $ qualInt "fastBinaryGetBase"),
+        Qualifier $ App (App (Var readFieldsFunc) (Var $ unqual "update")) (Paren $ RecUpdate (Var $ qualInt "defaultValue") [FieldUpdate (UnQual baseStructField) (Var $ UnQual baseVar)])
+      ]
+    getNoBaseCode = App (App (Var readFieldsFunc) (Var $ unqual "update")) (Var $ qualInt "defaultValue")
+    getCode | isNothing structBase = getNoBaseCode
+            | otherwise = getWithBaseCode
+
+fastBinaryInstanceImpl _ _ _ _ _ _ = error "fastBinaryInstanceImpl not implemented"
 
 putFieldsImpl :: Declaration -> Decl
 putFieldsImpl Struct{structFields, structBase} = FunBind [Match noLoc (Ident "putStruct") [PVar recVar] Nothing (UnGuardedRhs (Do putCode)) (BDecls [])]
@@ -316,3 +299,20 @@ putFieldsImpl Struct{structFields, structBase} = FunBind [Match noLoc (Ident "pu
     putCode | isNothing structBase = putFieldsCode
             | otherwise = putBaseCode : putFieldsCode
 putFieldsImpl _ = error "putFieldsImpl not implemented"
+
+updateImpl :: Declaration -> Decl
+updateImpl Struct{structFields} = FunBind $ readFieldsCode ++ [skipReadCode]
+    where
+    recVar = Ident "v'"
+    fieldVar = Ident "f'"
+    typeVar = Ident "t'"
+    readFunc fieldName fieldOrdinal fieldMod = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) fieldMod])))) (Paren $ App (Var $ qualInt "getField") (Var $ UnQual typeVar))) (BDecls [])
+    readField Field{fieldType, fieldName, fieldOrdinal}
+        | BT_Maybe _ <- fieldType = readFunc fieldName fieldOrdinal (App (Con $ unqual "Just") (Var $ UnQual fieldVar))
+        | otherwise = readFunc fieldName fieldOrdinal (Var $ UnQual fieldVar)
+    skipReadCode = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PWildCard] Nothing (UnGuardedRhs $ Do [
+                    Qualifier (App (Var $ qualInt "skipValue") (Var $ UnQual typeVar)),
+                    Qualifier (App (Var $ unqual "return") (Var $ UnQual recVar))]) (BDecls [])
+    readFieldsCode = map readField structFields
+
+updateImpl _ = error "updateImpl not implemented"

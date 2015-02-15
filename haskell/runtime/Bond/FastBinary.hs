@@ -11,6 +11,7 @@ module Bond.FastBinary (
     putMaybeField,
     putStructStop,
     putStructStopBase,
+    readBaseFieldsWith,
     readFieldsWith,
     skipValue
   ) where
@@ -33,6 +34,7 @@ import qualified Data.Vector as V
 
 class FastBinaryStruct a where
     fastBinaryPutBase :: a -> Put
+    fastBinaryGetBase :: Get a
 
 class FastBinary a where
     fastBinaryPut :: a -> Put
@@ -236,18 +238,23 @@ putMaybeField :: (FastBinary t, WireType t) => Word16 -> Maybe t -> Put
 putMaybeField _ Nothing = return ()
 putMaybeField n (Just f) = putField n f
 
-readFieldsWith :: (a -> ItemType -> Word16 -> Get a) -> a -> Get a
-readFieldsWith updateFunc = loop
+readFieldsWith' :: ItemType -> (a -> ItemType -> Word16 -> Get a) -> a -> Get a
+readFieldsWith' stop updateFunc = loop
     where
     loop v = do
         t <- fmap (toEnum . fromIntegral) getWord8
-        case t of
-            BT_STOP -> return v
-            BT_STOP_BASE -> return v
-            _ -> do
+        if t == stop
+            then return v
+            else do
                     n <- getWord16le
                     v' <- updateFunc v t n
                     loop v'
+
+readFieldsWith :: (a -> ItemType -> Word16 -> Get a) -> a -> Get a
+readFieldsWith = readFieldsWith' BT_STOP
+
+readBaseFieldsWith :: (a -> ItemType -> Word16 -> Get a) -> a -> Get a
+readBaseFieldsWith = readFieldsWith' BT_STOP_BASE
 
 skipValue :: ItemType -> Get ()
 skipValue BT_STOP = error "skipValue BT_STOP"
