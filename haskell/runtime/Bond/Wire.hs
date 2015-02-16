@@ -1,5 +1,7 @@
 module Bond.Wire (
+    FieldTag(..),
     ItemType(..),
+    Ordinal(..),
     WireType(..)
   ) where
 
@@ -50,3 +52,8 @@ instance WireType (Map a b) where getWireType _ = BT_MAP
 instance WireType (HashSet a) where getWireType _ = BT_SET
 instance WireType (Vector a) where getWireType _ = BT_LIST
 instance WireType (Bonded a) where getWireType _ = BT_STRUCT
+
+newtype Ordinal = Ordinal Word16
+    deriving Eq
+
+data FieldTag = FieldTag ItemType Ordinal

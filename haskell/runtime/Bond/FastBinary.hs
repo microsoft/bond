@@ -40,6 +40,16 @@ class FastBinary a where
     fastBinaryPut :: a -> Put
     fastBinaryGet :: Get a
 
+instance FastBinary FieldTag where
+    fastBinaryPut (FieldTag t (Ordinal o)) = do
+        putWord8 $ fromWireType t
+        putWord16le o
+    fastBinaryGet = do
+        t <- toWireType <$> getWord8
+        o <- if t == BT_STOP || t == BT_STOP_BASE
+                then return 0
+                else getWord16le
+        return $ FieldTag t (Ordinal o)
 instance FastBinary Bool where
     fastBinaryPut v = if v then putWord8 1 else putWord8 0
     fastBinaryGet = do
@@ -222,38 +232,35 @@ getInt32le :: Get Int32
 getInt32le = fromIntegral <$> getWord32le
 
 putStructStop :: Put
-putStructStop = putWord8 $ fromIntegral $ fromEnum BT_STOP
+putStructStop = putWord8 $ fromWireType BT_STOP
 
 putStructStopBase :: Put
-putStructStopBase = putWord8 $ fromIntegral $ fromEnum BT_STOP_BASE
+putStructStopBase = putWord8 $ fromWireType BT_STOP_BASE
 
-putField :: (FastBinary t, WireType t) => Word16 -> t -> Put
+putField :: (FastBinary t, WireType t) => Ordinal -> t -> Put
 putField n f = do
-    let t = getWireType f
-    putWord8 $ fromIntegral $ fromEnum t
-    putWord16le n
+    fastBinaryPut $ FieldTag (getWireType f) n
     fastBinaryPut f
 
-putMaybeField :: (FastBinary t, WireType t) => Word16 -> Maybe t -> Put
+putMaybeField :: (FastBinary t, WireType t) => Ordinal -> Maybe t -> Put
 putMaybeField _ Nothing = return ()
 putMaybeField n (Just f) = putField n f
 
-readFieldsWith' :: ItemType -> (a -> ItemType -> Word16 -> Get a) -> a -> Get a
+readFieldsWith' :: ItemType -> (a -> ItemType -> Ordinal -> Get a) -> a -> Get a
 readFieldsWith' stop updateFunc = loop
     where
     loop v = do
-        t <- fmap (toEnum . fromIntegral) getWord8
+        FieldTag t n <- fastBinaryGet
         if t == stop
             then return v
             else do
-                    n <- getWord16le
                     v' <- updateFunc v t n
                     loop v'
 
-readFieldsWith :: (a -> ItemType -> Word16 -> Get a) -> a -> Get a
+readFieldsWith :: (a -> ItemType -> Ordinal -> Get a) -> a -> Get a
 readFieldsWith = readFieldsWith' BT_STOP
 
-readBaseFieldsWith :: (a -> ItemType -> Word16 -> Get a) -> a -> Get a
+readBaseFieldsWith :: (a -> ItemType -> Ordinal -> Get a) -> a -> Get a
 readBaseFieldsWith = readFieldsWith' BT_STOP_BASE
 
 skipValue :: ItemType -> Get ()
@@ -291,12 +298,11 @@ skipValue BT_MAP = do
 skipValue BT_STRUCT = loop
     where
     loop = do
-        t <- fmap (toEnum . fromIntegral) getWord8
+        FieldTag t _ <- fastBinaryGet
         case t of
             BT_STOP -> return ()
-            BT_STOP_BASE -> return ()
+            BT_STOP_BASE -> loop
             _ -> do
-                    skip 2 -- skip ordinal
                     skipValue t
                     loop
 

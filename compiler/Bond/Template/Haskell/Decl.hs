@@ -189,7 +189,7 @@ mkHaskellDecl mapping s@Struct{..} = traceShow s (filename, prettyPrint code)
     fastBinaryStructDecl = fastBinaryStructInstance s
     putFieldsTypeSig = TypeSig noLoc [Ident "putStruct"] (TyForall Nothing (stdConstraints declParams) (TyFun (makeType False typeName declParams) (TyCon $ qualInt "Put")))
     putFieldsCode = putFieldsImpl s
-    updateTypeSig = TypeSig noLoc [Ident "update"] (TyForall Nothing (stdConstraints declParams) (TyFun (makeType False typeName declParams) (TyFun (TyCon $ qualInt "ItemType") (TyFun (TyCon $ qualInt "Word16") (TyApp (TyCon $ qualInt "Get") (makeType True typeName declParams))))))
+    updateTypeSig = TypeSig noLoc [Ident "update"] (TyForall Nothing (stdConstraints declParams) (TyFun (makeType False typeName declParams) (TyFun (TyCon $ qualInt "ItemType") (TyFun (TyCon $ qualInt "Ordinal") (TyApp (TyCon $ qualInt "Get") (makeType True typeName declParams))))))
     updateCode = updateImpl s
 
 mkHaskellDecl _ _ = ("/dev/null", "empty")
@@ -288,8 +288,8 @@ putFieldsImpl :: Declaration -> Decl
 putFieldsImpl Struct{structFields, structBase} = FunBind [Match noLoc (Ident "putStruct") [PVar recVar] Nothing (UnGuardedRhs (Do putCode)) (BDecls [])]
     where
     recVar = Ident "v'"
-    saveFunc fieldName fieldOrdinal func = Qualifier $ App (App (Var $ qualInt func) (intLit fieldOrdinal)) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar))
-    saveUnlessDefaultFunc fieldName fieldOrdinal func = Qualifier $ App (App (Var $ qualInt "unless") (Paren (InfixApp (App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar)) (QVarOp $ UnQual $ Symbol "==") (App (Var $ UnQual $ mkVar fieldName) (Var $ qualInt "defaultValue"))))) (Paren $ App (App (Var $ qualInt func) (intLit fieldOrdinal)) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar)))
+    saveFunc fieldName fieldOrdinal func = Qualifier $ App (App (Var $ qualInt func) (Paren $ App (Con $ qualInt "Ordinal") (intLit fieldOrdinal))) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar))
+    saveUnlessDefaultFunc fieldName fieldOrdinal func = Qualifier $ App (App (Var $ qualInt "unless") (Paren (InfixApp (App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar)) (QVarOp $ UnQual $ Symbol "==") (App (Var $ UnQual $ mkVar fieldName) (Var $ qualInt "defaultValue"))))) (Paren $ App (App (Var $ qualInt func) (Paren $ App (Con $ qualInt "Ordinal") (intLit fieldOrdinal))) (Paren $ App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar)))
     saveField Field{fieldType, fieldName, fieldOrdinal}
         | BT_Maybe _ <- fieldType = saveFunc fieldName fieldOrdinal "putMaybeField"
         | BT_UserDefined (Struct {}) _ <- fieldType = saveFunc fieldName fieldOrdinal "putField"
@@ -306,7 +306,7 @@ updateImpl Struct{structFields} = FunBind $ readFieldsCode ++ [skipReadCode]
     recVar = Ident "v'"
     fieldVar = Ident "f'"
     typeVar = Ident "t'"
-    readFunc fieldName fieldOrdinal fieldMod = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PLit Signless (Int $ fromIntegral fieldOrdinal)] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) fieldMod])))) (Paren $ App (Var $ qualInt "getField") (Var $ UnQual typeVar))) (BDecls [])
+    readFunc fieldName fieldOrdinal fieldMod = Match noLoc (Ident "update") [PVar recVar,PVar typeVar,PParen (PApp (qualInt "Ordinal") [PLit Signless (Int $ fromIntegral fieldOrdinal)])] Nothing (UnGuardedRhs $ App (App (Var $ unqual "fmap") (Paren (Lambda noLoc [PVar fieldVar] (RecUpdate (Var $ UnQual recVar) [FieldUpdate (UnQual $ mkVar fieldName) fieldMod])))) (Paren $ App (Var $ qualInt "getField") (Var $ UnQual typeVar))) (BDecls [])
     readField Field{fieldType, fieldName, fieldOrdinal}
         | BT_Maybe _ <- fieldType = readFunc fieldName fieldOrdinal (App (Con $ unqual "Just") (Var $ UnQual fieldVar))
         | otherwise = readFunc fieldName fieldOrdinal (Var $ UnQual fieldVar)
