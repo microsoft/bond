@@ -15,8 +15,10 @@ import Control.Monad.Reader
 import Control.Monad.Loops (firstM)
 import Control.Concurrent.Async
 import GHC.Conc (getNumProcessors, setNumCapabilities)
+import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy.IO as L
 import Bond.Parser
+import Bond.Schema (Declaration, Import)
 import Bond.Template.Util
 import Bond.Template.Cpp.Reflection_h
 import Bond.Template.Cpp.Types_h
@@ -39,6 +41,7 @@ main = do
         Cs {..}     -> csCodegen options
         _           -> print options
 
+setJobs :: Maybe Int -> IO ()
 setJobs Nothing = return ()
 setJobs (Just n)
     | n > 0 = setNumCapabilities n
@@ -46,6 +49,7 @@ setJobs (Just n)
         numProc <- getNumProcessors
         setNumCapabilities $ max 1 (numProc + n)
 
+concurrentlyFor_ :: [a] -> (a -> IO b) -> IO ()
 concurrentlyFor_ = (void .) . flip mapConcurrently
 
 cppCodegen :: Options -> IO()
@@ -72,6 +76,7 @@ cppCodegen (Cpp {..}) = do
         , (Fast, Protocol "FastBinaryReader" "FastBinaryWriter")
         , (Simple, Protocol "SimpleBinaryReader" "SimpleBinaryWriter")
         ]
+cppCodegen _ = error "cppCodegen: impossible happened."
 
     
 csCodegen :: Options -> IO()
@@ -83,8 +88,15 @@ csCodegen (Cs {..}) = do
     concurrentlyFor_ files $ codeGen output_dir import_dir mappingContext 
         [ types_cs readonly_properties fields
         ]
+csCodegen _ = error "csCodegen: impossible happened."
 
 
+codeGen :: FilePath
+        -> [FilePath]
+        -> Context
+        -> [Context -> String -> [Import] -> [Declaration] -> (String, Text)]
+        -> FilePath
+        -> IO ()
 codeGen outputDir importDirs mappingContext templates file = do
     cwd <- getCurrentDirectory
     input <- readFileUtf8 file

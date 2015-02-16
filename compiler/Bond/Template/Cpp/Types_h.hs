@@ -9,6 +9,7 @@ import System.FilePath
 import Data.Maybe
 import Data.List
 import Data.Monoid
+import Data.String (IsString)
 import Data.Text.Lazy.Builder
 import qualified Data.Text.Lazy as L
 import Data.Foldable (foldMap)
@@ -21,6 +22,15 @@ import Bond.Template.Util
 import qualified Bond.Template.Cpp.Util as CPP
 
 -- generate the *_types.h file from parsed .bond file
+types_h :: (ToText t1, ToText a, IsString t)
+        => [t1]
+        -> Bool
+        -> Maybe String
+        -> Context
+        -> a
+        -> [Import]
+        -> [Declaration]
+        -> (t, L.Text)
 types_h userHeaders enumHeader allocator cpp file imports declarations = ("_types.h", [lt|
 #pragma once
 #{newlineBeginSep 0 includeHeader userHeaders}
@@ -181,7 +191,7 @@ namespace std
             | otherwise = Nothing
 
         -- constructor initializer list from 'base' and 'fields' initializers
-        initializeList base fields = between colon mempty $ commaLineSep 3 id [base, fields]
+        initializeList base' fields = between colon mempty $ commaLineSep 3 id [base', fields]
           where
             colon = [lt|
           : |]
@@ -237,6 +247,7 @@ namespace std
             allocInitValue i f d = i f d
             keyType (BT_Set key) = cppType key
             keyType (BT_Map key _) = cppType key
+            keyType _ = error "allocatorCtor/keyType: impossible happened."
             allocParameterized = L.isInfixOf (L.pack alloc) . toLazyText . cppType
 
         -- copy constructor

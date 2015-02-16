@@ -15,7 +15,6 @@ import Data.List
 import Data.Function
 import Control.Applicative
 import Control.Monad.Reader
-import Control.Monad.Trans (liftIO)
 import Text.Parsec.Pos (initialPos)
 import Text.Parsec hiding (many, optional, (<|>))
 import Bond.Lexer
@@ -42,6 +41,8 @@ newEnvironment = Environment [] []
 
 type Parser a = ParsecT String Symbols (ReaderT Environment IO) a
 
+parseBond :: SourceName
+          -> String -> ReaderT Environment IO (Either ParseError Bond)
 parseBond = runParserT bond $ Symbols [] []
 
 data Bond = Bond [Import] [Namespace] [Declaration]
@@ -88,6 +89,7 @@ declaration = do
     updateSymbols decl <?> "declaration"
     return decl
 
+updateSymbols :: Declaration -> Parser ()
 updateSymbols decl = do
     (previous, symbols) <- partition (duplicateDeclaration decl) <$> symbols <$> getState
     case reconcile previous decl of
@@ -103,6 +105,7 @@ updateSymbols decl = do
     -- imports multiple times but that would have to depend on canonical file
     -- paths which are unreliable.
     reconcile [x] y = (x == y, const id)
+    reconcile _   _ = error "updateSymbols/reconcile: impossible happened."
     paramsMatch = (==) `on` (map paramConstraint . declParams)
     add x xs u = u { symbols = x:xs }
 
@@ -118,9 +121,9 @@ findSymbol name = doFind <?> "qualified name"
     delcMatching namespaces [unqualifiedName] decl =
         unqualifiedName == declName decl
      && (not $ null $ intersectBy nsMatching namespaces (declNamespaces decl))
-    delcMatching _ qualifiedName decl =
-        takeName qualifiedName == declName decl
-     && any ((takeNamespace qualifiedName ==) . nsName) (declNamespaces decl)
+    delcMatching _ qualifiedName' decl =
+        takeName qualifiedName' == declName decl
+     && any ((takeNamespace qualifiedName' ==) . nsName) (declNamespaces decl)
     nsMatching ns1 ns2 =
         nsName ns1 == nsName ns2 && (lang1 == lang2 || lang1 == Nothing || lang2 == Nothing)
       where
@@ -131,10 +134,10 @@ findStruct :: QualifiedName -> Parser Declaration
 findStruct name = doFind <?> "qualified struct name"
   where
     doFind = do
-        symbol <- findSymbol name
-        case symbol of
-            Struct {..} -> return symbol
-            _ -> fail $ "The " ++ show symbol ++ " is invalid in this context. Expected a struct."
+        symb <- findSymbol name
+        case symb of
+            Struct {..} -> return symb
+            _ -> fail $ "The " ++ show symb ++ " is invalid in this context. Expected a struct."
 
 -- namespace
 namespace :: Parser Namespace
@@ -189,6 +192,7 @@ view = do
     Struct namespaces attr name (declParams decl) (structBase decl) (viewFields decl fields) <$ optional semi
   where
     viewFields Struct {..} fields = filter ((`elem` fields) . fieldName) structFields
+    viewFields _           _      = error "view/viewFields: impossible happened."
 
 -- struct definition parser
 struct :: Parser Declaration
@@ -204,14 +208,17 @@ struct = do
     fields = unique $ braces $ manySortedBy (comparing fieldOrdinal) (field <* semi)
     with params e = e { currentParams = params }
     unique p = do
-        fields <- p
-        case findDuplicates fields of
-            [] -> return fields
+        fields' <- p
+        case findDuplicates fields' of
+            [] -> return fields'
             Field {..}:_ -> fail $ "Duplicate definition of the field with ordinal " ++ show fieldOrdinal
       where
         findDuplicates xs = deleteFirstsBy ordinal xs (nubBy ordinal xs)
         ordinal = (==) `on` fieldOrdinal
 
+manySortedBy :: (a -> a -> Ordering)
+             -> ParsecT s u m a
+            -> ParsecT s u m [a]
 manySortedBy = manyAccum . insertBy
 
 -- field definition parser
@@ -237,8 +244,8 @@ enum :: Parser Declaration
 enum = Enum <$> asks currentNamespaces <*> attributes <*> name <*> consts <* optional semi <?> "enum definition"
   where
     name = keyword "enum" *> (identifier <?> "enum identifier")
-    consts = braces (semiOrCommaSepEnd1 const <?> "enum constant")
-    const = Constant <$> identifier <*> optional value
+    consts = braces (semiOrCommaSepEnd1 constant <?> "enum constant")
+    constant = Constant <$> identifier <*> optional value
     value = equal *> (fromIntegral <$> integer)
 
 -- basic types parser
@@ -276,6 +283,7 @@ basicUserType = do
         BT_WString -> True
         _ -> scalarType t
     typeName (BT_UserDefined decl _) = declName decl
+    typeName _ = error "basicUserType/typeName: impossible happened."
 
 -- containers parser
 complexType :: Parser Type
@@ -298,14 +306,14 @@ userType = do
         Nothing -> do
             decl <- findSymbol name
             args <- option [] (angles $ commaSep1 arg)
-            if length args /= length (params decl)
+            if length args /= length (params' decl)
                 then
                     fail $ declName decl ++ " requires " ++ (show.length $ declParams decl) ++ " type argument(s)"
                 else
                     return $ BT_UserDefined decl args
           where
-            params Enum{..} = []
-            params d = declParams d
+            params' Enum{..} = []
+            params' d = declParams d
             arg = type_ <|> BT_IntTypeArg <$> (fromIntegral <$> integer)
   where
     isParam [name] TypeParam {..} = name == paramName

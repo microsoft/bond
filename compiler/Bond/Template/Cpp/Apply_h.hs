@@ -7,10 +7,13 @@ module Bond.Template.Cpp.Apply_h (apply_h, Protocol(..), apply) where
 
 import System.FilePath
 import Data.Monoid
+import Data.String (IsString)
+import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema
 import Bond.Util
 import Bond.Template.Util
+import Bond.Template.TypeMapping (Context)
 import qualified Bond.Template.Cpp.Util as CPP
 
 data Protocol =
@@ -20,6 +23,14 @@ data Protocol =
     }
 
 -- generate the *_apply.h file from parsed .bond file
+apply_h :: (ToText a1, ToText a, IsString t)
+        => [Protocol]
+        -> Maybe a
+        -> Context
+        -> a1
+        -> [Import]
+        -> [Declaration]
+        -> (t, Text)
 apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
 #pragma once
 
@@ -41,6 +52,9 @@ apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
     semi = [lt|;|]
 
 -- Apply overloads
+apply :: (ToText t1, ToText t)
+      => [Protocol]
+      -> t -> t1 -> Declaration -> Text
 apply protocols attr body Struct {..} | null declParams = [lt|
     //
     // Overloads of Apply function with common transforms for #{declName}.
@@ -76,8 +90,8 @@ apply protocols attr body Struct {..} | null declParams = [lt|
                const bond::bonded<#{declName}>& value)#{body}
     #{newlineSep 1 (transcoding transform) protocols}|]
       where
-        transcoding transform Protocol {protocolReader = fromReader} = [lt|
-    #{attr}bool Apply(const bond::#{transform}<bond::#{protocolWriter}<bond::OutputBuffer> >& transform,
+        transcoding transform' Protocol {protocolReader = fromReader} = [lt|
+    #{attr}bool Apply(const bond::#{transform'}<bond::#{protocolWriter}<bond::OutputBuffer> >& transform,
                const bond::bonded<#{declName}, bond::#{fromReader}<bond::InputBuffer>&>& value)#{body}|]
 
 apply _ _ _ _ = mempty

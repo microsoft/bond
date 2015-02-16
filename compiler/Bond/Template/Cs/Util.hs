@@ -12,13 +12,16 @@ module Bond.Template.Cs.Util
     , disableReSharperWarnings
     ) where
 
+import Data.Int (Int64)
 import Data.Monoid
+import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Version
 import Bond.Schema
 import Bond.Template.TypeMapping
 import Bond.Template.Util
 
+disableReSharperWarnings :: Text
 disableReSharperWarnings = [lt|
 #region ReSharper warnings
 // ReSharper disable PartialTypeWithSinglePart
@@ -31,6 +34,7 @@ disableReSharperWarnings = [lt|
 |]
 
 -- C# field/property attributes
+propertyAttributes :: Context -> Field -> Text
 propertyAttributes cs Field {..} = 
     schemaAttributes 2 fieldAttributes
  <> [lt|[global::Bond.Id(#{fieldOrdinal})#{typeAttribute}#{modifierAttribute fieldType fieldModifier}]|]
@@ -48,6 +52,7 @@ propertyAttributes cs Field {..} =
             modifierAttribute _ _ = mempty
 
 -- C# class/struct/interface attributes
+typeAttributes :: Context -> Declaration -> Text
 typeAttributes cs s@Struct {..} = 
     optionalTypeAttributes cs s
  <> [lt|[global::Bond.Schema]
@@ -58,9 +63,12 @@ typeAttributes cs s@Struct {..} =
 typeAttributes cs e@Enum {..} = 
     optionalTypeAttributes cs e
  <> generatedCodeAttr
+typeAttributes _ _ = error "typeAttributes: impossible happened."
 
+generatedCodeAttr :: Text
 generatedCodeAttr = [lt|[System.CodeDom.Compiler.GeneratedCode("gbc", "#{majorVersion}.#{minorVersion}")]|]
 
+optionalTypeAttributes :: Context -> Declaration -> Text
 optionalTypeAttributes cs decl = 
     schemaAttributes 1 (declAttributes decl)
  <> namespaceAttribute
@@ -71,18 +79,21 @@ optionalTypeAttributes cs decl =
     |]
 
 -- Attributes defined by the user in the schema
+schemaAttributes :: Int64 -> [Attribute] -> Text
 schemaAttributes indent = newlineSepEnd indent schemaAttribute
   where
     schemaAttribute Attribute {..} = 
         [lt|[global::Bond.Attribute("#{getIdlQualifiedName attrName}", "#{attrValue}")]|]
 
 -- generic type parameter constraints
+paramConstraints :: [TypeParam] -> Text
 paramConstraints = newlineBeginSep 2 constraint
   where
     constraint (TypeParam _ Nothing) = mempty
     constraint (TypeParam name (Just Value)) = [lt|where #{name} : struct|]
 
 -- Initial value for C# field/property or Nothing if C# implicit default is OK
+defaultValue :: Context -> Field -> Maybe Text
 defaultValue cs Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
     where
         newInstance t = Just [lt|new #{getInstanceTypeName cs t}()|]
@@ -107,8 +118,9 @@ defaultValue cs Field {fieldDefault = (Just def), ..} = explicitDefault def
         explicitDefault (DefaultInteger x) = Just [lt|#{x}|]
         explicitDefault (DefaultFloat x) = Just $ floatLiteral fieldType x
             where
-                floatLiteral BT_Float x = [lt|#{x}F|]
-                floatLiteral BT_Double x = [lt|#{x}|]
+                floatLiteral BT_Float y = [lt|#{y}F|]
+                floatLiteral BT_Double y = [lt|#{y}|]
+                floatLiteral _ _ = error "defaultValue/floatLiteral: impossible happened."
         explicitDefault (DefaultBool True) = Just "true"
         explicitDefault (DefaultBool False) = Just "false"
         explicitDefault (DefaultString x) = Just [lt|"#{x}"|]

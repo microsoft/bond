@@ -13,6 +13,7 @@ module Bond.Template.CustomMapping
 
 import Data.Char
 import Control.Applicative
+import Control.Monad.Identity
 import Text.Parsec hiding (many, optional, (<|>))
 import Bond.Schema
 
@@ -30,11 +31,18 @@ data NamespaceMapping = NamespaceMapping
     , toNamespace :: QualifiedName
     }
 
+
+whitespace :: ParsecT SourceName u Identity String
 whitespace = many (char ' ') <?> "whitespace"
+identifier :: ParsecT SourceName u Identity String
 identifier = many1 (alphaNum <|> char '_') <?> "identifier"
+qualifiedName :: ParsecT SourceName u Identity [String]
 qualifiedName = sepBy1 identifier (char '.') <?> "qualified name"
+symbol :: String -> ParsecT SourceName u Identity String
 symbol s = whitespace *> string s <* whitespace
+equal :: ParsecT SourceName u Identity String
 equal = symbol "="
+integer :: ParsecT SourceName u Identity Integer
 integer = decimal <$> many1 digit <?> "decimal number"
   where
     decimal = foldl (\x d -> 10 * x + toInteger (digitToInt d)) 0
@@ -42,9 +50,9 @@ integer = decimal <$> many1 digit <?> "decimal number"
 -- parse alias mapping specification from the command line --using flags
 -- e.g.: --using="OrderedSet=SortedSet<{0}>"
 parseAliasMapping :: [String] -> IO [AliasMapping]
-parseAliasMapping = mapM parseAliasMapping
+parseAliasMapping = mapM parseAliasMapping'
   where
-    parseAliasMapping s = case parse aliasMapping s s of
+    parseAliasMapping' s = case parse aliasMapping s s of
         Left err -> fail $ show err
         Right m -> return m
     aliasMapping = AliasMapping <$> qualifiedName <* equal <*> many1 (placeholder <|> fragment) <* eof
@@ -56,9 +64,9 @@ parseAliasMapping = mapM parseAliasMapping
 -- parse namespace mapping specification from the command line --namespace flags
 -- e.g.: --namespace="bond="
 parseNamespaceMapping :: [String] -> IO [NamespaceMapping]
-parseNamespaceMapping = mapM parseNamespaceMapping
+parseNamespaceMapping = mapM parseNamespaceMapping'
   where
-    parseNamespaceMapping s = case parse namespaceMapping s s of
+    parseNamespaceMapping' s = case parse namespaceMapping s s of
         Left err -> fail $ show err
         Right m -> return m
     namespaceMapping = NamespaceMapping <$> qualifiedName <* equal <*> qualifiedName

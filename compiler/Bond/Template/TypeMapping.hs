@@ -22,6 +22,7 @@ module Bond.Template.TypeMapping
     , getDeclQualifiedTypeName
     , getTypeName
     , getInstanceTypeName
+    , Context
     ) where
 
 import Data.List
@@ -55,6 +56,8 @@ data TypeMapping = TypeMapping
 
 type TypeNameBuilder = Reader Context Builder
 
+newMappingContext :: TypeMapping
+                  -> [AliasMapping] -> [NamespaceMapping] -> [Namespace] -> Context
 newMappingContext = Context
 
 setTypeMapping :: Context -> TypeMapping -> Context
@@ -85,14 +88,15 @@ getDeclQualifiedTypeName :: Context -> Declaration -> Builder
 getDeclQualifiedTypeName c = getGlobalQualifiedName (typeMapping c) . declQualifiedName c
 
 getTypeName :: Context -> Type -> Builder
-getTypeName c t = fix $ runReader (typeName t) c
+getTypeName c t = fix' $ runReader (typeName t) c
   where
-    fix = fixSyntax $ typeMapping c
+    fix' = fixSyntax $ typeMapping c
 
 getInstanceTypeName :: Context -> Type -> Builder
 getInstanceTypeName c t = runReader (instanceTypeName t) c
 
 -- type mappings for different languages/variants
+cppTypeMapping :: TypeMapping
 cppTypeMapping = TypeMapping
     Cpp
     "::"
@@ -102,6 +106,7 @@ cppTypeMapping = TypeMapping
     cppTypeMapping
     cppTypeMapping
 
+cppCustomAllocTypeMapping :: ToText a => a -> TypeMapping
 cppCustomAllocTypeMapping alloc = TypeMapping
     Cpp
     "::"
@@ -111,6 +116,7 @@ cppCustomAllocTypeMapping alloc = TypeMapping
     (cppCustomAllocTypeMapping alloc)
     (cppCustomAllocTypeMapping alloc)
 
+csTypeMapping :: TypeMapping
 csTypeMapping = TypeMapping
     Cs
     "global::"
@@ -120,6 +126,7 @@ csTypeMapping = TypeMapping
     csTypeMapping
     csTypeMapping
 
+csInterfaceTypeMapping :: TypeMapping
 csInterfaceTypeMapping = TypeMapping
     Cs
     "global::"
@@ -129,8 +136,10 @@ csInterfaceTypeMapping = TypeMapping
     csInterfaceInstanceTypeMapping
     csInterfaceTypeMapping
 
+csInterfaceInstanceTypeMapping :: TypeMapping
 csInterfaceInstanceTypeMapping = csInterfaceTypeMapping {mapType = csType}
 
+csAnnotatedTypeMapping :: TypeMapping
 csAnnotatedTypeMapping = TypeMapping
     Cs
     "global::"
@@ -158,6 +167,7 @@ infixr 6 <<>
 pureText :: ToText a => a -> TypeNameBuilder
 pureText = pure . toText
 
+commaSepTypeNames :: [Type] -> TypeNameBuilder
 commaSepTypeNames [] = return mempty
 commaSepTypeNames [x] = typeName x
 commaSepTypeNames (x:xs) = typeName x <<>> ", " <>> commaSepTypeNames xs
@@ -182,6 +192,7 @@ resolveNamespace c@Context {..} ns = maybe namespace toNamespace $ find ((namesp
     namespace = findNamespace c ns
 
 -- last namespace that is language-neutral or matches the language of the context's type mapping
+findNamespace :: Context -> [Namespace] -> QualifiedName
 findNamespace Context {..} ns =
     nsName . last . filter (maybe True (language typeMapping ==) . nsLanguage) $ ns
 
@@ -248,23 +259,27 @@ cppType (BT_UserDefined a@Alias {..} args) = aliasTypeName a args
 cppType (BT_UserDefined decl args) = declQualifiedTypeName decl <<>> (angles <$> commaSepTypeNames args)
 
 -- C++ type mapping with custom allocator
+cppTypeCustomAlloc :: Builder -> Type -> TypeNameBuilder
 cppTypeCustomAlloc alloc BT_String = pure $ "std::basic_string<char, std::char_traits<char>, typename " <> alloc <> "::rebind<char>::other>"
 cppTypeCustomAlloc alloc BT_WString = pure $ "std::basic_string<wchar_t, std::char_traits<wchar_t>, typename " <> alloc <>  "::rebind<wchar_t>::other>"
 cppTypeCustomAlloc alloc BT_MetaName = cppTypeCustomAlloc alloc BT_String
 cppTypeCustomAlloc alloc BT_MetaFullName = cppTypeCustomAlloc alloc BT_String
 cppTypeCustomAlloc alloc (BT_List element) = "std::list<" <>> elementTypeName element <<>> ", " <>> allocator alloc element <<> ">"
 cppTypeCustomAlloc alloc (BT_Nullable element) | structType element = "bond::nullable<" <>> elementTypeName element <<> ", " <> alloc <> ">"
-cppTypeCustomAlloc alloc (BT_Nullable element) = "bond::nullable<" <>> elementTypeName element <<> ">"
+cppTypeCustomAlloc _lloc (BT_Nullable element) = "bond::nullable<" <>> elementTypeName element <<> ">"
 cppTypeCustomAlloc alloc (BT_Vector element) = "std::vector<" <>> elementTypeName element <<>> ", " <>> allocator alloc element <<> ">"
 cppTypeCustomAlloc alloc (BT_Set element) = "std::set<" <>> elementTypeName element <<>> comparer element <<>> allocator alloc element <<> ">"
 cppTypeCustomAlloc alloc (BT_Map key value) = "std::map<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<>> comparer key <<>> pairAllocator alloc key value <<> ">"
 cppTypeCustomAlloc _ t = cppType t
 
+comparer :: Type -> TypeNameBuilder
 comparer t = ", std::less<" <>> elementTypeName t <<> ">, "
 
+allocator :: Builder -> Type -> TypeNameBuilder
 allocator alloc element =
     "typename " <>> alloc <>> "::rebind<" <>> elementTypeName element <<> ">::other"
 
+pairAllocator :: Builder -> Type -> Type -> TypeNameBuilder
 pairAllocator alloc key value =
     "typename " <>> alloc <>> "::rebind<" <>> "std::pair<const " <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> "> >::other"
 

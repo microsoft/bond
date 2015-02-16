@@ -6,6 +6,8 @@
 module Bond.Template.Cpp.Types_cpp (types_cpp) where
 
 import Data.Monoid
+import Data.String (IsString)
+import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema
 import Bond.Template.TypeMapping
@@ -13,7 +15,10 @@ import Bond.Template.Util
 import qualified Bond.Template.Cpp.Util as CPP
 
 -- generate the *_types_cpp file from parsed .bond file
-types_cpp cpp file imports declarations = ("_types.cpp", [lt|
+types_cpp ::  (ToText a)
+          => Context
+          -> a -> t -> [Declaration] -> (String, Text)
+types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 #include "#{file}_reflection.h"
 #include <bond/core/exception.h>
 
@@ -27,7 +32,7 @@ types_cpp cpp file imports declarations = ("_types.cpp", [lt|
         if null declParams then CPP.schemaMetadata cpp s else mempty
 
     -- global variables for enum name/value conversions
-    statics e@Enum {..} = [lt|
+    statics   Enum {..} = [lt|
     namespace _bond_enumerators
     {
     namespace #{declName}
