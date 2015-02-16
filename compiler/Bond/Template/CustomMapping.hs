@@ -4,8 +4,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Bond.Template.CustomMapping
-    ( parseAliasMapping
-    , parseNamespaceMapping
+    ( parseAliasMappings
+    , parseNamespaceMappings
     , AliasMapping(..)
     , Fragment(..)
     , NamespaceMapping(..)
@@ -13,7 +13,6 @@ module Bond.Template.CustomMapping
 
 import Data.Char
 import Control.Applicative
-import Control.Monad.Identity
 import Text.Parsec hiding (many, optional, (<|>))
 import Bond.Schema
 
@@ -32,27 +31,27 @@ data NamespaceMapping = NamespaceMapping
     }
 
 
-whitespace :: ParsecT SourceName u Identity String
+whitespace :: Parsec SourceName u String
 whitespace = many (char ' ') <?> "whitespace"
-identifier :: ParsecT SourceName u Identity String
+identifier :: Parsec SourceName u String
 identifier = many1 (alphaNum <|> char '_') <?> "identifier"
-qualifiedName :: ParsecT SourceName u Identity [String]
+qualifiedName :: Parsec SourceName u [String]
 qualifiedName = sepBy1 identifier (char '.') <?> "qualified name"
-symbol :: String -> ParsecT SourceName u Identity String
+symbol :: String -> Parsec SourceName u String
 symbol s = whitespace *> string s <* whitespace
-equal :: ParsecT SourceName u Identity String
+equal :: Parsec SourceName u String
 equal = symbol "="
-integer :: ParsecT SourceName u Identity Integer
+integer :: Parsec SourceName u Integer
 integer = decimal <$> many1 digit <?> "decimal number"
   where
     decimal = foldl (\x d -> 10 * x + toInteger (digitToInt d)) 0
 
 -- parse alias mapping specification from the command line --using flags
 -- e.g.: --using="OrderedSet=SortedSet<{0}>"
-parseAliasMapping :: [String] -> IO [AliasMapping]
-parseAliasMapping = mapM parseAliasMapping'
+parseAliasMappings :: [String] -> IO [AliasMapping]
+parseAliasMappings = mapM parseAliasMapping
   where
-    parseAliasMapping' s = case parse aliasMapping s s of
+    parseAliasMapping s = case parse aliasMapping s s of
         Left err -> fail $ show err
         Right m -> return m
     aliasMapping = AliasMapping <$> qualifiedName <* equal <*> many1 (placeholder <|> fragment) <* eof
@@ -63,10 +62,10 @@ parseAliasMapping = mapM parseAliasMapping'
 
 -- parse namespace mapping specification from the command line --namespace flags
 -- e.g.: --namespace="bond="
-parseNamespaceMapping :: [String] -> IO [NamespaceMapping]
-parseNamespaceMapping = mapM parseNamespaceMapping'
+parseNamespaceMappings :: [String] -> IO [NamespaceMapping]
+parseNamespaceMappings = mapM parseNamespaceMapping
   where
-    parseNamespaceMapping' s = case parse namespaceMapping s s of
+    parseNamespaceMapping s = case parse namespaceMapping s s of
         Left err -> fail $ show err
         Right m -> return m
     namespaceMapping = NamespaceMapping <$> qualifiedName <* equal <*> qualifiedName

@@ -9,7 +9,6 @@ import System.FilePath
 import Data.Maybe
 import Data.List
 import Data.Monoid
-import Data.String (IsString)
 import Data.Text.Lazy.Builder
 import qualified Data.Text.Lazy as L
 import Data.Foldable (foldMap)
@@ -22,15 +21,10 @@ import Bond.Template.Util
 import qualified Bond.Template.Cpp.Util as CPP
 
 -- generate the *_types.h file from parsed .bond file
-types_h :: (ToText t1, ToText a, IsString t)
-        => [t1]
+types_h :: [String]
         -> Bool
         -> Maybe String
-        -> Context
-        -> a
-        -> [Import]
-        -> [Declaration]
-        -> (t, L.Text)
+        -> MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
 types_h userHeaders enumHeader allocator cpp file imports declarations = ("_types.h", [lt|
 #pragma once
 #{newlineBeginSep 0 includeHeader userHeaders}

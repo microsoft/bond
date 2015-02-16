@@ -29,14 +29,14 @@ import Bond.Template.Util
 import Bond.Template.TypeMapping
 
 -- open namespaces
-openNamespace :: Context -> Text
+openNamespace :: MappingContext -> Text
 openNamespace cpp = newlineSep 0 open $ getNamespace cpp
   where
     open n = [lt|namespace #{n}
 {|]
 
 -- close namespaces in reverse order
-closeNamespace :: Context -> Text
+closeNamespace :: MappingContext -> Text
 closeNamespace cpp = newlineSep 0 close (reverse $ getNamespace cpp)
   where
     close n = [lt|} // namespace #{n}|]
@@ -73,7 +73,7 @@ modifierTag Field {..} = [lt|bond::reflection::#{modifier fieldType fieldModifie
     modifier _ Required = [lt|required|]
     modifier _ _ = [lt|optional|]
 
-defaultValue :: Context -> Type -> Default -> Text
+defaultValue :: MappingContext -> Type -> Default -> Text
 defaultValue _ BT_WString (DefaultString x) = [lt|L"#{x}"|]
 defaultValue _ BT_String (DefaultString x) = [lt|"#{x}"|]
 defaultValue _ BT_Float (DefaultFloat x) = [lt|#{x}f|]
@@ -89,13 +89,13 @@ defaultValue _ _ (DefaultFloat x) = [lt|#{x}|]
 defaultValue _ _ (DefaultNothing) = mempty
 defaultValue _ _ _ = error "defaultValue: impossible happened."
 
-enumValue :: ToText a => Context -> Type -> a -> Text
+enumValue :: ToText a => MappingContext -> Type -> a -> Text
 enumValue cpp (BT_UserDefined e@Enum {..} _) x =
     [lt|#{getGlobalQualifiedName cppTypeMapping $ getDeclNamespace cpp e}::_bond_enumerators::#{declName}::#{x}|]
 enumValue _ _ _ = error "enumValue: impossible happened."
 
 -- schema metadata static member definitions
-schemaMetadata :: Context -> Declaration -> Text
+schemaMetadata :: MappingContext -> Declaration -> Text
 schemaMetadata cpp s@Struct {..} = [lt|
     #{template s}const bond::Metadata #{structName s}::Schema::metadata
         = #{structName s}::Schema::GetMetadata();#{newlineBeginSep 1 staticDef structFields}|]

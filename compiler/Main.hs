@@ -54,12 +54,12 @@ concurrentlyFor_ = (void .) . flip mapConcurrently
 
 cppCodegen :: Options -> IO()
 cppCodegen (Cpp {..}) = do
-    aliasMapping <- parseAliasMapping using
-    namespaceMapping <- parseNamespaceMapping namespace
+    aliasMapping <- parseAliasMappings using
+    namespaceMapping <- parseNamespaceMappings namespace
     let typeMapping = case allocator of 
             Nothing -> cppTypeMapping
             Just a -> cppCustomAllocTypeMapping a
-    let mappingContext = newMappingContext typeMapping aliasMapping namespaceMapping []
+    let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping []
     concurrentlyFor_ files $ codeGen output_dir import_dir mappingContext $
         [ reflection_h
         , types_cpp
@@ -81,10 +81,10 @@ cppCodegen _ = error "cppCodegen: impossible happened."
     
 csCodegen :: Options -> IO()
 csCodegen (Cs {..}) = do
-    aliasMapping <- parseAliasMapping using
-    namespaceMapping <- parseNamespaceMapping namespace
+    aliasMapping <- parseAliasMappings using
+    namespaceMapping <- parseNamespaceMappings namespace
     let typeMapping = if collection_interfaces then csInterfaceTypeMapping else csTypeMapping
-    let mappingContext = newMappingContext typeMapping aliasMapping namespaceMapping []
+    let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping []
     concurrentlyFor_ files $ codeGen output_dir import_dir mappingContext 
         [ types_cs readonly_properties fields
         ]
@@ -93,8 +93,8 @@ csCodegen _ = error "csCodegen: impossible happened."
 
 codeGen :: FilePath
         -> [FilePath]
-        -> Context
-        -> [Context -> String -> [Import] -> [Declaration] -> (String, Text)]
+        -> MappingContext
+        -> [MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)]
         -> FilePath
         -> IO ()
 codeGen outputDir importDirs mappingContext templates file = do

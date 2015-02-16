@@ -6,7 +6,6 @@
 module Bond.Template.Cpp.Enum_h (enum_h) where
 
 import Data.Monoid
-import Data.String (IsString)
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema
@@ -15,8 +14,7 @@ import Bond.Template.Util
 import qualified Bond.Template.Cpp.Util as CPP
 
 -- generate the *_types.h file from parsed .bond file
-enum_h :: IsString t2
-       => Context -> t -> t1 -> [Declaration] -> (t2, Text)
+enum_h :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
 enum_h cpp _file _imports declarations = ("_enum.h", [lt|
 #pragma once
 

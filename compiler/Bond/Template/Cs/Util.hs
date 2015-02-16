@@ -34,7 +34,7 @@ disableReSharperWarnings = [lt|
 |]
 
 -- C# field/property attributes
-propertyAttributes :: Context -> Field -> Text
+propertyAttributes :: MappingContext -> Field -> Text
 propertyAttributes cs Field {..} = 
     schemaAttributes 2 fieldAttributes
  <> [lt|[global::Bond.Id(#{fieldOrdinal})#{typeAttribute}#{modifierAttribute fieldType fieldModifier}]|]
@@ -52,7 +52,7 @@ propertyAttributes cs Field {..} =
             modifierAttribute _ _ = mempty
 
 -- C# class/struct/interface attributes
-typeAttributes :: Context -> Declaration -> Text
+typeAttributes :: MappingContext -> Declaration -> Text
 typeAttributes cs s@Struct {..} = 
     optionalTypeAttributes cs s
  <> [lt|[global::Bond.Schema]
@@ -68,7 +68,7 @@ typeAttributes _ _ = error "typeAttributes: impossible happened."
 generatedCodeAttr :: Text
 generatedCodeAttr = [lt|[System.CodeDom.Compiler.GeneratedCode("gbc", "#{majorVersion}.#{minorVersion}")]|]
 
-optionalTypeAttributes :: Context -> Declaration -> Text
+optionalTypeAttributes :: MappingContext -> Declaration -> Text
 optionalTypeAttributes cs decl = 
     schemaAttributes 1 (declAttributes decl)
  <> namespaceAttribute
@@ -93,7 +93,7 @@ paramConstraints = newlineBeginSep 2 constraint
     constraint (TypeParam name (Just Value)) = [lt|where #{name} : struct|]
 
 -- Initial value for C# field/property or Nothing if C# implicit default is OK
-defaultValue :: Context -> Field -> Maybe Text
+defaultValue :: MappingContext -> Field -> Maybe Text
 defaultValue cs Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
     where
         newInstance t = Just [lt|new #{getInstanceTypeName cs t}()|]

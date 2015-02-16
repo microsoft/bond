@@ -4,8 +4,7 @@
 {-# LANGUAGE OverloadedStrings, RecordWildCards #-}
 
 module Bond.Template.TypeMapping
-    ( newMappingContext
-    , findAliasMapping
+    ( findAliasMapping
     , setTypeMapping
     , setNamespaces
     , cppTypeMapping
@@ -22,7 +21,7 @@ module Bond.Template.TypeMapping
     , getDeclQualifiedTypeName
     , getTypeName
     , getInstanceTypeName
-    , Context
+    , MappingContext(..)
     ) where
 
 import Data.List
@@ -37,7 +36,7 @@ import Bond.Util
 import Bond.Template.Util
 import Bond.Template.CustomMapping
 
-data Context = Context
+data MappingContext = MappingContext
     { typeMapping :: TypeMapping
     , aliasMapping :: [AliasMapping]
     , namespaceMapping :: [NamespaceMapping]
@@ -54,25 +53,21 @@ data TypeMapping = TypeMapping
     , elementMapping :: TypeMapping
     }
 
-type TypeNameBuilder = Reader Context Builder
+type TypeNameBuilder = Reader MappingContext Builder
 
-newMappingContext :: TypeMapping
-                  -> [AliasMapping] -> [NamespaceMapping] -> [Namespace] -> Context
-newMappingContext = Context
-
-setTypeMapping :: Context -> TypeMapping -> Context
+setTypeMapping :: MappingContext -> TypeMapping -> MappingContext
 setTypeMapping c m = c { typeMapping = m }
 
-setNamespaces :: Context -> [Namespace] -> Context
+setNamespaces :: MappingContext -> [Namespace] -> MappingContext
 setNamespaces c n = c { namespaces = n }
 
-getNamespace :: Context -> QualifiedName
-getNamespace c@Context {..} = resolveNamespace c namespaces
+getNamespace :: MappingContext -> QualifiedName
+getNamespace c@MappingContext {..} = resolveNamespace c namespaces
 
-getIdlNamespace :: Context -> QualifiedName
-getIdlNamespace c@Context {..} = findNamespace c namespaces
+getIdlNamespace :: MappingContext -> QualifiedName
+getIdlNamespace c@MappingContext {..} = findNamespace c namespaces
 
-getDeclNamespace :: Context -> Declaration -> QualifiedName
+getDeclNamespace :: MappingContext -> Declaration -> QualifiedName
 getDeclNamespace c = resolveNamespace c . declNamespaces
 
 getQualifiedName :: TypeMapping -> QualifiedName -> Builder
@@ -84,15 +79,15 @@ getIdlQualifiedName = sep "."
 getGlobalQualifiedName :: TypeMapping -> QualifiedName -> Builder
 getGlobalQualifiedName m@TypeMapping {..} = (global <>) . getQualifiedName m
 
-getDeclQualifiedTypeName :: Context -> Declaration -> Builder
+getDeclQualifiedTypeName :: MappingContext -> Declaration -> Builder
 getDeclQualifiedTypeName c = getGlobalQualifiedName (typeMapping c) . declQualifiedName c
 
-getTypeName :: Context -> Type -> Builder
+getTypeName :: MappingContext -> Type -> Builder
 getTypeName c t = fix' $ runReader (typeName t) c
   where
     fix' = fixSyntax $ typeMapping c
 
-getInstanceTypeName :: Context -> Type -> Builder
+getInstanceTypeName :: MappingContext -> Type -> Builder
 getInstanceTypeName c t = runReader (instanceTypeName t) c
 
 -- type mappings for different languages/variants
@@ -186,17 +181,17 @@ elementTypeName = localWith elementMapping . typeName
 instanceTypeName :: Type -> TypeNameBuilder
 instanceTypeName = localWith instanceMapping . typeName
 
-resolveNamespace :: Context -> [Namespace] -> QualifiedName
-resolveNamespace c@Context {..} ns = maybe namespace toNamespace $ find ((namespace ==) . fromNamespace) namespaceMapping
+resolveNamespace :: MappingContext -> [Namespace] -> QualifiedName
+resolveNamespace c@MappingContext {..} ns = maybe namespace toNamespace $ find ((namespace ==) . fromNamespace) namespaceMapping
   where
     namespace = findNamespace c ns
 
 -- last namespace that is language-neutral or matches the language of the context's type mapping
-findNamespace :: Context -> [Namespace] -> QualifiedName
-findNamespace Context {..} ns =
+findNamespace :: MappingContext -> [Namespace] -> QualifiedName
+findNamespace MappingContext {..} ns =
     nsName . last . filter (maybe True (language typeMapping ==) . nsLanguage) $ ns
 
-declQualifiedName :: Context -> Declaration -> QualifiedName
+declQualifiedName :: MappingContext -> Declaration -> QualifiedName
 declQualifiedName c decl = getDeclNamespace c decl ++ [declName decl]
 
 declQualifiedTypeName :: Declaration -> TypeNameBuilder
@@ -211,7 +206,7 @@ declTypeName decl = do
             then pureText $ declName decl
             else declQualifiedTypeName decl
 
-findAliasMapping :: Context -> Declaration -> Maybe AliasMapping
+findAliasMapping :: MappingContext -> Declaration -> Maybe AliasMapping
 findAliasMapping ctx a = find isSameAlias $ aliasMapping ctx
   where
     aliasDeclName = declQualifiedName ctx a
