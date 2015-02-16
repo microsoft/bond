@@ -9,7 +9,6 @@ module Options (getOptions, Options(..), ApplyOptions(..)) where
 
 import Bond.Version
 import System.Console.CmdArgs
-import System.Console.CmdArgs.Explicit (Mode(..))
 
 data ApplyOptions =
     Compact |
@@ -45,6 +44,7 @@ data Options
         }
       deriving (Show, Data, Typeable)
 
+cpp :: Options
 cpp = Cpp 
     { files = def &= typFile &= args
     , import_dir = def &= typDir &= help "Add the directory to import search path"
@@ -61,6 +61,7 @@ cpp = Cpp
     name "c++" &=    
     help "Generate C++ code" 
 
+cs :: Options
 cs = Cs 
     { collection_interfaces = def &= help "Use interfaces rather than concrete collection types"
     , readonly_properties = def &= help "Generate private property setters"
@@ -69,9 +70,11 @@ cs = Cs
     name "c#" &= 
     help "Generate C# code"
 
+mode :: Mode (CmdArgs Options)
 mode = cmdArgsMode $ modes [cpp, cs] &= 
     program "gbc" &= 
     help "Compile Bond schema definition file and generate specified output" &=
     summary ("Bond Compiler " ++ majorVersion ++ "." ++ minorVersion ++ ", (C) Microsoft")
                      
+getOptions :: IO Options
 getOptions = cmdArgsRun mode

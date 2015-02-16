@@ -4,8 +4,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Bond.Template.CustomMapping
-    ( parseAliasMapping
-    , parseNamespaceMapping
+    ( parseAliasMappings
+    , parseNamespaceMappings
     , AliasMapping(..)
     , Fragment(..)
     , NamespaceMapping(..)
@@ -30,19 +30,26 @@ data NamespaceMapping = NamespaceMapping
     , toNamespace :: QualifiedName
     }
 
+
+whitespace :: Parsec SourceName u String
 whitespace = many (char ' ') <?> "whitespace"
+identifier :: Parsec SourceName u String
 identifier = many1 (alphaNum <|> char '_') <?> "identifier"
+qualifiedName :: Parsec SourceName u [String]
 qualifiedName = sepBy1 identifier (char '.') <?> "qualified name"
+symbol :: String -> Parsec SourceName u String
 symbol s = whitespace *> string s <* whitespace
+equal :: Parsec SourceName u String
 equal = symbol "="
+integer :: Parsec SourceName u Integer
 integer = decimal <$> many1 digit <?> "decimal number"
   where
     decimal = foldl (\x d -> 10 * x + toInteger (digitToInt d)) 0
 
 -- parse alias mapping specification from the command line --using flags
 -- e.g.: --using="OrderedSet=SortedSet<{0}>"
-parseAliasMapping :: [String] -> IO [AliasMapping]
-parseAliasMapping = mapM parseAliasMapping
+parseAliasMappings :: [String] -> IO [AliasMapping]
+parseAliasMappings = mapM parseAliasMapping
   where
     parseAliasMapping s = case parse aliasMapping s s of
         Left err -> fail $ show err
@@ -55,8 +62,8 @@ parseAliasMapping = mapM parseAliasMapping
 
 -- parse namespace mapping specification from the command line --namespace flags
 -- e.g.: --namespace="bond="
-parseNamespaceMapping :: [String] -> IO [NamespaceMapping]
-parseNamespaceMapping = mapM parseNamespaceMapping
+parseNamespaceMappings :: [String] -> IO [NamespaceMapping]
+parseNamespaceMappings = mapM parseNamespaceMapping
   where
     parseNamespaceMapping s = case parse namespaceMapping s s of
         Left err -> fail $ show err

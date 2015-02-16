@@ -5,16 +5,17 @@
 
 module Bond.Template.Cpp.Apply_cpp (apply_cpp) where
 
-import System.FilePath
-import Data.Monoid
+import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema
+import Bond.Template.TypeMapping
 import Bond.Template.Util
 import Bond.Template.Cpp.Apply_h
 import qualified Bond.Template.Cpp.Util as CPP
 
 -- generate the *_apply.cpp file from parsed .bond file
-apply_cpp protocols cpp file imports declarations = ("_apply.cpp", [lt|
+apply_cpp :: [Protocol] -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
+apply_cpp protocols cpp file _imports declarations = ("_apply.cpp", [lt|
 #include "#{file}_apply.h"
 #include "#{file}_reflection.h"
 

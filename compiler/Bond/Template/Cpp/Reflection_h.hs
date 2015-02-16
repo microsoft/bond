@@ -7,6 +7,7 @@ module Bond.Template.Cpp.Reflection_h (reflection_h) where
 
 import System.FilePath
 import Data.Monoid
+import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema
 import Bond.Template.TypeMapping
@@ -14,6 +15,7 @@ import Bond.Template.Util
 import qualified Bond.Template.Cpp.Util as CPP
 
 -- generate the *_refection.h file from parsed .bond file
+reflection_h :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
 reflection_h cpp file imports declarations = ("_reflection.h", [lt|
 #pragma once
 
