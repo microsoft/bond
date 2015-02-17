@@ -5,4 +5,5 @@ module Bond.API (
     runFastBinaryPut
   ) where
 
-import Bond.FastBinary (bondGet, bondPut, runFastBinaryGet, runFastBinaryPut)
+import Bond.BinaryProto (bondGet, bondPut)
+import Bond.FastBinary (runFastBinaryGet, runFastBinaryPut)
