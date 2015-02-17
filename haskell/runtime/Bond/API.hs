@@ -1,6 +1,8 @@
 module Bond.API (
-    fastBinaryGet,
-    fastBinaryPut
+    bondGet,
+    bondPut,
+    runFastBinaryGet,
+    runFastBinaryPut
   ) where
 
-import Bond.FastBinary (fastBinaryGet, fastBinaryPut)
+import Bond.FastBinary (bondGet, bondPut, runFastBinaryGet, runFastBinaryPut)

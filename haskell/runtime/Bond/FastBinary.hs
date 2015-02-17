@@ -1,180 +1,326 @@
-{-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf #-}
+{-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf, MultiParamTypeClasses, GeneralizedNewtypeDeriving, FlexibleInstances, EmptyDataDecls #-}
 module Bond.FastBinary (
-    FastBinary(..),
-    FastBinaryStruct(..),
-    Put,
-    Get,
-    getField,
-    getInt32le,
-    putField,
-    putInt32le,
-    putMaybeField,
+    BondBinary(..),
+    BondBinaryStruct(..),
+    BondBinaryProto(..),
+    BondPut,
+    BondGet,
     putStructStop,
     putStructStopBase,
-    readBaseFieldsWith,
-    readFieldsWith,
-    skipValue
+    runFastBinaryGet,
+    runFastBinaryPut
   ) where
 
 import Bond.Types
 import Bond.Wire
+import Control.Applicative
 import Control.Monad
 import Control.Monad.ST (runST, ST)
 import Data.Array.ST (newArray, readArray, MArray, STUArray)
 import Data.Array.Unsafe (castSTUArray)
-import Data.Binary.Put
 import Data.Binary.Get
+import Data.Binary.Put
 import Data.Bits
-import Data.Functor
 import Data.Hashable
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as Lazy
 import qualified Data.HashSet as H
 import qualified Data.Map as M
 import qualified Data.Vector as V
 
-class FastBinaryStruct a where
-    fastBinaryPutBase :: a -> Put
-    fastBinaryGetBase :: Get a
+newtype VarInt = VarInt Int
 
-class FastBinary a where
-    fastBinaryPut :: a -> Put
-    fastBinaryGet :: Get a
+data FastBinaryProto
+newtype BondGet t a = BondGet (Get a)
+    deriving (Functor, Applicative, Monad)
+newtype BondPutM t a = BondPut (PutM a)
+    deriving (Functor, Applicative, Monad)
+type BondPut t = BondPutM t ()
 
-instance FastBinary FieldTag where
-    fastBinaryPut (FieldTag t (Ordinal o)) = do
-        putWord8 $ fromWireType t
-        putWord16le o
-    fastBinaryGet = do
-        t <- toWireType <$> getWord8
+class BondBinaryStruct t a where
+    bondGetBase :: BondGet t a
+    bondPutBase :: a -> BondPut t
+
+class BondBinary t a where
+    bondGet :: BondGet t a
+    bondPut :: a -> BondPut t
+
+instance BondBinary t Bool where
+    bondGet = do
+        v <- BondGet getWord8
+        return (v /= 0)
+    bondPut v = if v then BondPut (putWord8 1) else BondPut (putWord8 0)
+
+instance BondBinary t Word8 where
+    bondGet = BondGet getWord8
+    bondPut = BondPut . putWord8
+
+instance BondBinary FastBinaryProto Word16 where
+    bondGet = BondGet getWord16le
+    bondPut = BondPut . putWord16le
+
+instance BondBinary FastBinaryProto Word32 where
+    bondGet = BondGet getWord32le
+    bondPut = BondPut . putWord32le
+
+instance BondBinary FastBinaryProto Word64 where
+    bondGet = BondGet getWord64le
+    bondPut = BondPut . putWord64le
+
+instance BondBinary t Int8 where
+    bondGet = BondGet (fromIntegral <$> getWord8)
+    bondPut = BondPut . putWord8 . fromIntegral
+
+instance BondBinary FastBinaryProto Int16 where
+    bondGet = BondGet (fromIntegral <$> getWord16le)
+    bondPut = BondPut . putWord16le . fromIntegral
+
+instance BondBinary FastBinaryProto Int32 where
+    bondGet = BondGet (fromIntegral <$> getWord32le)
+    bondPut = BondPut . putWord32le . fromIntegral
+
+instance BondBinary FastBinaryProto Int64 where
+    bondGet = BondGet (fromIntegral <$> getWord64le)
+    bondPut = BondPut . putWord64le . fromIntegral
+
+instance BondBinary t VarInt where
+    bondGet = VarInt <$> step 0
+        where
+        step :: Int -> BondGet t Int
+        step n | n > 4 = fail "VarInt: sequence too long"
+        step n = do
+            b <- fromIntegral <$> BondGet getWord8
+            rest <- if b `testBit` 7 then step (n + 1)  else return (0 :: Int)
+            return $ (b `clearBit` 7) .|. (rest `shiftL` 7)
+    bondPut (VarInt i) | i < 0 = fail "VarInt with negative value"
+    bondPut (VarInt i) | i < 128 = BondPut $ putWord8 $ fromIntegral i
+    bondPut (VarInt i) = do
+        let iLow = fromIntegral $ i .&. 0x7F
+        BondPut $ putWord8 $ iLow `setBit` 7
+        bondPut $ VarInt (i `shiftR` 7)
+
+instance BondBinary t Double where
+    bondGet = BondGet (wordToDouble <$> getWord64le)
+    bondPut = BondPut . putWord64le . doubleToWord
+
+instance BondBinary t Float where
+    bondGet = BondGet (wordToFloat <$> getWord32le)
+    bondPut = BondPut . putWord32le . floatToWord
+
+instance BondBinary t ItemType where
+    bondGet = toWireType <$> bondGet
+    bondPut = bondPut . fromWireType
+
+instance BondBinary FastBinaryProto FieldTag where
+    bondPut (FieldTag t (Ordinal o)) = do
+        bondPut t
+        bondPut o
+    bondGet = do
+        t <- bondGet
         o <- if t == BT_STOP || t == BT_STOP_BASE
                 then return 0
-                else getWord16le
+                else bondGet
         return $ FieldTag t (Ordinal o)
-instance FastBinary Bool where
-    fastBinaryPut v = if v then putWord8 1 else putWord8 0
-    fastBinaryGet = do
-        v <- getWord8
-        return (v /= 0)
-instance FastBinary Double where
-    fastBinaryPut = putWord64le . doubleToWord
-    fastBinaryGet = wordToDouble <$> getWord64le
-instance FastBinary Float where
-    fastBinaryPut = putWord32le . floatToWord
-    fastBinaryGet = wordToFloat <$> getWord32le
-instance FastBinary Int8 where
-    fastBinaryPut = putWord8 . fromIntegral
-    fastBinaryGet = fromIntegral <$> getWord8
-instance FastBinary Int16 where
-    fastBinaryPut = putWord16le . fromIntegral
-    fastBinaryGet = fromIntegral <$> getWord16le
-instance FastBinary Int32 where
-    fastBinaryPut = putWord32le . fromIntegral
-    fastBinaryGet = fromIntegral <$> getWord32le
-instance FastBinary Int64 where
-    fastBinaryPut = putWord64le . fromIntegral
-    fastBinaryGet = fromIntegral <$> getWord64le
-instance FastBinary Word8 where
-    fastBinaryPut = putWord8
-    fastBinaryGet = getWord8
-instance FastBinary Word16 where
-    fastBinaryPut = putWord16le
-    fastBinaryGet = getWord16le
-instance FastBinary Word32 where
-    fastBinaryPut = putWord32le
-    fastBinaryGet = getWord32le
-instance FastBinary Word64 where
-    fastBinaryPut = putWord64le
-    fastBinaryGet = getWord64le
-instance (FastBinary a, WireType a) => FastBinary (Maybe a) where
-    fastBinaryPut Nothing = do
-        putWord8 $ wireType (undefined :: a)
-        putVarInt 0
-    fastBinaryPut (Just v) = do
-        putWord8 $ wireType v
-        putVarInt 1
-        fastBinaryPut v
-    fastBinaryGet = do
-        t <- getWord8
-        when (toWireType t /= getWireType (undefined :: a)) $ fail "nullable: type mismatch"
-        n <- getVarInt
+
+instance (BondBinary t a, WireType a) => BondBinary t (Maybe a) where
+    bondPut Nothing = do
+        bondPut $ getWireType (undefined :: a)
+        bondPut $ VarInt 0
+    bondPut (Just v) = do
+        bondPut $ getWireType v
+        bondPut $ VarInt 1
+        bondPut v
+    bondGet = do
+        t <- bondGet
+        when (t /= getWireType (undefined :: a)) $ fail "nullable: type mismatch"
+        VarInt n <- bondGet
         if | n == 0 -> return Nothing
-           | n == 1 -> Just <$> fastBinaryGet
-           | otherwise -> fail "fastBinaryGet nullable: count isn't 0 or 1"
-instance (FastBinary a, WireType a) => FastBinary [a] where
-    fastBinaryPut xs = do
-        putWord8 $ wireType (undefined :: a)
-        putVarInt $ length xs
-        mapM_ fastBinaryPut xs
-    fastBinaryGet = do
-        t <- getWord8
-        when (toWireType t /= getWireType (undefined :: a)) $ fail "fastBinaryGet [a]: type mismatch"
-        n <- getVarInt
-        replicateM n fastBinaryGet
-instance FastBinary Blob where
-    fastBinaryPut (Blob s) = do
-        putWord8 $ fromWireType BT_INT8
-        putVarInt $ BS.length s
-        putByteString s
-    fastBinaryGet = do
-        t <- getWord8
-        when (toWireType t /= BT_INT8) $ fail "fastBinaryGet Blob: type mismatch"
-        n <- getVarInt
-        Blob <$> getByteString n
-instance FastBinary Utf8 where
-    fastBinaryPut (Utf8 s) = do
-        putVarInt $ BS.length s
-        putByteString s
-    fastBinaryGet = do
-        n <- getVarInt
-        Utf8 <$> getByteString n
-instance FastBinary Utf16 where
-    fastBinaryPut (Utf16 s) = do
-        putVarInt $ BS.length s `div` 2
-        putByteString s
-    fastBinaryGet = do
-        n <- getVarInt
-        Utf16 <$> getByteString (n * 2)
-instance (Hashable a, Eq a, FastBinary a, WireType a) => FastBinary (HashSet a) where
-    fastBinaryPut xs = do
-        putWord8 $ wireType (undefined :: a)
-        putVarInt $ H.size xs
-        mapM_ fastBinaryPut $ H.toList xs
-    fastBinaryGet = do
-        t <- getWord8
-        when (toWireType t /= getWireType (undefined :: a)) $ fail "fastBinaryGet (HashSet a): type mismatch"
-        n <- getVarInt
-        H.fromList <$> replicateM n fastBinaryGet
-instance (Ord a, FastBinary a, WireType a, FastBinary b, WireType b) => FastBinary (Map a b) where
-    fastBinaryPut xs = do
-        putWord8 $ wireType (undefined :: a)
-        putWord8 $ wireType (undefined :: b)
-        putVarInt $ M.size xs
+           | n == 1 -> Just <$> bondGet
+           | otherwise -> fail "bondGet nullable: count isn't 0 or 1"
+
+instance (BondBinary t a, WireType a) => BondBinary t [a] where
+    bondPut xs = do
+        bondPut $ getWireType $ head xs
+        bondPut $ VarInt $ length xs
+        mapM_ bondPut xs
+    bondGet = do
+        t <- bondGet
+        when (t /= getWireType (undefined :: a)) $ fail "bondGet [a]: type mismatch"
+        VarInt n <- bondGet
+        replicateM n bondGet
+
+instance BondBinary t Blob where
+    bondPut (Blob s) = do
+        bondPut BT_INT8
+        bondPut $ VarInt $ BS.length s
+        BondPut $ putByteString s
+    bondGet = do
+        t <- bondGet
+        when (t /= BT_INT8) $ fail "bondGet Blob: type mismatch"
+        VarInt n <- bondGet
+        BondGet (Blob <$> getByteString n)
+
+instance BondBinary t Utf8 where
+    bondPut (Utf8 s) = do
+        bondPut $ VarInt $ BS.length s
+        BondPut $ putByteString s
+    bondGet = do
+        VarInt n <- bondGet
+        Utf8 <$> (BondGet $ getByteString n)
+
+instance BondBinary t Utf16 where
+    bondPut (Utf16 s) = do
+        bondPut $ VarInt $ BS.length s `div` 2
+        BondPut $ putByteString s
+    bondGet = do
+        VarInt n <- bondGet
+        Utf16 <$> (BondGet $ getByteString (n * 2))
+
+instance (Hashable a, Eq a, BondBinary t a, WireType a) => BondBinary t (HashSet a) where
+    bondPut xs = do
+        bondPut $ getWireType (undefined :: a)
+        bondPut $ VarInt $ H.size xs
+        mapM_ bondPut $ H.toList xs
+    bondGet = do
+        t <- bondGet
+        when (t /= getWireType (undefined :: a)) $ fail "bondGet (HashSet a): type mismatch"
+        VarInt n <- bondGet
+        H.fromList <$> replicateM n bondGet
+
+instance (Ord a, BondBinary t a, WireType a, BondBinary t b, WireType b) => BondBinary t (Map a b) where
+    bondPut xs = do
+        bondPut $ getWireType (undefined :: a)
+        bondPut $ getWireType (undefined :: b)
+        bondPut $ VarInt $ M.size xs
         forM_ (M.toList xs) $ \(k, v) -> do
-            fastBinaryPut k
-            fastBinaryPut v
-    fastBinaryGet = do
-        tkey <- getWord8
-        tval <- getWord8
-        when (toWireType tkey /= getWireType (undefined :: a)) $ fail "fastBinaryGet (Map a b): key type mismatch"
-        when (toWireType tval /= getWireType (undefined :: b)) $ fail "fastBinaryGet (Map a b): value type mismatch"
-        n <- getVarInt
+            bondPut k
+            bondPut v
+    bondGet = do
+        tkey <- bondGet
+        tval <- bondGet
+        when (tkey /= getWireType (undefined :: a)) $ fail "bondGet (Map a b): key type mismatch"
+        when (tval /= getWireType (undefined :: b)) $ fail "bondGet (Map a b): value type mismatch"
+        VarInt n <- bondGet
         fmap M.fromList $ replicateM n $ do
-            k <- fastBinaryGet
-            v <- fastBinaryGet
+            k <- bondGet
+            v <- bondGet
             return (k, v)
-instance (FastBinary a, WireType a) => FastBinary (Vector a) where
-    fastBinaryPut xs = do
-        putWord8 $ wireType (undefined :: a)
-        putVarInt $ V.length xs
-        V.mapM_ fastBinaryPut xs
-    fastBinaryGet = do
-        t <- getWord8
-        when (toWireType t /= getWireType (undefined :: a)) $ fail "fastBinaryGet (Vector a): type mismatch"
-        n <- getVarInt
-        V.replicateM n fastBinaryGet
-instance FastBinary a => FastBinary (Bonded a) where
-    fastBinaryPut (Bonded v) = fastBinaryPut v
-    fastBinaryGet = Bonded <$> fastBinaryGet
+
+instance (BondBinary t a, WireType a) => BondBinary t (Vector a) where
+    bondPut xs = do
+        bondPut $ getWireType (undefined :: a)
+        bondPut $ VarInt $ V.length xs
+        V.mapM_ bondPut xs
+    bondGet = do
+        t <- bondGet
+        when (t /= getWireType (undefined :: a)) $ fail "bondGet (Vector a): type mismatch"
+        VarInt n <- bondGet
+        V.replicateM n bondGet
+
+instance BondBinary t a => BondBinary t (Bonded a) where
+    bondPut (Bonded v) = bondPut v
+    bondGet = Bonded <$> bondGet
+
+putStructStop :: BondBinaryProto t => BondPut t
+putStructStop = bondPut BT_STOP
+
+putStructStopBase :: BondBinaryProto t => BondPut t
+putStructStopBase = bondPut BT_STOP_BASE
+
+class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t Int64,
+       BondBinary t Word8, BondBinary t Word16, BondBinary t Word32, BondBinary t Word64) =>
+        BondBinaryProto t where
+    checkTypeAndGet :: (BondBinary t a, WireType a) => ItemType -> BondGet t a
+    putField :: (BondBinary t a, WireType a) => Ordinal -> a -> BondPut t
+    putMaybeField :: (BondBinary t a, WireType a) => Ordinal -> Maybe a -> BondPut t
+    readFieldsWith :: (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
+    readBaseFieldsWith :: (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
+    putEnumValue :: Int32 -> BondPut t
+    getEnumValue :: BondGet t Int32
+    skipValue :: ItemType -> BondGet t ()
+
+instance BondBinaryProto FastBinaryProto where
+    checkTypeAndGet = checkTypeAndGet'
+    putField = putField'
+    putMaybeField = putMaybeField'
+    readFieldsWith = readFieldsWith' BT_STOP
+    readBaseFieldsWith = readFieldsWith' BT_STOP_BASE
+    putEnumValue = bondPut
+    getEnumValue = bondGet
+    skipValue = skipValue'
+
+checkTypeAndGet' :: forall t a . (BondBinary t a, WireType a) => ItemType -> BondGet t a
+checkTypeAndGet' t | t == getWireType (undefined :: a) = bondGet
+checkTypeAndGet' t = fail $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (undefined :: a))
+
+putField' :: (BondBinary t FieldTag, BondBinary t a, WireType a) => Ordinal -> a -> BondPut t
+putField' n f = do
+    bondPut $ FieldTag (getWireType f) n
+    bondPut f
+
+putMaybeField' :: (BondBinary t FieldTag, BondBinary t a, WireType a) => Ordinal -> Maybe a -> BondPut t
+putMaybeField' _ Nothing = return ()
+putMaybeField' n (Just f) = putField' n f
+
+readFieldsWith' :: (BondBinary t FieldTag) => ItemType -> (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
+readFieldsWith' stop updateFunc = loop
+    where
+    loop v = do
+        FieldTag t n <- bondGet
+        if t == stop
+            then return v
+            else do
+                    v' <- updateFunc v t n
+                    loop v'
+
+toWireType :: Word8 -> ItemType
+toWireType = toEnum . fromIntegral
+
+fromWireType :: ItemType -> Word8
+fromWireType = fromIntegral . fromEnum
+
+skipValue' :: BondBinary t FieldTag => ItemType -> BondGet t ()
+skipValue' BT_STOP = fail "internal error: skipValue BT_STOP"
+skipValue' BT_STOP_BASE = fail "internal error: skipValue BT_STOP_BASE"
+skipValue' BT_BOOL = BondGet $ skip 1
+skipValue' BT_UINT8 = BondGet $ skip 1
+skipValue' BT_UINT16 = BondGet $ skip 2
+skipValue' BT_UINT32 = BondGet $ skip 4
+skipValue' BT_UINT64 = BondGet $ skip 8
+skipValue' BT_FLOAT = BondGet $ skip 4
+skipValue' BT_DOUBLE = BondGet $ skip 8
+skipValue' BT_INT8 = BondGet $ skip 1
+skipValue' BT_INT16 = BondGet $ skip 2
+skipValue' BT_INT32 = BondGet $ skip 4
+skipValue' BT_INT64 = BondGet $ skip 8
+skipValue' BT_STRING = do
+    VarInt n <- bondGet
+    BondGet $ skip n
+skipValue' BT_WSTRING = do
+    VarInt n <- bondGet
+    BondGet $ skip (n * 2)
+skipValue' BT_LIST = do
+    t <- bondGet
+    VarInt n <- bondGet
+    replicateM_ n (skipValue' t)
+skipValue' BT_SET = skipValue' BT_LIST
+skipValue' BT_MAP = do
+    tkey <- bondGet
+    tvalue <- bondGet
+    VarInt n <- bondGet
+    replicateM_ n $ do
+        skipValue' tkey
+        skipValue' tvalue
+skipValue' BT_STRUCT = loop
+    where
+    loop = do
+        FieldTag t _ <- bondGet
+        case t of
+            BT_STOP -> return ()
+            BT_STOP_BASE -> loop
+            _ -> do
+                    skipValue' t
+                    loop
 
 {-# INLINE wordToFloat #-}
 wordToFloat :: Word32 -> Float
@@ -198,114 +344,8 @@ cast :: (MArray (STUArray s) a (ST s),
         a -> ST s b
 cast x = newArray (0 :: Int, 0) x >>= castSTUArray >>= flip readArray 0
 
-wireType :: WireType a => a -> Word8
-wireType = fromWireType . getWireType
+runFastBinaryGet :: BondGet FastBinaryProto a -> Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
+runFastBinaryGet (BondGet g) = runGetOrFail g
 
-toWireType :: Word8 -> ItemType
-toWireType = toEnum . fromIntegral
-
-fromWireType :: ItemType -> Word8
-fromWireType = fromIntegral . fromEnum
-
-putVarInt :: Int -> Put
-putVarInt i | i < 0 = fail "putVarInt called with negative value"
-putVarInt i | i < 128 = putWord8 $ fromIntegral i
-putVarInt i = do
-    let iLow = fromIntegral $ i .&. 0x7F
-    putWord8 $ iLow `setBit` 7
-    putVarInt $ i `shiftR` 7
-
-getVarInt :: Get Int
-getVarInt = step 0
-    where
-    step :: Int -> Get Int
-    step n | n > 4 = fail "getVarInt: sequence too long"
-    step n = do
-        b <- fromIntegral <$> getWord8
-        rest <- if b `testBit` 7 then step (n + 1)  else return (0 :: Int)
-        return $ (b `clearBit` 7) .|. (rest `shiftL` 7)
-
-putInt32le :: Int32 -> Put
-putInt32le = putWord32le . fromIntegral
-
-getInt32le :: Get Int32
-getInt32le = fromIntegral <$> getWord32le
-
-putStructStop :: Put
-putStructStop = putWord8 $ fromWireType BT_STOP
-
-putStructStopBase :: Put
-putStructStopBase = putWord8 $ fromWireType BT_STOP_BASE
-
-putField :: (FastBinary t, WireType t) => Ordinal -> t -> Put
-putField n f = do
-    fastBinaryPut $ FieldTag (getWireType f) n
-    fastBinaryPut f
-
-putMaybeField :: (FastBinary t, WireType t) => Ordinal -> Maybe t -> Put
-putMaybeField _ Nothing = return ()
-putMaybeField n (Just f) = putField n f
-
-readFieldsWith' :: ItemType -> (a -> ItemType -> Ordinal -> Get a) -> a -> Get a
-readFieldsWith' stop updateFunc = loop
-    where
-    loop v = do
-        FieldTag t n <- fastBinaryGet
-        if t == stop
-            then return v
-            else do
-                    v' <- updateFunc v t n
-                    loop v'
-
-readFieldsWith :: (a -> ItemType -> Ordinal -> Get a) -> a -> Get a
-readFieldsWith = readFieldsWith' BT_STOP
-
-readBaseFieldsWith :: (a -> ItemType -> Ordinal -> Get a) -> a -> Get a
-readBaseFieldsWith = readFieldsWith' BT_STOP_BASE
-
-skipValue :: ItemType -> Get ()
-skipValue BT_STOP = fail "internal error: skipValue BT_STOP"
-skipValue BT_STOP_BASE = fail "internal error: skipValue BT_STOP_BASE"
-skipValue BT_BOOL = skip 1
-skipValue BT_UINT8 = skip 1
-skipValue BT_UINT16 = skip 2
-skipValue BT_UINT32 = skip 4
-skipValue BT_UINT64 = skip 8
-skipValue BT_FLOAT = skip 4
-skipValue BT_DOUBLE = skip 8
-skipValue BT_INT8 = skip 1
-skipValue BT_INT16 = skip 2
-skipValue BT_INT32 = skip 4
-skipValue BT_INT64 = skip 8
-skipValue BT_STRING = do
-    n <- getVarInt
-    skip n
-skipValue BT_WSTRING = do
-    n <- getVarInt
-    skip (n * 2)
-skipValue BT_LIST = do
-    t <- toWireType <$> getWord8
-    n <- getVarInt
-    replicateM_ n (skipValue t)
-skipValue BT_SET = skipValue BT_LIST
-skipValue BT_MAP = do
-    tkey <- toWireType <$> getWord8
-    tvalue <- toWireType <$> getWord8
-    n <- getVarInt
-    replicateM_ n $ do
-        skipValue tkey
-        skipValue tvalue
-skipValue BT_STRUCT = loop
-    where
-    loop = do
-        FieldTag t _ <- fastBinaryGet
-        case t of
-            BT_STOP -> return ()
-            BT_STOP_BASE -> loop
-            _ -> do
-                    skipValue t
-                    loop
-
-getField :: forall a . (FastBinary a, WireType a) => ItemType -> Get a
-getField t | t == getWireType (undefined :: a) = fastBinaryGet
-getField t = fail $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (undefined :: a))
+runFastBinaryPut :: BondPut FastBinaryProto -> Lazy.ByteString
+runFastBinaryPut (BondPut p) = runPut p
