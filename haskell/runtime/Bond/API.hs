@@ -1,4 +1,7 @@
 module Bond.API (
+    BondGet,
+    BondPut,
+    BondBinaryProto,
     bondGet,
     bondPut,
     runCompactBinaryV2Get,
@@ -7,6 +10,6 @@ module Bond.API (
     runFastBinaryPut
   ) where
 
-import Bond.BinaryProto (bondGet, bondPut)
+import Bond.BinaryProto (BondGet, BondPut, BondBinaryProto, bondGet, bondPut)
 import Bond.FastBinary (runFastBinaryGet, runFastBinaryPut)
 import Bond.CompactBinary (runCompactBinaryV2Get, runCompactBinaryV2Put)
