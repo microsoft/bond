@@ -14,8 +14,6 @@ import Bond.Schema
 import Bond.Template.TypeMapping
 --import Bond.Template.Util
 
-import Debug.Trace
-
 internalModule :: ModuleName
 internalModule = ModuleName "B'"
 
@@ -169,7 +167,7 @@ mkHaskellDecl mapping e@Enum{..} = (filename, prettyPrint code)
               in map mkConst constVals
     mkConst (constName, val) = PatBind noLoc (PVar $ mkVar constName) (UnGuardedRhs $ App (Con $ UnQual typeName) (parenIntLit val)) (BDecls [])
 
-mkHaskellDecl mapping s@Struct{..} = traceShow s (filename, prettyPrint code)
+mkHaskellDecl mapping s@Struct{..} = (filename, prettyPrint code)
     where
     namespace = getIdlNamespace mapping
     filename = mkFileName namespace declName
@@ -278,7 +276,7 @@ bondBinaryInstanceImpl Struct{declName, declParams, structBase} className putFun
     where
     recVar = Ident "v'"
     baseVar = Ident "b'"
-    withWrapper wrapper code | Just symb <- wrapper = InfixApp (App (Var symb) (Lit $ String declName)) (QVarOp $ UnQual $ Symbol "$") code
+    withWrapper wrapper code | Just symb <- wrapper = InfixApp (Var symb) (QVarOp $ UnQual $ Symbol "$") code
                              | otherwise = code
     getWithBaseCode = Do [
         Generator noLoc (PVar baseVar) (Var $ qualInt "bondGetBase"),

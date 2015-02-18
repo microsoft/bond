@@ -100,7 +100,6 @@ hsCodegen (Haskell {..}) = do
                 print error
                 exitFailure
             Right (Bond imports namespaces declarations) -> do
-                print imports
                 let mapping = setNamespaces mappingContext namespaces
                 forM_ declarations $ \decl -> do
                     let (filename, code) = mkHaskellDecl mapping decl

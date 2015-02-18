@@ -11,8 +11,7 @@ module Bond.BinaryProto (
     toWireType,
     putStructStop,
     putStructStopBase,
-    readFieldsWith',
-    skipValue'
+    skipBinaryValue
   ) where
 
 import Bond.Types
@@ -193,19 +192,19 @@ class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t I
     putMaybeField :: (BondBinary t a, WireType a) => Ordinal -> Maybe a -> BondPut t
     putMaybeField = putMaybeField'
     readFieldsWith :: (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
-    readFieldsWith = readFieldsWith' BT_STOP
+    readFieldsWith = readStructFieldsWith BT_STOP
     readBaseFieldsWith :: (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
-    readBaseFieldsWith = readFieldsWith' BT_STOP_BASE
+    readBaseFieldsWith = readStructFieldsWith BT_STOP_BASE
     putEnumValue :: Int32 -> BondPut t
     putEnumValue = bondPut
     getEnumValue = bondGet
     getEnumValue :: BondGet t Int32
     skipValue :: ItemType -> BondGet t ()
-    skipValue = skipValue'
-    readStruct :: String -> BondGet t a -> BondGet t a
-    readStruct _ f = f
-    putStruct :: String -> BondPut t -> BondPut t
-    putStruct _ f = f
+    skipValue = skipBinaryValue
+    readStruct :: BondGet t a -> BondGet t a
+    readStruct = id
+    putStruct :: BondPut t -> BondPut t
+    putStruct = id
 
 checkTypeAndGet' :: forall t a . (BondBinary t a, WireType a) => ItemType -> BondGet t a
 checkTypeAndGet' t | t == getWireType (undefined :: a) = bondGet
@@ -220,8 +219,8 @@ putMaybeField' :: (BondBinary t FieldTag, BondBinary t a, WireType a) => Ordinal
 putMaybeField' _ Nothing = return ()
 putMaybeField' n (Just f) = putField' n f
 
-readFieldsWith' :: (BondBinary t FieldTag) => ItemType -> (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
-readFieldsWith' stop updateFunc = loop
+readStructFieldsWith :: (BondBinary t FieldTag) => ItemType -> (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
+readStructFieldsWith stop updateFunc = loop
     where
     loop v = do
         FieldTag t n <- bondGet
@@ -237,39 +236,39 @@ toWireType = toEnum . fromIntegral
 fromWireType :: ItemType -> Word8
 fromWireType = fromIntegral . fromEnum
 
-skipValue' :: BondBinary t FieldTag => ItemType -> BondGet t ()
-skipValue' BT_STOP = fail "internal error: skipValue BT_STOP"
-skipValue' BT_STOP_BASE = fail "internal error: skipValue BT_STOP_BASE"
-skipValue' BT_BOOL = BondGet $ skip 1
-skipValue' BT_UINT8 = BondGet $ skip 1
-skipValue' BT_UINT16 = BondGet $ skip 2
-skipValue' BT_UINT32 = BondGet $ skip 4
-skipValue' BT_UINT64 = BondGet $ skip 8
-skipValue' BT_FLOAT = BondGet $ skip 4
-skipValue' BT_DOUBLE = BondGet $ skip 8
-skipValue' BT_INT8 = BondGet $ skip 1
-skipValue' BT_INT16 = BondGet $ skip 2
-skipValue' BT_INT32 = BondGet $ skip 4
-skipValue' BT_INT64 = BondGet $ skip 8
-skipValue' BT_STRING = do
+skipBinaryValue :: BondBinary t FieldTag => ItemType -> BondGet t ()
+skipBinaryValue BT_STOP = fail "internal error: skipValue BT_STOP"
+skipBinaryValue BT_STOP_BASE = fail "internal error: skipValue BT_STOP_BASE"
+skipBinaryValue BT_BOOL = BondGet $ skip 1
+skipBinaryValue BT_UINT8 = BondGet $ skip 1
+skipBinaryValue BT_UINT16 = BondGet $ skip 2
+skipBinaryValue BT_UINT32 = BondGet $ skip 4
+skipBinaryValue BT_UINT64 = BondGet $ skip 8
+skipBinaryValue BT_FLOAT = BondGet $ skip 4
+skipBinaryValue BT_DOUBLE = BondGet $ skip 8
+skipBinaryValue BT_INT8 = BondGet $ skip 1
+skipBinaryValue BT_INT16 = BondGet $ skip 2
+skipBinaryValue BT_INT32 = BondGet $ skip 4
+skipBinaryValue BT_INT64 = BondGet $ skip 8
+skipBinaryValue BT_STRING = do
     VarInt n <- bondGet
     BondGet $ skip n
-skipValue' BT_WSTRING = do
+skipBinaryValue BT_WSTRING = do
     VarInt n <- bondGet
     BondGet $ skip (n * 2)
-skipValue' BT_LIST = do
+skipBinaryValue BT_LIST = do
     t <- bondGet
     VarInt n <- bondGet
-    replicateM_ n (skipValue' t)
-skipValue' BT_SET = skipValue' BT_LIST
-skipValue' BT_MAP = do
+    replicateM_ n (skipBinaryValue t)
+skipBinaryValue BT_SET = skipBinaryValue BT_LIST
+skipBinaryValue BT_MAP = do
     tkey <- bondGet
     tvalue <- bondGet
     VarInt n <- bondGet
     replicateM_ n $ do
-        skipValue' tkey
-        skipValue' tvalue
-skipValue' BT_STRUCT = loop
+        skipBinaryValue tkey
+        skipBinaryValue tvalue
+skipBinaryValue BT_STRUCT = loop
     where
     loop = do
         FieldTag t _ <- bondGet
@@ -277,7 +276,7 @@ skipValue' BT_STRUCT = loop
             BT_STOP -> return ()
             BT_STOP_BASE -> loop
             _ -> do
-                    skipValue' t
+                    skipBinaryValue t
                     loop
 
 {-# INLINE wordToFloat #-}

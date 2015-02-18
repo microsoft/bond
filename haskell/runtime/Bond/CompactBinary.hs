@@ -118,13 +118,10 @@ instance BondBinary CompactBinaryV2Proto ListHead where
         return $ ListHead t n
 
 instance BondBinaryProto CompactBinaryV2Proto where
-    readStruct name reader = do
-        VarInt n <- bondGet
-        b <- BondGet bytesRead
-        r <- reader
-        b' <- BondGet bytesRead
-        return r
-    putStruct name (BondPut writer) = do
+    readStruct reader = do
+        VarInt _ <- bondGet -- FIXME use "isolate" from Data.Binary >= 0.7.2.0
+        reader
+    putStruct (BondPut writer) = do
         let bs = runPut writer
         bondPut $ VarInt $ fromIntegral $ Lazy.length bs
         BondPut $ putLazyByteString bs
@@ -134,7 +131,7 @@ skipCompactV2Value :: BondBinary CompactBinaryV2Proto FieldTag => ItemType -> Bo
 skipCompactV2Value BT_STRUCT = do
     VarInt len <- bondGet
     BondGet $ skip len
-skipCompactV2Value tag = skipValue' tag
+skipCompactV2Value t = skipBinaryValue t
 
 runCompactBinaryV2Get :: BondGet CompactBinaryV2Proto a -> Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
 runCompactBinaryV2Get (BondGet g) = runGetOrFail g
