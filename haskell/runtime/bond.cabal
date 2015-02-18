@@ -76,4 +76,5 @@ test-suite compat
                     HUnit >= 1.2,
                     test-framework >= 0.8,
                     test-framework-hunit >= 0.2,
+                    test-framework-quickcheck2 >= 0.2,
                     bond

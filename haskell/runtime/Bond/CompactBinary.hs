@@ -2,6 +2,7 @@
 module Bond.CompactBinary (
     runCompactBinaryV2Get,
     runCompactBinaryV2Put,
+    EncodedInt(..), -- export for testing
     encodeInt,      -- export for testing
     decodeInt       -- export for testing
   ) where
@@ -19,6 +20,7 @@ data CompactBinaryV2Proto
 
 newtype EncodedWord = EncodedWord { unWord :: Word64 }
 newtype EncodedInt = EncodedInt { unInt :: Int64 }
+    deriving (Show, Eq)
 newtype Unpacked16 = Unpacked16 { unpack16 :: Word16 }
 
 encodeInt :: EncodedInt -> EncodedWord
@@ -27,7 +29,7 @@ encodeInt (EncodedInt i) = EncodedWord $ (2 * fromIntegral (abs i)) - 1
 
 decodeInt :: EncodedWord -> EncodedInt
 decodeInt (EncodedWord w) | even w = EncodedInt $ fromIntegral (w `div` 2)
-decodeInt (EncodedWord w) = EncodedInt $ negate $ fromIntegral ((w + 1) `div` 2)
+decodeInt (EncodedWord w) = EncodedInt $ negate $ fromIntegral ((w - 1) `div` 2) + 1
 
 instance BondBinary CompactBinaryV2Proto EncodedWord where
     bondGet = EncodedWord <$> step 0

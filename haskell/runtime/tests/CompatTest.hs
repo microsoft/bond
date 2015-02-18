@@ -2,6 +2,7 @@ module Main where
 
 import Test.Framework (defaultMain, testGroup)
 import Test.Framework.Providers.HUnit
+import Test.Framework.Providers.QuickCheck2
 import Test.HUnit
 import Data.Int
 
@@ -9,22 +10,29 @@ import Unittest.Compat.Compat
 import qualified Data.ByteString.Lazy as BS
 
 import Bond.API
+import Bond.Imports (encodeInt, decodeInt, EncodedInt(..))
 
 type GetFunc t a = BondGet t a -> BS.ByteString -> Either (BS.ByteString, Int64, String) (BS.ByteString, Int64, a)
 type PutFunc t = BondPut t -> BS.ByteString
 
+fastBinaryData, compactBinaryV2Data :: String
+fastBinaryData = "/home/blaze/bond/test/compat/data/compat.fast.dat"
+compactBinaryV2Data = "/home/blaze/bond/test/compat/data/compat.compact2.dat"
+
 main :: IO ()
 main = defaultMain [
     testGroup "Fast Binary protocol" [
-        testCase "parsing existing data" $ testParseCompat runFastBinaryGet "/home/blaze/bond/test/compat/data/compat.fast.dat",
-        testCase "saving and parsing data" $ testParseOwnOutput runFastBinaryGet runFastBinaryPut "/home/blaze/bond/test/compat/data/compat.fast.dat"
+        testCase "parsing existing data" $ testParseCompat runFastBinaryGet fastBinaryData,
+        testCase "saving and parsing data" $ testParseOwnOutput runFastBinaryGet runFastBinaryPut fastBinaryData
     ],
     testGroup "Compact Binary protocol" [
         testGroup "Version 2" [
-            testCase "parsing existing data" $ testParseCompat runCompactBinaryV2Get "/home/blaze/bond/test/compat/data/compat.compact2.dat",
-            testCase "saving and parsing data" $ testParseOwnOutput runCompactBinaryV2Get runCompactBinaryV2Put "/home/blaze/bond/test/compat/data/compat.compact2.dat"
+            testCase "parsing existing data" $ testParseCompat runCompactBinaryV2Get compactBinaryV2Data,
+            testCase "saving and parsing data" $ testParseOwnOutput runCompactBinaryV2Get runCompactBinaryV2Put compactBinaryV2Data,
+            testProperty "check int conversion in CompactBinary" compactDecodeEncodeInt
         ]
-    ]
+    ],
+    testCase "Check for identical read results" testAllReadSameData
  ]
 
 testParseCompat :: BondBinaryProto t => GetFunc t Compat -> String -> Assertion
@@ -49,3 +57,18 @@ testParseOwnOutput get put file = do
                         Right (_, _, _) -> error "Not all input consumed"
                         Left (_, _, msg) -> error msg
 
+testAllReadSameData :: Assertion
+testAllReadSameData = do
+    fastbin <- BS.readFile fastBinaryData
+    let fastrec = (runGetOrFail runFastBinaryGet fastbin) :: Compat
+    cv2bin <- BS.readFile compactBinaryV2Data
+    let cv2rec = runGetOrFail runCompactBinaryV2Get cv2bin
+    assertEqual "FastBinary read matches CompactBinary v2 read" fastrec cv2rec
+    where
+    runGetOrFail get s = case get bondGet s of
+                            Right (rest, _, msg) | BS.null rest -> msg
+                            Right (_, _, _) -> error "Not all input consumed"
+                            Left (_, _, msg) -> error msg
+
+compactDecodeEncodeInt :: Int64 -> Bool
+compactDecodeEncodeInt x = EncodedInt x == decodeInt (encodeInt $ EncodedInt x)
