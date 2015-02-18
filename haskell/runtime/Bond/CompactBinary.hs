@@ -27,7 +27,7 @@ encodeInt (EncodedInt i) = EncodedWord $ (2 * fromIntegral (abs i)) - 1
 
 decodeInt :: EncodedWord -> EncodedInt
 decodeInt (EncodedWord w) | even w = EncodedInt $ fromIntegral (w `div` 2)
-decodeInt (EncodedWord w) = EncodedInt $ negate $ fromIntegral (w `div` 2)
+decodeInt (EncodedWord w) = EncodedInt $ negate $ fromIntegral ((w + 1) `div` 2)
 
 instance BondBinary CompactBinaryV2Proto EncodedWord where
     bondGet = EncodedWord <$> step 0
