@@ -187,10 +187,12 @@ class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t I
         BondBinaryProto t where
     checkTypeAndGet :: (BondBinary t a, WireType a) => ItemType -> BondGet t a
     checkTypeAndGet = checkTypeAndGet'
-    putField :: (BondBinary t a, WireType a) => Ordinal -> a -> BondPut t
+    putField :: (BondBinary t a, WireType a, Eq a) => Ordinal -> a -> a -> BondPut t
     putField = putField'
     putMaybeField :: (BondBinary t a, WireType a) => Ordinal -> Maybe a -> BondPut t
     putMaybeField = putMaybeField'
+    putStructField :: (BondBinary t a, WireType a) => Ordinal -> a -> BondPut t
+    putStructField = doPutField
     readFieldsWith :: (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
     readFieldsWith = readStructFieldsWith BT_STOP
     readBaseFieldsWith :: (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
@@ -210,14 +212,17 @@ checkTypeAndGet' :: forall t a . (BondBinary t a, WireType a) => ItemType -> Bon
 checkTypeAndGet' t | t == getWireType (undefined :: a) = bondGet
 checkTypeAndGet' t = fail $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (undefined :: a))
 
-putField' :: (BondBinary t FieldTag, BondBinary t a, WireType a) => Ordinal -> a -> BondPut t
-putField' n f = do
+doPutField :: (BondBinary t FieldTag, BondBinary t a, WireType a) => Ordinal -> a -> BondPut t
+doPutField n f = do
     bondPut $ FieldTag (getWireType f) n
     bondPut f
 
+putField' :: (BondBinary t FieldTag, BondBinary t a, WireType a, Eq a) => Ordinal -> a -> a -> BondPut t
+putField' n defValue f = unless (f == defValue) (doPutField n f)
+
 putMaybeField' :: (BondBinary t FieldTag, BondBinary t a, WireType a) => Ordinal -> Maybe a -> BondPut t
 putMaybeField' _ Nothing = return ()
-putMaybeField' n (Just f) = putField' n f
+putMaybeField' n (Just f) = doPutField n f
 
 readStructFieldsWith :: (BondBinary t FieldTag) => ItemType -> (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
 readStructFieldsWith stop updateFunc = loop
