@@ -1,6 +1,7 @@
 module Bond.Wire (
     FieldTag(..),
     ItemType(..),
+    ListHead(..),
     Ordinal(..),
     WireType(..)
   ) where
@@ -57,3 +58,5 @@ newtype Ordinal = Ordinal Word16
     deriving Eq
 
 data FieldTag = FieldTag ItemType Ordinal
+
+data ListHead = ListHead ItemType Int

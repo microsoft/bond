@@ -49,6 +49,15 @@ instance BondBinary FastBinaryProto FieldTag where
                 else bondGet
         return $ FieldTag t (Ordinal o)
 
+instance BondBinary FastBinaryProto ListHead where
+    bondPut (ListHead t n) = do
+        bondPut t
+        bondPut $ VarInt n
+    bondGet = do
+        t <- bondGet
+        VarInt n <- bondGet
+        return $ ListHead t n
+
 instance BondBinaryProto FastBinaryProto
 
 runFastBinaryGet :: BondGet FastBinaryProto a -> Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
