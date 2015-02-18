@@ -236,7 +236,7 @@ toWireType = toEnum . fromIntegral
 fromWireType :: ItemType -> Word8
 fromWireType = fromIntegral . fromEnum
 
-skipBinaryValue :: BondBinary t FieldTag => ItemType -> BondGet t ()
+skipBinaryValue :: (BondBinaryProto t, BondBinary t FieldTag, BondBinary t ListHead) => ItemType -> BondGet t ()
 skipBinaryValue BT_STOP = fail "internal error: skipValue BT_STOP"
 skipBinaryValue BT_STOP_BASE = fail "internal error: skipValue BT_STOP_BASE"
 skipBinaryValue BT_BOOL = BondGet $ skip 1
@@ -257,17 +257,16 @@ skipBinaryValue BT_WSTRING = do
     VarInt n <- bondGet
     BondGet $ skip (n * 2)
 skipBinaryValue BT_LIST = do
-    t <- bondGet
-    VarInt n <- bondGet
-    replicateM_ n (skipBinaryValue t)
-skipBinaryValue BT_SET = skipBinaryValue BT_LIST
+    ListHead t n <- bondGet
+    replicateM_ n (skipValue t)
+skipBinaryValue BT_SET = skipValue BT_LIST
 skipBinaryValue BT_MAP = do
     tkey <- bondGet
     tvalue <- bondGet
     VarInt n <- bondGet
     replicateM_ n $ do
-        skipBinaryValue tkey
-        skipBinaryValue tvalue
+        skipValue tkey
+        skipValue tvalue
 skipBinaryValue BT_STRUCT = loop
     where
     loop = do
@@ -276,7 +275,7 @@ skipBinaryValue BT_STRUCT = loop
             BT_STOP -> return ()
             BT_STOP_BASE -> loop
             _ -> do
-                    skipBinaryValue t
+                    skipValue t
                     loop
 
 {-# INLINE wordToFloat #-}
