@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf, MultiParamTypeClasses, FlexibleInstances, EmptyDataDecls #-}
+{-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf, MultiParamTypeClasses, EmptyDataDecls #-}
 module Bond.CompactBinary (
     runCompactBinaryV1Get,
     runCompactBinaryV1Put,
@@ -13,6 +13,7 @@ import Bond.BinaryProto
 import Bond.Types
 import Bond.Wire
 import Control.Applicative
+import Control.Monad
 import Data.Binary.Get
 import Data.Binary.Put
 import Data.Bits
@@ -20,10 +21,6 @@ import qualified Data.ByteString.Lazy as Lazy
 
 data CompactBinaryV1Proto
 data CompactBinaryV2Proto
-
-class CompactBinaryProto t
-instance CompactBinaryProto CompactBinaryV1Proto
-instance CompactBinaryProto CompactBinaryV2Proto
 
 newtype EncodedWord = EncodedWord { unWord :: Word64 }
 newtype EncodedInt = EncodedInt { unInt :: Int64 }
@@ -38,77 +35,129 @@ decodeInt :: EncodedWord -> EncodedInt
 decodeInt (EncodedWord w) | even w = EncodedInt $ fromIntegral (w `div` 2)
 decodeInt (EncodedWord w) = EncodedInt $ negate $ fromIntegral ((w - 1) `div` 2) + 1
 
-instance CompactBinaryProto t => BondBinary t EncodedWord where
-    bondGet = EncodedWord <$> step 0
-        where
-        step :: Int -> BondGet t Word64
-        step n | n > 9 = fail "EncodedWord: sequence too long"
-        step n = do
-            b <- fromIntegral <$> BondGet getWord8
-            rest <- if b `testBit` 7 then step (n + 1)  else return (0 :: Word64)
-            return $ (b `clearBit` 7) .|. (rest `shiftL` 7)
-    bondPut (EncodedWord i) | i < 128 = BondPut $ putWord8 $ fromIntegral i
-    bondPut (EncodedWord i) = do
-        let iLow = fromIntegral $ i .&. 0x7F
-        BondPut $ putWord8 $ iLow `setBit` 7
-        bondPut $ EncodedWord (i `shiftR` 7)
+putEncodedWord :: EncodedWord -> BondPut t
+putEncodedWord (EncodedWord i) | i < 128 = BondPut $ putWord8 $ fromIntegral i
+putEncodedWord (EncodedWord i) = do
+    let iLow = fromIntegral $ i .&. 0x7F
+    BondPut $ putWord8 $ iLow `setBit` 7
+    putEncodedWord $ EncodedWord (i `shiftR` 7)
 
-instance CompactBinaryProto t => BondBinary t EncodedInt where
+getEncodedWord :: BondGet t EncodedWord
+getEncodedWord = EncodedWord <$> step 0
+    where
+    step :: Int -> BondGet t Word64
+    step n | n > 9 = fail "EncodedWord: sequence too long"
+    step n = do
+        b <- fromIntegral <$> BondGet getWord8
+        rest <- if b `testBit` 7 then step (n + 1)  else return (0 :: Word64)
+        return $ (b `clearBit` 7) .|. (rest `shiftL` 7)
+
+instance BondBinary CompactBinaryV1Proto EncodedWord where
+    bondGet = getEncodedWord
+    bondPut = putEncodedWord
+
+instance BondBinary CompactBinaryV2Proto EncodedWord where
+    bondGet = getEncodedWord
+    bondPut = putEncodedWord
+
+instance BondBinary CompactBinaryV1Proto EncodedInt where
     bondGet = decodeInt <$> bondGet
     bondPut = bondPut . encodeInt
 
-instance CompactBinaryProto t => BondBinary t Unpacked16 where
+instance BondBinary CompactBinaryV2Proto EncodedInt where
+    bondGet = decodeInt <$> bondGet
+    bondPut = bondPut . encodeInt
+
+instance BondBinary CompactBinaryV1Proto Unpacked16 where
     bondGet = Unpacked16 <$> BondGet getWord16le
     bondPut = BondPut . putWord16le . unpack16
 
-instance CompactBinaryProto t => BondBinary t Word16 where
+instance BondBinary CompactBinaryV2Proto Unpacked16 where
+    bondGet = Unpacked16 <$> BondGet getWord16le
+    bondPut = BondPut . putWord16le . unpack16
+
+instance BondBinary CompactBinaryV1Proto Word16 where
     bondGet = fromIntegral . unWord <$> bondGet
     bondPut = bondPut . EncodedWord . fromIntegral
 
-instance CompactBinaryProto t => BondBinary t Word32 where
+instance BondBinary CompactBinaryV2Proto Word16 where
     bondGet = fromIntegral . unWord <$> bondGet
     bondPut = bondPut . EncodedWord . fromIntegral
 
-instance CompactBinaryProto t => BondBinary t Word64 where
+instance BondBinary CompactBinaryV1Proto Word32 where
     bondGet = fromIntegral . unWord <$> bondGet
     bondPut = bondPut . EncodedWord . fromIntegral
 
-instance CompactBinaryProto t => BondBinary t Int16 where
+instance BondBinary CompactBinaryV2Proto Word32 where
+    bondGet = fromIntegral . unWord <$> bondGet
+    bondPut = bondPut . EncodedWord . fromIntegral
+
+instance BondBinary CompactBinaryV1Proto Word64 where
+    bondGet = fromIntegral . unWord <$> bondGet
+    bondPut = bondPut . EncodedWord . fromIntegral
+
+instance BondBinary CompactBinaryV2Proto Word64 where
+    bondGet = fromIntegral . unWord <$> bondGet
+    bondPut = bondPut . EncodedWord . fromIntegral
+
+instance BondBinary CompactBinaryV1Proto Int16 where
     bondGet = fromIntegral . unInt . decodeInt <$> bondGet
     bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
 
-instance CompactBinaryProto t => BondBinary t Int32 where
+instance BondBinary CompactBinaryV2Proto Int16 where
     bondGet = fromIntegral . unInt . decodeInt <$> bondGet
     bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
 
-instance CompactBinaryProto t => BondBinary t Int64 where
+instance BondBinary CompactBinaryV1Proto Int32 where
     bondGet = fromIntegral . unInt . decodeInt <$> bondGet
     bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
 
-instance CompactBinaryProto t => BondBinary t FieldTag where
-    bondPut (FieldTag t (Ordinal o)) | o <= 5 = let tag = fromWireType t
+instance BondBinary CompactBinaryV2Proto Int32 where
+    bondGet = fromIntegral . unInt . decodeInt <$> bondGet
+    bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
+
+instance BondBinary CompactBinaryV1Proto Int64 where
+    bondGet = fromIntegral . unInt . decodeInt <$> bondGet
+    bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
+
+instance BondBinary CompactBinaryV2Proto Int64 where
+    bondGet = fromIntegral . unInt . decodeInt <$> bondGet
+    bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
+
+putFieldTag :: BondBinary t Unpacked16 => FieldTag -> BondPut t
+putFieldTag (FieldTag t (Ordinal o)) | o <= 5 = let tag = fromWireType t
                                                     ordn = fromIntegral o
                                                     v = (ordn `shiftL` 5) .|. tag
                                                 in bondPut v
-    bondPut (FieldTag t (Ordinal o)) | o <= 0xff = let tag = fromWireType t .|. 0xc0
+putFieldTag (FieldTag t (Ordinal o)) | o <= 0xff = let tag = fromWireType t .|. 0xc0
                                                        ordn = fromIntegral o :: Word8
                                                     in do
                                                         bondPut tag
                                                         bondPut ordn
-    bondPut (FieldTag t (Ordinal o)) = let tag = fromWireType t .|. 0xe0
+putFieldTag (FieldTag t (Ordinal o)) = let tag = fromWireType t .|. 0xe0
                                         in do
                                             bondPut tag
                                             bondPut $ Unpacked16 o
-    bondGet = do
-        tag <- bondGet
-        let t = toWireType (tag .&. 0x1f)
-        let hibits = tag `shiftR` 5
-        o <- if t == BT_STOP || t == BT_STOP_BASE
-                then return 0
-                else if | hibits <= 5 -> return $ fromIntegral hibits
-                        | hibits == 6 -> fromIntegral <$> (bondGet :: BondGet t Word8)
-                        | otherwise -> unpack16 <$> bondGet
-        return $ FieldTag t (Ordinal o)
+
+getFieldTag :: BondBinary t Unpacked16 => BondGet t FieldTag
+getFieldTag = do
+    tag <- bondGet
+    let t = toWireType (tag .&. 0x1f)
+    let hibits = tag `shiftR` 5
+    o <- if t == BT_STOP || t == BT_STOP_BASE
+            then return 0
+            else if | hibits <= 5 -> return $ fromIntegral hibits
+                    | hibits == 6 -> fromIntegral <$> (bondGet :: BondGet t Word8)
+                    | otherwise -> unpack16 <$> bondGet
+    return $ FieldTag t (Ordinal o)
+
+instance BondBinary CompactBinaryV1Proto FieldTag where
+    bondPut = putFieldTag
+    bondGet = getFieldTag
+
+instance BondBinary CompactBinaryV2Proto FieldTag where
+    bondPut = putFieldTag
+    bondGet = getFieldTag
 
 instance BondBinary CompactBinaryV1Proto ListHead where
     bondPut (ListHead t n) = do
@@ -153,9 +202,9 @@ skipVarInt = loop
     where
     loop = do
         v :: Word8 <- bondGet
-        if v `testBit` 7 then loop else return ()
+        when (v `testBit` 7) loop
 
-skipCompactValue :: (BondBinaryProto t, CompactBinaryProto t, BondBinary t ListHead) => BondBinary t FieldTag => ItemType -> BondGet t ()
+skipCompactValue :: (BondBinaryProto t, BondBinary t ListHead) => BondBinary t FieldTag => ItemType -> BondGet t ()
 skipCompactValue BT_UINT16 = skipVarInt
 skipCompactValue BT_UINT32 = skipVarInt
 skipCompactValue BT_UINT64 = skipVarInt
