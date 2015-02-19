@@ -135,13 +135,8 @@ instance BondBinary t Utf16 where
         Utf16 <$> (BondGet $ getByteString (n * 2))
 
 instance (Hashable a, Eq a, BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (HashSet a) where
-    bondPut xs = do
-        bondPut $ ListHead (getWireType (undefined :: a)) (H.size xs)
-        mapM_ bondPut $ H.toList xs
-    bondGet = do
-        ListHead t n <- bondGet
-        when (t /= getWireType (undefined :: a)) $ fail "bondGet (HashSet a): type mismatch"
-        H.fromList <$> replicateM n bondGet
+    bondPut xs = bondPut $ H.toList xs
+    bondGet = H.fromList <$> bondGet
 
 instance (Ord a, BondBinary t a, WireType a, BondBinary t b, WireType b) => BondBinary t (Map a b) where
     bondPut xs = do
