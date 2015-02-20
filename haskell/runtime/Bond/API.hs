@@ -6,15 +6,15 @@ module Bond.API (
     bondPut,
     runCompactBinaryV1Get,
     runCompactBinaryV1Put,
-    runCompactBinaryV2Get,
-    runCompactBinaryV2Put,
+    runCompactBinaryGet,
+    runCompactBinaryPut,
     runFastBinaryGet,
     runFastBinaryPut,
-    runSimpleBinaryGet,
-    runSimpleBinaryPut
+    runSimpleBinaryV1Get,
+    runSimpleBinaryV1Put
   ) where
 
 import Bond.BinaryProto (BondGet, BondPut, BondBinaryProto, bondGet, bondPut)
 import Bond.FastBinary (runFastBinaryGet, runFastBinaryPut)
-import Bond.CompactBinary (runCompactBinaryV1Get, runCompactBinaryV1Put, runCompactBinaryV2Get, runCompactBinaryV2Put)
-import Bond.SimpleBinary (runSimpleBinaryGet, runSimpleBinaryPut)
+import Bond.CompactBinary (runCompactBinaryV1Get, runCompactBinaryV1Put, runCompactBinaryGet, runCompactBinaryPut)
+import Bond.SimpleBinary (runSimpleBinaryV1Get, runSimpleBinaryV1Put)

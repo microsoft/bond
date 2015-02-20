@@ -15,11 +15,11 @@ import Bond.Imports (encodeInt, decodeInt, EncodedInt(..))
 type GetFunc t a = BondGet t a -> BS.ByteString -> Either (BS.ByteString, Int64, String) (BS.ByteString, Int64, a)
 type PutFunc t = BondPut t -> BS.ByteString
 
-fastBinaryData, compactBinaryV2Data :: String
+fastBinaryData, compactBinaryV1Data, compactBinaryV2Data, simpleBinaryV1Data :: String
 fastBinaryData = "/home/blaze/bond/test/compat/data/compat.fast.dat"
 compactBinaryV1Data = "/home/blaze/bond/test/compat/data/compat.compact.dat"
 compactBinaryV2Data = "/home/blaze/bond/test/compat/data/compat.compact2.dat"
-simpleBinaryData = "/home/blaze/bond/test/compat/data/compat.simple.dat"
+simpleBinaryV1Data = "/home/blaze/bond/test/compat/data/compat.simple.dat"
 
 main :: IO ()
 main = defaultMain [
@@ -33,14 +33,16 @@ main = defaultMain [
             testCase "saving and parsing data" $ testParseOwnOutput runCompactBinaryV1Get runCompactBinaryV1Put compactBinaryV1Data
         ],
         testGroup "Version 2" [
-            testCase "parsing existing data" $ testParseCompat runCompactBinaryV2Get compactBinaryV2Data,
-            testCase "saving and parsing data" $ testParseOwnOutput runCompactBinaryV2Get runCompactBinaryV2Put compactBinaryV2Data
+            testCase "parsing existing data" $ testParseCompat runCompactBinaryGet compactBinaryV2Data,
+            testCase "saving and parsing data" $ testParseOwnOutput runCompactBinaryGet runCompactBinaryPut compactBinaryV2Data
         ],
         testProperty "check int conversion in CompactBinary" compactDecodeEncodeInt
     ],
     testGroup "Simple Binary protocol" [
-        testCase "parsing existing data" $ testParseCompat runSimpleBinaryGet simpleBinaryData,
-        testCase "saving and parsing data" $ testParseOwnOutput runSimpleBinaryGet runSimpleBinaryPut simpleBinaryData
+        testGroup "Version 1" [
+            testCase "parsing existing data" $ testParseCompat runSimpleBinaryV1Get simpleBinaryV1Data,
+            testCase "saving and parsing data" $ testParseOwnOutput runSimpleBinaryV1Get runSimpleBinaryV1Put simpleBinaryV1Data
+        ]
     ],
     testCase "Check for identical read results" testAllReadSameData
  ]
@@ -74,7 +76,7 @@ testAllReadSameData = do
     cv1bin <- BS.readFile compactBinaryV1Data
     let cv1rec = runGetOrFail runCompactBinaryV1Get cv1bin
     cv2bin <- BS.readFile compactBinaryV2Data
-    let cv2rec = runGetOrFail runCompactBinaryV2Get cv2bin
+    let cv2rec = runGetOrFail runCompactBinaryGet cv2bin
     assertEqual "FastBinary read do not match CompactBinary v1 read" fastrec cv1rec
     assertEqual "FastBinary read do not match CompactBinary v2 read" fastrec cv2rec
     where

@@ -2,10 +2,10 @@
 module Bond.CompactBinary (
     runCompactBinaryV1Get,
     runCompactBinaryV1Put,
-    runCompactBinaryV2Get,
-    runCompactBinaryV2Put,
+    runCompactBinaryGet,
+    runCompactBinaryPut,
     CompactBinaryV1Proto,
-    CompactBinaryV2Proto,
+    CompactBinaryProto,
     EncodedInt(..), -- export for testing
     encodeInt,      -- export for testing
     decodeInt       -- export for testing
@@ -22,7 +22,7 @@ import Data.Bits
 import qualified Data.ByteString.Lazy as Lazy
 
 data CompactBinaryV1Proto
-data CompactBinaryV2Proto
+data CompactBinaryProto
 
 newtype EncodedWord = EncodedWord { unWord :: Word64 }
 newtype EncodedInt = EncodedInt { unInt :: Int64 }
@@ -58,7 +58,7 @@ instance BondBinary CompactBinaryV1Proto EncodedWord where
     bondGet = getEncodedWord
     bondPut = putEncodedWord
 
-instance BondBinary CompactBinaryV2Proto EncodedWord where
+instance BondBinary CompactBinaryProto EncodedWord where
     bondGet = getEncodedWord
     bondPut = putEncodedWord
 
@@ -66,7 +66,7 @@ instance BondBinary CompactBinaryV1Proto EncodedInt where
     bondGet = decodeInt <$> bondGet
     bondPut = bondPut . encodeInt
 
-instance BondBinary CompactBinaryV2Proto EncodedInt where
+instance BondBinary CompactBinaryProto EncodedInt where
     bondGet = decodeInt <$> bondGet
     bondPut = bondPut . encodeInt
 
@@ -74,7 +74,7 @@ instance BondBinary CompactBinaryV1Proto Unpacked16 where
     bondGet = Unpacked16 <$> BondGet getWord16le
     bondPut = BondPut . putWord16le . unpack16
 
-instance BondBinary CompactBinaryV2Proto Unpacked16 where
+instance BondBinary CompactBinaryProto Unpacked16 where
     bondGet = Unpacked16 <$> BondGet getWord16le
     bondPut = BondPut . putWord16le . unpack16
 
@@ -82,7 +82,7 @@ instance BondBinary CompactBinaryV1Proto Word16 where
     bondGet = fromIntegral . unWord <$> bondGet
     bondPut = bondPut . EncodedWord . fromIntegral
 
-instance BondBinary CompactBinaryV2Proto Word16 where
+instance BondBinary CompactBinaryProto Word16 where
     bondGet = fromIntegral . unWord <$> bondGet
     bondPut = bondPut . EncodedWord . fromIntegral
 
@@ -90,7 +90,7 @@ instance BondBinary CompactBinaryV1Proto Word32 where
     bondGet = fromIntegral . unWord <$> bondGet
     bondPut = bondPut . EncodedWord . fromIntegral
 
-instance BondBinary CompactBinaryV2Proto Word32 where
+instance BondBinary CompactBinaryProto Word32 where
     bondGet = fromIntegral . unWord <$> bondGet
     bondPut = bondPut . EncodedWord . fromIntegral
 
@@ -98,7 +98,7 @@ instance BondBinary CompactBinaryV1Proto Word64 where
     bondGet = fromIntegral . unWord <$> bondGet
     bondPut = bondPut . EncodedWord . fromIntegral
 
-instance BondBinary CompactBinaryV2Proto Word64 where
+instance BondBinary CompactBinaryProto Word64 where
     bondGet = fromIntegral . unWord <$> bondGet
     bondPut = bondPut . EncodedWord . fromIntegral
 
@@ -106,7 +106,7 @@ instance BondBinary CompactBinaryV1Proto Int16 where
     bondGet = fromIntegral . unInt . decodeInt <$> bondGet
     bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
 
-instance BondBinary CompactBinaryV2Proto Int16 where
+instance BondBinary CompactBinaryProto Int16 where
     bondGet = fromIntegral . unInt . decodeInt <$> bondGet
     bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
 
@@ -114,7 +114,7 @@ instance BondBinary CompactBinaryV1Proto Int32 where
     bondGet = fromIntegral . unInt . decodeInt <$> bondGet
     bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
 
-instance BondBinary CompactBinaryV2Proto Int32 where
+instance BondBinary CompactBinaryProto Int32 where
     bondGet = fromIntegral . unInt . decodeInt <$> bondGet
     bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
 
@@ -122,7 +122,7 @@ instance BondBinary CompactBinaryV1Proto Int64 where
     bondGet = fromIntegral . unInt . decodeInt <$> bondGet
     bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
 
-instance BondBinary CompactBinaryV2Proto Int64 where
+instance BondBinary CompactBinaryProto Int64 where
     bondGet = fromIntegral . unInt . decodeInt <$> bondGet
     bondPut = bondPut . encodeInt . EncodedInt . fromIntegral
 
@@ -157,7 +157,7 @@ instance BondBinary CompactBinaryV1Proto FieldTag where
     bondPut = putFieldTag
     bondGet = getFieldTag
 
-instance BondBinary CompactBinaryV2Proto FieldTag where
+instance BondBinary CompactBinaryProto FieldTag where
     bondPut = putFieldTag
     bondGet = getFieldTag
 
@@ -167,7 +167,7 @@ instance BondBinary CompactBinaryV1Proto StringHead where
         VarInt n <- bondGet
         return $ StringHead n
 
-instance BondBinary CompactBinaryV2Proto StringHead where
+instance BondBinary CompactBinaryProto StringHead where
     bondPut (StringHead n) = bondPut $ VarInt n
     bondGet = do
         VarInt n <- bondGet
@@ -191,7 +191,7 @@ instance BondBinary CompactBinaryV1Proto MapHead where
     bondPut = putMapHead
     bondGet = getMapHead
 
-instance BondBinary CompactBinaryV2Proto MapHead where
+instance BondBinary CompactBinaryProto MapHead where
     bondPut = putMapHead
     bondGet = getMapHead
 
@@ -205,7 +205,7 @@ instance BondBinary CompactBinaryV1Proto ListHead where
         VarInt n <- bondGet
         return $ ListHead (Just t) n
 
-instance BondBinary CompactBinaryV2Proto ListHead where
+instance BondBinary CompactBinaryProto ListHead where
     bondPut (ListHead (Just t) n) | n < 7 = let tag = fromWireType t
                                                 v = tag .|. fromIntegral ((n + 1) `shiftL` 5)
                                              in bondPut v
@@ -225,7 +225,7 @@ instance BondBinary CompactBinaryV2Proto ListHead where
 instance BondBinaryProto CompactBinaryV1Proto where
     skipValue = skipCompactValue
 
-instance BondBinaryProto CompactBinaryV2Proto where
+instance BondBinaryProto CompactBinaryProto where
     readStruct reader = do
         VarInt _ <- bondGet -- FIXME use "isolate" from Data.Binary >= 0.7.2.0
         reader
@@ -251,7 +251,7 @@ skipCompactValue BT_INT32 = skipVarInt
 skipCompactValue BT_INT64 = skipVarInt
 skipCompactValue t = skipBinaryValue t
 
-skipCompactV2Value :: BondBinary CompactBinaryV2Proto FieldTag => ItemType -> BondGet CompactBinaryV2Proto ()
+skipCompactV2Value :: BondBinary CompactBinaryProto FieldTag => ItemType -> BondGet CompactBinaryProto ()
 skipCompactV2Value BT_STRUCT = do
     VarInt len <- bondGet
     BondGet $ skip len
@@ -263,8 +263,8 @@ runCompactBinaryV1Get (BondGet g) = runGetOrFail g
 runCompactBinaryV1Put :: BondPut CompactBinaryV1Proto -> Lazy.ByteString
 runCompactBinaryV1Put (BondPut p) = runPut p
 
-runCompactBinaryV2Get :: BondGet CompactBinaryV2Proto a -> Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
-runCompactBinaryV2Get (BondGet g) = runGetOrFail g
+runCompactBinaryGet :: BondGet CompactBinaryProto a -> Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
+runCompactBinaryGet (BondGet g) = runGetOrFail g
 
-runCompactBinaryV2Put :: BondPut CompactBinaryV2Proto -> Lazy.ByteString
-runCompactBinaryV2Put (BondPut p) = runPut p
+runCompactBinaryPut :: BondPut CompactBinaryProto -> Lazy.ByteString
+runCompactBinaryPut (BondPut p) = runPut p
