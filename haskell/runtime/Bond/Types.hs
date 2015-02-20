@@ -62,6 +62,7 @@ instance Show a => Show (Bonded a) where
 
 instance Eq a => Eq (Bonded a) where
     (BondedObject v1) == (BondedObject v2) = v1 == v2
+    (BondedStream s1 _) == (BondedStream s2 _) = s1 == s2
 
 unpackBonded :: Bonded a -> a
 unpackBonded (BondedObject v) = v

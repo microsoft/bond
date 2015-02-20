@@ -9,12 +9,11 @@ module Bond.BinaryProto (
     VarInt(..),
     fromWireType,
     toWireType,
-    putStructStop,
-    putStructStopBase,
     skipBinaryValue
   ) where
 
 import Bond.Default
+import Bond.Schema
 import Bond.Types
 import Bond.Wire
 import Control.Applicative
@@ -30,6 +29,8 @@ import qualified Data.ByteString as BS
 import qualified Data.HashSet as H
 import qualified Data.Map as M
 import qualified Data.Vector as V
+
+import Debug.Trace
 
 newtype VarInt = VarInt { fromVarInt :: Int }
 
@@ -48,10 +49,13 @@ class BondBinary t a => BondBinaryStruct t a where
     bondPutBase :: a -> BondPut t
     bondedGet :: BondGet t (Bonded a)
     bondedPut :: Bonded a -> BondPut t
+    bondGetSchema :: a -> StructSchema t
 
 instance BondBinary t Bool where
     bondGet = do
+        f <- BondGet bytesRead
         v <- BondGet getWord8
+        traceShowM ("bool", v, f)
         return (v /= 0)
     bondPut v = if v then BondPut (putWord8 1) else BondPut (putWord8 0)
 
@@ -80,7 +84,11 @@ instance BondBinary t VarInt where
         bondPut $ VarInt (i `shiftR` 7)
 
 instance BondBinary t Double where
-    bondGet = BondGet (wordToDouble <$> getWord64le)
+    bondGet = do
+                f <- BondGet bytesRead
+                n <- BondGet (wordToDouble <$> getWord64le)
+                traceShowM ("double", n, f)
+                return n
     bondPut = BondPut . putWord64le . doubleToWord
 
 instance BondBinary t Float where
@@ -92,69 +100,65 @@ instance BondBinary t ItemType where
     bondPut = bondPut . fromWireType
 
 instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (Maybe a) where
-    bondPut Nothing = bondPut $ ListHead (getWireType (undefined :: a)) 0
+    bondPut Nothing = bondPut $ ListHead (Just $ getWireType (undefined :: a)) 0
     bondPut (Just v) = do
-        bondPut $ ListHead (getWireType v) 1
+        bondPut $ ListHead (Just $ getWireType v) 1
         bondPut v
     bondGet = do
         ListHead t n <- bondGet
-        when (t /= getWireType (undefined :: a)) $ fail "nullable: type mismatch"
+        unless (maybe True (== getWireType (undefined :: a)) t) $ fail "nullable: type mismatch"
         if | n == 0 -> return Nothing
            | n == 1 -> Just <$> bondGet
            | otherwise -> fail "bondGet nullable: count isn't 0 or 1"
 
 instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t [a] where
     bondPut xs = do
-        bondPut $ ListHead (getWireType $ head xs) (length xs)
+        bondPut $ ListHead (Just $ getWireType $ head xs) (length xs)
         mapM_ bondPut xs
     bondGet = do
         ListHead t n <- bondGet
-        when (t /= getWireType (undefined :: a)) $ fail "bondGet [a]: type mismatch"
+        unless (maybe True (== getWireType (undefined :: a)) t) $ fail "bondGet [a]: type mismatch"
         replicateM n bondGet
 
 instance BondBinary t ListHead => BondBinary t Blob where
     bondPut (Blob s) = do
-        bondPut $ ListHead BT_INT8 (BS.length s)
+        bondPut $ ListHead (Just BT_INT8) (BS.length s)
         BondPut $ putByteString s
     bondGet = do
         ListHead t n <- bondGet
-        when (t /= BT_INT8) $ fail "bondGet Blob: type mismatch"
+        unless (maybe True (== BT_INT8) t) $ fail "bondGet Blob: type mismatch"
         BondGet (Blob <$> getByteString n)
 
-instance BondBinary t Utf8 where
+instance BondBinary t StringHead => BondBinary t Utf8 where
     bondPut (Utf8 s) = do
-        bondPut $ VarInt $ BS.length s
+        bondPut $ StringHead $ BS.length s
         BondPut $ putByteString s
     bondGet = do
-        VarInt n <- bondGet
+        StringHead n <- bondGet
         Utf8 <$> (BondGet $ getByteString n)
 
-instance BondBinary t Utf16 where
+instance BondBinary t StringHead => BondBinary t Utf16 where
     bondPut (Utf16 s) = do
-        bondPut $ VarInt $ BS.length s `div` 2
+        bondPut $ StringHead $ BS.length s `div` 2
         BondPut $ putByteString s
     bondGet = do
-        VarInt n <- bondGet
+        StringHead n <- bondGet
         Utf16 <$> (BondGet $ getByteString (n * 2))
 
 instance (Hashable a, Eq a, BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (HashSet a) where
     bondPut xs = bondPut $ H.toList xs
     bondGet = H.fromList <$> bondGet
 
-instance (Ord a, BondBinary t a, WireType a, BondBinary t b, WireType b) => BondBinary t (Map a b) where
+instance (Ord a, BondBinary t a, WireType a, BondBinary t b, WireType b, BondBinary t MapHead) => BondBinary t (Map a b) where
     bondPut xs = do
-        bondPut $ getWireType (undefined :: a)
-        bondPut $ getWireType (undefined :: b)
-        bondPut $ VarInt $ M.size xs
+        bondPut $ MapHead (Just $ getWireType (undefined :: a)) (Just $ getWireType (undefined :: b)) (M.size xs)
         forM_ (M.toList xs) $ \(k, v) -> do
             bondPut k
             bondPut v
     bondGet = do
-        tkey <- bondGet
-        tval <- bondGet
-        when (tkey /= getWireType (undefined :: a)) $ fail "bondGet (Map a b): key type mismatch"
-        when (tval /= getWireType (undefined :: b)) $ fail "bondGet (Map a b): value type mismatch"
-        VarInt n <- bondGet
+        MapHead tkey tvalue n <- bondGet
+        unless (maybe True (== getWireType (undefined :: a)) tkey) $ fail "bondGet (Map a b): key type mismatch"
+        unless (maybe True (== getWireType (undefined :: b)) tvalue) $ fail "bondGet (Map a b): value type mismatch"
         fmap M.fromList $ replicateM n $ do
             k <- bondGet
             v <- bondGet
@@ -162,26 +166,21 @@ instance (Ord a, BondBinary t a, WireType a, BondBinary t b, WireType b) => Bond
 
 instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (Vector a) where
     bondPut xs = do
-        bondPut $ ListHead (getWireType $ V.head xs) (V.length xs)
+        bondPut $ ListHead (Just $ getWireType $ V.head xs) (V.length xs)
         V.mapM_ bondPut xs
     bondGet = do
         ListHead t n <- bondGet
-        when (t /= getWireType (undefined :: a)) $ fail "bondGet (Vector a): type mismatch"
+        unless (maybe True (== getWireType (undefined :: a)) t) $ fail "bondGet (Vector a): type mismatch"
         V.replicateM n bondGet
 
 instance BondBinaryStruct t a => BondBinary t (Bonded a) where
     bondPut = bondedPut
     bondGet = bondedGet
 
-putStructStop :: BondBinaryProto t => BondPut t
-putStructStop = bondPut BT_STOP
-
-putStructStopBase :: BondBinaryProto t => BondPut t
-putStructStopBase = bondPut BT_STOP_BASE
-
 class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t Int64,
        BondBinary t Word8, BondBinary t Word16, BondBinary t Word32, BondBinary t Word64,
-       BondBinary t FieldTag, BondBinary t ListHead) =>
+       BondBinary t FieldTag, BondBinary t ListHead, BondBinary t StringHead,
+       BondBinary t MapHead) =>
         BondBinaryProto t where
     checkTypeAndGet :: (BondBinary t a, WireType a) => ItemType -> BondGet t a
     checkTypeAndGet = checkTypeAndGet'
@@ -191,9 +190,9 @@ class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t I
     putMaybeField = putMaybeField'
     putStructField :: (BondBinaryStruct t a, WireType a) => Ordinal -> a -> BondPut t
     putStructField = doPutField
-    readFieldsWith :: (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
+    readFieldsWith :: BondBinaryStruct t a => (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
     readFieldsWith = readStructFieldsWith BT_STOP
-    readBaseFieldsWith :: (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
+    readBaseFieldsWith :: BondBinaryStruct t a => (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
     readBaseFieldsWith = readStructFieldsWith BT_STOP_BASE
     putEnumValue :: Int32 -> BondPut t
     putEnumValue = bondPut
@@ -209,6 +208,10 @@ class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t I
     putBonded (BondedObject v) = bondPut v
     getBonded :: BondBinaryStruct t a => BondGet t (Bonded a)
     getBonded = BondedObject <$> bondGet
+    putStructStop :: BondBinaryProto t => BondPut t
+    putStructStop = bondPut BT_STOP
+    putStructStopBase :: BondBinaryProto t => BondPut t
+    putStructStopBase = bondPut BT_STOP_BASE
 
 checkTypeAndGet' :: forall t a . (BondBinary t a, WireType a) => ItemType -> BondGet t a
 checkTypeAndGet' t | t == getWireType (undefined :: a) = bondGet
@@ -264,13 +267,11 @@ skipBinaryValue BT_WSTRING = do
     VarInt n <- bondGet
     BondGet $ skip (n * 2)
 skipBinaryValue BT_LIST = do
-    ListHead t n <- bondGet
+    ListHead (Just t) n <- bondGet
     replicateM_ n (skipValue t)
 skipBinaryValue BT_SET = skipValue BT_LIST
 skipBinaryValue BT_MAP = do
-    tkey <- bondGet
-    tvalue <- bondGet
-    VarInt n <- bondGet
+    MapHead (Just tkey) (Just tvalue) n <- bondGet
     replicateM_ n $ do
         skipValue tkey
         skipValue tvalue

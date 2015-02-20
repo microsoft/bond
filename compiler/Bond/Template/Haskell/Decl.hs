@@ -265,6 +265,7 @@ bondBinaryInstance Enum{declName} = InstDecl noLoc Nothing []
         InsDecl $ FunBind [Match noLoc (Ident "bondPut") [PParen (PApp (unqual $ convertTypeName declName) [PVar $ Ident "v"])] Nothing (UnGuardedRhs (App (Var $ qualInt "putEnumValue") (Var $ unqual "v"))) (BDecls [])],
         InsDecl $ PatBind noLoc (PVar $ Ident "bondGet") (UnGuardedRhs (App (App (Var $ unqual "fmap") (Con $ unqual $ convertTypeName declName)) (Var $ qualInt "getEnumValue"))) (BDecls [])
     ]
+
 bondBinaryInstance Struct{declName, declParams, structBase} = InstDecl noLoc Nothing [] (bondBinaryProtoConstraint : stdConstraints declParams)
     (qualInt "BondBinary")
     [TyVar phantomTagName, makeType True (Ident $ convertTypeName declName) declParams]
@@ -285,10 +286,11 @@ bondBinaryInstance Struct{declName, declParams, structBase} = InstDecl noLoc Not
     getNoBaseCode = App (App (Var $ qualInt "readFieldsWith") (Var $ unqual "update")) (Var $ qualInt "defaultValue")
     getCode | isNothing structBase = getNoBaseCode
             | otherwise = getWithBaseCode
+
 bondBinaryInstance _ = error "bondBinaryInstance not implemented"
 
 bondBinaryStructInstance :: Declaration -> Decl
-bondBinaryStructInstance Struct{declName, declParams, structBase} = InstDecl noLoc Nothing [] (bondBinaryProtoConstraint : stdConstraints declParams)
+bondBinaryStructInstance Struct{declName, declParams, structBase, structFields} = InstDecl noLoc Nothing [] (bondBinaryProtoConstraint : stdConstraints declParams)
     (qualInt "BondBinaryStruct")
     [TyVar phantomTagName, makeType True (Ident $ convertTypeName declName) declParams]
     [
@@ -298,8 +300,9 @@ bondBinaryStructInstance Struct{declName, declParams, structBase} = InstDecl noL
           ]) (BDecls [])],
         InsDecl $ PatBind noLoc (PVar $ Ident "bondGetBase") (UnGuardedRhs getCode) (BDecls []),
         InsDecl $ PatBind noLoc (PVar $ Ident "bondedGet") (UnGuardedRhs $ Var $ qualInt "getBonded") (BDecls []),
-        InsDecl $ PatBind noLoc (PVar $ Ident "bondedPut") (UnGuardedRhs $ Var $ qualInt "putBonded") (BDecls [])
-      ]
+        InsDecl $ PatBind noLoc (PVar $ Ident "bondedPut") (UnGuardedRhs $ Var $ qualInt "putBonded") (BDecls []),
+        InsDecl $ FunBind [Match noLoc (Ident "bondGetSchema") [PWildCard] Nothing (UnGuardedRhs $ App (Con $ qualInt "StructSchema") (List $ map makeFieldSchema structFields)) (BDecls [])]
+    ]
     where
     recVar = Ident "v'"
     baseVar = Ident "b'"
@@ -310,6 +313,8 @@ bondBinaryStructInstance Struct{declName, declParams, structBase} = InstDecl noL
     getNoBaseCode = App (App (Var $ qualInt "readBaseFieldsWith") (Var $ unqual "update")) (Var $ qualInt "defaultValue")
     getCode | isNothing structBase = getNoBaseCode
             | otherwise = getWithBaseCode
+    makeFieldSchema Field{fieldOrdinal, fieldName} = App (App (Con $ qualInt "FieldInfo") (Lit $ String $ uncapitalize fieldName)) (Paren $ App (Con $ qualInt "Ordinal") (intLit fieldOrdinal))
+
 bondBinaryStructInstance _ = error "bondBinaryStructInstance not implemented"
 
 putFieldsImpl :: Declaration -> Decl

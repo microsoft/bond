@@ -52,6 +52,8 @@ library
                     Bond.CompactBinary,
                     Bond.Default,
                     Bond.FastBinary,
+                    Bond.Schema,
+                    Bond.SimpleBinary,
                     Bond.Types,
                     Bond.Wire
   

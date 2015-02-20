@@ -50,13 +50,32 @@ instance BondBinary FastBinaryProto FieldTag where
         return $ FieldTag t (Ordinal o)
 
 instance BondBinary FastBinaryProto ListHead where
-    bondPut (ListHead t n) = do
+    bondPut (ListHead (Just t) n) = do
         bondPut t
         bondPut $ VarInt n
+    bondPut (ListHead Nothing _) = fail "internal error: putting list without type info"
     bondGet = do
         t <- bondGet
         VarInt n <- bondGet
-        return $ ListHead t n
+        return $ ListHead (Just t) n
+
+instance BondBinary FastBinaryProto MapHead where
+    bondPut (MapHead (Just tkey) (Just tvalue) n) = do
+        bondPut tkey
+        bondPut tvalue
+        bondPut $ VarInt n
+    bondPut MapHead{} = fail "internal error: putting map without type info"
+    bondGet = do
+        tkey <- bondGet
+        tvalue <- bondGet
+        VarInt n <- bondGet
+        return $ MapHead (Just tkey) (Just tvalue) n
+
+instance BondBinary FastBinaryProto StringHead where
+    bondPut (StringHead n) = bondPut $ VarInt n
+    bondGet = do
+        VarInt n <- bondGet
+        return $ StringHead n
 
 instance BondBinaryProto FastBinaryProto
 

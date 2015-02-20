@@ -4,6 +4,8 @@ module Bond.CompactBinary (
     runCompactBinaryV1Put,
     runCompactBinaryV2Get,
     runCompactBinaryV2Put,
+    CompactBinaryV1Proto,
+    CompactBinaryV2Proto,
     EncodedInt(..), -- export for testing
     encodeInt,      -- export for testing
     decodeInt       -- export for testing
@@ -159,22 +161,58 @@ instance BondBinary CompactBinaryV2Proto FieldTag where
     bondPut = putFieldTag
     bondGet = getFieldTag
 
+instance BondBinary CompactBinaryV1Proto StringHead where
+    bondPut (StringHead n) = bondPut $ VarInt n
+    bondGet = do
+        VarInt n <- bondGet
+        return $ StringHead n
+
+instance BondBinary CompactBinaryV2Proto StringHead where
+    bondPut (StringHead n) = bondPut $ VarInt n
+    bondGet = do
+        VarInt n <- bondGet
+        return $ StringHead n
+
+putMapHead :: MapHead -> BondPut t
+putMapHead (MapHead (Just tkey) (Just tvalue) n) = do
+    bondPut tkey
+    bondPut tvalue
+    bondPut $ VarInt n
+putMapHead _ = fail "internal error: putting map without type info"
+
+getMapHead :: BondGet t MapHead
+getMapHead = do
+    tkey <- bondGet
+    tvalue <- bondGet
+    VarInt n <- bondGet
+    return $ MapHead (Just tkey) (Just tvalue) n
+
+instance BondBinary CompactBinaryV1Proto MapHead where
+    bondPut = putMapHead
+    bondGet = getMapHead
+
+instance BondBinary CompactBinaryV2Proto MapHead where
+    bondPut = putMapHead
+    bondGet = getMapHead
+
 instance BondBinary CompactBinaryV1Proto ListHead where
-    bondPut (ListHead t n) = do
+    bondPut (ListHead (Just t) n) = do
         bondPut t
         bondPut $ VarInt n
+    bondPut (ListHead Nothing _) = fail "internal error: putting list without type info"
     bondGet = do
         t <- bondGet
         VarInt n <- bondGet
-        return $ ListHead t n
+        return $ ListHead (Just t) n
 
 instance BondBinary CompactBinaryV2Proto ListHead where
-    bondPut (ListHead t n) | n < 7 = let tag = fromWireType t
-                                         v = tag .|. fromIntegral ((n + 1) `shiftL` 5)
-                                      in bondPut v
-    bondPut (ListHead t n) = do
+    bondPut (ListHead (Just t) n) | n < 7 = let tag = fromWireType t
+                                                v = tag .|. fromIntegral ((n + 1) `shiftL` 5)
+                                             in bondPut v
+    bondPut (ListHead (Just t) n) = do
         bondPut t
         bondPut $ VarInt n
+    bondPut (ListHead Nothing _) = fail "internal error: putting list without type info"
     bondGet = do
         tag <- bondGet
         let t = toWireType (tag .&. 0x1f)
@@ -182,7 +220,7 @@ instance BondBinary CompactBinaryV2Proto ListHead where
         n <- if hibits == 0
                 then fromVarInt <$> bondGet
                 else return $ fromIntegral (hibits - 1)
-        return $ ListHead t n
+        return $ ListHead (Just t) n
 
 instance BondBinaryProto CompactBinaryV1Proto where
     skipValue = skipCompactValue

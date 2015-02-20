@@ -2,7 +2,9 @@ module Bond.Wire (
     FieldTag(..),
     ItemType(..),
     ListHead(..),
+    MapHead(..),
     Ordinal(..),
+    StringHead(..),
     WireType(..)
   ) where
 
@@ -55,8 +57,10 @@ instance WireType (Vector a) where getWireType _ = BT_LIST
 instance WireType (Bonded a) where getWireType _ = BT_STRUCT
 
 newtype Ordinal = Ordinal Word16
-    deriving Eq
+    deriving (Eq, Show)
 
 data FieldTag = FieldTag ItemType Ordinal
 
-data ListHead = ListHead ItemType Int
+data ListHead = ListHead (Maybe ItemType) Int
+data MapHead = MapHead (Maybe ItemType) (Maybe ItemType) Int
+newtype StringHead = StringHead Int
