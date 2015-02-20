@@ -14,8 +14,6 @@ import Data.Binary.Get
 import Data.Binary.Put
 import qualified Data.ByteString.Lazy as Lazy
 
-import Debug.Trace
-
 data SimpleBinaryProto
 
 instance BondBinary SimpleBinaryProto Word16 where
@@ -27,10 +25,7 @@ instance BondBinary SimpleBinaryProto Word32 where
     bondPut = BondPut . putWord32le
 
 instance BondBinary SimpleBinaryProto Word64 where
-    bondGet = do
-                n <- BondGet getWord64le
-                traceShowM ("uint64", n)
-                return n
+    bondGet = BondGet getWord64le
     bondPut = BondPut . putWord64le
 
 instance BondBinary SimpleBinaryProto Int16 where
@@ -38,10 +33,7 @@ instance BondBinary SimpleBinaryProto Int16 where
     bondPut = BondPut . putWord16le . fromIntegral
 
 instance BondBinary SimpleBinaryProto Int32 where
-    bondGet = do
-                n <- BondGet (fromIntegral <$> getWord32le)
-                traceShowM ("int32", n)
-                return n
+    bondGet = BondGet (fromIntegral <$> getWord32le)
     bondPut = BondPut . putWord32le . fromIntegral
 
 instance BondBinary SimpleBinaryProto Int64 where
@@ -55,9 +47,7 @@ instance BondBinary SimpleBinaryProto FieldTag where
 instance BondBinary SimpleBinaryProto ListHead where
     bondPut (ListHead _ n) = bondPut (fromIntegral n :: Word32)
     bondGet = do
-        z <- BondGet bytesRead
         (n :: Word32) <- bondGet
-        traceShowM ("list pos", z, "size", n)
         return $ ListHead Nothing (fromIntegral n)
 
 instance BondBinary SimpleBinaryProto MapHead where
@@ -87,7 +77,6 @@ instance BondBinaryProto SimpleBinaryProto where
 getBondedContainer :: BondGet SimpleBinaryProto (Bonded a)
 getBondedContainer = do
     size <- BondGet getWord32le
-    traceShowM ("container size", size)
     bs <- BondGet $ getLazyByteString (fromIntegral size)
     return $ BondedStream bs undefined
 
@@ -97,10 +86,7 @@ putBondedContainer (BondedStream s _) = do
     BondPut $ putLazyByteString s
 
 readSimpleBinaryStruct :: forall a. BondBinaryStruct SimpleBinaryProto a => (a -> ItemType -> Ordinal -> BondGet SimpleBinaryProto a) -> a -> BondGet SimpleBinaryProto a
-readSimpleBinaryStruct update r = foldM (\v (FieldInfo _ o) -> do
-                                                                n <- BondGet bytesRead
-                                                                traceShowM (o, n)
-                                                                update v undefined o) r schema
+readSimpleBinaryStruct update r = foldM (\v (FieldInfo _ o) -> update v undefined o) r schema
     where
     StructSchema schema = bondGetSchema r :: StructSchema SimpleBinaryProto
 

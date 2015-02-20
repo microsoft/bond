@@ -30,8 +30,6 @@ import qualified Data.HashSet as H
 import qualified Data.Map as M
 import qualified Data.Vector as V
 
-import Debug.Trace
-
 newtype VarInt = VarInt { fromVarInt :: Int }
 
 newtype BondGet t a = BondGet (Get a)
@@ -53,9 +51,7 @@ class BondBinary t a => BondBinaryStruct t a where
 
 instance BondBinary t Bool where
     bondGet = do
-        f <- BondGet bytesRead
         v <- BondGet getWord8
-        traceShowM ("bool", v, f)
         return (v /= 0)
     bondPut v = if v then BondPut (putWord8 1) else BondPut (putWord8 0)
 
@@ -84,11 +80,7 @@ instance BondBinary t VarInt where
         bondPut $ VarInt (i `shiftR` 7)
 
 instance BondBinary t Double where
-    bondGet = do
-                f <- BondGet bytesRead
-                n <- BondGet (wordToDouble <$> getWord64le)
-                traceShowM ("double", n, f)
-                return n
+    bondGet = BondGet (wordToDouble <$> getWord64le)
     bondPut = BondPut . putWord64le . doubleToWord
 
 instance BondBinary t Float where
