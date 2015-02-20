@@ -15,11 +15,12 @@ import Bond.Imports (encodeInt, decodeInt, EncodedInt(..))
 type GetFunc t a = BondGet t a -> BS.ByteString -> Either (BS.ByteString, Int64, String) (BS.ByteString, Int64, a)
 type PutFunc t = BondPut t -> BS.ByteString
 
-fastBinaryData, compactBinaryV1Data, compactBinaryV2Data, simpleBinaryV1Data :: String
+fastBinaryData, compactBinaryV1Data, compactBinaryV2Data, simpleBinaryV1Data, simpleBinaryV2Data :: String
 fastBinaryData = "/home/blaze/bond/test/compat/data/compat.fast.dat"
 compactBinaryV1Data = "/home/blaze/bond/test/compat/data/compat.compact.dat"
 compactBinaryV2Data = "/home/blaze/bond/test/compat/data/compat.compact2.dat"
 simpleBinaryV1Data = "/home/blaze/bond/test/compat/data/compat.simple.dat"
+simpleBinaryV2Data = "/home/blaze/bond/test/compat/data/compat.simple2.dat"
 
 main :: IO ()
 main = defaultMain [
@@ -42,6 +43,10 @@ main = defaultMain [
         testGroup "Version 1" [
             testCase "parsing existing data" $ testParseCompat runSimpleBinaryV1Get simpleBinaryV1Data,
             testCase "saving and parsing data" $ testParseOwnOutput runSimpleBinaryV1Get runSimpleBinaryV1Put simpleBinaryV1Data
+        ],
+        testGroup "Version 2" [
+            testCase "parsing existing data" $ testParseCompat runSimpleBinaryGet simpleBinaryV2Data,
+            testCase "saving and parsing data" $ testParseOwnOutput runSimpleBinaryGet runSimpleBinaryPut simpleBinaryV2Data
         ]
     ],
     testCase "Check for identical read results" testAllReadSameData
@@ -77,8 +82,13 @@ testAllReadSameData = do
     let cv1rec = runGetOrFail runCompactBinaryV1Get cv1bin
     cv2bin <- BS.readFile compactBinaryV2Data
     let cv2rec = runGetOrFail runCompactBinaryGet cv2bin
+    simple1bin <- BS.readFile simpleBinaryV1Data
+    let simple1rec = (runGetOrFail runSimpleBinaryV1Get simple1bin) :: Compat
+    simple2bin <- BS.readFile simpleBinaryV2Data
+    let simple2rec = runGetOrFail runSimpleBinaryGet simple2bin
     assertEqual "FastBinary read do not match CompactBinary v1 read" fastrec cv1rec
     assertEqual "FastBinary read do not match CompactBinary v2 read" fastrec cv2rec
+    assertEqual "SimpleBinary v1 read do not match SimpleBinary v2 read" simple1rec simple2rec
     where
     runGetOrFail get s = case get bondGet s of
                             Right (rest, _, msg) | BS.null rest -> msg

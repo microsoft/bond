@@ -25,6 +25,7 @@ import Data.Binary.Get
 import Data.Binary.Put
 import Data.Bits
 import Data.Hashable
+import Data.Proxy
 import qualified Data.ByteString as BS
 import qualified Data.HashSet as H
 import qualified Data.Map as M
@@ -45,7 +46,7 @@ class BondBinary t a where
 class BondBinary t a => BondBinaryStruct t a where
     bondGetBase :: BondGet t a
     bondPutBase :: a -> BondPut t
-    bondGetSchema :: a -> StructSchema t
+    bondGetSchema :: Proxy (t, a) -> StructSchema
 
 instance BondBinary t Bool where
     bondGet = do
