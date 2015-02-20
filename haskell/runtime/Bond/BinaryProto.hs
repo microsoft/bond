@@ -14,6 +14,7 @@ module Bond.BinaryProto (
     skipBinaryValue
   ) where
 
+import Bond.Default
 import Bond.Types
 import Bond.Wire
 import Control.Applicative
@@ -38,13 +39,15 @@ newtype BondPutM t a = BondPut (PutM a)
     deriving (Functor, Applicative, Monad)
 type BondPut t = BondPutM t ()
 
-class BondBinaryStruct t a where
-    bondGetBase :: BondGet t a
-    bondPutBase :: a -> BondPut t
-
 class BondBinary t a where
     bondGet :: BondGet t a
     bondPut :: a -> BondPut t
+
+class BondBinary t a => BondBinaryStruct t a where
+    bondGetBase :: BondGet t a
+    bondPutBase :: a -> BondPut t
+    bondedGet :: BondGet t (Bonded a)
+    bondedPut :: Bonded a -> BondPut t
 
 instance BondBinary t Bool where
     bondGet = do
@@ -166,9 +169,9 @@ instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (Ve
         when (t /= getWireType (undefined :: a)) $ fail "bondGet (Vector a): type mismatch"
         V.replicateM n bondGet
 
-instance BondBinary t a => BondBinary t (Bonded a) where
-    bondPut (Bonded v) = bondPut v
-    bondGet = Bonded <$> bondGet
+instance BondBinaryStruct t a => BondBinary t (Bonded a) where
+    bondPut = bondedPut
+    bondGet = bondedGet
 
 putStructStop :: BondBinaryProto t => BondPut t
 putStructStop = bondPut BT_STOP
@@ -182,11 +185,11 @@ class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t I
         BondBinaryProto t where
     checkTypeAndGet :: (BondBinary t a, WireType a) => ItemType -> BondGet t a
     checkTypeAndGet = checkTypeAndGet'
-    putField :: (BondBinary t a, WireType a, Eq a) => Ordinal -> a -> a -> BondPut t
+    putField :: (BondBinary t a, WireType a, Default a) => Ordinal -> a -> a -> BondPut t
     putField = putField'
     putMaybeField :: (BondBinary t a, WireType a) => Ordinal -> Maybe a -> BondPut t
     putMaybeField = putMaybeField'
-    putStructField :: (BondBinary t a, WireType a) => Ordinal -> a -> BondPut t
+    putStructField :: (BondBinaryStruct t a, WireType a) => Ordinal -> a -> BondPut t
     putStructField = doPutField
     readFieldsWith :: (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
     readFieldsWith = readStructFieldsWith BT_STOP
@@ -202,6 +205,10 @@ class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t I
     readStruct = id
     putStruct :: BondPut t -> BondPut t
     putStruct = id
+    putBonded :: BondBinaryStruct t a => Bonded a -> BondPut t
+    putBonded (BondedObject v) = bondPut v
+    getBonded :: BondBinaryStruct t a => BondGet t (Bonded a)
+    getBonded = BondedObject <$> bondGet
 
 checkTypeAndGet' :: forall t a . (BondBinary t a, WireType a) => ItemType -> BondGet t a
 checkTypeAndGet' t | t == getWireType (undefined :: a) = bondGet
@@ -212,8 +219,8 @@ doPutField n f = do
     bondPut $ FieldTag (getWireType f) n
     bondPut f
 
-putField' :: (BondBinary t FieldTag, BondBinary t a, WireType a, Eq a) => Ordinal -> a -> a -> BondPut t
-putField' n defValue f = unless (f == defValue) (doPutField n f)
+putField' :: (BondBinary t FieldTag, BondBinary t a, WireType a, Default a) => Ordinal -> a -> a -> BondPut t
+putField' n defValue f = unless (equalToDefault f defValue) (doPutField n f)
 
 putMaybeField' :: (BondBinary t FieldTag, BondBinary t a, WireType a) => Ordinal -> Maybe a -> BondPut t
 putMaybeField' _ Nothing = return ()
