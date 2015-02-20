@@ -9,6 +9,7 @@ module Bond.Wire (
   ) where
 
 import Bond.Types
+import Data.Proxy
 
 data ItemType =
       BT_STOP
@@ -33,7 +34,7 @@ data ItemType =
     deriving (Show, Enum, Eq)
 
 class WireType a where
-    getWireType :: a -> ItemType
+    getWireType :: Proxy a -> ItemType
 
 instance WireType Bool where getWireType _ = BT_BOOL
 instance WireType Double where getWireType _ = BT_DOUBLE

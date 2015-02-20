@@ -91,24 +91,24 @@ instance BondBinary t ItemType where
     bondPut = bondPut . fromWireType
 
 instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (Maybe a) where
-    bondPut Nothing = bondPut $ ListHead (Just $ getWireType (undefined :: a)) 0
+    bondPut Nothing = bondPut $ ListHead (Just $ getWireType (Proxy :: Proxy a)) 0
     bondPut (Just v) = do
-        bondPut $ ListHead (Just $ getWireType v) 1
+        bondPut $ ListHead (Just $ getWireType (Proxy :: Proxy a)) 1
         bondPut v
     bondGet = do
         ListHead t n <- bondGet
-        unless (maybe True (== getWireType (undefined :: a)) t) $ fail "nullable: type mismatch"
+        unless (maybe True (== getWireType (Proxy :: Proxy a)) t) $ fail "nullable: type mismatch"
         if | n == 0 -> return Nothing
            | n == 1 -> Just <$> bondGet
            | otherwise -> fail "bondGet nullable: count isn't 0 or 1"
 
 instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t [a] where
     bondPut xs = do
-        bondPut $ ListHead (Just $ getWireType $ head xs) (length xs)
+        bondPut $ ListHead (Just $ getWireType (Proxy :: Proxy a)) (length xs)
         mapM_ bondPut xs
     bondGet = do
         ListHead t n <- bondGet
-        unless (maybe True (== getWireType (undefined :: a)) t) $ fail "bondGet [a]: type mismatch"
+        unless (maybe True (== getWireType (Proxy :: Proxy a)) t) $ fail "bondGet [a]: type mismatch"
         replicateM n bondGet
 
 instance BondBinary t ListHead => BondBinary t Blob where
@@ -142,14 +142,14 @@ instance (Hashable a, Eq a, BondBinary t ListHead, BondBinary t a, WireType a) =
 
 instance (Ord a, BondBinary t a, WireType a, BondBinary t b, WireType b, BondBinary t MapHead) => BondBinary t (Map a b) where
     bondPut xs = do
-        bondPut $ MapHead (Just $ getWireType (undefined :: a)) (Just $ getWireType (undefined :: b)) (M.size xs)
+        bondPut $ MapHead (Just $ getWireType (Proxy :: Proxy a)) (Just $ getWireType (Proxy :: Proxy b)) (M.size xs)
         forM_ (M.toList xs) $ \(k, v) -> do
             bondPut k
             bondPut v
     bondGet = do
         MapHead tkey tvalue n <- bondGet
-        unless (maybe True (== getWireType (undefined :: a)) tkey) $ fail "bondGet (Map a b): key type mismatch"
-        unless (maybe True (== getWireType (undefined :: b)) tvalue) $ fail "bondGet (Map a b): value type mismatch"
+        unless (maybe True (== getWireType (Proxy :: Proxy a)) tkey) $ fail "bondGet (Map a b): key type mismatch"
+        unless (maybe True (== getWireType (Proxy :: Proxy b)) tvalue) $ fail "bondGet (Map a b): value type mismatch"
         fmap M.fromList $ replicateM n $ do
             k <- bondGet
             v <- bondGet
@@ -157,11 +157,11 @@ instance (Ord a, BondBinary t a, WireType a, BondBinary t b, WireType b, BondBin
 
 instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (Vector a) where
     bondPut xs = do
-        bondPut $ ListHead (Just $ getWireType $ V.head xs) (V.length xs)
+        bondPut $ ListHead (Just $ getWireType (Proxy :: Proxy a)) (V.length xs)
         V.mapM_ bondPut xs
     bondGet = do
         ListHead t n <- bondGet
-        unless (maybe True (== getWireType (undefined :: a)) t) $ fail "bondGet (Vector a): type mismatch"
+        unless (maybe True (== getWireType (Proxy :: Proxy a)) t) $ fail "bondGet (Vector a): type mismatch"
         V.replicateM n bondGet
 
 instance (BondBinaryProto t, BondBinaryStruct t a) => BondBinary t (Bonded a) where
@@ -205,12 +205,12 @@ class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t I
     putStructStopBase = bondPut BT_STOP_BASE
 
 checkTypeAndGet' :: forall t a . (BondBinary t a, WireType a) => ItemType -> BondGet t a
-checkTypeAndGet' t | t == getWireType (undefined :: a) = bondGet
-checkTypeAndGet' t = fail $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (undefined :: a))
+checkTypeAndGet' t | t == getWireType (Proxy :: Proxy a) = bondGet
+checkTypeAndGet' t = fail $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (Proxy :: Proxy a))
 
-doPutField :: (BondBinary t FieldTag, BondBinary t a, WireType a) => Ordinal -> a -> BondPut t
+doPutField :: forall t a. (BondBinary t FieldTag, BondBinary t a, WireType a) => Ordinal -> a -> BondPut t
 doPutField n f = do
-    bondPut $ FieldTag (getWireType f) n
+    bondPut $ FieldTag (getWireType (Proxy :: Proxy a)) n
     bondPut f
 
 putField' :: (BondBinary t FieldTag, BondBinary t a, WireType a, Default a) => Ordinal -> a -> a -> BondPut t
