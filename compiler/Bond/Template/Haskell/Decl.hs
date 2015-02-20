@@ -299,8 +299,6 @@ bondBinaryStructInstance Struct{declName, declParams, structBase, structFields} 
             Qualifier (Var $ qualInt "putStructStopBase")
           ]) (BDecls [])],
         InsDecl $ PatBind noLoc (PVar $ Ident "bondGetBase") (UnGuardedRhs getCode) (BDecls []),
-        InsDecl $ PatBind noLoc (PVar $ Ident "bondedGet") (UnGuardedRhs $ Var $ qualInt "getBonded") (BDecls []),
-        InsDecl $ PatBind noLoc (PVar $ Ident "bondedPut") (UnGuardedRhs $ Var $ qualInt "putBonded") (BDecls []),
         InsDecl $ FunBind [Match noLoc (Ident "bondGetSchema") [PWildCard] Nothing (UnGuardedRhs $ App (Con $ qualInt "StructSchema") (List $ map makeFieldSchema structFields)) (BDecls [])]
     ]
     where

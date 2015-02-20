@@ -45,8 +45,6 @@ class BondBinary t a where
 class BondBinary t a => BondBinaryStruct t a where
     bondGetBase :: BondGet t a
     bondPutBase :: a -> BondPut t
-    bondedGet :: BondGet t (Bonded a)
-    bondedPut :: Bonded a -> BondPut t
     bondGetSchema :: a -> StructSchema t
 
 instance BondBinary t Bool where
@@ -165,9 +163,9 @@ instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (Ve
         unless (maybe True (== getWireType (undefined :: a)) t) $ fail "bondGet (Vector a): type mismatch"
         V.replicateM n bondGet
 
-instance BondBinaryStruct t a => BondBinary t (Bonded a) where
-    bondPut = bondedPut
-    bondGet = bondedGet
+instance (BondBinaryProto t, BondBinaryStruct t a) => BondBinary t (Bonded a) where
+    bondPut = putBonded
+    bondGet = getBonded
 
 class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t Int64,
        BondBinary t Word8, BondBinary t Word16, BondBinary t Word32, BondBinary t Word64,
