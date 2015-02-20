@@ -19,6 +19,7 @@ fastBinaryData, compactBinaryV2Data :: String
 fastBinaryData = "/home/blaze/bond/test/compat/data/compat.fast.dat"
 compactBinaryV1Data = "/home/blaze/bond/test/compat/data/compat.compact.dat"
 compactBinaryV2Data = "/home/blaze/bond/test/compat/data/compat.compact2.dat"
+simpleBinaryData = "/home/blaze/bond/test/compat/data/compat.simple.dat"
 
 main :: IO ()
 main = defaultMain [
@@ -36,6 +37,10 @@ main = defaultMain [
             testCase "saving and parsing data" $ testParseOwnOutput runCompactBinaryV2Get runCompactBinaryV2Put compactBinaryV2Data
         ],
         testProperty "check int conversion in CompactBinary" compactDecodeEncodeInt
+    ],
+    testGroup "Simple Binary protocol" [
+        testCase "parsing existing data" $ testParseCompat runSimpleBinaryGet simpleBinaryData,
+        testCase "saving and parsing data" $ testParseOwnOutput runSimpleBinaryGet runSimpleBinaryPut simpleBinaryData
     ],
     testCase "Check for identical read results" testAllReadSameData
  ]
