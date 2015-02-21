@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf, MultiParamTypeClasses, FlexibleInstances, EmptyDataDecls #-}
 module Bond.FastBinary (
+    FastBinaryProto,
     runFastBinaryGet,
     runFastBinaryPut
   ) where

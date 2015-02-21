@@ -1,5 +1,7 @@
 {-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf, MultiParamTypeClasses, FlexibleInstances, EmptyDataDecls #-}
 module Bond.SimpleBinary (
+    SimpleBinaryProto,
+    SimpleBinaryV1Proto,
     runSimpleBinaryGet,
     runSimpleBinaryPut,
     runSimpleBinaryV1Get,
@@ -18,7 +20,7 @@ import Data.Proxy
 import qualified Data.ByteString.Lazy as Lazy
 
 data SimpleBinaryV1Proto
-data SimpleBinaryV2Proto
+data SimpleBinaryProto
 
 instance BondBinary SimpleBinaryV1Proto Word16 where
     bondGet = BondGet getWord16le
@@ -78,53 +80,53 @@ instance BondBinaryProto SimpleBinaryV1Proto where
     putStructStop = return ()
     putStructStopBase = return ()
 
-instance BondBinary SimpleBinaryV2Proto Word16 where
+instance BondBinary SimpleBinaryProto Word16 where
     bondGet = BondGet getWord16le
     bondPut = BondPut . putWord16le
 
-instance BondBinary SimpleBinaryV2Proto Word32 where
+instance BondBinary SimpleBinaryProto Word32 where
     bondGet = BondGet getWord32le
     bondPut = BondPut . putWord32le
 
-instance BondBinary SimpleBinaryV2Proto Word64 where
+instance BondBinary SimpleBinaryProto Word64 where
     bondGet = BondGet getWord64le
     bondPut = BondPut . putWord64le
 
-instance BondBinary SimpleBinaryV2Proto Int16 where
+instance BondBinary SimpleBinaryProto Int16 where
     bondGet = BondGet (fromIntegral <$> getWord16le)
     bondPut = BondPut . putWord16le . fromIntegral
 
-instance BondBinary SimpleBinaryV2Proto Int32 where
+instance BondBinary SimpleBinaryProto Int32 where
     bondGet = BondGet (fromIntegral <$> getWord32le)
     bondPut = BondPut . putWord32le . fromIntegral
 
-instance BondBinary SimpleBinaryV2Proto Int64 where
+instance BondBinary SimpleBinaryProto Int64 where
     bondGet = BondGet (fromIntegral <$> getWord64le)
     bondPut = BondPut . putWord64le . fromIntegral
 
-instance BondBinary SimpleBinaryV2Proto FieldTag where
+instance BondBinary SimpleBinaryProto FieldTag where
     bondPut _ = return ()
     bondGet = fail "internal error: can't read field tag from SimpleBinary"
 
-instance BondBinary SimpleBinaryV2Proto ListHead where
+instance BondBinary SimpleBinaryProto ListHead where
     bondPut (ListHead _ n) = bondPut $ VarInt n
     bondGet = do
         VarInt n <- bondGet
         return $ ListHead Nothing n
 
-instance BondBinary SimpleBinaryV2Proto MapHead where
+instance BondBinary SimpleBinaryProto MapHead where
     bondPut (MapHead _ _ n) = bondPut $ VarInt n
     bondGet = do
         VarInt n <- bondGet
         return $ MapHead Nothing Nothing n
 
-instance BondBinary SimpleBinaryV2Proto StringHead where
+instance BondBinary SimpleBinaryProto StringHead where
     bondPut (StringHead n) = bondPut $ VarInt n
     bondGet = do
         VarInt n <- bondGet
         return $ StringHead n
 
-instance BondBinaryProto SimpleBinaryV2Proto where
+instance BondBinaryProto SimpleBinaryProto where
     readFieldsWith = readSimpleBinaryStruct
     readBaseFieldsWith = readSimpleBinaryStruct
     checkTypeAndGet = getSimpleBinaryValue
@@ -169,8 +171,8 @@ runSimpleBinaryV1Get (BondGet g) = runGetOrFail g
 runSimpleBinaryV1Put :: BondPut SimpleBinaryV1Proto -> Lazy.ByteString
 runSimpleBinaryV1Put (BondPut p) = runPut p
 
-runSimpleBinaryGet :: BondGet SimpleBinaryV2Proto a -> Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
+runSimpleBinaryGet :: BondGet SimpleBinaryProto a -> Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
 runSimpleBinaryGet (BondGet g) = runGetOrFail g
 
-runSimpleBinaryPut :: BondPut SimpleBinaryV2Proto -> Lazy.ByteString
+runSimpleBinaryPut :: BondPut SimpleBinaryProto -> Lazy.ByteString
 runSimpleBinaryPut (BondPut p) = runPut p
