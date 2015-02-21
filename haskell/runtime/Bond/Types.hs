@@ -1,27 +1,27 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Bond.Types (
+    Blob(..),
+    Bonded(..),
+    BondedDecoder,
+    Bool,
+    Double,
+    EncodedString(..),
+    Float,
+    H.HashSet,
     Int,
-    Int8,
     Int16,
     Int32,
     Int64,
-    Word8,
+    Int8,
+    Maybe,
+    M.Map,
+    Utf16(..),
+    Utf8(..),
+    V.Vector,
     Word16,
     Word32,
     Word64,
-    Double,
-    Float,
-    Bool,
-    Maybe,
-    Utf8(..),
-    Utf16(..),
-    Blob(..),
-    Bonded(..),
-    H.HashSet,
-    M.Map,
-    V.Vector,
-    EncodedString(..),
-    unpackBonded
+    Word8
   ) where
 
 import Data.Int
@@ -53,17 +53,13 @@ instance EncodedString Utf16 where fromString = Utf16 . T.encodeUtf16LE . T.pack
 instance Show Utf8 where show (Utf8 s) = show $ T.unpack $ T.decodeUtf8 s
 instance Show Utf16 where show (Utf16 s) = show $ T.unpack $ T.decodeUtf16LE s
 
-type BondedDecoder a = (Lazy.ByteString -> a)
-data Bonded a = BondedStream Lazy.ByteString (BondedDecoder a) | BondedObject a
+type BondedDecoder a = Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a)
+data Bonded a = BondedStream Lazy.ByteString Word16 Word16 | BondedObject a
 
 instance Show a => Show (Bonded a) where
-    show (BondedStream _ _) = "BondedStream"
+    show (BondedStream _ _ _) = "BondedStream"
     show (BondedObject v) = show v
 
 instance Eq a => Eq (Bonded a) where
     (BondedObject v1) == (BondedObject v2) = v1 == v2
-    (BondedStream s1 _) == (BondedStream s2 _) = s1 == s2
-
-unpackBonded :: Bonded a -> a
-unpackBonded (BondedObject v) = v
-unpackBonded (BondedStream s decoder) = decoder s
+    (BondedStream s1 _ _) == (BondedStream s2 _ _) = s1 == s2

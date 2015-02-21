@@ -139,12 +139,16 @@ instance BondBinaryProto SimpleBinaryV2Proto where
 getBondedContainer :: BondGet t (Bonded a)
 getBondedContainer = do
     size <- BondGet getWord32le
-    bs <- BondGet $ getLazyByteString (fromIntegral size)
-    return $ BondedStream bs undefined
+    proto <- BondGet getWord16be
+    ver <- BondGet getWord16le
+    bs <- BondGet $ getLazyByteString (fromIntegral $ size - 4)
+    return $ BondedStream bs proto ver
 
 putBondedContainer :: Bonded a -> BondPut t
-putBondedContainer (BondedStream s _) = do
-    BondPut $ putWord32le $ fromIntegral (Lazy.length s)
+putBondedContainer (BondedStream s proto ver) = do
+    BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
+    BondPut $ putWord16be proto
+    BondPut $ putWord16le ver
     BondPut $ putLazyByteString s
 
 readSimpleBinaryStruct :: forall t a. BondBinaryStruct t a => (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
