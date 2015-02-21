@@ -146,33 +146,20 @@ getBondedContainer = do
     bs <- BondGet $ getLazyByteString (fromIntegral $ size - 4)
     return $ BondedStream bs proto ver
 
-putBondedContainerV1 :: BondBinaryStruct SimpleBinaryV1Proto a => Bonded a -> BondPut SimpleBinaryV1Proto
-putBondedContainerV1 (BondedStream s (ProtoSig proto) ver) = do
+putContainer :: Lazy.ByteString -> ProtoSig -> Word16 -> BondPut t
+putContainer s (ProtoSig proto) ver = do
     BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
     BondPut $ putWord16be proto
     BondPut $ putWord16le ver
-    BondPut $ putLazyByteString s
-putBondedContainerV1 (BondedObject a) = do
-    let s = runSimpleBinaryV1Put (bondPut a)
-    let ProtoSig protoid = simpleSig
-    BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
-    BondPut $ putWord16be protoid
-    BondPut $ putWord16le 1
     BondPut $ putLazyByteString s
 
-putBondedContainer :: BondBinaryStruct SimpleBinaryProto a => Bonded a -> BondPut SimpleBinaryProto
-putBondedContainer (BondedStream s (ProtoSig proto) ver) = do
-    BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
-    BondPut $ putWord16be proto
-    BondPut $ putWord16le ver
-    BondPut $ putLazyByteString s
-putBondedContainer (BondedObject a) = do
-    let s = runSimpleBinaryPut (bondPut a)
-    let ProtoSig protoid = simpleSig
-    BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
-    BondPut $ putWord16be protoid
-    BondPut $ putWord16le 2
-    BondPut $ putLazyByteString s
+putBondedContainerV1 :: forall a. BondBinaryStruct SimpleBinaryV1Proto a => Bonded a -> BondPut SimpleBinaryV1Proto
+putBondedContainerV1 (BondedStream s proto ver) = putContainer s proto ver
+putBondedContainerV1 (BondedObject a) = putContainer (runSimpleBinaryV1Put $ bondPut a) simpleSig 1
+
+putBondedContainer :: forall a. BondBinaryStruct SimpleBinaryProto a => Bonded a -> BondPut SimpleBinaryProto
+putBondedContainer (BondedStream s proto ver) = putContainer s proto ver
+putBondedContainer (BondedObject a) = putContainer (runSimpleBinaryPut $ bondPut a) simpleSig 2
 
 readSimpleBinaryStruct :: forall t a. BondBinaryStruct t a => (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
 readSimpleBinaryStruct update r = foldM (\v (FieldInfo _ o) -> update v undefined o) r schema

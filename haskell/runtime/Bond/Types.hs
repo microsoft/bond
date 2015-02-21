@@ -67,7 +67,7 @@ fastSig = ProtoSig 0x4D46
 data Bonded a = BondedStream Lazy.ByteString ProtoSig Word16 | BondedObject a
 
 instance Show a => Show (Bonded a) where
-    show (BondedStream _ _ _) = "BondedStream"
+    show BondedStream{} = "BondedStream"
     show (BondedObject v) = show v
 
 instance Eq a => Eq (Bonded a) where
