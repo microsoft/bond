@@ -1,6 +1,5 @@
 {-# Language FlexibleContexts, AllowAmbiguousTypes #-}
 module Bond.Bonded (
-        getBondedDecoder,
         unpackBonded
     ) where
 
@@ -11,6 +10,8 @@ import Bond.SimpleBinary
 import Bond.Types
 import qualified Data.ByteString.Lazy as Lazy
 
+type Decoder a = Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a)
+
 unpackBonded :: (BondBinary CompactBinaryProto a,
                  BondBinary CompactBinaryV1Proto a,
                  BondBinary FastBinaryProto a,
@@ -19,24 +20,24 @@ unpackBonded :: (BondBinary CompactBinaryProto a,
                 ) => Bonded a -> Either String a
 unpackBonded (BondedObject v) = Right v
 unpackBonded (BondedStream s proto ver)
-    = let decoder = getBondedDecoder proto ver
+    = let decoder = getDecoder proto ver
        in case decoder s of
             Right (rest, _, msg) | Lazy.null rest -> Right msg
             Right (_, _, _) -> Left "Not all input consumed"
             Left (_, _, msg) -> Left msg
 
-getBondedDecoder :: (BondBinary CompactBinaryProto a,
-                     BondBinary CompactBinaryV1Proto a,
-                     BondBinary FastBinaryProto a,
-                     BondBinary SimpleBinaryProto a,
-                     BondBinary SimpleBinaryV1Proto a
-                    ) => Word16 -> Word16 -> BondedDecoder a
-getBondedDecoder 0x4342 1 = runCompactBinaryV1Get bondGet
-getBondedDecoder 0x4342 2 = runCompactBinaryGet bondGet
-getBondedDecoder 0x5350 1 = runSimpleBinaryV1Get bondGet
-getBondedDecoder 0x5350 2 = runSimpleBinaryGet bondGet
-getBondedDecoder 0x4D46 1 = runFastBinaryGet bondGet
-getBondedDecoder _ _ = const $ Left (Lazy.empty, 0, "unknown protocol or version")
+getDecoder :: (BondBinary CompactBinaryProto a,
+               BondBinary CompactBinaryV1Proto a,
+               BondBinary FastBinaryProto a,
+               BondBinary SimpleBinaryProto a,
+               BondBinary SimpleBinaryV1Proto a
+              ) => Word16 -> Word16 -> Decoder a
+getDecoder 0x4342 1 = runCompactBinaryV1Get bondGet
+getDecoder 0x4342 2 = runCompactBinaryGet bondGet
+getDecoder 0x5350 1 = runSimpleBinaryV1Get bondGet
+getDecoder 0x5350 2 = runSimpleBinaryGet bondGet
+getDecoder 0x4D46 1 = runFastBinaryGet bondGet
+getDecoder _ _ = const $ Left (Lazy.empty, 0, "unknown protocol or version")
 
 {-
 parseContainer :: (BondBinary CompactBinaryV1Proto a, BondBinary CompactBinaryProto a) => BS.ByteString -> BondGet t a

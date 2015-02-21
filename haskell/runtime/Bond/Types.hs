@@ -2,7 +2,6 @@
 module Bond.Types (
     Blob(..),
     Bonded(..),
-    BondedDecoder,
     Bool,
     Double,
     EncodedString(..),
@@ -53,7 +52,6 @@ instance EncodedString Utf16 where fromString = Utf16 . T.encodeUtf16LE . T.pack
 instance Show Utf8 where show (Utf8 s) = show $ T.unpack $ T.decodeUtf8 s
 instance Show Utf16 where show (Utf16 s) = show $ T.unpack $ T.decodeUtf16LE s
 
-type BondedDecoder a = Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a)
 data Bonded a = BondedStream Lazy.ByteString Word16 Word16 | BondedObject a
 
 instance Show a => Show (Bonded a) where
