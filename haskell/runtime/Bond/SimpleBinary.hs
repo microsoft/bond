@@ -73,7 +73,7 @@ instance BondBinaryProto SimpleBinaryV1Proto where
     readBaseFieldsWith = readSimpleBinaryStruct
     checkTypeAndGet = getSimpleBinaryValue
     getBonded = getBondedContainer
-    putBonded = putBondedContainer
+    putBonded = putBondedContainerV1
     putField _ _ = bondPut
     putMaybeField = putMaybeField'
     putStructField _ = bondPut
@@ -141,16 +141,37 @@ instance BondBinaryProto SimpleBinaryProto where
 getBondedContainer :: BondGet t (Bonded a)
 getBondedContainer = do
     size <- BondGet getWord32le
-    proto <- BondGet getWord16be
+    proto <- ProtoSig <$> BondGet getWord16be
     ver <- BondGet getWord16le
     bs <- BondGet $ getLazyByteString (fromIntegral $ size - 4)
     return $ BondedStream bs proto ver
 
-putBondedContainer :: Bonded a -> BondPut t
-putBondedContainer (BondedStream s proto ver) = do
+putBondedContainerV1 :: BondBinaryStruct SimpleBinaryV1Proto a => Bonded a -> BondPut SimpleBinaryV1Proto
+putBondedContainerV1 (BondedStream s (ProtoSig proto) ver) = do
     BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
     BondPut $ putWord16be proto
     BondPut $ putWord16le ver
+    BondPut $ putLazyByteString s
+putBondedContainerV1 (BondedObject a) = do
+    let s = runSimpleBinaryV1Put (bondPut a)
+    let ProtoSig protoid = simpleSig
+    BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
+    BondPut $ putWord16be protoid
+    BondPut $ putWord16le 1
+    BondPut $ putLazyByteString s
+
+putBondedContainer :: BondBinaryStruct SimpleBinaryProto a => Bonded a -> BondPut SimpleBinaryProto
+putBondedContainer (BondedStream s (ProtoSig proto) ver) = do
+    BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
+    BondPut $ putWord16be proto
+    BondPut $ putWord16le ver
+    BondPut $ putLazyByteString s
+putBondedContainer (BondedObject a) = do
+    let s = runSimpleBinaryPut (bondPut a)
+    let ProtoSig protoid = simpleSig
+    BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
+    BondPut $ putWord16be protoid
+    BondPut $ putWord16le 2
     BondPut $ putLazyByteString s
 
 readSimpleBinaryStruct :: forall t a. BondBinaryStruct t a => (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a

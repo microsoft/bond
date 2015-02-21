@@ -10,7 +10,7 @@ import Unittest.Compat.Compat
 import qualified Data.ByteString.Lazy as BS
 
 import Bond.API
-import Bond.Imports (encodeInt, decodeInt, EncodedInt(..))
+import Bond.Imports (BondBinary, encodeInt, decodeInt, EncodedInt(..))
 
 type GetFunc t a = BondGet t a -> BS.ByteString -> Either (BS.ByteString, Int64, String) (BS.ByteString, Int64, a)
 type PutFunc t = BondPut t -> BS.ByteString
@@ -21,6 +21,12 @@ compactBinaryV1Data = "/home/blaze/bond/test/compat/data/compat.compact.dat"
 compactBinaryV2Data = "/home/blaze/bond/test/compat/data/compat.compact2.dat"
 simpleBinaryV1Data = "/home/blaze/bond/test/compat/data/compat.simple.dat"
 simpleBinaryV2Data = "/home/blaze/bond/test/compat/data/compat.simple2.dat"
+
+runGetOrFail :: BondBinary t a => (BondGet t a -> BS.ByteString -> Either (BS.ByteString, Int64, [Char]) (BS.ByteString, Int64, a)) -> BS.ByteString -> a
+runGetOrFail get s = case get bondGet s of
+                    Right (rest, _, msg) | BS.null rest -> msg
+                    Right (_, _, _) -> error "Not all input consumed"
+                    Left (_, _, msg) -> error msg
 
 main :: IO ()
 main = defaultMain [
@@ -42,11 +48,13 @@ main = defaultMain [
     testGroup "Simple Binary protocol" [
         testGroup "Version 1" [
             testCase "parsing existing data" $ testParseCompat runSimpleBinaryV1Get simpleBinaryV1Data,
-            testCase "saving and parsing data" $ testParseOwnOutput runSimpleBinaryV1Get runSimpleBinaryV1Put simpleBinaryV1Data
+            testCase "saving and parsing data" $ testParseOwnOutput runSimpleBinaryV1Get runSimpleBinaryV1Put simpleBinaryV1Data,
+            testCase "saving and restoring Bonded a" $ testBonded runSimpleBinaryV1Get runSimpleBinaryV1Put simpleBinaryV1Data
         ],
         testGroup "Version 2" [
             testCase "parsing existing data" $ testParseCompat runSimpleBinaryGet simpleBinaryV2Data,
-            testCase "saving and parsing data" $ testParseOwnOutput runSimpleBinaryGet runSimpleBinaryPut simpleBinaryV2Data
+            testCase "saving and parsing data" $ testParseOwnOutput runSimpleBinaryGet runSimpleBinaryPut simpleBinaryV2Data,
+            testCase "saving and restoring Bonded a" $ testBonded runSimpleBinaryGet runSimpleBinaryPut simpleBinaryV2Data
         ]
     ],
     testCase "Check for identical read results" testAllReadSameData
@@ -64,15 +72,21 @@ testParseCompat get file = do
 testParseOwnOutput :: BondBinaryProto t => GetFunc t Compat -> PutFunc t -> String -> Assertion
 testParseOwnOutput get put file = do
     b <- BS.readFile file
-    let s = runGetOrFail b
+    let s = runGetOrFail get b
     let b' = put (bondPut s)
-    let s' = runGetOrFail b'
+    let s' = runGetOrFail get b'
     assertEqual "Saved value do not match parsed one" s s'
-    where
-    runGetOrFail s = case get bondGet s of
-                        Right (rest, _, msg) | BS.null rest -> msg
-                        Right (_, _, _) -> error "Not all input consumed"
-                        Left (_, _, msg) -> error msg
+
+testBonded :: BondBinaryProto t => GetFunc t Compat -> PutFunc t -> String -> Assertion
+testBonded get put file = do
+    b <- BS.readFile file
+    let s = runGetOrFail get b
+    let Right obj = unpackBonded (m_basicUnintialized s)
+    let sUnpacked = s { m_basicUnintialized = makeBonded obj }
+    let b' = put (bondPut sUnpacked)
+    let s' = runGetOrFail get b'
+    let Right obj' = unpackBonded (m_basicUnintialized s')
+    assertEqual "Saved Bonded value do not match parsed one" obj obj'
 
 testAllReadSameData :: Assertion
 testAllReadSameData = do
@@ -94,11 +108,6 @@ testAllReadSameData = do
     let fastbonded = unpackBonded $ m_basicUnintialized fastrec
     assertEqual "FastBinary bonded read do not match SimpleBinary v1 read" fastbonded simple1bonded
     assertEqual "FastBinary bonded read do not match SimpleBinary v2 read" fastbonded simple2bonded
-    where
-    runGetOrFail get s = case get bondGet s of
-                            Right (rest, _, msg) | BS.null rest -> msg
-                            Right (_, _, _) -> error "Not all input consumed"
-                            Left (_, _, msg) -> error msg
 
 compactDecodeEncodeInt :: Int64 -> Bool
 compactDecodeEncodeInt x = EncodedInt x == decodeInt (encodeInt $ EncodedInt x)
