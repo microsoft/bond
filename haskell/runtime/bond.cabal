@@ -49,6 +49,7 @@ library
                     Bond.Imports
 
   other-modules:    Bond.BinaryProto,
+                    Bond.Bonded,
                     Bond.CompactBinary,
                     Bond.Default,
                     Bond.FastBinary,

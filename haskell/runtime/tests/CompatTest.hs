@@ -89,6 +89,11 @@ testAllReadSameData = do
     assertEqual "FastBinary read do not match CompactBinary v1 read" fastrec cv1rec
     assertEqual "FastBinary read do not match CompactBinary v2 read" fastrec cv2rec
     assertEqual "SimpleBinary v1 read do not match SimpleBinary v2 read" simple1rec simple2rec
+    let simple1bonded = unpackBonded $ m_basicUnintialized simple1rec
+    let simple2bonded = unpackBonded $ m_basicUnintialized simple2rec
+    let fastbonded = unpackBonded $ m_basicUnintialized fastrec
+    assertEqual "FastBinary bonded read do not match SimpleBinary v1 read" fastbonded simple1bonded
+    assertEqual "FastBinary bonded read do not match SimpleBinary v2 read" fastbonded simple2bonded
     where
     runGetOrFail get s = case get bondGet s of
                             Right (rest, _, msg) | BS.null rest -> msg
