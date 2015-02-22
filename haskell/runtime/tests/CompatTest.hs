@@ -105,7 +105,11 @@ testAllReadSameData = do
     assertEqual "SimpleBinary v1 read do not match SimpleBinary v2 read" simple1rec simple2rec
     let simple1bonded = unpackBonded $ m_basicUnintialized simple1rec
     let simple2bonded = unpackBonded $ m_basicUnintialized simple2rec
+    let compact1bonded = unpackBonded $ m_basicUnintialized cv1rec
+    let compact2bonded = unpackBonded $ m_basicUnintialized cv2rec
     let fastbonded = unpackBonded $ m_basicUnintialized fastrec
+    assertEqual "FastBinary bonded read do not match CompactBinary v1 read" fastbonded compact1bonded
+    assertEqual "FastBinary bonded read do not match CompactBinary v2 read" fastbonded compact2bonded
     assertEqual "FastBinary bonded read do not match SimpleBinary v1 read" fastbonded simple1bonded
     assertEqual "FastBinary bonded read do not match SimpleBinary v2 read" fastbonded simple2bonded
 

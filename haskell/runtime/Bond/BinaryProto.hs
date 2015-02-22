@@ -196,9 +196,7 @@ class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t I
     putStruct :: BondPut t -> BondPut t
     putStruct = id
     putBonded :: BondBinaryStruct t a => Bonded a -> BondPut t
-    putBonded (BondedObject v) = bondPut v
     getBonded :: BondBinaryStruct t a => BondGet t (Bonded a)
-    getBonded = BondedObject <$> bondGet
     putStructStop :: BondBinaryProto t => BondPut t
     putStructStop = bondPut BT_STOP
     putStructStopBase :: BondBinaryProto t => BondPut t
