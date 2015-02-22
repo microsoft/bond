@@ -79,6 +79,7 @@ instance BondBinaryProto SimpleBinaryV1Proto where
     putStructField _ = bondPut
     putStructStop = return ()
     putStructStopBase = return ()
+    protoSignature = const simpleV1Sig
 
 instance BondBinary SimpleBinaryProto Word16 where
     bondGet = BondGet getWord16le
@@ -137,29 +138,28 @@ instance BondBinaryProto SimpleBinaryProto where
     putStructField _ = bondPut
     putStructStop = return ()
     putStructStopBase = return ()
+    protoSignature = const simpleSig
 
 getBondedContainer :: BondGet t (Bonded a)
 getBondedContainer = do
     size <- BondGet getWord32le
-    proto <- ProtoSig <$> BondGet getWord16be
-    ver <- BondGet getWord16le
+    proto <- ProtoSig <$> BondGet getWord32be
     bs <- BondGet $ getLazyByteString (fromIntegral $ size - 4)
-    return $ BondedStream bs proto ver
+    return $ BondedStream proto bs
 
-putContainer :: Lazy.ByteString -> ProtoSig -> Word16 -> BondPut t
-putContainer s (ProtoSig proto) ver = do
+putContainer :: ProtoSig -> Lazy.ByteString -> BondPut t
+putContainer (ProtoSig proto) s = do
     BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
-    BondPut $ putWord16be proto
-    BondPut $ putWord16le ver
+    BondPut $ putWord32be proto
     BondPut $ putLazyByteString s
 
 putBondedContainerV1 :: forall a. BondBinaryStruct SimpleBinaryV1Proto a => Bonded a -> BondPut SimpleBinaryV1Proto
-putBondedContainerV1 (BondedStream s proto ver) = putContainer s proto ver
-putBondedContainerV1 (BondedObject a) = putContainer (runSimpleBinaryV1Put $ bondPut a) simpleSig 1
+putBondedContainerV1 (BondedStream proto s) = putContainer proto s
+putBondedContainerV1 (BondedObject a) = putContainer simpleV1Sig (runSimpleBinaryV1Put $ bondPut a)
 
 putBondedContainer :: forall a. BondBinaryStruct SimpleBinaryProto a => Bonded a -> BondPut SimpleBinaryProto
-putBondedContainer (BondedStream s proto ver) = putContainer s proto ver
-putBondedContainer (BondedObject a) = putContainer (runSimpleBinaryPut $ bondPut a) simpleSig 2
+putBondedContainer (BondedStream proto s) = putContainer proto s
+putBondedContainer (BondedObject a) = putContainer simpleSig (runSimpleBinaryPut $ bondPut a)
 
 readSimpleBinaryStruct :: forall t a. BondBinaryStruct t a => (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
 readSimpleBinaryStruct update r = foldM (\v (FieldInfo _ o) -> update v undefined o) r schema

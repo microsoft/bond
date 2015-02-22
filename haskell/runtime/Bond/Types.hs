@@ -23,8 +23,10 @@ module Bond.Types (
     Word8,
     ProtoSig(..),
     compactSig,
+    compactV1Sig,
     fastSig,
-    simpleSig
+    simpleSig,
+    simpleV1Sig
   ) where
 
 import Data.Int
@@ -56,15 +58,17 @@ instance EncodedString Utf16 where fromString = Utf16 . T.encodeUtf16LE . T.pack
 instance Show Utf8 where show (Utf8 s) = show $ T.unpack $ T.decodeUtf8 s
 instance Show Utf16 where show (Utf16 s) = show $ T.unpack $ T.decodeUtf16LE s
 
-newtype ProtoSig = ProtoSig Word16
+newtype ProtoSig = ProtoSig Word32
     deriving Eq
 
-compactSig, simpleSig, fastSig :: ProtoSig
-compactSig = ProtoSig 0x4342
-simpleSig = ProtoSig 0x5350
-fastSig = ProtoSig 0x4D46
+compactSig, compactV1Sig, simpleSig, simpleV1Sig, fastSig :: ProtoSig
+compactSig = ProtoSig 0x43420200
+compactV1Sig = ProtoSig 0x43420100
+simpleSig = ProtoSig 0x53500200
+simpleV1Sig = ProtoSig 0x53500100
+fastSig = ProtoSig 0x4D460100
 
-data Bonded a = BondedStream Lazy.ByteString ProtoSig Word16 | BondedObject a
+data Bonded a = BondedStream ProtoSig Lazy.ByteString | BondedObject a
 
 instance Show a => Show (Bonded a) where
     show BondedStream{} = "BondedStream"

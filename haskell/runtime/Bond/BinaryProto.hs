@@ -196,11 +196,31 @@ class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t I
     putStruct :: BondPut t -> BondPut t
     putStruct = id
     putBonded :: BondBinaryStruct t a => Bonded a -> BondPut t
+    putBonded = putContainer
     getBonded :: BondBinaryStruct t a => BondGet t (Bonded a)
+    getBonded = getContainer
     putStructStop :: BondBinaryProto t => BondPut t
     putStructStop = bondPut BT_STOP
     putStructStopBase :: BondBinaryProto t => BondPut t
     putStructStopBase = bondPut BT_STOP_BASE
+    protoSignature :: Proxy t -> ProtoSig
+
+putContainer :: forall t a. (BondBinaryProto t, BondBinaryStruct t a) => Bonded a -> BondPut t
+putContainer (BondedObject v) = bondPut v
+putContainer (BondedStream proto s)
+    | proto == protoSignature (Proxy :: Proxy t) = BondPut $ putLazyByteString s
+    | otherwise = fail "internal error: invalid stream format in BondedStream"
+
+getContainer :: forall a t. (BondBinaryProto t, BondBinaryStruct t a) => BondGet t (Bonded a)
+getContainer = do
+    let BondGet structSize = do
+                startpos <- BondGet bytesRead
+                skipValue BT_STRUCT :: BondGet t ()
+                endpos <- BondGet bytesRead
+                return (endpos - startpos)
+    size <- BondGet $ lookAhead structSize
+    bs <- BondGet $ getLazyByteString size
+    return $ BondedStream (protoSignature (Proxy :: Proxy t)) bs
 
 checkTypeAndGet' :: forall t a . (BondBinary t a, WireType a) => ItemType -> BondGet t a
 checkTypeAndGet' t | t == getWireType (Proxy :: Proxy a) = bondGet

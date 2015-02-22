@@ -79,25 +79,7 @@ instance BondBinary FastBinaryProto StringHead where
         return $ StringHead n
 
 instance BondBinaryProto FastBinaryProto where
-    getBonded = getContainer
-    putBonded = putContainer
-
-putContainer :: BondBinaryStruct t a => Bonded a -> BondPut t
-putContainer (BondedObject v) = bondPut v
-putContainer (BondedStream s proto ver)
-    | proto == fastSig && ver == 1 = BondPut $ putLazyByteString s
-    | otherwise = fail "internal error: invalid stream format in BondedStream"
-
-getContainer :: forall a t. (BondBinaryProto t, BondBinaryStruct t a) => BondGet t (Bonded a)
-getContainer = do
-    let BondGet structSize = do
-                startpos <- BondGet bytesRead
-                skipValue BT_STRUCT :: BondGet t ()
-                endpos <- BondGet bytesRead
-                return (endpos - startpos)
-    size <- BondGet $ lookAhead structSize
-    bs <- BondGet $ getLazyByteString size
-    return $ BondedStream bs fastSig 1
+    protoSignature = const fastSig
 
 runFastBinaryGet :: BondGet FastBinaryProto a -> Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
 runFastBinaryGet (BondGet g) = runGetOrFail g

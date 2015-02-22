@@ -224,8 +224,7 @@ instance BondBinary CompactBinaryProto ListHead where
 
 instance BondBinaryProto CompactBinaryV1Proto where
     skipValue = skipCompactValue
-    getBonded = getContainer 1
-    putBonded = putContainer 1
+    protoSignature = const compactV1Sig
 
 instance BondBinaryProto CompactBinaryProto where
     readStruct reader = do
@@ -236,25 +235,7 @@ instance BondBinaryProto CompactBinaryProto where
         bondPut $ VarInt $ fromIntegral $ Lazy.length bs
         BondPut $ putLazyByteString bs
     skipValue = skipCompactV2Value
-    getBonded = getContainer 2
-    putBonded = putContainer 2
-
-putContainer :: BondBinaryStruct t a => Word16 -> Bonded a -> BondPut t
-putContainer _ (BondedObject v) = bondPut v
-putContainer pver (BondedStream s proto ver)
-    | proto == compactSig && ver == pver = BondPut $ putLazyByteString s
-    | otherwise = fail "internal error: invalid stream format in BondedStream"
-
-getContainer :: forall a t. (BondBinaryProto t, BondBinaryStruct t a) => Word16 -> BondGet t (Bonded a)
-getContainer ver = do
-    let BondGet structSize = do
-                startpos <- BondGet bytesRead
-                skipValue BT_STRUCT :: BondGet t ()
-                endpos <- BondGet bytesRead
-                return (endpos - startpos)
-    size <- BondGet $ lookAhead structSize
-    bs <- BondGet $ getLazyByteString size
-    return $ BondedStream bs compactSig ver
+    protoSignature = const compactSig
 
 skipVarInt :: BondGet t ()
 skipVarInt = loop

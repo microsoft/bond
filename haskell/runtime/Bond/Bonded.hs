@@ -20,8 +20,8 @@ unpackBonded :: (BondBinary CompactBinaryProto a,
                  BondBinary SimpleBinaryV1Proto a
                 ) => Bonded a -> Either String a
 unpackBonded (BondedObject v) = Right v
-unpackBonded (BondedStream s proto ver)
-    = let decoder = getDecoder proto ver
+unpackBonded (BondedStream proto s)
+    = let decoder = getDecoder proto
        in case decoder s of
             Right (rest, _, msg) | Lazy.null rest -> Right msg
             Right (_, _, _) -> Left "Not all input consumed"
@@ -35,11 +35,11 @@ getDecoder :: (BondBinary CompactBinaryProto a,
                BondBinary FastBinaryProto a,
                BondBinary SimpleBinaryProto a,
                BondBinary SimpleBinaryV1Proto a
-              ) => ProtoSig -> Word16 -> Decoder a
-getDecoder proto ver
-    | proto == compactSig && ver == 1 = runCompactBinaryV1Get bondGet
-    | proto == compactSig && ver == 2 = runCompactBinaryGet bondGet
-    | proto == simpleSig && ver == 1 = runSimpleBinaryV1Get bondGet
-    | proto == simpleSig && ver == 2 = runSimpleBinaryGet bondGet
-    | proto == fastSig && ver == 1 = runFastBinaryGet bondGet
-getDecoder _ _ = const $ Left (Lazy.empty, 0, "unknown protocol or version")
+              ) => ProtoSig -> Decoder a
+getDecoder proto
+    | proto == compactV1Sig = runCompactBinaryV1Get bondGet
+    | proto == compactSig = runCompactBinaryGet bondGet
+    | proto == simpleV1Sig = runSimpleBinaryV1Get bondGet
+    | proto == simpleSig = runSimpleBinaryGet bondGet
+    | proto == fastSig = runFastBinaryGet bondGet
+getDecoder _ = const $ Left (Lazy.empty, 0, "unknown protocol or version")
