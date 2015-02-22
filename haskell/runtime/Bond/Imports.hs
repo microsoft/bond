@@ -1,6 +1,8 @@
 module Bond.Imports (
     module X,
-    Hashable
+    Data,
+    Hashable,
+    Typeable
   ) where
 
 import Bond.BinaryProto as X
@@ -12,3 +14,4 @@ import Bond.SimpleBinary as X
 import Bond.Types as X
 import Bond.Wire as X
 import Data.Hashable (Hashable)
+import Data.Data

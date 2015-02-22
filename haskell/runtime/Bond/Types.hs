@@ -1,4 +1,4 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, DeriveDataTypeable #-}
 module Bond.Types (
     Blob(..),
     Bonded(..),
@@ -29,6 +29,7 @@ module Bond.Types (
     simpleV1Sig
   ) where
 
+import Data.Data
 import Data.Int
 import Data.Word
 import Data.Hashable
@@ -41,13 +42,13 @@ import qualified Data.Text.Encoding as T
 import qualified Data.Vector as V
 
 newtype Utf8 = Utf8 BS.ByteString
-    deriving (Eq, Ord, Hashable)
+    deriving (Eq, Ord, Hashable, Data, Typeable)
 
 newtype Utf16 = Utf16 BS.ByteString
-    deriving (Eq, Ord, Hashable)
+    deriving (Eq, Ord, Hashable, Data, Typeable)
 
 newtype Blob = Blob BS.ByteString
-    deriving (Show, Eq, Ord, Hashable)
+    deriving (Show, Eq, Ord, Hashable, Data, Typeable)
 
 class EncodedString a where
     fromString :: String -> a
@@ -59,7 +60,7 @@ instance Show Utf8 where show (Utf8 s) = show $ T.unpack $ T.decodeUtf8 s
 instance Show Utf16 where show (Utf16 s) = show $ T.unpack $ T.decodeUtf16LE s
 
 newtype ProtoSig = ProtoSig Word32
-    deriving Eq
+    deriving (Eq, Data, Typeable)
 
 compactSig, compactV1Sig, simpleSig, simpleV1Sig, fastSig :: ProtoSig
 compactSig = ProtoSig 0x43420200
@@ -69,6 +70,7 @@ simpleV1Sig = ProtoSig 0x53500100
 fastSig = ProtoSig 0x4D460100
 
 data Bonded a = BondedStream ProtoSig Lazy.ByteString | BondedObject a
+    deriving (Data, Typeable)
 
 instance Show a => Show (Bonded a) where
     show BondedStream{} = "BondedStream"

@@ -152,11 +152,12 @@ mkHaskellDecl mapping e@Enum{..} = (filename, prettyPrint code)
     filename = mkFileName namespace declName
     moduleName = mkModuleName namespace declName
     typeName = Ident $ convertTypeName declName
-    code = Module noLoc moduleName [LanguagePragma noLoc [Ident "GeneralizedNewtypeDeriving", Ident "MultiParamTypeClasses", Ident "FlexibleInstances"]] Nothing Nothing [defaultImport] decls
+    code = Module noLoc moduleName [LanguagePragma noLoc [Ident "GeneralizedNewtypeDeriving", Ident "MultiParamTypeClasses", Ident "FlexibleInstances", Ident "DeriveDataTypeable"]] Nothing Nothing [defaultImport] decls
     decls = dataDecl : defaultDecl : wiretypeDecl : bondBinaryDecl : typesig : values
     dataDecl = DataDecl noLoc NewType [] typeName []
                 [QualConDecl noLoc [] [] (ConDecl typeName [tyInt "Int32"])]
-                [(unqual "Show", []), (unqual "Eq", []), (unqual "Ord", []), (qualInt "Hashable", [])]
+                [(unqual "Show", []), (unqual "Eq", []), (unqual "Ord", []),
+                    (qualInt "Hashable", []), (qualInt "Data", []), (qualInt "Typeable", [])]
     defaultDecl = defaultInstance mapping e
     wiretypeDecl = wiretypeInstance e
     bondBinaryDecl = bondBinaryInstance e
@@ -173,9 +174,9 @@ mkHaskellDecl mapping s@Struct{..} = (filename, prettyPrint code)
     filename = mkFileName namespace declName
     moduleName = mkModuleName namespace declName
     typeName = Ident $ convertTypeName declName
-    code = Module noLoc moduleName [LanguagePragma noLoc [Ident "MultiParamTypeClasses", Ident "FlexibleInstances"]] Nothing (Just [EThingAll $ UnQual typeName]) imports decls
+    code = Module noLoc moduleName [LanguagePragma noLoc [Ident "MultiParamTypeClasses", Ident "FlexibleInstances", Ident "DeriveDataTypeable"]] Nothing (Just [EThingAll $ UnQual typeName]) imports decls
     decls = [dataDecl, defaultDecl, wiretypeDecl, bondBinaryDecl, bondBinaryStructDecl, putFieldsTypeSig, putFieldsCode, updateTypeSig, updateCode]
-    dataDecl = DataDecl noLoc DataType [] typeName typeParams [QualConDecl noLoc [] [] (RecDecl typeName fields)] [(unqual "Show",[]), (unqual "Eq", [])]
+    dataDecl = DataDecl noLoc DataType [] typeName typeParams [QualConDecl noLoc [] [] (RecDecl typeName fields)] [(unqual "Show",[]), (unqual "Eq", []), (qualInt "Data", []), (qualInt "Typeable", [])]
     typeParams = map mkTypeParam declParams
     -- FIXME see if type params T and t accepted in C++/C#, make smart conversion to t/t'
     mkTypeParam TypeParam{paramName} = UnkindedVar $ mkVar paramName
