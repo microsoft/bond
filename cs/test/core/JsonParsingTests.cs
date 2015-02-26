@@ -2,13 +2,10 @@
 {
     using System;
     using System.IO;
-
     using Bond;
     using Bond.Protocols;
-
-    using NUnit.Framework;
-
     using Newtonsoft.Json;
+    using NUnit.Framework;
 
     [TestFixture]
     public class JsonParsingTests
@@ -680,6 +677,16 @@ World", target._str);
             Assert.AreEqual(10, target.nb.Array[target.nb.Offset]);
             Assert.AreEqual(11, target.nb.Array[target.nb.Offset + 1]);
             
+        }
+        
+        [Test]
+        public void JsonParsing_DateAsString()
+        {
+            const string json = @"{""value"":""2015-02-26T13:18:13.1521765-08:00""}";
+
+            var target = ParseJson<Box<string>>(json);
+
+            Assert.AreEqual("2015-02-26T13:18:13.1521765-08:00", target.value);
         }
 
         private static T ParseJson<T>(string json) where T : new()
