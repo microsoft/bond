@@ -121,10 +121,11 @@ namespace Bond.Expressions.Json
                 convertedValue = Reader.Value;
             }
             
-            var errorMessage = string.Format(
-                CultureInfo.InvariantCulture,
-                "Invalid input, expected JSON token of type {0}",
-                scalarTokenType);
+            var errorMessage = 
+                StringExpression.Format(
+                    "Invalid input, expected JSON token of type {0}, encountered {1}",
+                    Expression.Constant(scalarTokenType, typeof(object)),
+                    Expression.Convert(Reader.TokenType, typeof(object)));
 
             return
                 Expression.Block(
@@ -197,14 +198,19 @@ namespace Bond.Expressions.Json
                     Expression.Convert(Reader.LinePosition, typeof(object))));
         }
 
-        Expression ThrowUnexpectedInput(string errorMessage)
+        Expression ThrowUnexpectedInput(Expression errorMessage)
         {
             return ThrowExpression.InvalidDataException(
                 StringExpression.Format(
                     "{0} (line {1} position {2})",
-                    Expression.Constant(errorMessage),
+                    errorMessage,
                     Expression.Convert(Reader.LineNumber, typeof(object)),
                     Expression.Convert(Reader.LinePosition, typeof(object))));
+        }
+
+        Expression ThrowUnexpectedInput(string errorMessage)
+        {
+            return ThrowUnexpectedInput(Expression.Constant(errorMessage));
         }
 
         Expression ProcessField(ParameterExpression requiredFields, IEnumerable<TransformSchemaPair> transforms)
