@@ -133,6 +133,10 @@ Install the following tools:
 
 If behind a proxy, set environment variable `HTTP_PROXY=http://proxy:port`.
 
+Update cabal package database:
+
+    cabal update
+
 Now you are ready to build the C# version of Bond. Open the solution file 
 `cs\cs.sln` in Visual Studio 2013 and build as usual. The C# unit tests can 
 also be run from within the solution.
