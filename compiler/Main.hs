@@ -41,9 +41,10 @@ main = do
 
 setJobs Nothing = return ()
 setJobs (Just n)
-    | n > 0 = setNumCapabilities n
+    | n > 0     = setNumCapabilities n
     | otherwise = do
         numProc <- getNumProcessors
+        -- if n is less than 0 use that many fewer jobs than processors
         setNumCapabilities $ max 1 (numProc + n)
 
 concurrentlyFor_ = (void .) . flip mapConcurrently
