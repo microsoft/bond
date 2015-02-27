@@ -1,3 +1,4 @@
+os: Previous Windows Server 2012 R2
 version: 1.0.{build}
 clone_depth: 15
 install:
