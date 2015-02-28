@@ -121,7 +121,13 @@
                                                                                                                                 System.Globalization.CultureInfo.InvariantCulture,
                                                                                                                                 "{0} (line {1} position {2})",
                                                                                                                                 .NewArray System.Object[] {
-                                                                                                                                    "Invalid input, expected JSON token of type Integer",
+                                                                                                                                    .Call System.String.Format(
+                                                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                        "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                        .NewArray System.Object[] {
+                                                                                                                                            .Constant<System.Object>(Integer),
+                                                                                                                                            (System.Object)$reader.TokenType
+                                                                                                                                        }),
                                                                                                                                     (System.Object)$reader.LineNumber,
                                                                                                                                     (System.Object)$reader.LinePosition
                                                                                                                                 }))
@@ -198,7 +204,13 @@
                                                                                                 System.Globalization.CultureInfo.InvariantCulture,
                                                                                                 "{0} (line {1} position {2})",
                                                                                                 .NewArray System.Object[] {
-                                                                                                    "Invalid input, expected JSON token of type Integer",
+                                                                                                    .Call System.String.Format(
+                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                        "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                        .NewArray System.Object[] {
+                                                                                                            .Constant<System.Object>(Integer),
+                                                                                                            (System.Object)$reader.TokenType
+                                                                                                        }),
                                                                                                     (System.Object)$reader.LineNumber,
                                                                                                     (System.Object)$reader.LinePosition
                                                                                                 }))
@@ -218,7 +230,13 @@
                                                                                                 System.Globalization.CultureInfo.InvariantCulture,
                                                                                                 "{0} (line {1} position {2})",
                                                                                                 .NewArray System.Object[] {
-                                                                                                    "Invalid input, expected JSON token of type Float",
+                                                                                                    .Call System.String.Format(
+                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                        "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                        .NewArray System.Object[] {
+                                                                                                            .Constant<System.Object>(Float),
+                                                                                                            (System.Object)$reader.TokenType
+                                                                                                        }),
                                                                                                     (System.Object)$reader.LineNumber,
                                                                                                     (System.Object)$reader.LinePosition
                                                                                                 }))
@@ -297,7 +315,13 @@
                                                                                                             System.Globalization.CultureInfo.InvariantCulture,
                                                                                                             "{0} (line {1} position {2})",
                                                                                                             .NewArray System.Object[] {
-                                                                                                                "Invalid input, expected JSON token of type Integer",
+                                                                                                                .Call System.String.Format(
+                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                    "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                    .NewArray System.Object[] {
+                                                                                                                        .Constant<System.Object>(Integer),
+                                                                                                                        (System.Object)$reader.TokenType
+                                                                                                                    }),
                                                                                                                 (System.Object)$reader.LineNumber,
                                                                                                                 (System.Object)$reader.LinePosition
                                                                                                             }))
@@ -434,7 +458,13 @@
                                                                                                                                                             System.Globalization.CultureInfo.InvariantCulture,
                                                                                                                                                             "{0} (line {1} position {2})",
                                                                                                                                                             .NewArray System.Object[] {
-                                                                                                                                                                "Invalid input, expected JSON token of type Float",
+                                                                                                                                                                .Call System.String.Format(
+                                                                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                                                    "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                                                    .NewArray System.Object[] {
+                                                                                                                                                                        .Constant<System.Object>(Float),
+                                                                                                                                                                        (System.Object)$reader.TokenType
+                                                                                                                                                                    }),
                                                                                                                                                                 (System.Object)$reader.LineNumber,
                                                                                                                                                                 (System.Object)$reader.LinePosition
                                                                                                                                                             }))
@@ -550,7 +580,13 @@
                                                                                                                     System.Globalization.CultureInfo.InvariantCulture,
                                                                                                                     "{0} (line {1} position {2})",
                                                                                                                     .NewArray System.Object[] {
-                                                                                                                        "Invalid input, expected JSON token of type Integer",
+                                                                                                                        .Call System.String.Format(
+                                                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                            "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                            .NewArray System.Object[] {
+                                                                                                                                .Constant<System.Object>(Integer),
+                                                                                                                                (System.Object)$reader.TokenType
+                                                                                                                            }),
                                                                                                                         (System.Object)$reader.LineNumber,
                                                                                                                         (System.Object)$reader.LinePosition
                                                                                                                     }))
@@ -663,7 +699,13 @@
                                                                                                                                         System.Globalization.CultureInfo.InvariantCulture,
                                                                                                                                         "{0} (line {1} position {2})",
                                                                                                                                         .NewArray System.Object[] {
-                                                                                                                                            "Invalid input, expected JSON token of type Integer",
+                                                                                                                                            .Call System.String.Format(
+                                                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                                "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                                .NewArray System.Object[] {
+                                                                                                                                                    .Constant<System.Object>(Integer),
+                                                                                                                                                    (System.Object)$reader.TokenType
+                                                                                                                                                }),
                                                                                                                                             (System.Object)$reader.LineNumber,
                                                                                                                                             (System.Object)$reader.LinePosition
                                                                                                                                         }))
@@ -687,7 +729,13 @@
                                                                                                                                             System.Globalization.CultureInfo.InvariantCulture,
                                                                                                                                             "{0} (line {1} position {2})",
                                                                                                                                             .NewArray System.Object[] {
-                                                                                                                                                "Invalid input, expected JSON token of type Integer",
+                                                                                                                                                .Call System.String.Format(
+                                                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                                    "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                                    .NewArray System.Object[] {
+                                                                                                                                                        .Constant<System.Object>(Integer),
+                                                                                                                                                        (System.Object)$reader.TokenType
+                                                                                                                                                    }),
                                                                                                                                                 (System.Object)$reader.LineNumber,
                                                                                                                                                 (System.Object)$reader.LinePosition
                                                                                                                                             }))
@@ -711,7 +759,13 @@
                                                                                                                                                 System.Globalization.CultureInfo.InvariantCulture,
                                                                                                                                                 "{0} (line {1} position {2})",
                                                                                                                                                 .NewArray System.Object[] {
-                                                                                                                                                    "Invalid input, expected JSON token of type Integer",
+                                                                                                                                                    .Call System.String.Format(
+                                                                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                                        "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                                        .NewArray System.Object[] {
+                                                                                                                                                            .Constant<System.Object>(Integer),
+                                                                                                                                                            (System.Object)$reader.TokenType
+                                                                                                                                                        }),
                                                                                                                                                     (System.Object)$reader.LineNumber,
                                                                                                                                                     (System.Object)$reader.LinePosition
                                                                                                                                                 }))
@@ -735,7 +789,13 @@
                                                                                                                                                     System.Globalization.CultureInfo.InvariantCulture,
                                                                                                                                                     "{0} (line {1} position {2})",
                                                                                                                                                     .NewArray System.Object[] {
-                                                                                                                                                        "Invalid input, expected JSON token of type Integer",
+                                                                                                                                                        .Call System.String.Format(
+                                                                                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                                            "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                                            .NewArray System.Object[] {
+                                                                                                                                                                .Constant<System.Object>(Integer),
+                                                                                                                                                                (System.Object)$reader.TokenType
+                                                                                                                                                            }),
                                                                                                                                                         (System.Object)$reader.LineNumber,
                                                                                                                                                         (System.Object)$reader.LinePosition
                                                                                                                                                     }))
@@ -811,7 +871,13 @@
                                                                                                 System.Globalization.CultureInfo.InvariantCulture,
                                                                                                 "{0} (line {1} position {2})",
                                                                                                 .NewArray System.Object[] {
-                                                                                                    "Invalid input, expected JSON token of type Float",
+                                                                                                    .Call System.String.Format(
+                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                        "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                        .NewArray System.Object[] {
+                                                                                                            .Constant<System.Object>(Float),
+                                                                                                            (System.Object)$reader.TokenType
+                                                                                                        }),
                                                                                                     (System.Object)$reader.LineNumber,
                                                                                                     (System.Object)$reader.LinePosition
                                                                                                 }))
@@ -839,7 +905,13 @@
                                                                                                         System.Globalization.CultureInfo.InvariantCulture,
                                                                                                         "{0} (line {1} position {2})",
                                                                                                         .NewArray System.Object[] {
-                                                                                                            "Invalid input, expected JSON token of type Integer",
+                                                                                                            .Call System.String.Format(
+                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                .NewArray System.Object[] {
+                                                                                                                    .Constant<System.Object>(Integer),
+                                                                                                                    (System.Object)$reader.TokenType
+                                                                                                                }),
                                                                                                             (System.Object)$reader.LineNumber,
                                                                                                             (System.Object)$reader.LinePosition
                                                                                                         }))
@@ -864,7 +936,13 @@
                                                                                                         System.Globalization.CultureInfo.InvariantCulture,
                                                                                                         "{0} (line {1} position {2})",
                                                                                                         .NewArray System.Object[] {
-                                                                                                            "Invalid input, expected JSON token of type Integer",
+                                                                                                            .Call System.String.Format(
+                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                .NewArray System.Object[] {
+                                                                                                                    .Constant<System.Object>(Integer),
+                                                                                                                    (System.Object)$reader.TokenType
+                                                                                                                }),
                                                                                                             (System.Object)$reader.LineNumber,
                                                                                                             (System.Object)$reader.LinePosition
                                                                                                         }))
@@ -888,7 +966,13 @@
                                                                                                             System.Globalization.CultureInfo.InvariantCulture,
                                                                                                             "{0} (line {1} position {2})",
                                                                                                             .NewArray System.Object[] {
-                                                                                                                "Invalid input, expected JSON token of type Integer",
+                                                                                                                .Call System.String.Format(
+                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                    "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                    .NewArray System.Object[] {
+                                                                                                                        .Constant<System.Object>(Integer),
+                                                                                                                        (System.Object)$reader.TokenType
+                                                                                                                    }),
                                                                                                                 (System.Object)$reader.LineNumber,
                                                                                                                 (System.Object)$reader.LinePosition
                                                                                                             }))
@@ -912,7 +996,13 @@
                                                                                                                 System.Globalization.CultureInfo.InvariantCulture,
                                                                                                                 "{0} (line {1} position {2})",
                                                                                                                 .NewArray System.Object[] {
-                                                                                                                    "Invalid input, expected JSON token of type String",
+                                                                                                                    .Call System.String.Format(
+                                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                        "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                        .NewArray System.Object[] {
+                                                                                                                            .Constant<System.Object>(String),
+                                                                                                                            (System.Object)$reader.TokenType
+                                                                                                                        }),
                                                                                                                     (System.Object)$reader.LineNumber,
                                                                                                                     (System.Object)$reader.LinePosition
                                                                                                                 }))
@@ -936,7 +1026,13 @@
                                                                                                                     System.Globalization.CultureInfo.InvariantCulture,
                                                                                                                     "{0} (line {1} position {2})",
                                                                                                                     .NewArray System.Object[] {
-                                                                                                                        "Invalid input, expected JSON token of type Boolean",
+                                                                                                                        .Call System.String.Format(
+                                                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                            "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                            .NewArray System.Object[] {
+                                                                                                                                .Constant<System.Object>(Boolean),
+                                                                                                                                (System.Object)$reader.TokenType
+                                                                                                                            }),
                                                                                                                         (System.Object)$reader.LineNumber,
                                                                                                                         (System.Object)$reader.LinePosition
                                                                                                                     }))

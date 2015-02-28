@@ -81,10 +81,14 @@
         public DeserializerDebugView(Type type)
         {
             var parser = ParserFactory<R>.Create(type);
-            var expressions = new DeserializerTransform<R>(
+            var expressions = new SortedDictionary<int, Expression<Func<R, object>>>();
+
+            new DeserializerTransform<R>(
+                (e, t, i) => expressions[i] = e,
                 (r, i) => deserialize[i](r))
                 .Generate(parser, type);
-            debugView = DebugViewHelper.ToString(expressions);
+            
+            debugView = DebugViewHelper.ToString(expressions.Values);
         }
 
         string IDebugView.DebugView { get { return debugView; } }
