@@ -652,6 +652,7 @@ struct IdAttribute
 {
     0: TypeAttribute field = DefaultAttribute;
 }
+
 struct classT {}
 struct structT {}
 struct GenericConflict<structT : value>
