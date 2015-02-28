@@ -58,6 +58,7 @@
     <Compile Include="io\safe\OutputBuffer.cs" />
     <Compile Include="ISchemaField.cs" />
     <Compile Include="Marshaler.cs" />
+    <Compile Include="MultipleTypeDeserializer.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="Property.cs" />
     <Compile Include="protocols\CompactBinary.cs" />

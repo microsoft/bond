@@ -4,6 +4,7 @@
 namespace Bond
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Bond.Expressions;
 
@@ -45,8 +46,13 @@ namespace Bond
         /// <param name="type">type of clone object, may be different than source object</param>
         public Cloner(Type type)
         {
-            clone = Generate(type, new DeserializerTransform<object>(
-                (o, i) => clone[i](o)));
+            var funcs = new Dictionary<int, Func<object, object>>();
+            clone = Generate(
+                type, 
+                funcs,
+                new DeserializerTransform<object>(
+                    (e, t, i) => funcs[i] = e.Compile(),
+                    (o, i) => clone[i](o)));
         }
 
         /// <summary>
@@ -57,8 +63,12 @@ namespace Bond
         public Cloner(Type type, IFactory factory)
         {
             objectFactory = factory;
-            clone = Generate(type, 
+            var funcs = new Dictionary<int, Func<object, object>>();
+            clone = Generate(
+                type,
+                funcs,
                 new DeserializerTransform<object>(
+                    (e, t, i) => funcs[i] = e.Compile(),
                     (o, i) => clone[i](o),
                     (t1, t2) => objectFactory.CreateObject(t1, t2),
                     (t1, t2, count) => objectFactory.CreateContainer(t1, t2, count)));
@@ -82,10 +92,18 @@ namespace Bond
             return (T)clone[0](source);
         }
 
-        static Func<object, object>[] Generate(Type type, DeserializerTransform<object> transform)
+        static Func<object, object>[] Generate(Type type, Dictionary<int, Func<object, object>> funcs, DeserializerTransform<object> transform)
         {
             var parser = new ObjectParser(typeof(SourceT));
-            return transform.Generate(parser, type).Select(lambda => lambda.Compile()).ToArray();
+            transform.Generate(parser, type);
+            var funcArray = new Func<object, object>[funcs.Count];
+
+            foreach (var pair in funcs)
+            {
+                funcArray[pair.Key] = pair.Value;
+            }
+
+            return funcArray;
         }
     }
 }

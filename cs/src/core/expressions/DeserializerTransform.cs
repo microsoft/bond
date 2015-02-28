@@ -8,20 +8,37 @@ namespace Bond.Expressions
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Threading;
 
     internal class DeserializerTransform<R>
     {
+        public delegate void DeserializeExpressionHandler(Expression<Func<R, object>> expression, Type objectType, int index);
         delegate Expression NewObject(Type type, Type schemaType);
         delegate Expression NewContainer(Type type, Type schemaType, Expression count);
-
+        
         readonly NewObject newObject;
         readonly NewContainer newContainer;
         TypeAlias typeAlias;
 
         readonly Expression<Func<R, int, object>> deferredDeserialize;
-        readonly List<Expression<Func<R, object>>> deserializeFuncs = new List<Expression<Func<R, object>>>();
-        readonly Dictionary<Type, int> deserializeIndex = new Dictionary<Type, int>();
-        readonly Stack<Type> inProgress = new Stack<Type>();
+        readonly DeserializeExpressionHandler deserializeExpressionHandler;
+        
+        readonly IDictionary<Type, TypeState> typeStates;
+        readonly object typeStatesSync;
+        
+        /// <summary>
+        /// Keeps track of types on the current stack while traversing the target deserialization type, in order to
+        /// detect recursion and avoid inlining.
+        /// </summary>
+        readonly Stack<Type> encounteredTypes = new Stack<Type>();
+
+        /// <summary>
+        /// Keeps track of types for which an expression is/was being generated, in order to skip infinite recursion.
+        /// </summary>
+        private readonly HashSet<Type> handledTypes = new HashSet<Type>();
+
+        readonly bool noInlining;
+
         static readonly MethodInfo bondedConvert =
             Reflection.GenericMethodInfoOf((IBonded bonded) => bonded.Convert<object>());
         static readonly MethodInfo bondedDeserialize =
@@ -34,9 +51,13 @@ namespace Bond.Expressions
             Reflection.MethodInfoOf((byte[] a) => Buffer.BlockCopy(a, default(int), a, default(int), default(int)));
 
         public DeserializerTransform(
+            DeserializeExpressionHandler deserializeExpressionHandler,
             Expression<Func<R, int, object>> deferredDeserialize,
             Expression<Func<Type, Type, object>> createObject = null,
-            Expression<Func<Type, Type, int, object>> createContainer = null)
+            Expression<Func<Type, Type, int, object>> createContainer = null,
+            IDictionary<Type, TypeState> externalTypeStates = null,
+            object externalTypeStatesSync = null,
+            bool noInlining = false)
         {
             this.deferredDeserialize = deferredDeserialize;
             if (createObject != null)
@@ -69,23 +90,35 @@ namespace Bond.Expressions
             {
                 newContainer = (t1, t2, count) => New(t1, t2, count);
             }
+
+            if (externalTypeStates == null)
+            {
+                externalTypeStates = new Dictionary<Type, TypeState>();
+                
+                // We won't bother locking if the dictionary is private to this DeserializerTransform
+                externalTypeStatesSync = null;
+            }
+            typeStates = externalTypeStates;
+            typeStatesSync = externalTypeStatesSync;
+
+            this.deserializeExpressionHandler = deserializeExpressionHandler;
+            this.noInlining = noInlining;
         }
 
-        public IEnumerable<Expression<Func<R, object>>> Generate(IParser parser, Type type)
+        public void Generate(IParser parser, Type type)
         {
             Audit.ArgNotNull(type, "type");
 
             typeAlias = new TypeAlias(type);
             Deserialize(parser, null, type, type, true);
-            return deserializeFuncs;
         }
 
         Expression Deserialize(IParser parser, Expression var, Type objectType, Type schemaType, bool initialize)
         {
-            var inline = inProgress.Count != 0 && !inProgress.Contains(schemaType) && var != null;
+            var inline = !noInlining && encounteredTypes.Count != 0 && !encounteredTypes.Contains(schemaType) && var != null;
             Expression body;
 
-            inProgress.Push(schemaType);
+            encounteredTypes.Push(schemaType);
 
             if (inline)
             {
@@ -101,19 +134,22 @@ namespace Bond.Expressions
             }
             else
             {
-                int index;
-                if (!deserializeIndex.TryGetValue(schemaType, out index))
+                var typeState = GetTypeState(schemaType);
+                if (!typeState.Handled && !handledTypes.Contains(schemaType))
                 {
-                    index = deserializeFuncs.Count;
-                    deserializeIndex[schemaType] = index;
-                    deserializeFuncs.Add(null);
+                    handledTypes.Add(schemaType);
+
+                    // This type has not been handled yet, prepare an expression and handle it
                     var result = Expression.Variable(objectType, objectType.Name);
-                    deserializeFuncs[index] = Expression.Lambda<Func<R, object>>(
+                    var expression = Expression.Lambda<Func<R, object>>(
                         Expression.Block(
-                            new[] { result },
+                            new[] {result},
                             Struct(parser, result, schemaType, true),
                             result),
                         parser.ReaderParam);
+
+                    deserializeExpressionHandler(expression, objectType, typeState.Index);
+                    typeState.Handled = true;
                 }
 
                 if (var == null)
@@ -124,12 +160,34 @@ namespace Bond.Expressions
                             Expression.Invoke(
                                 deferredDeserialize,
                                 parser.ReaderValue,
-                                Expression.Constant(index)),
+                                Expression.Constant(typeState.Index)),
                             objectType));
             }
 
-            inProgress.Pop();
+            encounteredTypes.Pop();
             return body;
+        }
+
+        private TypeState GetTypeState(Type type)
+        {
+            // Lock only if we have to (if state dictionary is external so might be shared)
+            if (typeStatesSync != null) Monitor.Enter(typeStatesSync);
+            
+            try
+            {
+                TypeState state;
+                if (!typeStates.TryGetValue(type, out state))
+                {
+                    state = new TypeState { Index = typeStates.Count, Handled = false };
+                    typeStates.Add(type, state);
+                }
+
+                return state;
+            }
+            finally
+            {
+                if (typeStatesSync != null) Monitor.Exit(typeStatesSync);
+            }
         }
 
         Expression Struct(IParser parser, Expression var, Type schemaType, bool initialize)
@@ -448,6 +506,12 @@ namespace Bond.Expressions
             }
 
             return Expression.New(schemaType);
+        }
+
+        public class TypeState
+        {
+            public int Index { get; set; }
+            public bool Handled { get; set; }
         }
     }
 }

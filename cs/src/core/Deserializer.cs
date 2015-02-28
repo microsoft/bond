@@ -4,6 +4,7 @@
 namespace Bond
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using Bond.Expressions;
@@ -87,21 +88,35 @@ namespace Bond
 
         Deserializer(Type type, IParser parser)
         {
-            deserialize = new DeserializerTransform<R>(
-                    (r, i) => deserialize[i](r))
-                .Generate(parser, type)
-                .Select(lambda => lambda.Compile()).ToArray();
+            var funcs = new Dictionary<int, Func<R, object>>();
+            new DeserializerTransform<R>(
+                (e, t, i) => funcs[i] = e.Compile(),
+                (r, i) => deserialize[i](r))
+                .Generate(parser, type);
+
+            deserialize = new Func<R, object>[funcs.Count];
+            foreach (var pair in funcs)
+            {
+                deserialize[pair.Key] = pair.Value;
+            }
         }
 
         Deserializer(Type type, IParser parser, IFactory factory)
         {
             objectFactory = factory;
-            deserialize = new DeserializerTransform<R>(
+            var funcs = new Dictionary<int, Func<R, object>>();
+            new DeserializerTransform<R>(
+                    (e, t, i) => funcs[i] = e.Compile(),
                     (r, i) => deserialize[i](r),
                     (t1, t2) => objectFactory.CreateObject(t1, t2),
                     (t1, t2, count) => objectFactory.CreateContainer(t1, t2, count))
-                .Generate(parser, type)
-                .Select(lambda => lambda.Compile()).ToArray();
+                .Generate(parser, type);
+
+            deserialize = new Func<R, object>[funcs.Count];
+            foreach (var pair in funcs)
+            {
+                deserialize[pair.Key] = pair.Value;
+            }
         }
 
         /// <summary>
