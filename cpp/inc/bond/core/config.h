@@ -71,3 +71,6 @@
 #define BOND_CALL  
 #define BOND_NO_INLINE  __attribute__((noinline))
 #endif
+
+#define BOND_NOEXCEPT BOOST_NOEXCEPT_OR_NOTHROW
+
