@@ -5,9 +5,9 @@
 
 module Bond.Template.Cs.Types_cs (types_cs) where
 
-import System.FilePath
 import Data.Monoid
 import Data.Foldable (foldMap)
+import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema
 import Bond.Util
@@ -16,7 +16,8 @@ import Bond.Template.Util
 import qualified Bond.Template.Cs.Util as CS
 
 -- generate the *_types.cs file from parsed .bond file
-types_cs readOnly useFields cs file imports declarations = ("_types.cs", [lt|
+types_cs :: Bool -> Bool -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
+types_cs readOnly useFields cs _file _imports declarations = ("_types.cs", [lt|
 #{CS.disableReSharperWarnings}
 namespace #{csNamespace}
 {

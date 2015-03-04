@@ -6,5 +6,7 @@ module Bond.Version
     , minorVersion
     ) where
 
+majorVersion :: String 
 majorVersion = "3"
+minorVersion :: String
 minorVersion = "02"
