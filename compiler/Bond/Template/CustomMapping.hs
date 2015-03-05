@@ -30,18 +30,19 @@ data NamespaceMapping = NamespaceMapping
     , toNamespace :: QualifiedName
     }
 
+type Parser a = Parsec SourceName () a
 
-whitespace :: Parsec SourceName u String
+whitespace :: Parser String
 whitespace = many (char ' ') <?> "whitespace"
-identifier :: Parsec SourceName u String
+identifier :: Parser String
 identifier = many1 (alphaNum <|> char '_') <?> "identifier"
-qualifiedName :: Parsec SourceName u [String]
+qualifiedName :: Parser [String]
 qualifiedName = sepBy1 identifier (char '.') <?> "qualified name"
-symbol :: String -> Parsec SourceName u String
+symbol :: String -> Parser String
 symbol s = whitespace *> string s <* whitespace
-equal :: Parsec SourceName u String
+equal :: Parser String
 equal = symbol "="
-integer :: Parsec SourceName u Integer
+integer :: Parser Integer
 integer = decimal <$> many1 digit <?> "decimal number"
   where
     decimal = foldl (\x d -> 10 * x + toInteger (digitToInt d)) 0
