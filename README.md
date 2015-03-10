@@ -92,6 +92,10 @@ using Homebrew ([http://brew.sh/](http://brew.sh/)):
 
 (boost-python is optional and only needed for Python support)
 
+Update cabal package database:
+
+    cabal update
+
 Bond can be built on OS X using either standard *nix makefiles or XCode. In 
 order to generate and build makefiles, in the root `bond` directory run:
 
