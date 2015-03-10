@@ -14,7 +14,8 @@ import qualified Data.Text.Lazy as L
 import Data.Foldable (foldMap)
 import Text.Shakespeare.Text
 import Bond.Version
-import Bond.Schema
+import Bond.Schema.Types
+import Bond.Schema.Util
 import Bond.Util
 import Bond.Template.TypeMapping
 import Bond.Template.Util

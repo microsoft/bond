@@ -18,7 +18,8 @@ import Control.Monad.Reader
 import Text.Parsec.Pos (initialPos)
 import Text.Parsec hiding (many, optional, (<|>))
 import Bond.Lexer
-import Bond.Schema
+import Bond.Schema.Types
+import Bond.Schema.Util
 
 -- parser state, mutable and global
 data Symbols =

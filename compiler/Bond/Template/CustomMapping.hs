@@ -14,7 +14,7 @@ module Bond.Template.CustomMapping
 import Data.Char
 import Control.Applicative
 import Text.Parsec hiding (many, optional, (<|>))
-import Bond.Schema
+import Bond.Schema.Types
 
 data Fragment =
     Fragment String |

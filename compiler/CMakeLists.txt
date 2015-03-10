@@ -13,7 +13,9 @@ set (sources
     Options.hs
     Bond/Lexer.hs
     Bond/Parser.hs
-    Bond/Schema.hs
+    Bond/Schema/JSON.hs
+    Bond/Schema/Types.hs
+    Bond/Schema/Util.hs
     Bond/Util.hs
     Bond/Version.hs
     Bond/Template/CustomMapping.hs

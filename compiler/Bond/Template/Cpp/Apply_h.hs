@@ -9,7 +9,7 @@ import System.FilePath
 import Data.Monoid
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
-import Bond.Schema
+import Bond.Schema.Types
 import Bond.Util
 import Bond.Template.Util
 import Bond.Template.TypeMapping

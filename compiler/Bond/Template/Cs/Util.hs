@@ -17,7 +17,8 @@ import Data.Monoid
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Version
-import Bond.Schema
+import Bond.Schema.Types
+import Bond.Schema.Util
 import Bond.Template.TypeMapping
 import Bond.Template.Util
 

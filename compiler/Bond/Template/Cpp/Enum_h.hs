@@ -8,7 +8,7 @@ module Bond.Template.Cpp.Enum_h (enum_h) where
 import Data.Monoid
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
-import Bond.Schema
+import Bond.Schema.Types
 import Bond.Template.TypeMapping
 import Bond.Template.Util
 import qualified Bond.Template.Cpp.Util as CPP

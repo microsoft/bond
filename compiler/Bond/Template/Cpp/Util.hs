@@ -23,7 +23,7 @@ module Bond.Template.Cpp.Util
 import Text.Shakespeare.Text
 import Data.Monoid
 import Data.Text.Lazy (Text)
-import Bond.Schema
+import Bond.Schema.Types
 import Bond.Util
 import Bond.Template.Util
 import Bond.Template.TypeMapping

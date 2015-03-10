@@ -18,7 +18,7 @@ import GHC.Conc (getNumProcessors, setNumCapabilities)
 import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy.IO as L
 import Bond.Parser
-import Bond.Schema (Declaration, Import)
+import Bond.Schema.Types (Declaration, Import)
 import Bond.Template.Util
 import Bond.Template.Cpp.Reflection_h
 import Bond.Template.Cpp.Types_h

@@ -31,7 +31,8 @@ import Control.Monad.Reader
 import qualified Data.Text.Lazy as L
 import Data.Text.Lazy.Builder
 import Text.Shakespeare.Text
-import Bond.Schema
+import Bond.Schema.Types
+import Bond.Schema.Util
 import Bond.Util
 import Bond.Template.Util
 import Bond.Template.CustomMapping

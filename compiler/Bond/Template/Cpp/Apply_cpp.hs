@@ -7,7 +7,7 @@ module Bond.Template.Cpp.Apply_cpp (apply_cpp) where
 
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
-import Bond.Schema
+import Bond.Schema.Types
 import Bond.Template.TypeMapping
 import Bond.Template.Util
 import Bond.Template.Cpp.Apply_h
