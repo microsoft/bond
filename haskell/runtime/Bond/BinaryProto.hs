@@ -91,6 +91,7 @@ class BondBinaryProto t where
     bondPutSet :: BondBinary a => H.HashSet a -> BondPut t
     bondPutMap :: (BondBinary k, BondBinary v) => M.Map k v -> BondPut t
     bondPutNullable :: BondBinary a => Maybe a -> BondPut t
+    bondPutMaybe :: BondBinary a => Maybe a -> BondPut t
     bondPutBonded :: BondBinary a => Bonded a -> BondPut t
     bondPutStruct :: BondStruct a => a -> BondPut t
 

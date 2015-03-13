@@ -610,6 +610,19 @@ bondStructInstance mapping decl@Struct{}
               (BDecls [])
         putField
           = FunBind $ map makePutFunc (structFields decl) ++ [defaultPutFunc]
+        makePutFunc
+          Field{fieldOrdinal, fieldName, fieldDefault = Just DefaultNothing}
+          = Match noLoc (Ident "bondPutField")
+              [PVar recVar,
+               PParen $
+                 PApp (qualInt "Ordinal")
+                   [PLit Signless (Int $ fromIntegral fieldOrdinal)]]
+              Nothing
+              (UnGuardedRhs $
+                 App (Var $ qualInt "bondPutMaybe")
+                   (Paren $
+                      App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar)))
+              (BDecls [])
         makePutFunc Field{fieldOrdinal, fieldName}
           = Match noLoc (Ident "bondPutField")
               [PVar recVar,
@@ -618,9 +631,9 @@ bondStructInstance mapping decl@Struct{}
                    [PLit Signless (Int $ fromIntegral fieldOrdinal)]]
               Nothing
               (UnGuardedRhs $
-                 (App (Var $ qualInt "bondPut")
-                    (Paren $
-                       App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar))))
+                 App (Var $ qualInt "bondPut")
+                   (Paren $
+                      App (Var $ UnQual $ mkVar fieldName) (Var $ UnQual recVar)))
               (BDecls [])
         defaultPutFunc
           = Match noLoc (Ident "bondPutField") [PWildCard, PWildCard] Nothing

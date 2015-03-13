@@ -114,6 +114,8 @@ instance BondBinaryProto CompactBinaryV1Proto where
         BondPut $ putWord8 $ typeIdOf (head xs)
         putVarInt $ length xs
         mapM_ bondPut xs
+    bondPutMaybe Nothing = return ()
+    bondPutMaybe (Just v) = bondPut v
     bondPutNullable = bondPutList . maybeToList
     bondPutSet = bondPutList . H.toList
     bondPutMap m = do
