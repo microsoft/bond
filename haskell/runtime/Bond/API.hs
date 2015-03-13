@@ -6,8 +6,8 @@ module Bond.API (
     bondPut,
 --    runCompactBinaryGet,
 --    runCompactBinaryPut,
-    runCompactBinaryV1Get,
-    runCompactBinaryV1Put
+    deserializeCompactV1,
+    serializeCompactV1,
 --    runFastBinaryGet,
 --    runFastBinaryPut,
 --    runSimpleBinaryGet,
@@ -20,6 +20,6 @@ module Bond.API (
 
 import Bond.BinaryProto (BondGet, BondPut, BondBinaryProto, bondGet, bondPut)
 --import Bond.FastBinary (runFastBinaryGet, runFastBinaryPut)
-import Bond.CompactBinary (runCompactBinaryV1Get, runCompactBinaryV1Put{-, runCompactBinaryGet, runCompactBinaryPut-})
+import Bond.CompactBinary (deserializeCompactV1, serializeCompactV1{-, runCompactBinaryGet, runCompactBinaryPut-})
 --import Bond.SimpleBinary (runSimpleBinaryV1Get, runSimpleBinaryV1Put, runSimpleBinaryGet, runSimpleBinaryPut)
 --import Bond.Bonded (unpackBonded, makeBonded)

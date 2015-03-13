@@ -1,7 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs, MultiWayIf, InstanceSigs #-}
 module Bond.CompactBinary (
-    runCompactBinaryV1Get,
-    runCompactBinaryV1Put,
+    deserializeCompactV1,
+    serializeCompactV1,
 --    runCompactBinaryGet,
 --    runCompactBinaryPut,
     CompactBinaryV1Proto,
@@ -29,8 +29,6 @@ import qualified Data.ByteString.Lazy as Lazy
 import qualified Data.HashSet as H
 import qualified Data.Map as M
 import qualified Data.Vector as V
-
-import Debug.Trace
 
 checkWireType :: WireType a => Proxy a -> ItemType -> Bool
 checkWireType p t = getWireType p == t
@@ -157,8 +155,6 @@ instance BondBinaryProto CompactBinaryV1Proto where
         n <- getVarInt
         Just . Utf16 <$> BondGet (getByteString $ n * 2)
     bondGetBlob = do
-        z <- BondGet bytesRead
-        traceShowM("blob", z)
         tag <- wireType <$> BondGet getWord8
         n <- getVarInt
         if tag == BT_INT8
@@ -189,8 +185,6 @@ instance BondBinaryProto CompactBinaryV1Proto where
 
 getMap :: forall a b t. (BondBinaryProto t, Ord a, BondBinary a, BondBinary b) => BondGet t (Maybe (M.Map a b))
 getMap = do
-    z <- BondGet bytesRead
-    traceShowM("map", z)
     ktag <- wireType <$> BondGet getWord8
     vtag <- wireType <$> BondGet getWord8
     n <- getVarInt
@@ -212,8 +206,6 @@ getMap = do
 
 getListV1 :: forall a. BondBinary a => BondGet CompactBinaryV1Proto (Maybe [a])
 getListV1 = do
-    z <- BondGet bytesRead
-    traceShowM("list", z)
     tag <- wireType <$> BondGet getWord8
     n <- getVarInt
     if checkWireType (Proxy :: Proxy a) tag
@@ -226,9 +218,7 @@ getListV1 = do
 
 getFieldHeader :: BondGet t (ItemType, Ordinal)
 getFieldHeader = do
-    z <- BondGet bytesRead
     tag <- BondGet getWord8
-    traceShowM ("field", z, tag)
     case tag `shiftR` 5 of
         6 -> do
             n <- BondGet getWord8
@@ -314,15 +304,11 @@ skipValue BT_WSTRING = do
     n <- getVarInt
     BondGet $ skip (n * 2)
 skipValue BT_LIST = do
-    z <- BondGet bytesRead
-    traceShowM("skip list", z)
     t <- wireType <$> BondGet getWord8
     n <- getVarInt
     replicateM_ n (skipValue t)
 skipValue BT_SET = skipValue BT_LIST
 skipValue BT_MAP = do
-    z <- BondGet bytesRead
-    traceShowM("skip map", z)
     tkey <- wireType <$> BondGet getWord8
     tvalue <- wireType <$> BondGet getWord8
     n <- getVarInt
@@ -432,12 +418,13 @@ skipCompactV2Value BT_STRUCT = do
 skipCompactV2Value t = skipCompactValue t
 -}
 
-runCompactBinaryV1Get :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
-runCompactBinaryV1Get = let BondGet g = bondGet :: BondGet CompactBinaryV1Proto (Maybe a)
-                         in runGetOrFail (fromJust <$> g)
+deserializeCompactV1 :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
+deserializeCompactV1 = let BondGet g = bondGet :: BondGet CompactBinaryV1Proto (Maybe a)
+                        in runGetOrFail (fromJust <$> g)
 
-runCompactBinaryV1Put :: BondPut CompactBinaryV1Proto -> Lazy.ByteString
-runCompactBinaryV1Put (BondPut p) = runPut p
+serializeCompactV1 :: BondStruct a => a -> Lazy.ByteString
+serializeCompactV1 v = let BondPut g = bondPut v :: BondPut CompactBinaryV1Proto
+                        in runPut g
 
 {-
 runCompactBinaryGet :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
