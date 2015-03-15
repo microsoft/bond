@@ -2,8 +2,8 @@
 module Bond.CompactBinary (
     deserializeCompactV1,
     serializeCompactV1,
---    runCompactBinaryGet,
---    runCompactBinaryPut,
+    deserializeCompact,
+    serializeCompact,
     CompactBinaryV1Proto,
     CompactBinaryProto,
     ZigZagInt(..),     -- export for testing
@@ -35,6 +35,9 @@ checkWireType p t = getWireType p == t
 
 data CompactBinaryV1Proto
 data CompactBinaryProto
+
+class BondBinaryProto t => Skippable t where
+    skipValue :: ItemType -> BondGet t ()
 
 newtype EncodedWord = EncodedWord { unWord :: Word64 }
 newtype ZigZagInt = ZigZagInt { fromZigZag :: Int64 }
@@ -86,6 +89,9 @@ putVarInt i = let iLow = fromIntegral $ i .&. 0x7F
 typeIdOf :: forall a. WireType a => a -> Word8
 typeIdOf _ =  fromIntegral $ fromEnum $ getWireType (Proxy :: Proxy a)
 
+wireTypeOf :: forall a. WireType a => a -> ItemType
+wireTypeOf _ =  getWireType (Proxy :: Proxy a)
+
 wireType :: Word8 -> ItemType
 wireType = toEnum . fromIntegral
 
@@ -133,7 +139,7 @@ instance BondBinaryProto CompactBinaryV1Proto where
         BondPut $ putByteString b
     bondPutBonded (BondedObject a) = bondPut a
     bondPutBonded (BondedStream sig s) | sig == compactV1Sig = BondPut $ putLazyByteString s
-    bondPutStruct = putStructV1 BT_STOP (bondGetInfo Proxy)
+    bondPutStruct = saveStruct BT_STOP (bondGetInfo Proxy)
 
     bondGetBool = do
         v <- BondGet getWord8
@@ -177,13 +183,19 @@ instance BondBinaryProto CompactBinaryV1Proto where
         let try (BondGet g) = BondGet $ lookAhead g
         size <- try $ do
             start <- BondGet bytesRead
-            skipValue (getWireType (Proxy :: Proxy a))
+            skipValueV1 (getWireType (Proxy :: Proxy a))
             end <- BondGet bytesRead
             return (end - start)
         Just . BondedStream compactV1Sig <$> BondGet (getLazyByteString size)
-    bondGetStruct = Just <$> getStructV1 (bondGetInfo Proxy)
+    bondGetStruct = Just <$> readStruct (bondGetInfo Proxy)
 
-getMap :: forall a b t. (BondBinaryProto t, Ord a, BondBinary a, BondBinary b) => BondGet t (Maybe (M.Map a b))
+instance Skippable CompactBinaryV1Proto where
+    skipValue = skipValueV1
+
+skipValueV1 :: ItemType -> BondGet CompactBinaryV1Proto ()
+skipValueV1 = skipValueCommon
+
+getMap :: forall a b t. (Skippable t, BondBinaryProto t, Ord a, BondBinary a, BondBinary b) => BondGet t (Maybe (M.Map a b))
 getMap = do
     ktag <- wireType <$> BondGet getWord8
     vtag <- wireType <$> BondGet getWord8
@@ -228,16 +240,16 @@ getFieldHeader = do
             return (wireType (tag .&. 31), Ordinal n)
         n -> return (wireType (tag .&. 31), Ordinal (fromIntegral n))
 
-getStructV1 :: forall a b. StructInfo a b -> BondGet CompactBinaryV1Proto a
-getStructV1 (StructInfo _ pb) = do
+readStruct :: forall a b t. (Skippable t, BondBinaryProto t) => StructInfo a b -> BondGet t a
+readStruct (StructInfo _ pb) = do
     def <- case pb of
         Nothing -> return defaultValue
         Just p -> do
-            base <- getStructV1 (bondGetInfo p)
+            base <- readStruct (bondGetInfo p)
             return $ bondSetBase defaultValue base
     getFields def
 
-getFields :: forall a. BondStruct a => a -> BondGet CompactBinaryV1Proto a
+getFields :: forall a t. (BondStruct a, Skippable t, BondBinaryProto t) => a -> BondGet t a
 getFields def = do
     update <- loop id
     return $ update def
@@ -245,21 +257,21 @@ getFields def = do
     try :: BondGet t (Maybe (b -> b)) -> BondGet t (Maybe (b -> b))
     try (BondGet g) = BondGet $ lookAheadM g
     loop f = do
-        (t, n) <- getFieldHeader
-        case t of
+        (tag, n) <- getFieldHeader
+        case tag of
             BT_STOP -> return f
             BT_STOP_BASE -> return f -- XXX think later
             _ -> do
-                fieldMod <- try $ bondSetField n t
+                fieldMod <- try $ bondSetField n tag
                 case fieldMod of
                     Just func -> loop (func . f)
                     Nothing -> do
-                        skipValue t
+                        skipValue tag
                         loop f
 
-putStructV1 :: ItemType -> StructInfo a b -> a -> BondPut CompactBinaryV1Proto
-putStructV1 stop (StructInfo pa pb) a = do
-    when (isJust pb) $ putStructV1 BT_STOP_BASE (bondGetInfo $ fromJust pb) (bondGetBase a)
+saveStruct :: BondBinaryProto t => ItemType -> StructInfo a b -> a -> BondPut t
+saveStruct stop (StructInfo pa pb) a = do
+    when (isJust pb) $ saveStruct BT_STOP_BASE (bondGetInfo $ fromJust pb) (bondGetBase a)
     putFields (bondGetSchema pa)
     BondPut $ putWord8 $ fromIntegral $ fromEnum stop
     where
@@ -283,39 +295,39 @@ skipVarInt = loop
         v <- BondGet getWord8
         when (v `testBit` 7) loop
 
-skipValue :: ItemType -> BondGet t ()
-skipValue BT_STOP = fail "internal error: skipValue BT_STOP"
-skipValue BT_STOP_BASE = fail "internal error: skipValue BT_STOP_BASE"
-skipValue BT_BOOL = BondGet $ skip 1
-skipValue BT_UINT8 = BondGet $ skip 1
-skipValue BT_UINT16 = skipVarInt
-skipValue BT_UINT32 = skipVarInt
-skipValue BT_UINT64 = skipVarInt
-skipValue BT_FLOAT = BondGet $ skip 4
-skipValue BT_DOUBLE = BondGet $ skip 8
-skipValue BT_INT8 = BondGet $ skip 1
-skipValue BT_INT16 = skipVarInt
-skipValue BT_INT32 = skipVarInt
-skipValue BT_INT64 = skipVarInt
-skipValue BT_STRING = do
+skipValueCommon :: Skippable t => ItemType -> BondGet t ()
+skipValueCommon BT_STOP = fail "internal error: skipValue BT_STOP"
+skipValueCommon BT_STOP_BASE = fail "internal error: skipValue BT_STOP_BASE"
+skipValueCommon BT_BOOL = BondGet $ skip 1
+skipValueCommon BT_UINT8 = BondGet $ skip 1
+skipValueCommon BT_UINT16 = skipVarInt
+skipValueCommon BT_UINT32 = skipVarInt
+skipValueCommon BT_UINT64 = skipVarInt
+skipValueCommon BT_FLOAT = BondGet $ skip 4
+skipValueCommon BT_DOUBLE = BondGet $ skip 8
+skipValueCommon BT_INT8 = BondGet $ skip 1
+skipValueCommon BT_INT16 = skipVarInt
+skipValueCommon BT_INT32 = skipVarInt
+skipValueCommon BT_INT64 = skipVarInt
+skipValueCommon BT_STRING = do
     n <- getVarInt
     BondGet $ skip n
-skipValue BT_WSTRING = do
+skipValueCommon BT_WSTRING = do
     n <- getVarInt
     BondGet $ skip (n * 2)
-skipValue BT_LIST = do
+skipValueCommon BT_LIST = do
     t <- wireType <$> BondGet getWord8
     n <- getVarInt
     replicateM_ n (skipValue t)
-skipValue BT_SET = skipValue BT_LIST
-skipValue BT_MAP = do
+skipValueCommon BT_SET = skipValue BT_LIST
+skipValueCommon BT_MAP = do
     tkey <- wireType <$> BondGet getWord8
     tvalue <- wireType <$> BondGet getWord8
     n <- getVarInt
     replicateM_ n $ do
         skipValue tkey
         skipValue tvalue
-skipValue BT_STRUCT = loop
+skipValueCommon BT_STRUCT = loop
     where
     loop = do
         (t, _) <- getFieldHeader
@@ -326,7 +338,14 @@ skipValue BT_STRUCT = loop
                     skipValue t
                     loop
 
-{-
+deserializeCompactV1 :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
+deserializeCompactV1 = let BondGet g = bondGet :: BondGet CompactBinaryV1Proto (Maybe a)
+                        in runGetOrFail (fromJust <$> g)
+
+serializeCompactV1 :: BondStruct a => a -> Lazy.ByteString
+serializeCompactV1 v = let BondPut g = bondPut v :: BondPut CompactBinaryV1Proto
+                        in runPut g
+
 instance BondBinaryProto CompactBinaryProto where
     bondPutBool True = BondPut $ putWord8 1
     bondPutBool False = BondPut $ putWord8 0
@@ -347,13 +366,28 @@ instance BondBinaryProto CompactBinaryProto where
         putVarInt $ fromIntegral $ BS.length s `div` 2
         BondPut $ putByteString s
     bondPutList xs = do
-        let t = typeIdOf (head xs)
-        if length xs < 7
-            then BondPut $ putWord8 $ t .|. fromIntegral ((1 + length xs) `shiftL` 5)
-            else do
-                BondPut $ putWord8 t
-                putVarInt $ length xs
+        putV2ListHeader (wireTypeOf $ head xs) (length xs)
         mapM_ bondPut xs
+    bondPutMaybe Nothing = return ()
+    bondPutMaybe (Just v) = bondPut v
+    bondPutNullable = bondPutList . maybeToList
+    bondPutSet = bondPutList . H.toList
+    bondPutMap m = do
+        BondPut $ putWord8 $ typeIdOf (head $ M.keys m)
+        BondPut $ putWord8 $ typeIdOf (head $ M.elems m)
+        putVarInt $ M.size m
+        forM_ (M.toList m) $ \(k, v) -> do
+            bondPut k
+            bondPut v
+    bondPutVector xs = do
+        putV2ListHeader (wireTypeOf $ V.head xs) (V.length xs)
+        V.mapM_ bondPut xs
+    bondPutBlob (Blob b) = do
+        putV2ListHeader BT_INT8 (BS.length b)
+        BondPut $ putByteString b
+    bondPutBonded (BondedObject a) = bondPut a
+    bondPutBonded (BondedStream sig s) | sig == compactSig = BondPut $ putLazyByteString s
+    bondPutStruct = putStruct (bondGetInfo Proxy)
 
     bondGetBool = do
         v <- BondGet getWord8
@@ -374,63 +408,91 @@ instance BondBinaryProto CompactBinaryProto where
     bondGetWString = do
         n <- getVarInt
         Just . Utf16 <$> BondGet (getByteString $ n * 2)
-    bondGetList = getListV2
-    
-getListV2 :: forall a. BondBinary a => BondGet CompactBinaryProto (Maybe [a])
-getListV2 = do
+    bondGetBlob = do
+        (tag, n) <- getV2ListHeader
+        if tag == BT_INT8
+            then Just . Blob <$> BondGet (getByteString n)
+            else do
+                replicateM_ n (skipValue tag)
+                return Nothing
+    bondGetList = getList
+    bondGetSet = liftM H.fromList <$> getList
+    bondGetMap = getMap
+    bondGetVector = liftM V.fromList <$> getList
+    bondGetNullable = do
+        v <- getList
+        return $ case v of
+            Just [x] -> Just $ Just x
+            Just [] -> Just Nothing
+            _ -> Nothing
+    bondGetBonded :: forall a. BondBinary a => BondGet CompactBinaryProto (Maybe (Bonded a))
+    bondGetBonded = do
+        let try (BondGet g) = BondGet $ lookAhead g
+        size <- try $ do
+            start <- BondGet bytesRead
+            skipValueV2 (getWireType (Proxy :: Proxy a))
+            end <- BondGet bytesRead
+            return (end - start)
+        Just . BondedStream compactSig <$> BondGet (getLazyByteString size)
+    bondGetStruct = Just <$> getStruct (bondGetInfo Proxy)
+
+instance Skippable CompactBinaryProto where
+    skipValue = skipValueV2
+
+getV2ListHeader :: BondGet CompactBinaryProto (ItemType, Int)
+getV2ListHeader = do
     v <- BondGet getWord8
-    (t, n) <- if v `shiftR` 5 /= 0
-                then return (wireType (v .&. 0x1f), fromIntegral (v `shiftR` 5) - 1)
-                else do
-                    num <- getVarInt
-                    return (wireType v, num)
-    if checkWireType (Proxy :: Proxy a) t
+    if v `shiftR` 5 /= 0
+        then return (wireType (v .&. 0x1f), fromIntegral (v `shiftR` 5) - 1)
+        else do
+                num <- getVarInt
+                return (wireType v, num)
+
+putV2ListHeader :: ItemType -> Int -> BondPut CompactBinaryProto
+putV2ListHeader t n = do
+    let tag = fromIntegral $ fromEnum t
+    if n < 7
+        then BondPut $ putWord8 $ tag .|. fromIntegral ((1 + n) `shiftL` 5)
+        else do
+            BondPut $ putWord8 tag
+            putVarInt $ n
+
+skipValueV2 :: ItemType -> BondGet CompactBinaryProto ()
+skipValueV2 BT_LIST = do
+    (tag, n) <- getV2ListHeader
+    replicateM_ n (skipValue tag)
+skipValueV2 BT_STRUCT = do
+    len <- getVarInt
+    BondGet $ skip len
+skipValueV2 t = skipValueCommon t
+
+getList :: forall a. BondBinary a => BondGet CompactBinaryProto (Maybe [a])
+getList = do
+    (tag, n) <- getV2ListHeader
+    if checkWireType (Proxy :: Proxy a) tag
         then do
             elems <- replicateM n bondGet
             return $ sequence elems
         else do
-            -- FIXME skip n elems by type
+            replicateM_ n (skipValue tag)
             return Nothing
 
-    readStruct reader = do
-        VarInt _ <- bondGet -- FIXME use "isolate" from Data.Binary >= 0.7.2.0
-        reader
-    putStruct (BondPut writer) = do
-        let bs = runPut writer
-        bondPut $ VarInt $ fromIntegral $ Lazy.length bs
-        BondPut $ putLazyByteString bs
-    skipValue = skipCompactV2Value
-    protoSignature = const compactSig
+putStruct :: StructInfo a b -> a -> BondPut CompactBinaryProto
+putStruct p v = do
+    let BondPut writer = saveStruct BT_STOP p v :: BondPut CompactBinaryProto
+    let bs = runPut writer
+    putVarInt $ fromIntegral $ Lazy.length bs
+    BondPut $ putLazyByteString bs
 
-skipCompactValue :: (BondBinaryProto t, BondBinary t ListHead) => BondBinary t FieldTag => ItemType -> BondGet t ()
-skipCompactValue BT_UINT16 = skipVarInt
-skipCompactValue BT_UINT32 = skipVarInt
-skipCompactValue BT_UINT64 = skipVarInt
-skipCompactValue BT_INT16 = skipVarInt
-skipCompactValue BT_INT32 = skipVarInt
-skipCompactValue BT_INT64 = skipVarInt
-skipCompactValue t = skipBinaryValue t
+getStruct :: forall a b. StructInfo a b -> BondGet CompactBinaryProto a
+getStruct p = do
+    void getVarInt -- FIXME use "isolate" from Data.Binary >= 0.7.2.0
+    readStruct p
 
-skipCompactV2Value :: BondBinary CompactBinaryProto FieldTag => ItemType -> BondGet CompactBinaryProto ()
-skipCompactV2Value BT_STRUCT = do
-    VarInt len <- bondGet
-    BondGet $ skip len
-skipCompactV2Value t = skipCompactValue t
--}
+deserializeCompact :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
+deserializeCompact = let BondGet g = bondGet :: BondGet CompactBinaryProto (Maybe a)
+                      in runGetOrFail (fromJust <$> g)
 
-deserializeCompactV1 :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
-deserializeCompactV1 = let BondGet g = bondGet :: BondGet CompactBinaryV1Proto (Maybe a)
-                        in runGetOrFail (fromJust <$> g)
-
-serializeCompactV1 :: BondStruct a => a -> Lazy.ByteString
-serializeCompactV1 v = let BondPut g = bondPut v :: BondPut CompactBinaryV1Proto
-                        in runPut g
-
-{-
-runCompactBinaryGet :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
-runCompactBinaryGet = let BondGet g = bondGet :: BondGet CompactBinaryProto (Maybe a)
-                       in runGetOrFail (fromJust <$> g)
-
-runCompactBinaryPut :: BondPut CompactBinaryProto -> Lazy.ByteString
-runCompactBinaryPut (BondPut p) = runPut p
--}
+serializeCompact :: BondStruct a => a -> Lazy.ByteString
+serializeCompact v = let BondPut g = bondPut v :: BondPut CompactBinaryProto
+                      in runPut g
