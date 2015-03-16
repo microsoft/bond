@@ -273,8 +273,8 @@ skipValue BT_STRUCT = loop
 
 deserializeFast :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
 deserializeFast = let BondGet g = bondGet :: BondGet FastBinaryProto (Maybe a)
-                        in runGetOrFail (fromJust <$> g)
+                   in runGetOrFail (fromJust <$> g)
 
 serializeFast :: BondStruct a => a -> Lazy.ByteString
 serializeFast v = let BondPut g = bondPut v :: BondPut FastBinaryProto
-                        in runPut g
+                   in runPut g

@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs, MultiWayIf, InstanceSigs #-}
+{-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs #-}
 module Bond.SimpleBinary (
     deserializeSimpleV1,
     serializeSimpleV1,
@@ -66,11 +66,7 @@ instance BondBinaryProto SimpleBinaryV1Proto where
     bondPutBlob (Blob b) = do
         BondPut $ putWord32le $ fromIntegral $ BS.length b
         BondPut $ putByteString b
-    bondPutBonded (BondedObject a) = bondPut a
-    bondPutBonded (BondedStream (ProtoSig sig) s) = do
-        BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
-        BondPut $ putWord32be sig
-        BondPut $ putLazyByteString s
+    bondPutBonded = putBonded
     bondPutStruct = saveStruct (bondGetInfo Proxy)
 
     bondGetBool = do
@@ -97,7 +93,7 @@ instance BondBinaryProto SimpleBinaryV1Proto where
         Just . Blob <$> BondGet (getByteString $ fromIntegral n)
     bondGetList = getListV1
     bondGetSet = liftM H.fromList <$> getListV1
-    bondGetMap = getMapV1
+    bondGetMap = getMap (fromIntegral <$> BondGet getWord32le)
     bondGetVector = liftM V.fromList <$> getListV1
     bondGetNullable = do
         v <- getListV1
@@ -105,17 +101,12 @@ instance BondBinaryProto SimpleBinaryV1Proto where
             Just [x] -> Just $ Just x
             Just [] -> Just Nothing
             _ -> Nothing
-    bondGetBonded :: forall a. BondBinary a => BondGet SimpleBinaryV1Proto (Maybe (Bonded a))
-    bondGetBonded = do
-        size <- BondGet getWord32le
-        sig <- BondGet getWord32be
-        bs <- BondGet $ getLazyByteString (fromIntegral $ size - 4)
-        return $ Just $ BondedStream (ProtoSig sig) bs
+    bondGetBonded = getBonded
     bondGetStruct = Just <$> readStruct (bondGetInfo Proxy)
 
-getMapV1 :: forall a b. (Ord a, BondBinary a, BondBinary b) => BondGet SimpleBinaryV1Proto (Maybe (M.Map a b))
-getMapV1 = do
-    n <- fromIntegral <$> BondGet getWord32le
+getMap :: (BondBinary a, BondBinary k, BondBinaryProto t, Ord k) => BondGet t Int -> BondGet t (Maybe (Map k a))
+getMap getLen = do
+    n <- getLen
     elems <- replicateM n $ do
         k <- bondGet
         v <- bondGet
@@ -125,13 +116,27 @@ getMapV1 = do
     seqPair (Just a, Just b) = Just (a, b)
     seqPair _ = Nothing
 
-getListV1 :: forall a. BondBinary a => BondGet SimpleBinaryV1Proto (Maybe [a])
+getListV1 :: BondBinary a => BondGet SimpleBinaryV1Proto (Maybe [a])
 getListV1 = do
     n <- fromIntegral <$> BondGet getWord32le
     elems <- replicateM n bondGet
     return $ sequence elems
 
-readStruct :: forall a b t. BondBinaryProto t => StructInfo a b -> BondGet t a
+getBonded :: BondBinaryProto t => BondBinary a => BondGet t (Maybe (Bonded a))
+getBonded = do
+    size <- BondGet getWord32le
+    sig <- BondGet getWord32be
+    bs <- BondGet $ getLazyByteString (fromIntegral $ size - 4)
+    return $ Just $ BondedStream (ProtoSig sig) bs
+
+putBonded :: (BondBinary a, BondBinaryProto t) => Bonded a -> BondPut t
+putBonded (BondedObject a) = bondPut a
+putBonded (BondedStream (ProtoSig sig) s) = do
+    BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
+    BondPut $ putWord32be sig
+    BondPut $ putLazyByteString s
+
+readStruct :: BondBinaryProto t => StructInfo a b -> BondGet t a
 readStruct (StructInfo pa pb) = do
     def <- case pb of
         Nothing -> return defaultValue
@@ -157,11 +162,11 @@ saveStruct (StructInfo pa pb) a = do
 
 deserializeSimpleV1 :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
 deserializeSimpleV1 = let BondGet g = bondGet :: BondGet SimpleBinaryV1Proto (Maybe a)
-                        in runGetOrFail (fromJust <$> g)
+                       in runGetOrFail (fromJust <$> g)
 
 serializeSimpleV1 :: BondStruct a => a -> Lazy.ByteString
 serializeSimpleV1 v = let BondPut g = bondPut v :: BondPut SimpleBinaryV1Proto
-                        in runPut g
+                       in runPut g
 
 instance BondBinaryProto SimpleBinaryProto where
     bondPutBool True = BondPut $ putWord8 1
@@ -200,11 +205,7 @@ instance BondBinaryProto SimpleBinaryProto where
     bondPutBlob (Blob b) = do
         putVarInt $ BS.length b
         BondPut $ putByteString b
-    bondPutBonded (BondedObject a) = bondPut a
-    bondPutBonded (BondedStream (ProtoSig sig) s) = do
-        BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
-        BondPut $ putWord32be sig
-        BondPut $ putLazyByteString s
+    bondPutBonded = putBonded
     bondPutStruct = saveStruct (bondGetInfo Proxy)
 
     bondGetBool = do
@@ -231,7 +232,7 @@ instance BondBinaryProto SimpleBinaryProto where
         Just . Blob <$> BondGet (getByteString n)
     bondGetList = getList
     bondGetSet = liftM H.fromList <$> getList
-    bondGetMap = getMap
+    bondGetMap = getMap getVarInt
     bondGetVector = liftM V.fromList <$> getList
     bondGetNullable = do
         v <- getList
@@ -239,27 +240,10 @@ instance BondBinaryProto SimpleBinaryProto where
             Just [x] -> Just $ Just x
             Just [] -> Just Nothing
             _ -> Nothing
-    bondGetBonded :: forall a. BondBinary a => BondGet SimpleBinaryProto (Maybe (Bonded a))
-    bondGetBonded = do
-        size <- BondGet getWord32le
-        sig <- BondGet getWord32be
-        bs <- BondGet $ getLazyByteString (fromIntegral $ size - 4)
-        return $ Just $ BondedStream (ProtoSig sig) bs
+    bondGetBonded = getBonded
     bondGetStruct = Just <$> readStruct (bondGetInfo Proxy)
 
-getMap :: forall a b. (Ord a, BondBinary a, BondBinary b) => BondGet SimpleBinaryProto (Maybe (M.Map a b))
-getMap = do
-    n <- getVarInt
-    elems <- replicateM n $ do
-        k <- bondGet
-        v <- bondGet
-        return $ seqPair (k, v)
-    return $ M.fromList <$> sequence elems
-    where
-    seqPair (Just a, Just b) = Just (a, b)
-    seqPair _ = Nothing
-
-getList :: forall a. BondBinary a => BondGet SimpleBinaryProto (Maybe [a])
+getList :: BondBinary a => BondGet SimpleBinaryProto (Maybe [a])
 getList = do
     n <- getVarInt
     elems <- replicateM n bondGet
@@ -285,8 +269,8 @@ putVarInt i = let iLow = fromIntegral $ i .&. 0x7F
 
 deserializeSimple :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
 deserializeSimple = let BondGet g = bondGet :: BondGet SimpleBinaryProto (Maybe a)
-                      in runGetOrFail (fromJust <$> g)
+                     in runGetOrFail (fromJust <$> g)
 
 serializeSimple :: BondStruct a => a -> Lazy.ByteString
 serializeSimple v = let BondPut g = bondPut v :: BondPut SimpleBinaryProto
-                      in runPut g
+                     in runPut g

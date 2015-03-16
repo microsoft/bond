@@ -122,13 +122,7 @@ instance BondBinaryProto CompactBinaryV1Proto where
     bondPutMaybe (Just v) = bondPut v
     bondPutNullable = bondPutList . maybeToList
     bondPutSet = bondPutList . H.toList
-    bondPutMap m = do
-        BondPut $ putWord8 $ typeIdOf (head $ M.keys m)
-        BondPut $ putWord8 $ typeIdOf (head $ M.elems m)
-        putVarInt $ M.size m
-        forM_ (M.toList m) $ \(k, v) -> do
-            bondPut k
-            bondPut v
+    bondPutMap = putMap
     bondPutVector xs = do
         BondPut $ putWord8 $ typeIdOf (V.head xs)
         putVarInt $ V.length xs
@@ -215,6 +209,15 @@ getMap = do
     where
     seqPair (Just a, Just b) = Just (a, b)
     seqPair _ = Nothing
+
+putMap :: (BondBinaryProto t, BondBinary a, BondBinary b) => M.Map a b -> BondPut t
+putMap m = do
+    BondPut $ putWord8 $ typeIdOf (head $ M.keys m)
+    BondPut $ putWord8 $ typeIdOf (head $ M.elems m)
+    putVarInt $ M.size m
+    forM_ (M.toList m) $ \(k, v) -> do
+        bondPut k
+        bondPut v
 
 getListV1 :: forall a. BondBinary a => BondGet CompactBinaryV1Proto (Maybe [a])
 getListV1 = do
@@ -372,13 +375,7 @@ instance BondBinaryProto CompactBinaryProto where
     bondPutMaybe (Just v) = bondPut v
     bondPutNullable = bondPutList . maybeToList
     bondPutSet = bondPutList . H.toList
-    bondPutMap m = do
-        BondPut $ putWord8 $ typeIdOf (head $ M.keys m)
-        BondPut $ putWord8 $ typeIdOf (head $ M.elems m)
-        putVarInt $ M.size m
-        forM_ (M.toList m) $ \(k, v) -> do
-            bondPut k
-            bondPut v
+    bondPutMap = putMap
     bondPutVector xs = do
         putV2ListHeader (wireTypeOf $ V.head xs) (V.length xs)
         V.mapM_ bondPut xs
@@ -455,7 +452,7 @@ putV2ListHeader t n = do
         then BondPut $ putWord8 $ tag .|. fromIntegral ((1 + n) `shiftL` 5)
         else do
             BondPut $ putWord8 tag
-            putVarInt $ n
+            putVarInt n
 
 skipValueV2 :: ItemType -> BondGet CompactBinaryProto ()
 skipValueV2 BT_LIST = do
