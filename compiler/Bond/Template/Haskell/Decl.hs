@@ -64,7 +64,7 @@ parenIntLit :: Integral a => a -> Exp
 parenIntLit n | n >= 0 = intLit n
 parenIntLit n = Paren $ intLit n
 
-declTypeInfo :: Bond.Template.TypeMapping.Context -> Declaration -> (QualifiedName, String)
+declTypeInfo :: MappingContext -> Declaration -> (QualifiedName, String)
 declTypeInfo mapping decl = (getDeclNamespace mapping decl, declName decl)
 
 typeParamConstraint :: String -> TypeParam -> Asst
@@ -82,10 +82,10 @@ stdConstraints = concatMap paramConstraint
         typeParamConstraint "Default" t
       ]
 
-declModule :: Bond.Template.TypeMapping.Context -> Declaration -> ModuleName
+declModule :: MappingContext -> Declaration -> ModuleName
 declModule mapping = uncurry mkModuleName . declTypeInfo mapping
 
-hsType :: Bond.Template.TypeMapping.Context -> Bond.Schema.Type -> Language.Haskell.Exts.Type
+hsType :: MappingContext -> Bond.Schema.Type -> Language.Haskell.Exts.Type
 hsType _ BT_Int8 = tyInt "Int8"
 hsType _ BT_Int16 = tyInt "Int16"
 hsType _ BT_Int32 = tyInt "Int32"
@@ -145,7 +145,7 @@ mkModuleName ns t = ModuleName $ intercalate "." $ convertNamespace ns ++ [conve
 mkFileName :: QualifiedName -> String -> FilePath
 mkFileName ns t = foldr1 (</>) (convertNamespace ns) </> (convertTypeName t ++ ".hs")
 
-mkHaskellDecl :: Bond.Template.TypeMapping.Context -> Declaration -> (FilePath, String)
+mkHaskellDecl :: MappingContext -> Declaration -> (FilePath, String)
 mkHaskellDecl mapping e@Enum{..} = (filename, prettyPrint code)
     where
     namespace = getIdlNamespace mapping
@@ -207,7 +207,7 @@ makeType needParen typeName params
     where
     type' = foldl (\v t -> TyApp v (TyVar $ mkVar $ paramName t)) (TyCon $ UnQual typeName) params
 
-defaultInstance :: Bond.Template.TypeMapping.Context -> Declaration -> Decl
+defaultInstance :: MappingContext -> Declaration -> Decl
 defaultInstance _ Enum{declName} = InstDecl noLoc Nothing [] [] (qualInt "Default") [TyCon $ unqual $ convertTypeName declName] [
         InsDecl $ PatBind noLoc (PVar $ Ident "defaultValue") (UnGuardedRhs $ App (Con $ unqual $ convertTypeName declName) (intLit (0 :: Int))) (BDecls []),
         InsDecl $ PatBind noLoc (PVar $ Ident "equalToDefault") (UnGuardedRhs $ Var $ UnQual $ Symbol "==") (BDecls [])
@@ -222,7 +222,7 @@ defaultInstance mapping Struct{declName, declParams, structBase, structFields} =
     defaults = if isNothing structBase then fields else FieldUpdate (UnQual baseStructField) (Var $ qualInt "defaultValue") : fields
 defaultInstance _ _ = error "defaultInstance not implemented"
 
-mkDefaultValue :: Bond.Template.TypeMapping.Context -> Bond.Schema.Field -> FieldUpdate
+mkDefaultValue :: MappingContext -> Bond.Schema.Field -> FieldUpdate
 mkDefaultValue mapping Field{fieldName, fieldType, fieldDefault} = FieldUpdate (UnQual $ mkVar fieldName) (defValue fieldDefault)
     where
     defValue Nothing = Var $ qualInt "defaultValue"
@@ -234,7 +234,7 @@ mkDefaultValue mapping Field{fieldName, fieldType, fieldDefault} = FieldUpdate (
                                        in Var $ Qual (declModule mapping decl) (mkVar v)
     defValue (Just DefaultNothing) = Con $ unqual "Nothing"
 
-getTypeModules :: Bond.Template.TypeMapping.Context -> Bond.Schema.Type -> [ModuleName]
+getTypeModules :: MappingContext -> Bond.Schema.Type -> [ModuleName]
 getTypeModules mapping = go
     where
     go (BT_UserDefined decl args) = declModule mapping decl : concatMap go args

@@ -4,8 +4,7 @@
 {-# LANGUAGE OverloadedStrings, RecordWildCards #-}
 
 module Bond.Template.TypeMapping
-    ( newMappingContext
-    , findAliasMapping
+    ( findAliasMapping
     , setTypeMapping
     , setNamespaces
     , cppTypeMapping
@@ -22,7 +21,7 @@ module Bond.Template.TypeMapping
     , getDeclQualifiedTypeName
     , getTypeName
     , getInstanceTypeName
-    , Context
+    , MappingContext(..)
     ) where
 
 import Data.List
@@ -37,7 +36,7 @@ import Bond.Util
 import Bond.Template.Util
 import Bond.Template.CustomMapping
 
-data Context = Context
+data MappingContext = MappingContext
     { typeMapping :: TypeMapping
     , aliasMapping :: [AliasMapping]
     , namespaceMapping :: [NamespaceMapping]
@@ -54,23 +53,21 @@ data TypeMapping = TypeMapping
     , elementMapping :: TypeMapping
     }
 
-type TypeNameBuilder = Reader Context Builder
+type TypeNameBuilder = Reader MappingContext Builder
 
-newMappingContext = Context
-
-setTypeMapping :: Context -> TypeMapping -> Context
+setTypeMapping :: MappingContext -> TypeMapping -> MappingContext
 setTypeMapping c m = c { typeMapping = m }
 
-setNamespaces :: Context -> [Namespace] -> Context
+setNamespaces :: MappingContext -> [Namespace] -> MappingContext
 setNamespaces c n = c { namespaces = n }
 
-getNamespace :: Context -> QualifiedName
-getNamespace c@Context {..} = resolveNamespace c namespaces
+getNamespace :: MappingContext -> QualifiedName
+getNamespace c@MappingContext {..} = resolveNamespace c namespaces
 
-getIdlNamespace :: Context -> QualifiedName
-getIdlNamespace c@Context {..} = findNamespace c namespaces
+getIdlNamespace :: MappingContext -> QualifiedName
+getIdlNamespace c@MappingContext {..} = findNamespace c namespaces
 
-getDeclNamespace :: Context -> Declaration -> QualifiedName
+getDeclNamespace :: MappingContext -> Declaration -> QualifiedName
 getDeclNamespace c = resolveNamespace c . declNamespaces
 
 getQualifiedName :: TypeMapping -> QualifiedName -> Builder
@@ -82,18 +79,19 @@ getIdlQualifiedName = sep "."
 getGlobalQualifiedName :: TypeMapping -> QualifiedName -> Builder
 getGlobalQualifiedName m@TypeMapping {..} = (global <>) . getQualifiedName m
 
-getDeclQualifiedTypeName :: Context -> Declaration -> Builder
+getDeclQualifiedTypeName :: MappingContext -> Declaration -> Builder
 getDeclQualifiedTypeName c = getGlobalQualifiedName (typeMapping c) . declQualifiedName c
 
-getTypeName :: Context -> Type -> Builder
-getTypeName c t = fix $ runReader (typeName t) c
+getTypeName :: MappingContext -> Type -> Builder
+getTypeName c t = fix' $ runReader (typeName t) c
   where
-    fix = fixSyntax $ typeMapping c
+    fix' = fixSyntax $ typeMapping c
 
-getInstanceTypeName :: Context -> Type -> Builder
+getInstanceTypeName :: MappingContext -> Type -> Builder
 getInstanceTypeName c t = runReader (instanceTypeName t) c
 
 -- type mappings for different languages/variants
+cppTypeMapping :: TypeMapping
 cppTypeMapping = TypeMapping
     Cpp
     "::"
@@ -103,6 +101,7 @@ cppTypeMapping = TypeMapping
     cppTypeMapping
     cppTypeMapping
 
+cppCustomAllocTypeMapping :: ToText a => a -> TypeMapping
 cppCustomAllocTypeMapping alloc = TypeMapping
     Cpp
     "::"
@@ -112,6 +111,7 @@ cppCustomAllocTypeMapping alloc = TypeMapping
     (cppCustomAllocTypeMapping alloc)
     (cppCustomAllocTypeMapping alloc)
 
+csTypeMapping :: TypeMapping
 csTypeMapping = TypeMapping
     Cs
     "global::"
@@ -121,6 +121,7 @@ csTypeMapping = TypeMapping
     csTypeMapping
     csTypeMapping
 
+csInterfaceTypeMapping :: TypeMapping
 csInterfaceTypeMapping = TypeMapping
     Cs
     "global::"
@@ -130,8 +131,10 @@ csInterfaceTypeMapping = TypeMapping
     csInterfaceInstanceTypeMapping
     csInterfaceTypeMapping
 
+csInterfaceInstanceTypeMapping :: TypeMapping
 csInterfaceInstanceTypeMapping = csInterfaceTypeMapping {mapType = csType}
 
+csAnnotatedTypeMapping :: TypeMapping
 csAnnotatedTypeMapping = TypeMapping
     Cs
     "global::"
@@ -159,6 +162,7 @@ infixr 6 <<>
 pureText :: ToText a => a -> TypeNameBuilder
 pureText = pure . toText
 
+commaSepTypeNames :: [Type] -> TypeNameBuilder
 commaSepTypeNames [] = return mempty
 commaSepTypeNames [x] = typeName x
 commaSepTypeNames (x:xs) = typeName x <<>> ", " <>> commaSepTypeNames xs
@@ -177,16 +181,17 @@ elementTypeName = localWith elementMapping . typeName
 instanceTypeName :: Type -> TypeNameBuilder
 instanceTypeName = localWith instanceMapping . typeName
 
-resolveNamespace :: Context -> [Namespace] -> QualifiedName
-resolveNamespace c@Context {..} ns = maybe namespace toNamespace $ find ((namespace ==) . fromNamespace) namespaceMapping
+resolveNamespace :: MappingContext -> [Namespace] -> QualifiedName
+resolveNamespace c@MappingContext {..} ns = maybe namespace toNamespace $ find ((namespace ==) . fromNamespace) namespaceMapping
   where
     namespace = findNamespace c ns
 
 -- last namespace that is language-neutral or matches the language of the context's type mapping
-findNamespace Context {..} ns =
+findNamespace :: MappingContext -> [Namespace] -> QualifiedName
+findNamespace MappingContext {..} ns =
     nsName . last . filter (maybe True (language typeMapping ==) . nsLanguage) $ ns
 
-declQualifiedName :: Context -> Declaration -> QualifiedName
+declQualifiedName :: MappingContext -> Declaration -> QualifiedName
 declQualifiedName c decl = getDeclNamespace c decl ++ [declName decl]
 
 declQualifiedTypeName :: Declaration -> TypeNameBuilder
@@ -201,7 +206,7 @@ declTypeName decl = do
             then pureText $ declName decl
             else declQualifiedTypeName decl
 
-findAliasMapping :: Context -> Declaration -> Maybe AliasMapping
+findAliasMapping :: MappingContext -> Declaration -> Maybe AliasMapping
 findAliasMapping ctx a = find isSameAlias $ aliasMapping ctx
   where
     aliasDeclName = declQualifiedName ctx a
@@ -249,23 +254,27 @@ cppType (BT_UserDefined a@Alias {..} args) = aliasTypeName a args
 cppType (BT_UserDefined decl args) = declQualifiedTypeName decl <<>> (angles <$> commaSepTypeNames args)
 
 -- C++ type mapping with custom allocator
+cppTypeCustomAlloc :: Builder -> Type -> TypeNameBuilder
 cppTypeCustomAlloc alloc BT_String = pure $ "std::basic_string<char, std::char_traits<char>, typename " <> alloc <> "::rebind<char>::other>"
 cppTypeCustomAlloc alloc BT_WString = pure $ "std::basic_string<wchar_t, std::char_traits<wchar_t>, typename " <> alloc <>  "::rebind<wchar_t>::other>"
 cppTypeCustomAlloc alloc BT_MetaName = cppTypeCustomAlloc alloc BT_String
 cppTypeCustomAlloc alloc BT_MetaFullName = cppTypeCustomAlloc alloc BT_String
 cppTypeCustomAlloc alloc (BT_List element) = "std::list<" <>> elementTypeName element <<>> ", " <>> allocator alloc element <<> ">"
 cppTypeCustomAlloc alloc (BT_Nullable element) | structType element = "bond::nullable<" <>> elementTypeName element <<> ", " <> alloc <> ">"
-cppTypeCustomAlloc alloc (BT_Nullable element) = "bond::nullable<" <>> elementTypeName element <<> ">"
+cppTypeCustomAlloc _lloc (BT_Nullable element) = "bond::nullable<" <>> elementTypeName element <<> ">"
 cppTypeCustomAlloc alloc (BT_Vector element) = "std::vector<" <>> elementTypeName element <<>> ", " <>> allocator alloc element <<> ">"
 cppTypeCustomAlloc alloc (BT_Set element) = "std::set<" <>> elementTypeName element <<>> comparer element <<>> allocator alloc element <<> ">"
 cppTypeCustomAlloc alloc (BT_Map key value) = "std::map<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<>> comparer key <<>> pairAllocator alloc key value <<> ">"
 cppTypeCustomAlloc _ t = cppType t
 
+comparer :: Type -> TypeNameBuilder
 comparer t = ", std::less<" <>> elementTypeName t <<> ">, "
 
+allocator :: Builder -> Type -> TypeNameBuilder
 allocator alloc element =
     "typename " <>> alloc <>> "::rebind<" <>> elementTypeName element <<> ">::other"
 
+pairAllocator :: Builder -> Type -> Type -> TypeNameBuilder
 pairAllocator alloc key value =
     "typename " <>> alloc <>> "::rebind<" <>> "std::pair<const " <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> "> >::other"
 
