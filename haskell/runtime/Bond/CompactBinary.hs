@@ -172,7 +172,7 @@ instance BondBinaryProto CompactBinaryV1Proto where
             Just [x] -> Just $ Just x
             Just [] -> Just Nothing
             _ -> Nothing
-    bondGetBonded :: forall a. BondBinary a => BondGet CompactBinaryV1Proto (Maybe (Bonded a))
+    bondGetBonded :: forall a. BondStruct a => BondGet CompactBinaryV1Proto (Maybe (Bonded a))
     bondGetBonded = do
         let try (BondGet g) = BondGet $ lookAhead g
         size <- try $ do
@@ -422,7 +422,7 @@ instance BondBinaryProto CompactBinaryProto where
             Just [x] -> Just $ Just x
             Just [] -> Just Nothing
             _ -> Nothing
-    bondGetBonded :: forall a. BondBinary a => BondGet CompactBinaryProto (Maybe (Bonded a))
+    bondGetBonded :: forall a. BondStruct a => BondGet CompactBinaryProto (Maybe (Bonded a))
     bondGetBonded = do
         let try (BondGet g) = BondGet $ lookAhead g
         size <- try $ do

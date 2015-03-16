@@ -136,7 +136,7 @@ instance BondBinaryProto FastBinaryProto where
             Just [x] -> Just $ Just x
             Just [] -> Just Nothing
             _ -> Nothing
-    bondGetBonded :: forall a. BondBinary a => BondGet FastBinaryProto (Maybe (Bonded a))
+    bondGetBonded :: forall a. BondStruct a => BondGet FastBinaryProto (Maybe (Bonded a))
     bondGetBonded = do
         let try (BondGet g) = BondGet $ lookAhead g
         size <- try $ do

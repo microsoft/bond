@@ -6,19 +6,14 @@ module Bond.Bonded (
 
 import Bond.BinaryProto
 import Bond.CompactBinary
---import Bond.FastBinary
---import Bond.SimpleBinary
+import Bond.FastBinary
+import Bond.SimpleBinary
 import Bond.Types
 import qualified Data.ByteString.Lazy as Lazy
 
 type Decoder a = Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a)
 
---unpackBonded :: (BondBinary CompactBinaryProto a,
---                 BondBinary CompactBinaryV1Proto a
---                 BondBinary FastBinaryProto a,
---                 BondBinary SimpleBinaryProto a,
---                 BondBinary SimpleBinaryV1Proto a
---                ) => Bonded a -> Either String a
+unpackBonded :: BondStruct a => Bonded a -> Either String a
 unpackBonded (BondedObject v) = Right v
 unpackBonded (BondedStream proto s)
     = let decoder = getDecoder proto
@@ -30,16 +25,11 @@ unpackBonded (BondedStream proto s)
 makeBonded :: a -> Bonded a
 makeBonded = BondedObject
 
-getDecoder :: (BondBinary CompactBinaryProto a,
-               BondBinary CompactBinaryV1Proto a
---               BondBinary FastBinaryProto a,
---               BondBinary SimpleBinaryProto a,
---               BondBinary SimpleBinaryV1Proto a
-              ) => ProtoSig -> Decoder a
+getDecoder :: BondStruct a => ProtoSig -> Decoder a
 getDecoder proto
-    | proto == compactV1Sig = runCompactBinaryV1Get bondGet
-    | proto == compactSig = runCompactBinaryGet bondGet
---    | proto == simpleV1Sig = runSimpleBinaryV1Get bondGet
---    | proto == simpleSig = runSimpleBinaryGet bondGet
---    | proto == fastSig = runFastBinaryGet bondGet
+    | proto == compactV1Sig = deserializeCompactV1
+    | proto == compactSig = deserializeCompact
+    | proto == simpleV1Sig = deserializeSimpleV1
+    | proto == simpleSig = deserializeSimple
+    | proto == fastSig = deserializeFast
 getDecoder _ = const $ Left (Lazy.empty, 0, "unknown protocol or version")

@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, GeneralizedNewtypeDeriving, TypeFamilies, GADTs #-}
+{-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GeneralizedNewtypeDeriving, TypeFamilies, GADTs #-}
 module Bond.BinaryProto (
         BondBinary(..),
         BondStruct(..),
@@ -92,7 +92,7 @@ class BondBinaryProto t where
     bondPutMap :: (BondBinary k, BondBinary v) => M.Map k v -> BondPut t
     bondPutNullable :: BondBinary a => Maybe a -> BondPut t
     bondPutMaybe :: BondBinary a => Maybe a -> BondPut t
-    bondPutBonded :: BondBinary a => Bonded a -> BondPut t
+    bondPutBonded :: BondStruct a => Bonded a -> BondPut t
     bondPutStruct :: BondStruct a => a -> BondPut t
 
     bondGetBool :: BondGet t (Maybe Bool)
@@ -114,7 +114,7 @@ class BondBinaryProto t where
     bondGetSet :: (Eq a, Hashable a, BondBinary a) => BondGet t (Maybe (H.HashSet a))
     bondGetMap :: (Ord k, BondBinary k, BondBinary v) => BondGet t (Maybe (M.Map k v))
     bondGetNullable :: BondBinary a => BondGet t (Maybe (Maybe a))
-    bondGetBonded :: BondBinary a => BondGet t (Maybe (Bonded a))
+    bondGetBonded :: BondStruct a => BondGet t (Maybe (Bonded a))
     bondGetStruct :: BondStruct a => BondGet t (Maybe a)
 
 instance BondBinary Float where
@@ -193,6 +193,6 @@ instance BondBinary a => BondBinary (Maybe a) where
     bondGet = bondGetNullable
     bondPut = bondPutNullable
 
-instance BondBinary a => BondBinary (Bonded a) where
+instance BondStruct a => BondBinary (Bonded a) where
     bondGet = bondGetBonded
     bondPut = bondPutBonded
