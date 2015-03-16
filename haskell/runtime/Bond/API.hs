@@ -4,22 +4,22 @@ module Bond.API (
     BondPut,
     bondGet,
     bondPut,
-    runCompactBinaryGet,
-    runCompactBinaryPut,
-    runCompactBinaryV1Get,
-    runCompactBinaryV1Put,
-    runFastBinaryGet,
-    runFastBinaryPut,
-    runSimpleBinaryGet,
-    runSimpleBinaryPut,
-    runSimpleBinaryV1Get,
-    runSimpleBinaryV1Put,
+    deserializeCompact,
+    serializeCompact,
+    deserializeCompactV1,
+    serializeCompactV1,
+    deserializeFast,
+    serializeFast,
+    deserializeSimple,
+    serializeSimple,
+    deserializeSimpleV1,
+    serializeSimpleV1,
     makeBonded,
     unpackBonded
   ) where
 
 import Bond.BinaryProto (BondGet, BondPut, BondBinaryProto, bondGet, bondPut)
-import Bond.FastBinary (runFastBinaryGet, runFastBinaryPut)
-import Bond.CompactBinary (runCompactBinaryV1Get, runCompactBinaryV1Put, runCompactBinaryGet, runCompactBinaryPut)
-import Bond.SimpleBinary (runSimpleBinaryV1Get, runSimpleBinaryV1Put, runSimpleBinaryGet, runSimpleBinaryPut)
+import Bond.FastBinary (deserializeFast, serializeFast)
+import Bond.CompactBinary (deserializeCompactV1, serializeCompactV1, deserializeCompact, serializeCompact)
+import Bond.SimpleBinary (deserializeSimpleV1, serializeSimpleV1, deserializeSimple, serializeSimple)
 import Bond.Bonded (unpackBonded, makeBonded)

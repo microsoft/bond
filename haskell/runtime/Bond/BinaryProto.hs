@@ -1,37 +1,69 @@
-{-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf, MultiParamTypeClasses, GeneralizedNewtypeDeriving, FlexibleInstances, UndecidableInstances #-}
+{-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GeneralizedNewtypeDeriving, TypeFamilies, GADTs #-}
 module Bond.BinaryProto (
-    BondBinary(..),
-    BondBinaryProto(..),
-    BondBinaryStruct(..),
-    BondGet(..),
-    BondPutM(..),
-    BondPut,
-    VarInt(..),
-    fromWireType,
-    toWireType,
-    skipBinaryValue
+        BondBinary(..),
+        BondStruct(..),
+        BondBinaryProto(..),
+        BondGet(..),
+        BondPutM(..),
+        BondPut,
+        StructInfo(..),
+        VoidBase,
+--        fromWireType,
+--        toWireType
+--    skipBinaryValue
   ) where
 
 import Bond.Default
-import Bond.Schema
 import Bond.Types
 import Bond.Wire
 import Control.Applicative
-import Control.Monad
-import Control.Monad.ST (runST, ST)
-import Data.Array.ST (newArray, readArray, MArray, STUArray)
-import Data.Array.Unsafe (castSTUArray)
 import Data.Binary.Get
 import Data.Binary.Put
-import Data.Bits
 import Data.Hashable
+import Bond.Schema
 import Data.Proxy
-import qualified Data.ByteString as BS
 import qualified Data.HashSet as H
 import qualified Data.Map as M
 import qualified Data.Vector as V
 
-newtype VarInt = VarInt { fromVarInt :: Int }
+class WireType a => BondBinary a where
+    -- | Read field value.
+    -- Returns Just a if ok, Nothing if schema mismatch, fails on irrecoverable error
+    bondGet :: BondBinaryProto t => BondGet t (Maybe a)
+    -- | Put field into stream.
+    bondPut :: BondBinaryProto t => a -> BondPut t
+
+data StructInfo a b where
+    StructInfo :: (BondStruct a, BondStruct b, Base a ~ b) => Proxy a -> Maybe (Proxy b) -> StructInfo a b
+
+class (Default a, BondBinary a) => BondStruct a where
+    type Base a :: *
+    bondGetSchema :: Proxy a -> StructSchema
+    bondGetInfo :: Proxy a -> StructInfo a (Base a)
+    bondSetField :: BondBinaryProto t => Ordinal -> ItemType -> BondGet t (Maybe (a -> a))
+    bondSetBase :: a -> Base a -> a
+    bondGetBase :: a -> Base a
+    bondFieldHasDefaultValue :: a -> Ordinal -> Bool
+    bondPutField :: BondBinaryProto t => a -> Ordinal -> BondPut t
+
+data VoidBase
+instance Default VoidBase where
+    defaultValue = error "call to VoidBase"
+    equalToDefault = error "call to VoidBase"
+instance WireType VoidBase where
+    getWireType = error "call to VoidBase"
+instance BondBinary VoidBase where
+    bondGet = error "call to VoidBase"
+    bondPut = error "call to VoidBase"
+instance BondStruct VoidBase where
+    type Base VoidBase = VoidBase
+    bondGetSchema = error "call to VoidBase"
+    bondGetInfo = error "call to VoidBase"
+    bondSetField = error "call to VoidBase"
+    bondSetBase = error "call to VoidBase"
+    bondGetBase = error "call to VoidBase"
+    bondFieldHasDefaultValue = error "call to VoidBase"
+    bondPutField = error "call to VoidBase"
 
 newtype BondGet t a = BondGet (Get a)
     deriving (Functor, Applicative, Monad)
@@ -39,280 +71,128 @@ newtype BondPutM t a = BondPut (PutM a)
     deriving (Functor, Applicative, Monad)
 type BondPut t = BondPutM t ()
 
-class BondBinary t a where
-    bondGet :: BondGet t a
-    bondPut :: a -> BondPut t
+class BondBinaryProto t where
+    bondPutBool :: Bool -> BondPut t
+    bondPutUInt8 :: Word8 -> BondPut t
+    bondPutUInt16 :: Word16 -> BondPut t
+    bondPutUInt32 :: Word32 -> BondPut t
+    bondPutUInt64 :: Word64 -> BondPut t
+    bondPutInt8 :: Int8 -> BondPut t
+    bondPutInt16 :: Int16 -> BondPut t
+    bondPutInt32 :: Int32 -> BondPut t
+    bondPutInt64 :: Int64 -> BondPut t
+    bondPutFloat :: Float -> BondPut t
+    bondPutDouble :: Double -> BondPut t
+    bondPutString :: Utf8 -> BondPut t
+    bondPutWString :: Utf16 -> BondPut t
+    bondPutBlob :: Blob -> BondPut t
+    bondPutList :: BondBinary a => [a] -> BondPut t
+    bondPutVector :: BondBinary a => V.Vector a -> BondPut t
+    bondPutSet :: BondBinary a => H.HashSet a -> BondPut t
+    bondPutMap :: (BondBinary k, BondBinary v) => M.Map k v -> BondPut t
+    bondPutNullable :: BondBinary a => Maybe a -> BondPut t
+    bondPutMaybe :: BondBinary a => Maybe a -> BondPut t
+    bondPutBonded :: BondStruct a => Bonded a -> BondPut t
+    bondPutStruct :: BondStruct a => a -> BondPut t
 
-class BondBinary t a => BondBinaryStruct t a where
-    bondGetBase :: BondGet t a
-    bondPutBase :: a -> BondPut t
-    bondGetSchema :: Proxy (t, a) -> StructSchema
+    bondGetBool :: BondGet t (Maybe Bool)
+    bondGetUInt8 :: BondGet t (Maybe Word8)
+    bondGetUInt16 :: BondGet t (Maybe Word16)
+    bondGetUInt32 :: BondGet t (Maybe Word32)
+    bondGetUInt64 :: BondGet t (Maybe Word64)
+    bondGetInt8 :: BondGet t (Maybe Int8)
+    bondGetInt16 :: BondGet t (Maybe Int16)
+    bondGetInt32 :: BondGet t (Maybe Int32)
+    bondGetInt64 :: BondGet t (Maybe Int64)
+    bondGetFloat :: BondGet t (Maybe Float)
+    bondGetDouble :: BondGet t (Maybe Double)
+    bondGetString :: BondGet t (Maybe Utf8)
+    bondGetWString :: BondGet t (Maybe Utf16)
+    bondGetBlob :: BondGet t (Maybe Blob)
+    bondGetList :: BondBinary a => BondGet t (Maybe [a])
+    bondGetVector :: BondBinary a => BondGet t (Maybe (V.Vector a))
+    bondGetSet :: (Eq a, Hashable a, BondBinary a) => BondGet t (Maybe (H.HashSet a))
+    bondGetMap :: (Ord k, BondBinary k, BondBinary v) => BondGet t (Maybe (M.Map k v))
+    bondGetNullable :: BondBinary a => BondGet t (Maybe (Maybe a))
+    bondGetBonded :: BondStruct a => BondGet t (Maybe (Bonded a))
+    bondGetStruct :: BondStruct a => BondGet t (Maybe a)
 
-instance BondBinary t Bool where
-    bondGet = do
-        v <- BondGet getWord8
-        return (v /= 0)
-    bondPut v = if v then BondPut (putWord8 1) else BondPut (putWord8 0)
+instance BondBinary Float where
+    bondGet = bondGetFloat
+    bondPut = bondPutFloat
 
-instance BondBinary t Word8 where
-    bondGet = BondGet getWord8
-    bondPut = BondPut . putWord8
+instance BondBinary Double where
+    bondGet = bondGetDouble
+    bondPut = bondPutDouble
 
-instance BondBinary t Int8 where
-    bondGet = BondGet (fromIntegral <$> getWord8)
-    bondPut = BondPut . putWord8 . fromIntegral
+instance BondBinary Bool where
+    bondGet = bondGetBool
+    bondPut = bondPutBool
 
-instance BondBinary t VarInt where
-    bondGet = VarInt <$> step 0
-        where
-        step :: Int -> BondGet t Int
-        step n | n > 4 = fail "VarInt: sequence too long"
-        step n = do
-            b <- fromIntegral <$> BondGet getWord8
-            rest <- if b `testBit` 7 then step (n + 1)  else return (0 :: Int)
-            return $ (b `clearBit` 7) .|. (rest `shiftL` 7)
-    bondPut (VarInt i) | i < 0 = fail "VarInt with negative value"
-    bondPut (VarInt i) | i < 128 = BondPut $ putWord8 $ fromIntegral i
-    bondPut (VarInt i) = do
-        let iLow = fromIntegral $ i .&. 0x7F
-        BondPut $ putWord8 $ iLow `setBit` 7
-        bondPut $ VarInt (i `shiftR` 7)
+instance BondBinary Int8 where
+    bondGet = bondGetInt8
+    bondPut = bondPutInt8
 
-instance BondBinary t Double where
-    bondGet = BondGet (wordToDouble <$> getWord64le)
-    bondPut = BondPut . putWord64le . doubleToWord
+instance BondBinary Int16 where
+    bondGet = bondGetInt16
+    bondPut = bondPutInt16
 
-instance BondBinary t Float where
-    bondGet = BondGet (wordToFloat <$> getWord32le)
-    bondPut = BondPut . putWord32le . floatToWord
+instance BondBinary Int32 where
+    bondGet = bondGetInt32
+    bondPut = bondPutInt32
 
-instance BondBinary t ItemType where
-    bondGet = toWireType <$> bondGet
-    bondPut = bondPut . fromWireType
+instance BondBinary Int64 where
+    bondGet = bondGetInt64
+    bondPut = bondPutInt64
 
-instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (Maybe a) where
-    bondPut Nothing = bondPut $ ListHead (Just $ getWireType (Proxy :: Proxy a)) 0
-    bondPut (Just v) = do
-        bondPut $ ListHead (Just $ getWireType (Proxy :: Proxy a)) 1
-        bondPut v
-    bondGet = do
-        ListHead t n <- bondGet
-        unless (maybe True (== getWireType (Proxy :: Proxy a)) t) $ fail "nullable: type mismatch"
-        if | n == 0 -> return Nothing
-           | n == 1 -> Just <$> bondGet
-           | otherwise -> fail "bondGet nullable: count isn't 0 or 1"
+instance BondBinary Word8 where
+    bondGet = bondGetUInt8
+    bondPut = bondPutUInt8
 
-instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t [a] where
-    bondPut xs = do
-        bondPut $ ListHead (Just $ getWireType (Proxy :: Proxy a)) (length xs)
-        mapM_ bondPut xs
-    bondGet = do
-        ListHead t n <- bondGet
-        unless (maybe True (== getWireType (Proxy :: Proxy a)) t) $ fail "bondGet [a]: type mismatch"
-        replicateM n bondGet
+instance BondBinary Word16 where
+    bondGet = bondGetUInt16
+    bondPut = bondPutUInt16
 
-instance BondBinary t ListHead => BondBinary t Blob where
-    bondPut (Blob s) = do
-        bondPut $ ListHead (Just BT_INT8) (BS.length s)
-        BondPut $ putByteString s
-    bondGet = do
-        ListHead t n <- bondGet
-        unless (maybe True (== BT_INT8) t) $ fail "bondGet Blob: type mismatch"
-        BondGet (Blob <$> getByteString n)
+instance BondBinary Word32 where
+    bondGet = bondGetUInt32
+    bondPut = bondPutUInt32
 
-instance BondBinary t StringHead => BondBinary t Utf8 where
-    bondPut (Utf8 s) = do
-        bondPut $ StringHead $ BS.length s
-        BondPut $ putByteString s
-    bondGet = do
-        StringHead n <- bondGet
-        Utf8 <$> (BondGet $ getByteString n)
+instance BondBinary Word64 where
+    bondGet = bondGetUInt64
+    bondPut = bondPutUInt64
 
-instance BondBinary t StringHead => BondBinary t Utf16 where
-    bondPut (Utf16 s) = do
-        bondPut $ StringHead $ BS.length s `div` 2
-        BondPut $ putByteString s
-    bondGet = do
-        StringHead n <- bondGet
-        Utf16 <$> (BondGet $ getByteString (n * 2))
+instance BondBinary Utf8 where
+    bondGet = bondGetString
+    bondPut = bondPutString
 
-instance (Hashable a, Eq a, BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (HashSet a) where
-    bondPut xs = bondPut $ H.toList xs
-    bondGet = H.fromList <$> bondGet
+instance BondBinary Utf16 where
+    bondGet = bondGetWString
+    bondPut = bondPutWString
 
-instance (Ord a, BondBinary t a, WireType a, BondBinary t b, WireType b, BondBinary t MapHead) => BondBinary t (Map a b) where
-    bondPut xs = do
-        bondPut $ MapHead (Just $ getWireType (Proxy :: Proxy a)) (Just $ getWireType (Proxy :: Proxy b)) (M.size xs)
-        forM_ (M.toList xs) $ \(k, v) -> do
-            bondPut k
-            bondPut v
-    bondGet = do
-        MapHead tkey tvalue n <- bondGet
-        unless (maybe True (== getWireType (Proxy :: Proxy a)) tkey) $ fail "bondGet (Map a b): key type mismatch"
-        unless (maybe True (== getWireType (Proxy :: Proxy b)) tvalue) $ fail "bondGet (Map a b): value type mismatch"
-        fmap M.fromList $ replicateM n $ do
-            k <- bondGet
-            v <- bondGet
-            return (k, v)
+instance BondBinary Blob where
+    bondGet = bondGetBlob
+    bondPut = bondPutBlob
 
-instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (Vector a) where
-    bondPut xs = do
-        bondPut $ ListHead (Just $ getWireType (Proxy :: Proxy a)) (V.length xs)
-        V.mapM_ bondPut xs
-    bondGet = do
-        ListHead t n <- bondGet
-        unless (maybe True (== getWireType (Proxy :: Proxy a)) t) $ fail "bondGet (Vector a): type mismatch"
-        V.replicateM n bondGet
+instance BondBinary a => BondBinary [a] where
+    bondGet = bondGetList
+    bondPut = bondPutList
 
-instance (BondBinaryProto t, BondBinaryStruct t a) => BondBinary t (Bonded a) where
-    bondPut = putBonded
-    bondGet = getBonded
+instance BondBinary a => BondBinary (V.Vector a) where
+    bondGet = bondGetVector
+    bondPut = bondPutVector
 
-class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t Int64,
-       BondBinary t Word8, BondBinary t Word16, BondBinary t Word32, BondBinary t Word64,
-       BondBinary t FieldTag, BondBinary t ListHead, BondBinary t StringHead,
-       BondBinary t MapHead) =>
-        BondBinaryProto t where
-    checkTypeAndGet :: (BondBinary t a, WireType a) => ItemType -> BondGet t a
-    checkTypeAndGet = checkTypeAndGet'
-    putField :: (BondBinary t a, WireType a, Default a) => Ordinal -> a -> a -> BondPut t
-    putField = putField'
-    putMaybeField :: (BondBinary t a, WireType a) => Ordinal -> Maybe a -> BondPut t
-    putMaybeField = putMaybeField'
-    putStructField :: (BondBinaryStruct t a, WireType a) => Ordinal -> a -> BondPut t
-    putStructField = doPutField
-    readFieldsWith :: BondBinaryStruct t a => (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
-    readFieldsWith = readStructFieldsWith BT_STOP
-    readBaseFieldsWith :: BondBinaryStruct t a => (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
-    readBaseFieldsWith = readStructFieldsWith BT_STOP_BASE
-    putEnumValue :: Int32 -> BondPut t
-    putEnumValue = bondPut
-    getEnumValue = bondGet
-    getEnumValue :: BondGet t Int32
-    skipValue :: ItemType -> BondGet t ()
-    skipValue = skipBinaryValue
-    readStruct :: BondGet t a -> BondGet t a
-    readStruct = id
-    putStruct :: BondPut t -> BondPut t
-    putStruct = id
-    putBonded :: BondBinaryStruct t a => Bonded a -> BondPut t
-    putBonded = putContainer
-    getBonded :: BondBinaryStruct t a => BondGet t (Bonded a)
-    getBonded = getContainer
-    putStructStop :: BondBinaryProto t => BondPut t
-    putStructStop = bondPut BT_STOP
-    putStructStopBase :: BondBinaryProto t => BondPut t
-    putStructStopBase = bondPut BT_STOP_BASE
-    protoSignature :: Proxy t -> ProtoSig
+instance (Eq a, Hashable a, BondBinary a) => BondBinary (H.HashSet a) where
+    bondGet = bondGetSet
+    bondPut = bondPutSet
 
-putContainer :: forall t a. (BondBinaryProto t, BondBinaryStruct t a) => Bonded a -> BondPut t
-putContainer (BondedObject v) = bondPut v
-putContainer (BondedStream proto s)
-    | proto == protoSignature (Proxy :: Proxy t) = BondPut $ putLazyByteString s
-    | otherwise = fail "internal error: invalid stream format in BondedStream"
+instance (Ord k, BondBinary k, BondBinary v) => BondBinary (M.Map k v) where
+    bondGet = bondGetMap
+    bondPut = bondPutMap
 
-getContainer :: forall a t. (BondBinaryProto t, BondBinaryStruct t a) => BondGet t (Bonded a)
-getContainer = do
-    let BondGet structSize = do
-                startpos <- BondGet bytesRead
-                skipValue BT_STRUCT :: BondGet t ()
-                endpos <- BondGet bytesRead
-                return (endpos - startpos)
-    size <- BondGet $ lookAhead structSize
-    bs <- BondGet $ getLazyByteString size
-    return $ BondedStream (protoSignature (Proxy :: Proxy t)) bs
+instance BondBinary a => BondBinary (Maybe a) where
+    bondGet = bondGetNullable
+    bondPut = bondPutNullable
 
-checkTypeAndGet' :: forall t a . (BondBinary t a, WireType a) => ItemType -> BondGet t a
-checkTypeAndGet' t | t == getWireType (Proxy :: Proxy a) = bondGet
-checkTypeAndGet' t = fail $ "invalid field type " ++ show t ++ " expected " ++ show (getWireType (Proxy :: Proxy a))
-
-doPutField :: forall t a. (BondBinary t FieldTag, BondBinary t a, WireType a) => Ordinal -> a -> BondPut t
-doPutField n f = do
-    bondPut $ FieldTag (getWireType (Proxy :: Proxy a)) n
-    bondPut f
-
-putField' :: (BondBinary t FieldTag, BondBinary t a, WireType a, Default a) => Ordinal -> a -> a -> BondPut t
-putField' n defValue f = unless (equalToDefault f defValue) (doPutField n f)
-
-putMaybeField' :: (BondBinary t FieldTag, BondBinary t a, WireType a) => Ordinal -> Maybe a -> BondPut t
-putMaybeField' _ Nothing = return ()
-putMaybeField' n (Just f) = doPutField n f
-
-readStructFieldsWith :: (BondBinary t FieldTag) => ItemType -> (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
-readStructFieldsWith stop updateFunc = loop
-    where
-    loop v = do
-        FieldTag t n <- bondGet
-        if t == stop
-            then return v
-            else do
-                    v' <- updateFunc v t n
-                    loop v'
-
-toWireType :: Word8 -> ItemType
-toWireType = toEnum . fromIntegral
-
-fromWireType :: ItemType -> Word8
-fromWireType = fromIntegral . fromEnum
-
-skipBinaryValue :: (BondBinaryProto t, BondBinary t FieldTag, BondBinary t ListHead) => ItemType -> BondGet t ()
-skipBinaryValue BT_STOP = fail "internal error: skipValue BT_STOP"
-skipBinaryValue BT_STOP_BASE = fail "internal error: skipValue BT_STOP_BASE"
-skipBinaryValue BT_BOOL = BondGet $ skip 1
-skipBinaryValue BT_UINT8 = BondGet $ skip 1
-skipBinaryValue BT_UINT16 = BondGet $ skip 2
-skipBinaryValue BT_UINT32 = BondGet $ skip 4
-skipBinaryValue BT_UINT64 = BondGet $ skip 8
-skipBinaryValue BT_FLOAT = BondGet $ skip 4
-skipBinaryValue BT_DOUBLE = BondGet $ skip 8
-skipBinaryValue BT_INT8 = BondGet $ skip 1
-skipBinaryValue BT_INT16 = BondGet $ skip 2
-skipBinaryValue BT_INT32 = BondGet $ skip 4
-skipBinaryValue BT_INT64 = BondGet $ skip 8
-skipBinaryValue BT_STRING = do
-    VarInt n <- bondGet
-    BondGet $ skip n
-skipBinaryValue BT_WSTRING = do
-    VarInt n <- bondGet
-    BondGet $ skip (n * 2)
-skipBinaryValue BT_LIST = do
-    ListHead (Just t) n <- bondGet
-    replicateM_ n (skipValue t)
-skipBinaryValue BT_SET = skipValue BT_LIST
-skipBinaryValue BT_MAP = do
-    MapHead (Just tkey) (Just tvalue) n <- bondGet
-    replicateM_ n $ do
-        skipValue tkey
-        skipValue tvalue
-skipBinaryValue BT_STRUCT = loop
-    where
-    loop = do
-        FieldTag t _ <- bondGet
-        case t of
-            BT_STOP -> return ()
-            BT_STOP_BASE -> loop
-            _ -> do
-                    skipValue t
-                    loop
-
-{-# INLINE wordToFloat #-}
-wordToFloat :: Word32 -> Float
-wordToFloat x = runST (cast x)
-
-{-# INLINE floatToWord #-}
-floatToWord :: Float -> Word32
-floatToWord x = runST (cast x)
-
-{-# INLINE wordToDouble #-}
-wordToDouble :: Word64 -> Double
-wordToDouble x = runST (cast x)
-
-{-# INLINE doubleToWord #-}
-doubleToWord :: Double -> Word64
-doubleToWord x = runST (cast x)
-
-{-# INLINE cast #-}
-cast :: (MArray (STUArray s) a (ST s),
-         MArray (STUArray s) b (ST s)) =>
-        a -> ST s b
-cast x = newArray (0 :: Int, 0) x >>= castSTUArray >>= flip readArray 0
+instance BondStruct a => BondBinary (Bonded a) where
+    bondGet = bondGetBonded
+    bondPut = bondPutBonded

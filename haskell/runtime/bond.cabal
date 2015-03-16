@@ -50,6 +50,7 @@ library
 
   other-modules:    Bond.BinaryProto,
                     Bond.Bonded,
+                    Bond.Cast,
                     Bond.CompactBinary,
                     Bond.Default,
                     Bond.FastBinary,

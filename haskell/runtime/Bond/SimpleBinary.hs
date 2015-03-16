@@ -1,186 +1,281 @@
-{-# LANGUAGE FlexibleContexts, ScopedTypeVariables, MultiWayIf, MultiParamTypeClasses, FlexibleInstances, EmptyDataDecls #-}
+{-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs #-}
 module Bond.SimpleBinary (
-    SimpleBinaryProto,
+    deserializeSimpleV1,
+    serializeSimpleV1,
+    deserializeSimple,
+    serializeSimple,
     SimpleBinaryV1Proto,
-    runSimpleBinaryGet,
-    runSimpleBinaryPut,
-    runSimpleBinaryV1Get,
-    runSimpleBinaryV1Put
+    SimpleBinaryProto
   ) where
 
 import Bond.BinaryProto
+import Bond.Cast
+import Bond.Default
 import Bond.Schema
 import Bond.Types
-import Bond.Wire
 import Control.Applicative
 import Control.Monad
 import Data.Binary.Get
 import Data.Binary.Put
+import Data.Bits
+import Data.Maybe
 import Data.Proxy
+import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as Lazy
+import qualified Data.HashSet as H
+import qualified Data.Map as M
+import qualified Data.Vector as V
 
 data SimpleBinaryV1Proto
 data SimpleBinaryProto
 
-instance BondBinary SimpleBinaryV1Proto Word16 where
-    bondGet = BondGet getWord16le
-    bondPut = BondPut . putWord16le
-
-instance BondBinary SimpleBinaryV1Proto Word32 where
-    bondGet = BondGet getWord32le
-    bondPut = BondPut . putWord32le
-
-instance BondBinary SimpleBinaryV1Proto Word64 where
-    bondGet = BondGet getWord64le
-    bondPut = BondPut . putWord64le
-
-instance BondBinary SimpleBinaryV1Proto Int16 where
-    bondGet = BondGet (fromIntegral <$> getWord16le)
-    bondPut = BondPut . putWord16le . fromIntegral
-
-instance BondBinary SimpleBinaryV1Proto Int32 where
-    bondGet = BondGet (fromIntegral <$> getWord32le)
-    bondPut = BondPut . putWord32le . fromIntegral
-
-instance BondBinary SimpleBinaryV1Proto Int64 where
-    bondGet = BondGet (fromIntegral <$> getWord64le)
-    bondPut = BondPut . putWord64le . fromIntegral
-
-instance BondBinary SimpleBinaryV1Proto FieldTag where
-    bondPut _ = return ()
-    bondGet = fail "internal error: can't read field tag from SimpleBinary"
-
-instance BondBinary SimpleBinaryV1Proto ListHead where
-    bondPut (ListHead _ n) = bondPut (fromIntegral n :: Word32)
-    bondGet = do
-        (n :: Word32) <- bondGet
-        return $ ListHead Nothing (fromIntegral n)
-
-instance BondBinary SimpleBinaryV1Proto MapHead where
-    bondPut (MapHead _ _ n) = bondPut (fromIntegral n :: Word32)
-    bondGet = do
-        n <- BondGet getWord32le
-        return $ MapHead Nothing Nothing (fromIntegral n)
-
-instance BondBinary SimpleBinaryV1Proto StringHead where
-    bondPut (StringHead n) = bondPut (fromIntegral n :: Word32)
-    bondGet = do
-        n <- BondGet getWord32le
-        return $ StringHead (fromIntegral n)
-
 instance BondBinaryProto SimpleBinaryV1Proto where
-    readFieldsWith = readSimpleBinaryStruct
-    readBaseFieldsWith = readSimpleBinaryStruct
-    checkTypeAndGet = getSimpleBinaryValue
-    getBonded = getBondedContainer
-    putBonded = putBondedContainerV1
-    putField _ _ = bondPut
-    putMaybeField = putMaybeField'
-    putStructField _ = bondPut
-    putStructStop = return ()
-    putStructStopBase = return ()
-    protoSignature = const simpleV1Sig
+    bondPutBool True = BondPut $ putWord8 1
+    bondPutBool False = BondPut $ putWord8 0
+    bondPutUInt8 = BondPut . putWord8
+    bondPutUInt16 = BondPut . putWord16le
+    bondPutUInt32 = BondPut . putWord32le
+    bondPutUInt64 = BondPut . putWord64le
+    bondPutInt8 = BondPut . putWord8 . fromIntegral
+    bondPutInt16 = BondPut . putWord16le . fromIntegral
+    bondPutInt32 = BondPut . putWord32le . fromIntegral
+    bondPutInt64 = BondPut . putWord64le . fromIntegral
+    bondPutFloat = BondPut . putWord32le . floatToWord
+    bondPutDouble = BondPut . putWord64le . doubleToWord
+    bondPutString (Utf8 s) = do
+        BondPut $ putWord32le $ fromIntegral $ BS.length s
+        BondPut $ putByteString s
+    bondPutWString (Utf16 s) = do
+        BondPut $ putWord32le $ fromIntegral $ BS.length s `div` 2
+        BondPut $ putByteString s
+    bondPutList xs = do
+        BondPut $ putWord32le $ fromIntegral $ length xs
+        mapM_ bondPut xs
+    bondPutMaybe Nothing = fail "can't put defaultNothing value to simple stream"
+    bondPutMaybe (Just v) = bondPut v
+    bondPutNullable = bondPutList . maybeToList
+    bondPutSet = bondPutList . H.toList
+    bondPutMap m = do
+        BondPut $ putWord32le $ fromIntegral $ M.size m
+        forM_ (M.toList m) $ \(k, v) -> do
+            bondPut k
+            bondPut v
+    bondPutVector xs = do
+        BondPut $ putWord32le $ fromIntegral $ V.length xs
+        V.mapM_ bondPut xs
+    bondPutBlob (Blob b) = do
+        BondPut $ putWord32le $ fromIntegral $ BS.length b
+        BondPut $ putByteString b
+    bondPutBonded (BondedObject a) = do
+        let bs = serializeSimpleV1 a
+        putBonded (BondedStream simpleV1Sig bs)
+    bondPutBonded s = putBonded s
+    bondPutStruct = saveStruct (bondGetInfo Proxy)
 
-instance BondBinary SimpleBinaryProto Word16 where
-    bondGet = BondGet getWord16le
-    bondPut = BondPut . putWord16le
+    bondGetBool = do
+        v <- BondGet getWord8
+        return $ Just $ v /= 0
+    bondGetUInt8 = Just <$> BondGet getWord8
+    bondGetUInt16 = Just <$> BondGet getWord16le
+    bondGetUInt32 = Just <$> BondGet getWord32le
+    bondGetUInt64 = Just <$> BondGet getWord64le
+    bondGetInt8 = Just . fromIntegral <$> BondGet getWord8
+    bondGetInt16 = Just . fromIntegral <$> BondGet getWord16le
+    bondGetInt32 = Just . fromIntegral <$> BondGet getWord32le
+    bondGetInt64 = Just . fromIntegral <$> BondGet getWord64le
+    bondGetFloat = Just . wordToFloat <$> BondGet getWord32le
+    bondGetDouble = Just . wordToDouble <$> BondGet getWord64le
+    bondGetString = do
+        n <- BondGet getWord32le
+        Just . Utf8 <$> BondGet (getByteString $ fromIntegral n)
+    bondGetWString = do
+        n <- BondGet getWord32le
+        Just . Utf16 <$> BondGet (getByteString $ fromIntegral $ n * 2)
+    bondGetBlob = do
+        n <- BondGet getWord32le
+        Just . Blob <$> BondGet (getByteString $ fromIntegral n)
+    bondGetList = getListV1
+    bondGetSet = liftM H.fromList <$> getListV1
+    bondGetMap = getMap (fromIntegral <$> BondGet getWord32le)
+    bondGetVector = liftM V.fromList <$> getListV1
+    bondGetNullable = do
+        v <- getListV1
+        return $ case v of
+            Just [x] -> Just $ Just x
+            Just [] -> Just Nothing
+            _ -> Nothing
+    bondGetBonded = getBonded
+    bondGetStruct = Just <$> readStruct (bondGetInfo Proxy)
 
-instance BondBinary SimpleBinaryProto Word32 where
-    bondGet = BondGet getWord32le
-    bondPut = BondPut . putWord32le
+getMap :: (BondBinary a, BondBinary k, BondBinaryProto t, Ord k) => BondGet t Int -> BondGet t (Maybe (Map k a))
+getMap getLen = do
+    n <- getLen
+    elems <- replicateM n $ do
+        k <- bondGet
+        v <- bondGet
+        return $ seqPair (k, v)
+    return $ M.fromList <$> sequence elems
+    where
+    seqPair (Just a, Just b) = Just (a, b)
+    seqPair _ = Nothing
 
-instance BondBinary SimpleBinaryProto Word64 where
-    bondGet = BondGet getWord64le
-    bondPut = BondPut . putWord64le
+getListV1 :: BondBinary a => BondGet SimpleBinaryV1Proto (Maybe [a])
+getListV1 = do
+    n <- fromIntegral <$> BondGet getWord32le
+    elems <- replicateM n bondGet
+    return $ sequence elems
 
-instance BondBinary SimpleBinaryProto Int16 where
-    bondGet = BondGet (fromIntegral <$> getWord16le)
-    bondPut = BondPut . putWord16le . fromIntegral
-
-instance BondBinary SimpleBinaryProto Int32 where
-    bondGet = BondGet (fromIntegral <$> getWord32le)
-    bondPut = BondPut . putWord32le . fromIntegral
-
-instance BondBinary SimpleBinaryProto Int64 where
-    bondGet = BondGet (fromIntegral <$> getWord64le)
-    bondPut = BondPut . putWord64le . fromIntegral
-
-instance BondBinary SimpleBinaryProto FieldTag where
-    bondPut _ = return ()
-    bondGet = fail "internal error: can't read field tag from SimpleBinary"
-
-instance BondBinary SimpleBinaryProto ListHead where
-    bondPut (ListHead _ n) = bondPut $ VarInt n
-    bondGet = do
-        VarInt n <- bondGet
-        return $ ListHead Nothing n
-
-instance BondBinary SimpleBinaryProto MapHead where
-    bondPut (MapHead _ _ n) = bondPut $ VarInt n
-    bondGet = do
-        VarInt n <- bondGet
-        return $ MapHead Nothing Nothing n
-
-instance BondBinary SimpleBinaryProto StringHead where
-    bondPut (StringHead n) = bondPut $ VarInt n
-    bondGet = do
-        VarInt n <- bondGet
-        return $ StringHead n
-
-instance BondBinaryProto SimpleBinaryProto where
-    readFieldsWith = readSimpleBinaryStruct
-    readBaseFieldsWith = readSimpleBinaryStruct
-    checkTypeAndGet = getSimpleBinaryValue
-    getBonded = getBondedContainer
-    putBonded = putBondedContainer
-    putField _ _ = bondPut
-    putMaybeField = putMaybeField'
-    putStructField _ = bondPut
-    putStructStop = return ()
-    putStructStopBase = return ()
-    protoSignature = const simpleSig
-
-getBondedContainer :: BondGet t (Bonded a)
-getBondedContainer = do
+getBonded :: BondBinaryProto t => BondBinary a => BondGet t (Maybe (Bonded a))
+getBonded = do
     size <- BondGet getWord32le
-    proto <- ProtoSig <$> BondGet getWord32be
+    sig <- BondGet getWord32be
     bs <- BondGet $ getLazyByteString (fromIntegral $ size - 4)
-    return $ BondedStream proto bs
+    return $ Just $ BondedStream (ProtoSig sig) bs
 
-putContainer :: ProtoSig -> Lazy.ByteString -> BondPut t
-putContainer (ProtoSig proto) s = do
+putBonded :: BondBinaryProto t => Bonded a -> BondPut t
+putBonded (BondedStream (ProtoSig sig) s) = do
     BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
-    BondPut $ putWord32be proto
+    BondPut $ putWord32be sig
     BondPut $ putLazyByteString s
 
-putBondedContainerV1 :: forall a. BondBinaryStruct SimpleBinaryV1Proto a => Bonded a -> BondPut SimpleBinaryV1Proto
-putBondedContainerV1 (BondedStream proto s) = putContainer proto s
-putBondedContainerV1 (BondedObject a) = putContainer simpleV1Sig (runSimpleBinaryV1Put $ bondPut a)
-
-putBondedContainer :: forall a. BondBinaryStruct SimpleBinaryProto a => Bonded a -> BondPut SimpleBinaryProto
-putBondedContainer (BondedStream proto s) = putContainer proto s
-putBondedContainer (BondedObject a) = putContainer simpleSig (runSimpleBinaryPut $ bondPut a)
-
-readSimpleBinaryStruct :: forall t a. BondBinaryStruct t a => (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
-readSimpleBinaryStruct update r = foldM (\v (FieldInfo _ o) -> update v undefined o) r schema
+readStruct :: BondBinaryProto t => StructInfo a b -> BondGet t a
+readStruct (StructInfo pa pb) = do
+    def <- case pb of
+        Nothing -> return defaultValue
+        Just p -> do
+            base <- readStruct (bondGetInfo p)
+            return $ bondSetBase defaultValue base
+    update <- foldM setField id schema
+    return $ update def
     where
-    StructSchema schema = bondGetSchema (Proxy :: Proxy (t, a))
+    StructSchema schema = bondGetSchema pa
+    setField f fi = do
+        fieldMod <- bondSetField (fiOrdinal fi) (fiType fi)
+        case fieldMod of
+            Just func -> return (func . f)
+            Nothing -> fail "error reading simple protocol field"
 
-getSimpleBinaryValue :: (BondBinary t a, WireType a) => ItemType -> BondGet t a
-getSimpleBinaryValue _ = bondGet
+saveStruct :: BondBinaryProto t => StructInfo a b -> a -> BondPut t
+saveStruct (StructInfo pa pb) a = do
+    when (isJust pb) $ saveStruct (bondGetInfo $ fromJust pb) (bondGetBase a)
+    putFields (bondGetSchema pa)
+    where
+    putFields (StructSchema fields) = forM_ fields $ \(FieldInfo _ _ n) -> bondPutField a n
 
-putMaybeField' :: BondBinary t a => Ordinal -> Maybe a -> BondPut t
-putMaybeField' _ Nothing = fail "Can't put defaultNothing to SimpleBinaryV1 protocol"
-putMaybeField' _ (Just f) = bondPut f
+deserializeSimpleV1 :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
+deserializeSimpleV1 = let BondGet g = bondGet :: BondGet SimpleBinaryV1Proto (Maybe a)
+                       in runGetOrFail (fromJust <$> g)
 
-runSimpleBinaryV1Get :: BondGet SimpleBinaryV1Proto a -> Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
-runSimpleBinaryV1Get (BondGet g) = runGetOrFail g
+serializeSimpleV1 :: BondStruct a => a -> Lazy.ByteString
+serializeSimpleV1 v = let BondPut g = bondPut v :: BondPut SimpleBinaryV1Proto
+                       in runPut g
 
-runSimpleBinaryV1Put :: BondPut SimpleBinaryV1Proto -> Lazy.ByteString
-runSimpleBinaryV1Put (BondPut p) = runPut p
+instance BondBinaryProto SimpleBinaryProto where
+    bondPutBool True = BondPut $ putWord8 1
+    bondPutBool False = BondPut $ putWord8 0
+    bondPutUInt8 = BondPut . putWord8
+    bondPutUInt16 = BondPut . putWord16le
+    bondPutUInt32 = BondPut . putWord32le
+    bondPutUInt64 = BondPut . putWord64le
+    bondPutInt8 = BondPut . putWord8 . fromIntegral
+    bondPutInt16 = BondPut . putWord16le . fromIntegral
+    bondPutInt32 = BondPut . putWord32le . fromIntegral
+    bondPutInt64 = BondPut . putWord64le . fromIntegral
+    bondPutFloat = BondPut . putWord32le . floatToWord
+    bondPutDouble = BondPut . putWord64le . doubleToWord
+    bondPutString (Utf8 s) = do
+        putVarInt $ BS.length s
+        BondPut $ putByteString s
+    bondPutWString (Utf16 s) = do
+        putVarInt $ BS.length s `div` 2
+        BondPut $ putByteString s
+    bondPutList xs = do
+        putVarInt $ length xs
+        mapM_ bondPut xs
+    bondPutMaybe Nothing = fail "can't put defaultNothing value to simple stream"
+    bondPutMaybe (Just v) = bondPut v
+    bondPutNullable = bondPutList . maybeToList
+    bondPutSet = bondPutList . H.toList
+    bondPutMap m = do
+        putVarInt $ M.size m
+        forM_ (M.toList m) $ \(k, v) -> do
+            bondPut k
+            bondPut v
+    bondPutVector xs = do
+        putVarInt $ V.length xs
+        V.mapM_ bondPut xs
+    bondPutBlob (Blob b) = do
+        putVarInt $ BS.length b
+        BondPut $ putByteString b
+    bondPutBonded (BondedObject a) = do
+        let bs = serializeSimple a
+        putBonded (BondedStream simpleSig bs)
+    bondPutBonded s = putBonded s
+    bondPutStruct = saveStruct (bondGetInfo Proxy)
 
-runSimpleBinaryGet :: BondGet SimpleBinaryProto a -> Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
-runSimpleBinaryGet (BondGet g) = runGetOrFail g
+    bondGetBool = do
+        v <- BondGet getWord8
+        return $ Just $ v /= 0
+    bondGetUInt8 = Just <$> BondGet getWord8
+    bondGetUInt16 = Just <$> BondGet getWord16le
+    bondGetUInt32 = Just <$> BondGet getWord32le
+    bondGetUInt64 = Just <$> BondGet getWord64le
+    bondGetInt8 = Just . fromIntegral <$> BondGet getWord8
+    bondGetInt16 = Just . fromIntegral <$> BondGet getWord16le
+    bondGetInt32 = Just . fromIntegral <$> BondGet getWord32le
+    bondGetInt64 = Just . fromIntegral <$> BondGet getWord64le
+    bondGetFloat = Just . wordToFloat <$> BondGet getWord32le
+    bondGetDouble = Just . wordToDouble <$> BondGet getWord64le
+    bondGetString = do
+        n <- getVarInt
+        Just . Utf8 <$> BondGet (getByteString n)
+    bondGetWString = do
+        n <- getVarInt
+        Just . Utf16 <$> BondGet (getByteString $ n * 2)
+    bondGetBlob = do
+        n <- getVarInt
+        Just . Blob <$> BondGet (getByteString n)
+    bondGetList = getList
+    bondGetSet = liftM H.fromList <$> getList
+    bondGetMap = getMap getVarInt
+    bondGetVector = liftM V.fromList <$> getList
+    bondGetNullable = do
+        v <- getList
+        return $ case v of
+            Just [x] -> Just $ Just x
+            Just [] -> Just Nothing
+            _ -> Nothing
+    bondGetBonded = getBonded
+    bondGetStruct = Just <$> readStruct (bondGetInfo Proxy)
 
-runSimpleBinaryPut :: BondPut SimpleBinaryProto -> Lazy.ByteString
-runSimpleBinaryPut (BondPut p) = runPut p
+getList :: BondBinary a => BondGet SimpleBinaryProto (Maybe [a])
+getList = do
+    n <- getVarInt
+    elems <- replicateM n bondGet
+    return $ sequence elems
+
+getVarInt :: BondGet t Int
+getVarInt = BondGet $ step 0
+    where
+    step :: Int -> Get Int
+    step n | n > 4 = fail "VarInt: sequence too long"
+    step n = do
+        b <- fromIntegral <$> getWord8
+        rest <- if b `testBit` 7 then step (n + 1)  else return (0 :: Int)
+        return $ (b `clearBit` 7) .|. (rest `shiftL` 7)
+
+putVarInt :: Int -> BondPut t
+putVarInt i | i < 0 = error "VarInt with negative value"
+putVarInt i | i < 128 = BondPut $ putWord8 $ fromIntegral i
+putVarInt i = let iLow = fromIntegral $ i .&. 0x7F
+               in do
+                    BondPut $ putWord8 $ iLow `setBit` 7
+                    putVarInt (i `shiftR` 7)
+
+deserializeSimple :: forall a. BondStruct a => Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
+deserializeSimple = let BondGet g = bondGet :: BondGet SimpleBinaryProto (Maybe a)
+                     in runGetOrFail (fromJust <$> g)
+
+serializeSimple :: BondStruct a => a -> Lazy.ByteString
+serializeSimple v = let BondPut g = bondPut v :: BondPut SimpleBinaryProto
+                     in runPut g
