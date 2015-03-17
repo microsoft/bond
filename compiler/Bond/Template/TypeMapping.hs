@@ -22,6 +22,7 @@ module Bond.Template.TypeMapping
     , getTypeName
     , getInstanceTypeName
     , MappingContext(..)
+    , TypeMapping
     ) where
 
 import Data.List

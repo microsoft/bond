@@ -35,6 +35,8 @@ import Bond.Template.TypeMapping
 import Bond.Template.CustomMapping
 import Options
 
+type Template = MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
+
 main :: IO()
 main = do
     args <- getArgs
@@ -67,14 +69,9 @@ writeSchema Schema {..} =
         BL.writeFile (output_dir </> fileName <.> "json") $ encode bond
 
 cppCodegen :: Options -> IO()
-cppCodegen Cpp {..} = do
-    aliasMapping <- parseAliasMappings using
-    namespaceMapping <- parseNamespaceMappings namespace
-    let typeMapping = case allocator of 
-            Nothing -> cppTypeMapping
-            Just a -> cppCustomAllocTypeMapping a
-    let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping []
-    concurrentlyFor_ files $ codeGen output_dir import_dir mappingContext $
+cppCodegen options@Cpp {..} = do
+    let typeMapping = maybe cppTypeMapping cppCustomAllocTypeMapping allocator
+    concurrentlyFor_ files $ codeGen options typeMapping $
         [ reflection_h
         , types_cpp
         , types_h header enum_header allocator
@@ -94,29 +91,23 @@ cppCodegen _ = error "cppCodegen: impossible happened."
 
     
 csCodegen :: Options -> IO()
-csCodegen Cs {..} = do
-    aliasMapping <- parseAliasMappings using
-    namespaceMapping <- parseNamespaceMappings namespace
+csCodegen options@Cs {..} = do
     let typeMapping = if collection_interfaces then csInterfaceTypeMapping else csTypeMapping
-    let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping []
-    concurrentlyFor_ files $ codeGen output_dir import_dir mappingContext 
+    concurrentlyFor_ files $ codeGen options typeMapping
         [ types_cs readonly_properties fields
         ]
 csCodegen _ = error "csCodegen: impossible happened."
 
-
-codeGen :: FilePath
-        -> [FilePath]
-        -> MappingContext
-        -> [MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)]
-        -> FilePath
-        -> IO ()
-codeGen outputDir importDirs mappingContext templates file = do
+codeGen :: Options -> TypeMapping -> [Template] -> FilePath -> IO ()
+codeGen options typeMapping templates file = do
+    let outputDir = output_dir options
     let baseName = takeBaseName file
-    (Bond imports namespaces declarations) <- parseFile importDirs file
+    aliasMapping <- parseAliasMappings $ using options
+    namespaceMapping <- parseNamespaceMappings $ namespace options
+    (Bond imports namespaces declarations) <- parseFile (import_dir options) file
     forM_ templates $ \template -> do
-        let mapping = setNamespaces mappingContext namespaces
-        let (suffix, code) = template mapping baseName imports declarations
+        let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
+        let (suffix, code) = template mappingContext baseName imports declarations
         let fileName = baseName ++ suffix
         createDirectoryIfMissing True outputDir
         L.writeFile (outputDir </> fileName) (commonHeader fileName <> code)
