@@ -217,9 +217,7 @@ struct = do
         findDuplicates xs = deleteFirstsBy ordinal xs (nubBy ordinal xs)
         ordinal = (==) `on` fieldOrdinal
 
-manySortedBy :: (a -> a -> Ordering)
-             -> ParsecT s u m a
-            -> ParsecT s u m [a]
+manySortedBy :: (a -> a -> Ordering) -> ParsecT s u m a -> ParsecT s u m [a]
 manySortedBy = manyAccum . insertBy
 
 -- field definition parser
@@ -266,25 +264,6 @@ basicType =
     <|> keyword "string" *> pure BT_String
     <|> keyword "bool" *> pure BT_Bool
 
-keyType :: Parser Type
-keyType = try (basicType <|> basicUserType) <?> "scalar, string or enum"
-
-basicUserType :: Parser Type
-basicUserType = do
-    t <- userType
-    if isBasic t then
-            return t
-        else
-            fail $ "Disallowed key type: " ++ typeName t
-  where
-    isBasic t = case t of
-        BT_TypeParam _ -> True
-        BT_UserDefined a@Alias {..} params -> isBasic $ resolveAlias a params
-        BT_String -> True
-        BT_WString -> True
-        _ -> scalarType t
-    typeName (BT_UserDefined decl _) = declName decl
-    typeName _ = error "basicUserType/typeName: impossible happened."
 
 -- containers parser
 complexType :: Parser Type
@@ -295,9 +274,23 @@ complexType =
     <|> keyword "nullable" *> angles (BT_Nullable <$> type_)
     <|> keyword "set" *> angles (BT_Set <$> keyType)
     <|> keyword "map" *> angles (BT_Map <$> keyType <* comma <*> type_)
-    <|> keyword "bonded" *> angles (BT_Bonded <$> userType)
+    <|> keyword "bonded" *> angles (BT_Bonded <$> userStruct)
+  where
+    keyType = try (basicType <|> checkUserType validKeyType) <?> "scalar, string or enum"
+    userStruct = try (checkUserType validBondedType) <?> "user defined struct"
+    checkUserType valid = do
+        t <- userType
+        if valid t then return t else unexpected "type"
+    validKeyType t = case t of
+        BT_TypeParam _ -> True
+        BT_UserDefined a@Alias {} args -> validKeyType $ resolveAlias a args
+        _ -> scalarType t
+    validBondedType t = case t of
+        BT_TypeParam _ -> True
+        _ -> structType t
 
---  parser for user defined type (struct, enum, alias or type parameter)
+
+-- parser for user defined type (struct, enum, alias or type parameter)
 userType :: Parser Type
 userType = do
     name <- qualifiedName
@@ -307,22 +300,26 @@ userType = do
         Nothing -> do
             decl <- findSymbol name
             args <- option [] (angles $ commaSep1 arg)
-            if length args /= length (params' decl)
-                then
-                    fail $ declName decl ++ " requires " ++ (show.length $ declParams decl) ++ " type argument(s)"
+            if length args /= paramsCount decl then
+                fail $ declName decl ++
+                    if paramsCount decl /= 0 then
+                        " requires " ++ show (paramsCount decl) ++ " type argument(s)"
+                    else
+                        " is not a generic type"
                 else
                     return $ BT_UserDefined decl args
           where
-            params' Enum{..} = []
-            params' d = declParams d
+            paramsCount Enum{} = 0
+            paramsCount decl   = length $ declParams decl
             arg = type_ <|> BT_IntTypeArg <$> (fromIntegral <$> integer)
   where
-    isParam [name] TypeParam {..} = name == paramName
-    isParam _ _ = False
+    isParam [name] = (name ==) . paramName
+    isParam _      = const False
+
 
 -- type parser
 type_ :: Parser Type
-type_ = try (basicType <|> complexType <|> userType) <?> "type"
+type_ = basicType <|> complexType <|> userType
 
 -- field type parser
 ftype :: Parser Type
