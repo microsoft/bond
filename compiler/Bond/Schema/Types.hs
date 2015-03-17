@@ -1,10 +1,11 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-{-# LANGUAGE OverloadedStrings, RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings, RecordWildCards, DeriveGeneric #-}
 
 module Bond.Schema.Types
     ( Attribute(..)
+    , Bond(..)
     , Constant(..)
     , Constraint(..)
     , Declaration(..)
@@ -21,10 +22,12 @@ module Bond.Schema.Types
 
 import Data.Word
 import Bond.Util
+import GHC.Generics (Generic)
 
 type QualifiedName = [String]
 
-data Modifier = Optional | Required | RequiredOptional deriving Eq
+data Modifier = Optional | Required | RequiredOptional
+    deriving (Eq, Generic)
 
 data Type =
     BT_Int8 | BT_Int16 | BT_Int32 | BT_Int64 |
@@ -44,23 +47,23 @@ data Type =
     BT_IntTypeArg Int |
     BT_TypeParam TypeParam |
     BT_UserDefined Declaration [Type]
-    deriving Eq
+    deriving (Eq, Generic)
 
 data Default =
     DefaultBool Bool |
     DefaultInteger Integer |
     DefaultFloat Double |
     DefaultString String |
-    DefaultEnum String|
+    DefaultEnum String |
     DefaultNothing
-    deriving Eq
+    deriving (Eq, Generic)
 
 data Attribute =
-    Attribute                                                                                                                               
+    Attribute
         { attrName :: QualifiedName         -- attribute name
         , attrValue :: String               -- value
         }
-    deriving Eq
+    deriving (Eq, Generic)
 
 data Field =
     Field
@@ -71,16 +74,17 @@ data Field =
         , fieldName :: String               -- field name
         , fieldDefault :: Maybe Default     -- optional default value
         }
-    deriving Eq
+    deriving (Eq, Generic)
 
 data Constant =
     Constant
         { constantName :: String            -- enum constant name
         , constantValue :: Maybe Int        -- optional value
         }
-    deriving Eq
+    deriving (Eq, Generic)
 
-data Constraint = Value deriving Eq
+data Constraint = Value
+    deriving (Eq, Generic)
 
 instance Show Constraint where
     show Value = ": value"
@@ -90,7 +94,7 @@ data TypeParam =
         { paramName :: String
         , paramConstraint :: Maybe Constraint
         }
-        deriving Eq
+    deriving (Eq, Generic)
 
 instance Show TypeParam where
     show TypeParam {..} = paramName ++ optional show paramConstraint
@@ -124,7 +128,7 @@ data Declaration =
         , declParams :: [TypeParam]         -- type parameters for generics
         , aliasType :: Type                 -- aliased type
         }
-    deriving Eq
+    deriving (Eq, Generic)
 
 showTypeParams :: [TypeParam] -> String
 showTypeParams = angles . sepBy ", " show
@@ -136,13 +140,23 @@ instance Show Declaration where
     show Alias {..} = "alias " ++ declName ++ showTypeParams declParams
 
 data Import = Import FilePath
+    deriving (Eq, Generic)
 
-data Language = Cpp | Cs | CSharp | Java deriving (Eq)
+data Language = Cpp | Cs | CSharp | Java
+    deriving (Eq, Generic)
 
-data Namespace = 
-    Namespace 
+data Namespace =
+    Namespace
         { nsLanguage :: Maybe Language
         , nsName :: QualifiedName
         }
-        deriving Eq
+    deriving (Eq, Generic)
+
+data Bond =
+    Bond
+        { bondImports :: [Import]
+        , bondNamespaces :: [Namespace]
+        , bondDeclarations :: [Declaration]
+        }
+    deriving (Eq, Generic)
 

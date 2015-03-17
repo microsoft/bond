@@ -9,4 +9,4 @@ module Bond.Version
 majorVersion :: String 
 majorVersion = "3"
 minorVersion :: String
-minorVersion = "02"
+minorVersion = "03"

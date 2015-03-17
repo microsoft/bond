@@ -4,8 +4,7 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Bond.Parser 
-    ( Bond(..)
-    , parseBond
+    ( parseBond
     , newEnvironment
     ) 
     where
@@ -45,8 +44,6 @@ type Parser a = ParsecT String Symbols (ReaderT Environment IO) a
 parseBond :: SourceName
           -> String -> ReaderT Environment IO (Either ParseError Bond)
 parseBond = runParserT bond $ Symbols [] []
-
-data Bond = Bond [Import] [Namespace] [Declaration]
 
 -- parser for .bond files
 bond :: Parser Bond

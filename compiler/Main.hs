@@ -17,6 +17,10 @@ import Control.Concurrent.Async
 import GHC.Conc (getNumProcessors, setNumCapabilities)
 import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy.IO as L
+import Data.Aeson (encode)
+import qualified Data.ByteString.Lazy as BL
+import Bond.Schema.Types (Bond(..))
+import Bond.Schema.JSON
 import Bond.Parser
 import Bond.Schema.Types (Declaration, Import)
 import Bond.Template.Util
@@ -39,6 +43,7 @@ main = do
     case options of
         Cpp {..}    -> cppCodegen options
         Cs {..}     -> csCodegen options
+        Schema {..} -> writeSchema options
         _           -> print options
 
 setJobs :: Maybe Int -> IO ()
@@ -53,8 +58,16 @@ setJobs (Just n)
 concurrentlyFor_ :: [a] -> (a -> IO b) -> IO ()
 concurrentlyFor_ = (void .) . flip mapConcurrently
 
+
+writeSchema :: Options -> IO()
+writeSchema Schema {..} = 
+    concurrentlyFor_ files $ \file -> do
+        let fileName = takeBaseName file 
+        bond <- parseFile import_dir file
+        BL.writeFile (output_dir </> fileName <.> "json") $ encode bond
+
 cppCodegen :: Options -> IO()
-cppCodegen (Cpp {..}) = do
+cppCodegen Cpp {..} = do
     aliasMapping <- parseAliasMappings using
     namespaceMapping <- parseNamespaceMappings namespace
     let typeMapping = case allocator of 
@@ -81,7 +94,7 @@ cppCodegen _ = error "cppCodegen: impossible happened."
 
     
 csCodegen :: Options -> IO()
-csCodegen (Cs {..}) = do
+csCodegen Cs {..} = do
     aliasMapping <- parseAliasMappings using
     namespaceMapping <- parseNamespaceMappings namespace
     let typeMapping = if collection_interfaces then csInterfaceTypeMapping else csTypeMapping
@@ -99,20 +112,27 @@ codeGen :: FilePath
         -> FilePath
         -> IO ()
 codeGen outputDir importDirs mappingContext templates file = do
+    let baseName = takeBaseName file
+    (Bond imports namespaces declarations) <- parseFile importDirs file
+    forM_ templates $ \template -> do
+        let mapping = setNamespaces mappingContext namespaces
+        let (suffix, code) = template mapping baseName imports declarations
+        let fileName = baseName ++ suffix
+        createDirectoryIfMissing True outputDir
+        L.writeFile (outputDir </> fileName) (commonHeader fileName <> code)
+
+
+parseFile :: [FilePath] -> FilePath -> IO(Bond)
+parseFile importDirs file = do
     cwd <- getCurrentDirectory
     input <- readFileUtf8 file
     result <- runReaderT (parseBond file input) (newEnvironment (cwd </> file) (readImportFile importDirs))
-    let baseName = takeBaseName file
     case result of
         Left error -> do
             print error
             exitFailure
-        Right (Bond imports namespaces declarations) -> forM_ templates $ \template -> do
-            let mapping = setNamespaces mappingContext namespaces
-            let (suffix, code) = template mapping baseName imports declarations
-            let fileName = baseName ++ suffix
-            createDirectoryIfMissing True outputDir
-            L.writeFile (outputDir </> fileName) (commonHeader fileName <> code)
+        Right bond -> return bond
+
 
 readImportFile :: [FilePath] -> FilePath -> FilePath -> IO (FilePath, String)
 readImportFile importDirs parentFile file = do

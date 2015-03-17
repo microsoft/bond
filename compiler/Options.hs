@@ -4,7 +4,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# OPTIONS_GHC -fno-warn-missing-fields #-}
 {-# OPTIONS_GHC -fno-cse #-}
-                                                     
+
 module Options (getOptions, Options(..), ApplyOptions(..)) where
 
 import Bond.Version
@@ -13,12 +13,12 @@ import System.Console.CmdArgs
 data ApplyOptions =
     Compact |
     Fast |
-    Simple 
+    Simple
     deriving (Show, Data, Typeable, Eq)
 
-data Options 
+data Options
     = Options
-    | Cpp 
+    | Cpp
         { files :: [FilePath]
         , import_dir :: [FilePath]
         , output_dir :: FilePath
@@ -31,7 +31,7 @@ data Options
         , apply_attribute :: Maybe String
         , jobs :: Maybe Int
         }
-    | Cs 
+    | Cs
         { files :: [FilePath]
         , import_dir :: [FilePath]
         , output_dir :: FilePath
@@ -42,10 +42,16 @@ data Options
         , fields :: Bool
         , jobs :: Maybe Int
         }
+    | Schema
+        { files :: [FilePath]
+        , import_dir :: [FilePath]
+        , output_dir :: FilePath
+        , jobs :: Maybe Int
+        }
       deriving (Show, Data, Typeable)
 
 cpp :: Options
-cpp = Cpp 
+cpp = Cpp
     { files = def &= typFile &= args
     , import_dir = def &= typDir &= help "Add the directory to import search path"
     , output_dir = "." &= typDir &= help "Output generated files into the specified directory"
@@ -57,24 +63,32 @@ cpp = Cpp
     , apply = def &= typ "PROTOCOL" &= help "Generate Apply function overloads for the specified protocol only; supported protocols: compact, fast and simple"
     , apply_attribute = def &= typ "ATTRIBUTE" &= help "Prefix the declarations of Apply functions with the specified C++ attribute/declspec"
     , jobs = def &= opt "0" &= typ "NUM" &= help "Run NUM jobs simultaneously (or '$ncpus' if no NUM is not given)"
-    } &= 
-    name "c++" &=    
-    help "Generate C++ code" 
+    } &=
+    name "c++" &=
+    help "Generate C++ code"
 
 cs :: Options
-cs = Cs 
+cs = Cs
     { collection_interfaces = def &= help "Use interfaces rather than concrete collection types"
     , readonly_properties = def &= help "Generate private property setters"
     , fields = def &= help "Generate public fields rather than properties"
-    } &= 
-    name "c#" &= 
+    } &=
+    name "c#" &=
     help "Generate C# code"
 
+schema :: Options
+schema = Schema
+    {
+    } &=
+    name "schema" &=
+    help "Output the schema"
+
+
 mode :: Mode (CmdArgs Options)
-mode = cmdArgsMode $ modes [cpp, cs] &= 
-    program "gbc" &= 
+mode = cmdArgsMode $ modes [cpp, cs, schema] &=
+    program "gbc" &=
     help "Compile Bond schema definition file and generate specified output" &=
     summary ("Bond Compiler " ++ majorVersion ++ "." ++ minorVersion ++ ", (C) Microsoft")
-                     
+
 getOptions :: IO Options
 getOptions = cmdArgsRun mode
