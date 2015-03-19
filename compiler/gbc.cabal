@@ -1,56 +1,50 @@
--- The name of the package.
+-- Copyright (c) Microsoft. All rights reserved.
+-- Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 name:               gbc
-
--- The package version.  See the Haskell package versioning policy (PVP) 
--- for standards guiding when and how versions should be incremented.
--- http://www.haskell.org/haskellwiki/Package_versioning_policy
--- PVP summary:     +-+------- breaking API changes
---                  | | +----- non-breaking API additions
---                  | | | +--- code changes with no API change
-version:            3.0.2.0
-
--- A short (one-line) description of the package.
+version:            3.0.3.0
+cabal-version:      >= 1.8
 synopsis:           The Glorious Bond Compilation System
-
--- A longer description of the package.
--- description:         
-
--- URL for the project homepage or repository.
+description:        gbc is Bond schema definition languange compiler and code
+                    generator.
 homepage:           https://github.com/Microsoft/bond
-
--- The license under which the package is released.
 license:            MIT
-
--- The file containing the license text.
--- license-file:    LICENSE
-
--- The package author(s).
-author:             Adam Sapek
-
--- An email address to which users can send suggestions, bug reports, and 
--- patches.
+author:             adamsap@microsoft.com
 maintainer:         adamsap@microsoft.com
-
--- A copyright notice.
-copyright:          Copyright (C) Microsoft. All rights reserved.
-
+copyright:          Copyright (c) Microsoft. All rights reserved.
 category:           Language
-
 build-type:         Simple
 
--- Constraint on the version of Cabal needed to build this package.
-cabal-version:      >=1.8
-
+test-suite tests
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   tests, .
+  main-is:          Main.hs
+  other-modules:
+  ghc-options:      -threaded
+  build-depends:    base >=4.5,
+                    shakespeare >= 2.0,
+                    text >=0.11,
+                    parsec >=3.1,
+                    filepath >=1.0,
+                    cmdargs >= 0.10.10,
+                    mtl >= 2.1,
+                    directory >= 1.1,
+                    async >= 2.0.1.0,
+                    monad-loops >= 0.4,
+                    aeson >= 0.7.0.6,
+                    bytestring >= 0.10,
+                    HUnit,
+                    QuickCheck,
+                    test-framework,
+                    test-framework-hunit,
+                    test-framework-quickcheck2,
+                    derive
 
 executable gbc
-  -- .hs or .lhs file containing the Main module.
   main-is:          Main.hs
-  
-  -- Modules included in this executable, other than Main.
-  -- other-modules:       
-  
-  -- Other library packages from which modules are imported.
-  build-depends:    base >=4.5, 
+  ghc-options:      -threaded
+  other-modules:
+  build-depends:    base >=4.5,
                     shakespeare >= 2.0,
                     text >=0.11,
                     parsec >=3.1,

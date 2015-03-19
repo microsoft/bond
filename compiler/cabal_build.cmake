@@ -33,7 +33,7 @@ if (error)
 endif()
 
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} build     --with-ghc=${Haskell_GHC_EXECUTABLE} --ghc-option=-O2 --ghc-option=-threaded --jobs --builddir=${output_dir}
+    COMMAND ${Haskell_CABAL_EXECUTABLE} build     --with-ghc=${Haskell_GHC_EXECUTABLE} --ghc-option=-O2 --jobs --builddir=${output_dir}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 
