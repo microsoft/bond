@@ -3,9 +3,14 @@ import System.Exit (exitFailure)
 import Data.Monoid
 import Test.Framework
 import Test.Framework.Providers.QuickCheck2 (testProperty)
+import Tests.Schema
 
 tests :: [Test]
-tests = []
+tests =
+    [ testGroup "AST"
+        [ testProperty "roundtripAST" roundtripAST
+        ]
+    ]
 
 main :: IO ()
 main = do

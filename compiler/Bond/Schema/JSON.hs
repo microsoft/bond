@@ -7,13 +7,58 @@ module Bond.Schema.JSON
     ( FromJSON(..)
     ) where
 
-import Bond.Schema.Types
 import Data.Aeson
+import Control.Applicative
+import Bond.Schema.Types
 
 instance FromJSON Modifier
 instance ToJSON Modifier
 
-instance FromJSON Type
+instance FromJSON Type where
+    parseJSON (String "int8") = pure BT_Int8
+    parseJSON (String "int16") = pure BT_Int16
+    parseJSON (String "int32") = pure BT_Int32
+    parseJSON (String "int64") = pure BT_Int64
+    parseJSON (String "uint8") = pure BT_UInt8
+    parseJSON (String "uint16") = pure BT_UInt16
+    parseJSON (String "uint32") = pure BT_UInt32
+    parseJSON (String "uint64") = pure BT_UInt64
+    parseJSON (String "float") = pure BT_Float
+    parseJSON (String "double") = pure BT_Double
+    parseJSON (String "bool") = pure BT_Bool
+    parseJSON (String "string") = pure BT_String
+    parseJSON (String "wstring") = pure BT_WString
+    parseJSON (String "bond_meta::name") = pure BT_MetaName
+    parseJSON (String "bond_meta::full_name") = pure BT_MetaFullName
+    parseJSON (String "blob") = pure BT_Blob
+    parseJSON (Object o) = do
+        type_ <- o .: "type"
+        case type_ of
+            String "maybe" -> BT_Maybe <$>
+                o .: "element"
+            String "list" -> BT_List <$>
+                o .: "element"
+            String "vector" -> BT_Vector <$>
+                o .: "element"
+            String "nullable" -> BT_Nullable <$>
+                o .: "element"
+            String "set" -> BT_Set <$>
+                o .: "element"
+            String "map" -> BT_Map <$>
+                o .: "key" <*>
+                o .: "element"
+            String "bonded" -> BT_Bonded <$>
+                o .: "element"
+            String "constant" -> BT_IntTypeArg <$>
+                o .: "value"
+            String "parameter" -> BT_TypeParam <$>
+                o .: "value"
+            String "user" -> BT_UserDefined <$>
+                o .: "declaration" <*>
+                o .: "arguments"
+            _ -> empty
+    parseJSON _ = empty
+
 instance ToJSON Type where
     toJSON BT_Int8 = "int8"
     toJSON BT_Int16 = "int16"
@@ -64,10 +109,9 @@ instance ToJSON Type where
         [ "type" .= String "constant"
         , "value" .= n
         ]
-    toJSON (BT_TypeParam TypeParam {..}) = object
+    toJSON (BT_TypeParam p) = object
         [ "type" .= String "parameter"
-        , "name" .= paramName
-        , "constraint" .= paramConstraint
+        , "value" .= p
         ]
     toJSON (BT_UserDefined decl args) = object
         [ "type" .= String "user"
@@ -75,15 +119,8 @@ instance ToJSON Type where
         , "arguments" .= args
         ]
 
-
 instance FromJSON Default
-instance ToJSON Default where
-    toJSON DefaultNothing = object [ "value" .= Null ]
-    toJSON (DefaultBool x) = toJSON x
-    toJSON (DefaultInteger x) = toJSON x
-    toJSON (DefaultFloat x) = toJSON x
-    toJSON (DefaultString x) = toJSON x
-    toJSON (DefaultEnum x) = toJSON x
+instance ToJSON Default
 
 instance FromJSON Attribute
 instance ToJSON Attribute
@@ -94,7 +131,10 @@ instance ToJSON Field
 instance FromJSON Constant
 instance ToJSON Constant
 
-instance FromJSON Constraint
+instance FromJSON Constraint where
+    parseJSON (String "value") = pure Value
+    parseJSON _ = empty
+
 instance ToJSON Constraint where
     toJSON Value = "value"
 

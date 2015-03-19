@@ -91,7 +91,7 @@ updateSymbols :: Declaration -> Parser ()
 updateSymbols decl = do
     (previous, symbols) <- partition (duplicateDeclaration decl) <$> symbols <$> getState
     case reconcile previous decl of
-        (False, _) -> fail $ "The " ++ show decl ++ " has been previously defined as " ++ show (head previous)
+        (False, _) -> fail $ "The " ++ showPretty decl ++ " has been previously defined as " ++ showPretty (head previous)
         (True, f) -> modifyState (f symbols)
   where
     reconcile [x@Forward {}] y@Struct {} = (paramsMatch x y, add y)
@@ -135,7 +135,7 @@ findStruct name = doFind <?> "qualified struct name"
         symb <- findSymbol name
         case symb of
             Struct {..} -> return symb
-            _ -> fail $ "The " ++ show symb ++ " is invalid in this context. Expected a struct."
+            _ -> fail $ "The " ++ showPretty symb ++ " is invalid in this context. Expected a struct."
 
 -- namespace
 namespace :: Parser Namespace

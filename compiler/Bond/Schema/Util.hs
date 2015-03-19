@@ -18,6 +18,7 @@ module Bond.Schema.Util
     , nullableType
     , resolveAlias
     , scalarType
+    , showPretty
     , showQualifiedName
     , stringType
     , structType
@@ -39,8 +40,26 @@ takeName = last
 takeNamespace :: QualifiedName -> QualifiedName
 takeNamespace = subtract 1 . length >>= take
 
-showQualifiedName  :: QualifiedName -> String
-showQualifiedName  = sepBy "." id
+showQualifiedName :: QualifiedName -> String
+showQualifiedName = sepBy "." id
+
+showTypeParams :: [TypeParam] -> String
+showTypeParams = angles . sepBy ", " showPretty
+
+class ShowPretty a where
+    showPretty :: a -> String
+
+instance ShowPretty Constraint where
+    showPretty Value = ": value"
+
+instance ShowPretty TypeParam where
+    showPretty TypeParam {..} = paramName ++ optional showPretty paramConstraint
+
+instance ShowPretty Declaration where
+    showPretty Struct {..} = "struct " ++ declName ++ showTypeParams declParams
+    showPretty Enum {..} = "enum " ++ declName
+    showPretty Forward {..} = "struct declaration " ++ declName ++ showTypeParams declParams
+    showPretty Alias {..} = "alias " ++ declName ++ showTypeParams declParams
 
 scalarType :: Type -> Bool
 scalarType BT_Int8 = True
