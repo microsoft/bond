@@ -122,9 +122,43 @@ instance ToJSON Type where
         , "arguments" .= args
         ]
 
-deriving instance Generic Default
-instance FromJSON Default
-instance ToJSON Default
+instance FromJSON Default where
+    parseJSON (Object o) = do
+        type_ <- o .: "type"
+        case type_ of
+            String "bool" -> DefaultBool <$> o .: "value"
+            String "integer" -> DefaultInteger <$> o .: "value"
+            String "float" -> DefaultFloat <$> o .: "value"
+            String "string" -> DefaultString <$> o .: "value"
+            String "enum" -> DefaultEnum <$> o .: "value"
+            String "nothing" -> pure DefaultNothing
+            _ -> empty
+    parseJSON _ = empty
+
+instance ToJSON Default where
+    toJSON (DefaultBool x) = object
+        [ "type" .= String "bool"
+        , "value" .= x
+        ]
+    toJSON (DefaultInteger x) = object
+        [ "type" .= String "integer"
+        , "value" .= x
+        ]
+    toJSON (DefaultFloat x) = object
+        [ "type" .= String "float"
+        , "value" .= x
+        ]
+    toJSON (DefaultString x) = object
+        [ "type" .= String "string"
+        , "value" .= x
+        ]
+    toJSON (DefaultEnum x) = object
+        [ "type" .= String "enum"
+        , "value" .= x
+        ]
+    toJSON DefaultNothing = object
+        [ "type" .= String "nothing"
+        ]
 
 deriving instance Generic Attribute
 instance FromJSON Attribute
