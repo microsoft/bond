@@ -1,7 +1,8 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-{-# LANGUAGE OverloadedStrings, RecordWildCards, DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings, RecordWildCards, DeriveGeneric,
+    StandaloneDeriving #-}
 
 module Bond.Schema.JSON
     ( FromJSON(..)
@@ -9,8 +10,10 @@ module Bond.Schema.JSON
 
 import Data.Aeson
 import Control.Applicative
+import GHC.Generics (Generic)
 import Bond.Schema.Types
 
+deriving instance Generic Modifier
 instance FromJSON Modifier
 instance ToJSON Modifier
 
@@ -119,15 +122,19 @@ instance ToJSON Type where
         , "arguments" .= args
         ]
 
+deriving instance Generic Default
 instance FromJSON Default
 instance ToJSON Default
 
+deriving instance Generic Attribute
 instance FromJSON Attribute
 instance ToJSON Attribute
 
+deriving instance Generic Field
 instance FromJSON Field
 instance ToJSON Field
 
+deriving instance Generic Constant
 instance FromJSON Constant
 instance ToJSON Constant
 
@@ -138,21 +145,27 @@ instance FromJSON Constraint where
 instance ToJSON Constraint where
     toJSON Value = "value"
 
+deriving instance Generic TypeParam
 instance FromJSON TypeParam
 instance ToJSON TypeParam
 
+deriving instance Generic Declaration
 instance FromJSON Declaration
 instance ToJSON Declaration
 
+deriving instance Generic Import
 instance FromJSON Import
 instance ToJSON Import
 
+deriving instance Generic Language
 instance FromJSON Language
 instance ToJSON Language
 
+deriving instance Generic Namespace
 instance FromJSON Namespace
 instance ToJSON Namespace
 
+deriving instance Generic Bond
 instance FromJSON Bond
 instance ToJSON Bond
 

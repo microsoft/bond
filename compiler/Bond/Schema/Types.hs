@@ -22,12 +22,11 @@ module Bond.Schema.Types
 
 import Data.Word
 import Bond.Util
-import GHC.Generics (Generic)
 
 type QualifiedName = [String]
 
 data Modifier = Optional | Required | RequiredOptional
-    deriving (Eq, Generic, Show)
+    deriving (Eq, Show)
 
 data Type =
     BT_Int8 | BT_Int16 | BT_Int32 | BT_Int64 |
@@ -47,7 +46,7 @@ data Type =
     BT_IntTypeArg Int |
     BT_TypeParam TypeParam |
     BT_UserDefined Declaration [Type]
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
 data Default =
     DefaultBool Bool |
@@ -56,14 +55,14 @@ data Default =
     DefaultString String |
     DefaultEnum String |
     DefaultNothing
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
 data Attribute =
     Attribute
         { attrName :: QualifiedName         -- attribute name
         , attrValue :: String               -- value
         }
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
 data Field =
     Field
@@ -74,24 +73,24 @@ data Field =
         , fieldName :: String               -- field name
         , fieldDefault :: Maybe Default     -- optional default value
         }
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
 data Constant =
     Constant
         { constantName :: String            -- enum constant name
         , constantValue :: Maybe Int        -- optional value
         }
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
 data Constraint = Value
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
 data TypeParam =
     TypeParam
         { paramName :: String
         , paramConstraint :: Maybe Constraint
         }
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
 data Declaration =
     Struct
@@ -122,20 +121,20 @@ data Declaration =
         , declParams :: [TypeParam]         -- type parameters for generics
         , aliasType :: Type                 -- aliased type
         }
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
 data Import = Import FilePath
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
 data Language = Cpp | Cs | CSharp | Java
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
 data Namespace =
     Namespace
         { nsLanguage :: Maybe Language
         , nsName :: QualifiedName
         }
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
 data Bond =
     Bond
@@ -143,5 +142,5 @@ data Bond =
         , bondNamespaces :: [Namespace]
         , bondDeclarations :: [Declaration]
         }
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
