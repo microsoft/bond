@@ -9,6 +9,7 @@ module Bond.Schema.JSON
     ) where
 
 import Data.Aeson
+import Data.Aeson.Types
 import Control.Applicative
 import GHC.Generics (Generic)
 import Bond.Schema.Types
@@ -59,8 +60,12 @@ instance FromJSON Type where
             String "user" -> BT_UserDefined <$>
                 o .: "declaration" <*>
                 o .: "arguments"
-            _ -> empty
-    parseJSON _ = empty
+            _ -> modifyFailure
+                    (const $ "Invalid value `" ++ show type_ ++ "` for the `type` key.")
+                    empty
+    parseJSON x = modifyFailure
+                    (const $ "Expected a representation of Type but found: " ++ show x)
+                    empty
 
 instance ToJSON Type where
     toJSON BT_Int8 = "int8"
@@ -132,8 +137,12 @@ instance FromJSON Default where
             String "string" -> DefaultString <$> o .: "value"
             String "enum" -> DefaultEnum <$> o .: "value"
             String "nothing" -> pure DefaultNothing
-            _ -> empty
-    parseJSON _ = empty
+            _ -> modifyFailure
+                    (const $ "Invalid value `" ++ show type_ ++ "` for the `type` key.")
+                    empty
+    parseJSON x = modifyFailure
+                    (const $ "Expected a representation of Default but found: " ++ show x)
+                    empty
 
 instance ToJSON Default where
     toJSON (DefaultBool x) = object
@@ -174,7 +183,9 @@ instance ToJSON Constant
 
 instance FromJSON Constraint where
     parseJSON (String "value") = pure Value
-    parseJSON _ = empty
+    parseJSON x = modifyFailure
+                    (const $ "Expected a representation of Constraint but found: " ++ show x)
+                    empty
 
 instance ToJSON Constraint where
     toJSON Value = "value"
