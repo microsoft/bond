@@ -3,10 +3,9 @@
 
 {-# LANGUAGE RecordWildCards #-}
 
-module Bond.Parser 
+module Bond.Parser
     ( parseBond
-    , newEnvironment
-    ) 
+    )
     where
 
 import Data.Ord
@@ -27,23 +26,21 @@ data Symbols =
     , imports :: [FilePath]    -- list of imported files
     }
 
+type ImportResolver = FilePath -> FilePath -> IO (FilePath, String)
+
 -- parser environment, immutable but contextual
 data Environment =
     Environment
     { currentNamespaces :: [Namespace]  -- namespace(s) in current context
     , currentParams :: [TypeParam]      -- type parameter(s) for current type (struct or alias)
     , currentFile :: FilePath           -- path of the current file
-    , resolveImport :: FilePath -> FilePath -> IO (FilePath, String) -- imports resolver 
+    , resolveImport :: ImportResolver   -- imports resolver
     }
-
-newEnvironment :: FilePath -> (FilePath -> FilePath -> IO (FilePath, String)) -> Environment
-newEnvironment = Environment [] []
 
 type Parser a = ParsecT String Symbols (ReaderT Environment IO) a
 
-parseBond :: SourceName
-          -> String -> ReaderT Environment IO (Either ParseError Bond)
-parseBond = runParserT bond $ Symbols [] []
+parseBond :: SourceName -> String -> FilePath -> ImportResolver -> IO (Either ParseError Bond)
+parseBond s c f r = runReaderT (runParserT bond (Symbols [] []) s c) (Environment [] [] f r)
 
 -- parser for .bond files
 bond :: Parser Bond

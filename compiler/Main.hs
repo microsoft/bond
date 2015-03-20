@@ -117,7 +117,7 @@ parseFile :: [FilePath] -> FilePath -> IO(Bond)
 parseFile importDirs file = do
     cwd <- getCurrentDirectory
     input <- readFileUtf8 file
-    result <- runReaderT (parseBond file input) (newEnvironment (cwd </> file) (readImportFile importDirs))
+    result <- parseBond file input (cwd </> file) (readImportFile importDirs)
     case result of
         Left error -> do
             print error
