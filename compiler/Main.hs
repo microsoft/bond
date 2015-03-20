@@ -17,7 +17,7 @@ import Control.Concurrent.Async
 import GHC.Conc (getNumProcessors, setNumCapabilities)
 import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy.IO as L
-import Data.Aeson (encode)
+import Data.Aeson (encode, eitherDecode)
 import qualified Data.ByteString.Lazy as BL
 import Bond.Schema.Types (Bond(..))
 import Bond.Schema.JSON
@@ -114,7 +114,24 @@ codeGen options typeMapping templates file = do
 
 
 parseFile :: [FilePath] -> FilePath -> IO(Bond)
-parseFile importDirs file = do
+parseFile importDirs file =
+    if takeExtension file == ".json" then
+        parseASTFile file else 
+        parseBondFile importDirs file
+    
+
+parseASTFile :: FilePath -> IO(Bond)
+parseASTFile file = do
+    input <- BL.readFile file
+    case eitherDecode input of
+        Left error -> do
+            print error
+            exitFailure
+        Right bond -> return bond
+
+
+parseBondFile :: [FilePath] -> FilePath -> IO(Bond)
+parseBondFile importDirs file = do
     cwd <- getCurrentDirectory
     input <- readFileUtf8 file
     result <- parseBond file input (cwd </> file) (readImportFile importDirs)

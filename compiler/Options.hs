@@ -81,13 +81,13 @@ schema = Schema
     {
     } &=
     name "schema" &=
-    help "Output the schema"
+    help "Output the JSON representation of the schema abstract syntax tree"
 
 
 mode :: Mode (CmdArgs Options)
 mode = cmdArgsMode $ modes [cpp, cs, schema] &=
     program "gbc" &=
-    help "Compile Bond schema definition file and generate specified output" &=
+    help "Compile Bond schema file(s) and generate specified output. The schema file(s) can be in one of two formats: Bond IDL or JSON representation of the schema abstract syntax tree as produced by `gbc schema`" &=
     summary ("Bond Compiler " ++ majorVersion ++ "." ++ minorVersion ++ ", (C) Microsoft")
 
 getOptions :: IO Options
