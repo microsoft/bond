@@ -5,8 +5,6 @@
 
 module Bond.Template.TypeMapping
     ( findAliasMapping
-    , setTypeMapping
-    , setNamespaces
     , cppTypeMapping
     , cppCustomAllocTypeMapping
     , csTypeMapping
@@ -56,12 +54,6 @@ data TypeMapping = TypeMapping
     }
 
 type TypeNameBuilder = Reader MappingContext Builder
-
-setTypeMapping :: MappingContext -> TypeMapping -> MappingContext
-setTypeMapping c m = c { typeMapping = m }
-
-setNamespaces :: MappingContext -> [Namespace] -> MappingContext
-setNamespaces c n = c { namespaces = n }
 
 getNamespace :: MappingContext -> QualifiedName
 getNamespace c@MappingContext {..} = resolveNamespace c namespaces

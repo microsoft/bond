@@ -40,7 +40,7 @@ propertyAttributes cs Field {..} =
     schemaAttributes 2 fieldAttributes
  <> [lt|[global::Bond.Id(#{fieldOrdinal})#{typeAttribute}#{modifierAttribute fieldType fieldModifier}]|]
         where
-            csAnnotated = setTypeMapping cs csAnnotatedTypeMapping
+            csAnnotated = cs { typeMapping = csAnnotatedTypeMapping }
             annotatedType = getTypeName csAnnotated fieldType
             propertyType = getTypeName cs fieldType
             typeAttribute = if annotatedType /= propertyType 
