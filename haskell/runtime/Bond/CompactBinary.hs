@@ -1,9 +1,15 @@
 {-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs, MultiWayIf, InstanceSigs #-}
 module Bond.CompactBinary (
+    serializeCompactV1S,
+    serializeCompactS,
     deserializeCompactV1,
     serializeCompactV1,
     deserializeCompact,
     serializeCompact,
+    compactV1ToStream',
+    streamToCompactV1,
+    compactToStream',
+    streamToCompact,
     CompactBinaryV1Proto,
     CompactBinaryProto,
     ZigZagInt(..),     -- export for testing
@@ -15,6 +21,7 @@ import Bond.BinaryProto
 import Bond.Cast
 import Bond.Default
 import Bond.Schema
+import Bond.Stream
 import Bond.Types
 import Bond.Wire
 import Control.Applicative
@@ -243,6 +250,17 @@ getFieldHeader = do
             return (wireType (tag .&. 31), Ordinal n)
         n -> return (wireType (tag .&. 31), Ordinal (fromIntegral n))
 
+putFieldHeader :: ItemType -> Ordinal -> BondPut t
+putFieldHeader t (Ordinal n) = let tbits = fromIntegral $ fromEnum t
+                                   nbits = fromIntegral n
+                                in if | n <= 5 -> BondPut $ putWord8 $ tbits .|. (nbits `shiftL` 5)
+                                      | n <= 255 -> do
+                                                BondPut $ putWord8 $ tbits .|. 0xC0
+                                                BondPut $ putWord8 nbits
+                                      | otherwise -> do
+                                                BondPut $ putWord8 $ tbits .|. 0xE0
+                                                BondPut $ putWord16le n
+
 readStruct :: forall a b t. (Skippable t, BondBinaryProto t) => StructInfo a b -> BondGet t a
 readStruct (StructInfo _ pb) = do
     def <- case pb of
@@ -281,15 +299,6 @@ saveStruct stop (StructInfo pa pb) a = do
     putFields (StructSchema fields) = forM_ fields $ \(FieldInfo _ t n) -> unless (bondFieldHasDefaultValue a n) $ do
         putFieldHeader t n
         bondPutField a n
-    putFieldHeader t (Ordinal n) = let tbits = fromIntegral $ fromEnum t
-                                       nbits = fromIntegral n
-                                    in if | n <= 5 -> BondPut $ putWord8 $ tbits .|. (nbits `shiftL` 5)
-                                          | n <= 255 -> do
-                                                    BondPut $ putWord8 $ tbits .|. 0xC0
-                                                    BondPut $ putWord8 nbits
-                                          | otherwise -> do
-                                                    BondPut $ putWord8 $ tbits .|. 0xE0
-                                                    BondPut $ putWord16le n
 
 skipVarInt :: BondGet t ()
 skipVarInt = loop
@@ -348,6 +357,135 @@ deserializeCompactV1 = let BondGet g = bondGet :: BondGet CompactBinaryV1Proto (
 serializeCompactV1 :: BondStruct a => a -> Lazy.ByteString
 serializeCompactV1 v = let BondPut g = bondPut v :: BondPut CompactBinaryV1Proto
                         in runPut g
+
+compactV1ToStream' :: Lazy.ByteString -> StreamStruct
+compactV1ToStream' = let BondGet parser = compactV1ToStream
+                      in runGet parser
+
+compactV1ToStream :: BondGet CompactBinaryV1Proto StreamStruct
+compactV1ToStream = loop (StreamStruct Nothing [])
+    where
+    getElem t = do
+      case t of
+        BT_STOP -> error "internal error: getElem BT_STOP"
+        BT_STOP_BASE -> error "internal error: getElem BT_STOP_BASE"
+        BT_BOOL -> do
+            Just v <- bondGetBool
+            return $ SeBool v
+        BT_UINT8 -> do
+            Just v <- bondGetUInt8
+            return $ SeUInt8 v
+        BT_UINT16 -> do
+            Just v <- bondGetUInt16
+            return $ SeUInt16 v
+        BT_UINT32 -> do
+            Just v <- bondGetUInt32
+            return $ SeUInt32 v
+        BT_UINT64 -> do
+            Just v <- bondGetUInt64
+            return $ SeUInt64 v
+        BT_FLOAT -> do
+            Just v <- bondGetFloat
+            return $ SeFloat v
+        BT_DOUBLE -> do
+            Just v <- bondGetDouble
+            return $ SeDouble v
+        BT_STRING -> do
+            Just v <- bondGetString
+            return $ SeString v
+        BT_STRUCT -> do
+            s <- compactV1ToStream
+            return $ SeStruct s
+        BT_LIST -> do
+            tag <- wireType <$> BondGet getWord8
+            n <- getVarInt
+            elems <- replicateM n (getElem tag)
+            return $ SeList tag elems
+        BT_SET -> do
+            tag <- wireType <$> BondGet getWord8
+            n <- getVarInt
+            elems <- replicateM n (getElem tag)
+            return $ SeSet tag elems
+        BT_MAP -> do
+            ktag <- wireType <$> BondGet getWord8
+            vtag <- wireType <$> BondGet getWord8
+            n <- getVarInt
+            elems <- replicateM n $ do
+                k <- getElem ktag
+                v <- getElem vtag
+                return (k, v)
+            return $ SeMap (ktag, vtag) elems
+        BT_INT8 -> do
+            Just v <- bondGetInt8
+            return $ SeInt8 v
+        BT_INT16 -> do
+            Just v <- bondGetInt16
+            return $ SeInt16 v
+        BT_INT32 -> do
+            Just v <- bondGetInt32
+            return $ SeInt32 v
+        BT_INT64 -> do
+            Just v <- bondGetInt64
+            return $ SeInt64 v
+        BT_WSTRING -> do
+            Just v <- bondGetWString
+            return $ SeWString v
+    loop st = do
+        (tag, n) <- getFieldHeader
+        case tag of
+            BT_STOP -> return st
+            BT_STOP_BASE -> loop (StreamStruct (Just st) [])
+            _ -> do
+                e <- getElem tag
+                loop $ st { ssElems = ssElems st ++ [(n, e)] }
+
+streamToCompactV1 :: StreamStruct -> BondPut CompactBinaryV1Proto
+streamToCompactV1 struct = do
+    putStreamStruct struct
+    BondPut $ putWord8 $ fromIntegral $ fromEnum BT_STOP
+    where
+    putStreamStruct st = do
+        when (isJust $ ssBase st) $ do
+            putStreamStruct (fromJust $ ssBase st)
+            BondPut $ putWord8 $ fromIntegral $ fromEnum BT_STOP_BASE
+        mapM_ putField (ssElems st)
+    putField (n, e) = do
+        putFieldHeader (elemItemType e) n
+        putElem e
+    putElem (SeBool v) = bondPutBool v
+    putElem (SeUInt8 v) = bondPutUInt8 v
+    putElem (SeUInt16 v) = bondPutUInt16 v
+    putElem (SeUInt32 v) = bondPutUInt32 v
+    putElem (SeUInt64 v) = bondPutUInt64 v
+    putElem (SeFloat v) = bondPutFloat v
+    putElem (SeDouble v) = bondPutDouble v
+    putElem (SeString v) = bondPutString v
+    putElem (SeStruct v) = streamToCompactV1 v
+    putElem (SeList tag xs) = do
+        BondPut $ putWord8 $ fromIntegral $ fromEnum tag
+        putVarInt $ length xs
+        mapM_ putElem xs
+    putElem (SeSet tag xs) = do
+        BondPut $ putWord8 $ fromIntegral $ fromEnum tag
+        putVarInt $ length xs
+        mapM_ putElem xs
+    putElem (SeMap (ktag, vtag) xs) = do
+        BondPut $ putWord8 $ fromIntegral $ fromEnum ktag
+        BondPut $ putWord8 $ fromIntegral $ fromEnum vtag
+        putVarInt $ length xs
+        forM_ xs $ \(k, v) -> do
+            putElem k
+            putElem v
+    putElem (SeInt8 v) = do
+        bondPutInt8 v
+    putElem (SeInt16 v) = do
+        bondPutInt16 v
+    putElem (SeInt32 v) = do
+        bondPutInt32 v
+    putElem (SeInt64 v) = do
+        bondPutInt64 v
+    putElem (SeWString v) = do
+        bondPutWString v
 
 instance BondBinaryProto CompactBinaryProto where
     bondPutBool True = BondPut $ putWord8 1
@@ -493,3 +631,142 @@ deserializeCompact = let BondGet g = bondGet :: BondGet CompactBinaryProto (Mayb
 serializeCompact :: BondStruct a => a -> Lazy.ByteString
 serializeCompact v = let BondPut g = bondPut v :: BondPut CompactBinaryProto
                       in runPut g
+
+compactToStream' :: Lazy.ByteString -> StreamStruct
+compactToStream' = let BondGet parser = compactToStream
+                    in runGet parser
+
+compactToStream :: BondGet CompactBinaryProto StreamStruct
+compactToStream = do
+    void getVarInt
+    loop (StreamStruct Nothing [])
+    where
+    getElem t = do
+      case t of
+        BT_STOP -> error "internal error: getElem BT_STOP"
+        BT_STOP_BASE -> error "internal error: getElem BT_STOP_BASE"
+        BT_BOOL -> do
+            Just v <- bondGetBool
+            return $ SeBool v
+        BT_UINT8 -> do
+            Just v <- bondGetUInt8
+            return $ SeUInt8 v
+        BT_UINT16 -> do
+            Just v <- bondGetUInt16
+            return $ SeUInt16 v
+        BT_UINT32 -> do
+            Just v <- bondGetUInt32
+            return $ SeUInt32 v
+        BT_UINT64 -> do
+            Just v <- bondGetUInt64
+            return $ SeUInt64 v
+        BT_FLOAT -> do
+            Just v <- bondGetFloat
+            return $ SeFloat v
+        BT_DOUBLE -> do
+            Just v <- bondGetDouble
+            return $ SeDouble v
+        BT_STRING -> do
+            Just v <- bondGetString
+            return $ SeString v
+        BT_STRUCT -> do
+            s <- compactToStream
+            return $ SeStruct s
+        BT_LIST -> do
+            (tag, n) <- getV2ListHeader
+            elems <- replicateM n (getElem tag)
+            return $ SeList tag elems
+        BT_SET -> do
+            (tag, n) <- getV2ListHeader
+            elems <- replicateM n (getElem tag)
+            return $ SeSet tag elems
+        BT_MAP -> do
+            ktag <- wireType <$> BondGet getWord8
+            vtag <- wireType <$> BondGet getWord8
+            n <- getVarInt
+            elems <- replicateM n $ do
+                k <- getElem ktag
+                v <- getElem vtag
+                return (k, v)
+            return $ SeMap (ktag, vtag) elems
+        BT_INT8 -> do
+            Just v <- bondGetInt8
+            return $ SeInt8 v
+        BT_INT16 -> do
+            Just v <- bondGetInt16
+            return $ SeInt16 v
+        BT_INT32 -> do
+            Just v <- bondGetInt32
+            return $ SeInt32 v
+        BT_INT64 -> do
+            Just v <- bondGetInt64
+            return $ SeInt64 v
+        BT_WSTRING -> do
+            Just v <- bondGetWString
+            return $ SeWString v
+    loop st = do
+        (tag, n) <- getFieldHeader
+        case tag of
+            BT_STOP -> return st
+            BT_STOP_BASE -> loop (StreamStruct (Just st) [])
+            _ -> do
+                e <- getElem tag
+                loop $ st { ssElems = ssElems st ++ [(n, e)] }
+
+streamToCompact :: StreamStruct -> BondPut CompactBinaryProto
+streamToCompact struct = do
+    let BondPut writer = do
+        putStreamStruct struct
+        BondPut $ putWord8 $ fromIntegral $ fromEnum BT_STOP
+    let bs = runPut writer
+    putVarInt $ fromIntegral $ Lazy.length bs
+    BondPut $ putLazyByteString bs
+    where
+    putStreamStruct st = do
+        when (isJust $ ssBase st) $ do
+            putStreamStruct (fromJust $ ssBase st)
+            BondPut $ putWord8 $ fromIntegral $ fromEnum BT_STOP_BASE
+        mapM_ putField (ssElems st)
+    putField (n, e) = do
+        putFieldHeader (elemItemType e) n
+        putElem e
+    putElem (SeBool v) = bondPutBool v
+    putElem (SeUInt8 v) = bondPutUInt8 v
+    putElem (SeUInt16 v) = bondPutUInt16 v
+    putElem (SeUInt32 v) = bondPutUInt32 v
+    putElem (SeUInt64 v) = bondPutUInt64 v
+    putElem (SeFloat v) = bondPutFloat v
+    putElem (SeDouble v) = bondPutDouble v
+    putElem (SeString v) = bondPutString v
+    putElem (SeStruct v) = streamToCompact v
+    putElem (SeList tag xs) = do
+        putV2ListHeader tag (length xs)
+        mapM_ putElem xs
+    putElem (SeSet tag xs) = do
+        putV2ListHeader tag (length xs)
+        mapM_ putElem xs
+    putElem (SeMap (ktag, vtag) xs) = do
+        BondPut $ putWord8 $ fromIntegral $ fromEnum ktag
+        BondPut $ putWord8 $ fromIntegral $ fromEnum vtag
+        putVarInt $ length xs
+        forM_ xs $ \(k, v) -> do
+            putElem k
+            putElem v
+    putElem (SeInt8 v) = do
+        bondPutInt8 v
+    putElem (SeInt16 v) = do
+        bondPutInt16 v
+    putElem (SeInt32 v) = do
+        bondPutInt32 v
+    putElem (SeInt64 v) = do
+        bondPutInt64 v
+    putElem (SeWString v) = do
+        bondPutWString v
+
+serializeCompactS :: StreamStruct -> Lazy.ByteString
+serializeCompactS v = let BondPut g = streamToCompact v
+                       in runPut g
+
+serializeCompactV1S :: StreamStruct -> Lazy.ByteString
+serializeCompactV1S v = let BondPut g = streamToCompactV1 v
+                         in runPut g
