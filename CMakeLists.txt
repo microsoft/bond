@@ -24,6 +24,7 @@ add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} -C ${CMAKE_CFG_INTDIR} --
 
 add_subdirectory (compiler)
 add_subdirectory (cpp)
+add_subdirectory (doc)
 add_python_subdirectory (python)
 add_subdirectory (examples)
 
