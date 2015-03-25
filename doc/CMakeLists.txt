@@ -54,10 +54,23 @@ endfunction()
 find_haskell_program (pandoc)
 
 if (Haskell_PANDOC_EXECUTABLE)
-    add_custom_target (documentation)
+    add_custom_command(
+        OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
+        COMMAND ${CMAKE_COMMAND} -E copy .pandoc/templates/cmdargs.html "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
+        COMMAND ${GBC_EXECUTABLE} --help=html >> "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS .pandoc/templates/cmdargs.html ${GBC_EXECUTABLE})
+
+    add_custom_target (documentation
+        DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html")
 
     add_pandoc_markdown (src/bond_py.md src/bond_cpp.md
         CODE "cpp,numberLines"
+        OPTIONS --self-contained --table-of-contents
+        OUTPUT_DIR manual)
+
+    add_pandoc_markdown (src/compiler.md
+        CODE "javascript"
         OPTIONS --self-contained --table-of-contents
         OUTPUT_DIR manual)
 

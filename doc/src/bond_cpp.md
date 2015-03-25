@@ -32,7 +32,7 @@ In Bond data schemas are defined using idl-like [syntax](#idl-syntax):
     }
 
 In order to use the schema in a C++ program, it needs to be compiled using the
-Bond compiler [`gbc`](gbc.html). This step is sometimes also referred to as 
+Bond compiler [`gbc`](compiler.html). This step is sometimes also referred to as 
 code generation (or codegen) because the compilation generates C++ code 
 corresponding to the schema definition.
 

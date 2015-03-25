@@ -79,7 +79,7 @@ Code generation
 ===============
 
 In order to use a Bond schema in a C# program, it needs to be compiled using 
-the Bond compiler [`gbc`](gbc.html). The compiler generates C# classes that 
+the Bond compiler [`gbc`](compiler.html). The compiler generates C# classes that 
 represent the schema. By default schema fields are represented by public 
 auto-properties initialized in the default constructor. Code generation can be 
 customized by passing one or more of the following command line options to 

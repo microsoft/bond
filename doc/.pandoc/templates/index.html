@@ -26,7 +26,7 @@ $endif$
   }
   td.lineNumbers { width: 40px; }
   div#all {
-    width: 1120px;
+    max-width: 1120px;
     background-color: #ffffff;
     margin: 0 auto;
     padding: 25px;
@@ -50,17 +50,21 @@ $endif$
     border-bottom: 1px solid black;
   }
 
+  div.sourceCode {
+    overflow-x: auto;
+  }
+
   #toc {
     width: 300px; 
     position:fixed;
     overflow: auto;
-    height: 100%;
+    height: 95%;
   }
 
   #main {
-    margin-left: auto;
-    margin-right: auto;
-    width: 800px;
+    margin-left: 320px;  
+    margin-rigth: auto;
+    max-width: 800px;
   }
   a {
     text-decoration: none;
@@ -73,6 +77,15 @@ $endif$
   }
   a:link {
     color: #36c;
+  }
+  @media screen and (max-width: 979px){
+  #main {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #toc {
+    left: -300px; 
+  }
   }
   </style>
 $for(css)$
