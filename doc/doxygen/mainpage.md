@@ -18,7 +18,7 @@ Basic example
 =============
 
 In Bond data schemas are defined using idl-like 
-[syntax](../../manual/bond_cpp.html#idl-syntax):
+[syntax](../../manual/compiler.html#idl-syntax):
 
     namespace example
 

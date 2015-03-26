@@ -13,7 +13,7 @@ like to include a link to it in this document, please send a pull request.
 Meta schema
 -----------
 
-Bond has a very rich [type system](manual/bond_cpp.html#idl-syntax). It is 
+Bond has a very rich [type system](manual/compiler.html#idl-syntax). It is 
 probably most similar to Thrift in this respect. Some notable additions in Bond 
 are inheritance, [type aliases](manual/bond_cpp.html#type-aliases) and 
 [generics](manual/bond_cpp.html#generics). One type system feature not present 

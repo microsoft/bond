@@ -70,7 +70,7 @@ if (Haskell_PANDOC_EXECUTABLE)
         OUTPUT_DIR manual)
 
     add_pandoc_markdown (src/compiler.md
-        CODE "javascript"
+        CODE cpp
         OPTIONS --self-contained --table-of-contents
         OUTPUT_DIR manual)
 
@@ -80,7 +80,7 @@ if (Haskell_PANDOC_EXECUTABLE)
         OUTPUT_DIR manual)
 
     add_pandoc_markdown (src/reference_index.md
-        CODE "cpp"
+        CODE cpp
         OPTIONS --self-contained
         OUTPUT_NAME index
         OUTPUT_DIR reference)

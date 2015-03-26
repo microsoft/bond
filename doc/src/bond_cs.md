@@ -22,7 +22,7 @@ Basic example
 =============
 
 In Bond data schemas are defined using idl-like 
-[syntax](bond_cpp.html#idl-syntax):
+[syntax](compiler.html#idl-syntax):
 
     namespace Examples
 
