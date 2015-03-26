@@ -138,8 +138,7 @@ foldMapFields f t = case t of
     (BT_UserDefined a@Alias {..} args) -> foldMapFields f $ resolveAlias a args
     _ -> mempty
 
-foldMapStructFields :: Monoid m
-                    => (Field -> m) -> Declaration -> m
+foldMapStructFields :: Monoid m => (Field -> m) -> Declaration -> m
 foldMapStructFields f s = foldMapFields f $ BT_UserDefined s []
 
 foldMapType :: (Monoid m) => (Type -> m) -> Type -> m

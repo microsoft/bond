@@ -59,7 +59,7 @@ instance FromJSON Type where
                 o .: "value"
             String "user" -> BT_UserDefined <$>
                 o .: "declaration" <*>
-                o .: "arguments"
+                o .:? "arguments" .!= []
             _ -> modifyFailure
                     (const $ "Invalid value `" ++ show type_ ++ "` for the `type` key.")
                     empty
@@ -120,6 +120,10 @@ instance ToJSON Type where
     toJSON (BT_TypeParam p) = object
         [ "type" .= String "parameter"
         , "value" .= p
+        ]
+    toJSON (BT_UserDefined decl []) = object
+        [ "type" .= String "user"
+        , "declaration" .= decl
         ]
     toJSON (BT_UserDefined decl args) = object
         [ "type" .= String "user"
@@ -206,11 +210,38 @@ deriving instance Generic Language
 instance FromJSON Language
 instance ToJSON Language
 
-deriving instance Generic Namespace
-instance FromJSON Namespace
-instance ToJSON Namespace
+instance FromJSON Namespace where
+    parseJSON (Object v) =
+        Namespace <$>
+            v .:? "language" <*>
+            v .: "name"
+    parseJSON x = modifyFailure
+                    (const $ "Expected an object but found: " ++ show x)
+                    empty
 
-deriving instance Generic Bond
-instance FromJSON Bond
-instance ToJSON Bond
+instance ToJSON Namespace where
+    toJSON (Namespace Nothing name) = object
+        [ "name" .= name
+        ]
+    toJSON Namespace {..} = object
+        [ "language" .= nsLanguage
+        , "name" .= nsName
+        ]
+
+instance FromJSON Bond where
+    parseJSON (Object v) =
+        Bond <$>
+            v .: "imports" <*>
+            v .: "namespaces" <*>
+            v .: "declarations"
+    parseJSON x = modifyFailure
+                    (const $ "Expected an object but found: " ++ show x)
+                    empty
+
+instance ToJSON Bond where
+    toJSON Bond {..} = object
+        [ "imports" .= bondImports
+        , "namespaces" .= bondNamespaces
+        , "declarations" .= bondDeclarations
+        ]
 
