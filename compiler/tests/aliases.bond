@@ -1,0 +1,9 @@
+namespace tests
+
+using array<N, T> = vector<T>;
+using array10<T> = array<10, T>;
+
+struct Foo<T>
+{
+    0: array10<array<20, T>> aa;
+}

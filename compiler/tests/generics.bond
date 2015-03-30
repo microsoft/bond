@@ -1,0 +1,7 @@
+namespace tests
+
+struct Foo<T1, T2 : value>
+{
+    0: T2 t2;
+    1: nullable<Foo<T1, bool>> n;
+}

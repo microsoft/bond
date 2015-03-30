@@ -1,0 +1,11 @@
+namespace tests
+
+struct Base
+{
+    0: int32 x;
+}
+
+struct Foo : Base
+{
+    0: int32 x;
+}

@@ -3,12 +3,24 @@ import System.Exit (exitFailure)
 import Data.Monoid
 import Test.Framework
 import Test.Framework.Providers.QuickCheck2 (testProperty)
+import Test.Framework.Providers.HUnit (testCase)
 import Tests.Schema
 
 tests :: [Test]
 tests =
     [ testGroup "AST"
-        [ testProperty "roundtripAST" roundtripAST
+        [ testProperty "roundtrip" roundtripAST
+        , testGroup "Compare .bond and .json"
+            [ testCase "attributes" $ compareAST "attributes"
+            , testCase "basic types" $ compareAST "basic_types"
+            , testCase "complex types" $ compareAST "complex_types"
+            , testCase "default values" $ compareAST "defaults"
+            , testCase "empty" $ compareAST "empty"
+            , testCase "field modifiers" $ compareAST "field_modifiers"
+            , testCase "generics" $ compareAST "generics"
+            , testCase "inheritance" $ compareAST "inheritance"
+            , testCase "type aliases" $ compareAST "aliases"
+            ]
         ]
     ]
 

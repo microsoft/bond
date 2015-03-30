@@ -1,0 +1,17 @@
+namespace tests
+
+[EnumAttribute1("one")]
+[EnumAttribute2("two")]
+enum Enum
+{
+    Value1
+}
+
+[StructAttribute1("one")]
+[StructAttribute2("two")]
+struct Foo
+{
+    [FieldAttribute1("one")]
+    [FieldAttribute2("two")]
+    0: string f;
+}

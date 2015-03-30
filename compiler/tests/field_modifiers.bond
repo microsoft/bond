@@ -1,0 +1,8 @@
+namespace tests
+
+struct Foo
+{
+    0: optional bool o;
+    1: required int16 r;
+    2: required_optional double ro;
+}
