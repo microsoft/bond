@@ -1,14 +1,12 @@
 {-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs, MultiWayIf, InstanceSigs #-}
 module Bond.CompactBinary (
-    serializeCompactV1S,
-    serializeCompactS,
     deserializeCompactV1,
     serializeCompactV1,
     deserializeCompact,
     serializeCompact,
-    compactV1ToStream',
+    compactV1ToStream,
     streamToCompactV1,
-    compactToStream',
+    compactToStream,
     streamToCompact,
     CompactBinaryV1Proto,
     CompactBinaryProto,
@@ -146,7 +144,7 @@ instance BondBinaryProto CompactBinaryV1Proto where
         case ret of
             Left err -> fail err
             Right a -> bondPut a
-    bondPutBonded (BondedStream sig s) = streamToCompactV1 $ streamBonded sig s
+    bondPutBonded (BondedStream sig s) = streamBonded sig s >>= streamToCompactV1 
     bondPutStruct = saveStruct BT_STOP (bondGetInfo Proxy)
 
     bondGetBool = do
@@ -365,10 +363,6 @@ serializeCompactV1 :: BondStruct a => a -> Lazy.ByteString
 serializeCompactV1 v = let BondPut g = bondPut v :: BondPut CompactBinaryV1Proto
                         in runPut g
 
-compactV1ToStream' :: Lazy.ByteString -> StreamStruct
-compactV1ToStream' = let BondGet parser = compactV1ToStream
-                      in runGet parser
-
 compactV1ToStream :: BondGet CompactBinaryV1Proto StreamStruct
 compactV1ToStream = loop (StreamStruct Nothing [])
     where
@@ -534,7 +528,7 @@ instance BondBinaryProto CompactBinaryProto where
         case ret of
             Left err -> fail err
             Right a -> bondPut a
-    bondPutBonded (BondedStream sig s) = streamToCompact $ streamBonded sig s
+    bondPutBonded (BondedStream sig s) = streamBonded sig s >>= streamToCompact 
     bondPutStruct = putStruct (bondGetInfo Proxy)
 
     bondGetBool = do
@@ -644,10 +638,6 @@ deserializeCompact = let BondGet g = bondGet :: BondGet CompactBinaryProto (Mayb
 serializeCompact :: BondStruct a => a -> Lazy.ByteString
 serializeCompact v = let BondPut g = bondPut v :: BondPut CompactBinaryProto
                       in runPut g
-
-compactToStream' :: Lazy.ByteString -> StreamStruct
-compactToStream' = let BondGet parser = compactToStream
-                    in runGet parser
 
 compactToStream :: BondGet CompactBinaryProto StreamStruct
 compactToStream = do
@@ -775,11 +765,3 @@ streamToCompact struct = do
         bondPutInt64 v
     putElem (SeWString v) = do
         bondPutWString v
-
-serializeCompactS :: StreamStruct -> Lazy.ByteString
-serializeCompactS v = let BondPut g = streamToCompact v
-                       in runPut g
-
-serializeCompactV1S :: StreamStruct -> Lazy.ByteString
-serializeCompactV1S v = let BondPut g = streamToCompactV1 v
-                         in runPut g

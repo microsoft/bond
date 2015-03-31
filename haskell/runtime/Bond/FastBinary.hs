@@ -1,7 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs, MultiWayIf, InstanceSigs #-}
 module Bond.FastBinary (
-    serializeFastS,
-    fastToStream',
+    fastToStream,
     deserializeFast,
     serializeFast,
     FastBinaryProto
@@ -106,7 +105,7 @@ instance BondBinaryProto FastBinaryProto where
         case ret of
             Left err -> fail err
             Right a -> bondPut a
-    bondPutBonded (BondedStream sig s) = streamToFast $ streamBonded sig s
+    bondPutBonded (BondedStream sig s) = streamBonded sig s >>= streamToFast
     bondPutStruct = saveStruct BT_STOP (bondGetInfo Proxy)
 
     bondGetBool = do
@@ -415,11 +414,3 @@ streamToFast struct = do
         bondPutInt64 v
     putElem (SeWString v) = do
         bondPutWString v
-
-serializeFastS :: StreamStruct -> Lazy.ByteString
-serializeFastS v = let BondPut g = streamToFast v
-                    in runPut g
-
-fastToStream' :: Lazy.ByteString -> StreamStruct
-fastToStream' = let BondGet parser = fastToStream
-                 in runGet parser
