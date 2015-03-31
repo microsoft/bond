@@ -1,0 +1,85 @@
+-- The name of the package.
+name:               bond
+
+-- The package version.  See the Haskell package versioning policy (PVP) 
+-- for standards guiding when and how versions should be incremented.
+-- http://www.haskell.org/haskellwiki/Package_versioning_policy
+-- PVP summary:     +-+------- breaking API changes
+--                  | | +----- non-breaking API additions
+--                  | | | +--- code changes with no API change
+version:            3.0.2.0
+
+-- A short (one-line) description of the package.
+synopsis:           Bond Library
+
+-- A longer description of the package.
+-- description:         
+
+-- URL for the project homepage or repository.
+homepage:           https://github.com/Microsoft/bond
+
+-- The license under which the package is released.
+license:            MIT
+
+-- The file containing the license text.
+-- license-file:    LICENSE
+
+-- The package author(s).
+author:             Andrey Sverdlichenko
+
+-- An email address to which users can send suggestions, bug reports, and 
+-- patches.
+maintainer:         andreys@microsoft.com
+
+-- A copyright notice.
+copyright:          Copyright (C) Microsoft. All rights reserved.
+
+category:           Language
+
+build-type:         Simple
+
+-- Constraint on the version of Cabal needed to build this package.
+cabal-version:      >=1.8
+
+
+library
+  ghc-options:      -O2 -W -Wall
+  
+  exposed-modules:  Bond.API,
+                    Bond.Imports
+
+  other-modules:    Bond.BinaryProto,
+                    Bond.Bonded,
+                    Bond.Cast,
+                    Bond.CompactBinary,
+                    Bond.Default,
+                    Bond.FastBinary,
+                    Bond.Schema,
+                    Bond.SimpleBinary,
+                    Bond.Stream,
+                    Bond.Types,
+                    Bond.Wire
+  
+  build-depends:    base >=4.5,
+                    array >= 0.4,
+                    binary >= 0.7,
+                    bytestring >= 0.10,
+                    containers >= 0.5,
+                    hashable >= 1.2,
+                    text >= 1.2,
+                    unordered-containers >= 0.2,
+                    vector >= 0.10
+
+test-suite compat
+  type:             exitcode-stdio-1.0
+  main-is:          CompatTest.hs
+  hs-source-dirs:   tests, generated
+  ghc-options:      -O2 -W -Wall
+  build-depends:    base >= 4.5,
+                    binary >= 0.7,
+                    bytestring >= 0.10,
+                    HUnit >= 1.2,
+                    test-framework >= 0.8,
+                    test-framework-hunit >= 0.2,
+                    test-framework-quickcheck2 >= 0.2,
+                    bond

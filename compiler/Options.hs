@@ -42,6 +42,14 @@ data Options
         , fields :: Bool
         , jobs :: Maybe Int
         }
+    | Haskell
+        { files :: [FilePath]
+        , import_dir :: [FilePath]
+        , output_dir :: FilePath
+        , using :: [String]
+        , namespace :: [String]
+        , jobs :: Maybe Int
+        }
       deriving (Show, Data, Typeable)
 
 cpp :: Options
@@ -70,8 +78,14 @@ cs = Cs
     name "c#" &= 
     help "Generate C# code"
 
+haskell :: Options
+haskell = Haskell { }
+    &=
+    name "haskell" &=
+    help "Generate Haskell code"
+
 mode :: Mode (CmdArgs Options)
-mode = cmdArgsMode $ modes [cpp, cs] &= 
+mode = cmdArgsMode $ modes [cpp, cs, haskell] &=
     program "gbc" &= 
     help "Compile Bond schema definition file and generate specified output" &=
     summary ("Bond Compiler " ++ majorVersion ++ "." ++ minorVersion ++ ", (C) Microsoft")
