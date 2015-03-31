@@ -8,6 +8,7 @@ module Bond.FastBinary (
   ) where
 
 import Bond.BinaryProto
+import Bond.Bonded
 import Bond.Cast
 import Bond.Default
 import Bond.Schema
@@ -100,6 +101,12 @@ instance BondBinaryProto FastBinaryProto where
         BondPut $ putByteString b
     bondPutBonded (BondedObject a) = bondPut a
     bondPutBonded (BondedStream sig s) | sig == fastSig = BondPut $ putLazyByteString s
+    bondPutBonded b@(BondedStream sig _) | sig == simpleV1Sig || sig == simpleSig = do
+        let ret = unpackBonded b
+        case ret of
+            Left err -> fail err
+            Right a -> bondPut a
+    bondPutBonded (BondedStream sig s) = streamToFast $ streamBonded sig s
     bondPutStruct = saveStruct BT_STOP (bondGetInfo Proxy)
 
     bondGetBool = do

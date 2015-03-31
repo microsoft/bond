@@ -68,8 +68,8 @@ instance BondBinaryProto SimpleBinaryV1Proto where
         BondPut $ putByteString b
     bondPutBonded (BondedObject a) = do
         let bs = serializeSimpleV1 a
-        putBonded (BondedStream simpleV1Sig bs)
-    bondPutBonded s = putBonded s
+        putBonded simpleV1Sig bs
+    bondPutBonded (BondedStream sig s) = putBonded sig s
     bondPutStruct = saveStruct (bondGetInfo Proxy)
 
     bondGetBool = do
@@ -132,8 +132,8 @@ getBonded = do
     bs <- BondGet $ getLazyByteString (fromIntegral $ size - 4)
     return $ Just $ BondedStream (ProtoSig sig) bs
 
-putBonded :: BondBinaryProto t => Bonded a -> BondPut t
-putBonded (BondedStream (ProtoSig sig) s) = do
+putBonded :: BondBinaryProto t => ProtoSig -> Lazy.ByteString -> BondPut t
+putBonded (ProtoSig sig) s = do
     BondPut $ putWord32le $ fromIntegral (4 + Lazy.length s)
     BondPut $ putWord32be sig
     BondPut $ putLazyByteString s
@@ -209,8 +209,8 @@ instance BondBinaryProto SimpleBinaryProto where
         BondPut $ putByteString b
     bondPutBonded (BondedObject a) = do
         let bs = serializeSimple a
-        putBonded (BondedStream simpleSig bs)
-    bondPutBonded s = putBonded s
+        putBonded simpleSig bs
+    bondPutBonded (BondedStream sig s) = putBonded sig s
     bondPutStruct = saveStruct (bondGetInfo Proxy)
 
     bondGetBool = do

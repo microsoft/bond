@@ -7,6 +7,7 @@ module Bond.Imports (
   ) where
 
 import Bond.BinaryProto as X
+import Bond.CompactBinary as X
 import Bond.Default as X
 import Bond.Schema as X
 import Bond.Types as X

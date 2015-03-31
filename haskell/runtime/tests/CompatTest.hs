@@ -32,16 +32,31 @@ main :: IO ()
 main = defaultMain [
     testGroup "Fast Binary protocol" [
         testCase "parsing existing data" $ testParseCompat deserializeFast fastBinaryData,
-        testCase "saving and parsing data" $ testParseOwnOutput deserializeFast serializeFast fastBinaryData
+        testCase "saving and parsing data" $ testParseOwnOutput deserializeFast serializeFast fastBinaryData,
+        testCase "saving and restoring Bonded a" $ testBonded deserializeFast serializeFast fastBinaryData,
+        testCase "testing Fast->CompactV1 transform" $ testRecode deserializeFast serializeCompactV1 deserializeCompactV1 fastBinaryData,
+        testCase "testing Fast->Compact transform" $ testRecode deserializeFast serializeCompact deserializeCompact fastBinaryData,
+        testCase "testing Fast->SimpleV1 transform" $ testRecodeNoDefaults deserializeFast serializeSimpleV1 deserializeSimpleV1 fastBinaryData,
+        testCase "testing Fast->Simple transform" $ testRecodeNoDefaults deserializeFast serializeSimple deserializeSimple fastBinaryData
     ],
     testGroup "Compact Binary protocol" [
         testGroup "Version 1" [
             testCase "parsing existing data" $ testParseCompat deserializeCompactV1 compactBinaryV1Data,
-            testCase "saving and parsing data" $ testParseOwnOutput deserializeCompactV1 serializeCompactV1 compactBinaryV1Data
+            testCase "saving and parsing data" $ testParseOwnOutput deserializeCompactV1 serializeCompactV1 compactBinaryV1Data,
+            testCase "saving and restoring Bonded a" $ testBonded deserializeCompactV1 serializeCompactV1 compactBinaryV1Data,
+            testCase "testing CompactV1->Fast transform" $ testRecode deserializeCompactV1 serializeFast deserializeFast compactBinaryV1Data,
+            testCase "testing CompactV1->CompactV2 transform" $ testRecode deserializeCompactV1 serializeCompact deserializeCompact compactBinaryV1Data,
+            testCase "testing CompactV1->SimpleV1 transform" $ testRecodeNoDefaults deserializeCompactV1 serializeSimpleV1 deserializeSimpleV1 compactBinaryV1Data,
+            testCase "testing CompactV1->Simple transform" $ testRecodeNoDefaults deserializeCompactV1 serializeSimple deserializeSimple compactBinaryV1Data
         ],
         testGroup "Version 2" [
             testCase "parsing existing data" $ testParseCompat deserializeCompact compactBinaryV2Data,
-            testCase "saving and parsing data" $ testParseOwnOutput deserializeCompact serializeCompact compactBinaryV2Data
+            testCase "saving and parsing data" $ testParseOwnOutput deserializeCompact serializeCompact compactBinaryV2Data,
+            testCase "saving and restoring Bonded a" $ testBonded deserializeCompact serializeCompact compactBinaryV2Data,
+            testCase "testing CompactV2->Fast transform" $ testRecode deserializeCompact serializeFast deserializeFast compactBinaryV2Data,
+            testCase "testing CompactV2->CompactV1 transform" $ testRecode deserializeCompact serializeCompactV1 deserializeCompactV1 compactBinaryV2Data,
+            testCase "testing CompactV2->SimpleV1 transform" $ testRecodeNoDefaults deserializeCompact serializeSimpleV1 deserializeSimpleV1 compactBinaryV2Data,
+            testCase "testing CompactV2->Simple transform" $ testRecodeNoDefaults deserializeCompact serializeSimple deserializeSimple compactBinaryV2Data
         ],
         testProperty "check int conversion in CompactBinary" compactDecodeEncodeInt
     ],
@@ -49,12 +64,20 @@ main = defaultMain [
         testGroup "Version 1" [
             testCase "parsing existing data" $ testParseCompat deserializeSimpleV1 simpleBinaryV1Data,
             testCase "saving and parsing data" $ testParseOwnOutput deserializeSimpleV1 serializeSimpleV1 simpleBinaryV1Data,
-            testCase "saving and restoring Bonded a" $ testBonded deserializeSimpleV1 serializeSimpleV1 simpleBinaryV1Data
+            testCase "saving and restoring Bonded a" $ testBonded deserializeSimpleV1 serializeSimpleV1 simpleBinaryV1Data,
+            testCase "testing SimpleV1->CompactV1 transform" $ testRecode deserializeSimpleV1 serializeCompactV1 deserializeCompactV1 simpleBinaryV1Data,
+            testCase "testing SimpleV1->Compact transform" $ testRecode deserializeSimpleV1 serializeCompact deserializeCompact simpleBinaryV1Data,
+            testCase "testing SimpleV1->Fast transform" $ testRecode deserializeSimpleV1 serializeFast deserializeFast simpleBinaryV1Data,
+            testCase "testing SimpleV1->SimpleV2 transform" $ testRecode deserializeSimpleV1 serializeSimple deserializeSimple simpleBinaryV1Data
         ],
         testGroup "Version 2" [
             testCase "parsing existing data" $ testParseCompat deserializeSimple simpleBinaryV2Data,
             testCase "saving and parsing data" $ testParseOwnOutput deserializeSimple serializeSimple simpleBinaryV2Data,
-            testCase "saving and restoring Bonded a" $ testBonded deserializeSimple serializeSimple simpleBinaryV2Data
+            testCase "saving and restoring Bonded a" $ testBonded deserializeSimple serializeSimple simpleBinaryV2Data,
+            testCase "testing Simple->CompactV1 transform" $ testRecode deserializeSimple serializeCompactV1 deserializeCompactV1 simpleBinaryV2Data,
+            testCase "testing Simple->Compact transform" $ testRecode deserializeSimple serializeCompact deserializeCompact simpleBinaryV2Data,
+            testCase "testing Simple->Fast transform" $ testRecode deserializeSimple serializeFast deserializeFast simpleBinaryV2Data,
+            testCase "testing Simple->SimpleV1 transform" $ testRecode deserializeSimple serializeSimpleV1 deserializeSimpleV1 simpleBinaryV2Data
         ]
     ],
     testCase "Check for identical read results" testAllReadSameData
@@ -87,6 +110,23 @@ testBonded get put file = do
     let s' = runGetOrFail get b'
     let Right obj' = unpackBonded (m_basicUnintialized s')
     assertEqual "Saved Bonded value do not match parsed one" obj obj'
+
+testRecode :: GetFunc Compat -> PutFunc Compat -> GetFunc Compat -> String -> Assertion
+testRecode get put get' file = do
+    b <- BS.readFile file
+    let s = runGetOrFail get b
+    let b' = put s
+    let s' = runGetOrFail get' b'
+    assertEqual "Saved object is not equal to original" s s'
+
+testRecodeNoDefaults :: GetFunc Compat -> PutFunc Compat -> GetFunc Compat -> String -> Assertion
+testRecodeNoDefaults get put get' file = do
+    b <- BS.readFile file
+    let s = runGetOrFail get b
+    let sfix = s { m_defaults = Nothing } -- simple proto can't save defaultNothing
+    let b' = put sfix
+    let s' = runGetOrFail get' b'
+    assertEqual "Saved object is not equal to original" sfix s'
 
 testAllReadSameData :: Assertion
 testAllReadSameData = do

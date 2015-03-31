@@ -1,13 +1,15 @@
 {-# Language FlexibleContexts, AllowAmbiguousTypes #-}
 module Bond.Bonded (
         makeBonded,
-        unpackBonded
+        unpackBonded,
+        streamBonded
     ) where
 
 import Bond.BinaryProto
-import Bond.CompactBinary
-import Bond.FastBinary
+import {-# SOURCE #-} Bond.CompactBinary
+import {-# SOURCE #-} Bond.FastBinary
 import Bond.SimpleBinary
+import Bond.Stream
 import Bond.Types
 import qualified Data.ByteString.Lazy as Lazy
 
@@ -24,6 +26,12 @@ unpackBonded (BondedStream proto s)
 
 makeBonded :: a -> Bonded a
 makeBonded = BondedObject
+
+streamBonded :: ProtoSig -> Lazy.ByteString -> StreamStruct
+streamBonded sig | sig == compactV1Sig = compactV1ToStream'
+streamBonded sig | sig == compactSig = compactToStream'
+streamBonded sig | sig == fastSig = fastToStream'
+streamBonded _ = error "internal error: unstreamable protocol"
 
 getDecoder :: BondStruct a => ProtoSig -> Decoder a
 getDecoder proto

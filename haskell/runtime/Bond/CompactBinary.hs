@@ -18,6 +18,7 @@ module Bond.CompactBinary (
   ) where
 
 import Bond.BinaryProto
+import Bond.Bonded
 import Bond.Cast
 import Bond.Default
 import Bond.Schema
@@ -140,6 +141,12 @@ instance BondBinaryProto CompactBinaryV1Proto where
         BondPut $ putByteString b
     bondPutBonded (BondedObject a) = bondPut a
     bondPutBonded (BondedStream sig s) | sig == compactV1Sig = BondPut $ putLazyByteString s
+    bondPutBonded b@(BondedStream sig _) | sig == simpleV1Sig || sig == simpleSig = do
+        let ret = unpackBonded b
+        case ret of
+            Left err -> fail err
+            Right a -> bondPut a
+    bondPutBonded (BondedStream sig s) = streamToCompactV1 $ streamBonded sig s
     bondPutStruct = saveStruct BT_STOP (bondGetInfo Proxy)
 
     bondGetBool = do
@@ -522,6 +529,12 @@ instance BondBinaryProto CompactBinaryProto where
         BondPut $ putByteString b
     bondPutBonded (BondedObject a) = bondPut a
     bondPutBonded (BondedStream sig s) | sig == compactSig = BondPut $ putLazyByteString s
+    bondPutBonded b@(BondedStream sig _) | sig == simpleV1Sig || sig == simpleSig = do
+        let ret = unpackBonded b
+        case ret of
+            Left err -> fail err
+            Right a -> bondPut a
+    bondPutBonded (BondedStream sig s) = streamToCompact $ streamBonded sig s
     bondPutStruct = putStruct (bondGetInfo Proxy)
 
     bondGetBool = do
