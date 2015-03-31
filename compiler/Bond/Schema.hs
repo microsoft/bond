@@ -56,7 +56,7 @@ takeNamespace = subtract 1 . length >>= take
 showQualifiedName  :: QualifiedName -> String
 showQualifiedName  = sepBy "." id
 
-data Modifier = Optional | Required | RequiredOptional deriving (Eq, Show)
+data Modifier = Optional | Required | RequiredOptional deriving Eq
 
 data Type =
     BT_Int8 | BT_Int16 | BT_Int32 | BT_Int64 |
@@ -76,7 +76,7 @@ data Type =
     BT_IntTypeArg Int |
     BT_TypeParam TypeParam |
     BT_UserDefined Declaration [Type]
-    deriving (Eq, Show)
+    deriving Eq
 
 scalarType :: Type -> Bool
 scalarType BT_Int8 = True
@@ -136,14 +136,14 @@ data Default =
     DefaultString String |
     DefaultEnum String|
     DefaultNothing
-    deriving (Eq, Show)
+    deriving Eq
 
 data Attribute =
     Attribute                                                                                                                               
         { attrName :: QualifiedName         -- attribute name
         , attrValue :: String               -- value
         }
-    deriving (Eq, Show)
+    deriving Eq
 
 data Field =
     Field
@@ -154,7 +154,7 @@ data Field =
         , fieldName :: String               -- field name
         , fieldDefault :: Maybe Default     -- optional default value
         }
-    deriving (Eq, Show)
+    deriving Eq
 
 makeField :: [Attribute]
           -> Word16
@@ -171,26 +171,22 @@ data Constant =
         { constantName :: String            -- enum constant name
         , constantValue :: Maybe Int        -- optional value
         }
-    deriving (Eq, Show)
+    deriving Eq
 
-data Constraint = Value deriving (Eq, Show)
+data Constraint = Value deriving Eq
 
-{-
 instance Show Constraint where
     show Value = ": value"
--}
 
 data TypeParam =
     TypeParam
         { paramName :: String
         , paramConstraint :: Maybe Constraint
         }
-        deriving (Eq, Show)
+        deriving Eq
 
-{-
 instance Show TypeParam where
     show TypeParam {..} = paramName ++ optional show paramConstraint
--}
 
 data Declaration =
     Struct
@@ -221,9 +217,8 @@ data Declaration =
         , declParams :: [TypeParam]         -- type parameters for generics
         , aliasType :: Type                 -- aliased type
         }
-    deriving (Eq, Show)
+    deriving Eq
 
-{-
 showTypeParams :: [TypeParam] -> String
 showTypeParams = angles . sepBy ", " show
 
@@ -232,7 +227,6 @@ instance Show Declaration where
     show Enum {..} = "enum " ++ declName
     show Forward {..} = "struct declaration " ++ declName ++ showTypeParams declParams
     show Alias {..} = "alias " ++ declName ++ showTypeParams declParams
--}
 
 mapType :: (Type -> Type) -> Type -> Type
 mapType f (BT_UserDefined decl args) = BT_UserDefined decl $ map f args
@@ -282,7 +276,6 @@ isBaseField :: String -> Maybe Type -> Bool
 isBaseField name = getAny . optional (foldMapFields (Any.(name==).fieldName))
 
 data Import = Import FilePath
-    deriving Show
 
 data Language = Cpp | Cs | CSharp | Java | Haskell deriving (Eq, Show)
 
@@ -291,6 +284,6 @@ data Namespace =
         { nsLanguage :: Maybe Language
         , nsName :: QualifiedName
         }
-        deriving (Eq, Show)
+        deriving Eq
 
 
