@@ -49,7 +49,7 @@ function (add_bond_codegen)
         OUTPUT ${outputs}
         COMMAND ${GBC_EXECUTABLE} c++ ${options} ${inputs}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DEPENDS ${inputs} compiler ${GBC_EXECUTABLE})
+        DEPENDS ${inputs} gbc ${GBC_EXECUTABLE})
     if (arg_TARGET)
         add_custom_target (${arg_TARGET}
             DEPENDS ${outputs}

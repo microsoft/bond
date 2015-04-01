@@ -15,44 +15,46 @@ copyright:          Copyright (c) Microsoft. All rights reserved.
 category:           Language
 build-type:         Simple
 
-test-suite tests
+test-suite gbc-tests
   type:             exitcode-stdio-1.0
   hs-source-dirs:   tests, .
   main-is:          Main.hs
   other-modules:
   ghc-options:      -threaded
-  build-depends:    base >=4.5,
+  build-depends:    aeson >= 0.7.0.6,
+                    async >= 2.0.1.0,
+                    base >=4.5,
+                    bytestring >= 0.10,
+                    cmdargs >= 0.10.10,
+                    directory >= 1.1,
+                    filepath >=1.0,
+                    ghc-prim,
+                    monad-loops >= 0.4,
+                    mtl >= 2.1,
+                    parsec >=3.1,
                     shakespeare >= 2.0,
                     text >=0.11,
-                    parsec >=3.1,
-                    filepath >=1.0,
-                    cmdargs >= 0.10.10,
-                    mtl >= 2.1,
-                    directory >= 1.1,
-                    async >= 2.0.1.0,
-                    monad-loops >= 0.4,
-                    aeson >= 0.7.0.6,
-                    bytestring >= 0.10,
+                    derive,
                     HUnit,
                     QuickCheck,
                     test-framework,
                     test-framework-hunit,
-                    test-framework-quickcheck2,
-                    derive
+                    test-framework-quickcheck2
 
 executable gbc
   main-is:          Main.hs
   ghc-options:      -threaded
   other-modules:
-  build-depends:    base >=4.5,
-                    aeson >= 0.7.0.6,
-                    bytestring >= 0.10,
-                    shakespeare >= 2.0,
-                    text >=0.11,
-                    parsec >=3.1,
-                    filepath >=1.0,
-                    cmdargs >= 0.10.10,
-                    mtl >= 2.1,
-                    directory >= 1.1,
+  build-depends:    aeson >= 0.7.0.6,
                     async >= 2.0.1.0,
-                    monad-loops >= 0.4
+                    base >=4.5,
+                    bytestring >= 0.10,
+                    cmdargs >= 0.10.10,
+                    directory >= 1.1,
+                    filepath >=1.0,
+                    ghc-prim,
+                    monad-loops >= 0.4,
+                    mtl >= 2.1,
+                    parsec >=3.1,
+                    shakespeare >= 2.0,
+                    text >=0.11

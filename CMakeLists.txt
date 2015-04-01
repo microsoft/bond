@@ -28,6 +28,8 @@ add_subdirectory (doc)
 add_python_subdirectory (python)
 add_subdirectory (examples)
 
+add_dependencies (check gbc-tests)
+
 install (DIRECTORY
     cpp/inc/bond
     cpp/generated/bond

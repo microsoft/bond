@@ -3,9 +3,44 @@ cmake_minimum_required (VERSION 2.8.12)
 set (CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
 
+include (CMakeParseArguments)
+
 # required Haskell components
 find_package (Cabal 1.18.0.0 REQUIRED)
 find_package (GHC 7.4.1.0 REQUIRED)
+
+function (add_cabal_build target)
+    set (flagArgs ENABLE_TESTS)
+    set (multiValueArgs SOURCES DEPENDS)
+    cmake_parse_arguments (arg "${flagArgs}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    if (${arg_ENABLE_TESTS})
+        set (options --enable-tests)
+    endif()
+    add_custom_command (
+        DEPENDS ${arg_SOURCES}
+        COMMAND ${CMAKE_COMMAND} 
+            ${CMAKE_BINARY_DIR}
+            -N
+            -Dbuild_dir=${CMAKE_CURRENT_BINARY_DIR} 
+            -Dtarget=${target}
+            -Dcabal_options=${options}
+            -P cabal_build.cmake
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/build/${target}/${target}${CMAKE_EXECUTABLE_SUFFIX})
+    add_custom_target (${target}
+        SOURCES ${arg_SOURCES}
+        DEPENDS ${arg_DEPENDS} 
+                ${CMAKE_CURRENT_BINARY_DIR}/build/${target}/${target}${CMAKE_EXECUTABLE_SUFFIX})
+endfunction()    
+
+function (add_cabal_test target)
+    list (INSERT ${target} 0 EXCLUDE_FROM_ALL) 
+    add_cabal_build (${ARGV} ENABLE_TESTS)
+    add_test (
+        NAME ${target} 
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/build/${target}/${target})
+endfunction()
 
 set (sources
     gbc.cabal
@@ -31,10 +66,13 @@ set (sources
     Bond/Template/Cs/Types_cs.hs
     Bond/Template/Cs/Util.hs)
 
-set (output_dir ${CMAKE_CURRENT_BINARY_DIR})
-set (output ${output_dir}/build/gbc/gbc${CMAKE_EXECUTABLE_SUFFIX})
+set (test_sources
+    tests/Main.hs
+    tests/Tests/Schema.hs)
+
 set (completion_dir /etc/bash_completion.d)
-set (completion ${output_dir}/gbc.comp)
+set (completion ${CMAKE_CURRENT_BINARY_DIR}/gbc.comp)
+set (output ${CMAKE_CURRENT_BINARY_DIR}/build/gbc/gbc${CMAKE_EXECUTABLE_SUFFIX})
 set (GBC_EXECUTABLE ${output} PARENT_SCOPE)
 
 add_custom_command (
@@ -46,23 +84,17 @@ add_custom_command (
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/cabal.sandbox.config)
 
 add_custom_command (
-    DEPENDS ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/cabal.sandbox.config
-    COMMAND ${CMAKE_COMMAND} 
-        ${CMAKE_BINARY_DIR}
-        -N
-        -Doutput_dir=${output_dir} 
-        -P cabal_build.cmake
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    OUTPUT ${output})
-
-add_custom_command (
     DEPENDS ${output}
     COMMAND ${output} --help=bash > ${completion}
     OUTPUT ${completion})
 
-add_custom_target (compiler
-    SOURCES ${sources}
-    DEPENDS ${output} ${completion})
+add_cabal_build (gbc
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cabal.sandbox.config ${completion}
+    SOURCES ${sources})
+
+add_cabal_test (gbc-tests
+    DEPENDS gbc
+    SOURCES ${test_sources})
 
 install (FILES ${output}
     PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE

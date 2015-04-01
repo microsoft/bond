@@ -15,7 +15,7 @@ if ($ENV{APPVEYOR})
 endif()
 
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} install   --with-compiler=${Haskell_GHC_EXECUTABLE} --only-dependencies --jobs ${GHC_OPTIONS}
+    COMMAND ${Haskell_CABAL_EXECUTABLE} install   ${cabal_options} --with-compiler=${Haskell_GHC_EXECUTABLE} --only-dependencies --jobs ${GHC_OPTIONS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 
@@ -24,7 +24,7 @@ if (error)
 endif()
 
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} configure --with-compiler=${Haskell_GHC_EXECUTABLE} --builddir=${output_dir}
+    COMMAND ${Haskell_CABAL_EXECUTABLE} configure ${cabal_options} --with-compiler=${Haskell_GHC_EXECUTABLE} --builddir=${build_dir}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 
@@ -33,7 +33,7 @@ if (error)
 endif()
 
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} build     --with-ghc=${Haskell_GHC_EXECUTABLE} --ghc-option=-O2 --jobs --builddir=${output_dir}
+    COMMAND ${Haskell_CABAL_EXECUTABLE} build ${target} --with-ghc=${Haskell_GHC_EXECUTABLE} --ghc-option=-O2 --jobs --builddir=${build_dir}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 
