@@ -15,6 +15,15 @@ if ($ENV{APPVEYOR})
 endif()
 
 execute_process (
+    COMMAND ${Haskell_CABAL_EXECUTABLE} install   --with-compiler=${Haskell_GHC_EXECUTABLE} --jobs ${GHC_OPTIONS} happy
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    RESULT_VARIABLE error)
+
+if (error)
+    message (FATAL_ERROR)
+endif()
+
+execute_process (
     COMMAND ${Haskell_CABAL_EXECUTABLE} install   --with-compiler=${Haskell_GHC_EXECUTABLE} --only-dependencies --jobs ${GHC_OPTIONS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
