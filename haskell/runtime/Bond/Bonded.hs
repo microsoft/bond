@@ -1,4 +1,3 @@
-{-# Language FlexibleContexts, AllowAmbiguousTypes #-}
 module Bond.Bonded (
         makeBonded,
         unpackBonded,
