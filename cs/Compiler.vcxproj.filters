@@ -13,8 +13,14 @@
     <None Include="$(ProjectDir)..\compiler\Bond\Parser.hs">
       <Filter>Bond</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Schema.hs">
-      <Filter>Bond</Filter>
+    <None Include="$(ProjectDir)..\compiler\Bond\Schema\JSON.hs">
+      <Filter>Bond\Schema</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Schema\Types.hs">
+      <Filter>Bond\Schema</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\Bond\Schema\Util.hs">
+      <Filter>Bond\Schema</Filter>
     </None>
     <None Include="$(ProjectDir)..\compiler\Bond\Version.hs">
       <Filter>Bond</Filter>
@@ -64,6 +70,9 @@
       <UniqueIdentifier>{585b26a1-2a98-4a75-80d5-b9218a71ba2d}</UniqueIdentifier>
       <Extensions>
       </Extensions>
+    </Filter>
+    <Filter Include="Bond\Schema">
+      <UniqueIdentifier>{905ABB36-088E-4045-8EA5-7316C8675D60}</UniqueIdentifier>
     </Filter>
     <Filter Include="Bond\Template">
       <UniqueIdentifier>{6136aa59-3761-4878-85e7-efda39785ecb}</UniqueIdentifier>
