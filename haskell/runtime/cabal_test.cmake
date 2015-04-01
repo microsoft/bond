@@ -15,7 +15,7 @@ if ($ENV{APPVEYOR})
 endif()
 
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} test --builddir=${output_dir}
+    COMMAND ${Haskell_CABAL_EXECUTABLE} test --builddir=${output_dir} --test-option=${CMAKE_CURRENT_SOURCE_DIR}/../../test/compat/data
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 

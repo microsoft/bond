@@ -1,10 +1,13 @@
 module Main where
 
-import Test.Framework (defaultMain, testGroup)
+import Test.Framework (defaultMainWithArgs, testGroup)
 import Test.Framework.Providers.HUnit
 import Test.Framework.Providers.QuickCheck2
 import Test.HUnit
+import Control.Monad
 import Data.Int
+import System.Environment
+import System.FilePath
 
 import Unittest.Compat.Compat
 import qualified Data.ByteString.Lazy as BS
@@ -16,11 +19,11 @@ type GetFunc a = BS.ByteString -> Either (BS.ByteString, Int64, String) (BS.Byte
 type PutFunc a = a -> BS.ByteString
 
 fastBinaryData, compactBinaryV1Data, compactBinaryV2Data, simpleBinaryV1Data, simpleBinaryV2Data :: String
-fastBinaryData = "/home/blaze/bond/test/compat/data/compat.fast.dat"
-compactBinaryV1Data = "/home/blaze/bond/test/compat/data/compat.compact.dat"
-compactBinaryV2Data = "/home/blaze/bond/test/compat/data/compat.compact2.dat"
-simpleBinaryV1Data = "/home/blaze/bond/test/compat/data/compat.simple.dat"
-simpleBinaryV2Data = "/home/blaze/bond/test/compat/data/compat.simple2.dat"
+fastBinaryData = "compat.fast.dat"
+compactBinaryV1Data = "compat.compact.dat"
+compactBinaryV2Data = "compat.compact2.dat"
+simpleBinaryV1Data = "compat.simple.dat"
+simpleBinaryV2Data = "compat.simple2.dat"
 
 runGetOrFail :: BondStruct a => GetFunc a -> BS.ByteString -> a
 runGetOrFail get s = case get s of
@@ -29,59 +32,62 @@ runGetOrFail get s = case get s of
                     Left (_, _, msg) -> error msg
 
 main :: IO ()
-main = defaultMain [
-    testGroup "Fast Binary protocol" [
-        testCase "parsing existing data" $ testParseCompat deserializeFast fastBinaryData,
-        testCase "saving and parsing data" $ testParseOwnOutput deserializeFast serializeFast fastBinaryData,
-        testCase "saving and restoring Bonded a" $ testBonded deserializeFast serializeFast fastBinaryData,
-        testCase "testing Fast->CompactV1 transform" $ testRecode deserializeFast serializeCompactV1 deserializeCompactV1 fastBinaryData,
-        testCase "testing Fast->Compact transform" $ testRecode deserializeFast serializeCompact deserializeCompact fastBinaryData,
-        testCase "testing Fast->SimpleV1 transform" $ testRecodeNoDefaults deserializeFast serializeSimpleV1 deserializeSimpleV1 fastBinaryData,
-        testCase "testing Fast->Simple transform" $ testRecodeNoDefaults deserializeFast serializeSimple deserializeSimple fastBinaryData
-    ],
-    testGroup "Compact Binary protocol" [
-        testGroup "Version 1" [
-            testCase "parsing existing data" $ testParseCompat deserializeCompactV1 compactBinaryV1Data,
-            testCase "saving and parsing data" $ testParseOwnOutput deserializeCompactV1 serializeCompactV1 compactBinaryV1Data,
-            testCase "saving and restoring Bonded a" $ testBonded deserializeCompactV1 serializeCompactV1 compactBinaryV1Data,
-            testCase "testing CompactV1->Fast transform" $ testRecode deserializeCompactV1 serializeFast deserializeFast compactBinaryV1Data,
-            testCase "testing CompactV1->CompactV2 transform" $ testRecode deserializeCompactV1 serializeCompact deserializeCompact compactBinaryV1Data,
-            testCase "testing CompactV1->SimpleV1 transform" $ testRecodeNoDefaults deserializeCompactV1 serializeSimpleV1 deserializeSimpleV1 compactBinaryV1Data,
-            testCase "testing CompactV1->Simple transform" $ testRecodeNoDefaults deserializeCompactV1 serializeSimple deserializeSimple compactBinaryV1Data
+main = do
+    args@(~(datapath:args')) <- getArgs
+    when (null args) $ fail "please specify path to data files"
+    defaultMainWithArgs [
+        testGroup "Fast Binary protocol" [
+            testCase "parsing existing data" $ testParseCompat deserializeFast (datapath </> fastBinaryData),
+            testCase "saving and parsing data" $ testParseOwnOutput deserializeFast serializeFast (datapath </> fastBinaryData),
+            testCase "saving and restoring Bonded a" $ testBonded deserializeFast serializeFast (datapath </> fastBinaryData),
+            testCase "testing Fast->CompactV1 transform" $ testRecode deserializeFast serializeCompactV1 deserializeCompactV1 (datapath </> fastBinaryData),
+            testCase "testing Fast->Compact transform" $ testRecode deserializeFast serializeCompact deserializeCompact (datapath </> fastBinaryData),
+            testCase "testing Fast->SimpleV1 transform" $ testRecodeNoDefaults deserializeFast serializeSimpleV1 deserializeSimpleV1 (datapath </> fastBinaryData),
+            testCase "testing Fast->Simple transform" $ testRecodeNoDefaults deserializeFast serializeSimple deserializeSimple (datapath </> fastBinaryData)
         ],
-        testGroup "Version 2" [
-            testCase "parsing existing data" $ testParseCompat deserializeCompact compactBinaryV2Data,
-            testCase "saving and parsing data" $ testParseOwnOutput deserializeCompact serializeCompact compactBinaryV2Data,
-            testCase "saving and restoring Bonded a" $ testBonded deserializeCompact serializeCompact compactBinaryV2Data,
-            testCase "testing CompactV2->Fast transform" $ testRecode deserializeCompact serializeFast deserializeFast compactBinaryV2Data,
-            testCase "testing CompactV2->CompactV1 transform" $ testRecode deserializeCompact serializeCompactV1 deserializeCompactV1 compactBinaryV2Data,
-            testCase "testing CompactV2->SimpleV1 transform" $ testRecodeNoDefaults deserializeCompact serializeSimpleV1 deserializeSimpleV1 compactBinaryV2Data,
-            testCase "testing CompactV2->Simple transform" $ testRecodeNoDefaults deserializeCompact serializeSimple deserializeSimple compactBinaryV2Data
+        testGroup "Compact Binary protocol" [
+            testGroup "Version 1" [
+                testCase "parsing existing data" $ testParseCompat deserializeCompactV1 (datapath </> compactBinaryV1Data),
+                testCase "saving and parsing data" $ testParseOwnOutput deserializeCompactV1 serializeCompactV1 (datapath </> compactBinaryV1Data),
+                testCase "saving and restoring Bonded a" $ testBonded deserializeCompactV1 serializeCompactV1 (datapath </> compactBinaryV1Data),
+                testCase "testing CompactV1->Fast transform" $ testRecode deserializeCompactV1 serializeFast deserializeFast (datapath </> compactBinaryV1Data),
+                testCase "testing CompactV1->CompactV2 transform" $ testRecode deserializeCompactV1 serializeCompact deserializeCompact (datapath </> compactBinaryV1Data),
+                testCase "testing CompactV1->SimpleV1 transform" $ testRecodeNoDefaults deserializeCompactV1 serializeSimpleV1 deserializeSimpleV1 (datapath </> compactBinaryV1Data),
+                testCase "testing CompactV1->Simple transform" $ testRecodeNoDefaults deserializeCompactV1 serializeSimple deserializeSimple (datapath </> compactBinaryV1Data)
+            ],
+            testGroup "Version 2" [
+                testCase "parsing existing data" $ testParseCompat deserializeCompact (datapath </> compactBinaryV2Data),
+                testCase "saving and parsing data" $ testParseOwnOutput deserializeCompact serializeCompact (datapath </> compactBinaryV2Data),
+                testCase "saving and restoring Bonded a" $ testBonded deserializeCompact serializeCompact (datapath </> compactBinaryV2Data),
+                testCase "testing CompactV2->Fast transform" $ testRecode deserializeCompact serializeFast deserializeFast (datapath </> compactBinaryV2Data),
+                testCase "testing CompactV2->CompactV1 transform" $ testRecode deserializeCompact serializeCompactV1 deserializeCompactV1 (datapath </> compactBinaryV2Data),
+                testCase "testing CompactV2->SimpleV1 transform" $ testRecodeNoDefaults deserializeCompact serializeSimpleV1 deserializeSimpleV1 (datapath </> compactBinaryV2Data),
+                testCase "testing CompactV2->Simple transform" $ testRecodeNoDefaults deserializeCompact serializeSimple deserializeSimple (datapath </> compactBinaryV2Data)
+            ],
+            testProperty "check int conversion in CompactBinary" compactDecodeEncodeInt
         ],
-        testProperty "check int conversion in CompactBinary" compactDecodeEncodeInt
-    ],
-    testGroup "Simple Binary protocol" [
-        testGroup "Version 1" [
-            testCase "parsing existing data" $ testParseCompat deserializeSimpleV1 simpleBinaryV1Data,
-            testCase "saving and parsing data" $ testParseOwnOutput deserializeSimpleV1 serializeSimpleV1 simpleBinaryV1Data,
-            testCase "saving and restoring Bonded a" $ testBonded deserializeSimpleV1 serializeSimpleV1 simpleBinaryV1Data,
-            testCase "testing SimpleV1->CompactV1 transform" $ testRecode deserializeSimpleV1 serializeCompactV1 deserializeCompactV1 simpleBinaryV1Data,
-            testCase "testing SimpleV1->Compact transform" $ testRecode deserializeSimpleV1 serializeCompact deserializeCompact simpleBinaryV1Data,
-            testCase "testing SimpleV1->Fast transform" $ testRecode deserializeSimpleV1 serializeFast deserializeFast simpleBinaryV1Data,
-            testCase "testing SimpleV1->SimpleV2 transform" $ testRecode deserializeSimpleV1 serializeSimple deserializeSimple simpleBinaryV1Data
+        testGroup "Simple Binary protocol" [
+            testGroup "Version 1" [
+                testCase "parsing existing data" $ testParseCompat deserializeSimpleV1 (datapath </> simpleBinaryV1Data),
+                testCase "saving and parsing data" $ testParseOwnOutput deserializeSimpleV1 serializeSimpleV1 (datapath </> simpleBinaryV1Data),
+                testCase "saving and restoring Bonded a" $ testBonded deserializeSimpleV1 serializeSimpleV1 (datapath </> simpleBinaryV1Data),
+                testCase "testing SimpleV1->CompactV1 transform" $ testRecode deserializeSimpleV1 serializeCompactV1 deserializeCompactV1 (datapath </> simpleBinaryV1Data),
+                testCase "testing SimpleV1->Compact transform" $ testRecode deserializeSimpleV1 serializeCompact deserializeCompact (datapath </> simpleBinaryV1Data),
+                testCase "testing SimpleV1->Fast transform" $ testRecode deserializeSimpleV1 serializeFast deserializeFast (datapath </> simpleBinaryV1Data),
+                testCase "testing SimpleV1->SimpleV2 transform" $ testRecode deserializeSimpleV1 serializeSimple deserializeSimple (datapath </> simpleBinaryV1Data)
+            ],
+            testGroup "Version 2" [
+                testCase "parsing existing data" $ testParseCompat deserializeSimple (datapath </> simpleBinaryV2Data),
+                testCase "saving and parsing data" $ testParseOwnOutput deserializeSimple serializeSimple (datapath </> simpleBinaryV2Data),
+                testCase "saving and restoring Bonded a" $ testBonded deserializeSimple serializeSimple (datapath </> simpleBinaryV2Data),
+                testCase "testing Simple->CompactV1 transform" $ testRecode deserializeSimple serializeCompactV1 deserializeCompactV1 (datapath </> simpleBinaryV2Data),
+                testCase "testing Simple->Compact transform" $ testRecode deserializeSimple serializeCompact deserializeCompact (datapath </> simpleBinaryV2Data),
+                testCase "testing Simple->Fast transform" $ testRecode deserializeSimple serializeFast deserializeFast (datapath </> simpleBinaryV2Data),
+                testCase "testing Simple->SimpleV1 transform" $ testRecode deserializeSimple serializeSimpleV1 deserializeSimpleV1 (datapath </> simpleBinaryV2Data)
+            ]
         ],
-        testGroup "Version 2" [
-            testCase "parsing existing data" $ testParseCompat deserializeSimple simpleBinaryV2Data,
-            testCase "saving and parsing data" $ testParseOwnOutput deserializeSimple serializeSimple simpleBinaryV2Data,
-            testCase "saving and restoring Bonded a" $ testBonded deserializeSimple serializeSimple simpleBinaryV2Data,
-            testCase "testing Simple->CompactV1 transform" $ testRecode deserializeSimple serializeCompactV1 deserializeCompactV1 simpleBinaryV2Data,
-            testCase "testing Simple->Compact transform" $ testRecode deserializeSimple serializeCompact deserializeCompact simpleBinaryV2Data,
-            testCase "testing Simple->Fast transform" $ testRecode deserializeSimple serializeFast deserializeFast simpleBinaryV2Data,
-            testCase "testing Simple->SimpleV1 transform" $ testRecode deserializeSimple serializeSimpleV1 deserializeSimpleV1 simpleBinaryV2Data
-        ]
-    ],
-    testCase "Check for identical read results" testAllReadSameData
- ]
+        testCase "Check for identical read results" $ testAllReadSameData datapath
+      ] args'
 
 testParseCompat :: GetFunc Compat -> String -> Assertion
 testParseCompat get file = do
@@ -128,17 +134,17 @@ testRecodeNoDefaults get put get' file = do
     let s' = runGetOrFail get' b'
     assertEqual "Saved object is not equal to original" sfix s'
 
-testAllReadSameData :: Assertion
-testAllReadSameData = do
-    fastbin <- BS.readFile fastBinaryData
+testAllReadSameData :: FilePath -> Assertion
+testAllReadSameData datapath = do
+    fastbin <- BS.readFile $ datapath </> fastBinaryData
     let fastrec = (runGetOrFail deserializeFast fastbin) :: Compat
-    cv1bin <- BS.readFile compactBinaryV1Data
+    cv1bin <- BS.readFile $ datapath </> compactBinaryV1Data
     let cv1rec = runGetOrFail deserializeCompactV1 cv1bin
-    cv2bin <- BS.readFile compactBinaryV2Data
+    cv2bin <- BS.readFile $ datapath </> compactBinaryV2Data
     let cv2rec = runGetOrFail deserializeCompact cv2bin
-    simple1bin <- BS.readFile simpleBinaryV1Data
+    simple1bin <- BS.readFile $ datapath </> simpleBinaryV1Data
     let simple1rec = (runGetOrFail deserializeSimpleV1 simple1bin) :: Compat
-    simple2bin <- BS.readFile simpleBinaryV2Data
+    simple2bin <- BS.readFile $ datapath </> simpleBinaryV2Data
     let simple2rec = runGetOrFail deserializeSimple simple2bin
     assertEqual "FastBinary read do not match CompactBinary v1 read" fastrec cv1rec
     assertEqual "FastBinary read do not match CompactBinary v2 read" fastrec cv2rec

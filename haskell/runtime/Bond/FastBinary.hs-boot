@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs, MultiWayIf, InstanceSigs #-}
+{-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs #-}
 module Bond.FastBinary (
     deserializeFast,
     fastToStream

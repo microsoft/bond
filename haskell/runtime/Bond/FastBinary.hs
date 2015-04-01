@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs, MultiWayIf, InstanceSigs #-}
+{-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs #-}
 module Bond.FastBinary (
     fastToStream,
     deserializeFast,
@@ -145,16 +145,18 @@ instance BondBinaryProto FastBinaryProto where
             Just [x] -> Just $ Just x
             Just [] -> Just Nothing
             _ -> Nothing
-    bondGetBonded :: forall a. BondStruct a => BondGet FastBinaryProto (Maybe (Bonded a))
-    bondGetBonded = do
-        let try (BondGet g) = BondGet $ lookAhead g
-        size <- try $ do
-            start <- BondGet bytesRead
-            skipValue (getWireType (Proxy :: Proxy a))
-            end <- BondGet bytesRead
-            return (end - start)
-        Just . BondedStream fastSig <$> BondGet (getLazyByteString size)
+    bondGetBonded = getBonded
     bondGetStruct = Just <$> readStruct (bondGetInfo Proxy)
+
+getBonded :: forall a. BondStruct a => BondGet FastBinaryProto (Maybe (Bonded a))
+getBonded = do
+    let try (BondGet g) = BondGet $ lookAhead g
+    size <- try $ do
+        start <- BondGet bytesRead
+        skipValue (getWireType (Proxy :: Proxy a))
+        end <- BondGet bytesRead
+        return (end - start)
+    Just . BondedStream fastSig <$> BondGet (getLazyByteString size)
 
 getMap :: forall a b t. (BondBinaryProto t, Ord a, BondBinary a, BondBinary b) => BondGet t (Maybe (M.Map a b))
 getMap = do

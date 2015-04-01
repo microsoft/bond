@@ -65,6 +65,7 @@ library
                     bytestring >= 0.10,
                     containers >= 0.5,
                     hashable >= 1.2,
+                    tagged >= 0.5,
                     text >= 1.2,
                     unordered-containers >= 0.2,
                     vector >= 0.10
@@ -78,6 +79,7 @@ test-suite compat
                     binary >= 0.7,
                     bytestring >= 0.10,
                     HUnit >= 1.2,
+                    filepath >= 1.0,
                     test-framework >= 0.8,
                     test-framework-hunit >= 0.2,
                     test-framework-quickcheck2 >= 0.2,

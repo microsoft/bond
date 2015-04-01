@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs, MultiWayIf, InstanceSigs #-}
+{-# LANGUAGE ScopedTypeVariables, EmptyDataDecls, GADTs #-}
 module Bond.CompactBinary (
     deserializeCompactV1,
     serializeCompactV1,
@@ -184,15 +184,7 @@ instance BondBinaryProto CompactBinaryV1Proto where
             Just [x] -> Just $ Just x
             Just [] -> Just Nothing
             _ -> Nothing
-    bondGetBonded :: forall a. BondStruct a => BondGet CompactBinaryV1Proto (Maybe (Bonded a))
-    bondGetBonded = do
-        let try (BondGet g) = BondGet $ lookAhead g
-        size <- try $ do
-            start <- BondGet bytesRead
-            skipValueV1 (getWireType (Proxy :: Proxy a))
-            end <- BondGet bytesRead
-            return (end - start)
-        Just . BondedStream compactV1Sig <$> BondGet (getLazyByteString size)
+    bondGetBonded = getBonded compactV1Sig
     bondGetStruct = Just <$> readStruct (bondGetInfo Proxy)
 
 instance Skippable CompactBinaryV1Proto where
@@ -200,6 +192,16 @@ instance Skippable CompactBinaryV1Proto where
 
 skipValueV1 :: ItemType -> BondGet CompactBinaryV1Proto ()
 skipValueV1 = skipValueCommon
+
+getBonded :: forall a t. (Skippable t, BondBinaryProto t, BondStruct a) => ProtoSig -> BondGet t (Maybe (Bonded a))
+getBonded sig = do
+    let try (BondGet g) = BondGet $ lookAhead g
+    size <- try $ do
+        start <- BondGet bytesRead
+        skipValue (getWireType (Proxy :: Proxy a)) :: BondGet t ()
+        end <- BondGet bytesRead
+        return (end - start)
+    Just . BondedStream sig <$> BondGet (getLazyByteString size)
 
 getMap :: forall a b t. (Skippable t, BondBinaryProto t, Ord a, BondBinary a, BondBinary b) => BondGet t (Maybe (M.Map a b))
 getMap = do
@@ -258,7 +260,8 @@ getFieldHeader = do
 putFieldHeader :: ItemType -> Ordinal -> BondPut t
 putFieldHeader t (Ordinal n) = let tbits = fromIntegral $ fromEnum t
                                    nbits = fromIntegral n
-                                in if | n <= 5 -> BondPut $ putWord8 $ tbits .|. (nbits `shiftL` 5)
+                                in case () of
+                                    _ |n <= 5 -> BondPut $ putWord8 $ tbits .|. (nbits `shiftL` 5)
                                       | n <= 255 -> do
                                                 BondPut $ putWord8 $ tbits .|. 0xC0
                                                 BondPut $ putWord8 nbits
@@ -567,15 +570,7 @@ instance BondBinaryProto CompactBinaryProto where
             Just [x] -> Just $ Just x
             Just [] -> Just Nothing
             _ -> Nothing
-    bondGetBonded :: forall a. BondStruct a => BondGet CompactBinaryProto (Maybe (Bonded a))
-    bondGetBonded = do
-        let try (BondGet g) = BondGet $ lookAhead g
-        size <- try $ do
-            start <- BondGet bytesRead
-            skipValueV2 (getWireType (Proxy :: Proxy a))
-            end <- BondGet bytesRead
-            return (end - start)
-        Just . BondedStream compactSig <$> BondGet (getLazyByteString size)
+    bondGetBonded = getBonded compactSig
     bondGetStruct = Just <$> getStruct (bondGetInfo Proxy)
 
 instance Skippable CompactBinaryProto where

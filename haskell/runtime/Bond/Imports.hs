@@ -14,3 +14,4 @@ import Bond.Types as X
 import Bond.Wire as X
 import Data.Hashable (Hashable)
 import Data.Data
+import Data.Proxy
