@@ -1,6 +1,7 @@
 namespace tests
 
-struct Foo {}
+struct Foo {};
+struct Bar;
 
 struct ComplexTypes
 {
@@ -10,5 +11,5 @@ struct ComplexTypes
     3: nullable<float> nf;
     4: map<string, wstring> msws;
     5: bonded<Foo> bfoo;
-    6: map<double, list<vector<nullable<bonded<Foo>>>>> m;
+    6: map<double, list<vector<nullable<bonded<Bar>>>>> m;
 }

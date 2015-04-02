@@ -281,6 +281,7 @@ complexType =
         _ -> scalarType t
     validBondedType t = case t of
         BT_TypeParam _ -> True
+        BT_UserDefined Forward {} _ -> True
         _ -> structType t
 
 
