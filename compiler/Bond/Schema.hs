@@ -277,7 +277,7 @@ isBaseField name = getAny . optional (foldMapFields (Any.(name==).fieldName))
 
 data Import = Import FilePath
 
-data Language = Cpp | Cs | CSharp | Java deriving (Eq)
+data Language = Cpp | Cs | CSharp | Java | Haskell deriving (Eq, Show)
 
 data Namespace = 
     Namespace 
