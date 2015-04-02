@@ -27,6 +27,7 @@ import Bond.Template.Cpp.Apply_cpp
 import Bond.Template.Cpp.Enum_h
 import Bond.Template.Cpp.Types_cpp
 import Bond.Template.Cs.Types_cs
+import Bond.Template.Haskell.Decl
 import Bond.Template.TypeMapping
 import Bond.Template.CustomMapping
 import Options
@@ -39,6 +40,7 @@ main = do
     case options of
         Cpp {..}    -> cppCodegen options
         Cs {..}     -> csCodegen options
+        Haskell {..} -> hsCodegen options
         _           -> print options
 
 setJobs :: Maybe Int -> IO ()
@@ -79,7 +81,6 @@ cppCodegen (Cpp {..}) = do
         ]
 cppCodegen _ = error "cppCodegen: impossible happened."
 
-    
 csCodegen :: Options -> IO()
 csCodegen (Cs {..}) = do
     aliasMapping <- parseAliasMappings using
@@ -91,6 +92,27 @@ csCodegen (Cs {..}) = do
         ]
 csCodegen _ = error "csCodegen: impossible happened."
 
+hsCodegen :: Options -> IO()
+hsCodegen (Haskell {..}) = do
+    aliasMapping <- parseAliasMappings using
+    namespaceMapping <- parseNamespaceMappings namespace
+
+    let mappingContext = MappingContext csTypeMapping aliasMapping namespaceMapping []
+    cwd <- getCurrentDirectory
+    forM_ files $ \file -> do
+        input <- readFileUtf8 file
+        result <- runReaderT (parseBond file input) (newEnvironment (cwd </> file) (readImportFile import_dir))
+        case result of
+            Left error -> do
+                print error
+                exitFailure
+            Right (Bond imports namespaces declarations) -> do
+                let mapping = setNamespaces mappingContext namespaces
+                forM_ declarations $ \decl -> do
+                    let (filename, code) = mkHaskellDecl mapping decl
+                    let fullname = output_dir </> filename
+                    createDirectoryIfMissing True (dropFileName fullname)
+                    writeFile fullname code
 
 codeGen :: FilePath
         -> [FilePath]

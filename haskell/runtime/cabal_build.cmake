@@ -15,7 +15,7 @@ if ($ENV{APPVEYOR})
 endif()
 
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} install   --with-compiler=${Haskell_GHC_EXECUTABLE} --jobs ${GHC_OPTIONS} happy
+    COMMAND ${gbc} haskell -o generated ../../test/compat/schemas/compat.bond ../../test/compat/schemas/compat2.bond ../../test/compat/schemas/compat_common.bond ../../test/compat/schemas/compat_no_generics.bond
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 
@@ -24,7 +24,7 @@ if (error)
 endif()
 
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} install   --with-compiler=${Haskell_GHC_EXECUTABLE} --only-dependencies --jobs ${GHC_OPTIONS}
+    COMMAND ${Haskell_CABAL_EXECUTABLE} install --enable-tests --with-compiler=${Haskell_GHC_EXECUTABLE} --only-dependencies --jobs ${GHC_OPTIONS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 
@@ -33,7 +33,7 @@ if (error)
 endif()
 
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} configure --with-compiler=${Haskell_GHC_EXECUTABLE} --builddir=${output_dir}
+    COMMAND ${Haskell_CABAL_EXECUTABLE} configure --enable-tests --with-compiler=${Haskell_GHC_EXECUTABLE} --builddir=${output_dir}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 
@@ -49,4 +49,3 @@ execute_process (
 if (error)
     message (FATAL_ERROR)
 endif()
-
