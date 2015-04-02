@@ -6,6 +6,12 @@ install:
 - ps: >-
     if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
+        if (Test-Path compiler\.cabal-sandbox) {
+
+            $env:SandboxCache = "restored"
+
+        }
+
         #choco install 7zip
 
         #$env:Path += ";${env:ProgramFiles}\7-Zip"
@@ -24,7 +30,7 @@ install:
 
         #$env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}\boost_1_57_0"
 
-        choco install haskellplatform -version 2014.2.0.0
+        choco install haskellplatform -version 2014.2.0.0 -y
 
         # Haskell Platfrom package doesn't update PATH for the current shell instance
 
@@ -94,15 +100,22 @@ test_script:
 
     if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-        nunit-console-x86 /framework:net-4.0 /labels cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
-        
-        nunit-console-x86 /framework:net-4.5 /labels cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+        if ($env:SandboxCache -ne "restored") {
 
-        #cd build
+            nunit-console-x86 /framework:net-4.5 /labels cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
 
-        #ctest -C Release -R compatibility --output-on-failure
+        } else {
 
-        #cd ..
+            nunit-console-x86 /framework:net-4.0 /labels cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
+
+            nunit-console-x86 /framework:net-4.5 /labels cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+
+            #cd build
+
+            #ctest -C Release -R compatibility --output-on-failure
+
+            #cd ..
+        }
 
     } else {
 

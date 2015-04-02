@@ -85,7 +85,7 @@ if (Haskell_PANDOC_EXECUTABLE)
         OUTPUT_NAME index
         OUTPUT_DIR reference)
 
-    add_pandoc_markdown (../readme.md
+    add_pandoc_markdown (../README.md
         TEMPLATE index.html
         OUTPUT_NAME index
         CODE python)

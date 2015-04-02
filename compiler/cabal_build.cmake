@@ -10,12 +10,22 @@
 cmake_policy (SET CMP0012 NEW)
 
 if ($ENV{APPVEYOR})
-    # AppVeyor Azure VMs have limited memory, limit ghc heap to 192 MB
-    set (GHC_OPTIONS --ghc-option=+RTS --ghc-option=-M192m --ghc-option=-RTS)
+    # AppVeyor Azure VMs have limited memory and shakespeare package doesn't
+    # install as a dependency of the Bond compiler. As a workaround we install
+    # shakespeare explicitly when running under AppVeyor and we limit the heap
+    # used by ghc to 400 MB.
+    execute_process (
+        COMMAND ${Haskell_CABAL_EXECUTABLE} install shakespeare --with-compiler=${Haskell_GHC_EXECUTABLE} --jobs --ghc-option=+RTS --ghc-option=-M400m --ghc-option=-RTS
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        RESULT_VARIABLE error)
+    
+    if (error)
+        message (FATAL_ERROR)
+    endif()
 endif()
 
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} install   ${cabal_options} --with-compiler=${Haskell_GHC_EXECUTABLE} --only-dependencies --jobs ${GHC_OPTIONS}
+    COMMAND ${Haskell_CABAL_EXECUTABLE} install   ${cabal_options} --with-compiler=${Haskell_GHC_EXECUTABLE} --extra-prog-path=$ENV{HOME}/.cabal/bin --only-dependencies --jobs
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 

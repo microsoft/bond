@@ -70,6 +70,8 @@ packages are needed:
         libboost-test-dev \
         libboost-python-dev
 
+    cabal install happy
+
 Running the following command in the build directory will build and execute all 
 the tests and examples:
 
@@ -92,9 +94,10 @@ using Homebrew ([http://brew.sh/](http://brew.sh/)):
 
 (boost-python is optional and only needed for Python support)
 
-Update cabal package database:
+Update cabal package database and install `happy` (only needed for tests): 
 
     cabal update
+    cabal install happy
 
 Bond can be built on OS X using either standard *nix makefiles or XCode. In 
 order to generate and build makefiles, in the root `bond` directory run:
