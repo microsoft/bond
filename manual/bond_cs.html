@@ -6,6 +6,7 @@
   <meta name="generator" content="pandoc" />
   <title>A Young Person’s Guide to C# Bond</title>
   <style type="text/css">
+div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
 table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
@@ -32,6 +33,7 @@ code > span.er { font-weight: bold; }
   }
   code {
       font-size: 1em;
+      font-family: "Courier New", monospace, serif;
   }
   td.lineNumbers { width: 40px; }
   div#all {
@@ -159,7 +161,7 @@ code > span.er { font-weight: bold; }
 <p>By design Bond is language and platform independent and is currently supported for C++, C#, and Python on Linux, OS X and Windows.</p>
 <p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
 <h1 id="basic-example">Basic example</h1>
-<p>In Bond data schemas are defined using idl-like <a href="bond_cpp.html#idl-syntax">syntax</a>:</p>
+<p>In Bond data schemas are defined using idl-like <a href="compiler.html#idl-syntax">syntax</a>:</p>
 <div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
@@ -241,7 +243,7 @@ code > span.er { font-weight: bold; }
     }
 }</code></pre></td></tr></table></div>
 <h1 id="code-generation">Code generation</h1>
-<p>In order to use a Bond schema in a C# program, it needs to be compiled using the Bond compiler <a href="gbc.html"><code>gbc</code></a>. The compiler generates C# classes that represent the schema. By default schema fields are represented by public auto-properties initialized in the default constructor. Code generation can be customized by passing one or more of the following command line options to <code>gbc</code>:</p>
+<p>In order to use a Bond schema in a C# program, it needs to be compiled using the Bond compiler <a href="compiler.html"><code>gbc</code></a>. The compiler generates C# classes that represent the schema. By default schema fields are represented by public auto-properties initialized in the default constructor. Code generation can be customized by passing one or more of the following command line options to <code>gbc</code>:</p>
 <p><code>--fields</code></p>
 <p>Schema fields are represented by public fields with initializers and no constructor is generated.</p>
 <p><code>--readonly-properties</code></p>

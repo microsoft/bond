@@ -6,9 +6,10 @@
   <meta name="generator" content="pandoc" />
   <title></title>
   <style type="text/css">
+div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; background-color: #f8f8f8; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
 td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
 td.sourceCode { padding-left: 5px; }
 pre, code { background-color: #f8f8f8; }
@@ -32,10 +33,11 @@ code > span.er { font-weight: bold; }
   }
   code {
       font-size: 1em;
+      font-family: "Courier New", monospace, serif;
   }
   td.lineNumbers { width: 40px; }
   div#all {
-    width: 1120px;
+    max-width: 1120px;
     background-color: #ffffff;
     margin: 0 auto;
     padding: 25px;
@@ -59,17 +61,21 @@ code > span.er { font-weight: bold; }
     border-bottom: 1px solid black;
   }
 
+  div.sourceCode {
+    overflow-x: auto;
+  }
+
   #toc {
     width: 300px; 
     position:fixed;
     overflow: auto;
-    height: 100%;
+    height: 95%;
   }
 
   #main {
-    margin-left: auto;
-    margin-right: auto;
-    width: 800px;
+    margin-left: 320px;  
+    margin-rigth: auto;
+    max-width: 800px;
   }
   a {
     text-decoration: none;
@@ -82,6 +88,15 @@ code > span.er { font-weight: bold; }
   }
   a:link {
     color: #36c;
+  }
+  @media screen and (max-width: 979px){
+  #main {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #toc {
+    left: -300px; 
+  }
   }
   </style>
 <script>
@@ -99,21 +114,21 @@ code > span.er { font-weight: bold; }
 <nav id="TOC"/>
 <div id="all">
 <div id="main">
-<p><a href="https://travis-ci.org/Microsoft/bond"><embed src="https://travis-ci.org/Microsoft/bond.svg?branch=master"></a> <a href="https://www.nuget.org/packages/Bond.CSharp/"><embed src="https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat"></a></p>
+<p><a href="https://travis-ci.org/Microsoft/bond"><img src="https://travis-ci.org/Microsoft/bond.svg?branch=master" alt="Build Status" /></a> <a href="https://www.nuget.org/packages/Bond.CSharp/"><img src="https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat" alt="NuGet" /></a></p>
 <h1 id="bond">Bond</h1>
 <p>Bond is an open source, cross-platform framework for working with schematized data. It supports cross-language serialization/deserialization and powerful generic mechanisms for efficiently manipulating data. Bond is broadly used at Microsoft in high scale services.</p>
-<p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/">https://github.com/Microsoft/bond/</a>.</p>
+<p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
 <p>For details, see the User’s Manuals for <a href="https://Microsoft.github.io/bond/manual/bond_cpp.html">C++</a>, <a href="https://Microsoft.github.io/bond/manual/bond_cs.html">C#</a> and <a href="https://Microsoft.github.io/bond/manual/bond_py.html">Python</a>.</p>
 <p>For a discussion how Bond compares to similar frameworks see <a href="https://Microsoft.github.io/bond/why_bond.html">Why Bond</a>.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>The Bond repository uses Git submodules and should be cloned with the <code>--recursive</code> flag:</p>
-<pre class="sourceCode python"><code class="sourceCode python">git clone --recursive https://github.com/Microsoft/bond.git</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">git clone --recursive https://github.com/Microsoft/bond.git</code></pre></div>
 <p>In order to build Bond you will need CMake (2.8.12+), Haskell (ghc 7.4+ and cabal-install 1.18+) and Boost (1.54+). The core Bond C++ library can be used with C++03 compilers, although Python support, unit tests and various examples require some C++11 features.</p>
 <p>Following are specific instructions for building on various platforms.</p>
 <h3 id="linux">Linux</h3>
 <p>Bond can be built with Clang (3.4+) or GNU C++ (4.7+). We recommend the latest version of Clang as it’s much faster with template-heavy code like Bond.</p>
 <p>Run the following commands to install the minimal set of packages needed to build the core Bond library on Ubuntu 14.04:</p>
-<pre class="sourceCode python"><code class="sourceCode python">sudo apt-get install \
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">sudo apt-get install \
     clang \
     cmake \
     zlib1g-dev \
@@ -123,74 +138,77 @@ code > span.er { font-weight: bold; }
     libboost-thread-dev
 
 cabal update
-cabal install cabal-install</code></pre>
+cabal install cabal-install</code></pre></div>
 <p>In the root <code>bond</code> directory run:</p>
-<pre class="sourceCode python"><code class="sourceCode python">mkdir build
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
 cd build
 cmake ..
 make
-sudo make install</code></pre>
+sudo make install</code></pre></div>
 <p>The <code>build</code> directory is just an example. Any directory can be used for build destination.</p>
 <p>In order to build all the C++ and Python tests and examples, a few more packages are needed:</p>
-<pre class="sourceCode python"><code class="sourceCode python">sudo apt-get install \
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">sudo apt-get install \
     python2<span class="fl">.7</span>-dev \
     libboost-date-time-dev \
     libboost-test-dev \
-    libboost-python-dev</code></pre>
+    libboost-python-dev
+
+cabal install happy</code></pre></div>
 <p>Running the following command in the build directory will build and execute all the tests and examples:</p>
-<pre class="sourceCode python"><code class="sourceCode python">make --jobs <span class="dv">8</span> check</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">make --jobs <span class="dv">8</span> check</code></pre></div>
 <p>(unit tests are large so you may want to run 4-8 build jobs in parallel, assuming you have enough memory)</p>
 <h3 id="os-x">OS X</h3>
-<p>Install XCode and then run the following command to install required packages using Homebrew (<a href="http://brew.sh/">http://brew.sh/</a>):</p>
-<pre class="sourceCode python"><code class="sourceCode python">brew install \
+<p>Install XCode and then run the following command to install required packages using Homebrew (<a href="http://brew.sh/" class="uri">http://brew.sh/</a>):</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">brew install \
     cmake \
     ghc \
     cabal-install \
     boost \
-    boost-python</code></pre>
+    boost-python</code></pre></div>
 <p>(boost-python is optional and only needed for Python support)</p>
-<p>Update cabal package database:</p>
-<pre class="sourceCode python"><code class="sourceCode python">cabal update</code></pre>
+<p>Update cabal package database and install <code>happy</code> (only needed for tests):</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cabal update
+cabal install happy</code></pre></div>
 <p>Bond can be built on OS X using either standard *nix makefiles or XCode. In order to generate and build makefiles, in the root <code>bond</code> directory run:</p>
-<pre class="sourceCode python"><code class="sourceCode python">mkdir build
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
 cd build
 cmake ..
 make
-sudo make install</code></pre>
+sudo make install</code></pre></div>
 <p>Alternatively you can generate XCode project by passing <code>-G Xcode</code> option to cmake:</p>
-<pre class="sourceCode python"><code class="sourceCode python">cmake -G Xcode ..</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake -G Xcode ..</code></pre></div>
 <p>You can build and run unit tests by building the <code>check</code> target in XCode or by running make in the build directory:</p>
-<pre class="sourceCode python"><code class="sourceCode python">make --jobs <span class="dv">8</span> check</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">make --jobs <span class="dv">8</span> check</code></pre></div>
 <p>Note that if you are using Homebrew’s Python, you’ll need to build boost-python from source:</p>
-<pre class="sourceCode python"><code class="sourceCode python">brew install --build-<span class="ch">from</span>-source boost-python</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">brew install --build-<span class="ch">from</span>-source boost-python</code></pre></div>
 <p>and tell cmake the location of Homebrew’s libpython by setting <code>PYTHON_LIBRARY</code> variable, e.g.:</p>
-<pre class="sourceCode python"><code class="sourceCode python">cmake .. -DPYTHON_LIBRARY=/usr/local/Cellar/python/<span class="fl">2.7.9</span>/Frameworks/Python.framework/Versions/<span class="fl">2.7</span>/lib/libpython2<span class="fl">.7</span>.dylib</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake .. -DPYTHON_LIBRARY=/usr/local/Cellar/python/<span class="fl">2.7.9</span>/Frameworks/Python.framework/Versions/<span class="fl">2.7</span>/lib/libpython2<span class="fl">.7</span>.dylib</code></pre></div>
 <h3 id="windows">Windows</h3>
 <p><a href="https://ci.appveyor.com/project/sapek/bond/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&amp;branch=master" alt="Build Status" /></a></p>
 <p>Install the following tools:</p>
 <ul>
 <li>Visual Studio 2013</li>
-<li>CMake (<a href="http://www.cmake.org/download/">http://www.cmake.org/download/</a>)</li>
-<li>Haskell Platform (<a href="http://haskell.org/platform/">http://haskell.org/platform/</a>)</li>
+<li>CMake (<a href="http://www.cmake.org/download/" class="uri">http://www.cmake.org/download/</a>)</li>
+<li>Haskell Platform (<a href="http://haskell.org/platform/" class="uri">http://haskell.org/platform/</a>)</li>
 </ul>
 <p>If behind a proxy, set environment variable <code>HTTP_PROXY=http://proxy:port</code>.</p>
 <p>Update cabal package database:</p>
-<pre class="sourceCode python"><code class="sourceCode python">cabal update</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cabal update</code></pre></div>
 <p>Now you are ready to build the C# version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio 2013 and build as usual. The C# unit tests can also be run from within the solution.</p>
 <p>The C++ and Python versions of Bond additionally require:</p>
 <ul>
-<li>Boost 1.54+ (<a href="http://www.boost.org/users/download/">http://www.boost.org/users/download/</a>)</li>
-<li>Python 2.7 (<a href="https://www.python.org/downloads/">https://www.python.org/downloads/</a>)</li>
+<li>Boost 1.54+ (<a href="http://www.boost.org/users/download/" class="uri">http://www.boost.org/users/download/</a>)</li>
+<li>Python 2.7 (<a href="https://www.python.org/downloads/" class="uri">https://www.python.org/downloads/</a>)</li>
 </ul>
 <p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment can be found. The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests and Python support. If Boost or Python libraries are not found on the system then some tests and examples will not be built.</p>
 <p>In order to configure C++/Python project run <code>cmake-gui</code>, select the root of this repository as the source code directory and some other directory as the target for generated project files and build binaries. Now press Generate and select desired target build environment. This configuration step has to be performed only once. From now on you can use the generated solution <code>bond.sln</code>.</p>
 <p>IMPORTANT: Bond unit tests are very large. If you are building using the Visual Studio toolchain you have to select 64-bit tools by setting the following environment variable:</p>
 <p>For Visual Studio 2012:</p>
-<pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> _IsNativeEnvironment=true</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> _IsNativeEnvironment=true</code></pre></div>
 <p>For Visual Studio 2013:</p>
-<pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> PreferredToolArchitecture=x64</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> PreferredToolArchitecture=x64</code></pre></div>
 <p>In order to run unit tests on the Debug build, execute the following command in the build directory:</p>
-<pre class="sourceCode python"><code class="sourceCode python">ctest -C Debug</code></pre>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">ctest -C Debug</code></pre></div>
 </div>    
 </div>
 </body>

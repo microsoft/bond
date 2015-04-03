@@ -6,6 +6,7 @@
   <meta name="generator" content="pandoc" />
   <title>A Young Person’s Guide to C++ Bond</title>
   <style type="text/css">
+div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
 table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
@@ -32,6 +33,7 @@ code > span.er { font-weight: bold; }
   }
   code {
       font-size: 1em;
+      font-family: "Courier New", monospace, serif;
   }
   td.lineNumbers { width: 40px; }
   div#all {
@@ -131,18 +133,6 @@ code > span.er { font-weight: bold; }
 <li><a href="#simple-binary">Simple Binary</a></li>
 <li><a href="#simple-json">Simple JSON</a></li>
 </ul></li>
-<li><a href="#idl-syntax">IDL syntax</a><ul>
-<li><a href="#import-statements">Import statements</a></li>
-<li><a href="#namespace-definition">Namespace definition</a></li>
-<li><a href="#enum-definition">Enum definition</a></li>
-<li><a href="#forward-declaration">Forward declaration</a></li>
-<li><a href="#struct-definition">Struct definition</a></li>
-<li><a href="#generics">Generics</a></li>
-<li><a href="#type-aliases">Type aliases</a></li>
-<li><a href="#struct-views">Struct views</a></li>
-<li><a href="#custom-attributes">Custom attributes</a></li>
-<li><a href="#comments">Comments</a></li>
-</ul></li>
 <li><a href="#custom-type-mappings">Custom type mappings</a><ul>
 <li><a href="#codegen-parameters">Codegen parameters</a></li>
 <li><a href="#container-concept">Container concept</a></li>
@@ -176,7 +166,7 @@ code > span.er { font-weight: bold; }
 <p>By design Bond is language and platform independent and is currently supported for C++, C#, and Python on Linux, OS X and Windows.</p>
 <p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
 <h1 id="basic-example">Basic example</h1>
-<p>In Bond data schemas are defined using idl-like <a href="#idl-syntax">syntax</a>:</p>
+<p>In Bond data schemas are defined using idl-like <a href="compiler.html#idl-syntax">syntax</a>:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
@@ -191,7 +181,7 @@ code > span.er { font-weight: bold; }
     <span class="dv">0</span>: string          name;
     <span class="dv">1</span>: vector&lt;<span class="dt">double</span>&gt;  items;
 }</code></pre></td></tr></table></div>
-<p>In order to use the schema in a C++ program, it needs to be compiled using the Bond compiler <a href="gbc.html"><code>gbc</code></a>. This step is sometimes also referred to as code generation (or codegen) because the compilation generates C++ code corresponding to the schema definition.</p>
+<p>In order to use the schema in a C++ program, it needs to be compiled using the Bond compiler <a href="compiler.html"><code>gbc</code></a>. This step is sometimes also referred to as code generation (or codegen) because the compilation generates C++ code corresponding to the schema definition.</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">gbc c++ example.bond</code></pre></td></tr></table></div>
 <p>Using the generated C++ code, we can write a simple program that will serialize and deserialize an instance of the Record schema using <a href="#compact-binary">Compact Binary</a> protocol:</p>
@@ -231,7 +221,7 @@ code > span.er { font-weight: bold; }
     example::Record src;
 
     src.name = <span class="st">&quot;test&quot;</span>;
-    src.items.push_back(<span class="fl">3.</span><span class="dv">14</span>);
+    src.items.push_back(<span class="fl">3.14</span>);
 
     bond::OutputBuffer output;
     bond::CompactBinaryWriter&lt;bond::OutputBuffer&gt; writer(output);
@@ -491,7 +481,7 @@ schema;</code></pre></td></tr></table></div>
 2
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T, <span class="kw">typename</span> Reader = ProtocolReader&lt;T, InputBuffer&gt;&gt;
 <span class="kw">class</span> bonded;</code></pre></td></tr></table></div>
-<p>The class template has two parameters. The first one, <code>T</code>, represents schema (or type) of the data. Usually it is a struct defined via Bond <a href="#idl-syntax">IDL</a> but it can also be <code>void</code> (see <a href="../reference/cpp/classbond_1_1bonded_3_01void_00_01_reader_01_4.html"><code>bonded&lt;void&gt;</code></a>) if we want to work with data for which schema is not known at compile-time. The second parameter, <code>Reader</code>, specifies representation of the data. The default, <code>ProtocolReader</code> is a variant type which can hold data serialized using any of the Bond protocols, or an instance of struct <code>T</code>.</p>
+<p>The class template has two parameters. The first one, <code>T</code>, represents schema (or type) of the data. Usually it is a struct defined via Bond <a href="compiler.html#idl-syntax">IDL</a> but it can also be <code>void</code> (see <a href="../reference/cpp/classbond_1_1bonded_3_01void_00_01_reader_01_4.html"><code>bonded&lt;void&gt;</code></a>) if we want to work with data for which schema is not known at compile-time. The second parameter, <code>Reader</code>, specifies representation of the data. The default, <code>ProtocolReader</code> is a variant type which can hold data serialized using any of the Bond protocols, or an instance of struct <code>T</code>.</p>
 <p>The <code>bonded</code> class defines several constructors which allow creation of <code>bonded</code> objects from following inputs:</p>
 <ul>
 <li>Instance of <code>T</code> or a type derived from <code>T</code> <a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a></li>
@@ -1159,250 +1149,6 @@ Field(<span class="dt">uint16_t</span>, <span class="dt">const</span> bond::Meta
 <ul>
 <li><code>examples/cpp/core/simple_json</code></li>
 </ul>
-<h1 id="idl-syntax">IDL syntax</h1>
-<p>A Bond schema definition file can contain the following elements:</p>
-<ul>
-<li>Import statements</li>
-<li>Namespace definition</li>
-<li>Forward declarations</li>
-<li>Definitions
-<ul>
-<li>enum</li>
-<li>forward declaration</li>
-<li>struct</li>
-<li>generics</li>
-<li>struct view</li>
-</ul></li>
-<li>Custom attributes</li>
-<li>Comments</li>
-</ul>
-<h2 id="import-statements">Import statements</h2>
-<p>In order to use types defined in another schema definition file, the other file needs to be explicitly imported. Schema file can contain zero or more import statements and they must appear at the top of the file:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">import <span class="st">&quot;file.bond&quot;</span></code></pre></td></tr></table></div>
-<p>The file being imported can be specified using a partial path which is resolved by Bond compiler relative to the directory containing the schema file being compiled and any import path(s) specified using the –import-dir option(s) passed to gbc.</p>
-<p>See example: <code>examples/cpp/core/import</code>.</p>
-<h2 id="namespace-definition">Namespace definition</h2>
-<p>All schema types are always defined within a namespace. Namespace scope starts with namespace definition statement and ends at the end of the file.</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">namespace</span> some.unique.name</code></pre></td></tr></table></div>
-<h2 id="enum-definition">Enum definition</h2>
-<p>Bond enums are very similar to C++ enums, both in semantics and syntax used to define them:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">enum</span> Protocols
-{
-    TCP,
-    UDP = <span class="dv">10</span>
-}</code></pre></td></tr></table></div>
-<p>On the wire values of enums types are equivalent to 32-bit signed integers.</p>
-<h2 id="forward-declaration">Forward declaration</h2>
-<p>In order to define recursive schemas, such as trees, it may be necessary to declare a struct before it is defined. A forward declaration statement serves this purpose:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Node;</code></pre></td></tr></table></div>
-<p>Forward declared structs can be used in field declarations as the base type for nullable&lt;T&gt; and bonded&lt;T&gt; or the element type of a container.</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Node;
-
-<span class="kw">struct</span> Node
-{
-    <span class="dv">0</span>: nullable&lt;Node&gt; left;
-    <span class="dv">1</span>: nullable&lt;Node&gt; right;
-}</code></pre></td></tr></table></div>
-<h2 id="struct-definition">Struct definition</h2>
-<p>Struct definition consists of a struct name, an optional base struct, and zero or more fields.</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Example : Base
-{
-    <span class="dv">0</span>: uint32 fieldName = <span class="dv">10</span>;
-}</code></pre></td></tr></table></div>
-<p>Field definition consists of an ordinal, type, name and optional default value. Field type can be:</p>
-<ul>
-<li><p>Basic type: <code>bool</code>, <code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>uint64</code>, <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>int64</code>, <code>float</code>, <code>double</code>, <code>string</code>, <code>wstring</code>.</p></li>
-<li><p>Container: <code>blob</code>, <code>list&lt;T&gt;</code>, <code>vector&lt;T&gt;</code>, <code>set&lt;T&gt;</code>, <code>map&lt;K, T&gt;</code>, <code>nullable&lt;T&gt;</code>.</p></li>
-<li><p>User-defined type: enum, struct or <code>bonded&lt;T&gt;</code> where T is a struct.</p></li>
-</ul>
-<p>An optional default value can be specified for fields of basic types. For integers the default can be specified as either a decimal number or a hexadecimal number prefixed with <code>0x</code>. The only explicit default value allowed for containers is <a href="#default-value-of-nothing"><code>nothing</code></a>. Enum fields must have an explicit default value which must be one of the enum named constants.</p>
-<p>Names of structs and enums defined in another namespace must be qualified with the namespace name:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">import <span class="st">&quot;bond/core/bond.bond&quot;</span>
-
-<span class="kw">namespace</span> example
-
-<span class="kw">struct</span> Example
-{
-    <span class="dv">0</span>: bond.GUID id;
-    <span class="dv">1</span>: bond.BondDataType type = BT_UNAVAILABLE;
-}</code></pre></td></tr></table></div>
-<p>Structs can be defined as sealed. Sealed structs can’t be inherited from:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">sealed <span class="kw">struct</span> Example
-{
-}</code></pre></td></tr></table></div>
-<h2 id="generics">Generics</h2>
-<p>Generic structs are parameterized with one or more type parameters which can be used within the struct definition in any place where a concrete type could be used (e.g. base struct, field type, container element type, parameter of a generic struct).</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Example&lt;T1, T2&gt; : T1
-{
-    <span class="dv">0</span>: T1 field;
-    <span class="dv">1</span>: list&lt;T2&gt; list;
-    <span class="dv">2</span>: Generic&lt;T2&gt; generic;
-}</code></pre></td></tr></table></div>
-<p>Usage of a type parameter within a generic struct definition may implicitly constrain what type(s) can be used to instantiate the generic struct:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Example&lt;T&gt;
-{
-    <span class="co">// The default value of 10 implicitly constrains T to numeric types</span>
-    <span class="dv">0</span>: T x = <span class="dv">10</span>;
-}</code></pre></td></tr></table></div>
-<p>Using a type parameter in a <a href="#nullable-types"><code>nullable</code></a> or as the type of a field with default value of <a href="#default-value-of-nothing"><code>nothing</code></a> constrains the type parameter to be non-scalar type. If this is undesired then explicit constraint to value type can be specified in the generic schema definition:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Example&lt;T : value&gt;
-{
-    <span class="dv">0</span>: nullable&lt;T&gt; x;
-    <span class="dv">1</span>: T y = nothing;
-}</code></pre></td></tr></table></div>
-<p>When instantiating a generic struct all type parameters must be concrete types. Bond IDL doesn’t support the equivalent of C++ template template parameters.</p>
-<p>See examples:</p>
-<ul>
-<li><code>examples/cpp/core/generics</code></li>
-<li><code>examples/cpp/core/generic_tree</code></li>
-</ul>
-<h2 id="type-aliases">Type aliases</h2>
-<p>The syntax to define type aliases is very similar to C++:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">using</span> time = int64;
-<span class="kw">using</span> array&lt;T&gt; = vector&lt;T&gt;;</code></pre></td></tr></table></div>
-<p>An alias can be used in any context where the aliased type could be used, including a definition of another alias:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">using</span> times = array&lt;time&gt;;</code></pre></td></tr></table></div>
-<p>Type aliases can optionally be <a href="#custom-type-mappings">mapped to custom types</a> in the generated code.</p>
-<p>See examples:</p>
-<ul>
-<li><code>examples/cpp/core/time_alias</code></li>
-<li><code>examples/cpp/core/multiprecision</code></li>
-<li><code>examples/cpp/core/string_ref</code></li>
-<li><code>examples/cpp/core/container_of_pointers</code></li>
-<li><code>examples/cpp/core/static_array</code></li>
-</ul>
-<h2 id="struct-views">Struct views</h2>
-<p>A view definition is syntactic sugar to define a struct that has a subset of the fields of another struct:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Example
-{
-    <span class="dv">0</span>: int16 x;
-    <span class="dv">1</span>: string y;
-    <span class="dv">2</span>: list&lt;<span class="dt">bool</span>&gt; z;
-}
-
-<span class="kw">struct</span> View view_of Example
-{
-    x,z;
-}</code></pre></td></tr></table></div>
-<p>In the above example, the definition of <code>View</code> is equivalent to:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> View
-{
-    <span class="dv">0</span>: int16 x;
-    <span class="dv">2</span>: list&lt;<span class="dt">bool</span>&gt; z;
-}</code></pre></td></tr></table></div>
-<p>A view of a generic struct is also a generic struct with the same number of type parameters.</p>
-<p>A view of a sealed struct is always sealed. A view of non-sealed struct can be defined to be sealed:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">sealed <span class="kw">struct</span> View view_of Example
-{
-    x,
-    z;
-}</code></pre></td></tr></table></div>
-<p>See example: <code>examples/cpp/core/schema_view</code></p>
-<h2 id="custom-attributes">Custom attributes</h2>
-<p>Struct, enum and field definitions can be annotated with custom attributes which are in effect name, string-values pairs:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">[Validate(<span class="st">&quot;True&quot;</span>)]
-<span class="kw">struct</span> Example
-{
-    [Max(<span class="st">&quot;100&quot;</span>)]
-    <span class="dv">0</span>: uint32 value;
-}</code></pre></td></tr></table></div>
-<p>Attributes are available in code generation templates and thus can be used to drive custom code generation. They are also available to applications via <a href="#compile-time-schema">compile-time</a> and <a href="#runtime-schema">runtime</a> schema, and as <code>Metadata</code> argument in <a href="#transforms">transforms</a> and <a href="#protocols">protocols</a>.</p>
-<p>See example: <code>examples/cpp/core/attributes</code></p>
-<h2 id="comments">Comments</h2>
-<p>Bond IDL supports C++ style comments:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-8
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="co">/*</span>
-<span class="co">    Multi-line </span>
-<span class="co">    comment</span>
-<span class="co">*/</span>
-<span class="kw">struct</span> Example
-{
-    <span class="co">// One line commet</span>
-}</code></pre></td></tr></table></div>
 <h1 id="custom-type-mappings">Custom type mappings</h1>
 <p>Bond codegen provides a simple extensibility mechanism allowing use of custom C++ types to represent types in a Bond schema. One common scenario is replacing the default STL containers with a different implementation that is semantically identical, e.g. <code>std::unordered_map</code> instead of <code>std::map</code>. Custom type mappings can be also used to introduce completely new types which can be serialized to one of the built-in Bond schema types. For example time could be represented using the <code>boost::posix_time::ptime</code> class and serialized as <code>int64</code>.</p>
 <p>Defining a custom type mapping involves three steps:</p>
