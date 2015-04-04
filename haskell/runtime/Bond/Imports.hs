@@ -2,7 +2,7 @@ module Bond.Imports (
     module X,
     Data,
     Hashable,
-    Proxy(..),
+    X.Proxy(..),
     Typeable
   ) where
 
@@ -14,4 +14,4 @@ import Bond.Types as X
 import Bond.Wire as X
 import Data.Hashable (Hashable)
 import Data.Data
-import Data.Proxy
+import Data.Proxy as X

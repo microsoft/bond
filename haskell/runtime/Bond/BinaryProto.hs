@@ -22,6 +22,7 @@ import Data.Binary.Put
 import Data.Hashable
 import Bond.Schema
 import Data.Proxy
+import Prelude          -- ghc 7.10 workaround for Control.Applicative
 import qualified Data.HashSet as H
 import qualified Data.Map as M
 import qualified Data.Vector as V

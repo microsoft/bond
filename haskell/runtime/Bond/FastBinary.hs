@@ -21,6 +21,7 @@ import Data.Binary.Put
 import Data.Bits
 import Data.Maybe
 import Data.Proxy
+import Prelude          -- ghc 7.10 workaround for Control.Applicative
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as Lazy
 import qualified Data.HashSet as H
