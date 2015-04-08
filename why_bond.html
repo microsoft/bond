@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>Why Bond?</title>
   <style type="text/css">
   body {
       line-height: 1.5; 
@@ -105,7 +105,7 @@
 <p>Bond support three kinds of protocols. Tagged binary protocols are very similar to Thrift protocols and Protocol Buffers wire format. We use those in RPC scenarios because they don’t require any schema pre-negotiation. Bond untagged protocols are like Avro wire format. The payload is compact because it doesn’t contain any schema information, only data, but you need to provide schema of the payload at runtime in order to support schema versioning. We use these protocols in data storage scenarios, when many records using the same schema are stored in a file/stream. Finally Bond has first class support for text protocol like JSON and Xml.</p>
 <p>In Bond, like in Thrift, protocols are pluggable. Where possible, Bond implements protocols through generics so that there is no performance overhead: neither C++ or C# implementation incurs virtual dispatch cost when calling protocol implementation.</p>
 <h2 id="architecture">Architecture</h2>
-<p>One unique feature of Bond is that serialization and deserialization are not fundamental operations hard-coded in the generated code. In fact there is no code generated that is specific to serialization and deserialization. Instead Bond programming model exposes parsers and <a href="manual/bond_cpp.html#transforms">transform</a> which are composable by the user using meta-programming techniques. Some examples how this is used internally should give a taste of the flexibility of the architecture:</p>
+<p>One unique feature of Bond is that serialization and deserialization are not fundamental operations hard-coded in the generated code. In fact there is no code generated that is specific to serialization and deserialization. Instead Bond programming model exposes parsers and <a href="manual/bond_cpp.html#transforms">transforms</a> which are composable by the user using meta-programming techniques. Some examples how this is used internally should give a taste of the flexibility of the architecture:</p>
 <ul>
 <li><p>Bond Python implementation doesn’t involve <em>any</em> Python specific generated code. It is fully built by driving Boost Python library using meta-programming interfaces in Bond C++ implementation. A basic Python <a href="manual/bond_py.html#basic-example">example</a> is literally 7 lines of code.</p></li>
 <li><p>Bond can serialize and deserialize arbitrary instances of <code>std::tuple&lt;T...&gt;</code> without any generated code. This is possible because serializer and deserializer are constructed at C++ compile time and the C++ parameter pack expansion effectively gives us compile-time C++ reflection for <a href="manual/bond_cpp.html#tuples">tuples</a>.</p></li>
