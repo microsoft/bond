@@ -76,7 +76,7 @@
     <!-- We'll optimize to generate in a single command where possible -->
     <!-- Workaround for xbuild. It does not support ItemDefinitionGroup, so use Options only with MSBuild -->
     <ItemGroup>
-      <_BondCodegenWithDefaultOptions Include="@(BondCodegen)" Condition="'%(BondCodegen.Options)' == ''" />
+      <_BondCodegenWithDefaultOptions Include="@(BondCodegen)" Condition="'%(BondCodegen.Options)' == '$(BondOptions)'" />
     </ItemGroup>
 
     <WriteLinesToFile File="$(BondOutputDirectory)bondfiles.tmp"
@@ -88,7 +88,7 @@
 
     <!-- And for any files needing custom options we'll have to generate one by one -->
     <Exec Command="$(_BondCommand) %(BondCodegen.Options) &quot;%(BondCodegen.Identity)&quot;"
-          Condition="'%(BondCodegen.Options)' != ''" />
+          Condition="'%(BondCodegen.Options)' != '$(BondOptions)'" />
   </Target>
 
   <!--
