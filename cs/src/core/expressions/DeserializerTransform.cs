@@ -16,6 +16,7 @@ namespace Bond.Expressions
 
         readonly NewObject newObject;
         readonly NewContainer newContainer;
+        readonly bool inlineNested;
         TypeAlias typeAlias;
 
         readonly Expression<Func<R, int, object>> deferredDeserialize;
@@ -35,6 +36,7 @@ namespace Bond.Expressions
 
         public DeserializerTransform(
             Expression<Func<R, int, object>> deferredDeserialize,
+            bool inlineNested = true,
             Expression<Func<Type, Type, object>> createObject = null,
             Expression<Func<Type, Type, int, object>> createContainer = null)
         {
@@ -69,6 +71,8 @@ namespace Bond.Expressions
             {
                 newContainer = (t1, t2, count) => New(t1, t2, count);
             }
+
+            this.inlineNested = inlineNested;
         }
 
         public IEnumerable<Expression<Func<R, object>>> Generate(IParser parser, Type type)
@@ -82,7 +86,7 @@ namespace Bond.Expressions
 
         Expression Deserialize(IParser parser, Expression var, Type objectType, Type schemaType, bool initialize)
         {
-            var inline = inProgress.Count != 0 && !inProgress.Contains(schemaType) && var != null;
+            var inline = inlineNested && inProgress.Count != 0 && !inProgress.Contains(schemaType) && var != null;
             Expression body;
 
             inProgress.Push(schemaType);
