@@ -41,7 +41,7 @@ roundtripAST x = (decode . encode) x == Just x
 
 compareAST :: FilePath -> Assertion
 compareAST file = do
-    bond <- parseBondFile [] $ "tests" </> file <.> "bond"
-    json <- parseASTFile $ "tests" </> file <.> "json"
+    bond <- parseBondFile [] $ "tests" </> "schema" </> file <.> "bond"
+    json <- parseASTFile $ "tests" </> "schema" </> file <.> "json"
     assertEqual "" bond json
 

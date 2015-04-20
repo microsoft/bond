@@ -77,7 +77,7 @@ verifyFiles :: Options -> TypeMapping -> [Template] -> FilePath -> Assertion
 verifyFiles options typeMapping templates baseName = do
     aliasMapping <- parseAliasMappings $ using options
     namespaceMapping <- parseNamespaceMappings $ namespace options
-    (Bond imports namespaces declarations) <- parseBondFile [] $ "tests" </> baseName <.> "bond"
+    (Bond imports namespaces declarations) <- parseBondFile [] $ "tests" </> "schema" </> baseName <.> "bond"
     let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
     forM_ templates $ \template -> do
         let (suffix, code) = template mappingContext baseName imports declarations
