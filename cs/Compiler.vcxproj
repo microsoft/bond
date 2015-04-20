@@ -42,13 +42,14 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd
           </Command>
-      <AdditionalInputs>$(ProjectDir)..\compiler\gbc.cabal;$(ProjectDir)..\compiler\Main.hs;$(ProjectDir)..\compiler\Options.hs;$(ProjectDir)..\compiler\Bond\Lexer.hs;$(ProjectDir)..\compiler\Bond\Parser.hs;$(ProjectDir)..\compiler\Bond\Schema\JSON.hs;$(ProjectDir)..\compiler\Bond\Schema\Types.hs;$(ProjectDir)..\compiler\Bond\Schema\Util.hs;$(ProjectDir)..\compiler\Bond\Util.hs;$(ProjectDir)..\compiler\Bond\Version.hs;$(ProjectDir)..\compiler\Bond\Template\CustomMapping.hs;$(ProjectDir)..\compiler\Bond\Template\TypeMapping.hs;$(ProjectDir)..\compiler\Bond\Template\Util.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Apply_cpp.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Apply_h.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Enum_h.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Reflection_h.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Types_cpp.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Types_h.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Util.hs;$(ProjectDir)..\compiler\Bond\Template\Cs\Types_cs.hs;$(ProjectDir)..\compiler\Bond\Template\Cs\Util.hs;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs>$(ProjectDir)..\compiler\gbc.cabal;$(ProjectDir)..\compiler\Main.hs;$(ProjectDir)..\compiler\Files.hs;$(ProjectDir)..\compiler\Options.hs;$(ProjectDir)..\compiler\Bond\Lexer.hs;$(ProjectDir)..\compiler\Bond\Parser.hs;$(ProjectDir)..\compiler\Bond\Schema\JSON.hs;$(ProjectDir)..\compiler\Bond\Schema\Types.hs;$(ProjectDir)..\compiler\Bond\Schema\Util.hs;$(ProjectDir)..\compiler\Bond\Util.hs;$(ProjectDir)..\compiler\Bond\Version.hs;$(ProjectDir)..\compiler\Bond\Template\CustomMapping.hs;$(ProjectDir)..\compiler\Bond\Template\TypeMapping.hs;$(ProjectDir)..\compiler\Bond\Template\Util.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Apply_cpp.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Apply_h.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Enum_h.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Reflection_h.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Types_cpp.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Types_h.hs;$(ProjectDir)..\compiler\Bond\Template\Cpp\Util.hs;$(ProjectDir)..\compiler\Bond\Template\Cs\Types_cs.hs;$(ProjectDir)..\compiler\Bond\Template\Cs\Util.hs;%(AdditionalInputs)</AdditionalInputs>
       <Outputs>$(ProjectDir)\bin\gbc.exe</Outputs>          
       </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(ProjectDir)..\compiler\gbc.cabal" />
     <None Include="$(ProjectDir)..\compiler\Main.hs" />
+    <None Include="$(ProjectDir)..\compiler\Files.hs" />
     <None Include="$(ProjectDir)..\compiler\Options.hs" />
     <None Include="$(ProjectDir)..\compiler\Bond\Lexer.hs" />
     <None Include="$(ProjectDir)..\compiler\Bond\Parser.hs" />

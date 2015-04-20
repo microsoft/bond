@@ -37,6 +37,7 @@ test-suite gbc-tests
                     derive,
                     HUnit,
                     QuickCheck,
+                    Diff >= 0.2 && < 0.4,
                     test-framework,
                     test-framework-hunit,
                     test-framework-quickcheck2

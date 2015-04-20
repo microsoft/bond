@@ -7,6 +7,7 @@
     <None Include="$(ProjectDir)..\compiler\gbc.cabal" />
     <None Include="$(ProjectDir)..\compiler\Options.hs" />
     <None Include="$(ProjectDir)..\compiler\Main.hs" />
+    <None Include="$(ProjectDir)..\compiler\Files.hs" />
     <None Include="$(ProjectDir)..\compiler\Bond\Lexer.hs">
       <Filter>Bond</Filter>
     </None>

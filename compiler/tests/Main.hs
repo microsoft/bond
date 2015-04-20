@@ -1,3 +1,6 @@
+-- Copyright (c) Microsoft. All rights reserved.
+-- Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
 import Data.Monoid
@@ -5,6 +8,7 @@ import Test.Framework
 import Test.Framework.Providers.QuickCheck2 (testProperty)
 import Test.Framework.Providers.HUnit (testCase)
 import Tests.Schema
+import Tests.Codegen
 
 tests :: [Test]
 tests =
@@ -20,6 +24,30 @@ tests =
             , testCase "generics" $ compareAST "generics"
             , testCase "inheritance" $ compareAST "inheritance"
             , testCase "type aliases" $ compareAST "aliases"
+            ]
+        ]
+    , testGroup "Codegen"
+        [ testGroup "C++"
+            [ testCase "attributes" $ verifyCppCodegen "attributes"
+            , testCase "basic types" $ verifyCppCodegen "basic_types"
+            , testCase "complex types" $ verifyCppCodegen "complex_types"
+            , testCase "default values" $ verifyCppCodegen "defaults"
+            , testCase "empty" $ verifyCppCodegen "empty"
+            , testCase "field modifiers" $ verifyCppCodegen "field_modifiers"
+            , testCase "generics" $ verifyCppCodegen "generics"
+            , testCase "inheritance" $ verifyCppCodegen "inheritance"
+            , testCase "type aliases" $ verifyCppCodegen "aliases"
+            ]
+        , testGroup "C#"
+            [ testCase "attributes" $ verifyCsCodegen "attributes"
+            , testCase "basic types" $ verifyCsCodegen "basic_types"
+            , testCase "complex types" $ verifyCsCodegen "complex_types"
+            , testCase "default values" $ verifyCsCodegen "defaults"
+            , testCase "empty" $ verifyCsCodegen "empty"
+            , testCase "field modifiers" $ verifyCsCodegen "field_modifiers"
+            , testCase "generics" $ verifyCsCodegen "generics"
+            , testCase "inheritance" $ verifyCsCodegen "inheritance"
+            , testCase "type aliases" $ verifyCsCodegen "aliases"
             ]
         ]
     ]

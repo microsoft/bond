@@ -45,6 +45,7 @@ endfunction()
 set (sources
     gbc.cabal
     Main.hs
+    Files.hs
     Options.hs
     Bond/Lexer.hs
     Bond/Parser.hs
