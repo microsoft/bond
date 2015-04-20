@@ -3,6 +3,7 @@
 
 {-# LANGUAGE OverloadedStrings, RecordWildCards, DeriveGeneric,
     StandaloneDeriving #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Bond.Schema.JSON
     ( FromJSON(..)

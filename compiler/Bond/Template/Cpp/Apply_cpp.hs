@@ -20,7 +20,7 @@ apply_cpp protocols cpp file _imports declarations = ("_apply.cpp", [lt|
 #include "#{file}_reflection.h"
 
 #{CPP.openNamespace cpp}
-    #{newlineSepEnd 1 (apply protocols attr body) declarations}
+    #{newlineSepEnd 1 (applyOverloads protocols attr body) declarations}
 #{CPP.closeNamespace cpp}
 |])
   where

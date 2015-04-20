@@ -110,7 +110,7 @@ schemaMetadata cpp s@Struct {..} = [lt|
         = bond::reflection::MetadataInit(#{defaultInit f}"#{fieldName}", #{modifierTag f}::value,
             #{attributeInit fieldAttributes});|]
       where
-        defaultInit Field {fieldDefault = (Just def), ..} = [lt|#{explicitDefault def}, |]
+        defaultInit Field {fieldDefault = (Just def)} = [lt|#{explicitDefault def}, |]
         defaultInit _ = mempty
         explicitDefault (DefaultNothing) = "bond::nothing"
         explicitDefault d@(DefaultInteger _) = staticCast d

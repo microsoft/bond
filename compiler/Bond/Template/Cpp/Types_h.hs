@@ -236,7 +236,7 @@ namespace std
             allocInitValue i (BT_Maybe t) _
                 | scalarType t = Nothing
                 | otherwise = allocInitValue i t Nothing
-            allocInitValue i t@(BT_UserDefined a@Alias {..} args) d = if allocParameterized t
+            allocInitValue i t@(BT_UserDefined a@Alias {} args) d = if allocParameterized t
                 then allocInitValue i (resolveAlias a args) d
                 else Just mempty
             allocInitValue i f d = i f d
@@ -298,14 +298,14 @@ namespace std
             nameParam = if baseInit == mempty && nameInit == mempty then mempty else [lt| name|]
             qualifiedNameParam = if baseInit == mempty && qualifiedInit == mempty then mempty else [lt| qualified_name|]
             baseInit = optional (\b -> [lt|#{cppType b}::InitMetadata(name, qualified_name);|]) structBase
-            nameInit = newlineSep 3 init structFields
+            nameInit = newlineSep 3 init' structFields
               where
-                init Field {fieldType = BT_MetaName, ..} = [lt|this->#{fieldName} = name;|]
-                init _ = mempty
-            qualifiedInit = newlineSep 3 init structFields
+                init' Field {fieldType = BT_MetaName, ..} = [lt|this->#{fieldName} = name;|]
+                init' _ = mempty
+            qualifiedInit = newlineSep 3 init' structFields
               where
-                init Field {fieldType = BT_MetaFullName, ..} = [lt|this->#{fieldName} = qualified_name;|]
-                init _ = mempty
+                init' Field {fieldType = BT_MetaFullName, ..} = [lt|this->#{fieldName} = qualified_name;|]
+                init' _ = mempty
 
     -- enum definition and helpers
     typeDeclaration e@Enum {..} = [lt|

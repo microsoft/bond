@@ -88,12 +88,12 @@ namespace #{csNamespace}
             new = if isBaseField fieldName structBase then "new " else "" :: String
 
         -- initializers in constructor
-        initializer f@Field {..} = optional init $ def f
+        initializer f@Field {..} = optional fieldInit $ def f
           where 
-            init x = [lt|#{this fieldName} = #{x};|]
+            fieldInit x = [lt|#{this fieldName} = #{x};|]
             this = if fieldName == "name" || fieldName == "fullName" then ("this." ++) else id
-            def Field {fieldType = BT_MetaName, ..} = Just "name"
-            def Field {fieldType = BT_MetaFullName, ..} = Just "fullName"
+            def Field {fieldType = BT_MetaName} = Just "name"
+            def Field {fieldType = BT_MetaFullName} = Just "fullName"
             def x = if useFields then Nothing else csDefault x
 
     -- C# enum definition for schema enum

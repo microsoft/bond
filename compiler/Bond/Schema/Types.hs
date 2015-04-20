@@ -21,7 +21,6 @@ module Bond.Schema.Types
     ) where
 
 import Data.Word
-import Bond.Util
 
 type QualifiedName = [String]
 

@@ -44,7 +44,7 @@ test-suite gbc-tests
 
 executable gbc
   main-is:          Main.hs
-  ghc-options:      -threaded
+  ghc-options:      -threaded -Wall -Werror
   other-modules:
   build-depends:    aeson >= 0.7.0.6,
                     async >= 2.0.1.0,
