@@ -6,6 +6,7 @@
 module Bond.Template.Cpp.Types_cpp (types_cpp) where
 
 import Data.Monoid
+import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema.Types

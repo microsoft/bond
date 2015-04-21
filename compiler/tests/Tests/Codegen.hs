@@ -13,6 +13,7 @@ import System.FilePath
 import System.Environment (withArgs)
 import Control.Monad
 import Data.Monoid
+import Prelude
 import Data.Text.Lazy (Text, unpack)
 import Test.HUnit
 import Bond.Template.Util

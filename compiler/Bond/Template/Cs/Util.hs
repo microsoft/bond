@@ -14,6 +14,7 @@ module Bond.Template.Cs.Util
 
 import Data.Int (Int64)
 import Data.Monoid
+import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Version

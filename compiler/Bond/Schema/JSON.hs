@@ -12,6 +12,7 @@ module Bond.Schema.JSON
 import Data.Aeson
 import Data.Aeson.Types
 import Control.Applicative
+import Prelude
 import GHC.Generics (Generic)
 import Bond.Schema.Types
 

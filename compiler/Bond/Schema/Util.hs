@@ -29,8 +29,9 @@ module Bond.Schema.Util
 import Data.Maybe
 import Data.Word
 import Data.List
-import Data.Foldable (foldMap)
+import qualified Data.Foldable as F
 import Data.Monoid
+import Prelude
 import Bond.Util
 import Bond.Schema.Types
 
@@ -141,7 +142,7 @@ mapType f x = f x
 
 foldMapFields :: (Monoid m) => (Field -> m) -> Type -> m
 foldMapFields f t = case t of
-    (BT_UserDefined   Struct {..} _) -> optional (foldMapFields f) structBase <> foldMap f structFields
+    (BT_UserDefined   Struct {..} _) -> optional (foldMapFields f) structBase <> F.foldMap f structFields
     (BT_UserDefined a@Alias {..} args) -> foldMapFields f $ resolveAlias a args
     _ -> mempty
 
@@ -149,7 +150,7 @@ foldMapStructFields :: Monoid m => (Field -> m) -> Declaration -> m
 foldMapStructFields f s = foldMapFields f $ BT_UserDefined s []
 
 foldMapType :: (Monoid m) => (Type -> m) -> Type -> m
-foldMapType f t@(BT_UserDefined _decl args) = f t <> foldMap (foldMapType f) args
+foldMapType f t@(BT_UserDefined _decl args) = f t <> F.foldMap (foldMapType f) args
 foldMapType f t@(BT_Map key value) = f t <> foldMapType f key <> foldMapType f value
 foldMapType f t@(BT_List element) = f t <> foldMapType f element
 foldMapType f t@(BT_Vector element) = f t <> foldMapType f element

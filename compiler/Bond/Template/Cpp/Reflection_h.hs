@@ -7,6 +7,7 @@ module Bond.Template.Cpp.Reflection_h (reflection_h) where
 
 import System.FilePath
 import Data.Monoid
+import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema.Types

@@ -8,6 +8,7 @@ import System.Directory
 import System.FilePath
 import Data.Monoid
 import Control.Monad
+import Prelude
 import Control.Concurrent.Async
 import GHC.Conc (getNumProcessors, setNumCapabilities)
 import Data.Text.Lazy (Text)

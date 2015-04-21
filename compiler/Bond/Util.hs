@@ -17,6 +17,7 @@ module Bond.Util
 
 import Data.Monoid
 import Data.String (IsString)
+import Prelude
 
 sepEndBy :: (Monoid a, Eq a)
          => a -> (t -> a) -> [t] -> a

@@ -27,6 +27,7 @@ import Data.List
 import Data.Monoid
 import Control.Applicative
 import Control.Monad.Reader
+import Prelude
 import qualified Data.Text.Lazy as L
 import Data.Text.Lazy.Builder
 import Text.Shakespeare.Text

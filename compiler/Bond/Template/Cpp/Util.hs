@@ -20,9 +20,10 @@ module Bond.Template.Cpp.Util
     , enumDefinition
     ) where
 
-import Text.Shakespeare.Text
 import Data.Monoid
+import Prelude
 import Data.Text.Lazy (Text)
+import Text.Shakespeare.Text
 import Bond.Schema.Types
 import Bond.Schema.Util
 import Bond.Util

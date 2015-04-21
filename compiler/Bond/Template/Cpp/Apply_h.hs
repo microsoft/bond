@@ -7,6 +7,7 @@ module Bond.Template.Cpp.Apply_h (apply_h, Protocol(..), applyOverloads) where
 
 import System.FilePath
 import Data.Monoid
+import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema.Types

@@ -6,7 +6,8 @@
 module Bond.Template.Cs.Types_cs (types_cs) where
 
 import Data.Monoid
-import Data.Foldable (foldMap)
+import qualified Data.Foldable as F
+import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema.Types
@@ -72,7 +73,7 @@ namespace #{csNamespace}
         }|]
           where
             emptyCtor = not callBaseCtor && (useFields && noMetaFields || null structFields)
-            noMetaFields = not $ getAny $ foldMap metaField structFields
+            noMetaFields = not $ getAny $ F.foldMap metaField structFields
 
         -- property or field
         property f@Field {..} = [lt|#{CS.propertyAttributes cs f}

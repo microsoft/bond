@@ -8,9 +8,10 @@ module Bond.Template.Cpp.Types_h (types_h) where
 import System.FilePath
 import Data.Maybe
 import Data.Monoid
+import Prelude
 import Data.Text.Lazy.Builder
 import qualified Data.Text.Lazy as L
-import Data.Foldable (foldMap)
+import qualified Data.Foldable as F
 import Text.Shakespeare.Text
 import Bond.Version
 import Bond.Schema.Types
@@ -66,7 +67,7 @@ types_h userHeaders enumHeader allocator cpp file imports declarations = ("_type
     includeEnum = if enumHeader then [lt|#include "#{file}_enum.h"|] else mempty
 
     -- True if declarations have any type satisfying f
-    have f = getAny $ foldMap g declarations
+    have f = getAny $ F.foldMap g declarations
       where
         g s@Struct{..} = foldMapStructFields (foldMapType f . fieldType) s
                       <> optional (foldMapType f) structBase

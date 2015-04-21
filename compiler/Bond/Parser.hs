@@ -13,6 +13,7 @@ import Data.List
 import Data.Function
 import Control.Applicative
 import Control.Monad.Reader
+import Prelude
 import Text.Parsec.Pos (initialPos)
 import Text.Parsec hiding (many, optional, (<|>))
 import Bond.Lexer

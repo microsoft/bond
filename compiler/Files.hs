@@ -12,8 +12,9 @@ import System.Exit
 import System.FilePath
 import System.Directory
 import System.IO
-import Data.Aeson (eitherDecode)
 import Control.Applicative
+import Prelude
+import Data.Aeson (eitherDecode)
 import Control.Monad.Loops (firstM)
 import qualified Data.ByteString.Lazy as BL
 import Bond.Schema.Types (Bond(..))
