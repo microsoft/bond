@@ -7,7 +7,6 @@ module Bond.Template.Cpp.Types_h (types_h) where
 
 import System.FilePath
 import Data.Maybe
-import Data.List
 import Data.Monoid
 import Data.Text.Lazy.Builder
 import qualified Data.Text.Lazy as L
@@ -175,12 +174,12 @@ namespace std
         -- value to pass to field initializer in ctor initialize list
         -- or Nothing if field doesn't need explicit initialization
         initValue (BT_Maybe _) _ = Nothing
+        initValue t (Just d) = Just $ cppDefaultValue t d
         initValue (BT_TypeParam _) _ = Just mempty
         initValue (BT_UserDefined a@Alias {} args) d =
             case findAliasMapping cpp a of
                 Nothing -> initValue (resolveAlias a args) d
                 Just _ -> Just mempty
-        initValue t (Just d) = Just $ cppDefaultValue t d
         initValue t _
             | scalarType t = Just mempty
             | otherwise = Nothing
@@ -216,32 +215,27 @@ namespace std
           where
             allocParam = if needAlloc then [lt| allocator|] else mempty
               where
-                needAlloc = isJust structBase || isJust (find needsAlloc structFields)
-                needsAlloc Field {..} = isJust $ allocInitValue (const $ const Nothing) fieldType fieldDefault
+                needAlloc = isJust structBase || any (allocParameterized . fieldType) structFields
             initList = initializeList
                 (optional baseInit structBase)
                 (commaLineSep 3 fieldInit structFields)
             baseInit b = [lt|#{cppType b}(allocator)|]
             fieldInit Field {..} = optional (\x -> [lt|#{fieldName}(#{x})|])
-                $ allocInitValue initValue fieldType fieldDefault
-            allocInitValue _ t (Just d)
+                $ allocInitValue fieldType fieldDefault
+            allocInitValue t@(BT_UserDefined a@Alias {} args) d
+                | allocParameterized t = allocInitValue (resolveAlias a args) d
+                | otherwise = initValue t d
+            allocInitValue (BT_Nullable t) _ = allocInitValue t Nothing
+            allocInitValue (BT_Maybe t) _ = allocInitValue t Nothing
+            allocInitValue t (Just d)
                 | stringType t = Just [lt|#{cppDefaultValue t d}, allocator|]
-            allocInitValue _ t _
+            allocInitValue t Nothing
                 | listType t || metaType t || stringType t || structType t = Just "allocator"
                 | associativeType t = Just [lt|std::less<#{keyType t}>(), allocator|]
-            allocInitValue i (BT_Nullable t) _
-                | scalarType t = Nothing
-                | nullableType t = allocInitValue i t Nothing
-                | otherwise = Just "allocator"
-            allocInitValue i (BT_Maybe t) _
-                | scalarType t = Nothing
-                | otherwise = allocInitValue i t Nothing
-            allocInitValue i t@(BT_UserDefined a@Alias {} args) d = if allocParameterized t
-                then allocInitValue i (resolveAlias a args) d
-                else Just mempty
-            allocInitValue i f d = i f d
+            allocInitValue t d = initValue t d
             keyType (BT_Set key) = cppType key
             keyType (BT_Map key _) = cppType key
+            keyType (BT_UserDefined a@Alias {} args) = keyType $ resolveAlias a args
             keyType _ = error "allocatorCtor/keyType: impossible happened."
             allocParameterized = L.isInfixOf (L.pack alloc) . toLazyText . cppType
 

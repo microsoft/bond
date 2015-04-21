@@ -24,7 +24,7 @@ namespace test
         = bond::reflection::MetadataInit("s");
     
     const bond::Metadata foo::Schema::s_d_metadata
-        = bond::reflection::MetadataInit("d");
+        = bond::reflection::MetadataInit("foo", "d");
     
     const bond::Metadata foo::Schema::s_l1_metadata
         = bond::reflection::MetadataInit(bond::nothing, "l1");

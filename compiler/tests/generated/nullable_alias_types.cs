@@ -14,11 +14,11 @@ namespace test
     using System.Collections.Generic;
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "3.03")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "3.05")]
     public partial class foo
     {
         [global::Bond.Id(1), global::Bond.Type(typeof(global::Bond.Tag.nullable<long>))]
-        public long l { get; set; }
+        public long? l { get; set; }
         
         public foo()
             : this("test.foo", "foo")

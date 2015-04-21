@@ -277,11 +277,9 @@ complexType =
         if valid t then return t else unexpected "type"
     validKeyType t = case t of
         BT_TypeParam _ -> True
-        BT_UserDefined a@Alias {} args -> validKeyType $ resolveAlias a args
-        _ -> scalarType t
+        _ -> scalarType t || stringType t
     validBondedType t = case t of
         BT_TypeParam _ -> True
-        BT_UserDefined Forward {} _ -> True
         _ -> structType t
 
 

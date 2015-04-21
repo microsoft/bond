@@ -37,6 +37,7 @@ tests =
             , testCase "generics" $ verifyCppCodegen "generics"
             , testCase "inheritance" $ verifyCppCodegen "inheritance"
             , testCase "type aliases" $ verifyCppCodegen "aliases"
+            , testCase "alias key" $ verifyCppCodegen "alias_key"
             , testCase "alias with allocator" $ verifyCodegen
                 [ "c++"
                 , "--allocator=arena"

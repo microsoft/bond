@@ -18,27 +18,28 @@
 
 
 
-namespace tests
+namespace test
 {
     
-    template <typename T>
-    struct Foo
+    struct foo
     {
-        std::vector<std::vector<T> > aa;
+        std::map<std::string, int32_t> m;
+        std::set<int32_t> s;
         
-        Foo()
+        foo()
         {
         }
 
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
-        Foo(const Foo& other) = default;
+        foo(const foo& other) = default;
 #endif
         
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
-        Foo(Foo&& other)
-          : aa(std::move(other.aa))
+        foo(foo&& other)
+          : m(std::move(other.m)),
+            s(std::move(other.s))
         {
         }
 #endif
@@ -46,24 +47,26 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
-        Foo& operator=(const Foo& other) = default;
+        foo& operator=(const foo& other) = default;
 #endif
 
-        bool operator==(const Foo& other) const
+        bool operator==(const foo& other) const
         {
             return true
-                && (aa == other.aa);
+                && (m == other.m)
+                && (s == other.s);
         }
 
-        bool operator!=(const Foo& other) const
+        bool operator!=(const foo& other) const
         {
             return !(*this == other);
         }
 
-        void swap(Foo& other)
+        void swap(foo& other)
         {
             using std::swap;
-            swap(aa, other.aa);
+            swap(m, other.m);
+            swap(s, other.s);
         }
 
         struct Schema;
@@ -74,10 +77,9 @@ namespace tests
         }
     };
 
-    template <typename T>
-    inline void swap(Foo<T>& left, Foo<T>& right)
+    inline void swap(foo& left, foo& right)
     {
         left.swap(right);
     }
-} // namespace tests
+} // namespace test
 

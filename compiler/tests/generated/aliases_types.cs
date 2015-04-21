@@ -14,7 +14,7 @@ namespace tests
     using System.Collections.Generic;
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "3.03")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "3.05")]
     public partial class Foo<T>
     {
         [global::Bond.Id(0), global::Bond.Type(typeof(List<List<global::Bond.Tag.classT>>))]

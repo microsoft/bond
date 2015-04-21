@@ -13,7 +13,7 @@ struct foo
     2: Set<bool> s;
     3: Map<String, bool> m;
     4: String s;
-    5: String d;// = "foo";
+    5: String d = "foo";
     10: List<bool> l1 = nothing;
     11: Vector<bool> v1 = nothing;
     12: Set<bool> s1 = nothing;

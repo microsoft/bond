@@ -24,6 +24,7 @@ import Text.Shakespeare.Text
 import Data.Monoid
 import Data.Text.Lazy (Text)
 import Bond.Schema.Types
+import Bond.Schema.Util
 import Bond.Util
 import Bond.Template.Util
 import Bond.Template.TypeMapping
@@ -87,6 +88,7 @@ defaultValue _ _ (DefaultBool False) = "false"
 defaultValue _ _ (DefaultInteger x) = [lt|#{x}|]
 defaultValue _ _ (DefaultFloat x) = [lt|#{x}|]
 defaultValue _ _ (DefaultNothing) = mempty
+defaultValue m (BT_UserDefined a@Alias {..} args) d = defaultValue m (resolveAlias a args) d
 defaultValue _ _ _ = error "defaultValue: impossible happened."
 
 enumValue :: ToText a => MappingContext -> Type -> a -> Text
