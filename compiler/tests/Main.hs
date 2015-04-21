@@ -37,6 +37,31 @@ tests =
             , testCase "generics" $ verifyCppCodegen "generics"
             , testCase "inheritance" $ verifyCppCodegen "inheritance"
             , testCase "type aliases" $ verifyCppCodegen "aliases"
+            , testCase "alias with allocator" $ verifyCodegen
+                [ "c++"
+                , "--allocator=arena"
+                ]
+                "alias_with_allocator"
+            , testCase "custom alias with allocator" $ verifyCodegen
+                [ "c++"
+                , "--allocator=arena"
+                , "--using=List=my::list<{0}, arena>"
+                , "--using=Vector=my::vector<{0}, arena>"
+                , "--using=Set=my::set<{0}, arena>"
+                , "--using=Map=my::map<{0}, {1}, arena>"
+                , "--using=String=my::string<arena>"
+                ]
+                "custom_alias_with_allocator"
+            , testCase "custom alias without allocator" $ verifyCodegen
+                [ "c++"
+                , "--allocator=arena"
+                , "--using=List=my::list<{0}>"
+                , "--using=Vector=my::vector<{0}>"
+                , "--using=Set=my::set<{0}>"
+                , "--using=Map=my::map<{0}, {1}>"
+                , "--using=String=my::string"
+                ]
+                "custom_alias_without_allocator"
             ]
         , testGroup "C#"
             [ testCase "attributes" $ verifyCsCodegen "attributes"
@@ -48,6 +73,7 @@ tests =
             , testCase "generics" $ verifyCsCodegen "generics"
             , testCase "inheritance" $ verifyCsCodegen "inheritance"
             , testCase "type aliases" $ verifyCsCodegen "aliases"
+            , testCase "nullable of alias" $ verifyCsCodegen "nullable_alias"
             ]
         ]
     ]
