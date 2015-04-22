@@ -132,7 +132,10 @@ In order to build Bond on your machine:
 - Install CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
 - Install Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
 
+You can install them with [Chocolatey](http://chocolatey.org):
 
+    cinst haskellplatform cmake visualstudiocommunity2013
+    
 Update cabal to the latest version (if behind a proxy, set environment variable 
 `HTTP_PROXY=http://proxy:port` before running cabal):
 
