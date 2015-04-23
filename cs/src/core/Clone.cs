@@ -60,6 +60,7 @@ namespace Bond
             clone = Generate(type, 
                 new DeserializerTransform<object>(
                     (o, i) => clone[i](o),
+                    true,
                     (t1, t2) => objectFactory.CreateObject(t1, t2),
                     (t1, t2, count) => objectFactory.CreateContainer(t1, t2, count)));
         }
