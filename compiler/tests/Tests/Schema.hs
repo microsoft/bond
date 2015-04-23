@@ -1,3 +1,6 @@
+-- Copyright (c) Microsoft. All rights reserved.
+-- Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 {-# LANGUAGE TemplateHaskell #-}
 
 module Tests.Schema
@@ -17,6 +20,7 @@ import Test.HUnit
 import Bond.Schema.Types
 import Bond.Schema.JSON
 import Bond.Parser
+import Files
 
 derive makeArbitrary ''Attribute
 derive makeArbitrary ''Bond
@@ -30,33 +34,14 @@ derive makeArbitrary ''Language
 derive makeArbitrary ''Modifier
 derive makeArbitrary ''Namespace
 derive makeArbitrary ''Type
-derive makeArbitrary ''TypeParam 
+derive makeArbitrary ''TypeParam
 
 roundtripAST :: Bond -> Bool
 roundtripAST x = (decode . encode) x == Just x
 
 compareAST :: FilePath -> Assertion
 compareAST file = do
-    bondInput <- readFileUtf8 $ "tests" </> file <.> "bond"
-    jsonInput <- BL.readFile $ "tests" </> file <.> "json"
-    bondParsed <- parseBond "" bondInput "" noImports
-    let jsonParsed = eitherDecode jsonInput
-    case bondParsed of
-        Left error -> do
-            print $ "Error parsing " ++ file ++ ".bond: " ++ show error
-            exitFailure
-        Right bond -> 
-            case jsonParsed of
-                Left error -> do
-                    print $ "Error parsing " ++ file ++ ".json: " ++ show error
-                    exitFailure
-                Right json ->
-                    assertEqual "" bond json
-  where
-    noImports _ _ = return ("", "")
+    bond <- parseBondFile [] $ "tests" </> "schema" </> file <.> "bond"
+    json <- parseASTFile $ "tests" </> "schema" </> file <.> "json"
+    assertEqual "" bond json
 
-readFileUtf8 :: FilePath -> IO String
-readFileUtf8 name = do 
-    h <- openFile name ReadMode
-    hSetEncoding h utf8_bom
-    hGetContents h

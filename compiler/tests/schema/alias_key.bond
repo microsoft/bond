@@ -1,0 +1,10 @@
+namespace  test
+
+using String = string;
+using Int = int32;
+
+struct foo
+{
+    0: map<String, Int> m;
+    1: set<Int> s;
+}

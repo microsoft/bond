@@ -1,0 +1,8 @@
+namespace test
+
+using LargeInt=int64;
+
+struct foo
+{
+    1: nullable<LargeInt> l;
+}

@@ -13,6 +13,7 @@ module Bond.Template.CustomMapping
 
 import Data.Char
 import Control.Applicative
+import Prelude
 import Text.Parsec hiding (many, optional, (<|>))
 import Bond.Schema.Types
 

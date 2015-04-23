@@ -25,6 +25,7 @@ module Bond.Template.Util
 import Data.Int (Int64)
 import Data.Monoid
 import Data.Word
+import Prelude
 import Data.Text.Lazy (Text, justifyRight)
 import Data.Text.Lazy.Builder
 import Text.Shakespeare.Text

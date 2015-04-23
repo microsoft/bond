@@ -20,10 +20,12 @@ module Bond.Template.Cpp.Util
     , enumDefinition
     ) where
 
-import Text.Shakespeare.Text
 import Data.Monoid
+import Prelude
 import Data.Text.Lazy (Text)
+import Text.Shakespeare.Text
 import Bond.Schema.Types
+import Bond.Schema.Util
 import Bond.Util
 import Bond.Template.Util
 import Bond.Template.TypeMapping
@@ -87,6 +89,7 @@ defaultValue _ _ (DefaultBool False) = "false"
 defaultValue _ _ (DefaultInteger x) = [lt|#{x}|]
 defaultValue _ _ (DefaultFloat x) = [lt|#{x}|]
 defaultValue _ _ (DefaultNothing) = mempty
+defaultValue m (BT_UserDefined a@Alias {..} args) d = defaultValue m (resolveAlias a args) d
 defaultValue _ _ _ = error "defaultValue: impossible happened."
 
 enumValue :: ToText a => MappingContext -> Type -> a -> Text
@@ -110,7 +113,7 @@ schemaMetadata cpp s@Struct {..} = [lt|
         = bond::reflection::MetadataInit(#{defaultInit f}"#{fieldName}", #{modifierTag f}::value,
             #{attributeInit fieldAttributes});|]
       where
-        defaultInit Field {fieldDefault = (Just def), ..} = [lt|#{explicitDefault def}, |]
+        defaultInit Field {fieldDefault = (Just def)} = [lt|#{explicitDefault def}, |]
         defaultInit _ = mempty
         explicitDefault (DefaultNothing) = "bond::nothing"
         explicitDefault d@(DefaultInteger _) = staticCast d

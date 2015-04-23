@@ -3,10 +3,11 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
-module Bond.Template.Cpp.Apply_h (apply_h, Protocol(..), apply) where
+module Bond.Template.Cpp.Apply_h (apply_h, Protocol(..), applyOverloads) where
 
 import System.FilePath
 import Data.Monoid
+import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema.Types
@@ -32,7 +33,7 @@ apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
 #{newlineSep 0 includeImport imports}
 
 #{CPP.openNamespace cpp}
-    #{newlineSepEnd 1 (apply protocols attr semi) declarations}
+    #{newlineSepEnd 1 (applyOverloads protocols attr semi) declarations}
 #{CPP.closeNamespace cpp}
 |])
   where
@@ -44,8 +45,8 @@ apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
     semi = [lt|;|]
 
 -- Apply overloads
-apply :: [Protocol] -> Text -> Text -> Declaration -> Text
-apply protocols attr body Struct {..} | null declParams = [lt|
+applyOverloads :: [Protocol] -> Text -> Text -> Declaration -> Text
+applyOverloads protocols attr body Struct {..} | null declParams = [lt|
     //
     // Overloads of Apply function with common transforms for #{declName}.
     // These overloads will be selected using argument dependent lookup
@@ -56,9 +57,9 @@ apply protocols attr body Struct {..} | null declParams = [lt|
 
     #{attr}bool Apply(const bond::InitSchemaDef& transform,
                const #{declName}& value)#{body}
-    #{newlineSep 1 applyOverloads protocols}|]
+    #{newlineSep 1 applyOverloads' protocols}|]
   where
-    applyOverloads p = [lt|#{deserialization p}
+    applyOverloads' p = [lt|#{deserialization p}
     #{serialization serializer p}
     #{serialization marshaler p}|]
 
@@ -84,4 +85,4 @@ apply protocols attr body Struct {..} | null declParams = [lt|
     #{attr}bool Apply(const bond::#{transform'}<bond::#{protocolWriter}<bond::OutputBuffer> >& transform,
                const bond::bonded<#{declName}, bond::#{fromReader}<bond::InputBuffer>&>& value)#{body}|]
 
-apply _ _ _ _ = mempty
+applyOverloads _ _ _ _ = mempty

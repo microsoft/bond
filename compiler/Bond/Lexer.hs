@@ -1,6 +1,8 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
 module Bond.Lexer
     ( angles
     , braces

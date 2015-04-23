@@ -27,6 +27,7 @@ import Data.List
 import Data.Monoid
 import Control.Applicative
 import Control.Monad.Reader
+import Prelude
 import qualified Data.Text.Lazy as L
 import Data.Text.Lazy.Builder
 import Text.Shakespeare.Text
@@ -310,7 +311,7 @@ csType (BT_Set element) = "HashSet<" <>> elementTypeName element <<> ">"
 csType (BT_Map key value) = "Dictionary<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> ">"
 csType (BT_Bonded type_) = "global::Bond.IBonded<" <>> typeName type_ <<> ">"
 csType (BT_TypeParam param) = pureText $ paramName param
-csType (BT_UserDefined a@Alias {..} args) = aliasTypeName a args
+csType (BT_UserDefined a@Alias {} args) = aliasTypeName a args
 csType (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> localWith (const csTypeMapping) (commaSepTypeNames args))
 
 -- C# type mapping with collection interfaces
@@ -329,11 +330,9 @@ csTypeAnnotation (BT_Bonded type_) = "global::Bond.Tag.bonded<" <>> typeName typ
 csTypeAnnotation (BT_TypeParam (TypeParam _ Nothing)) = pure "global::Bond.Tag.classT"
 csTypeAnnotation (BT_TypeParam (TypeParam _ (Just Value))) = pure "global::Bond.Tag.structT"
 csTypeAnnotation (BT_UserDefined Alias {aliasType = BT_Blob} _) = pure "global::Bond.Tag.blob"
-csTypeAnnotation t@(BT_UserDefined Alias {aliasType = (BT_Set _)} _) = csType t
-csTypeAnnotation t@(BT_UserDefined Alias {aliasType = (BT_List _)} _) = csType t
-csTypeAnnotation t@(BT_UserDefined Alias {aliasType = (BT_Map _ _)} _) = csType t
-csTypeAnnotation t@(BT_UserDefined Alias {aliasType = (BT_Vector _)} _) = csType t
-csTypeAnnotation (BT_UserDefined a@Alias {..} args) = typeName $ resolveAlias a args
+csTypeAnnotation t@(BT_UserDefined a@Alias {..} args)
+   | containerType t = csType t 
+   | otherwise = typeName $ resolveAlias a args
 csTypeAnnotation (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> commaSepTypeNames args)
 csTypeAnnotation t = csType t
 

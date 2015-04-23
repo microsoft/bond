@@ -6,23 +6,17 @@
 import System.Environment (getArgs, withArgs)
 import System.Directory
 import System.FilePath
-import System.IO
-import System.Exit
-import Control.Applicative
 import Data.Monoid
 import Control.Monad
-import Control.Monad.Reader
-import Control.Monad.Loops (firstM)
+import Prelude
 import Control.Concurrent.Async
 import GHC.Conc (getNumProcessors, setNumCapabilities)
 import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy.IO as L
-import Data.Aeson (encode, eitherDecode)
+import Data.Aeson (encode)
 import qualified Data.ByteString.Lazy as BL
-import Bond.Schema.Types (Bond(..))
-import Bond.Schema.JSON
-import Bond.Parser
-import Bond.Schema.Types (Declaration, Import)
+import Bond.Schema.Types (Bond(..), Declaration, Import)
+import Bond.Schema.JSON()
 import Bond.Template.Util
 import Bond.Template.Cpp.Reflection_h
 import Bond.Template.Cpp.Types_h
@@ -34,6 +28,7 @@ import Bond.Template.Cs.Types_cs
 import Bond.Template.TypeMapping
 import Bond.Template.CustomMapping
 import Options
+import Files
 
 type Template = MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
 
@@ -67,6 +62,7 @@ writeSchema Schema {..} =
         let fileName = takeBaseName file 
         bond <- parseFile import_dir file
         BL.writeFile (output_dir </> fileName <.> "json") $ encode bond
+writeSchema _ = error "writeSchema: impossible happened."
 
 cppCodegen :: Options -> IO()
 cppCodegen options@Cpp {..} = do
@@ -105,57 +101,11 @@ codeGen options typeMapping templates file = do
     aliasMapping <- parseAliasMappings $ using options
     namespaceMapping <- parseNamespaceMappings $ namespace options
     (Bond imports namespaces declarations) <- parseFile (import_dir options) file
+    let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
     forM_ templates $ \template -> do
-        let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
         let (suffix, code) = template mappingContext baseName imports declarations
         let fileName = baseName ++ suffix
         createDirectoryIfMissing True outputDir
-        L.writeFile (outputDir </> fileName) (commonHeader fileName <> code)
-
-
-parseFile :: [FilePath] -> FilePath -> IO(Bond)
-parseFile importDirs file =
-    if takeExtension file == ".json" then
-        parseASTFile file else 
-        parseBondFile importDirs file
-    
-
-parseASTFile :: FilePath -> IO(Bond)
-parseASTFile file = do
-    input <- BL.readFile file
-    case eitherDecode input of
-        Left error -> do
-            print error
-            exitFailure
-        Right bond -> return bond
-
-
-parseBondFile :: [FilePath] -> FilePath -> IO(Bond)
-parseBondFile importDirs file = do
-    cwd <- getCurrentDirectory
-    input <- readFileUtf8 file
-    result <- parseBond file input (cwd </> file) (readImportFile importDirs)
-    case result of
-        Left error -> do
-            print error
-            exitFailure
-        Right bond -> return bond
-
-
-readImportFile :: [FilePath] -> FilePath -> FilePath -> IO (FilePath, String)
-readImportFile importDirs parentFile file = do
-    path <- findFilePath (takeDirectory parentFile:importDirs)
-    case path of
-        Just path -> do
-            content <- readFileUtf8 path
-            return (path, content)
-        Nothing -> fail $ "Can't find import file " ++ file
-  where
-    findFilePath dirs = fmap (</> file) <$> firstM (doesFileExist . (</> file)) dirs
-                              
-readFileUtf8 :: FilePath -> IO String
-readFileUtf8 name = do 
-    h <- openFile name ReadMode
-    hSetEncoding h utf8_bom
-    hGetContents h
+        let content = if (no_banner options) then code else (commonHeader fileName <> code)
+        L.writeFile (outputDir </> fileName) content
 

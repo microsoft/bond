@@ -6,7 +6,8 @@
 module Bond.Template.Cs.Types_cs (types_cs) where
 
 import Data.Monoid
-import Data.Foldable (foldMap)
+import qualified Data.Foldable as F
+import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Bond.Schema.Types
@@ -72,7 +73,7 @@ namespace #{csNamespace}
         }|]
           where
             emptyCtor = not callBaseCtor && (useFields && noMetaFields || null structFields)
-            noMetaFields = not $ getAny $ foldMap metaField structFields
+            noMetaFields = not $ getAny $ F.foldMap metaField structFields
 
         -- property or field
         property f@Field {..} = [lt|#{CS.propertyAttributes cs f}
@@ -88,12 +89,12 @@ namespace #{csNamespace}
             new = if isBaseField fieldName structBase then "new " else "" :: String
 
         -- initializers in constructor
-        initializer f@Field {..} = optional init $ def f
+        initializer f@Field {..} = optional fieldInit $ def f
           where 
-            init x = [lt|#{this fieldName} = #{x};|]
+            fieldInit x = [lt|#{this fieldName} = #{x};|]
             this = if fieldName == "name" || fieldName == "fullName" then ("this." ++) else id
-            def Field {fieldType = BT_MetaName, ..} = Just "name"
-            def Field {fieldType = BT_MetaFullName, ..} = Just "fullName"
+            def Field {fieldType = BT_MetaName} = Just "name"
+            def Field {fieldType = BT_MetaFullName} = Just "fullName"
             def x = if useFields then Nothing else csDefault x
 
     -- C# enum definition for schema enum

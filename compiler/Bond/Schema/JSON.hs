@@ -3,6 +3,7 @@
 
 {-# LANGUAGE OverloadedStrings, RecordWildCards, DeriveGeneric,
     StandaloneDeriving #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Bond.Schema.JSON
     ( FromJSON(..)
@@ -11,6 +12,7 @@ module Bond.Schema.JSON
 import Data.Aeson
 import Data.Aeson.Types
 import Control.Applicative
+import Prelude
 import GHC.Generics (Generic)
 import Bond.Schema.Types
 
