@@ -32,11 +32,6 @@
     <BondImportDirectory>
       <Visible>false</Visible>
     </BondImportDirectory>
-
-    <!-- set the default compilation settings per bond file -->
-    <BondCodegen>
-      <Options>$(BondOptions)</Options>
-    </BondCodegen>
   </ItemDefinitionGroup>
 
   <ItemGroup>
