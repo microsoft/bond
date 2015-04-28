@@ -1179,14 +1179,14 @@ represented using the `boost::posix_time::ptime` class and serialized as
 
 Defining a custom type mapping involves three steps:
 
-- Define a [type alias](#type-aliases) in the schema.
+- Define a [type alias](compiler.html#type-aliases) in the schema.
 - Specify during codegen a C++ type to represent the alias.
 - Implement an appropriate concept for the custom C++ type.
 
 Codegen parameters
 ------------------
 
-When generating code for a schema that uses [type aliases](#type-aliases), the 
+When generating code for a schema that uses [type aliases](compiler.html#type-aliases), the 
 user can specify a custom type to represent each alias in the generated code:
 
     gbc c++ --using="time=boost::posix_time::ptime" time.bond
@@ -1695,6 +1695,9 @@ References
 [C++ API reference][API_reference]
 ------------------------------
 
+[Bond compiler reference][compiler]
+---------------------------
+
 [C# User's Manual][bond_cs]
 ---------------------------
 
@@ -1702,6 +1705,8 @@ References
 ----------------------------
 
 [API_reference]: ../reference/cpp/index.html
+
+[compiler]: compiler.html
 
 [bond_py]: bond_py.html
 

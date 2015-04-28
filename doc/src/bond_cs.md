@@ -649,7 +649,7 @@ using the `DateTime` class and serialized as `int64`.
 
 Defining a custom type mapping involves three steps:
 
-- Define a [type alias](.\bond_cpp.html#type-aliases) in the schema.
+- Define a [type alias](compiler.html#type-aliases) in the schema.
 - Specify during codegen a C# type to represent the alias.
 - Implement an appropriate converter for the custom C# type.
 
@@ -657,7 +657,7 @@ Codegen parameters
 ------------------
 
 When generating code for a schema that uses [type 
-aliases](./bond_cpp.html#type-aliases), the user can specify a custom type to 
+aliases](compiler.html#type-aliases), the user can specify a custom type to 
 represent each alias in the generated code:
 
     gbc c# --using="DateTime=System.DateTime" date_time.bond
@@ -770,7 +770,7 @@ the containing structs.
 Using Xml namespace inherently limits some of flexibility of Bond 
 deserialization. In particular a document with namespaces can't be deserialized 
 into a schema that is compatible but has a different name, for example 
-a [view](bond_cpp.html#struct-views) of the payload schema.
+a [view](compiler.html#struct-views) of the payload schema.
 
 See also the following example:
 
@@ -895,7 +895,7 @@ represent schema fields and thus are not decorated with Bond attributes.
 ### RequiredAttribute ###
 
 By default fields of Bond schemas are optional. [Required 
-fields](./bond_cpp.html#required-fields) must be marked with the `Required` 
+fields](bond_cpp.html#required-fields) must be marked with the `Required` 
 attribute.
 
     /* Bond schema
@@ -1082,11 +1082,16 @@ public constructors:
 References
 ==========
 
+[Bond compiler reference][compiler]
+---------------------------
+
 [C++ User's Manual][bond_cpp]
 ---------------------------
 
 [Python User's Manual][bond_py]
 ----------------------------
+
+[compiler]: compiler.html
 
 [bond_py]: bond_py.html
 

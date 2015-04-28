@@ -295,6 +295,9 @@ The `Deserialize` and `Unmarshal` APIs take an optional argument of type
 References
 ==========
 
+[Bond compiler reference][compiler]
+---------------------------
+
 [C++ User's Manual][bond_cpp]
 -----------------------------
 
@@ -303,6 +306,8 @@ References
 
 [Boost Python][boost_python]
 ----------------------------
+
+[compiler]: compiler.html
 
 [bond_cpp]: bond_cpp.html
 
