@@ -1,5 +1,4 @@
-Why Bond
-========
+%Why Bond?
 
 Bond is an [open source framework](https://github.com/Microsoft/bond/) which
 addresses similar scenarios to Protocol Buffers, Thrift and Avro. In this 
@@ -59,7 +58,7 @@ One unique feature of Bond is that serialization and deserialization are not
 fundamental operations hard-coded in the generated code. In fact there is no 
 code generated that is specific to serialization and deserialization. Instead 
 Bond programming model exposes parsers and 
-[transform](manual/bond_cpp.html#transforms) which are composable by the user 
+[transforms](manual/bond_cpp.html#transforms) which are composable by the user 
 using meta-programming techniques. Some examples how this is used internally 
 should give a taste of the flexibility of the architecture:
 
