@@ -95,7 +95,9 @@
 <nav id="TOC"/>
 <div id="all">
 <div id="main">
-<h1 id="why-bond">Why Bond</h1>
+<div id="header">    
+<h1 class="title">Why Bond?</h1>
+</div>
 <p>Bond is an <a href="https://github.com/Microsoft/bond/">open source framework</a> which addresses similar scenarios to Protocol Buffers, Thrift and Avro. In this document we try to address similarities and differences between Bond and other solutions. We try to keep it objective and uncolored by opinions but inevitably our perspective is surely informed by specific use cases we most care about and the depth of knowledge we have of the various frameworks. If you find factual inaccuracies, or if you have written your own informed comparison and would like to include a link to it in this document, please send a pull request.</p>
 <h2 id="meta-schema">Meta schema</h2>
 <p>Bond has a very rich <a href="manual/compiler.html#idl-syntax">type system</a>. It is probably most similar to Thrift in this respect. Some notable additions in Bond are inheritance, <a href="manual/bond_cpp.html#type-aliases">type aliases</a> and <a href="manual/bond_cpp.html#generics">generics</a>. One type system feature not present in Bond that Avro, and recently Protocol Buffers, have are unions. We use schemas with optional fields to represent unions.</p>

@@ -146,6 +146,7 @@ code > span.er { font-weight: bold; }
 </ul></li>
 </ul></li>
 <li><a href="#references">References</a><ul>
+<li><a href="#bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></a></li>
 <li><a href="#c-users-manualbond_cpp"><a href="bond_cpp.html">C++ User’s Manual</a></a></li>
 <li><a href="#python-users-manualbond_py"><a href="bond_py.html">Python User’s Manual</a></a></li>
 </ul></li>
@@ -676,12 +677,12 @@ exampleSerializer.<span class="fu">Serialize</span>(src, writer);
 <p>Bond codegen provides a simple extensibility mechanism allowing use of custom C# types to represent types in a Bond schema. One common scenario is replacing the default collections with a different implementation that is semantically identical, e.g. <code>SortedSet&lt;T&gt;</code> instead of <code>HashSet&lt;T&gt;</code>. Custom type mappings can be also used to introduce completely new types which can be serialized as one of the built-in Bond schema types. For example time could be represented using the <code>DateTime</code> class and serialized as <code>int64</code>.</p>
 <p>Defining a custom type mapping involves three steps:</p>
 <ul>
-<li>Define a <a href=".\bond_cpp.html#type-aliases">type alias</a> in the schema.</li>
+<li>Define a <a href="compiler.html#type-aliases">type alias</a> in the schema.</li>
 <li>Specify during codegen a C# type to represent the alias.</li>
 <li>Implement an appropriate converter for the custom C# type.</li>
 </ul>
 <h2 id="codegen-parameters">Codegen parameters</h2>
-<p>When generating code for a schema that uses <a href="./bond_cpp.html#type-aliases">type aliases</a>, the user can specify a custom type to represent each alias in the generated code:</p>
+<p>When generating code for a schema that uses <a href="compiler.html#type-aliases">type aliases</a>, the user can specify a custom type to represent each alias in the generated code:</p>
 <div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cs">gbc c# --<span class="kw">using</span>=<span class="st">&quot;DateTime=System.DateTime&quot;</span> date_time.<span class="fu">bond</span></code></pre></td></tr></table></div>
 <p>The value of the <code>/using</code> parameter consists of one or more alias substitutions separated by semicolons, each in the following format:</p>
@@ -781,7 +782,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
     UseNamespaces = <span class="kw">true</span>
 });</code></pre></td></tr></table></div>
 <p>There is no need to enable namespace support for the SimpleXmlReader. The elements representing fields are always matched against field names and their namespaces, if specified in the Xml document, against the qualified names of the containing structs.</p>
-<p>Using Xml namespace inherently limits some of flexibility of Bond deserialization. In particular a document with namespaces can’t be deserialized into a schema that is compatible but has a different name, for example a <a href="bond_cpp.html#struct-views">view</a> of the payload schema.</p>
+<p>Using Xml namespace inherently limits some of flexibility of Bond deserialization. In particular a document with namespaces can’t be deserialized into a schema that is compatible but has a different name, for example a <a href="compiler.html#struct-views">view</a> of the payload schema.</p>
 <p>See also the following example:</p>
 <ul>
 <li><code>examples/cs/core/simple_xml</code></li>
@@ -887,7 +888,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 }</code></pre></td></tr></table></div>
 <p>A type representing a schema may have additional fields/properties that don’t represent schema fields and thus are not decorated with Bond attributes.</p>
 <h3 id="requiredattribute">RequiredAttribute</h3>
-<p>By default fields of Bond schemas are optional. <a href="./bond_cpp.html#required-fields">Required fields</a> must be marked with the <code>Required</code> attribute.</p>
+<p>By default fields of Bond schemas are optional. <a href="bond_cpp.html#required-fields">Required fields</a> must be marked with the <code>Required</code> attribute.</p>
 <div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
@@ -1103,6 +1104,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
     }
 }</code></pre></td></tr></table></div>
 <h1 id="references">References</h1>
+<h2 id="bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></h2>
 <h2 id="c-users-manualbond_cpp"><a href="bond_cpp.html">C++ User’s Manual</a></h2>
 <h2 id="python-users-manualbond_py"><a href="bond_py.html">Python User’s Manual</a></h2>
 </div>    

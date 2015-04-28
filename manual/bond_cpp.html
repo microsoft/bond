@@ -151,6 +151,7 @@ code > span.er { font-weight: bold; }
 <li><a href="#optimizing-build-time">Optimizing build time</a></li>
 <li><a href="#references">References</a><ul>
 <li><a href="#c-api-referenceapi_reference"><a href="../reference/cpp/index.html">C++ API reference</a></a></li>
+<li><a href="#bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></a></li>
 <li><a href="#c-users-manualbond_cs"><a href="bond_cs.html">C# User’s Manual</a></a></li>
 <li><a href="#python-users-manualbond_py"><a href="bond_py.html">Python User’s Manual</a></a></li>
 </ul></li>
@@ -1153,12 +1154,12 @@ Field(<span class="dt">uint16_t</span>, <span class="dt">const</span> bond::Meta
 <p>Bond codegen provides a simple extensibility mechanism allowing use of custom C++ types to represent types in a Bond schema. One common scenario is replacing the default STL containers with a different implementation that is semantically identical, e.g. <code>std::unordered_map</code> instead of <code>std::map</code>. Custom type mappings can be also used to introduce completely new types which can be serialized to one of the built-in Bond schema types. For example time could be represented using the <code>boost::posix_time::ptime</code> class and serialized as <code>int64</code>.</p>
 <p>Defining a custom type mapping involves three steps:</p>
 <ul>
-<li>Define a <a href="#type-aliases">type alias</a> in the schema.</li>
+<li>Define a <a href="compiler.html#type-aliases">type alias</a> in the schema.</li>
 <li>Specify during codegen a C++ type to represent the alias.</li>
 <li>Implement an appropriate concept for the custom C++ type.</li>
 </ul>
 <h2 id="codegen-parameters">Codegen parameters</h2>
-<p>When generating code for a schema that uses <a href="#type-aliases">type aliases</a>, the user can specify a custom type to represent each alias in the generated code:</p>
+<p>When generating code for a schema that uses <a href="compiler.html#type-aliases">type aliases</a>, the user can specify a custom type to represent each alias in the generated code:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">gbc c++ --<span class="kw">using</span>=<span class="st">&quot;time=boost::posix_time::ptime&quot;</span> time.bond</code></pre></td></tr></table></div>
 <p>The value of the <code>--using</code> parameter is a custom alias mapping in the following format:</p>
@@ -1624,6 +1625,7 @@ bond::CompactBinaryWriter&lt;Output&gt; writer(output);</code></pre></td></tr></
 <p>See example: <code>examples/cpp/core/static_library</code>.</p>
 <h1 id="references">References</h1>
 <h2 id="c-api-referenceapi_reference"><a href="../reference/cpp/index.html">C++ API reference</a></h2>
+<h2 id="bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></h2>
 <h2 id="c-users-manualbond_cs"><a href="bond_cs.html">C# User’s Manual</a></h2>
 <h2 id="python-users-manualbond_py"><a href="bond_py.html">Python User’s Manual</a></h2>
 <div class="footnotes">
