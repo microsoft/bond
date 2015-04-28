@@ -138,7 +138,11 @@ Install the following tools:
 - CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
 - Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
 
-If behind a proxy, set environment variable `HTTP_PROXY=http://proxy:port`.
+You can install them with [Chocolatey](http://chocolatey.org):
+
+    cinst haskellplatform cmake visualstudiocommunity2013
+
+If behind a proxy, set the environment variable `HTTP_PROXY=http://proxy:port`.
 
 Update cabal package database:
 
