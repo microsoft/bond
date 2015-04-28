@@ -135,8 +135,12 @@ variable, e.g.:
 Install the following tools:
 
 - Visual Studio 2013
-- CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
-- Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
+- [CMake](http://www.cmake.org/download/)
+- [Haskell Platform](http://haskell.org/platform/)
+
+You can install them with [Chocolatey](http://chocolatey.org):
+
+    cinst haskellplatform cmake visualstudiocommunity2013
 
 You can install them with [Chocolatey](http://chocolatey.org):
 
