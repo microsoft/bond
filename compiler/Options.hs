@@ -55,16 +55,16 @@ data Options
 cpp :: Options
 cpp = Cpp
     { files = def &= typFile &= args
-    , import_dir = def &= typDir &= help "Add the directory to import search path"
-    , output_dir = "." &= typDir &= help "Output generated files into the specified directory"
-    , using = def &= typ "MAPPING" &= help "Custom type alias mapping in the form alias=type"
-    , namespace = def &= typ "MAPPING" &= help "Custom namespace mapping in the from bond_namespace=language_namespace"
-    , header = def &= typ "HEADER" &= help "Emit #include HEADER into the generated files"
-    , enum_header = def &= help "Generate enums into a separate header file"
+    , import_dir = def &= typDir &= name "i" &= help "Add the directory to import search path"
+    , output_dir = "." &= typDir &= name "o" &= help "Output generated files into the specified directory"
+    , using = def &= typ "MAPPING" &= name "u" &= help "Custom type alias mapping in the form alias=type"
+    , namespace = def &= typ "MAPPING" &= name "n" &= help "Custom namespace mapping in the form bond_namespace=language_namespace"
+    , header = def &= typ "HEADER" &= name "h" &= help "Emit #include HEADER into the generated files"
+    , enum_header = def &= name "e" &= help "Generate enums into a separate header file"
     , allocator = def &= typ "ALLOCATOR" &= help "Generate types using the specified  allocator"
     , apply = def &= typ "PROTOCOL" &= help "Generate Apply function overloads for the specified protocol only; supported protocols: compact, fast and simple"
     , apply_attribute = def &= typ "ATTRIBUTE" &= help "Prefix the declarations of Apply functions with the specified C++ attribute/declspec"
-    , jobs = def &= opt "0" &= typ "NUM" &= help "Run NUM jobs simultaneously (or '$ncpus' if no NUM is not given)"
+    , jobs = def &= opt "0" &= typ "NUM" &= name "j" &= help "Run NUM jobs simultaneously (or '$ncpus' if no NUM is not given)"
     , no_banner = def &= help "Omit the banner at the top of generated files"
     } &=
     name "c++" &=
@@ -72,9 +72,9 @@ cpp = Cpp
 
 cs :: Options
 cs = Cs
-    { collection_interfaces = def &= help "Use interfaces rather than concrete collection types"
-    , readonly_properties = def &= help "Generate private property setters"
-    , fields = def &= help "Generate public fields rather than properties"
+    { collection_interfaces = def &= name "c" &= help "Use interfaces rather than concrete collection types"
+    , readonly_properties = def &= name "r" &= help "Generate private property setters"
+    , fields = def &= name "f" &= help "Generate public fields rather than properties"
     } &=
     name "c#" &=
     help "Generate C# code"
