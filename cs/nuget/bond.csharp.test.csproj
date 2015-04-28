@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\Bond.CSharp.3.0.4\build\Bond.CSharp.props" Condition="Exists('packages\Bond.CSharp.3.0.4\build\bond.CSharp.props')" />    
+  <Import Project="packages\Bond.CSharp.3.0.5\build\Bond.CSharp.props" Condition="Exists('packages\Bond.CSharp.3.0.5\build\bond.CSharp.props')" />    
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -91,16 +91,16 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Bond">
-      <HintPath>packages\Bond.Runtime.CSharp.3.0.4\lib\net45\Bond.dll</HintPath>
+      <HintPath>packages\Bond.Runtime.CSharp.3.0.5\lib\net45\Bond.dll</HintPath>
     </Reference>
     <Reference Include="Bond.Attributes">
-      <HintPath>packages\Bond.Runtime.CSharp.3.0.4\lib\net45\Bond.Attributes.dll</HintPath>
+      <HintPath>packages\Bond.Runtime.CSharp.3.0.5\lib\net45\Bond.Attributes.dll</HintPath>
     </Reference>
     <Reference Include="Bond.IO">
-      <HintPath>packages\Bond.Runtime.CSharp.3.0.4\lib\net45\Bond.IO.dll</HintPath>
+      <HintPath>packages\Bond.Runtime.CSharp.3.0.5\lib\net45\Bond.IO.dll</HintPath>
     </Reference>
     <Reference Include="Bond.JSON">
-      <HintPath>packages\Bond.Runtime.CSharp.3.0.4\lib\net45\Bond.JSON.dll</HintPath>
+      <HintPath>packages\Bond.Runtime.CSharp.3.0.5\lib\net45\Bond.JSON.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
@@ -114,5 +114,5 @@
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="packages\Bond.CSharp.3.0.4\build\Bond.CSharp.targets" Condition="Exists('packages\Bond.CSharp.3.0.4\build\Bond.CSharp.targets')" />
+  <Import Project="packages\Bond.CSharp.3.0.5\build\Bond.CSharp.targets" Condition="Exists('packages\Bond.CSharp.3.0.5\build\Bond.CSharp.targets')" />
 </Project>
