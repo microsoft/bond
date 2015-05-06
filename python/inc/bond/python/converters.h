@@ -34,7 +34,7 @@ namespace python
 // Convert Bond type name to a valid python identifier
 class pythonic_name
 {
-public:    
+public:
     template <typename T>
     pythonic_name()
         : _name(bond::detail::type<T>::name())
@@ -181,12 +181,19 @@ extend_map(Map& map, const boost::python::object& obj)
     typedef typename Map::value_type value_type;
 
     BOOST_ASSERT(PyDict_Check(obj.ptr()));
-    
+
     dict dict(obj);
-        
+
+    const auto keys =
+#if PY_VERSION_HEX >= 0x03000000
+        dict.keys();
+#else
+        dict.iterkeys();
+#endif
+
     BOOST_FOREACH(object k,
         std::make_pair(
-            stl_input_iterator<object>(dict.iterkeys()),
+            stl_input_iterator<object>(keys),
             stl_input_iterator<object>()
             ))
     {
@@ -211,7 +218,7 @@ extend_map(Map& map, const boost::python::object& obj)
                 }
             }
         }
-        
+
         PyErr_SetString(PyExc_TypeError, "Incompatible Data Type");
         throw_error_already_set();
     }
@@ -247,7 +254,7 @@ extend_set(T& set, const boost::python::object& obj)
 {
     using namespace boost::python;
     typedef typename T::value_type data_type;
-        
+
     BOOST_FOREACH(object elem,
         std::make_pair(
             stl_input_iterator<object>(obj),
@@ -274,7 +281,7 @@ extend_set(T& set, const boost::python::object& obj)
                 throw_error_already_set();
             }
         }
-    }          
+    }
 }
 
 
@@ -303,26 +310,51 @@ struct rvalue_set_container_from_python
 
 // Conversion policy for bond::blob
 struct blob_converter
+#if PY_VERSION_HEX >= 0x03000000
+    : boost::python::converter::wrap_pytype<&PyBytes_Type>
+#else
     : boost::python::converter::wrap_pytype<&PyString_Type>
+#endif
 {
-    // Conversion from Python string to bond::blob
+    // Conversion from Python2 string or Python3 bytes to bond::blob
     static unaryfunc* convertible(PyObject* obj)
     {
+#if PY_VERSION_HEX >= 0x03000000
+        return (PyBytes_Check(obj)) ? &py_object_identity : 0;
+#else
         return (PyString_Check(obj)) ? &obj->ob_type->tp_str : 0;
+#endif
     }
 
     static void extract(bond::blob& dst, const boost::python::object& src)
     {
+#if PY_VERSION_HEX >= 0x03000000
+        boost::shared_ptr<void> hold_convertible_ref_count(
+            (void*)0,
+            boost::python::converter::shared_ptr_deleter(
+                boost::python::handle<>(boost::python::borrowed(src.ptr()))));
+        boost::shared_ptr<char[]> bytes(
+            hold_convertible_ref_count,
+            PyBytes_AsString(src.ptr()));
         dst.assign(
-            boost::python::extract<boost::shared_ptr<char> >(src)(), 
+            bytes,
+            static_cast<uint32_t>(PyBytes_Size(src.ptr())));
+#else
+        dst.assign(
+            boost::python::extract<boost::shared_ptr<char> >(src)(),
             static_cast<uint32_t>(PyString_Size(src.ptr())));
+#endif
     }
 
-    // Conversion from bond::blob to Python string 
+    // Conversion from bond::blob to Python2 string or Python3 bytes
     static PyObject* convert(const bond::blob& blob)
     {
         return boost::python::incref(
+#if PY_VERSION_HEX >= 0x03000000
+            PyBytes_FromStringAndSize(blob.content(), blob.length()));
+#else
             boost::python::str(blob.content(), blob.length()).ptr());
+#endif
     }
 };
 
@@ -338,13 +370,13 @@ struct nullable_maybe_converter
     {
         if (obj == Py_None)
             return &py_object_identity;
-        
+
         const auto* reg = boost::python::converter::registry::query
             (typeid(typename T::value_type));
 
         if (reg && reg->m_class_object == Py_TYPE(obj))
             return &py_object_identity;
-        
+
         if (reg && reg->rvalue_chain)
             return static_cast<unaryfunc*>(reg->rvalue_chain->convertible(obj));
 
@@ -363,7 +395,7 @@ struct nullable_maybe_converter
         else
         {
             boost::python::extract<typename T::value_type> value(src);
-            
+
             if (value.check())
             {
                 dst = T(static_cast<typename T::value_type>(value));
@@ -396,7 +428,7 @@ void register_builtin_convereters()
         using namespace boost::python;
 
         rvalue_from_python<
-            bond::blob, 
+            bond::blob,
             blob_converter
             >();
 

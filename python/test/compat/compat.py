@@ -1,3 +1,4 @@
+from __future__ import print_function
 import bond_python_compatibility_test as test
 import sys, getopt
 
@@ -20,13 +21,13 @@ def compat(input_, output, test_case):
     output.write(test.Serialize(obj, protocol))
 
 def usage():
-    print ''
-    print 'compat.py -d INPUT_FILE -s OUTPUT_FILE TEST'
-    print ''
-    print ' -? --help                      show this help text'
-    print '    TEST                        compact | json | schema'
-    print ' -d --deserialize=INPUT_FILE    deserialize object from specified file'
-    print ' -s --serialize=OUTPUT_FILE     serialize object to specified file'
+    print('')
+    print('compat.py -d INPUT_FILE -s OUTPUT_FILE TEST')
+    print('')
+    print(' -? --help                      show this help text')
+    print('    TEST                        compact | json | schema')
+    print(' -d --deserialize=INPUT_FILE    deserialize object from specified file')
+    print(' -s --serialize=OUTPUT_FILE     serialize object to specified file')
 
 def main(argv):
     inputfile = ''
