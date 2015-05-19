@@ -2,11 +2,21 @@ import unittest
 import random
 import string
 import functools
+import sys
 from bond_python_unit_test import Serialize, Deserialize, Marshal, Unmarshal, GetRuntimeSchema
 import bond_python_unit_test as test
 
+def atleast_python3():
+    return sys.version_info[0] >= 3
+
 def random_string():
     return ''.join(random.sample(string.ascii_lowercase*16, 16))
+
+def random_blob():
+    if atleast_python3():
+        return bytes(random_string(), 'ascii')
+    else:
+        return random_string()
 
 def random_uint(bits):
     return random.randint(0, (1 << bits) - 1)
@@ -52,10 +62,10 @@ def marshal_unmarshal(obj):
     new_obj = obj_type()
 
     Unmarshal(data, new_obj)
-    
+
     data2 = Marshal(new_obj)
     new_obj2 = obj_type()
-    
+
     Unmarshal(data2, new_obj2, GetRuntimeSchema(obj))
     return new_obj2
 
@@ -81,7 +91,7 @@ class BondTest(unittest.TestCase):
             test.EnumType1.EnumValue3, \
             test.EnumType1.EnumValue4, \
             test.EnumType1.EnumValue5])
-        obj.m_blob = random_string();
+        obj.m_blob = random_blob()
 
     def randomSimpleStruct(self):
         obj = test.SimpleStruct()
@@ -93,7 +103,7 @@ class BondTest(unittest.TestCase):
         # initSimpleStruct will set values of derived, not of SimpleStruct.
         # Below we set those fields for the base. Ideally it should be the
         # other way around, initSimpleStruct should set fields of base and here
-        # we would set the derived overrides. Need to figure out hot to achieve
+        # we would set the derived overrides. Need to figure out how to achieve
         # this in Python...
         self.initSimpleStruct(obj)
         test.SimpleStruct.m_int32.__set__(obj, random_int(32))
@@ -131,11 +141,13 @@ class BondTest(unittest.TestCase):
         obj.nullable_struct = test.SimpleStruct()
         obj.nullable_map = random_map(random_int8, random_int8)
         obj.nullable_string = random_string()
+        obj.nullable_blob = random_blob()
         obj.nullable_nullable_uint32 = random_uint(32)
         self.assertNotEqual(None, obj.nullable_list)
         self.assertNotEqual(None, obj.nullable_struct)
         self.assertNotEqual(None, obj.nullable_map)
         self.assertNotEqual(None, obj.nullable_string)
+        self.assertNotEqual(None, obj.nullable_blob)
         self.assertNotEqual(None, obj.nullable_nullable_uint32)
 
     def initNestedContainers(self, obj):
@@ -164,7 +176,7 @@ class BondTest(unittest.TestCase):
         obj_type = type(obj)
         for i in range(0, 50):
             init(obj)
-            new_obj = obj_type() 
+            new_obj = obj_type()
             self.assertFalse(obj == new_obj)
             new_obj = serialize_deserialize(obj)
             self.assertTrue(obj == new_obj)
@@ -173,7 +185,7 @@ class BondTest(unittest.TestCase):
         obj_type = type(obj)
         for i in range(0, 50):
             init(obj)
-            new_obj = obj_type() 
+            new_obj = obj_type()
             self.assertFalse(obj == new_obj)
             new_obj = marshal_unmarshal(obj)
             self.assertTrue(obj == new_obj)
@@ -186,7 +198,7 @@ class BondTest(unittest.TestCase):
         del a[-1]
         self.assertTrue(len(a)==len(b) and all(a[i] == b[i] for i in range(0, len(a))))
         a.extend(b)
-        self.assertTrue(all(a[i] == a[i+len(a)/2] for i in range(0, len(a)/2)))
+        self.assertTrue(all(a[i] == a[i+len(a)//2] for i in range(0, len(a)//2)))
         s1 = set(a)
         s2 = set(b)
         self.assertTrue(s1 - s2 == set())
@@ -196,7 +208,7 @@ class BondTest(unittest.TestCase):
         a[:] = [b[0]]*len(a)
         self.assertEqual(len(a), len(b))
         self.assertTrue(all(a[i] == b[0] for i in range(0, len(a))))
-        a[0:len(a)/2] = b[0]
+        a[0:len(a)//2] = b[0]
         self.assertEqual(a[0], b[0])
         x = a[-1]
         del a[:-1]
@@ -265,6 +277,7 @@ class BondTest(unittest.TestCase):
         self.assertEqual(None, obj.nullable_struct)
         self.assertEqual(None, obj.nullable_map)
         self.assertEqual(None, obj.nullable_string)
+        self.assertEqual(None, obj.nullable_blob)
         self.assertEqual(None, obj.nullable_nullable_uint32)
         self.serialization(obj, self.initNullable)
         self.marshaling(obj, self.initNullable)
@@ -276,6 +289,8 @@ class BondTest(unittest.TestCase):
             obj.nullable_map = 0
         with self.assertRaises(TypeError):
             obj.nullable_string = 1
+        with self.assertRaises(TypeError):
+            obj.nullable_blob = 0
         with self.assertRaises(TypeError):
             obj.nullable_nullable_uint32 = 3.14
         with self.assertRaises(OverflowError):
@@ -355,7 +370,7 @@ class BondTest(unittest.TestCase):
         obj3 = test.SimpleWithBase()
         bonded.Deserialize(obj3)
         self.assertTrue(obj3, src2.n2)
-        
+
     def test_Polymorphism(self):
         src = test.Bonded()
         obj = self.randomSimpleWithBase()

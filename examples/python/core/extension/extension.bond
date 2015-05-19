@@ -15,6 +15,7 @@ struct Person
     0: string first_name;
     1: string last_name;
     2: Color eyes = Brown;
+    3: blob hash;
 }
 
 

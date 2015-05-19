@@ -157,9 +157,10 @@ instead objects with two methods: `key()` and `data()`.
 Blob
 ----
 
-Bond `blob` is represented as Python string object. Initializing a `blob` from 
-a Python string does not involve memory copy, it just increases reference count 
-on the underlying Python object.
+Bond `blob` is represented as either a string object in Python2 or a bytes
+object in Python3. Initializing a `blob` from a Python object does not involve
+a memory copy; instead, the reference count on the underlying Python object is
+increased.
 
 Nullable and `nothing`
 ----------------------

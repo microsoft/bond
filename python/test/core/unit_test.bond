@@ -88,7 +88,8 @@ struct Nullable
      3: nullable<SimpleStruct>     nullable_struct;
      4: nullable<map<int8, int8>>  nullable_map;
      5: nullable<string>           nullable_string;
-	10: nullable<nullable<uint32>> nullable_nullable_uint32;
+     6: nullable<blob>             nullable_blob;
+    10: nullable<nullable<uint32>> nullable_nullable_uint32;
 };
 
 struct Nothing
