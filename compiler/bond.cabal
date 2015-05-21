@@ -1,8 +1,8 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-name:               gbc
-version:            3.0.3.0
+name:               bond
+version:            0.3.0.5
 cabal-version:      >= 1.8
 synopsis:           The Glorious Bond Compilation System
 description:        gbc is Bond schema definition languange compiler and code

@@ -7,7 +7,8 @@
 
 module Options (getOptions, Options(..), ApplyOptions(..)) where
 
-import Bond.Version
+import Paths_bond (version)
+import Data.Version (showVersion) 
 import System.Console.CmdArgs
 
 data ApplyOptions =
@@ -91,7 +92,7 @@ mode :: Mode (CmdArgs Options)
 mode = cmdArgsMode $ modes [cpp, cs, schema] &=
     program "gbc" &=
     help "Compile Bond schema file(s) and generate specified output. The schema file(s) can be in one of two formats: Bond IDL or JSON representation of the schema abstract syntax tree as produced by `gbc schema`" &=
-    summary ("Bond Compiler " ++ majorVersion ++ "." ++ minorVersion ++ ", (C) Microsoft")
+    summary ("Bond Compiler " ++ showVersion version ++ ", (C) Microsoft")
 
 getOptions :: IO Options
 getOptions = cmdArgsRun mode

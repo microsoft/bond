@@ -17,7 +17,8 @@ import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
-import Bond.Version
+import Paths_bond (version)
+import Data.Version (showVersion) 
 import Bond.Schema.Types
 import Bond.Schema.Util
 import Bond.Template.TypeMapping
@@ -68,7 +69,7 @@ typeAttributes cs e@Enum {..} =
 typeAttributes _ _ = error "typeAttributes: impossible happened."
 
 generatedCodeAttr :: Text
-generatedCodeAttr = [lt|[System.CodeDom.Compiler.GeneratedCode("gbc", "#{majorVersion}.#{minorVersion}")]|]
+generatedCodeAttr = [lt|[System.CodeDom.Compiler.GeneratedCode("gbc", "#{showVersion version}")]|]
 
 optionalTypeAttributes :: MappingContext -> Declaration -> Text
 optionalTypeAttributes cs decl = 

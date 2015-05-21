@@ -44,7 +44,7 @@ function (add_cabal_test target)
 endfunction()
 
 set (sources
-    gbc.cabal
+    bond.cabal
     Main.hs
     Files.hs
     Options.hs
@@ -54,7 +54,6 @@ set (sources
     Bond/Schema/Types.hs
     Bond/Schema/Util.hs
     Bond/Util.hs
-    Bond/Version.hs
     Bond/Template/CustomMapping.hs
     Bond/Template/TypeMapping.hs
     Bond/Template/Util.hs

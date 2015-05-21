@@ -4,7 +4,7 @@
     <CustomBuild Include="$(ProjectDir)\..\compiler\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(ProjectDir)..\compiler\gbc.cabal" />
+    <None Include="$(ProjectDir)..\compiler\bond.cabal" />
     <None Include="$(ProjectDir)..\compiler\Options.hs" />
     <None Include="$(ProjectDir)..\compiler\Main.hs" />
     <None Include="$(ProjectDir)..\compiler\Files.hs" />
@@ -22,9 +22,6 @@
     </None>
     <None Include="$(ProjectDir)..\compiler\Bond\Schema\Util.hs">
       <Filter>Bond\Schema</Filter>
-    </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Version.hs">
-      <Filter>Bond</Filter>
     </None>
     <None Include="$(ProjectDir)..\compiler\Bond\Util.hs">
       <Filter>Bond</Filter>

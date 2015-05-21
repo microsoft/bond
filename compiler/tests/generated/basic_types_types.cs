@@ -14,7 +14,7 @@ namespace tests
     using System.Collections.Generic;
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "3.05")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.3.0.5")]
     public partial class BasicTypes
     {
         [global::Bond.Id(0)]
