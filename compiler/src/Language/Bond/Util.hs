@@ -3,7 +3,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Bond.Util
+module Language.Bond.Util
     ( sepBy
     , sepEndBy
     , sepBeginBy

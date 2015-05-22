@@ -3,7 +3,7 @@
 
 {-# LANGUAGE OverloadedStrings, RecordWildCards, DeriveGeneric #-}
 
-module Bond.Schema.Types
+module Language.Bond.Syntax.Types
     ( Attribute(..)
     , Bond(..)
     , Constant(..)

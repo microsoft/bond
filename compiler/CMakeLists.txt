@@ -48,28 +48,30 @@ set (sources
     Main.hs
     Files.hs
     Options.hs
-    Bond/Lexer.hs
-    Bond/Parser.hs
-    Bond/Schema/JSON.hs
-    Bond/Schema/Types.hs
-    Bond/Schema/Util.hs
-    Bond/Util.hs
-    Bond/Template/CustomMapping.hs
-    Bond/Template/TypeMapping.hs
-    Bond/Template/Util.hs
-    Bond/Template/Cpp/Apply_cpp.hs
-    Bond/Template/Cpp/Apply_h.hs
-    Bond/Template/Cpp/Enum_h.hs
-    Bond/Template/Cpp/Reflection_h.hs
-    Bond/Template/Cpp/Types_cpp.hs
-    Bond/Template/Cpp/Types_h.hs
-    Bond/Template/Cpp/Util.hs
-    Bond/Template/Cs/Types_cs.hs
-    Bond/Template/Cs/Util.hs)
+    src/Language/Bond/Lexer.hs
+    src/Language/Bond/Parser.hs
+    src/Language/Bond/Syntax/JSON.hs
+    src/Language/Bond/Syntax/Types.hs
+    src/Language/Bond/Syntax/Util.hs
+    src/Language/Bond/Util.hs
+    src/Language/Bond/Codegen/CustomMapping.hs
+    src/Language/Bond/Codegen/TypeMapping.hs
+    src/Language/Bond/Codegen/Util.hs
+    src/Language/Bond/Codegen/Cpp/Apply_cpp.hs
+    src/Language/Bond/Codegen/Cpp/Apply_h.hs
+    src/Language/Bond/Codegen/Cpp/Enum_h.hs
+    src/Language/Bond/Codegen/Cpp/Reflection_h.hs
+    src/Language/Bond/Codegen/Cpp/Types_cpp.hs
+    src/Language/Bond/Codegen/Cpp/Types_h.hs
+    src/Language/Bond/Codegen/Cpp/Util.hs
+    src/Language/Bond/Codegen/Cs/Types_cs.hs
+    src/Language/Bond/Codegen/Cs/Util.hs)
 
 set (test_sources
     tests/Main.hs
-    tests/Tests/Schema.hs)
+    tests/Tests/Util.hs
+    tests/Tests/Codegen.hs
+    tests/Tests/Syntax.hs)
 
 set (completion_dir /etc/bash_completion.d)
 set (completion ${CMAKE_CURRENT_BINARY_DIR}/gbc.comp)

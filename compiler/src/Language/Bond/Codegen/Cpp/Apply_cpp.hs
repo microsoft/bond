@@ -3,15 +3,15 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings #-}
 
-module Bond.Template.Cpp.Apply_cpp (apply_cpp) where
+module Language.Bond.Codegen.Cpp.Apply_cpp (apply_cpp) where
 
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
-import Bond.Schema.Types
-import Bond.Template.TypeMapping
-import Bond.Template.Util
-import Bond.Template.Cpp.Apply_h
-import qualified Bond.Template.Cpp.Util as CPP
+import Language.Bond.Syntax.Types
+import Language.Bond.Codegen.TypeMapping
+import Language.Bond.Codegen.Util
+import Language.Bond.Codegen.Cpp.Apply_h
+import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- generate the *_apply.cpp file from parsed .bond file
 apply_cpp :: [Protocol] -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)

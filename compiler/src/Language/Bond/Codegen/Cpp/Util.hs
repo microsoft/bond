@@ -4,7 +4,7 @@
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 {-# OPTIONS_GHC -Wwarn #-}
 
-module Bond.Template.Cpp.Util
+module Language.Bond.Codegen.Cpp.Util
     ( openNamespace
     , closeNamespace
     , structName
@@ -24,11 +24,11 @@ import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
-import Bond.Schema.Types
-import Bond.Schema.Util
-import Bond.Util
-import Bond.Template.Util
-import Bond.Template.TypeMapping
+import Language.Bond.Syntax.Types
+import Language.Bond.Syntax.Util
+import Language.Bond.Util
+import Language.Bond.Codegen.Util
+import Language.Bond.Codegen.TypeMapping
 
 -- open namespaces
 openNamespace :: MappingContext -> Text

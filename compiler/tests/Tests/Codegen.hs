@@ -16,18 +16,18 @@ import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text, unpack)
 import Test.HUnit
-import Bond.Template.Util
-import Bond.Template.Cpp.Reflection_h
-import Bond.Template.Cpp.Types_h
-import Bond.Template.Cpp.Apply_h
-import Bond.Template.Cpp.Apply_cpp
-import Bond.Template.Cpp.Enum_h
-import Bond.Template.Cpp.Types_cpp
-import Bond.Template.Cs.Types_cs
-import Bond.Template.TypeMapping
-import Bond.Template.CustomMapping
-import Bond.Schema.Types (Bond(..), Import, Declaration)
-import Bond.Parser
+import Language.Bond.Codegen.Util
+import Language.Bond.Codegen.Cpp.Reflection_h
+import Language.Bond.Codegen.Cpp.Types_h
+import Language.Bond.Codegen.Cpp.Apply_h
+import Language.Bond.Codegen.Cpp.Apply_cpp
+import Language.Bond.Codegen.Cpp.Enum_h
+import Language.Bond.Codegen.Cpp.Types_cpp
+import Language.Bond.Codegen.Cs.Types_cs
+import Language.Bond.Codegen.TypeMapping
+import Language.Bond.Codegen.CustomMapping
+import Language.Bond.Syntax.Types (Bond(..), Import, Declaration)
+import Language.Bond.Parser
 import Options
 import Files
 import Tests.Util

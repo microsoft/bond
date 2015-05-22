@@ -17,9 +17,9 @@ import Prelude
 import Data.Aeson (eitherDecode)
 import Control.Monad.Loops (firstM)
 import qualified Data.ByteString.Lazy as BL
-import Bond.Schema.Types (Bond(..))
-import Bond.Schema.JSON()
-import Bond.Parser
+import Language.Bond.Syntax.Types (Bond(..))
+import Language.Bond.Syntax.JSON()
+import Language.Bond.Parser
 
 
 parseFile :: [FilePath] -> FilePath -> IO(Bond)

@@ -3,7 +3,7 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Bond.Template.CustomMapping
+module Language.Bond.Codegen.CustomMapping
     ( parseAliasMappings
     , parseNamespaceMappings
     , AliasMapping(..)
@@ -15,7 +15,7 @@ import Data.Char
 import Control.Applicative
 import Prelude
 import Text.Parsec hiding (many, optional, (<|>))
-import Bond.Schema.Types
+import Language.Bond.Syntax.Types
 
 data Fragment =
     Fragment String |

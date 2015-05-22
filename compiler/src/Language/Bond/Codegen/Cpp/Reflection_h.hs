@@ -3,17 +3,17 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
-module Bond.Template.Cpp.Reflection_h (reflection_h) where
+module Language.Bond.Codegen.Cpp.Reflection_h (reflection_h) where
 
 import System.FilePath
 import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
-import Bond.Schema.Types
-import Bond.Template.TypeMapping
-import Bond.Template.Util
-import qualified Bond.Template.Cpp.Util as CPP
+import Language.Bond.Syntax.Types
+import Language.Bond.Codegen.TypeMapping
+import Language.Bond.Codegen.Util
+import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- generate the *_refection.h file from parsed .bond file
 reflection_h :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)

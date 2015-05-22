@@ -3,7 +3,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Tests.Schema
+module Tests.Syntax
     ( roundtripAST
     , compareAST
     ) where
@@ -17,9 +17,9 @@ import System.FilePath
 import qualified Data.ByteString.Lazy as BL
 import Test.QuickCheck
 import Test.HUnit
-import Bond.Schema.Types
-import Bond.Schema.JSON
-import Bond.Parser
+import Language.Bond.Syntax.Types
+import Language.Bond.Syntax.JSON
+import Language.Bond.Parser
 import Files
 
 derive makeArbitrary ''Attribute

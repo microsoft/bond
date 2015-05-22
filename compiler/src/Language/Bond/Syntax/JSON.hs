@@ -5,7 +5,7 @@
     StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Bond.Schema.JSON
+module Language.Bond.Syntax.JSON
     ( FromJSON(..)
     ) where
 
@@ -14,7 +14,7 @@ import Data.Aeson.Types
 import Control.Applicative
 import Prelude
 import GHC.Generics (Generic)
-import Bond.Schema.Types
+import Language.Bond.Syntax.Types
 
 deriving instance Generic Modifier
 instance FromJSON Modifier

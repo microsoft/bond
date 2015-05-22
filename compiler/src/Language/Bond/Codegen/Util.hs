@@ -4,7 +4,7 @@
 {-# LANGUAGE QuasiQuotes, OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Bond.Template.Util
+module Language.Bond.Codegen.Util
     ( toText
     , commonHeader
     , mconcatMap
@@ -31,7 +31,7 @@ import Data.Text.Lazy.Builder
 import Text.Shakespeare.Text
 import Paths_bond (version)
 import Data.Version (showVersion) 
-import Bond.Util
+import Language.Bond.Util
 
 instance ToText Word16 where
     toText = toText . show

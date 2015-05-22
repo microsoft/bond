@@ -8,59 +8,59 @@
     <None Include="$(ProjectDir)..\compiler\Options.hs" />
     <None Include="$(ProjectDir)..\compiler\Main.hs" />
     <None Include="$(ProjectDir)..\compiler\Files.hs" />
-    <None Include="$(ProjectDir)..\compiler\Bond\Lexer.hs">
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Lexer.hs">
       <Filter>Bond</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Parser.hs">
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Parser.hs">
       <Filter>Bond</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Schema\JSON.hs">
-      <Filter>Bond\Schema</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Syntax\JSON.hs">
+      <Filter>Bond\Syntax</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Schema\Types.hs">
-      <Filter>Bond\Schema</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Syntax\Types.hs">
+      <Filter>Bond\Syntax</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Schema\Util.hs">
-      <Filter>Bond\Schema</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Syntax\Util.hs">
+      <Filter>Bond\Syntax</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Util.hs">
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Util.hs">
       <Filter>Bond</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\CustomMapping.hs">
-      <Filter>Bond\Template</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\CustomMapping.hs">
+      <Filter>Bond\Codegen</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\TypeMapping.hs">
-      <Filter>Bond\Template</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\TypeMapping.hs">
+      <Filter>Bond\Codegen</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\Util.hs">
-      <Filter>Bond\Template</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Util.hs">
+      <Filter>Bond\Codegen</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Reflection_h.hs">
-      <Filter>Bond\Template\Cpp</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Reflection_h.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Types_cpp.hs">
-      <Filter>Bond\Template\Cpp</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_cpp.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Types_h.hs">
-      <Filter>Bond\Template\Cpp</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_h.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Enum_h.hs">
-      <Filter>Bond\Template\Cpp</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Enum_h.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Apply_h.hs">
-      <Filter>Bond\Template\Cpp</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_h.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Apply_cpp.hs">
-      <Filter>Bond\Template\Cpp</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_cpp.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cpp\Util.hs">
-      <Filter>Bond\Template\Cpp</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Util.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cs\Types_cs.hs">
-      <Filter>Bond\Template\Cs</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Types_cs.hs">
+      <Filter>Bond\Codegen\Cs</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\Bond\Template\Cs\Util.hs">
-      <Filter>Bond\Template\Cs</Filter>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Util.hs">
+      <Filter>Bond\Codegen\Cs</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -69,16 +69,16 @@
       <Extensions>
       </Extensions>
     </Filter>
-    <Filter Include="Bond\Schema">
+    <Filter Include="Bond\Syntax">
       <UniqueIdentifier>{905ABB36-088E-4045-8EA5-7316C8675D60}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Bond\Template">
+    <Filter Include="Bond\Codegen">
       <UniqueIdentifier>{6136aa59-3761-4878-85e7-efda39785ecb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Bond\Template\Cpp">
+    <Filter Include="Bond\Codegen\Cpp">
       <UniqueIdentifier>{0e5652ef-f06f-42d0-a5ba-7ed015eb92f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Bond\Template\Cs">
+    <Filter Include="Bond\Codegen\Cs">
       <UniqueIdentifier>{4fb77bee-4379-4717-8bc0-721644d44d5f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

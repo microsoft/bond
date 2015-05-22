@@ -3,7 +3,7 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
-module Bond.Template.Cs.Util
+module Language.Bond.Codegen.Cs.Util
     ( typeAttributes
     , propertyAttributes
     , schemaAttributes
@@ -19,10 +19,10 @@ import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Paths_bond (version)
 import Data.Version (showVersion) 
-import Bond.Schema.Types
-import Bond.Schema.Util
-import Bond.Template.TypeMapping
-import Bond.Template.Util
+import Language.Bond.Syntax.Types
+import Language.Bond.Syntax.Util
+import Language.Bond.Codegen.TypeMapping
+import Language.Bond.Codegen.Util
 
 disableReSharperWarnings :: Text
 disableReSharperWarnings = [lt|

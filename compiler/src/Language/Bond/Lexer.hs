@@ -3,7 +3,7 @@
 
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
-module Bond.Lexer
+module Language.Bond.Lexer
     ( angles
     , braces
     , brackets

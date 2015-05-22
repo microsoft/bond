@@ -3,18 +3,18 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
-module Bond.Template.Cpp.Apply_h (apply_h, Protocol(..), applyOverloads) where
+module Language.Bond.Codegen.Cpp.Apply_h (apply_h, Protocol(..), applyOverloads) where
 
 import System.FilePath
 import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
-import Bond.Schema.Types
-import Bond.Util
-import Bond.Template.Util
-import Bond.Template.TypeMapping
-import qualified Bond.Template.Cpp.Util as CPP
+import Language.Bond.Syntax.Types
+import Language.Bond.Util
+import Language.Bond.Codegen.Util
+import Language.Bond.Codegen.TypeMapping
+import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 data Protocol =
     Protocol

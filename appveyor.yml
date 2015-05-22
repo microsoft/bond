@@ -50,7 +50,7 @@ install:
         }
 cache:
     - cs\packages -> cs\test\core\packages.config
-    - compiler\.cabal-sandbox -> compiler\gbc.cabal
+    - compiler\.cabal-sandbox -> compiler\bond.cabal
     - boost_1_57_0.7z
 build_script:
     - ps: >-

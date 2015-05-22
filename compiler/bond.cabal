@@ -4,36 +4,81 @@
 name:               bond
 version:            0.3.0.5
 cabal-version:      >= 1.8
-synopsis:           The Glorious Bond Compilation System
-description:        gbc is Bond schema definition languange compiler and code
-                    generator.
+synopsis:           Bond schema compiler and code generator
+description:        Bond is a cross-platform framework for handling schematized
+                    data. It supports cross-language de/serialization and
+                    powerful generic mechanisms for efficiently manipulating
+                    data.
+                    .
+                    This package contains a library for parsing the Bond
+                    schema definition language and performing template-based
+                    code generation. The library includes built-in templates
+                    for generating standard Bond C++ and C# code, as well as
+                    utilities for writing custom codegen templates.
+                    .  
+                    The package also contains a command-line compiler/codegen
+                    tool, named gbc, which is primarily used to generate code
+                    for C++ and C# programs using Bond.
+
 homepage:           https://github.com/Microsoft/bond
 license:            MIT
-author:             adamsap@microsoft.com
-maintainer:         adamsap@microsoft.com
+license-file:       LICENSE
+author:             Adam Sapek <adamsap@microsoft.com>
+maintainer:         Adam Sapek <adamsap@microsoft.com>
+bug-reports:        https://github.com/Microsoft/bond/issues
 copyright:          Copyright (c) Microsoft. All rights reserved.
 category:           Language
 build-type:         Simple
+
+source-repository head
+  type:             git
+  location:         git@github.com:Microsoft/bond.git
+
+library
+  hs-source-dirs:   src
+  build-depends:    aeson >= 0.7.0.6,
+                    base >= 4.5 && < 5,
+                    filepath >= 1.0,
+                    ghc-prim,
+                    mtl >= 2.1,
+                    parsec >= 3.1,
+                    shakespeare >= 2.0,
+                    text >= 0.11
+  ghc-options:      -Wall
+  exposed-modules:  Language.Bond.Parser
+                    Language.Bond.Syntax.Types
+                    Language.Bond.Syntax.JSON
+                    Language.Bond.Syntax.Util
+                    Language.Bond.Codegen.Util
+                    Language.Bond.Codegen.TypeMapping
+                    Language.Bond.Codegen.CustomMapping
+                    Language.Bond.Codegen.Cpp.Apply_cpp
+                    Language.Bond.Codegen.Cpp.Apply_h
+                    Language.Bond.Codegen.Cpp.Enum_h
+                    Language.Bond.Codegen.Cpp.Reflection_h
+                    Language.Bond.Codegen.Cpp.Types_cpp
+                    Language.Bond.Codegen.Cpp.Types_h
+                    Language.Bond.Codegen.Cpp.Util
+                    Language.Bond.Codegen.Cs.Types_cs
+                    Language.Bond.Codegen.Cs.Util
+  other-modules:    Language.Bond.Lexer
+                    Language.Bond.Util
+                    Paths_bond
 
 test-suite gbc-tests
   type:             exitcode-stdio-1.0
   hs-source-dirs:   tests, .
   main-is:          Main.hs
-  other-modules:
   ghc-options:      -threaded
-  build-depends:    aeson >= 0.7.0.6,
-                    async >= 2.0.1.0,
-                    base >=4.5,
+  build-depends:    bond,
+                    aeson >= 0.7.0.6,
+                    base >= 4.5 && < 5,
                     bytestring >= 0.10,
                     cmdargs >= 0.10.10,
                     directory >= 1.1,
-                    filepath >=1.0,
-                    ghc-prim,
+                    filepath >= 1.0,
                     monad-loops >= 0.4,
-                    mtl >= 2.1,
-                    parsec >=3.1,
-                    shakespeare >= 2.0,
-                    text >=0.11,
+                    text >= 0.11,
                     derive,
                     HUnit,
                     QuickCheck,
@@ -44,18 +89,14 @@ test-suite gbc-tests
 
 executable gbc
   main-is:          Main.hs
-  ghc-options:      -threaded -Wall -Werror
-  other-modules:
-  build-depends:    aeson >= 0.7.0.6,
+  ghc-options:      -threaded -Wall
+  build-depends:    bond,
+                    aeson >= 0.7.0.6,
                     async >= 2.0.1.0,
-                    base >=4.5,
+                    base >= 4.5 && < 5,
                     bytestring >= 0.10,
                     cmdargs >= 0.10.10,
                     directory >= 1.1,
-                    filepath >=1.0,
-                    ghc-prim,
+                    filepath >= 1.0,
                     monad-loops >= 0.4,
-                    mtl >= 2.1,
-                    parsec >=3.1,
-                    shakespeare >= 2.0,
-                    text >=0.11
+                    text >= 0.11

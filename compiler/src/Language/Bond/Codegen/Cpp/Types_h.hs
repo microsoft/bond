@@ -3,7 +3,7 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
-module Bond.Template.Cpp.Types_h (types_h) where
+module Language.Bond.Codegen.Cpp.Types_h (types_h) where
 
 import System.FilePath
 import Data.Maybe
@@ -16,12 +16,12 @@ import qualified Data.Foldable as F
 import Text.Shakespeare.Text
 import Paths_bond (version)
 import Data.Version
-import Bond.Schema.Types
-import Bond.Schema.Util
-import Bond.Util
-import Bond.Template.TypeMapping
-import Bond.Template.Util
-import qualified Bond.Template.Cpp.Util as CPP
+import Language.Bond.Syntax.Types
+import Language.Bond.Syntax.Util
+import Language.Bond.Util
+import Language.Bond.Codegen.TypeMapping
+import Language.Bond.Codegen.Util
+import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- generate the *_types.h file from parsed .bond file
 types_h :: [String]

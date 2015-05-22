@@ -3,7 +3,7 @@
 
 {-# LANGUAGE OverloadedStrings, RecordWildCards #-}
 
-module Bond.Schema.Util
+module Language.Bond.Syntax.Util
     ( associativeType
     , containerType
     , duplicateDeclaration
@@ -32,8 +32,8 @@ import Data.List
 import qualified Data.Foldable as F
 import Data.Monoid
 import Prelude
-import Bond.Util
-import Bond.Schema.Types
+import Language.Bond.Util
+import Language.Bond.Syntax.Types
 
 takeName :: QualifiedName -> String
 takeName = last

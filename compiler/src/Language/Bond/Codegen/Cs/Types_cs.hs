@@ -3,19 +3,19 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
-module Bond.Template.Cs.Types_cs (types_cs) where
+module Language.Bond.Codegen.Cs.Types_cs (types_cs) where
 
 import Data.Monoid
 import qualified Data.Foldable as F
 import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
-import Bond.Schema.Types
-import Bond.Schema.Util
-import Bond.Util
-import Bond.Template.TypeMapping
-import Bond.Template.Util
-import qualified Bond.Template.Cs.Util as CS
+import Language.Bond.Syntax.Types
+import Language.Bond.Syntax.Util
+import Language.Bond.Util
+import Language.Bond.Codegen.TypeMapping
+import Language.Bond.Codegen.Util
+import qualified Language.Bond.Codegen.Cs.Util as CS
 
 -- generate the *_types.cs file from parsed .bond file
 types_cs :: Bool -> Bool -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)

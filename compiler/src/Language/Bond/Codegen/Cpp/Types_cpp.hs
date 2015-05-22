@@ -3,16 +3,16 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
-module Bond.Template.Cpp.Types_cpp (types_cpp) where
+module Language.Bond.Codegen.Cpp.Types_cpp (types_cpp) where
 
 import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
-import Bond.Schema.Types
-import Bond.Template.TypeMapping
-import Bond.Template.Util
-import qualified Bond.Template.Cpp.Util as CPP
+import Language.Bond.Syntax.Types
+import Language.Bond.Codegen.TypeMapping
+import Language.Bond.Codegen.Util
+import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- generate the *_types_cpp file from parsed .bond file
 types_cpp :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)

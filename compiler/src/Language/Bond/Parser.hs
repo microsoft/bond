@@ -3,7 +3,7 @@
 
 {-# LANGUAGE RecordWildCards #-}
 
-module Bond.Parser
+module Language.Bond.Parser
     ( parseBond
     )
     where
@@ -16,9 +16,9 @@ import Control.Monad.Reader
 import Prelude
 import Text.Parsec.Pos (initialPos)
 import Text.Parsec hiding (many, optional, (<|>))
-import Bond.Lexer
-import Bond.Schema.Types
-import Bond.Schema.Util
+import Language.Bond.Lexer
+import Language.Bond.Syntax.Types
+import Language.Bond.Syntax.Util
 
 -- parser state, mutable and global
 data Symbols =

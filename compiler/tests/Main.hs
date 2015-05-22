@@ -8,7 +8,7 @@ import Prelude
 import Test.Framework
 import Test.Framework.Providers.QuickCheck2 (testProperty)
 import Test.Framework.Providers.HUnit (testCase)
-import Tests.Schema
+import Tests.Syntax
 import Tests.Codegen
 
 tests :: [Test]

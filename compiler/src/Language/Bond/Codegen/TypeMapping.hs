@@ -3,7 +3,7 @@
 
 {-# LANGUAGE OverloadedStrings, RecordWildCards #-}
 
-module Bond.Template.TypeMapping
+module Language.Bond.Codegen.TypeMapping
     ( findAliasMapping
     , cppTypeMapping
     , cppCustomAllocTypeMapping
@@ -31,11 +31,11 @@ import Prelude
 import qualified Data.Text.Lazy as L
 import Data.Text.Lazy.Builder
 import Text.Shakespeare.Text
-import Bond.Schema.Types
-import Bond.Schema.Util
-import Bond.Util
-import Bond.Template.Util
-import Bond.Template.CustomMapping
+import Language.Bond.Syntax.Types
+import Language.Bond.Syntax.Util
+import Language.Bond.Util
+import Language.Bond.Codegen.Util
+import Language.Bond.Codegen.CustomMapping
 
 data MappingContext = MappingContext
     { typeMapping :: TypeMapping

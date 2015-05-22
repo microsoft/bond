@@ -15,18 +15,18 @@ import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy.IO as L
 import Data.Aeson (encode)
 import qualified Data.ByteString.Lazy as BL
-import Bond.Schema.Types (Bond(..), Declaration, Import)
-import Bond.Schema.JSON()
-import Bond.Template.Util
-import Bond.Template.Cpp.Reflection_h
-import Bond.Template.Cpp.Types_h
-import Bond.Template.Cpp.Apply_h
-import Bond.Template.Cpp.Apply_cpp
-import Bond.Template.Cpp.Enum_h
-import Bond.Template.Cpp.Types_cpp
-import Bond.Template.Cs.Types_cs
-import Bond.Template.TypeMapping
-import Bond.Template.CustomMapping
+import Language.Bond.Syntax.Types (Bond(..), Declaration, Import)
+import Language.Bond.Syntax.JSON()
+import Language.Bond.Codegen.Util
+import Language.Bond.Codegen.Cpp.Reflection_h
+import Language.Bond.Codegen.Cpp.Types_h
+import Language.Bond.Codegen.Cpp.Apply_h
+import Language.Bond.Codegen.Cpp.Apply_cpp
+import Language.Bond.Codegen.Cpp.Enum_h
+import Language.Bond.Codegen.Cpp.Types_cpp
+import Language.Bond.Codegen.Cs.Types_cs
+import Language.Bond.Codegen.TypeMapping
+import Language.Bond.Codegen.CustomMapping
 import Options
 import Files
 
