@@ -12,6 +12,7 @@ import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.Util
+import Language.Bond.Syntax.Internal
 import Language.Bond.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util

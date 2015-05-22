@@ -63,6 +63,7 @@ library
                     Language.Bond.Codegen.Cs.Util
   other-modules:    Language.Bond.Lexer
                     Language.Bond.Util
+                    Language.Bond.Syntax.Internal
                     Paths_bond
 
 test-suite gbc-tests

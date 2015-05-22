@@ -19,6 +19,7 @@ import Text.Parsec hiding (many, optional, (<|>))
 import Language.Bond.Lexer
 import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.Util
+import Language.Bond.Syntax.Internal
 
 -- parser state, mutable and global
 data Symbols =
@@ -104,6 +105,10 @@ updateSymbols decl = do
     reconcile _   _ = error "updateSymbols/reconcile: impossible happened."
     paramsMatch = (==) `on` (map paramConstraint . declParams)
     add x xs u = u { symbols = x:xs }
+    duplicateDeclaration left right = 
+        (declName left == declName right)
+     && not (null $ intersect (declNamespaces left) (declNamespaces right))
+
 
 findSymbol :: QualifiedName -> Parser Declaration
 findSymbol name = doFind <?> "qualified name"
@@ -232,6 +237,8 @@ field = makeField <$> attributes <*> ordinal <*> modifier <*> ftype <*> identifi
                  <|> DefaultEnum <$> identifier
                  <|> DefaultFloat <$> try float
                  <|> DefaultInteger <$> fromIntegral <$> integer)
+    makeField a o m t n d@(Just DefaultNothing) = Field a o m (BT_Maybe t) n d
+    makeField a o m t n d = Field a o m t n d
 
 -- enum definition parser
 enum :: Parser Declaration

@@ -6,61 +6,25 @@
 module Language.Bond.Syntax.Util
     ( associativeType
     , containerType
-    , duplicateDeclaration
     , foldMapFields
     , foldMapStructFields
     , foldMapType
-    , isBaseField
     , listType
-    , makeField
-    , metaField
     , metaType
     , nullableType
     , resolveAlias
     , scalarType
-    , showPretty
-    , showQualifiedName
     , stringType
     , structType
-    , takeName
-    , takeNamespace
     ) where
 
 import Data.Maybe
-import Data.Word
 import Data.List
 import qualified Data.Foldable as F
 import Data.Monoid
 import Prelude
 import Language.Bond.Util
 import Language.Bond.Syntax.Types
-
-takeName :: QualifiedName -> String
-takeName = last
-
-takeNamespace :: QualifiedName -> QualifiedName
-takeNamespace = subtract 1 . length >>= take
-
-showQualifiedName :: QualifiedName -> String
-showQualifiedName = sepBy "." id
-
-showTypeParams :: [TypeParam] -> String
-showTypeParams = angles . sepBy ", " showPretty
-
-class ShowPretty a where
-    showPretty :: a -> String
-
-instance ShowPretty Constraint where
-    showPretty Value = ": value"
-
-instance ShowPretty TypeParam where
-    showPretty TypeParam {..} = paramName ++ optional showPretty paramConstraint
-
-instance ShowPretty Declaration where
-    showPretty Struct {..} = "struct " ++ declName ++ showTypeParams declParams
-    showPretty Enum {..} = "enum " ++ declName
-    showPretty Forward {..} = "struct declaration " ++ declName ++ showTypeParams declParams
-    showPretty Alias {..} = "alias " ++ declName ++ showTypeParams declParams
 
 scalarType :: Type -> Bool
 scalarType BT_Int8 = True
@@ -117,19 +81,6 @@ nullableType (BT_Nullable _) = True
 nullableType (BT_UserDefined a@Alias {} args) = nullableType $ resolveAlias a args
 nullableType _ = False
 
-metaField :: Field -> Any
-metaField Field {..} = Any $ metaType fieldType
-
-makeField :: [Attribute]
-          -> Word16
-          -> Modifier
-          -> Type
-          -> String
-          -> Maybe Default
-          -> Field
-makeField a o m t n d@(Just DefaultNothing) = Field a o m (BT_Maybe t) n d
-makeField a o m t n d = Field a o m t n d
-
 mapType :: (Type -> Type) -> Type -> Type
 mapType f (BT_UserDefined decl args) = BT_UserDefined decl $ map f args
 mapType f (BT_Map key value) = BT_Map (f key) (f value)
@@ -167,12 +118,4 @@ resolveAlias Alias {..} args = mapType resolveParam $ resolveParam aliasType
     resolveParam x = x
     paramsArgs = zip declParams args
 resolveAlias _ _ = error "resolveAlias: impossible happened."
-
-duplicateDeclaration :: Declaration -> Declaration -> Bool
-duplicateDeclaration left right = 
-    (declName left == declName right)
- && not (null $ intersect (declNamespaces left) (declNamespaces right))
-
-isBaseField :: String -> Maybe Type -> Bool
-isBaseField name = getAny . optional (foldMapFields (Any.(name==).fieldName))
 
