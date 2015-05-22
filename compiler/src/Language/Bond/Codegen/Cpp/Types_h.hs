@@ -24,10 +24,11 @@ import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
--- generate the *_types.h file from parsed .bond file
-types_h :: [String]
-        -> Bool
-        -> Maybe String
+-- | Codegen template for generating /base_name/_type.h containing definitions
+-- of C++ types representing the schema. 
+types_h :: [String]     -- ^ list of optional header files to be @#include@'ed by the generated code
+        -> Bool         -- ^ 'True' to generate enum definitions into a separate file /base_name/_enum.h
+        -> Maybe String -- ^ optional custom allocator to be used by the generated code
         -> MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
 types_h userHeaders enumHeader allocator cpp file imports declarations = ("_types.h", [lt|
 #pragma once
@@ -84,7 +85,7 @@ types_h userHeaders enumHeader allocator cpp file imports declarations = ("_type
     anyBlob BT_Blob = Any True
     anyBlob _ = Any False
 
-    anyNullable = Any . nullableType
+    anyNullable = Any . isNullable
 
     bondHeaders :: [(Bool, String)]
     bondHeaders = [
@@ -102,7 +103,7 @@ namespace std
 |]
       where
         usesAllocator s@Struct {..} = [lt|template <typename _Alloc#{sepBeginBy ", typename " paramName declParams}>
-    struct uses_allocator<#{typename} #{getDeclQualifiedTypeName cpp s}#{CPP.structParams s}, _Alloc>
+    struct uses_allocator<#{typename} #{getDeclTypeName cpp s}#{CPP.structParams s}, _Alloc>
         : is_convertible<_Alloc, #{allocParam}>
     {};|]
           where
@@ -181,12 +182,11 @@ namespace std
         initValue (BT_Maybe _) _ = Nothing
         initValue t (Just d) = Just $ cppDefaultValue t d
         initValue (BT_TypeParam _) _ = Just mempty
-        initValue (BT_UserDefined a@Alias {} args) d =
-            case findAliasMapping cpp a of
-                Nothing -> initValue (resolveAlias a args) d
-                Just _ -> Just mempty
+        initValue (BT_UserDefined a@Alias {} args) d
+            | customAliasMapping cpp a = Just mempty
+            | otherwise = initValue (resolveAlias a args) d
         initValue t _
-            | scalarType t = Just mempty
+            | isScalar t = Just mempty
             | otherwise = Nothing
 
         -- constructor initializer list from 'base' and 'fields' initializers
@@ -233,10 +233,10 @@ namespace std
             allocInitValue (BT_Nullable t) _ = allocInitValue t Nothing
             allocInitValue (BT_Maybe t) _ = allocInitValue t Nothing
             allocInitValue t (Just d)
-                | stringType t = Just [lt|#{cppDefaultValue t d}, allocator|]
+                | isString t = Just [lt|#{cppDefaultValue t d}, allocator|]
             allocInitValue t Nothing
-                | listType t || metaType t || stringType t || structType t = Just "allocator"
-                | associativeType t = Just [lt|std::less<#{keyType t}>(), allocator|]
+                | isList t || isMetaName t || isString t || isStruct t = Just "allocator"
+                | isAssociative t = Just [lt|std::less<#{keyType t}>(), allocator|]
             allocInitValue t d = initValue t d
             keyType (BT_Set key) = cppType key
             keyType (BT_Map key _) = cppType key

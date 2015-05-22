@@ -46,7 +46,7 @@ endfunction()
 set (sources
     bond.cabal
     Main.hs
-    Files.hs
+    IO.hs
     Options.hs
     src/Language/Bond/Lexer.hs
     src/Language/Bond/Parser.hs
@@ -57,6 +57,8 @@ set (sources
     src/Language/Bond/Codegen/CustomMapping.hs
     src/Language/Bond/Codegen/TypeMapping.hs
     src/Language/Bond/Codegen/Util.hs
+    src/Language/Bond/Codegen/Templates.hs
+    src/Language/Bond/Codegen/Cpp/ApplyOverloads.hs
     src/Language/Bond/Codegen/Cpp/Apply_cpp.hs
     src/Language/Bond/Codegen/Cpp/Apply_h.hs
     src/Language/Bond/Codegen/Cpp/Enum_h.hs

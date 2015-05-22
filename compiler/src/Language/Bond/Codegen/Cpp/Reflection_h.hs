@@ -9,13 +9,15 @@ import System.FilePath
 import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
+import qualified Data.Foldable as F
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
--- generate the *_refection.h file from parsed .bond file
+-- | Codegen template for generating /base_name/_reflection.h containing schema
+-- metadata definitions.
 reflection_h :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
 reflection_h cpp file imports declarations = ("_reflection.h", [lt|
 #pragma once
@@ -48,7 +50,7 @@ reflection_h cpp file imports declarations = ("_reflection.h", [lt|
         #{newlineBeginSep 2 fieldMetadata structFields}
 
         public: struct var
-        {#{fieldTemplates}};
+        {#{fieldTemplates structFields}};
 
         private: typedef boost::mpl::list<> fields0;
         #{newlineSep 2 pushField indexedFields}
@@ -99,7 +101,7 @@ reflection_h cpp file imports declarations = ("_reflection.h", [lt|
         fieldMetadata Field {..} =
             [lt|private: static const bond::Metadata s_#{fieldName}_metadata;|]
 
-        fieldTemplates = mconcatFor structFields $ \ f@Field {..} -> [lt|
+        fieldTemplates = F.foldMap $ \ f@Field {..} -> [lt|
             // #{fieldName}
             typedef bond::reflection::FieldTemplate<
                 #{fieldOrdinal},

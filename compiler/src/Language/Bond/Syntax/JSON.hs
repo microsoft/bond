@@ -5,9 +5,19 @@
     StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Language.Bond.Syntax.JSON
-    ( FromJSON(..)
-    ) where
+{-|
+Copyright   : (c) Microsoft
+License     : MIT
+Maintainer  : adamsap@microsoft.com
+Stability   : alpha
+Portability : portable
+-}
+
+module Language.Bond.Syntax.JSON 
+    ( -- * FromJSON and ToJSON instances
+      -- $aeson 
+    )
+    where
 
 import Data.Aeson
 import Data.Aeson.Types
@@ -15,6 +25,20 @@ import Control.Applicative
 import Prelude
 import GHC.Generics (Generic)
 import Language.Bond.Syntax.Types
+
+-- $aeson
+--
+-- This module defines 'FromJSON' and 'ToJSON' instances for Bond abstract
+-- syntax tree.  They allow using the <http://hackage.haskell.org/package/aeson aeson> 
+-- library to encode Bond AST types to <https://microsoft.github.io/bond/manual/compiler.html#schema-ast JSON format>:
+--
+-- > > encode (Bond [] [Namespace Nothing ["example"]] [])
+-- > "{\"namespaces\":[{\"name\":[\"example\"]}],\"imports\":[],\"declarations\":[]}"
+--
+-- and decode Bond data types from JSON:
+--
+-- > > decode "{\"namespaces\":[{\"name\":[\"example\"]}],\"imports\":[],\"declarations\":[]}" :: Maybe Bond
+-- > Just (Bond {bondImports = [], bondNamespaces = [Namespace {nsLanguage = Nothing, nsName = ["example"]}], bondDeclarations = []})
 
 deriving instance Generic Modifier
 instance FromJSON Modifier

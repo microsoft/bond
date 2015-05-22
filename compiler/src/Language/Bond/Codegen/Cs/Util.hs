@@ -109,10 +109,9 @@ defaultValue cs Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
         implicitDefault t@(BT_Set _) = newInstance t
         implicitDefault t@(BT_Map _ _) = newInstance t
         implicitDefault t@BT_Blob = newInstance t
-        implicitDefault t@(BT_UserDefined a@Alias {..} args) = 
-            case findAliasMapping cs a of
-                Nothing -> implicitDefault $ resolveAlias a args
-                Just _ -> newInstance t
+        implicitDefault t@(BT_UserDefined a@Alias {..} args)
+            | customAliasMapping cs a = newInstance t
+            | otherwise = implicitDefault $ resolveAlias a args
         implicitDefault t@(BT_UserDefined _ _) = newInstance t
         implicitDefault _ = Nothing
 

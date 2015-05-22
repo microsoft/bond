@@ -45,7 +45,7 @@ instance ShowPretty Declaration where
     showPretty Alias {..} = "alias " ++ declName ++ showTypeParams declParams
 
 metaField :: Field -> Any
-metaField Field {..} = Any $ metaType fieldType
+metaField Field {..} = Any $ isMetaName fieldType
 
 isBaseField :: String -> Maybe Type -> Bool
 isBaseField name = getAny . optional (foldMapFields (Any.(name==).fieldName))

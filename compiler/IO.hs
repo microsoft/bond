@@ -1,10 +1,12 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-module Files
+module IO
     ( parseFile
     , parseBondFile
     , parseASTFile
+    , parseNamespaceMappings
+    , parseAliasMappings
     )
     where
 
@@ -20,14 +22,15 @@ import qualified Data.ByteString.Lazy as BL
 import Language.Bond.Syntax.Types (Bond(..))
 import Language.Bond.Syntax.JSON()
 import Language.Bond.Parser
+import Language.Bond.Codegen.CustomMapping
 
 
 parseFile :: [FilePath] -> FilePath -> IO(Bond)
 parseFile importDirs file =
     if takeExtension file == ".json" then
-        parseASTFile file else 
+        parseASTFile file else
         parseBondFile importDirs file
-    
+
 
 parseBondFile :: [FilePath] -> FilePath -> IO(Bond)
 parseBondFile importDirs file = do
@@ -65,3 +68,16 @@ parseASTFile file = do
             exitFailure
         Right bond -> return bond
 
+
+parseAliasMappings :: [String] -> IO [AliasMapping]
+parseAliasMappings = mapM $
+    \ s -> case parseAliasMapping s of
+        Left err -> fail $ show err
+        Right m -> return m
+
+
+parseNamespaceMappings :: [String] -> IO [NamespaceMapping]
+parseNamespaceMappings = mapM $ 
+    \ s -> case parseNamespaceMapping s of
+        Left err -> fail $ show err
+        Right m -> return m

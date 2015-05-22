@@ -3,30 +3,52 @@
 
 {-# LANGUAGE OverloadedStrings, RecordWildCards, DeriveGeneric #-}
 
+{-|
+Copyright   : (c) Microsoft
+License     : MIT
+Maintainer  : adamsap@microsoft.com
+Stability   : alpha
+Portability : portable
+
+A suite of types describing the abstract syntax tree of the Bond
+<https://microsoft.github.io/bond/manual/compiler.html#idl-syntax schema definition language>.
+-}
+
 module Language.Bond.Syntax.Types
-    ( Attribute(..)
-    , Bond(..)
-    , Constant(..)
-    , Constraint(..)
-    , Declaration(..)
-    , Default(..)
-    , Field(..)
-    , Import(..)
-    , Language(..)
-    , Modifier(..)
-    , Namespace(..)
+    ( -- * Schema definition file
+      Bond(..)
     , QualifiedName
+    , Import(..)
+    , Namespace(..)
+      -- ** Declarations
+    , Declaration(..)
+    , Field(..)
+    , Default(..)
+    , Modifier(..)
+    , Constant(..)
+      -- ** Types
     , Type(..)
     , TypeParam(..)
+    , Constraint(..)
+      -- ** Metadata
+    , Attribute(..)
+      -- ** Deprecated
+    , Language(..)
     ) where
 
 import Data.Word
 
+-- | Represents fully qualified name
 type QualifiedName = [String]
 
-data Modifier = Optional | Required | RequiredOptional
+-- | Specifies whether a field is required or optional
+data Modifier =
+    Optional |                              -- ^ field is optional and may be omitted during serialization
+    Required |                              -- ^ field is required, deserialization will fail if it is missing
+    RequiredOptional                        -- ^ deserialization will not fail if the field is missing but it can't be omitted during serialization
     deriving (Eq, Show)
 
+-- | Type in the Bond type system
 data Type =
     BT_Int8 | BT_Int16 | BT_Int32 | BT_Int64 |
     BT_UInt8 | BT_UInt16 | BT_UInt32 | BT_UInt64 |
@@ -35,27 +57,29 @@ data Type =
     BT_String | BT_WString |
     BT_MetaName | BT_MetaFullName |
     BT_Blob |
-    BT_Maybe Type |
+    BT_Maybe Type |                         -- ^ type of a field with the default value of @nothing@
     BT_List Type |
     BT_Vector Type |
     BT_Nullable Type |
     BT_Set Type |
     BT_Map Type Type |
     BT_Bonded Type |
-    BT_IntTypeArg Int |
-    BT_TypeParam TypeParam |
-    BT_UserDefined Declaration [Type]
+    BT_IntTypeArg Int |                     -- ^ an integer argument in an instance of a generic type 'Alias'
+    BT_TypeParam TypeParam |                -- ^ type parameter of a generic 'Struct' or 'Alias' declaration
+    BT_UserDefined Declaration [Type]       -- ^ user defined type or an instance of a generic type with the specified type arguments
     deriving (Eq, Show)
 
+-- | Default value of a field
 data Default =
     DefaultBool Bool |
     DefaultInteger Integer |
     DefaultFloat Double |
     DefaultString String |
-    DefaultEnum String |
-    DefaultNothing
+    DefaultEnum String |                    -- ^ name of an enum 'Constant'
+    DefaultNothing                          -- ^ explicitly specified default value of @nothing@
     deriving (Eq, Show)
 
+-- | <https://microsoft.github.io/bond/manual/compiler.html#custom-attributes Attribute> for attaching user defined metadata to a 'Declaration' or a 'Field'
 data Attribute =
     Attribute
         { attrName :: QualifiedName         -- attribute name
@@ -63,6 +87,7 @@ data Attribute =
         }
     deriving (Eq, Show)
 
+-- | Definition of a 'Struct' field
 data Field =
     Field
         { fieldAttributes :: [Attribute]    -- zero or more attributes
@@ -74,6 +99,7 @@ data Field =
         }
     deriving (Eq, Show)
 
+-- | Definition of an 'Enum' constant
 data Constant =
     Constant
         { constantName :: String            -- enum constant name
@@ -81,9 +107,11 @@ data Constant =
         }
     deriving (Eq, Show)
 
-data Constraint = Value
+-- | Constraint on a 'TypeParam'
+data Constraint = Value                     -- ^ the type parameter allows only value types
     deriving (Eq, Show)
 
+-- | Type parameter of a <https://microsoft.github.io/bond/manual/compiler.html#generics generic> 'Struct' or type 'Alias'
 data TypeParam =
     TypeParam
         { paramName :: String
@@ -91,6 +119,7 @@ data TypeParam =
         }
     deriving (Eq, Show)
 
+-- | Bond schema declaration
 data Declaration =
     Struct
         { declNamespaces :: [Namespace]     -- namespace(s) in which the struct is declared
@@ -100,34 +129,39 @@ data Declaration =
         , structBase :: Maybe Type          -- optional base struct
         , structFields :: [Field]           -- zero or more fields
         }
-    |
+    |                                       -- ^ <https://microsoft.github.io/bond/manual/compiler.html#struct-definition struct definition>
     Enum
         { declNamespaces :: [Namespace]     -- namespace(s) in which the enum is declared
         , declAttributes :: [Attribute]     -- zero or more attributes
         , declName :: String                -- enum identifier
         , enumConstants :: [Constant]       -- one or more constant values
         }
-    |
+    |                                       -- ^ <https://microsoft.github.io/bond/manual/compiler.html#enum-definition enum definition>
     Forward
         { declNamespaces :: [Namespace]     -- namespace(s) in which the struct is declared
         , declName :: String                -- struct identifier
         , declParams :: [TypeParam]         -- type parameters for generics
         }
-    |
+    |                                       -- ^ <https://microsoft.github.io/bond/manual/compiler.html#forward-declaration forward declaration>
     Alias
         { declNamespaces :: [Namespace]     -- namespace(s) in which the alias is declared
         , declName :: String                -- alias identifier
         , declParams :: [TypeParam]         -- type parameters for generics
         , aliasType :: Type                 -- aliased type
-        }
+        }                                   -- ^ <https://microsoft.github.io/bond/manual/compiler.html#type-aliases type alias definition>
     deriving (Eq, Show)
 
+-- | <https://microsoft.github.io/bond/manual/compiler.html#import-statements Import> declaration
 data Import = Import FilePath
     deriving (Eq, Show)
 
+-- | Language annotation for namespaces. Note that language-specific
+-- namespaces are only supported for backward compatibility and are not
+-- recommended.
 data Language = Cpp | Cs | CSharp | Java
     deriving (Eq, Show)
 
+-- | <https://microsoft.github.io/bond/manual/compiler.html#namespace-definition Namespace> declaration
 data Namespace =
     Namespace
         { nsLanguage :: Maybe Language
@@ -135,6 +169,8 @@ data Namespace =
         }
     deriving (Eq, Show)
 
+-- | The top level type representing the Bond schema definition abstract syntax
+-- tree.
 data Bond =
     Bond
         { bondImports :: [Import]

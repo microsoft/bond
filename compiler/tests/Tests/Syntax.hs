@@ -20,7 +20,7 @@ import Test.HUnit
 import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.JSON
 import Language.Bond.Parser
-import Files
+import IO
 
 derive makeArbitrary ''Attribute
 derive makeArbitrary ''Bond

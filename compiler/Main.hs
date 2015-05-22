@@ -18,17 +18,10 @@ import qualified Data.ByteString.Lazy as BL
 import Language.Bond.Syntax.Types (Bond(..), Declaration, Import)
 import Language.Bond.Syntax.JSON()
 import Language.Bond.Codegen.Util
-import Language.Bond.Codegen.Cpp.Reflection_h
-import Language.Bond.Codegen.Cpp.Types_h
-import Language.Bond.Codegen.Cpp.Apply_h
-import Language.Bond.Codegen.Cpp.Apply_cpp
-import Language.Bond.Codegen.Cpp.Enum_h
-import Language.Bond.Codegen.Cpp.Types_cpp
-import Language.Bond.Codegen.Cs.Types_cs
+import Language.Bond.Codegen.Templates
 import Language.Bond.Codegen.TypeMapping
-import Language.Bond.Codegen.CustomMapping
 import Options
-import Files
+import IO
 
 type Template = MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
 
@@ -106,6 +99,6 @@ codeGen options typeMapping templates file = do
         let (suffix, code) = template mappingContext baseName imports declarations
         let fileName = baseName ++ suffix
         createDirectoryIfMissing True outputDir
-        let content = if (no_banner options) then code else (commonHeader fileName <> code)
+        let content = if (no_banner options) then code else (commonHeader "//" fileName <> code)
         L.writeFile (outputDir </> fileName) content
 

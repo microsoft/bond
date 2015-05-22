@@ -14,7 +14,8 @@ import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
--- generate the *_types_cpp file from parsed .bond file
+-- | Codegen template for generating /base_name/_type.cpp containing
+-- definitions of helper functions and schema metadata static variables.
 types_cpp :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
 types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 #include "#{file}_reflection.h"

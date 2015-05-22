@@ -3,8 +3,21 @@
 
 {-# LANGUAGE RecordWildCards #-}
 
+{-|
+Copyright   : (c) Microsoft
+License     : MIT
+Maintainer  : adamsap@microsoft.com
+Stability   : alpha
+Portability : portable
+
+This module provides functionality necessary to parse Bond
+<https://microsoft.github.io/bond/manual/compiler.html#idl-syntax schema definition language>.
+-}
+
 module Language.Bond.Parser
-    ( parseBond
+    ( -- * Parser
+      parseBond
+    , ImportResolver
     )
     where
 
@@ -24,11 +37,14 @@ import Language.Bond.Syntax.Internal
 -- parser state, mutable and global
 data Symbols =
     Symbols
-    { symbols :: [Declaration] -- list of structs, enums and aliases declared in the current and all imported files
-    , imports :: [FilePath]    -- list of imported files
+    { symbols :: [Declaration]  -- list of structs, enums and aliases declared in the current and all imported files
+    , imports :: [FilePath]     -- list of imported files
     }
 
-type ImportResolver = FilePath -> FilePath -> IO (FilePath, String)
+type ImportResolver = 
+    FilePath                    -- ^ path of the file containing the import statement
+ -> FilePath                    -- ^ (usually relative) path of the imported file
+ -> IO (FilePath, String)       -- ^ the resolver function returns the resolved path of the imported file and its content
 
 -- parser environment, immutable but contextual
 data Environment =
@@ -41,7 +57,13 @@ data Environment =
 
 type Parser a = ParsecT String Symbols (ReaderT Environment IO) a
 
-parseBond :: SourceName -> String -> FilePath -> ImportResolver -> IO (Either ParseError Bond)
+-- | Parses content of a schema definition file.
+parseBond :: 
+    SourceName                          -- ^ source name, used only for error messages
+ -> String                              -- ^ content of a schema file to parse
+ -> FilePath                            -- ^ path of the file being parsed, used to resolve relative import paths
+ -> ImportResolver                      -- ^ function to resolve and load imported files
+ -> IO (Either ParseError Bond)         -- ^ function returns 'Bond' which represents the parsed AST or 'ParserError' if parsing failed
 parseBond s c f r = runReaderT (runParserT bond (Symbols [] []) s c) (Environment [] [] f r)
 
 -- parser for .bond files
@@ -285,10 +307,10 @@ complexType =
         if valid t then return t else unexpected "type"
     validKeyType t = case t of
         BT_TypeParam _ -> True
-        _ -> scalarType t || stringType t
+        _ -> isScalar t || isString t
     validBondedType t = case t of
         BT_TypeParam _ -> True
-        _ -> structType t
+        _ -> isStruct t
 
 
 -- parser for user defined type (struct, enum, alias or type parameter)

@@ -7,7 +7,7 @@
     <None Include="$(ProjectDir)..\compiler\bond.cabal" />
     <None Include="$(ProjectDir)..\compiler\Options.hs" />
     <None Include="$(ProjectDir)..\compiler\Main.hs" />
-    <None Include="$(ProjectDir)..\compiler\Files.hs" />
+    <None Include="$(ProjectDir)..\compiler\IO.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Lexer.hs">
       <Filter>Bond</Filter>
     </None>
@@ -35,6 +35,9 @@
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Util.hs">
       <Filter>Bond\Codegen</Filter>
     </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Templates.hs">
+      <Filter>Bond\Codegen</Filter>
+    </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Reflection_h.hs">
       <Filter>Bond\Codegen\Cpp</Filter>
     </None>
@@ -45,6 +48,9 @@
       <Filter>Bond\Codegen\Cpp</Filter>
     </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Enum_h.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\ApplyOverloads.hs">
       <Filter>Bond\Codegen\Cpp</Filter>
     </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_h.hs">

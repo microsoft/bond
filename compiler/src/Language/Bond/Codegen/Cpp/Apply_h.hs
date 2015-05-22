@@ -3,10 +3,9 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
-module Language.Bond.Codegen.Cpp.Apply_h (apply_h, Protocol(..), applyOverloads) where
+module Language.Bond.Codegen.Cpp.Apply_h (apply_h) where
 
 import System.FilePath
-import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
@@ -14,16 +13,15 @@ import Language.Bond.Syntax.Types
 import Language.Bond.Util
 import Language.Bond.Codegen.Util
 import Language.Bond.Codegen.TypeMapping
+import Language.Bond.Codegen.Cpp.ApplyOverloads
 import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
-data Protocol =
-    Protocol
-    { protocolReader :: String
-    , protocolWriter :: String
-    }
-
--- generate the *_apply.h file from parsed .bond file
-apply_h :: [Protocol] -> Maybe String -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
+-- | Codegen template for generating /base_name/_apply.h containing declarations of
+-- <https://microsoft.github.io/bond/manual/bond_cpp.html#optimizing-build-time Apply>
+-- function overloads for the specified protocols.
+apply_h :: [Protocol]   -- ^ List of protocols for which @Apply@ overloads should be generated
+        -> Maybe String -- ^ Optional attribute to decorate function declarations
+        -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
 apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
 #pragma once
 
@@ -44,45 +42,3 @@ apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
 
     semi = [lt|;|]
 
--- Apply overloads
-applyOverloads :: [Protocol] -> Text -> Text -> Declaration -> Text
-applyOverloads protocols attr body Struct {..} | null declParams = [lt|
-    //
-    // Overloads of Apply function with common transforms for #{declName}.
-    // These overloads will be selected using argument dependent lookup
-    // before bond::Apply function templates.
-    //
-    #{attr}bool Apply(const bond::To<#{declName}>& transform,
-               const bond::bonded<#{declName}>& value)#{body}
-
-    #{attr}bool Apply(const bond::InitSchemaDef& transform,
-               const #{declName}& value)#{body}
-    #{newlineSep 1 applyOverloads' protocols}|]
-  where
-    applyOverloads' p = [lt|#{deserialization p}
-    #{serialization serializer p}
-    #{serialization marshaler p}|]
-
-    serializer = "Serializer" :: String
-    marshaler = "Marshaler" :: String
-
-    deserialization Protocol {..} = [lt|
-    #{attr}bool Apply(const bond::To<#{declName}>& transform,
-               const bond::bonded<#{declName}, bond::#{protocolReader}<bond::InputBuffer>&>& value)#{body}
-
-    #{attr}bool Apply(const bond::To<#{declName}>& transform,
-               const bond::bonded<void, bond::#{protocolReader}<bond::InputBuffer>&>& value)#{body}|]
-
-    serialization transform Protocol {..} = [lt|
-    #{attr}bool Apply(const bond::#{transform}<bond::#{protocolWriter}<bond::OutputBuffer> >& transform,
-               const #{declName}& value)#{body}
-
-    #{attr}bool Apply(const bond::#{transform}<bond::#{protocolWriter}<bond::OutputBuffer> >& transform,
-               const bond::bonded<#{declName}>& value)#{body}
-    #{newlineSep 1 (transcoding transform) protocols}|]
-      where
-        transcoding transform' Protocol {protocolReader = fromReader} = [lt|
-    #{attr}bool Apply(const bond::#{transform'}<bond::#{protocolWriter}<bond::OutputBuffer> >& transform,
-               const bond::bonded<#{declName}, bond::#{fromReader}<bond::InputBuffer>&>& value)#{body}|]
-
-applyOverloads _ _ _ _ = mempty

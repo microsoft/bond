@@ -46,23 +46,25 @@ library
                     text >= 0.11
   ghc-options:      -Wall
   exposed-modules:  Language.Bond.Parser
+                    Language.Bond.Util
                     Language.Bond.Syntax.Types
                     Language.Bond.Syntax.JSON
                     Language.Bond.Syntax.Util
                     Language.Bond.Codegen.Util
                     Language.Bond.Codegen.TypeMapping
                     Language.Bond.Codegen.CustomMapping
-                    Language.Bond.Codegen.Cpp.Apply_cpp
+                    Language.Bond.Codegen.Templates
+  other-modules:    Language.Bond.Codegen.Cpp.Apply_cpp
                     Language.Bond.Codegen.Cpp.Apply_h
                     Language.Bond.Codegen.Cpp.Enum_h
                     Language.Bond.Codegen.Cpp.Reflection_h
                     Language.Bond.Codegen.Cpp.Types_cpp
                     Language.Bond.Codegen.Cpp.Types_h
-                    Language.Bond.Codegen.Cpp.Util
                     Language.Bond.Codegen.Cs.Types_cs
+                    Language.Bond.Codegen.Cpp.ApplyOverloads
+                    Language.Bond.Codegen.Cpp.Util
                     Language.Bond.Codegen.Cs.Util
-  other-modules:    Language.Bond.Lexer
-                    Language.Bond.Util
+                    Language.Bond.Lexer
                     Language.Bond.Syntax.Internal
                     Paths_bond
 

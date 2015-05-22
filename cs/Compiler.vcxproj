@@ -42,14 +42,14 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd
           </Command>
-      <AdditionalInputs>$(ProjectDir)..\compiler\bond.cabal;$(ProjectDir)..\compiler\Main.hs;$(ProjectDir)..\compiler\Files.hs;$(ProjectDir)..\compiler\Options.hs;$(ProjectDir)..\compiler\src\Language\Bond\Lexer.hs;$(ProjectDir)..\compiler\src\Language\Bond\Parser.hs;$(ProjectDir)..\compiler\src\Language\Bond\Syntax\JSON.hs;$(ProjectDir)..\compiler\src\Language\Bond\Syntax\Types.hs;$(ProjectDir)..\compiler\src\Language\Bond\Syntax\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\CustomMapping.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\TypeMapping.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_cpp.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Enum_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Reflection_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_cpp.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Types_cs.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Util.hs;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs>$(ProjectDir)..\compiler\bond.cabal;$(ProjectDir)..\compiler\Main.hs;$(ProjectDir)..\compiler\IO.hs;$(ProjectDir)..\compiler\Options.hs;$(ProjectDir)..\compiler\src\Language\Bond\Lexer.hs;$(ProjectDir)..\compiler\src\Language\Bond\Parser.hs;$(ProjectDir)..\compiler\src\Language\Bond\Syntax\JSON.hs;$(ProjectDir)..\compiler\src\Language\Bond\Syntax\Types.hs;$(ProjectDir)..\compiler\src\Language\Bond\Syntax\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\CustomMapping.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\TypeMapping.hs;;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Templates.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\ApplyOverloads.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_cpp.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Enum_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Reflection_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_cpp.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Types_cs.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Util.hs;%(AdditionalInputs)</AdditionalInputs>
       <Outputs>$(ProjectDir)\bin\gbc.exe</Outputs>          
       </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(ProjectDir)..\compiler\bond.cabal" />
     <None Include="$(ProjectDir)..\compiler\Main.hs" />
-    <None Include="$(ProjectDir)..\compiler\Files.hs" />
+    <None Include="$(ProjectDir)..\compiler\IO.hs" />
     <None Include="$(ProjectDir)..\compiler\Options.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Lexer.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Parser.hs" />
@@ -60,6 +60,8 @@ if %errorlevel% neq 0 goto :VCEnd
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\CustomMapping.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\TypeMapping.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Util.hs" />
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Templates.hs" />
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\ApplyOverloads.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_cpp.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_h.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Enum_h.hs" />

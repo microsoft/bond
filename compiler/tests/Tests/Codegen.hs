@@ -17,19 +17,13 @@ import Prelude
 import Data.Text.Lazy (Text, unpack)
 import Test.HUnit
 import Language.Bond.Codegen.Util
-import Language.Bond.Codegen.Cpp.Reflection_h
-import Language.Bond.Codegen.Cpp.Types_h
-import Language.Bond.Codegen.Cpp.Apply_h
-import Language.Bond.Codegen.Cpp.Apply_cpp
-import Language.Bond.Codegen.Cpp.Enum_h
-import Language.Bond.Codegen.Cpp.Types_cpp
-import Language.Bond.Codegen.Cs.Types_cs
+import Language.Bond.Codegen.Templates
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.CustomMapping
 import Language.Bond.Syntax.Types (Bond(..), Import, Declaration)
 import Language.Bond.Parser
 import Options
-import Files
+import IO
 import Tests.Util
 
 type Template = MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)

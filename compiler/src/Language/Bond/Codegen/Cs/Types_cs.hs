@@ -18,8 +18,11 @@ import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 import qualified Language.Bond.Codegen.Cs.Util as CS
 
--- generate the *_types.cs file from parsed .bond file
-types_cs :: Bool -> Bool -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
+-- | Codegen template for generating /base_name/_type.cs containing definitions
+-- of types representing the schema. 
+types_cs :: Bool    -- ^ 'True' to generate types with read-only properties
+         -> Bool    -- ^ 'True' to generate types with public fields
+         -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
 types_cs readOnly useFields cs _file _imports declarations = ("_types.cs", [lt|
 #{CS.disableReSharperWarnings}
 namespace #{csNamespace}
@@ -34,7 +37,7 @@ namespace #{csNamespace}
 
     -- C# type
     csType = getTypeName cs
-    csNamespace = getQualifiedName csTypeMapping $ getNamespace cs
+    csNamespace = getQualifiedName cs $ getNamespace cs
 
     -- C# class definition for schema struct
     typeDefinition s@Struct {..} = [lt|#{CS.typeAttributes cs s}
