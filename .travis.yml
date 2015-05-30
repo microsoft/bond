@@ -26,19 +26,19 @@ before_install:
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install nuget && export NUGET=nuget; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then curl -s -o "cs/nuget/nuget.exe" -L "http://www.nuget.org/nuget.exe" && export NUGET="mono cs/nuget/nuget.exe"; fi
     #nunit installation
-    - $NUGET install NUnit.Runners -version 2.6.4
+    - travis_retry $NUGET install NUnit.Runners -version 2.6.4
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then $CABAL_PATH/cabal update; else cabal update; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then $CABAL_PATH/cabal install happy; else cabal install happy; fi
 
 before_script:
     #restore nuget packages for solution
-    - $NUGET restore cs/cs.sln
+    - travis_retry $NUGET restore cs/cs.sln
 
 script:
     - mkdir build && cd build
     - cmake ..
     #linux build is throwed out by out of memory or travis timeout with "make check" so do only make
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then make; else make --jobs 2 check; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then make --jobs 2; else make --jobs 2 check; fi
     - sudo make install
     - cd ..
     - xbuild /p:Configuration=Debug cs/cs.sln

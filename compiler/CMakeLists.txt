@@ -31,6 +31,7 @@ function (add_cabal_build target)
         SOURCES ${arg_SOURCES}
         DEPENDS ${arg_DEPENDS} 
                 ${CMAKE_CURRENT_BINARY_DIR}/build/${target}/${target}${CMAKE_EXECUTABLE_SUFFIX})
+    add_dependencies (${target} sandbox)        
 endfunction()    
 
 function (add_cabal_test target)
@@ -84,13 +85,16 @@ add_custom_command (
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/cabal.sandbox.config)
 
+add_custom_target (sandbox
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cabal.sandbox.config)
+
 add_custom_command (
     DEPENDS ${output}
     COMMAND ${output} --help=bash > ${completion}
     OUTPUT ${completion})
 
 add_cabal_build (gbc
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cabal.sandbox.config ${completion}
+    DEPENDS sandbox ${completion}
     SOURCES ${sources})
 
 add_cabal_test (gbc-tests
