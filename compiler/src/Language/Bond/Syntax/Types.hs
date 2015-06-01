@@ -158,7 +158,7 @@ data Import = Import FilePath
 -- | Language annotation for namespaces. Note that language-specific
 -- namespaces are only supported for backward compatibility and are not
 -- recommended.
-data Language = Cpp | Cs | CSharp | Java
+data Language = Cpp | Cs | Java
     deriving (Eq, Show)
 
 -- | <https://microsoft.github.io/bond/manual/compiler.html#namespace-definition Namespace> declaration
