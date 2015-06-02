@@ -290,25 +290,38 @@ Serializer<Writer> SerializeTo(Writer& output)
 
 template <typename Writer>
 class Marshaler
-    : public Serializer<Writer>
+    : protected Serializer<Writer>
 {
 public:
+    typedef Writer writer_type;
+
     Marshaler(Writer& output)
         : Serializer<Writer>(output)
     {}
     
-    template <typename Pass0>
-    Marshaler<Pass0> Rebind(Pass0& pass0) const
-    {
-        return Marshaler<Pass0>(pass0);
-    }
-
-    void Begin(const bond::Metadata& metadata) const
+    template <typename T>
+    bool Marshal(const T& value) const
     {
         this->_output.WriteVersion();
-        Serializer<Writer>::Begin(metadata);
+        return Apply(static_cast<const Serializer<Writer>&>(*this), value);
     }
 };
+
+
+template <typename Writer, typename T, typename Reader>
+bool inline
+Apply(const Marshaler<Writer>& marshaler, const bonded<T, Reader>& bonded)
+{
+    return marshaler.Marshal(bonded);
+}
+
+
+template <typename Writer, typename T>
+bool inline 
+Apply(const Marshaler<Writer>& marshaler, const T& value)
+{
+    return marshaler.Marshal(value);
+}
 
 
 // MarshalTo
