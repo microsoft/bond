@@ -39,7 +39,7 @@ parseBondFile importDirs file = do
     result <- parseBond file input (cwd </> file) readImportFile
     case result of
         Left err -> do
-            print $ "Error parsing " ++ file ++ ": " ++ show err
+            putStrLn $ "Error parsing " ++ file ++ ": " ++ show err
             exitFailure
         Right bond -> return bond
   where
@@ -64,7 +64,7 @@ parseASTFile file = do
     input <- BL.readFile file
     case eitherDecode input of
         Left err -> do
-            print $ "Error parsing " ++ file ++ ": " ++ show err
+            putStrLn $ "Error parsing " ++ file ++ ": " ++ show err
             exitFailure
         Right bond -> return bond
 
