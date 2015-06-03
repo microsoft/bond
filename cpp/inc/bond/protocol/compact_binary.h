@@ -159,7 +159,9 @@ public:
         : _input(input),
           _version(version)
     {
-        BOOST_ASSERT(_version <= CompactBinaryReader::version);
+        BOOST_ASSERT(protocol_has_multiple_versions<CompactBinaryReader>::value
+            ? _version <= CompactBinaryReader::version
+            : _version == default_version<CompactBinaryReader>::value);
     }
 
     
@@ -195,8 +197,10 @@ public:
         _input.Read(magic);
         _input.Read(_version);
         
-        return magic == CompactBinaryReader::magic 
-            && _version <= CompactBinaryReader::version;
+        return magic == CompactBinaryReader::magic
+            && (protocol_has_multiple_versions<CompactBinaryReader>::value
+                ? _version <= CompactBinaryReader::version
+                : _version == default_version<CompactBinaryReader>::value);
     }
 
     
@@ -537,7 +541,9 @@ public:
           _it(NULL),
           _version(version)
     {
-        BOOST_ASSERT(_version <= Reader::version);
+        BOOST_ASSERT(protocol_has_multiple_versions<Reader>::value
+            ? _version <= Reader::version
+            : _version == default_version<Reader>::value);
     }
 
     template<typename T>
@@ -768,12 +774,13 @@ protected:
 };
 
 template <typename Input> struct
-protocol_has_multiple_versions<bond::CompactBinaryReader<Input> >
-    : true_type {};
+protocol_has_multiple_versions<CompactBinaryReader<Input> >
+    : enable_protocol_versions<CompactBinaryReader<Input> > {};
 
 template <typename Input, typename Output>
-bool is_protocol_version_same(const bond::CompactBinaryReader<Input>& reader, 
-                              const bond::CompactBinaryWriter<Output>& writer)
+inline 
+bool is_protocol_version_same(const CompactBinaryReader<Input>& reader, 
+                              const CompactBinaryWriter<Output>& writer)
 {
     return reader._version == writer._version;
 }

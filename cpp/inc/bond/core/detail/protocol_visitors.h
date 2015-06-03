@@ -70,6 +70,9 @@ public:
     Apply(const Serializer<Writer>& transform, Reader<InputBuffer>& reader, const Schema& schema, bool base)
     {
         BOOST_VERIFY(!base);
+        // Triggering the following assert means that bond::enable_protocol_versions trait is 
+        // defined/specialized inconsistently for the protocol in different compilation units.
+        BOOST_ASSERT(is_protocol_version_same(reader, transform._output));
         return FastPassThrough(reader, transform._output, schema);
     }
 

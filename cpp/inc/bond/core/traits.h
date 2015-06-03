@@ -97,9 +97,22 @@ protocol_has_multiple_versions
     : false_type {};
 
 
-// ... and define this function. 
+// ... and overload this function. 
 template <typename Reader, typename Writer>
-bool is_protocol_version_same(const Reader&, const Writer&);
+inline 
+bool is_protocol_version_same(const Reader&, const Writer&)
+{
+    return true;
+}
+
+
+// By default if a protocol has multiple versions any of the versions can be
+// used by an application. This template can be specialized to fix protocol to
+// a single version specified by default_version<Reader>. This can enable some
+// optimizations, e.g. fast pass-through w/o checking version at runtime.
+template <typename Reader> struct
+enable_protocol_versions
+    : true_type {};
 
 
 // get_protocol_writer
