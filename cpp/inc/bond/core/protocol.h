@@ -179,6 +179,7 @@ template <typename Buffer>
 struct ProtocolReader
 {
     typedef void Parser;
+    typedef void Writer;
 
     ProtocolReader()
         : value()

@@ -39,7 +39,7 @@ public:
     operator()(Reader& reader) const
     {
         // Apply transform to serialized data 
-        return Apply(_transform, reader);
+        return Apply(_transform, reader, _schema, false);
     }
 
     template <typename Reader>
@@ -51,48 +51,53 @@ public:
         return false;
     }
 
-protected:
     template <template <typename U> class Reader, typename Writer>
+    static
     typename boost::enable_if_c<is_protocol_same<Reader<InputBuffer>, Writer>::value
                              && protocol_has_multiple_versions<Reader<InputBuffer> >::value, bool>::type
-    Apply(const Serializer<Writer>&, Reader<InputBuffer>& reader) const
+    Apply(const Serializer<Writer>& transform, Reader<InputBuffer>& reader, const Schema& schema, bool base)
     {
-        if (is_protocol_version_same(reader, _transform._output))
-            return FastPassThrough(reader, _schema);
+        if (is_protocol_version_same(reader, transform._output))
+            return FastPassThrough(reader, transform._output, schema);
         else
-            return typename Reader<InputBuffer>::Parser(reader, false).Apply(_transform, _schema);
+            return typename Reader<InputBuffer>::Parser(reader, base).Apply(transform, schema);
     }
 
     template <template <typename U> class Reader, typename Writer>
+    static
     typename boost::enable_if_c<is_protocol_same<Reader<InputBuffer>, Writer>::value
                              && !protocol_has_multiple_versions<Reader<InputBuffer> >::value, bool>::type
-    Apply(const Serializer<Writer>&, Reader<InputBuffer>& reader) const
+    Apply(const Serializer<Writer>& transform, Reader<InputBuffer>& reader, const Schema& schema, bool base)
     {
-        return FastPassThrough(reader, _schema);
-    }
-
-    template <typename Reader, typename SchemaT>
-    bool FastPassThrough(Reader& reader, const SchemaT&) const
-    {
-        bonded<T, Reader&> value(reader);
-        detail::PassThrough(value, reader, _transform._output);
-        return false;
-    }
-
-    template <typename Reader>
-    bool FastPassThrough(Reader& reader, const RuntimeSchema&) const
-    {
-        bonded<void, Reader&> value(reader, _schema);
-        detail::PassThrough(value, reader, _transform._output);
-        return false;
+        BOOST_VERIFY(!base);
+        return FastPassThrough(reader, transform._output, schema);
     }
 
     template <typename TransformT, typename Reader>
-    bool Apply(const TransformT&, Reader& reader) const
+    static
+    bool Apply(const TransformT& transform, Reader& reader, const Schema& schema, bool base)
     {
-        return typename Reader::Parser(reader, false).Apply(_transform, _schema);
+        return typename Reader::Parser(reader, base).Apply(transform, schema);
     }
 
+protected:
+    template <typename Reader, typename Writer, typename SchemaT>
+    static
+    bool FastPassThrough(Reader& reader, Writer& writer, const SchemaT&)
+    {
+        bonded<T, Reader&> value(reader);
+        PassThrough(value, reader, writer);
+        return false;
+    }
+
+    template <typename Reader, typename Writer>
+    static
+    bool FastPassThrough(Reader& reader, Writer& writer, const RuntimeSchema& schema)
+    {
+        bonded<void, Reader&> value(reader, schema);
+        PassThrough(value, reader, writer);
+        return false;
+    }
 
     const Transform& _transform;
     const Schema&    _schema;
@@ -182,9 +187,8 @@ template <typename T, typename Transform, typename Reader, typename Schema>
 inline bool Parse(const Transform& transform, Reader& reader, const Schema& schema, const RuntimeSchema* runtime_schema, bool base)
 {
     BOOST_VERIFY(!runtime_schema);
-    return typename Reader::Parser(reader, base).Apply(transform, schema);
+    return Parser<T, Schema, Transform>::Apply(transform, reader, schema, base);
 }
-
 
 template <typename T, typename Transform, typename Buffer, typename Schema>
 inline bool Parse(const Transform& transform, ProtocolReader<Buffer> reader, const Schema& schema, const RuntimeSchema* runtime_schema, bool base)
@@ -194,15 +198,15 @@ inline bool Parse(const Transform& transform, ProtocolReader<Buffer> reader, con
     if (runtime_schema)
     {
         // Use named variable to avoid gcc silently copying objects (which
-        // causes build break, because Parse<> is non-copyable).
-        detail::Parser<void, RuntimeSchema, Transform> parser(transform, *runtime_schema);
+        // causes build break, because Parser<> is non-copyable).
+        Parser<void, RuntimeSchema, Transform> parser(transform, *runtime_schema);
         return boost::apply_visitor(parser, reader.value);
     }
     else
     {
         // Use named variable to avoid gcc silently copying objects (which
-        // causes build break, because Parse<> is non-copyable).
-        detail::Parser<T, Schema, Transform> parser(transform, schema);
+        // causes build break, because Parser<> is non-copyable).
+        Parser<T, Schema, Transform> parser(transform, schema);
         return boost::apply_visitor(parser, reader.value);
     }
 }
@@ -257,7 +261,7 @@ private:
 template <typename T, typename Buffer>
 inline void Merge(const T& var, ProtocolReader<Buffer>& reader)
 {
-    boost::apply_visitor(detail::InsituMerge<T, Buffer>(var, reader), reader.value);
+    boost::apply_visitor(InsituMerge<T, Buffer>(var, reader), reader.value);
 }
 
 
