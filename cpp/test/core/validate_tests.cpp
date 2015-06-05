@@ -149,9 +149,9 @@ TEST_CASE_BEGIN(Validation)
     UT_AssertIsTrue(Check<type2, type2_incompatible_base>(Error, Error, Error));
     UT_AssertIsTrue(Check<type2, type2_no_base>(Error, Error, Error));
     UT_AssertIsTrue(Check<type4, type4_compatible>(False, Error, Error));
-    UT_AssertIsTrue(Check<empty, depth1>(False, False, False));
-    UT_AssertIsTrue(Check<empty, depth2>(Error, False, Error));
-    UT_AssertIsTrue(Check<empty, depth3>(Error, False, Error));
+    UT_AssertIsTrue(Check<empty0, depth1>(False, False, False));
+    UT_AssertIsTrue(Check<empty0, depth2>(Error, False, Error));
+    UT_AssertIsTrue(Check<empty0, depth3>(Error, False, Error));
     UT_AssertIsTrue(Check<depth1, depth2>(Error, False, Error));
     UT_AssertIsTrue(Check<depth1, depth3>(Error, False, Error));
     UT_AssertIsTrue(Check<depth2, depth3>(Error, False, Error));

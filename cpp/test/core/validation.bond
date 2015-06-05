@@ -113,7 +113,7 @@ struct type4_compatible
     3: int64 field3;
 };
 
-struct empty
+struct empty0
 {
 };
 
