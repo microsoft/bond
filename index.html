@@ -191,7 +191,10 @@ sudo make install</code></pre></div>
 <li>CMake (<a href="http://www.cmake.org/download/" class="uri">http://www.cmake.org/download/</a>)</li>
 <li>Haskell Platform (<a href="http://haskell.org/platform/" class="uri">http://haskell.org/platform/</a>)</li>
 </ul>
-<p>If behind a proxy, set environment variable <code>HTTP_PROXY=http://proxy:port</code>.</p>
+<p>You can install them with <a href="http://chocolatey.org">Chocolatey</a>:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cinst haskellplatform cmake visualstudiocommunity2013</code></pre></div>
+<p>If you are building on a network behind a proxy, set the environment variable <code>HTTP_PROXY</code>, e.g.:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> HTTP_PROXY=http://proxy:<span class="dv">80</span></code></pre></div>
 <p>Update cabal package database:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cabal update</code></pre></div>
 <p>Now you are ready to build the C# version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio 2013 and build as usual. The C# unit tests can also be run from within the solution.</p>
@@ -200,15 +203,22 @@ sudo make install</code></pre></div>
 <li>Boost 1.54+ (<a href="http://www.boost.org/users/download/" class="uri">http://www.boost.org/users/download/</a>)</li>
 <li>Python 2.7 (<a href="https://www.python.org/downloads/" class="uri">https://www.python.org/downloads/</a>)</li>
 </ul>
-<p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment can be found. The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests and Python support. If Boost or Python libraries are not found on the system then some tests and examples will not be built.</p>
-<p>In order to configure C++/Python project run <code>cmake-gui</code>, select the root of this repository as the source code directory and some other directory as the target for generated project files and build binaries. Now press Generate and select desired target build environment. This configuration step has to be performed only once. From now on you can use the generated solution <code>bond.sln</code>.</p>
-<p>IMPORTANT: Bond unit tests are very large. If you are building using the Visual Studio toolchain you have to select 64-bit tools by setting the following environment variable:</p>
-<p>For Visual Studio 2012:</p>
+<p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment can be found, e.g.:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> BOOST_ROOT=D:\boost_1_57_0
+<span class="dt">set</span> BOOST_LIBRARYDIR=D:\boost_1_57_0\lib64-msvc<span class="fl">-12.0</span></code></pre></div>
+<p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests and Python support. If Boost or Python libraries are not found on the system then some tests and examples will not be built.</p>
+<p>In order to configure solution for Visual Studio 2013 run the following commands from the root <code>bond</code> directory:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
+cd build
+cmake -G <span class="st">&quot;Visual Studio 12 2013 Win64&quot;</span> ..</code></pre></div>
+<p>Instead of <code>cmake</code> you can also use <code>cmake-gui</code> and specify configuration settings in the UI. This configuration step has to be performed only once. From now on you can use the generated solution <code>build\bond.sln</code> from Visual Studio or build from command line using <code>cmake</code>:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> PreferredToolArchitecture=x64
+cmake --build . --target
+cmake --build . --target INSTALL</code></pre></div>
+<p>In order to build and execute the unit tests and examples run:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake --build . --target check -- /maxcpucount:<span class="dv">8</span></code></pre></div>
+<p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed (Bond unit tests are too big to build with 32-bit tools). This variable works for Visual Studio 2014. For VS 2012 set the following variable instead:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> _IsNativeEnvironment=true</code></pre></div>
-<p>For Visual Studio 2013:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> PreferredToolArchitecture=x64</code></pre></div>
-<p>In order to run unit tests on the Debug build, execute the following command in the build directory:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">ctest -C Debug</code></pre></div>
 </div>    
 </div>
 </body>
