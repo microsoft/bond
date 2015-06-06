@@ -142,7 +142,10 @@ You can install them with [Chocolatey](http://chocolatey.org):
 
     cinst haskellplatform cmake visualstudiocommunity2013
 
-If behind a proxy, set the environment variable `HTTP_PROXY=http://proxy:port`.
+If you are building on a network behind a proxy, set the environment variable 
+`HTTP_PROXY`, e.g.:
+
+    set HTTP_PROXY=http://proxy:80
 
 Update cabal package database:
 
@@ -159,30 +162,39 @@ The C++ and Python versions of Bond additionally require:
 
 You may need to set the environment variables `BOOST_ROOT` and `BOOST_LIBRARYDIR` 
 to specify where Boost and its pre-built libraries for your environment can be 
-found. The core Bond library and most examples only require Boost headers. The 
+found, e.g.: 
+
+    set BOOST_ROOT=D:\boost_1_57_0
+    set BOOST_LIBRARYDIR=D:\boost_1_57_0\lib64-msvc-12.0
+
+The core Bond library and most examples only require Boost headers. The 
 pre-built libraries are only needed for unit tests and Python support. If Boost
 or Python libraries are not found on the system then some tests and examples will 
 not be built.
 
-In order to configure C++/Python project run `cmake-gui`, select the root of 
-this repository as the source code directory and some other directory as the 
-target for generated project files and build binaries. Now press Generate and 
-select desired target build environment. This configuration step has to be 
-performed only once. From now on you can use the generated solution `bond.sln`.
+In order to configure solution for Visual Studio 2013 run the following 
+commands from the root `bond` directory:
 
-IMPORTANT: Bond unit tests are very large. If you are building using the Visual 
-Studio toolchain you have to select 64-bit tools by setting the following 
-environment variable:
+    mkdir build
+    cd build
+    cmake -G "Visual Studio 12 2013 Win64" ..
 
-For Visual Studio 2012:
-
-    set _IsNativeEnvironment=true
-
-For Visual Studio 2013:
+Instead of `cmake` you can also use `cmake-gui` and specify configuration 
+settings in the UI. This configuration step has to be performed only once. From 
+now on you can use the generated solution `build\bond.sln` from Visual Studio 
+or build from command line using `cmake`:
 
     set PreferredToolArchitecture=x64
+    cmake --build . --target
+    cmake --build . --target INSTALL
 
-In order to run unit tests on the Debug build, execute the following command in 
-the build directory:
+In order to build and execute the unit tests and examples run:
 
-    ctest -C Debug
+    cmake --build . --target check -- /maxcpucount:8
+
+Setting `PreferredToolArchitecture=x64` selects the 64-bit toolchain which 
+dramatically improves build speed (Bond unit tests are too big to build with 
+32-bit tools). This variable works for Visual Studio 2014. For VS 2012 set the 
+following variable instead:
+
+    set _IsNativeEnvironment=true
