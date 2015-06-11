@@ -37,6 +37,8 @@ struct tuple_field
     }
 };
 
+using ignore_t = decltype(std::ignore); 
+
 template <typename Tuple, uint16_t t_id, typename T>
 const Metadata tuple_field<Tuple, t_id, T>::metadata
     = tuple_field<Tuple, t_id, T>::GetMetadata();
@@ -55,7 +57,7 @@ tuple_fields<Tuple, id, T, Rest...>
 };
 
 template <typename Tuple, uint16_t id, typename ...Rest> struct
-tuple_fields<Tuple, id, const decltype(std::ignore)&, Rest...>
+tuple_fields<Tuple, id, const ignore_t&, Rest...>
     : tuple_fields<Tuple, id + 1, Rest...>
 {};
 
@@ -79,7 +81,7 @@ param_list<T, Rest...>
 };
 
 template <typename ...Rest> struct
-param_list<const decltype(std::ignore)&, Rest...>
+param_list<const ignore_t&, Rest...>
     : param_list<Rest...>
 {};
 
