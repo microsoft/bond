@@ -1,124 +1,128 @@
-os: Previous Windows Server 2012 R2
 version: 1.0.{build}
 clone_depth: 15
+os: 
+    - Visual Studio 2015 RC
+environment:
+    matrix:
+        - BOND_LANG: cs
+        - BOND_LANG: cpp
 install:
-- cmd: git submodule update --init
-- ps: >-
-    if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
+    - cmd: git submodule update --init
+    - ps: >-
+        if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-        if (Test-Path compiler\.cabal-sandbox) {
+            if (Test-Path compiler\.cabal-sandbox) {
 
-            $env:SandboxCache = "restored"
+                $env:SandboxCache = "restored"
+
+            }
+
+            if ($env:BOND_LANG -eq "cpp") {
+                
+                if (!(Test-Path boost_1_57_0.7z)) {
+
+                    echo "Downloading Boost 1.57 ..."
+
+                    appveyor DownloadFile "http://softlayer-dal.dl.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.7z" -Timeout 1200000
+
+                }
+
+                echo "Extracting Boost..."
+
+                7z x boost_1_57_0.7z -y -o"${env:APPVEYOR_BUILD_FOLDER}" boost_1_57_0\boost > $null
+
+                $env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}\boost_1_57_0"
+        
+            }
+
+            choco install haskellplatform -version 2014.2.0.0 -y
+
+            # Haskell Platfrom package doesn't update PATH for the current shell instance
+
+            $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\bin"
+
+            $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\lib\extralibs\bin"
+
+            $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\mingw\bin"
+
+            cabal update
 
         }
-
-        #choco install 7zip
-
-        #$env:Path += ";${env:ProgramFiles}\7-Zip"
-
-        #if (!(Test-Path boost_1_57_0.7z)) {
-
-        #    echo "Downloading Boost 1.57 ..."
-
-        #    appveyor DownloadFile "http://softlayer-dal.dl.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.7z" -Timeout 1200000
-
-        #}
-
-        #echo "Extracting Boost..."
-
-        #7z x boost_1_57_0.7z -y -o"${env:APPVEYOR_BUILD_FOLDER}" boost_1_57_0\boost > $null
-
-        #$env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}\boost_1_57_0"
-
-        choco install haskellplatform -version 2014.2.0.0 -y
-
-        # Haskell Platfrom package doesn't update PATH for the current shell instance
-
-        $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\bin"
-
-        $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\lib\extralibs\bin"
-
-        $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\mingw\bin"
-
-        cabal update
-
-    }
 cache:
-- cs\packages
-- compiler\.cabal-sandbox
-- boost_1_57_0.7z
-# Majority of build time is spent installing dependencies and then building
-# cabal and the sandbox. Using build matrix support we would have to do this
-# for every configuration. Instead we manually build the configurations we want
-# to test. This way all the Haskell prerequisites are resued.
+    - cs\packages -> cs\test\core\packages.config
+    - compiler\.cabal-sandbox -> compiler\gbc.cabal
+    - boost_1_57_0.7z
 build_script:
-- ps: >-
-    if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
+    - ps: >-
+        if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-        nuget restore cs\cs.sln
+            if ($env:BOND_LANG -eq "cs") {
 
-        # default codegen with properties
+                nuget restore cs\cs.sln
 
-        msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                # default codegen with properties
 
-        if (-not $?) { throw "build failed" }
+                msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-        # codegen with public fields and interfaces used to represent collections
+                if (-not $?) { throw "build failed" }
 
-        msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                # codegen with public fields and interfaces used to represent collections
 
-        if (-not $?) { throw "build failed" }
+                msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-        # AppVeyor open source plan runs on very slow VMs, disable C++ until VC14 is fully supported
+                if (-not $?) { throw "build failed" }
+                
+            }
+            
+            
+            if ($env:BOND_LANG -eq "cpp") {
+                
+                mkdir build
 
-        #mkdir build
+                cd build
 
-        #cd build
+                cmake -G "Visual Studio 14 2015 Win64" ..
 
-        #cmake ..
+                $env:PreferredToolArchitecture = "x64"
 
-        #$env:PreferredToolArchitecture = "x64"
+                cmake --build . -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-        # Building Release configuration to prevent assert message boxes
+                if (-not $?) { throw "build failed" }
 
-        # msbuild bond.sln /verbosity:minimal /p:Configuration=Release /p:Optimization=Disabled /target:bond_compatibility_test /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                cd ..
 
-        #if (-not $?) { throw "build failed" }
-
-        #cd ..
-
-    } else {
-
-        nuget restore fsharp\fsharp.sln
-
-        msbuild fsharp\fsharp.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-    }
-test_script:
-- ps: >-
-    $ErrorActionPreference = "Stop"
-
-    if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
-
-        if ($env:SandboxCache -ne "restored") {
-
-            nunit-console-x86 /framework:net-4.5 /labels cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+            }
 
         } else {
 
-            nunit-console-x86 /framework:net-4.0 /labels cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
+            nuget restore fsharp\fsharp.sln
 
-            nunit-console-x86 /framework:net-4.5 /labels cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+            msbuild fsharp\fsharp.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-            #cd build
-
-            #ctest -C Release -R compatibility --output-on-failure
-
-            #cd ..
         }
+test_script:
+    - ps: >-
+        $ErrorActionPreference = "Stop"
 
-    } else {
+        if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-        vstest.console /logger:Appveyor fsharp\test\TypeProvider\bin\Debug\BondFsharpUnitTest.dll
+            if ($env:BOND_LANG -eq "cs") {
 
-    }
+                if ($env:SandboxCache -ne "restored") {
+
+                    nunit-console-x86 /framework:net-4.5 /labels cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+
+                } else {
+
+                    nunit-console-x86 /framework:net-4.0 /labels cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
+
+                    nunit-console-x86 /framework:net-4.5 /labels cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+                }
+
+            }
+
+        } else {
+
+            vstest.console /logger:Appveyor fsharp\test\TypeProvider\bin\Debug\BondFsharpUnitTest.dll
+
+        }
