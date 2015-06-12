@@ -43,37 +43,38 @@ function (add_cabal_test target)
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/build/${target}/${target})
 endfunction()
 
+file (GLOB language_bond "src/Language/Bond/*.hs")
+source_group ("Language\\Bond" FILES ${language_bond})
+
+file (GLOB language_bond_syntax "src/Language/Bond/Syntax/*.hs")
+source_group ("Language\\Bond\\Syntax" FILES ${language_bond_syntax})
+
+file (GLOB language_bond_codegen "src/Language/Bond/Codegen/*.hs")
+source_group ("Language\\Bond\\Codegen" FILES ${language_bond_codegen})
+
+file (GLOB language_bond_codegen_cpp "src/Language/Bond/Codegen/Cpp/*.hs")
+source_group ("Language\\Bond\\Codegen\\Cpp" FILES ${language_bond_codegen_cpp})
+
+file (GLOB language_bond_codegen_cs "src/Language/Bond/Codegen/Cs/*.hs")
+source_group ("Language\\Bond\\Codegen\\Cs" FILES ${language_bond_codegen_cs})
+
 set (sources
     bond.cabal
     Main.hs
     IO.hs
     Options.hs
-    src/Language/Bond/Lexer.hs
-    src/Language/Bond/Parser.hs
-    src/Language/Bond/Syntax/JSON.hs
-    src/Language/Bond/Syntax/Types.hs
-    src/Language/Bond/Syntax/Util.hs
-    src/Language/Bond/Util.hs
-    src/Language/Bond/Codegen/CustomMapping.hs
-    src/Language/Bond/Codegen/TypeMapping.hs
-    src/Language/Bond/Codegen/Util.hs
-    src/Language/Bond/Codegen/Templates.hs
-    src/Language/Bond/Codegen/Cpp/ApplyOverloads.hs
-    src/Language/Bond/Codegen/Cpp/Apply_cpp.hs
-    src/Language/Bond/Codegen/Cpp/Apply_h.hs
-    src/Language/Bond/Codegen/Cpp/Enum_h.hs
-    src/Language/Bond/Codegen/Cpp/Reflection_h.hs
-    src/Language/Bond/Codegen/Cpp/Types_cpp.hs
-    src/Language/Bond/Codegen/Cpp/Types_h.hs
-    src/Language/Bond/Codegen/Cpp/Util.hs
-    src/Language/Bond/Codegen/Cs/Types_cs.hs
-    src/Language/Bond/Codegen/Cs/Util.hs)
+    ${language_bond}
+    ${language_bond_syntax}
+    ${language_bond_codegen}
+    ${language_bond_codegen_cpp}
+    ${language_bond_codegen_cs})
+
+file (GLOB tests "tests/Tests/*.hs")
+source_group ("Tests" FILES ${tests})
 
 set (test_sources
     tests/Main.hs
-    tests/Tests/Util.hs
-    tests/Tests/Codegen.hs
-    tests/Tests/Syntax.hs)
+    ${tests})
 
 set (completion_dir /etc/bash_completion.d)
 set (completion ${CMAKE_CURRENT_BINARY_DIR}/gbc.comp)
