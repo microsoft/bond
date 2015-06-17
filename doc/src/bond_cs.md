@@ -53,7 +53,7 @@ Binary](bond_cpp.html#compact-binary) protocol:
         {
             static void Main()
             {
-                var src = new Example
+                var src = new Record
                 {
                     Name = "FooBar",
                     Constants = { 3.14, 6.28 }
@@ -70,7 +70,7 @@ Binary](bond_cpp.html#compact-binary) protocol:
                 var input = new InputBuffer(output.Data);
                 var reader = new CompactBinaryReader<InputBuffer>(input);
 
-                var dst = Deserialize<Example>.From(reader);
+                var dst = Deserialize<Record>.From(reader);
             }
         }
     }
