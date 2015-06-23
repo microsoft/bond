@@ -21,9 +21,6 @@
         </description>
         <copyright>Copyright (c) Microsoft</copyright>
         <tags>Bond .NET C# serialization</tags>
-        <dependencies>
-            <dependency id="Newtonsoft.Json" version="6.0.5" />
-        </dependencies>
     </metadata>
     <files>
         <file src="net45\Bond.dll" target="lib\net45" />
