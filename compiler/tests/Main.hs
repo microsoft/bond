@@ -64,6 +64,11 @@ tests =
                 , "--using=String=my::string"
                 ]
                 "custom_alias_without_allocator"
+            , testCase "apply" $ verifyApplyCodegen
+                [ "c++"
+                , "--apply-attribute=DllExport"
+                ]
+                "basic_types"
             ]
         , testGroup "C#"
             [ testCase "attributes" $ verifyCsCodegen "attributes"

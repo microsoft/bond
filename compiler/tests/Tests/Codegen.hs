@@ -6,6 +6,7 @@
 module Tests.Codegen
     ( verifyCodegen
     , verifyCppCodegen
+    , verifyApplyCodegen
     , verifyCsCodegen
     ) where
 
@@ -13,6 +14,7 @@ import System.FilePath
 import System.Environment (withArgs)
 import Control.Monad
 import Data.Monoid
+import Data.Maybe
 import Prelude
 import Data.Text.Lazy (Text, unpack)
 import Test.HUnit
@@ -43,15 +45,27 @@ verifyCodegen args baseName = do
         _        -> assert False
 
 verifyCppFiles :: Options -> FilePath -> Assertion
-verifyCppFiles options@Cpp {..} = do
+verifyCppFiles options@Cpp {..} baseName = do
     let typeMapping = maybe cppTypeMapping cppCustomAllocTypeMapping allocator
-    verifyFiles options typeMapping $
-        [ reflection_h
-        , types_cpp
-        , types_h header enum_header allocator
-        , apply_h protocols apply_attribute
-        , apply_cpp protocols
-        ]
+    let templates _allocator =
+            [ reflection_h
+            , types_cpp
+            , types_h header enum_header _allocator
+            ]
+    let verify = verifyFiles options baseName
+    verify (templates allocator) typeMapping ""
+    when (isNothing allocator) $
+        verify (templates $ Just "arena") (cppCustomAllocTypeMapping "arena") "allocator"
+
+
+verifyApplyCodegen :: [String] -> FilePath -> Assertion
+verifyApplyCodegen args baseName = do
+    options <- withArgs args getOptions
+    let templates =
+            [ apply_h protocols (apply_attribute options)
+            , apply_cpp protocols
+            ]
+    verifyFiles options baseName templates cppTypeMapping "apply"
   where
     protocols =
         [ Protocol "CompactBinaryReader" "CompactBinaryWriter"
@@ -59,24 +73,26 @@ verifyCppFiles options@Cpp {..} = do
         , Protocol "SimpleBinaryReader" "SimpleBinaryWriter"
         ]
 
-
 verifyCsFiles :: Options -> FilePath -> Assertion
-verifyCsFiles options@Cs {..} = do
+verifyCsFiles options@Cs {..} baseName = do
     let typeMapping = if collection_interfaces then csInterfaceTypeMapping else csTypeMapping
-    verifyFiles options typeMapping
-        [ types_cs readonly_properties fields
-        ]
+    let verify = verifyFiles options baseName
+            [ types_cs readonly_properties fields
+            ]
+    verify typeMapping ""
+    unless collection_interfaces $
+        verify csInterfaceTypeMapping "collection-interfaces"
 
 
-verifyFiles :: Options -> TypeMapping -> [Template] -> FilePath -> Assertion
-verifyFiles options typeMapping templates baseName = do
+verifyFiles :: Options -> FilePath -> [Template] -> TypeMapping -> FilePath -> Assertion
+verifyFiles options baseName templates typeMapping subfolder = do
     aliasMapping <- parseAliasMappings $ using options
     namespaceMapping <- parseNamespaceMappings $ namespace options
     (Bond imports namespaces declarations) <- parseBondFile [] $ "tests" </> "schema" </> baseName <.> "bond"
     let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
     forM_ templates $ \template -> do
         let (suffix, code) = template mappingContext baseName imports declarations
-        let fileName = baseName ++ suffix
+        let fileName = subfolder </> baseName ++ suffix
         expected <- readFile $ "tests" </> "generated" </> fileName
         let actual = unpack code
         let msg = "Generated `" ++ fileName ++ "` doesn't match:\n\n" ++ stringDiff actual expected
