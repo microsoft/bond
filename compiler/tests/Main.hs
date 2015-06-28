@@ -5,16 +5,17 @@ import System.Environment (getArgs)
 import System.Exit (exitFailure)
 import Data.Monoid
 import Prelude
-import Test.Framework
-import Test.Framework.Providers.QuickCheck2 (testProperty)
-import Test.Framework.Providers.HUnit (testCase)
+import Test.Tasty
+import Test.Tasty.QuickCheck
+import Test.Tasty.HUnit (testCase)
 import Tests.Syntax
 import Tests.Codegen
 
-tests :: [Test]
-tests =
+tests :: TestTree
+tests = testGroup "Compiler tests"
     [ testGroup "AST"
-        [ testProperty "roundtrip" roundtripAST
+        [ localOption (QuickCheckMaxSize 15) $
+            testProperty "roundtrip" roundtripAST
         , testGroup "Compare .bond and .json"
             [ testCase "attributes" $ compareAST "attributes"
             , testCase "basic types" $ compareAST "basic_types"
@@ -86,18 +87,4 @@ tests =
     ]
 
 main :: IO ()
-main = do
-    options <- getArgs >>= interpretArgs
-    case options of
-        Left error -> do
-            putStr error
-            exitFailure
-        Right (runnerOptions, _) -> do
-            let testOptions = maybe mempty id $ ropt_test_options runnerOptions
-            let testSize = topt_maximum_test_size testOptions
-            defaultMainWithOpts tests $ runnerOptions
-                { ropt_test_options = Just testOptions
-                    -- Use a smaller maximum test size by default
-                    { topt_maximum_test_size = Just $ maybe 15 id testSize
-                    }
-                }
+main = defaultMain tests

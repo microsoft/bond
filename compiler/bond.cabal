@@ -86,9 +86,9 @@ test-suite gbc-tests
                     HUnit,
                     QuickCheck,
                     Diff >= 0.2 && < 0.4,
-                    test-framework,
-                    test-framework-hunit,
-                    test-framework-quickcheck2
+                    tasty,
+                    tasty-hunit,
+                    tasty-quickcheck
 
 executable gbc
   main-is:          Main.hs
