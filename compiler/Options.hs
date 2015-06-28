@@ -5,11 +5,17 @@
 {-# OPTIONS_GHC -fno-warn-missing-fields #-}
 {-# OPTIONS_GHC -fno-cse #-}
 
-module Options (getOptions, Options(..), ApplyOptions(..)) where
+module Options
+    ( getOptions
+    , processOptions
+    , Options(..)
+    , ApplyOptions(..)
+    ) where
 
 import Paths_bond (version)
-import Data.Version (showVersion) 
+import Data.Version (showVersion)
 import System.Console.CmdArgs
+import System.Console.CmdArgs.Explicit (processValue)
 
 data ApplyOptions =
     Compact |
@@ -96,3 +102,6 @@ mode = cmdArgsMode $ modes [cpp, cs, schema] &=
 
 getOptions :: IO Options
 getOptions = cmdArgsRun mode
+
+processOptions :: [String] -> Options
+processOptions = cmdArgsValue . processValue mode

@@ -72,7 +72,7 @@ test-suite gbc-tests
   type:             exitcode-stdio-1.0
   hs-source-dirs:   tests, .
   main-is:          Main.hs
-  ghc-options:      -threaded
+  ghc-options:      -threaded -Wall
   build-depends:    bond,
                     aeson >= 0.7.0.6,
                     base >= 4.5 && < 5,
@@ -86,7 +86,9 @@ test-suite gbc-tests
                     HUnit,
                     QuickCheck,
                     Diff >= 0.2 && < 0.4,
+                    pretty,
                     tasty,
+                    tasty-golden,
                     tasty-hunit,
                     tasty-quickcheck
 

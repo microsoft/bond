@@ -2,24 +2,19 @@
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tests.Syntax
     ( roundtripAST
     , compareAST
     ) where
 
-import System.Exit
-import System.IO
-import System.Directory
-import Data.Aeson (encode, decode, eitherDecode)
+import Data.Aeson (encode, decode)
 import Data.DeriveTH
 import System.FilePath
-import qualified Data.ByteString.Lazy as BL
 import Test.QuickCheck
 import Test.HUnit
 import Language.Bond.Syntax.Types
-import Language.Bond.Syntax.JSON
-import Language.Bond.Parser
 import IO
 
 derive makeArbitrary ''Attribute

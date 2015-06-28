@@ -1,10 +1,6 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import System.Environment (getArgs)
-import System.Exit (exitFailure)
-import Data.Monoid
-import Prelude
 import Test.Tasty
 import Test.Tasty.QuickCheck
 import Test.Tasty.HUnit (testCase)
@@ -30,22 +26,22 @@ tests = testGroup "Compiler tests"
         ]
     , testGroup "Codegen"
         [ testGroup "C++"
-            [ testCase "attributes" $ verifyCppCodegen "attributes"
-            , testCase "basic types" $ verifyCppCodegen "basic_types"
-            , testCase "complex types" $ verifyCppCodegen "complex_types"
-            , testCase "default values" $ verifyCppCodegen "defaults"
-            , testCase "empty" $ verifyCppCodegen "empty"
-            , testCase "field modifiers" $ verifyCppCodegen "field_modifiers"
-            , testCase "generics" $ verifyCppCodegen "generics"
-            , testCase "inheritance" $ verifyCppCodegen "inheritance"
-            , testCase "type aliases" $ verifyCppCodegen "aliases"
-            , testCase "alias key" $ verifyCppCodegen "alias_key"
-            , testCase "alias with allocator" $ verifyCodegen
+            [ verifyCppCodegen "attributes"
+            , verifyCppCodegen "basic_types"
+            , verifyCppCodegen "complex_types"
+            , verifyCppCodegen "defaults"
+            , verifyCppCodegen "empty"
+            , verifyCppCodegen "field_modifiers"
+            , verifyCppCodegen "generics"
+            , verifyCppCodegen "inheritance"
+            , verifyCppCodegen "aliases"
+            , verifyCppCodegen "alias_key"
+            , verifyCodegen
                 [ "c++"
                 , "--allocator=arena"
                 ]
                 "alias_with_allocator"
-            , testCase "custom alias with allocator" $ verifyCodegen
+            , verifyCodegen
                 [ "c++"
                 , "--allocator=arena"
                 , "--using=List=my::list<{0}, arena>"
@@ -55,7 +51,7 @@ tests = testGroup "Compiler tests"
                 , "--using=String=my::string<arena>"
                 ]
                 "custom_alias_with_allocator"
-            , testCase "custom alias without allocator" $ verifyCodegen
+            , verifyCodegen
                 [ "c++"
                 , "--allocator=arena"
                 , "--using=List=my::list<{0}>"
@@ -65,23 +61,23 @@ tests = testGroup "Compiler tests"
                 , "--using=String=my::string"
                 ]
                 "custom_alias_without_allocator"
-            , testCase "apply" $ verifyApplyCodegen
+            , verifyApplyCodegen
                 [ "c++"
                 , "--apply-attribute=DllExport"
                 ]
                 "basic_types"
             ]
-        , testGroup "C#"
-            [ testCase "attributes" $ verifyCsCodegen "attributes"
-            , testCase "basic types" $ verifyCsCodegen "basic_types"
-            , testCase "complex types" $ verifyCsCodegen "complex_types"
-            , testCase "default values" $ verifyCsCodegen "defaults"
-            , testCase "empty" $ verifyCsCodegen "empty"
-            , testCase "field modifiers" $ verifyCsCodegen "field_modifiers"
-            , testCase "generics" $ verifyCsCodegen "generics"
-            , testCase "inheritance" $ verifyCsCodegen "inheritance"
-            , testCase "type aliases" $ verifyCsCodegen "aliases"
-            , testCase "nullable of alias" $ verifyCsCodegen "nullable_alias"
+    , testGroup "C#"
+            [ verifyCsCodegen "attributes"
+            , verifyCsCodegen "basic_types"
+            , verifyCsCodegen "complex_types"
+            , verifyCsCodegen "defaults"
+            , verifyCsCodegen "empty"
+            , verifyCsCodegen "field_modifiers"
+            , verifyCsCodegen "generics"
+            , verifyCsCodegen "inheritance"
+            , verifyCsCodegen "aliases"
+            , verifyCsCodegen "nullable_alias"
             ]
         ]
     ]
