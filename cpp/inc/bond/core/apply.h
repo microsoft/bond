@@ -3,8 +3,12 @@
 
 #pragma once
 
+#include "config.h"
+
+#if defined(BOOST_MSVC)
 #pragma warning(push)
 #pragma warning(disable: 4702)
+#endif
 
 #include "bonded.h"
 #include "bonded_void.h"
@@ -78,4 +82,6 @@ Apply(const Transform& transform, const T& value)
 
 } // namespace bond
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif

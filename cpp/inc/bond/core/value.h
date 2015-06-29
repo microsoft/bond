@@ -586,9 +586,11 @@ private:
 };
 
 
+#if defined(BOOST_MSVC)
 // warning C4512: 'bond::DeserializeElement::Deserialize' : assignment operator could not be generated
 #pragma warning(push)
 #pragma warning(disable: 4512)
+#endif
 
 
 template <typename X, typename I, typename T>
@@ -620,7 +622,9 @@ inline DeserializeElement(X&, I& item, const T& element)
     element.Deserialize(item);
 }
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif
 
 
 // Read elements of a list

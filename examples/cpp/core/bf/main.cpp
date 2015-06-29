@@ -5,9 +5,10 @@
 #include <bond/stream/stdio_output_stream.h>
 #include <bond/protocol/simple_json_writer.h>
 
-#pragma warning(push)
+#if defined(BOOST_MSVC)
 // C4996: 'fopen': Function call with parameters that may be unsafe
 #pragma warning(disable: 4996)
+#endif
 
 using namespace bf;
 
@@ -238,5 +239,3 @@ int main(int argc, char** argv)
     
     return 1;
 }
-
-#pragma warning(pop)

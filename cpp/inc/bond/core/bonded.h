@@ -10,6 +10,7 @@
 #include "detail/double_pass.h"
 #include "detail/marshaled_bonded.h"
 
+
 namespace bond
 {
 
@@ -38,10 +39,12 @@ inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
     const Transform& transform);
 
 
+#if defined(BOOST_MSVC)
 #pragma warning(push)
 // Disable warning when Reader parameter is a reference
 // warning C4512: 'bond::bonded<T,Reader>' : assignment operator could not be generated
 #pragma warning(disable : 4512)
+#endif
 
 
 /// @brief Represents data for a struct T known at compile-time
@@ -274,6 +277,8 @@ private:
 };
 
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif
 
 } // namespace bond

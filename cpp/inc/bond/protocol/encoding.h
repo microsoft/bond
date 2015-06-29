@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <bond/core/config.h>
 #include <exception>
 #include <bond/core/containers.h>
 #include <bond/core/blob.h>
@@ -135,8 +136,10 @@ typename make_unsigned<T>::type EncodeZigZag(T value)
     return (value << 1) ^ (value >> (sizeof(T) * 8 - 1));
 }
 
+#if defined(BOOST_MSVC)
 #pragma warning(push)
 #pragma warning(disable: 4146)
+#endif
 
 // ZigZag decoding
 template<typename T>
@@ -146,8 +149,9 @@ typename make_signed<T>::type DecodeZigZag(T value)
     return (value >> 1) ^ (-(value & 1));
 }
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
-
+#endif
 
 namespace detail
 {

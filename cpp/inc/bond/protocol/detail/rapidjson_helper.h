@@ -7,9 +7,13 @@
 #define RAPIDJSON_ASSERT BOOST_ASSERT
 #define RAPIDJSON_PARSE_ERROR(err, offset) bond::RapidJsonException(rapidjson::GetParseError_En(err), offset)
 
+#include <bond/core/config.h>
+
 // disable warnings in rapidjson
+#if defined(BOOST_MSVC)
 #pragma warning(push)
 #pragma warning(disable:4100 4201 4127 4701 4512)
+#endif
 
 #include <bond/core/bond_const_enum.h>
 #include <bond/core/exception.h>
@@ -308,5 +312,7 @@ inline const std::string& FieldName(const Metadata& metadata)
 
 } // namespace bond
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif
 

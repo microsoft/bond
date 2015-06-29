@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <bond/core/config.h>
 #include "encoding.h"
 #include "detail/simple_array.h"
 #include <bond/core/bond_version.h>
@@ -132,11 +133,12 @@ namespace bond
 {
 
 
+#if defined(BOOST_MSVC)
 #pragma warning(push)
 // Disable warning when Buffer parameter is a reference
 // warning C4512: 'bond::CompactBinaryReader<Buffer>' : assignment operator could not be generated
 #pragma warning(disable:4512) 
-
+#endif
 
 template <typename BufferT>
 class CompactBinaryWriter;
@@ -503,7 +505,9 @@ protected:
 template <typename Buffer>
 const uint16_t CompactBinaryReader<Buffer>::magic = COMPACT_PROTOCOL;
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif
 
 
 class OutputCounter;

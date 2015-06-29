@@ -2,8 +2,13 @@
 #   define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#include <bond/core/config.h>
+
+#if defined(BOOST_MSVC)
 #pragma warning (disable: 4706 4068)
+#elif defined(BOOST_CLANG)
 #pragma clang diagnostic ignored "-Wunused-value"
+#endif
 
 #include "compat_reflection.h"
 #include "compat_no_generics_reflection.h"
