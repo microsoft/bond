@@ -124,6 +124,7 @@ public:
     size_t PutEnd(char* begin)
     { 
         BOOST_ASSERT(begin == 0);
+        return 0;
     }
 
 private:
