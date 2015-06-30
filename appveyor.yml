@@ -1,7 +1,5 @@
 version: 1.0.{build}
 clone_depth: 15
-os: 
-    - Visual Studio 2015 RC
 environment:
     matrix:
         - BOND_LANG: cs
@@ -18,32 +16,28 @@ install:
             }
 
             if ($env:BOND_LANG -eq "cpp") {
-                
-                if (!(Test-Path boost_1_57_0.7z)) {
 
-                    echo "Downloading Boost 1.57 ..."
+                if (!(Test-Path boost_1_58_0.7z)) {
 
-                    appveyor DownloadFile "http://softlayer-dal.dl.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.7z" -Timeout 1200000
+                    echo "Downloading Boost 1.58 ..."
+
+                    appveyor DownloadFile "http://iweb.dl.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.7z" -Timeout 1200000
 
                 }
 
                 echo "Extracting Boost..."
 
-                7z x boost_1_57_0.7z -y -o"${env:APPVEYOR_BUILD_FOLDER}" boost_1_57_0\boost > $null
+                7z x boost_1_58_0.7z -y -o"${env:APPVEYOR_BUILD_FOLDER}" boost_1_58_0\boost > $null
 
-                $env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}\boost_1_57_0"
-        
+                $env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}\boost_1_58_0"
+
             }
 
             choco install haskellplatform -version 2014.2.0.0 -y
 
             # Haskell Platfrom package doesn't update PATH for the current shell instance
 
-            $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\bin"
-
-            $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\lib\extralibs\bin"
-
-            $env:Path += ";${env:ProgramFiles}\Haskell Platform\2014.2.0.0\mingw\bin"
+            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 
             cabal update
 
@@ -51,7 +45,7 @@ install:
 cache:
     - cs\packages -> cs\test\core\packages.config
     - compiler\.cabal-sandbox -> compiler\bond.cabal
-    - boost_1_57_0.7z
+    - boost_1_58_0.7z
 build_script:
     - ps: >-
         if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
@@ -71,12 +65,12 @@ build_script:
                 msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
                 if (-not $?) { throw "build failed" }
-                
+
             }
-            
-            
+
+
             if ($env:BOND_LANG -eq "cpp") {
-                
+
                 mkdir build
 
                 cd build
@@ -85,7 +79,7 @@ build_script:
 
                 $env:PreferredToolArchitecture = "x64"
 
-                cmake --build . -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                cmake --build . --target check -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
                 if (-not $?) { throw "build failed" }
 
