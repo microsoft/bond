@@ -19,7 +19,7 @@ namespace tests
     {
         [global::Bond.Id(0), global::Bond.Type(typeof(List<List<global::Bond.Tag.classT>>))]
         public IList<IList<T>> aa { get; set; }
-        
+
         public Foo()
             : this("tests.Foo", "Foo")
         {}

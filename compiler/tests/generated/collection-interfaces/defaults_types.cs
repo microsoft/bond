@@ -13,7 +13,6 @@ namespace tests
 {
     using System.Collections.Generic;
 
-    
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.3.0.5")]
     public enum EnumType1
     {
@@ -124,7 +123,7 @@ namespace tests
 
         [global::Bond.Id(31), global::Bond.Type(typeof(global::Bond.Tag.wstring))]
         public string m_wstr_2 { get; set; }
-        
+
         public Foo()
             : this("tests.Foo", "Foo")
         {}

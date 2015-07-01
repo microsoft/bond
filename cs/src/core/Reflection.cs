@@ -124,6 +124,14 @@ namespace Bond
         }
 
         /// <summary>
+        /// Get a value indicating whether the Type is a Bond string
+        /// </summary>
+        public static bool IsBondString(this Type type)
+        {
+            return type == typeof(Tag.wstring) || type == typeof(string);
+        }
+
+        /// <summary>
         /// Get a value indicating whether the Type is a Bond blob
         /// </summary>
         public static bool IsBondBlob(this Type type)
@@ -887,16 +895,17 @@ namespace Bond
                         return null;
                     }
 
-                    if (schemaType.IsBondStruct() || schemaType.IsBondContainer())
+                    if (schemaType.IsBondStruct() || schemaType.IsBonded() || schemaType.IsBondContainer() || schemaType.IsBondBlob())
                     {
                         return Empty;
                     }
 
-                    throw new InvalidOperationException(string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Default value for property {0}.{1} must be specified using the DefaultAttribute",
-                        schemaField.DeclaringType.Name,
-                        schemaField.Name));
+                    if (schemaType.IsBondString())
+                    {
+                        return string.Empty;
+                    }
+
+                    return Activator.CreateInstance(schemaField.MemberType);
                 }
             }
 

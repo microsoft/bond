@@ -25,7 +25,7 @@ namespace tests
 
         [global::Bond.Id(2), global::Bond.RequiredOptional]
         public double ro { get; set; }
-        
+
         public Foo()
             : this("tests.Foo", "Foo")
         {}

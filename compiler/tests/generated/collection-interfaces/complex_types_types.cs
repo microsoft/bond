@@ -18,7 +18,6 @@ namespace tests
     public partial class Foo
     {
         
-        
     }
 
     [global::Bond.Schema]
@@ -45,7 +44,7 @@ namespace tests
 
         [global::Bond.Id(6), global::Bond.Type(typeof(Dictionary<double, LinkedList<List<global::Bond.Tag.nullable<global::Bond.Tag.bonded<Bar>>>>>))]
         public IDictionary<double, ICollection<IList<global::Bond.IBonded<Bar>>>> m { get; set; }
-        
+
         public ComplexTypes()
             : this("tests.ComplexTypes", "ComplexTypes")
         {}

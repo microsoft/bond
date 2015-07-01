@@ -58,15 +58,15 @@ namespace tests
 
         [global::Bond.Id(21)]
         public System.ArraySegment<byte> _blob { get; set; }
-        
+
         public BasicTypes()
             : this("tests.BasicTypes", "BasicTypes")
         {}
 
         protected BasicTypes(string fullName, string name)
         {
-            _str = string.Empty;
-            _wstr = string.Empty;
+            _str = "";
+            _wstr = "";
             _blob = new System.ArraySegment<byte>();
         }
     }

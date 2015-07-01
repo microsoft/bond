@@ -13,7 +13,6 @@ namespace tests
 {
     using System.Collections.Generic;
 
-    
     [global::Bond.Attribute("EnumAttribute1", "one")]
     [global::Bond.Attribute("EnumAttribute2", "two")]
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.3.0.5")]
@@ -32,14 +31,14 @@ namespace tests
         [global::Bond.Attribute("FieldAttribute2", "two")]
         [global::Bond.Id(0)]
         public string f { get; set; }
-        
+
         public Foo()
             : this("tests.Foo", "Foo")
         {}
 
         protected Foo(string fullName, string name)
         {
-            f = string.Empty;
+            f = "";
         }
     }
 } // tests

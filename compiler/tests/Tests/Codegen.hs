@@ -65,6 +65,11 @@ verifyFiles options baseName =
     extra options
   where
     verify = verifyFile options baseName
+    fieldMapping Cs {..} = if readonly_properties
+        then ReadOnlyProperties
+        else if fields
+             then PublicFields
+             else Properties
     typeMapping Cpp {..} = maybe cppTypeMapping cppCustomAllocTypeMapping allocator
     typeMapping Cs {} = csTypeMapping
     templates Cpp {..} =
@@ -73,11 +78,11 @@ verifyFiles options baseName =
         , types_h header enum_header allocator
         ]
     templates Cs {..} =
-        [ types_cs readonly_properties fields
+        [ types_cs Class $ fieldMapping options
         ]
     extra Cs {} =
-        [ testGroup "collection interface" $
-            map (verify csInterfaceTypeMapping "collection-interfaces") (templates options)
+        [ testGroup "collection interfaces" $
+            map (verify csCollectionInterfacesTypeMapping "collection-interfaces") (templates options)
         ]
     extra Cpp {..} =
         [ testGroup "custom allocator" $

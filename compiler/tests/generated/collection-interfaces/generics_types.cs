@@ -23,7 +23,7 @@ namespace tests
 
         [global::Bond.Id(1), global::Bond.Type(typeof(global::Bond.Tag.nullable<Foo<global::Bond.Tag.classT, bool>>))]
         public Foo<T1, bool> n { get; set; }
-        
+
         public Foo()
             : this("tests.Foo", "Foo")
         {}

@@ -18,7 +18,7 @@ import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Paths_bond (version)
-import Data.Version (showVersion) 
+import Data.Version (showVersion)
 import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.Util
 import Language.Bond.Codegen.TypeMapping
@@ -38,14 +38,14 @@ disableReSharperWarnings = [lt|
 
 -- C# field/property attributes
 propertyAttributes :: MappingContext -> Field -> Text
-propertyAttributes cs Field {..} = 
+propertyAttributes cs Field {..} =
     schemaAttributes 2 fieldAttributes
- <> [lt|[global::Bond.Id(#{fieldOrdinal})#{typeAttribute}#{modifierAttribute fieldType fieldModifier}]|]
+ <> [lt|[global::Bond.Id(#{fieldOrdinal})#{typeAttribute}#{modifierAttribute fieldType fieldModifier}]
+        |]
         where
-            csAnnotated = cs { typeMapping = csAnnotatedTypeMapping }
-            annotatedType = getTypeName csAnnotated fieldType
+            annotatedType = getAnnotatedTypeName cs fieldType
             propertyType = getTypeName cs fieldType
-            typeAttribute = if annotatedType /= propertyType 
+            typeAttribute = if annotatedType /= propertyType
                 then [lt|, global::Bond.Type(typeof(#{annotatedType}))|]
                 else mempty
             modifierAttribute BT_MetaName _ = [lt|, global::Bond.RequiredOptional|]
@@ -56,28 +56,29 @@ propertyAttributes cs Field {..} =
 
 -- C# class/struct/interface attributes
 typeAttributes :: MappingContext -> Declaration -> Text
-typeAttributes cs s@Struct {..} = 
+typeAttributes cs s@Struct {..} =
     optionalTypeAttributes cs s
  <> [lt|[global::Bond.Schema]
     |]
  <> generatedCodeAttr
 
 -- C# enum attributes
-typeAttributes cs e@Enum {..} = 
+typeAttributes cs e@Enum {..} =
     optionalTypeAttributes cs e
  <> generatedCodeAttr
 typeAttributes _ _ = error "typeAttributes: impossible happened."
 
 generatedCodeAttr :: Text
-generatedCodeAttr = [lt|[System.CodeDom.Compiler.GeneratedCode("gbc", "#{showVersion version}")]|]
+generatedCodeAttr = [lt|[System.CodeDom.Compiler.GeneratedCode("gbc", "#{showVersion version}")]
+    |]
 
 optionalTypeAttributes :: MappingContext -> Declaration -> Text
-optionalTypeAttributes cs decl = 
+optionalTypeAttributes cs decl =
     schemaAttributes 1 (declAttributes decl)
  <> namespaceAttribute
   where
     namespaceAttribute = if getIdlNamespace cs == getNamespace cs
-        then mempty 
+        then mempty
         else [lt|[global::Bond.Namespace("#{getIdlQualifiedName $ getIdlNamespace cs}")]
     |]
 
@@ -85,7 +86,7 @@ optionalTypeAttributes cs decl =
 schemaAttributes :: Int64 -> [Attribute] -> Text
 schemaAttributes indent = newlineSepEnd indent schemaAttribute
   where
-    schemaAttribute Attribute {..} = 
+    schemaAttribute Attribute {..} =
         [lt|[global::Bond.Attribute("#{getIdlQualifiedName attrName}", "#{attrValue}")]|]
 
 -- generic type parameter constraints
@@ -98,33 +99,29 @@ paramConstraints = newlineBeginSep 2 constraint
 -- Initial value for C# field/property or Nothing if C# implicit default is OK
 defaultValue :: MappingContext -> Field -> Maybe Text
 defaultValue cs Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
-    where
-        newInstance t = Just [lt|new #{getInstanceTypeName cs t}()|]
-        implicitDefault BT_String = Just "string.Empty"
-        implicitDefault BT_WString = Just "string.Empty"
-        implicitDefault (BT_Bonded t) = Just [lt|global::Bond.Bonded<#{getTypeName cs t}>.Empty|]
-        implicitDefault t@(BT_TypeParam _) = Just [lt|global::Bond.GenericFactory.Create<#{getInstanceTypeName cs t}>()|]
-        implicitDefault t@(BT_List _) = newInstance t
-        implicitDefault t@(BT_Vector _) = newInstance t
-        implicitDefault t@(BT_Set _) = newInstance t
-        implicitDefault t@(BT_Map _ _) = newInstance t
-        implicitDefault t@BT_Blob = newInstance t
-        implicitDefault t@(BT_UserDefined a@Alias {..} args)
-            | customAliasMapping cs a = newInstance t
-            | otherwise = implicitDefault $ resolveAlias a args
-        implicitDefault t@(BT_UserDefined _ _) = newInstance t
-        implicitDefault _ = Nothing
+  where
+    newInstance t = Just [lt|new #{getInstanceTypeName cs t}()|]
+    implicitDefault (BT_Bonded t) = Just [lt|global::Bond.Bonded<#{getTypeName cs t}>.Empty|]
+    implicitDefault t@(BT_TypeParam _) = Just [lt|global::Bond.GenericFactory.Create<#{getInstanceTypeName cs t}>()|]
+    implicitDefault t@BT_Blob = newInstance t
+    implicitDefault t@(BT_UserDefined a@Alias {..} args)
+        | customAliasMapping cs a = newInstance t
+        | otherwise = implicitDefault $ resolveAlias a args
+    implicitDefault t
+        | isString t = Just [lt|""|]
+        | isContainer t || isStruct t = newInstance t
+    implicitDefault _ = Nothing
 
 defaultValue cs Field {fieldDefault = (Just def), ..} = explicitDefault def
-    where
-        explicitDefault (DefaultInteger x) = Just [lt|#{x}|]
-        explicitDefault (DefaultFloat x) = Just $ floatLiteral fieldType x
-            where
-                floatLiteral BT_Float y = [lt|#{y}F|]
-                floatLiteral BT_Double y = [lt|#{y}|]
-                floatLiteral _ _ = error "defaultValue/floatLiteral: impossible happened."
-        explicitDefault (DefaultBool True) = Just "true"
-        explicitDefault (DefaultBool False) = Just "false"
-        explicitDefault (DefaultString x) = Just [lt|"#{x}"|]
-        explicitDefault (DefaultEnum x) = Just [lt|#{getTypeName cs fieldType}.#{x}|]
-        explicitDefault _ = Nothing
+  where
+    explicitDefault (DefaultInteger x) = Just [lt|#{x}|]
+    explicitDefault (DefaultFloat x) = Just $ floatLiteral fieldType x
+      where
+        floatLiteral BT_Float y = [lt|#{y}F|]
+        floatLiteral BT_Double y = [lt|#{y}|]
+        floatLiteral _ _ = error "defaultValue/floatLiteral: impossible happened."
+    explicitDefault (DefaultBool True) = Just "true"
+    explicitDefault (DefaultBool False) = Just "false"
+    explicitDefault (DefaultString x) = Just [lt|"#{x}"|]
+    explicitDefault (DefaultEnum x) = Just [lt|#{getTypeName cs fieldType}.#{x}|]
+    explicitDefault _ = Nothing

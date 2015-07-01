@@ -13,7 +13,10 @@
         [Test]
         public void ReflectionDefaultAttribute_Absent_On_Interface()
         {
-            Assert.Throws<InvalidOperationException>(() => GetDefaultValue<IFoo>("NoDefault"));
+            Assert.AreEqual(0, GetDefaultValue<IFoo>("IntNoDefault"));
+            Assert.AreEqual(0.0, GetDefaultValue<IFoo>("DoubleNoDefault"));
+            Assert.AreEqual(0.0f, GetDefaultValue<IFoo>("FloatNoDefault"));
+            Assert.AreEqual(false, GetDefaultValue<IFoo>("BoolNoDefault"));
         }
 
         [Test]
@@ -83,7 +86,16 @@
             string NullStringField { get; set; }
 
             [Id(8)]
-            int NoDefault { get; set; }
+            int IntNoDefault { get; set; }
+
+            [Id(18)]
+            float FloatNoDefault { get; set; }
+
+            [Id(19)]
+            double DoubleNoDefault { get; set; }
+
+            [Id(20)]
+            bool BoolNoDefault { get; set; }
 
             [Id(9), Type(typeof(nullable<IFoo>))]
             IFoo NullableNoDefault { get; set; }

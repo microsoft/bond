@@ -50,9 +50,9 @@ concurrentlyFor_ = (void .) . flip mapConcurrently
 
 
 writeSchema :: Options -> IO()
-writeSchema Schema {..} = 
+writeSchema Schema {..} =
     concurrentlyFor_ files $ \file -> do
-        let fileName = takeBaseName file 
+        let fileName = takeBaseName file
         bond <- parseFile import_dir file
         BL.writeFile (output_dir </> fileName <.> "json") $ encode bond
 writeSchema _ = error "writeSchema: impossible happened."
@@ -78,13 +78,17 @@ cppCodegen options@Cpp {..} = do
         ]
 cppCodegen _ = error "cppCodegen: impossible happened."
 
-    
+
 csCodegen :: Options -> IO()
 csCodegen options@Cs {..} = do
-    let typeMapping = if collection_interfaces then csInterfaceTypeMapping else csTypeMapping
-    concurrentlyFor_ files $ codeGen options typeMapping
-        [ types_cs readonly_properties fields
-        ]
+    let fieldMapping = if readonly_properties
+            then ReadOnlyProperties
+            else if fields
+                 then PublicFields
+                 else Properties
+    let typeMapping = if collection_interfaces then csCollectionInterfacesTypeMapping else csTypeMapping
+    let templates = [ types_cs Class fieldMapping ]
+    concurrentlyFor_ files $ codeGen options typeMapping templates
 csCodegen _ = error "csCodegen: impossible happened."
 
 codeGen :: Options -> TypeMapping -> [Template] -> FilePath -> IO ()

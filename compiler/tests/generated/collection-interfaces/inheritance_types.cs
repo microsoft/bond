@@ -19,7 +19,7 @@ namespace tests
     {
         [global::Bond.Id(0)]
         public int x { get; set; }
-        
+
         public Base()
             : this("tests.Base", "Base")
         {}
@@ -37,7 +37,7 @@ namespace tests
     {
         [global::Bond.Id(0)]
         new public int x { get; set; }
-        
+
         public Foo()
             : this("tests.Foo", "Foo")
         {}

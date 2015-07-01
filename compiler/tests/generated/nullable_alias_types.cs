@@ -19,7 +19,7 @@ namespace test
     {
         [global::Bond.Id(1), global::Bond.Type(typeof(global::Bond.Tag.nullable<long>))]
         public long? l { get; set; }
-        
+
         public foo()
             : this("test.foo", "foo")
         {}

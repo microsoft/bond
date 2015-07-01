@@ -3,7 +3,11 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
-module Language.Bond.Codegen.Cs.Types_cs (types_cs) where
+module Language.Bond.Codegen.Cs.Types_cs
+    ( types_cs
+    , FieldMapping(..)
+    , StructMapping(..)
+    ) where
 
 import Data.Monoid
 import qualified Data.Foldable as F
@@ -18,12 +22,24 @@ import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 import qualified Language.Bond.Codegen.Cs.Util as CS
 
--- | Codegen template for generating /base_name/_type.cs containing definitions
--- of types representing the schema. 
-types_cs :: Bool    -- ^ 'True' to generate types with read-only properties
-         -> Bool    -- ^ 'True' to generate types with public fields
-         -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
-types_cs readOnly useFields cs _file _imports declarations = ("_types.cs", [lt|
+-- | C# representation of schema structs
+data StructMapping =
+    Class                   -- ^ public partial class
+    deriving Eq
+
+-- | Representation of schema fields in the generated C# types
+data FieldMapping =
+    PublicFields |          -- ^ public fields
+    Properties |            -- ^ auto-properties
+    ReadOnlyProperties      -- ^ auto-properties with private setter
+    deriving Eq
+
+-- | Codegen template for generating definitions of types representing the schema
+types_cs
+    :: StructMapping        -- ^ Specifies how to represent schema structs
+    -> FieldMapping         -- ^ Specifies how to represent schema fields
+    -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
+types_cs structMapping fieldMapping cs _ _ declarations = (fileSuffix, [lt|
 #{CS.disableReSharperWarnings}
 namespace #{csNamespace}
 {
@@ -39,14 +55,30 @@ namespace #{csNamespace}
     csType = getTypeName cs
     csNamespace = getQualifiedName cs $ getNamespace cs
 
-    -- C# class definition for schema struct
-    typeDefinition s@Struct {..} = [lt|#{CS.typeAttributes cs s}
-    public partial class #{declName}#{params}#{optional baseClass structBase}#{constraints}
+    access = case structMapping of
+        _ -> [lt|public |]
+
+    fileSuffix = case structMapping of
+        _ -> "_types.cs"
+
+    struct = case structMapping of
+        _ -> [lt|public partial class |]
+
+    typeAttributes s = case structMapping of
+        _ -> CS.typeAttributes cs s
+
+    propertyAttributes f = case structMapping of
+        Class -> CS.propertyAttributes cs f
+
+    -- C# type definition for schema struct
+    typeDefinition s@Struct {..} = [lt|#{typeAttributes s}#{struct}#{declName}#{params}#{maybe interface baseClass structBase}#{constraints}
     {
-        #{doubleLineSep 2 property structFields}
-        #{constructors}
+        #{doubleLineSep 2 property structFields}#{constructors}
     }|]
       where
+        interface = case structMapping of
+            _ -> mempty
+
         -- type parameters
         params = angles $ sepBy ", " paramName declParams
 
@@ -66,7 +98,8 @@ namespace #{csNamespace}
         csDefault = CS.defaultValue cs
 
         -- constructors
-        constructors = if emptyCtor then mempty else [lt|
+        constructors = if noCtor then mempty else [lt|
+
         public #{declName}()
             : this("#{idlNamespace}.#{declName}", "#{declName}")
         {}
@@ -76,35 +109,31 @@ namespace #{csNamespace}
             #{newlineSep 3 initializer structFields}
         }|]
           where
-            emptyCtor = not callBaseCtor && (useFields && noMetaFields || null structFields)
+            noCtor = not callBaseCtor && (fieldMapping == PublicFields && noMetaFields || null structFields)
             noMetaFields = not $ getAny $ F.foldMap metaField structFields
 
         -- property or field
-        property f@Field {..} = [lt|#{CS.propertyAttributes cs f}
-        #{new}public #{csType fieldType} #{fieldName}#{autoPropertyOrField}|]
+        property f@Field {..} =
+            [lt|#{propertyAttributes f}#{new}#{access}#{csType fieldType} #{fieldName}#{autoPropertyOrField}|]
           where
-            autoPropertyOrField =
-                if useFields then
-                    [lt|#{optional fieldInitializer $ csDefault f};|]
-                else
-                    [lt| { get; #{set}; }|]
+            autoPropertyOrField = case fieldMapping of
+                PublicFields        -> [lt|#{optional fieldInitializer $ csDefault f};|]
+                Properties          -> [lt| { get; set; }|]
+                ReadOnlyProperties  -> [lt| { get; private set; }|]
             fieldInitializer x = [lt| = #{x}|]
-            set = if readOnly then "private set" else "set" :: String
             new = if isBaseField fieldName structBase then "new " else "" :: String
 
         -- initializers in constructor
         initializer f@Field {..} = optional fieldInit $ def f
-          where 
+          where
             fieldInit x = [lt|#{this fieldName} = #{x};|]
             this = if fieldName == "name" || fieldName == "fullName" then ("this." ++) else id
             def Field {fieldType = BT_MetaName} = Just "name"
             def Field {fieldType = BT_MetaFullName} = Just "fullName"
-            def x = if useFields then Nothing else csDefault x
+            def x = if fieldMapping == PublicFields then Nothing else csDefault x
 
     -- C# enum definition for schema enum
-    typeDefinition e@Enum {..} = [lt|
-    #{CS.typeAttributes cs e}
-    public enum #{declName}
+    typeDefinition e@Enum {..} = [lt|#{CS.typeAttributes cs e}public enum #{declName}
     {
         #{newlineSep 2 constant enumConstants}
     }|]

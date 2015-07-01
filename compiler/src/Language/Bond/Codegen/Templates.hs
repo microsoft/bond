@@ -41,6 +41,8 @@ module Language.Bond.Codegen.Templates
     , apply_h
     , apply_cpp
       -- ** C#
+    , FieldMapping(..)
+    , StructMapping(..)
     , types_cs
     )
     where

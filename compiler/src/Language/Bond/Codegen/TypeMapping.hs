@@ -23,11 +23,11 @@ module Language.Bond.Codegen.TypeMapping
     , cppTypeMapping
     , cppCustomAllocTypeMapping
     , csTypeMapping
-    , csInterfaceTypeMapping
-    , csAnnotatedTypeMapping
+    , csCollectionInterfacesTypeMapping
       -- * Name builders
     , getTypeName
     , getInstanceTypeName
+    , getAnnotatedTypeName
     , getDeclTypeName
     , getQualifiedName
     , getGlobalQualifiedName
@@ -35,6 +35,7 @@ module Language.Bond.Codegen.TypeMapping
       -- * Helper functions
     , getNamespace
     , getIdlNamespace
+    , getDeclName
     , getDeclNamespace
     , customAliasMapping
     ) where
@@ -71,9 +72,11 @@ data TypeMapping = TypeMapping
     , global :: Builder
     , separator :: Builder
     , mapType :: Type -> TypeNameBuilder
+    , mapDeclName :: Declaration -> String
     , fixSyntax :: Builder -> Builder
     , instanceMapping :: TypeMapping
     , elementMapping :: TypeMapping
+    , annotatedMapping :: TypeMapping
     }
 
 type TypeNameBuilder = Reader MappingContext Builder
@@ -85,7 +88,7 @@ getNamespace :: MappingContext -> QualifiedName
 getNamespace c@MappingContext {..} = resolveNamespace c namespaces
 
 -- | Returns the namespace for the 'MappingContext' as specified in the schema
--- definition file (i.e. ignoring namespace mapping). 
+-- definition file (i.e. ignoring namespace mapping).
 getIdlNamespace :: MappingContext -> QualifiedName
 getIdlNamespace c@MappingContext {..} = findNamespace c namespaces
 
@@ -106,6 +109,10 @@ getIdlQualifiedName = sepBy "." toText
 getGlobalQualifiedName :: MappingContext -> QualifiedName -> Builder
 getGlobalQualifiedName c@MappingContext { typeMapping = m } = (global m <>) . getQualifiedName c
 
+-- | Returns name of the declaration in given mapping context
+getDeclName :: MappingContext -> Declaration -> String
+getDeclName MappingContext {..} = mapDeclName typeMapping
+
 -- | Builds the qualified name for a 'Declaration' in the specified
 -- 'MappingContext'.
 getDeclTypeName :: MappingContext -> Declaration -> Builder
@@ -123,6 +130,13 @@ getTypeName c t = fix' $ runReader (typeName t) c
 getInstanceTypeName :: MappingContext -> Type -> Builder
 getInstanceTypeName c t = runReader (instanceTypeName t) c
 
+-- | Builds the annotated name of a 'Type'. The type annotations are used to
+-- express type information about a Bond type that doesn't directly map to
+-- the target language type system (e.g. distinction between a nullable and
+-- non-nullable string in C# type system).
+getAnnotatedTypeName :: MappingContext -> Type -> Builder
+getAnnotatedTypeName c t = runReader (annotatedTypeName t) c
+
 -- | Returns 'True' if the alias has a custom mapping in the given
 -- 'MappingContext'.
 customAliasMapping :: MappingContext -> Declaration -> Bool
@@ -135,7 +149,9 @@ cppTypeMapping = TypeMapping
     "::"
     "::"
     cppType
+    declName
     cppSyntaxFix
+    cppTypeMapping
     cppTypeMapping
     cppTypeMapping
 
@@ -146,7 +162,9 @@ cppCustomAllocTypeMapping alloc = TypeMapping
     "::"
     "::"
     (cppTypeCustomAlloc $ toText alloc)
+    declName
     cppSyntaxFix
+    (cppCustomAllocTypeMapping alloc)
     (cppCustomAllocTypeMapping alloc)
     (cppCustomAllocTypeMapping alloc)
 
@@ -157,33 +175,38 @@ csTypeMapping = TypeMapping
     "global::"
     "."
     csType
+    declName
     id
     csTypeMapping
     csTypeMapping
+    csAnnotatedTypeMapping
 
 -- | C# type name mapping using interfaces rather than concrete types to
 -- represent collections.
-csInterfaceTypeMapping :: TypeMapping
-csInterfaceTypeMapping = TypeMapping
+csCollectionInterfacesTypeMapping :: TypeMapping
+csCollectionInterfacesTypeMapping = TypeMapping
     Cs
     "global::"
     "."
-    csIfaceType
+    csInterfaceType
+    declName
     id
-    csInterfaceInstanceTypeMapping
-    csInterfaceTypeMapping
+    csCollectionInstancesTypeMapping
+    csCollectionInterfacesTypeMapping
+    csAnnotatedTypeMapping
 
-csInterfaceInstanceTypeMapping :: TypeMapping
-csInterfaceInstanceTypeMapping = csInterfaceTypeMapping {mapType = csType}
+csCollectionInstancesTypeMapping :: TypeMapping
+csCollectionInstancesTypeMapping = csCollectionInterfacesTypeMapping {mapType = csType}
 
--- | C\# type name mapping for generating <https://microsoft.github.io/bond/manual/bond_cs.html#typeattribute Type attribute> annotations.
 csAnnotatedTypeMapping :: TypeMapping
 csAnnotatedTypeMapping = TypeMapping
     Cs
     "global::"
     "."
-    csTypeAnnotation
+    (csTypeAnnotation csType)
+    declName
     id
+    csAnnotatedTypeMapping
     csAnnotatedTypeMapping
     csAnnotatedTypeMapping
 
@@ -224,6 +247,9 @@ elementTypeName = localWith elementMapping . typeName
 instanceTypeName :: Type -> TypeNameBuilder
 instanceTypeName = localWith instanceMapping . typeName
 
+annotatedTypeName :: Type -> TypeNameBuilder
+annotatedTypeName = localWith annotatedMapping . typeName
+
 resolveNamespace :: MappingContext -> [Namespace] -> QualifiedName
 resolveNamespace c@MappingContext {..} ns = maybe namespace toNamespace $ find ((namespace ==) . fromNamespace) namespaceMapping
   where
@@ -246,7 +272,7 @@ declTypeName :: Declaration -> TypeNameBuilder
 declTypeName decl = do
     ctx <- ask
     if namespaces ctx == declNamespaces decl
-            then pureText $ declName decl
+            then pureText $ getDeclName ctx decl
             else declQualifiedTypeName decl
 
 findAliasMapping :: MappingContext -> Declaration -> Maybe AliasMapping
@@ -363,24 +389,24 @@ csType (BT_UserDefined a@Alias {} args) = aliasTypeName a args
 csType (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> localWith (const csTypeMapping) (commaSepTypeNames args))
 
 -- C# type mapping with collection interfaces
-csIfaceType :: Type -> TypeNameBuilder
-csIfaceType (BT_List element) = "ICollection<" <>> elementTypeName element <<> ">"
-csIfaceType (BT_Vector element) = "IList<" <>> elementTypeName element <<> ">"
-csIfaceType (BT_Set element) = "ISet<" <>> elementTypeName element <<> ">"
-csIfaceType (BT_Map key value) = "IDictionary<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> ">"
-csIfaceType t = csType t
+csInterfaceType :: Type -> TypeNameBuilder
+csInterfaceType (BT_List element) = "ICollection<" <>> elementTypeName element <<> ">"
+csInterfaceType (BT_Vector element) = "IList<" <>> elementTypeName element <<> ">"
+csInterfaceType (BT_Set element) = "ISet<" <>> elementTypeName element <<> ">"
+csInterfaceType (BT_Map key value) = "IDictionary<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> ">"
+csInterfaceType t = csType t
 
 -- C# type annotation mapping
-csTypeAnnotation :: Type -> TypeNameBuilder
-csTypeAnnotation BT_WString = pure "global::Bond.Tag.wstring"
-csTypeAnnotation (BT_Nullable element) = "global::Bond.Tag.nullable<" <>> typeName element <<> ">"
-csTypeAnnotation (BT_Bonded type_) = "global::Bond.Tag.bonded<" <>> typeName type_ <<> ">"
-csTypeAnnotation (BT_TypeParam (TypeParam _ Nothing)) = pure "global::Bond.Tag.classT"
-csTypeAnnotation (BT_TypeParam (TypeParam _ (Just Value))) = pure "global::Bond.Tag.structT"
-csTypeAnnotation (BT_UserDefined Alias {aliasType = BT_Blob} _) = pure "global::Bond.Tag.blob"
-csTypeAnnotation t@(BT_UserDefined a@Alias {..} args)
-   | isContainer t = csType t 
+csTypeAnnotation :: (Type -> TypeNameBuilder) -> Type -> TypeNameBuilder
+csTypeAnnotation _ BT_WString = pure "global::Bond.Tag.wstring"
+csTypeAnnotation _ (BT_Nullable element) = "global::Bond.Tag.nullable<" <>> typeName element <<> ">"
+csTypeAnnotation _ (BT_Bonded type_) = "global::Bond.Tag.bonded<" <>> typeName type_ <<> ">"
+csTypeAnnotation _ (BT_TypeParam (TypeParam _ Nothing)) = pure "global::Bond.Tag.classT"
+csTypeAnnotation _ (BT_TypeParam (TypeParam _ (Just Value))) = pure "global::Bond.Tag.structT"
+csTypeAnnotation _ (BT_UserDefined Alias {aliasType = BT_Blob} _) = pure "global::Bond.Tag.blob"
+csTypeAnnotation m t@(BT_UserDefined a@Alias {..} args)
+   | isContainer t = m t
    | otherwise = typeName $ resolveAlias a args
-csTypeAnnotation (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> commaSepTypeNames args)
-csTypeAnnotation t = csType t
+csTypeAnnotation _ (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> commaSepTypeNames args)
+csTypeAnnotation m t = m t
 
