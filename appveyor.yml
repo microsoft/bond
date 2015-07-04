@@ -2,20 +2,14 @@ version: 1.0.{build}
 clone_depth: 15
 environment:
     matrix:
-        - BOND_LANG: cs
-        - BOND_LANG: cpp
+        - BOND_BUILD: cs
+        - BOND_BUILD: cpp
 install:
     - cmd: git submodule update --init
     - ps: >-
         if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-            if (Test-Path compiler\.cabal-sandbox) {
-
-                $env:SandboxCache = "restored"
-
-            }
-
-            if ($env:BOND_LANG -eq "cpp") {
+            if ($env:BOND_BUILD -eq "cpp") {
 
                 if (!(Test-Path boost_1_58_0.7z)) {
 
@@ -50,7 +44,7 @@ build_script:
     - ps: >-
         if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-            if ($env:BOND_LANG -eq "cs") {
+            if ($env:BOND_BUILD -eq "cs") {
 
                 nuget restore cs\cs.sln
 
@@ -69,7 +63,7 @@ build_script:
             }
 
 
-            if ($env:BOND_LANG -eq "cpp") {
+            if ($env:BOND_BUILD -eq "cpp") {
 
                 mkdir build
 
@@ -100,18 +94,11 @@ test_script:
 
         if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
 
-            if ($env:BOND_LANG -eq "cs") {
+            if ($env:BOND_BUILD -eq "cs") {
 
-                if ($env:SandboxCache -ne "restored") {
+                nunit-console-x86 /framework:net-4.0 /labels cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
 
-                    nunit-console-x86 /framework:net-4.5 /labels cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
-
-                } else {
-
-                    nunit-console-x86 /framework:net-4.0 /labels cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
-
-                    nunit-console-x86 /framework:net-4.5 /labels cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
-                }
+                nunit-console-x86 /framework:net-4.5 /labels cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
 
             }
 
