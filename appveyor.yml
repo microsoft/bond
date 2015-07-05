@@ -1,15 +1,39 @@
-version: 1.0.{build}
-clone_depth: 15
-environment:
-    matrix:
-        - BOND_BUILD: cs
-        - BOND_BUILD: cpp
-install:
-    - cmd: git submodule update --init
-    - ps: >-
-        if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
+# fsharp feature branch
+-
+    version: 1.0.{build}
+    clone_depth: 15
+    branches:
+        only:
+            - fsharp
+    configuration: Debug
+    build:
+        project: fsharp\fsharp.sln
+        verbosity: minimal
+    test:
+        assemblies: fsharp\test\TypeProvider\bin\$(configuration)\BondFsharpUnitTest.dll
 
-            if ($env:BOND_BUILD -eq "cpp") {
+# other branches
+-
+    version: 1.0.{build}
+    clone_depth: 15
+
+    environment:
+        matrix:
+            - BOND_BUILD: C++
+            - BOND_BUILD: C#
+              BOND_PROJECT: cs\cs.sln
+              BOND_OUTPUT: Properties
+              BOND_CONFIG: Debug
+            - BOND_BUILD: C#
+              BOND_PROJECT: cs\cs.sln
+              BOND_OUTPUT: Fields
+              BOND_CONFIG: Fields
+
+    install:
+        - ps: >-
+            if ($env:BOND_BUILD -eq "C++") {
+
+                git submodule update --init
 
                 if (!(Test-Path boost_1_58_0.7z)) {
 
@@ -29,41 +53,23 @@ install:
 
             choco install haskellplatform -version 2014.2.0.0 -y
 
-            # Haskell Platfrom package doesn't update PATH for the current shell instance
-
             $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 
             cabal update
+    cache:
+        - cs\packages -> cs\test\core\packages.config
+        - compiler\.cabal-sandbox -> compiler\bond.cabal
+        - boost_1_58_0.7z
 
-        }
-cache:
-    - cs\packages -> cs\test\core\packages.config
-    - compiler\.cabal-sandbox -> compiler\bond.cabal
-    - boost_1_58_0.7z
-build_script:
-    - ps: >-
-        if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
+    before_build:
+        - ps: >-
+            if ($env:BOND_BUILD -eq "C#") {
 
-            if ($env:BOND_BUILD -eq "cs") {
-
-                nuget restore cs\cs.sln
-
-                # default codegen with properties
-
-                msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-                if (-not $?) { throw "build failed" }
-
-                # codegen with public fields and interfaces used to represent collections
-
-                msbuild cs\cs.sln /verbosity:minimal /p:Configuration=Fields /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-                if (-not $?) { throw "build failed" }
+                nuget restore $env:BOND_PROJECT
 
             }
 
-
-            if ($env:BOND_BUILD -eq "cpp") {
+            if ($env:BOND_BUILD -eq "C++") {
 
                 mkdir build
 
@@ -73,37 +79,32 @@ build_script:
 
                 $env:PreferredToolArchitecture = "x64"
 
+            }
+
+    build_script:
+        - ps: >-
+            if ($env:BOND_BUILD -eq "C++") {
+
                 cmake --build . --target check -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-                if (-not $?) { throw "build failed" }
+            }
 
-                cd ..
+            if ($env:BOND_BUILD -eq "C#") {
+
+                msbuild ${env:BOND_PROJECT} /verbosity:minimal /p:Configuration=${env:BOND_CONFIG} /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
             }
 
-        } else {
+            if (-not $?) { throw "build failed" }
 
-            nuget restore fsharp\fsharp.sln
+    test_script:
+        - ps: >-
+            $ErrorActionPreference = "Stop"
 
-            msbuild fsharp\fsharp.sln /verbosity:minimal /p:Configuration=Debug /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+            if ($env:BOND_BUILD -eq "C#") {
 
-        }
-test_script:
-    - ps: >-
-        $ErrorActionPreference = "Stop"
+                nunit-console-x86 /framework:net-4.0 /labels "cs\test\core\bin\debug\net40\${env:BOND_OUTPUT}\Bond.UnitTest.dll" cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
 
-        if ($env:APPVEYOR_REPO_BRANCH -ne "fsharp") {
-
-            if ($env:BOND_BUILD -eq "cs") {
-
-                nunit-console-x86 /framework:net-4.0 /labels cs\test\core\bin\debug\net40\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net40\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
-
-                nunit-console-x86 /framework:net-4.5 /labels cs\test\core\bin\debug\net45\Properties\Bond.UnitTest.dll cs\test\core\bin\debug\net45\Fields\Bond.UnitTest.dll cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+                nunit-console-x86 /framework:net-4.5 /labels "cs\test\core\bin\debug\net45\${env:BOND_OUTPUT}\Bond.UnitTest.dll" cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
 
             }
-
-        } else {
-
-            vstest.console /logger:Appveyor fsharp\test\TypeProvider\bin\Debug\BondFsharpUnitTest.dll
-
-        }
