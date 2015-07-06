@@ -23,7 +23,7 @@ $endif$
   }
   code {
       font-size: 1em;
-      font-family: "Courier New", monospace, serif;
+      font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace, serif;
   }
   td.lineNumbers { width: 40px; }
   div#all {
@@ -33,8 +33,18 @@ $endif$
     padding: 25px;
     overflow: auto;
   }
+  code > span.kw { color: #204a87; font-weight: normal; } /* Keyword */  
   code > span.co { color: #4E9A06; font-style: normal; }
   code > span.st { color: #8A0303; font-style: normal; }
+  code > span.cf { color: #204a87; font-weight: normal; } /* ControlFlow */
+  code > span.op { color: #000000; font-weight: normal; } /* Operator */
+  code > span.pp { color: #8f5902; font-style: normal; } /* Preprocessor */
+  code > span.ex { } /* Extension */
+  code > span.at { color: #c4a000; } /* Attribute */
+  code > span.do { color: #8f5902; font-weight: normal; font-style: normal; } /* Documentation */
+  code > span.an { color: #8f5902; font-weight: normal; font-style: normal; } /* Annotation */
+  code > span.cv { color: #8f5902; font-weight: normal; font-style: normal; } /* CommentVar */
+  code > span.in { color: #8f5902; font-weight: normal; font-style: normal; } /* Information */
 
   h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
@@ -44,6 +54,10 @@ $endif$
   div.sourceCode {
     overflow-x: auto;
   }
+
+  table.sourceCode { 
+    line-height: 120%;
+  } 
 
   #toc {
     width: 300px; 
