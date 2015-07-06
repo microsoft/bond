@@ -52,7 +52,7 @@ PROJECT_LOGO           =
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = ../html/reference
+OUTPUT_DIRECTORY       = "$(BOND_DOXYGEN_OUTPUT_DIR)"
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
@@ -324,22 +324,6 @@ INLINE_SIMPLE_STRUCTS  = NO
 
 TYPEDEF_HIDES_STRUCT   = NO
 
-# The SYMBOL_CACHE_SIZE determines the size of the internal cache use to
-# determine which symbols to keep in memory and which to flush to disk.
-# When the cache is full, less often used symbols will be written to disk.
-# For small to medium size projects (<1000 input files) the default value is
-# probably good enough. For larger projects a too small cache size can cause
-# doxygen to be busy swapping symbols to and from disk most of the time
-# causing a significant performance penalty.
-# If the system has enough physical memory increasing the cache will improve the
-# performance by keeping more symbols in memory. Note that the value works on
-# a logarithmic scale so increasing the size by one will roughly double the
-# memory usage. The cache size is given by this formula:
-# 2^(16+SYMBOL_CACHE_SIZE). The valid range is 0..9, the default is 0,
-# corresponding to a cache size of 2^16 = 65536 symbols.
-
-SYMBOL_CACHE_SIZE      = 0
-
 # Similar to the SYMBOL_CACHE_SIZE the size of the symbol lookup cache can be
 # set using LOOKUP_CACHE_SIZE. This cache is used to resolve symbols given
 # their name and scope. Since this can be an expensive process and often the
@@ -589,7 +573,7 @@ FILE_VERSION_FILTER    =
 # You can optionally specify a file name after the option, if omitted
 # DoxygenLayout.xml will be used as the name of the layout file.
 
-LAYOUT_FILE            = bond_layout.xml
+LAYOUT_FILE            = doxygen/bond_layout.xml
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files
 # containing the references data. This must be a list of .bib files. The
@@ -661,7 +645,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = mainpage.md ../../cpp/inc/bond
+INPUT                  = doxygen/mainpage.md ../cpp/inc/bond
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -693,7 +677,7 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = ../../cpp/inc/bond/protocol/detail/rapidjson
+EXCLUDE                =
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -905,7 +889,7 @@ HTML_FOOTER            =
 # HTML_EXTRA_STYLESHEET instead of this one, as it is more robust and this
 # tag will in the future become obsolete.
 
-HTML_STYLESHEET        = 
+HTML_STYLESHEET        =
 
 # The HTML_EXTRA_STYLESHEET tag can be used to specify an additional
 # user-defined cascading style sheet that is included after the standard
@@ -915,7 +899,7 @@ HTML_STYLESHEET        =
 # robust against future updates. Doxygen will copy the style sheet file to
 # the output directory.
 
-HTML_EXTRA_STYLESHEET  =  bond_reference.css
+HTML_EXTRA_STYLESHEET  =  doxygen/bond_reference.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1409,18 +1393,6 @@ GENERATE_XML           = NO
 # put in front of it. If left blank `xml' will be used as the default path.
 
 XML_OUTPUT             = xml
-
-# The XML_SCHEMA tag can be used to specify an XML schema,
-# which can be used by a validating XML parser to check the
-# syntax of the XML files.
-
-XML_SCHEMA             =
-
-# The XML_DTD tag can be used to specify an XML DTD,
-# which can be used by a validating XML parser to check the
-# syntax of the XML files.
-
-XML_DTD                =
 
 # If the XML_PROGRAMLISTING tag is set to YES Doxygen will
 # dump the program listings (including syntax highlighting
