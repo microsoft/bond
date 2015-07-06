@@ -13,18 +13,34 @@ table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
 td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
 td.sourceCode { padding-left: 5px; }
 pre, code { background-color: #f8f8f8; }
-code > span.kw { color: #204a87; font-weight: bold; }
-code > span.dt { color: #204a87; }
-code > span.dv { color: #0000cf; }
-code > span.bn { color: #0000cf; }
-code > span.fl { color: #0000cf; }
-code > span.ch { color: #4e9a06; }
-code > span.st { color: #4e9a06; }
-code > span.co { color: #8f5902; font-style: italic; }
-code > span.ot { color: #8f5902; }
-code > span.al { color: #ef2929; }
-code > span.fu { color: #000000; }
-code > span.er { font-weight: bold; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
   body {
       line-height: 1.5; 
       font-family: Helvetica, Arial, sans-serif; 
@@ -33,7 +49,7 @@ code > span.er { font-weight: bold; }
   }
   code {
       font-size: 1em;
-      font-family: "Courier New", monospace, serif;
+      font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace, serif;
   }
   td.lineNumbers { width: 40px; }
   div#all {
@@ -55,6 +71,14 @@ code > span.er { font-weight: bold; }
   code > span.al { color: #000000; font-style:normal; }
   code > span.fu { color: #000000; font-style:normal; }
   code > span.er { color: #000000; font-style:normal; }
+  code > span.cf { color: #000000; font-weight: normal; } /* ControlFlow */
+  code > span.op { color: #000000; font-weight: normal; } /* Operator */
+  code > span.pp { color: #000000; font-style: normal; } /* Preprocessor */
+  code > span.at { color: #000000; } /* Attribute */
+  code > span.do { color: #000000; font-weight: normal; font-style: normal; } /* Documentation */
+  code > span.an { color: #000000; font-weight: normal; font-style: normal; } /* Annotation */
+  code > span.cv { color: #000000; font-weight: normal; font-style: normal; } /* CommentVar */
+  code > span.in { color: #000000; font-weight: normal; font-style: normal; } /* Information */
 
   h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
@@ -64,6 +88,10 @@ code > span.er { font-weight: bold; }
   div.sourceCode {
     overflow-x: auto;
   }
+
+  table.sourceCode { 
+    line-height: 120%;
+  }   
 
   #toc {
     width: 300px; 
@@ -122,23 +150,23 @@ code > span.er { font-weight: bold; }
 <p>For a discussion how Bond compares to similar frameworks see <a href="https://Microsoft.github.io/bond/why_bond.html">Why Bond</a>.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>The Bond repository uses Git submodules and should be cloned with the <code>--recursive</code> flag:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">git clone --recursive https://github.com/Microsoft/bond.git</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">git clone <span class="op">--</span>recursive https:<span class="op">//</span>github.com<span class="op">/</span>Microsoft<span class="op">/</span>bond.git</code></pre></div>
 <p>In order to build Bond you will need CMake (2.8.12+), Haskell (ghc 7.4+ and cabal-install 1.18+) and Boost (1.54+). The core Bond C++ library can be used with C++03 compilers, although Python support, unit tests and various examples require some C++11 features.</p>
 <p>Following are specific instructions for building on various platforms.</p>
 <h3 id="linux">Linux</h3>
 <p>Bond can be built with Clang (3.4+) or GNU C++ (4.7+). We recommend the latest version of Clang as it’s much faster with template-heavy code like Bond.</p>
 <p>Run the following commands to install the minimal set of packages needed to build the core Bond library on Ubuntu 14.04:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">sudo apt-get install \
-    clang \
-    cmake \
-    zlib1g-dev \
-    ghc \
-    cabal-install \
-    libboost-dev \
-    libboost-thread-dev
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">sudo apt<span class="op">-</span>get install <span class="op">\</span>
+    clang <span class="op">\</span>
+    cmake <span class="op">\</span>
+    zlib1g<span class="op">-</span>dev <span class="op">\</span>
+    ghc <span class="op">\</span>
+    cabal<span class="op">-</span>install <span class="op">\</span>
+    libboost<span class="op">-</span>dev <span class="op">\</span>
+    libboost<span class="op">-</span>thread<span class="op">-</span>dev
 
 cabal update
-cabal install cabal-install</code></pre></div>
+cabal install cabal<span class="op">-</span>install</code></pre></div>
 <p>In the root <code>bond</code> directory run:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
 cd build
@@ -147,24 +175,24 @@ make
 sudo make install</code></pre></div>
 <p>The <code>build</code> directory is just an example. Any directory can be used for build destination.</p>
 <p>In order to build all the C++ and Python tests and examples, a few more packages are needed:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">sudo apt-get install \
-    python2<span class="fl">.7</span>-dev \
-    libboost-date-time-dev \
-    libboost-test-dev \
-    libboost-python-dev
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">sudo apt<span class="op">-</span>get install <span class="op">\</span>
+    python2<span class="fl">.7</span><span class="op">-</span>dev <span class="op">\</span>
+    libboost<span class="op">-</span>date<span class="op">-</span>time<span class="op">-</span>dev <span class="op">\</span>
+    libboost<span class="op">-</span>test<span class="op">-</span>dev <span class="op">\</span>
+    libboost<span class="op">-</span>python<span class="op">-</span>dev
 
 cabal install happy</code></pre></div>
 <p>Running the following command in the build directory will build and execute all the tests and examples:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">make --jobs <span class="dv">8</span> check</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">make <span class="op">--</span>jobs <span class="dv">8</span> check</code></pre></div>
 <p>(unit tests are large so you may want to run 4-8 build jobs in parallel, assuming you have enough memory)</p>
 <h3 id="os-x">OS X</h3>
 <p>Install XCode and then run the following command to install required packages using Homebrew (<a href="http://brew.sh/" class="uri">http://brew.sh/</a>):</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">brew install \
-    cmake \
-    ghc \
-    cabal-install \
-    boost \
-    boost-python</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">brew install <span class="op">\</span>
+    cmake <span class="op">\</span>
+    ghc <span class="op">\</span>
+    cabal<span class="op">-</span>install <span class="op">\</span>
+    boost <span class="op">\</span>
+    boost<span class="op">-</span>python</code></pre></div>
 <p>(boost-python is optional and only needed for Python support)</p>
 <p>Update cabal package database and install <code>happy</code> (only needed for tests):</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cabal update
@@ -176,13 +204,13 @@ cmake ..
 make
 sudo make install</code></pre></div>
 <p>Alternatively you can generate XCode project by passing <code>-G Xcode</code> option to cmake:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake -G Xcode ..</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake <span class="op">-</span>G Xcode ..</code></pre></div>
 <p>You can build and run unit tests by building the <code>check</code> target in XCode or by running make in the build directory:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">make --jobs <span class="dv">8</span> check</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">make <span class="op">--</span>jobs <span class="dv">8</span> check</code></pre></div>
 <p>Note that if you are using Homebrew’s Python, you’ll need to build boost-python from source:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">brew install --build-<span class="ch">from</span>-source boost-python</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">brew install <span class="op">--</span>build<span class="op">-</span><span class="im">from</span><span class="op">-</span>source boost<span class="op">-</span>python</code></pre></div>
 <p>and tell cmake the location of Homebrew’s libpython by setting <code>PYTHON_LIBRARY</code> variable, e.g.:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake .. -DPYTHON_LIBRARY=/usr/local/Cellar/python/<span class="fl">2.7.9</span>/Frameworks/Python.framework/Versions/<span class="fl">2.7</span>/lib/libpython2<span class="fl">.7</span>.dylib</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake .. <span class="op">-</span>DPYTHON_LIBRARY<span class="op">=/</span>usr<span class="op">/</span>local<span class="op">/</span>Cellar<span class="op">/</span>python<span class="op">/</span><span class="fl">2.7.9</span><span class="op">/</span>Frameworks<span class="op">/</span>Python.framework<span class="op">/</span>Versions<span class="op">/</span><span class="fl">2.7</span><span class="op">/</span>lib<span class="op">/</span>libpython2<span class="fl">.7</span>.dylib</code></pre></div>
 <h3 id="windows">Windows</h3>
 <p><a href="https://ci.appveyor.com/project/sapek/bond/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&amp;branch=master" alt="Build Status" /></a></p>
 <p>Install the following tools:</p>
@@ -194,7 +222,7 @@ sudo make install</code></pre></div>
 <p>You can install them with <a href="http://chocolatey.org">Chocolatey</a>:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cinst haskellplatform cmake visualstudiocommunity2013</code></pre></div>
 <p>If you are building on a network behind a proxy, set the environment variable <code>HTTP_PROXY</code>, e.g.:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> HTTP_PROXY=http://proxy:<span class="dv">80</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> HTTP_PROXY<span class="op">=</span>http:<span class="op">//</span>proxy:<span class="dv">80</span></code></pre></div>
 <p>Update cabal package database:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cabal update</code></pre></div>
 <p>Now you are ready to build the C# version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio 2013 and build as usual. The C# unit tests can also be run from within the solution.</p>
@@ -204,21 +232,21 @@ sudo make install</code></pre></div>
 <li>Python 2.7 (<a href="https://www.python.org/downloads/" class="uri">https://www.python.org/downloads/</a>)</li>
 </ul>
 <p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment can be found, e.g.:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> BOOST_ROOT=D:\boost_1_57_0
-<span class="dt">set</span> BOOST_LIBRARYDIR=D:\boost_1_57_0\lib64-msvc<span class="fl">-12.0</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> BOOST_ROOT<span class="op">=</span>D:<span class="op">\</span>boost_1_57_0
+<span class="bu">set</span> BOOST_LIBRARYDIR<span class="op">=</span>D:<span class="op">\</span>boost_1_57_0<span class="op">\</span>lib64<span class="op">-</span>msvc<span class="fl">-12.0</span></code></pre></div>
 <p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests and Python support. If Boost or Python libraries are not found on the system then some tests and examples will not be built.</p>
 <p>In order to configure solution for Visual Studio 2013 run the following commands from the root <code>bond</code> directory:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
 cd build
-cmake -G <span class="st">&quot;Visual Studio 12 2013 Win64&quot;</span> ..</code></pre></div>
+cmake <span class="op">-</span>G <span class="st">&quot;Visual Studio 12 2013 Win64&quot;</span> ..</code></pre></div>
 <p>Instead of <code>cmake</code> you can also use <code>cmake-gui</code> and specify configuration settings in the UI. This configuration step has to be performed only once. From now on you can use the generated solution <code>build\bond.sln</code> from Visual Studio or build from command line using <code>cmake</code>:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> PreferredToolArchitecture=x64
-cmake --build . --target
-cmake --build . --target INSTALL</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> PreferredToolArchitecture<span class="op">=</span>x64
+cmake <span class="op">--</span>build . <span class="op">--</span>target
+cmake <span class="op">--</span>build . <span class="op">--</span>target INSTALL</code></pre></div>
 <p>In order to build and execute the unit tests and examples run:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake --build . --target check -- /maxcpucount:<span class="dv">8</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake <span class="op">--</span>build . <span class="op">--</span>target check <span class="op">--</span> <span class="op">/</span>maxcpucount:<span class="dv">8</span></code></pre></div>
 <p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed (Bond unit tests are too big to build with 32-bit tools). This variable works for Visual Studio 2014. For VS 2012 set the following variable instead:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="dt">set</span> _IsNativeEnvironment=true</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> _IsNativeEnvironment<span class="op">=</span>true</code></pre></div>
 </div>    
 </div>
 </body>

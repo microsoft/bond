@@ -37,8 +37,8 @@ function writeCookie(cookie, val, expiration)
 function resizeWidth() 
 {
   var windowWidth = $(window).width() + "px";
-  var sidenavWidth = $(sidenav).width();
-  content.css({marginLeft:parseInt(sidenavWidth)+6+"px"}); //account for 6px-wide handle-bar
+  var sidenavWidth = $(sidenav).outerWidth();
+  content.css({marginLeft:parseInt(sidenavWidth)+"px"}); 
   writeCookie('width',sidenavWidth, null);
 }
 
@@ -51,8 +51,8 @@ function restoreWidth(navWidth)
 
 function resizeHeight() 
 {
-  var headerHeight = header.height();
-  var footerHeight = footer.height();
+  var headerHeight = header.outerHeight();
+  var footerHeight = footer.outerHeight();
   var windowHeight = $(window).height() - headerHeight - footerHeight;
   content.css({height:windowHeight + "px"});
   navtree.css({height:windowHeight + "px"});
@@ -77,15 +77,19 @@ function initResizable()
   var _preventDefault = function(evt) { evt.preventDefault(); };
   $("#splitbar").bind("dragstart", _preventDefault).bind("selectstart", _preventDefault);
   $(document).bind('touchmove',function(e){
-    try {
-      var target = e.target;
-      while (target) {
-        if ($(target).css('-webkit-overflow-scrolling')=='touch') return;
-        target = target.parentNode;
+    var device = navigator.userAgent.toLowerCase();
+    var ios = device.match(/(iphone|ipod|ipad)/);
+    if (ios) {
+      try {
+        var target = e.target;
+        while (target) {
+          if ($(target).css('-webkit-overflow-scrolling')=='touch') return;
+          target = target.parentNode;
+        }
+        e.preventDefault();
+      } catch(err) {
+        e.preventDefault();
       }
-      e.preventDefault();
-    } catch(err) {
-      e.preventDefault();
     }
   });
 }

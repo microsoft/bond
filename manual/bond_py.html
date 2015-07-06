@@ -13,18 +13,34 @@ table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
 td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
 td.sourceCode { padding-left: 5px; }
 pre, code { background-color: #f8f8f8; }
-code > span.kw { color: #204a87; font-weight: bold; }
-code > span.dt { color: #204a87; }
-code > span.dv { color: #0000cf; }
-code > span.bn { color: #0000cf; }
-code > span.fl { color: #0000cf; }
-code > span.ch { color: #4e9a06; }
-code > span.st { color: #4e9a06; }
-code > span.co { color: #8f5902; font-style: italic; }
-code > span.ot { color: #8f5902; }
-code > span.al { color: #ef2929; }
-code > span.fu { color: #000000; }
-code > span.er { font-weight: bold; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
   body {
       line-height: 1.5; 
       font-family: Helvetica, Arial, sans-serif; 
@@ -33,7 +49,7 @@ code > span.er { font-weight: bold; }
   }
   code {
       font-size: 1em;
-      font-family: "Courier New", monospace, serif;
+      font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace, serif;
   }
   td.lineNumbers { width: 40px; }
   div#all {
@@ -43,8 +59,18 @@ code > span.er { font-weight: bold; }
     padding: 25px;
     overflow: auto;
   }
+  code > span.kw { color: #204a87; font-weight: normal; } /* Keyword */  
   code > span.co { color: #4E9A06; font-style: normal; }
   code > span.st { color: #8A0303; font-style: normal; }
+  code > span.cf { color: #204a87; font-weight: normal; } /* ControlFlow */
+  code > span.op { color: #000000; font-weight: normal; } /* Operator */
+  code > span.pp { color: #8f5902; font-style: normal; } /* Preprocessor */
+  code > span.ex { } /* Extension */
+  code > span.at { color: #c4a000; } /* Attribute */
+  code > span.do { color: #8f5902; font-weight: normal; font-style: normal; } /* Documentation */
+  code > span.an { color: #8f5902; font-weight: normal; font-style: normal; } /* Annotation */
+  code > span.cv { color: #8f5902; font-weight: normal; font-style: normal; } /* CommentVar */
+  code > span.in { color: #8f5902; font-weight: normal; font-style: normal; } /* Information */
 
   h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
@@ -54,6 +80,10 @@ code > span.er { font-weight: bold; }
   div.sourceCode {
     overflow-x: auto;
   }
+
+  table.sourceCode { 
+    line-height: 120%;
+  } 
 
   #toc {
     width: 300px; 
@@ -185,16 +215,16 @@ BOOST_PYTHON_MODULE(example)
 9
 10
 11
-</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="ch">import</span> example
+</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="im">import</span> example
 
-    src = example.Record()
+    src <span class="op">=</span> example.Record()
 
-    src.name = <span class="st">&quot;test&quot;</span>
-    src.items = [<span class="fl">3.14</span>, <span class="fl">6.28</span>]
+    src.name <span class="op">=</span> <span class="st">&quot;test&quot;</span>
+    src.items <span class="op">=</span> [<span class="fl">3.14</span>, <span class="fl">6.28</span>]
 
-    data = example.Serialize(src)
+    data <span class="op">=</span> example.Serialize(src)
 
-    dst = example.Record()
+    dst <span class="op">=</span> example.Record()
     example.Deserialize(data, dst)</code></pre></td></tr></table></div>
 <h1 id="building-extensions">Building extensions</h1>
 <p>Python extensions are simply shared libraries with the same file name as the module name. On Windows the extension should have .pyd file extension. Bond extensions depend on <a href="http://www.boost.org/doc/libs/1_54_0/libs/python/doc/index.html">Boost Python</a> library, and thus need to be linked with both the Boost Python library and the Python library. Refer to <a href="http://www.boost.org/doc/libs/1_54_0/libs/python/doc/building.html">Boost documentation</a> for details.</p>
@@ -249,7 +279,7 @@ BOOST_PYTHON_MODULE(example)
 <p>Any container classes used in exposed schema structs are automatically exposed to Python. The exposed types behave just like Python built-in equivalent containers, supporting Python style indexing, including slices and negative indices, list/set/dictionary comprehension as well as many of the built-in functions and operations like <code>len()</code>, <code>del</code> and <code>in</code>. Built-in container objects also are implicitly convertible to containers exposed by Bond.</p>
 <p>There is a noteworthy difference between Bond <code>map</code> and Python <code>dictionary</code>: iterating over elements of a <code>map</code> doesn’t yield tuples <code>(key, value)</code> but instead objects with two methods: <code>key()</code> and <code>data()</code>.</p>
 <h2 id="blob">Blob</h2>
-<p>Bond <code>blob</code> is represented as Python string object. Initializing a <code>blob</code> from a Python string does not involve memory copy, it just increases reference count on the underlying Python object.</p>
+<p>Bond <code>blob</code> is represented as either a string object in Python2 or a bytes object in Python3. Initializing a <code>blob</code> from a Python object does not involve a memory copy; instead, the reference count on the underlying Python object is increased.</p>
 <h2 id="nullable-and-nothing">Nullable and <code>nothing</code></h2>
 <p>The <code>null</code> value for nullable types and default value of <code>nothing</code> are both mapped to the Python <code>None</code> object. For example, given the schema:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -273,16 +303,16 @@ BOOST_PYTHON_MODULE(example)
 8
 9
 10
-</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    obj = example.Record()
+</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    obj <span class="op">=</span> example.Record()
 
-    <span class="kw">assert</span>(obj.x is <span class="ot">None</span>)
-    <span class="kw">assert</span>(obj.s is <span class="ot">None</span>)
+    <span class="cf">assert</span>(obj.x <span class="op">is</span> <span class="va">None</span>)
+    <span class="cf">assert</span>(obj.s <span class="op">is</span> <span class="va">None</span>)
 
-    x = <span class="dv">100</span>
-    s = <span class="st">&quot;test&quot;</span>
+    x <span class="op">=</span> <span class="dv">100</span>
+    s <span class="op">=</span> <span class="st">&quot;test&quot;</span>
 
-    <span class="kw">assert</span>(obj.x is not <span class="ot">None</span>)
-    <span class="kw">assert</span>(obj.s is not <span class="ot">None</span>)</code></pre></td></tr></table></div>
+    <span class="cf">assert</span>(obj.x <span class="op">is</span> <span class="op">not</span> <span class="va">None</span>)
+    <span class="cf">assert</span>(obj.s <span class="op">is</span> <span class="op">not</span> <span class="va">None</span>)</code></pre></td></tr></table></div>
 <h2 id="generics">Generics</h2>
 <p>While generic Bond schemas can not be instantiated from within a Python program, specific instances of generic schemas can be used like any other concrete structs. In fact any instances of a generic schema used within exposed structs are also implicitly exposed, just like any other nested struct.</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -336,13 +366,13 @@ BOOST_PYTHON_MODULE(example)
 5
 6
 7
-</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="ch">import</span> example
+</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="im">import</span> example
 
     <span class="co"># The instance Generic&lt;string&gt;</span>
-    obj1 = example.Generic_string_()
+    obj1 <span class="op">=</span> example.Generic_string_()
 
     <span class="co"># The instance Generic&lt;bond.GUID&gt;</span>
-    obj2 = example.Generic_bond_GUID_()</code></pre></td></tr></table></div>
+    obj2 <span class="op">=</span> example.Generic_bond_GUID_()</code></pre></td></tr></table></div>
 <h1 id="exposed-apis">Exposed APIs</h1>
 <p>For every exposed schema struct Bond exposes appropriate overloads of the following API functions:</p>
 <ul>
@@ -374,21 +404,21 @@ BOOST_PYTHON_MODULE(example)
 17
 18
 19
-</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="ch">import</span> example
+</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="im">import</span> example
 
-    obj = example.Record()
+    obj <span class="op">=</span> example.Record()
 
     <span class="co"># serialize to Compact Binary</span>
-    data = example.Serialize(obj)
+    data <span class="op">=</span> example.Serialize(obj)
 
     <span class="co"># serialize to JSON</span>
-    json = example.Serialize(obj, example.ProtocolType.SIMPLE_JSON_PROTOCOL)
+    json <span class="op">=</span> example.Serialize(obj, example.ProtocolType.SIMPLE_JSON_PROTOCOL)
 
     <span class="co"># marshal schema to Compact Binary</span>
-    data = example.Marshal(example.GetRuntimeSchema(obj))
+    data <span class="op">=</span> example.Marshal(example.GetRuntimeSchema(obj))
 
     <span class="co"># unmarshal SchemaDef</span>
-    schema = example.SchemaDef()
+    schema <span class="op">=</span> example.SchemaDef()
     example.Unmarshal(data, schema)
 
     <span class="co"># deserialize from Simple Protocol with runtime schema</span>
