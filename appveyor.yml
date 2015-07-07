@@ -20,17 +20,30 @@
     environment:
         matrix:
             - BOND_BUILD: C++
+            - BOND_BUILD: Doc
             - BOND_BUILD: C#
-              BOND_PROJECT: cs\cs.sln
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
             - BOND_BUILD: C#
-              BOND_PROJECT: cs\cs.sln
               BOND_OUTPUT: Fields
               BOND_CONFIG: Fields
 
     install:
         - ps: >-
+            choco install haskellplatform -version 2014.2.0.0 -y
+
+            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+
+            cabal update
+
+            if ($env:BOND_BUILD -eq "Doc") {
+
+                cabal install --verbose=0 pandoc
+
+                choco install doxygen.install -y
+
+            }
+
             if ($env:BOND_BUILD -eq "C++") {
 
                 git submodule update --init
@@ -51,11 +64,8 @@
 
             }
 
-            choco install haskellplatform -version 2014.2.0.0 -y
-
             $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 
-            cabal update
     cache:
         - cs\packages -> cs\test\core\packages.config
         - compiler\.cabal-sandbox -> compiler\bond.cabal
@@ -65,7 +75,7 @@
         - ps: >-
             if ($env:BOND_BUILD -eq "C#") {
 
-                nuget restore $env:BOND_PROJECT
+                nuget restore cs\cs.sln
 
             }
 
@@ -77,12 +87,28 @@
 
                 cmake -G "Visual Studio 14 2015 Win64" ..
 
-                $env:PreferredToolArchitecture = "x64"
+            }
+
+            if ($env:BOND_BUILD -eq "Doc") {
+
+                mkdir build
+
+                cd build
+
+                cmake ../doc
 
             }
 
+            $env:PreferredToolArchitecture = "x64"
+
     build_script:
         - ps: >-
+            if ($env:BOND_BUILD -eq "Doc") {
+
+                cmake --build . --target documentation -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+            }
+
             if ($env:BOND_BUILD -eq "C++") {
 
                 cmake --build . --target check -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
@@ -91,7 +117,7 @@
 
             if ($env:BOND_BUILD -eq "C#") {
 
-                msbuild ${env:BOND_PROJECT} /verbosity:minimal /p:Configuration=${env:BOND_CONFIG} /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                msbuild cs\cs.sln /verbosity:minimal /p:Configuration=${env:BOND_CONFIG} /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
             }
 

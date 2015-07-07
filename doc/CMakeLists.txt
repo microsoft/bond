@@ -1,5 +1,15 @@
+cmake_minimum_required (VERSION 2.8.12)
+
+set (CMAKE_MODULE_PATH
+    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
+
 include (CMakeParseArguments)
 include (HaskellUtil)
+
+# build the compiler when doc directory is build by itself
+if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    add_subdirectory (../compiler ${CMAKE_CURRENT_BINARY_DIR}/compiler)
+endif()
 
 #
 # add_pandoc_markdown (file.md [file2.md ...]
