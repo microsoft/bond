@@ -95,7 +95,7 @@ if (Haskell_PANDOC_EXECUTABLE)
         CODE python)
 endif()
 
-find_program (Doxygen_EXECUTABLE doxygen.exe)
+find_program (Doxygen_EXECUTABLE doxygen)
 
 if (Doxygen_EXECUTABLE)
     set (doxygen_sources
