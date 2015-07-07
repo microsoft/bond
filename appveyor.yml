@@ -20,10 +20,15 @@
     environment:
         matrix:
             - BOND_BUILD: C++
-            - BOND_BUILD: Doc
+              BOND_VS: "Visual Studio 14 2015 Win64"
+              BOND_BOOST: 58
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
+            - BOND_BUILD: Doc
+            - BOND_BUILD: C++
+              BOND_VS: "Visual Studio 12 2013"
+              BOND_BOOST: 55
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
               BOND_CONFIG: Fields
@@ -48,19 +53,19 @@
 
                 git submodule update --init
 
-                if (!(Test-Path boost_1_58_0.7z)) {
+                if (!(Test-Path boost.7z)) {
 
-                    echo "Downloading Boost 1.58 ..."
+                    echo "Downloading Boost 1.${env:BOND_BOOST} ..."
 
-                    appveyor DownloadFile "http://iweb.dl.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.7z" -Timeout 1200000
+                    Start-FileDownload "http://iweb.dl.sourceforge.net/project/boost/boost/1.${env:BOND_BOOST}.0/boost_1_${env:BOND_BOOST}_0.7z" -FileName boost.7z -Timeout 1200000
 
                 }
 
                 echo "Extracting Boost..."
 
-                7z x boost_1_58_0.7z -y -o"${env:APPVEYOR_BUILD_FOLDER}" boost_1_58_0\boost > $null
+                7z x boost.7z -y -o"${env:APPVEYOR_BUILD_FOLDER}" "boost_1_${env:BOND_BOOST}_0/boost" > $null
 
-                $env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}\boost_1_58_0"
+                $env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}/boost_1_${env:BOND_BOOST}_0"
 
             }
 
@@ -69,7 +74,7 @@
     cache:
         - cs\packages -> cs\test\core\packages.config
         - compiler\.cabal-sandbox -> compiler\bond.cabal
-        - boost_1_58_0.7z
+        - boost.7z
 
     before_build:
         - ps: >-
@@ -85,7 +90,7 @@
 
                 cd build
 
-                cmake -G "Visual Studio 14 2015 Win64" ..
+                cmake -G $env:BOND_VS ..
 
             }
 
