@@ -99,7 +99,7 @@ Update cabal package database and install `happy` (only needed for tests):
     cabal update
     cabal install happy
 
-Bond can be built on OS X using either standard *nix makefiles or XCode. In 
+Bond can be built on OS X using either standard \*nix makefiles or XCode. In 
 order to generate and build makefiles, in the root `bond` directory run:
 
     mkdir build
@@ -194,7 +194,7 @@ In order to build and execute the unit tests and examples run:
 
 Setting `PreferredToolArchitecture=x64` selects the 64-bit toolchain which 
 dramatically improves build speed (Bond unit tests are too big to build with 
-32-bit tools). This variable works for Visual Studio 2014. For VS 2012 set the 
+32-bit tools). This variable works for Visual Studio 2013 or 2015. For VS 2012 set the 
 following variable instead:
 
     set _IsNativeEnvironment=true
