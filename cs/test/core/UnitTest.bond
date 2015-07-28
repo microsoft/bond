@@ -227,6 +227,7 @@ struct NullableBasicTypes
     18: nullable<double> _double;
     20: nullable<float> _float;
     21: nullable<EnumType1> _enum1;
+    22: nullable<DateTime> dt;
 };
 
 struct NullableStruct

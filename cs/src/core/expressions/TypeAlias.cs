@@ -21,7 +21,17 @@ namespace Bond.Expressions
 
         public Expression Assign(Expression left, Expression right)
         {
-            var value = Convert(right, left.Type);
+            var leftType = left.Type;
+
+            if (leftType != right.Type &&
+                leftType.IsGenericType() &&
+                leftType.GetGenericTypeDefinition() == typeof (Nullable<>))
+            {
+                leftType = leftType.GetGenericArguments()[0];
+            }
+
+            var value = Convert(right, leftType);
+
             return Expression.Assign(left, PrunedExpression.Convert(value, left.Type));
         }
 
@@ -32,6 +42,13 @@ namespace Bond.Expressions
 
             if (type == typeof(Tag.wstring))
                 type = typeof(string);
+
+            if (type != value.Type &&
+                value.Type.IsGenericType() &&
+                value.Type.GetGenericTypeDefinition() == typeof (Nullable<>))
+            {
+                value = Expression.Convert(value, value.Type.GetGenericArguments()[0]);
+            }
 
             if (type != value.Type)
             {
