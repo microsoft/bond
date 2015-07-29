@@ -47,6 +47,7 @@
     <Compile Include="GenericsTests.cs" />
     <Compile Include="StreamTests.cs" />
     <Compile Include="TypeAliasTests.cs" />
+    <Compile Include="ProtocolTests.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="XmlTests.cs" />
     <BondCodegen Include="Aliases.bond">

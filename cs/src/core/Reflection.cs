@@ -361,12 +361,21 @@ namespace Bond
         {
             var methods = type.GetDeclaredMethods(name);
 
-            return (
+            var result = (
                 from method in methods
                 let parameters = method.GetParameters()
                 where parameters != null
                 where parameters.Select(p => p.ParameterType).Where(t => !t.IsGenericParameter).SequenceEqual(paramTypes)
                 select method).FirstOrDefault();
+            
+            if (result == null)
+            {
+                var baseType = type.GetBaseType();
+                if (baseType != null)
+                    result = baseType.GetMethod(name, paramTypes);
+            }
+
+            return result;
         }
 
         internal static MethodInfo FindMethod(this Type type, string name, params Type[] argumentTypes)
