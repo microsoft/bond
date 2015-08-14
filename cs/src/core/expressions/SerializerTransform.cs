@@ -61,7 +61,7 @@ namespace Bond.Expressions
                 {
                     body = Expression.Block(
                         new[] { parser.ReaderParam },
-                        Expression.Assign(parser.ReaderParam, parser.ReaderValue),
+                        Expression.Assign(parser.ReaderParam, Expression.Convert(parser.ReaderValue, parser.ReaderParam.Type)),
                         body);
                 }
             }

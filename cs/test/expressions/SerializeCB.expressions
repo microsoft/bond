@@ -159,7 +159,7 @@
                 .Constant<System.UInt16>(20),
                 .Constant<Bond.Metadata>(guid));
             .Block(System.Object $obj) {
-                $obj = $Example.guid;
+                $obj = (System.Object)$Example.guid;
                 .Block(Bond.GUID $GUID) {
                     $GUID = (Bond.GUID)$obj;
                     .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(GUID));
@@ -287,7 +287,7 @@
                                 .Block() {
                                     .Default(System.Void);
                                     .Block(System.Object $obj) {
-                                        $obj = $node.Value;
+                                        $obj = (System.Object)$node.Value;
                                         .Block(ExpressionsTest.Nested $Nested) {
                                             $Nested = (ExpressionsTest.Nested)$obj;
                                             .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(Nested));

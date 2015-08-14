@@ -99,7 +99,7 @@ namespace Bond.Expressions
                 {
                     body = Expression.Block(
                         new[] { parser.ReaderParam },
-                        Expression.Assign(parser.ReaderParam, parser.ReaderValue),
+                        Expression.Assign(parser.ReaderParam, Expression.Convert(parser.ReaderValue, parser.ReaderParam.Type)),
                         body);
                 }
             }
@@ -116,7 +116,7 @@ namespace Bond.Expressions
                         Expression.Block(
                             new[] { result },
                             Struct(parser, result, schemaType, true),
-                            result),
+                            Expression.Convert(result, typeof(object))),
                         parser.ReaderParam);
                 }
 
@@ -163,7 +163,7 @@ namespace Bond.Expressions
                         from field in schemaType.GetSchemaFields()
                         select new Field(
                             Id: field.Id,
-                            Value: (fieldParser, fieldType) => CheckedValue(
+                            Value: (fieldParser, fieldType) => FieldValue(
                                 fieldParser,
                                 DataExpression.PropertyOrField(var, field.Name),
                                 fieldType,
@@ -386,9 +386,24 @@ namespace Bond.Expressions
                 });
         }
 
-        Expression CheckedValue(IParser parser, Expression var, Expression valueType, Type schemaType, bool initialize)
+        Expression FieldValue(IParser parser, Expression var, Expression valueType, Type schemaType, bool initialize)
         {
-            var body = Value(parser, var, valueType, schemaType, initialize);
+            Expression body;
+
+            if (schemaType.IsBondStruct() && var.Type.IsValueType())
+            {
+                // Special handling for properties of struct types: we deserialize into
+                // a temp variable and then assign the value to the property.
+                var temp = Expression.Variable(var.Type, "temp");
+                body = Expression.Block(
+                    new[] { temp },
+                    Value(parser, temp, valueType, schemaType, true),
+                    Expression.Assign(var, temp));
+            }
+            else
+            {
+                body = Value(parser, var, valueType, schemaType, initialize);
+            }
 
             if (schemaType.IsBondContainer() || schemaType.IsBondStruct() || schemaType.IsBondNullable())
             {

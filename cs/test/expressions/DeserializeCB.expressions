@@ -1350,7 +1350,7 @@
                 .Default(System.Void)
             }
         };
-        $Example
+        (System.Object)$Example
     }
 }
 

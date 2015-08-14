@@ -332,6 +332,11 @@ namespace Bond
             return type.GetTypeInfo().IsClass;
         }
 
+        internal static bool IsValueType(this Type type)
+        {
+            return type.GetTypeInfo().IsValueType;
+        }
+
         static bool IsInterface(this Type type)
         {
             return type.GetTypeInfo().IsInterface;

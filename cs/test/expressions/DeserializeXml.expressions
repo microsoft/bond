@@ -1696,7 +1696,7 @@
                 }
             }
         };
-        $Example
+        (System.Object)$Example
     }
 }
 

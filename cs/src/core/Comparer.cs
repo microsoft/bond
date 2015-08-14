@@ -39,8 +39,10 @@ namespace Bond
                 var left = Expression.Parameter(typeof(T));
                 var right = Expression.Parameter(typeof(T));
 
-                var equal = typeof(T).IsBondStruct() ? 
-                    NullCheckEqual(left, right, StructsEqual(left, right)) : 
+                var equal = typeof(T).IsBondStruct() ?
+                    typeof(T).IsValueType() ?
+                        StructsEqual(left, right) :
+                        NullCheckEqual(left, right, StructsEqual(left, right)) :
                     ObjectsEqual(left, right);
                 Equal = Expression.Lambda<Func<T, T, bool>>(equal, left, right).Compile();
             }
