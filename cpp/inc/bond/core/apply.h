@@ -3,9 +3,6 @@
 
 #pragma once
 
-#pragma warning(push)
-#pragma warning(disable: 4702)
-
 #include "bonded.h"
 #include "bonded_void.h"
 #include <bond/core/bond_reflection.h>
@@ -78,4 +75,3 @@ Apply(const Transform& transform, const T& value)
 
 } // namespace bond
 
-#pragma warning(pop)

@@ -17,9 +17,9 @@ public:
 
     TestAllocator()
     {}
-    
+
     template<typename U>
-    TestAllocator(const TestAllocator<U>& rhs)
+    TestAllocator(const TestAllocator<U>&)
     {}
 
     template<class Other>
@@ -29,12 +29,12 @@ public:
         typedef TestAllocator<Other> other;
     };
 
-    bool operator==(const TestAllocator& rhs) const
+    bool operator==(const TestAllocator&) const
     {
         return true;
     }
 
-    bool operator!=(const TestAllocator& rhs) const
+    bool operator!=(const TestAllocator&) const
     {
         return false;
     }

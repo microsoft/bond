@@ -8,9 +8,6 @@
 #include "runtime_schema.h"
 #include "exception.h"
 
-#pragma warning(push)
-#pragma warning(disable: 4702)
-
 namespace bond
 {
 namespace detail
@@ -273,4 +270,3 @@ inline bool Apply(const T& value, Buffer& output, uint16_t protocol)
 
 } // namespace bond
 
-#pragma warning(pop)

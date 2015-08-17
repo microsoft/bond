@@ -7,12 +7,6 @@
 #include "detail/rapidjson_helper.h"
 #include <boost/call_traits.hpp>
 
-#pragma warning(push)
-
-// Disable warning when Buffer parameter is a reference
-// warning C4512: 'bond::SimpleJsonReader<Buffer>' : assignment operator could not be generated
-#pragma warning(disable:4512) 
-
 
 namespace bond
 {
@@ -186,5 +180,3 @@ is_protocol_same<SimpleJsonReader<Input>, SimpleJsonWriter<Output> >
 
 
 } // namespace bond
-
-#pragma warning(pop)

@@ -1,6 +1,3 @@
-// warning C4351: new behavior: elements of array 'BondStruct<T>::field' will be default initialized
-#pragma warning (disable: 4351)
-
 #include "custom_protocols.h"
 #include "multi_index.h"
 #include "precompiled.h"

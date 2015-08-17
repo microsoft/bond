@@ -22,15 +22,15 @@ int main(int argc, char** argv)
     bond::SimpleJsonReader<bond::InputBuffer> json_reader(buffer.GetBuffer());
     bond::Deserialize(json_reader, obj);
     BOOST_ASSERT(widget == obj);
-    
+
     // Deserialize from string
-    const char* json = "{\"debug\":\"on\",\"windows\":[{\"title\":\"Sample Konfabulator Widget\",\"width\":500,\"height\":500}]}";
-    bond::SimpleJsonReader<const char*> json_string_reader(json);
+    bond::SimpleJsonReader<const char*> json_string_reader(
+         "{\"debug\":\"on\",\"windows\":[{\"title\":\"Sample Konfabulator Widget\",\"width\":500,\"height\":500}]}");
     bond::Deserialize(json_string_reader, obj2);
     BOOST_ASSERT(widget == obj2);
 
     // Write to standard output
-    bond::StdioOutputStream out(stdout);   
+    bond::StdioOutputStream out(stdout);
 
     if (argc == 1)
     {
@@ -51,5 +51,5 @@ int main(int argc, char** argv)
         bond::Serialize(widget, json);
     }
 
-    return 0;    
+    return 0;
 }

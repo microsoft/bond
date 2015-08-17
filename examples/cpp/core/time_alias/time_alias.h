@@ -1,8 +1,5 @@
 #pragma once
 
-// C4245: 'initializing' : conversion from 'int' to 'unsigned short', signed/unsigned mismatch
-#pragma warning(disable: 4245)
-
 #include <bond/core/scalar_interface.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 

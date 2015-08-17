@@ -3,10 +3,6 @@
 
 #pragma once
 
-#pragma warning (push)
-// warning C4512: 'boost::transform_iterator<UnaryFunc,Iterator,Reference,Value>' : assignment operator could not be generated
-#pragma warning (disable : 4512)
-
 #include <iostream>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>

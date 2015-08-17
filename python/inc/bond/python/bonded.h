@@ -37,7 +37,7 @@ class schema_base_visitor
     }
 
     template <typename classT>
-    void def_init(classT& c, const no_base*) const
+    void def_init(classT&, const no_base*) const
     {
     }
 };
@@ -60,9 +60,9 @@ private:
         boost::python::class_<bonded<T> >(name)
             .def(boost::python::init<const T&>())
             .def(schema_base_visitor<T>())
-            .def("Deserialize", 
+            .def("Deserialize",
                 static_cast<void (bonded<T>::*)(T&) const>(&bonded<T>::template Deserialize<T>));
-        
+
         // Expose struct T to Python
         struct_<T>()
             .def();

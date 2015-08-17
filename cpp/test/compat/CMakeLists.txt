@@ -1,3 +1,5 @@
+cxx_add_compile_options(Clang -Wno-unused-value)
+
 add_bond_executable (bond_compatibility_test EXCLUDE_FROM_ALL
     ${BOND_COMPAT_TEST_DIR}/schemas/compat.bond
     ${BOND_COMPAT_TEST_DIR}/schemas/compat2.bond

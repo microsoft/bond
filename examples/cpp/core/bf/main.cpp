@@ -5,10 +5,6 @@
 #include <bond/stream/stdio_output_stream.h>
 #include <bond/protocol/simple_json_writer.h>
 
-#pragma warning(push)
-// C4996: 'fopen': Function call with parameters that may be unsafe
-#pragma warning(disable: 4996)
-
 using namespace bf;
 
 inline bool IsValidType(bond::BondDataType type)
@@ -27,7 +23,7 @@ bool TryProtocol(Reader reader, int confidence = 5)
 
         reader.ReadStructBegin();
         reader.ReadFieldBegin(type, id);
-        
+
         for (int i = 0; i < confidence; ++i, reader.ReadFieldEnd(), reader.ReadFieldBegin(type, id))
         {
             if (type == bond::BT_STOP)
@@ -38,24 +34,24 @@ bool TryProtocol(Reader reader, int confidence = 5)
 
             if (!IsValidType(type))
                 return false;
-            
+
             if (type == bond::BT_SET || type == bond::BT_LIST)
             {
-                bond::BondDataType type;
+                bond::BondDataType element_type;
 
-                Reader(reader).ReadContainerBegin(size, type);
+                Reader(reader).ReadContainerBegin(size, element_type);
 
-                if (!IsValidType(type))
+                if (!IsValidType(element_type))
                     return false;
             }
 
             if (type == bond::BT_MAP)
             {
-                std::pair<bond::BondDataType, bond::BondDataType> type;
-                
-                Reader(reader).ReadContainerBegin(size, type);
+                std::pair<bond::BondDataType, bond::BondDataType> element_type;
 
-                if (!IsValidType(type.first) || !IsValidType(type.second))
+                Reader(reader).ReadContainerBegin(size, element_type);
+
+                if (!IsValidType(element_type.first) || !IsValidType(element_type.second))
                     return false;
             }
 
@@ -80,8 +76,8 @@ Protocol Guess(InputFile input)
 
     input.Read(word);
 
-    if (word == bond::FAST_PROTOCOL 
-     || word == bond::COMPACT_PROTOCOL 
+    if (word == bond::FAST_PROTOCOL
+     || word == bond::COMPACT_PROTOCOL
      || word == bond::SIMPLE_PROTOCOL)
         return marshal;
 
@@ -143,9 +139,9 @@ bool TranscodeFrom(Reader reader, const Options& options)
         file = stdout;
     else
         file = fopen(options.output.c_str(), "wb");
-    
+
     bond::StdioOutputStream out(file);
-    
+
     switch (options.to)
     {
         case compact:
@@ -221,10 +217,10 @@ int main(int argc, char** argv)
         if (!options.help)
         {
             InputFile input(options.file);
-    
+
             if (options.from == guess)
                 std::cerr << "Guessed " << ToString(options.from = Guess(input)) << std::endl;
-    
+
             if (Transcode(input, options))
                 return 0;
         }
@@ -235,8 +231,7 @@ int main(int argc, char** argv)
     }
 
     bond::cmd::ShowUsage<bf::Options>(argv[0]);
-    
+
     return 1;
 }
 
-#pragma warning(pop)

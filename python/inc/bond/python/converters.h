@@ -3,12 +3,14 @@
 
 #pragma once
 
+#if defined(_MSC_VER)
 // Disable warnings in boost::python
-#pragma warning (push)
-#pragma warning (disable : 4512 4127 4244 4100 4121 4267)
+#   pragma warning (push)
+#   pragma warning (disable : 4512 4127 4244 4100 4121 4267)
 
-#if defined(_MSC_VER) && _MSC_VER < 1800
-#   define HAVE_ROUND
+#   if _MSC_VER < 1800
+#       define HAVE_ROUND
+#   endif
 #endif
 
 #include <boost/python/module.hpp>
@@ -17,7 +19,9 @@
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/suite/indexing/map_indexing_suite.hpp>
 
-#pragma warning (pop)
+#if defined(_MSC_VER)
+#   pragma warning (pop)
+#endif
 
 #include "list_indexing_suite.h"
 #include "set_indexing_suite.h"

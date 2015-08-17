@@ -2,8 +2,8 @@ include (Compiler)
 
 if (MSVC)
     # disable MSVC warnings
-    add_compile_options (/bigobj /FIbond/core/warning.h)
-    add_definitions (-D_CRT_SECURE_NO_WARNINGS)
+    add_compile_options (/bigobj /FIbond/core/warning.h /W4 /WX)
+    add_definitions (-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
     set (Boost_USE_STATIC_LIBS ON)
 endif (MSVC)
 
@@ -44,8 +44,8 @@ message(STATUS "Boost Python Library: ${Boost_PYTHON_LIBRARY}")
 # disable Boost auto-linking
 add_definitions (-DBOOST_ALL_NO_LIB)
 
-cxx_add_compile_options(Clang -fPIC)
-cxx_add_compile_options(GNU -fPIC)
+cxx_add_compile_options(Clang -fPIC -Wall -Werror)
+cxx_add_compile_options(GNU -fPIC -Wall -Werror)
 
 include_directories (
     ${BOND_INCLUDE}

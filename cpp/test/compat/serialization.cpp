@@ -16,7 +16,7 @@ using namespace unittest::compat;
 
 void Init(std::string& str)
 {
-    str = 
+    str =
         "Arabic: \xD9\x85\xD8\xB1\xD8\xAD\xD8\xA8\xD8\xA7 \xD8\xA7\xD9\x84\xD8\xB9\xD8\xA7\xD9\x84\xD9\x85 | "
         "Chinese: \xE4\xBD\xA0\xE5\xA5\xBD\xE4\xB8\x96\xE7\x95\x8C | "
         "Hebrew: \xD7\xA9\xD7\x9C\xD7\x95\xD7\x9D \xD7\xA2\xD7\x95\xD7\x9C\xD7\x9D | "
@@ -27,7 +27,7 @@ void Init(std::string& str)
 
 void Init(std::wstring& wstr)
 {
-    wstr = 
+    wstr =
         L"Arabic: \x0645\x0631\x062d\x0628\x0627 \x0627\x0644\x0639\x0627\x0644\x0645 | "
         L"Chinese: \x4f60\x597d\x4e16\x754c | "
         L"Hebrew: \x05e9\x05dc\x05d5\x05dd \x05e2\x05d5\x05dc\x05dd | "
@@ -36,10 +36,6 @@ void Init(std::wstring& wstr)
         L"Escaped: \" \\ / \b \f \n \r \t \x0001 \x001f \x0";
 }
 
-
-#pragma warning(push)
-// warning C4310: cast truncates constant value
-#pragma warning(disable: 4310)
 
 template <typename T>
 void Init(std::list<T>& x)
@@ -59,16 +55,13 @@ void Init(std::list<T>& x)
         static std::vector<T> constants = boost::assign::list_of
             ((T)-1)((T)0)((T)1)((T)2)((T)3)((T)4)((T)5)((T)6)((T)7)((T)8)((T)9)
             ((T)SCHAR_MAX)((T)SCHAR_MIN)((T)UCHAR_MAX)
-            ((T)SHRT_MIN)((T)SHRT_MAX)((T)USHRT_MAX)  
-            ((T)INT_MIN)((T)INT_MAX)((T)UINT_MAX)     
+            ((T)SHRT_MIN)((T)SHRT_MAX)((T)USHRT_MAX)
+            ((T)INT_MIN)((T)INT_MAX)((T)UINT_MAX)
             ((T)LLONG_MAX)((T)LLONG_MIN)((T)ULLONG_MAX);
 
         std::copy(constants.begin(), constants.end(), std::back_inserter(x));
     }
 }
-
-#pragma warning(pop)
-
 
 class InitEnums
     : public bond::ModifyingTransform
@@ -108,12 +101,12 @@ public:
             Init(value.value());
         return false;
     }
-    
+
 private:
     // basic type
     template <typename T>
     typename boost::enable_if_c<bond::is_basic_type<T>::value && !std::is_enum<T>::value>::type
-    Init(T& value) const
+    Init(T&) const
     {}
 
     // enum
@@ -124,7 +117,7 @@ private:
         auto enums = GetValueToNameMap(T());
         auto it = enums.begin();
         uint32_t n;
-        
+
         _random.Read(n);
         std::advance(it, n % enums.size());
         value = it->first;
@@ -140,7 +133,7 @@ private:
 
     // bonded<T>
     template <typename T>
-    void Init(bond::bonded<T>& value) const
+    void Init(bond::bonded<T>&) const
     {}
 
     // 2-tuple
@@ -177,7 +170,7 @@ private:
 
     template <typename T>
     typename boost::disable_if<std::is_enum<T> >::type
-    Init(std::set<T>& set) const
+    Init(std::set<T>&) const
     {}
 
     // map from enums
@@ -222,17 +215,19 @@ void Init(Test test, Compat& obj)
             return field.id == id;
         }
     };
-    
+
     // Erase field m_defaults
     fields.erase(
-        std::remove_if(fields.begin(), fields.end(), boost::bind<bool>(FieldIdEqual(), Compat::Schema::var::m_defaults::id, _1)), 
+        std::remove_if(fields.begin(), fields.end(), boost::bind<bool>(FieldIdEqual(), Compat::Schema::var::m_defaults::id, _1)),
         fields.end());
 
-    bond::OutputBuffer buffer;
-    bond::CompactBinaryWriter<bond::OutputBuffer> writer(buffer);
-    bond::bonded<void, bond::RandomProtocolReader&>(random, bond::RuntimeSchema(schema)).Serialize(writer);
-    bond::CompactBinaryReader<bond::InputBuffer> reader(buffer.GetBuffer());
-    bond::Deserialize(reader, obj);
+    {
+        bond::OutputBuffer buffer;
+        bond::CompactBinaryWriter<bond::OutputBuffer> writer(buffer);
+        bond::bonded<void, bond::RandomProtocolReader&>(random, bond::RuntimeSchema(schema)).Serialize(writer);
+        bond::CompactBinaryReader<bond::InputBuffer> reader(buffer.GetBuffer());
+        bond::Deserialize(reader, obj);
+    }
 
     assert(!obj.m_defaults);
 
@@ -246,7 +241,7 @@ void Init(Test test, Compat& obj)
         bond::CompactBinaryWriter<bond::OutputBuffer> writer(buffer);
         Serialize(BasicTypesUninitialized(), writer);
         bond::CompactBinaryReader<bond::InputBuffer> reader(buffer.GetBuffer());
-        
+
         obj.m_defaults.set();
         obj.m_defaults->m_basicUnintialized = bond::bonded<BasicTypesUninitialized>(reader);
     }
@@ -316,27 +311,27 @@ bond::blob Serialize(Test test, const Compat& obj)
 {
     switch (test)
     {
-        case compact: 
+        case compact:
             return Serialize<bond::CompactBinaryWriter<bond::OutputBuffer> >(obj);
 
-        case compact2: 
+        case compact2:
             return Serialize<bond::CompactBinaryWriter<bond::OutputBuffer> >(obj, bond::v2);
 
-        case fast: 
+        case fast:
             return Serialize<bond::FastBinaryWriter<bond::OutputBuffer> >(obj);
 
-        case json: 
+        case json:
             return Serialize<bond::SimpleJsonWriter<bond::OutputBuffer> >(obj);
 
-        case simple: 
+        case simple:
             return Serialize<bond::SimpleBinaryWriter<bond::OutputBuffer> >(obj);
 
         case simple2:
             return Serialize<bond::SimpleBinaryWriter<bond::OutputBuffer> >(obj, bond::v2);
 
-        case schema: 
+        case schema:
             return Marshal<bond::CompactBinaryWriter<bond::OutputBuffer> >(bond::GetRuntimeSchema<Compat>());
-        
+
         default:
             BOOST_ASSERT(false);
             return bond::blob();
@@ -374,19 +369,19 @@ void Deserialize(Test test, const bond::blob& buffer, Compat& obj, bond::SchemaD
 {
     switch (test)
     {
-        case compact: 
+        case compact:
             return Deserialize<bond::CompactBinaryReader<bond::InputBuffer> >(buffer, obj);
 
-        case compact2: 
+        case compact2:
             return Deserialize<bond::CompactBinaryReader<bond::InputBuffer> >(buffer, obj, bond::v2);
 
-        case fast: 
+        case fast:
             return Deserialize<bond::FastBinaryReader<bond::InputBuffer> >(buffer, obj);
 
-        case json: 
+        case json:
             return Deserialize<bond::SimpleJsonReader<bond::InputBuffer> >(buffer, obj);
 
-        case simple: 
+        case simple:
             return Deserialize<bond::SimpleBinaryReader<bond::InputBuffer> >(buffer, obj);
 
         case simple2:

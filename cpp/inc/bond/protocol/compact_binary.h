@@ -13,73 +13,73 @@
 
 /*
 
-                     .----------.--------------.   .----------.---------.                            
-   struct (v1)       |  fields  | BT_STOP_BASE |...|  fields  | BT_STOP |                            
-                     '----------'--------------'   '----------'---------'                            
+                     .----------.--------------.   .----------.---------.
+   struct (v1)       |  fields  | BT_STOP_BASE |...|  fields  | BT_STOP |
+                     '----------'--------------'   '----------'---------'
 
-                     .----------.----------.--------------.   .----------.---------.                            
-   struct (v2)       |  length  |  fields  | BT_STOP_BASE |...|  fields  | BT_STOP |                            
-                     '----------'----------'--------------'   '----------'---------'                            
+                     .----------.----------.--------------.   .----------.---------.
+   struct (v2)       |  length  |  fields  | BT_STOP_BASE |...|  fields  | BT_STOP |
+                     '----------'----------'--------------'   '----------'---------'
 
-   length             variable int encoded uint32 length of following fields, up to and 
+   length             variable int encoded uint32 length of following fields, up to and
                       including BT_STOP but excluding length itself.
 
-                     .----------.----------.   .----------.                                           
-   fields            |  field   |  field   |...|  field   |                                           
-                     '----------'----------'   '----------'                                           
-                                                                                                      
+                     .----------.----------.   .----------.
+   fields            |  field   |  field   |...|  field   |
+                     '----------'----------'   '----------'
+
                      .----------.----------.
-   field             | id+type  |  value   |                                                          
-                     '----------'----------'                                                          
-                                                                                                      
-                                            .---.---.---.---.---.---.---.---.                       i - id bits 
-   id+type           0 <= id <= 5           | i | i | i | t | t | t | t | t |                       t - type bits     
+   field             | id+type  |  value   |
+                     '----------'----------'
+
+                                            .---.---.---.---.---.---.---.---.                       i - id bits
+   id+type           0 <= id <= 5           | i | i | i | t | t | t | t | t |                       t - type bits
                                             '---'---'---'---'---'---'---'---'                       v - value bits
-                                              2       0   4               0                           
+                                              2       0   4               0
 
                                             .---.---.---.---.---.---.---.---.---.   .---.
-                     5 < id <= 0xff         | 1 | 1 | 0 | t | t | t | t | t | i |...| i |             
-                                            '---'---'---'---'---'---'---'---'---'   '---'             
-                                                          4               0   7       0               
-                                                                                                      
-                                            .---.---.---.---.---.---.---.---.---.   .---.---.   .---.
-                     0xff < id <= 0xffff    | 1 | 1 | 1 | t | t | t | t | t | i |...| i | i |...| i |             
-                                            '---'---'---'---'---'---'---'---'---'   '---'---'   '---'             
-                                                          4               0   7       0   15      8               
+                     5 < id <= 0xff         | 1 | 1 | 0 | t | t | t | t | t | i |...| i |
+                                            '---'---'---'---'---'---'---'---'---'   '---'
+                                                          4               0   7       0
 
-                                                                                                      
-                                            .---.---.---.---.---.---.---.---.                       
-   value             bool                   |   |   |   |   |   |   |   | v |                         
-                                            '---'---'---'---'---'---'---'---'                         
+                                            .---.---.---.---.---.---.---.---.---.   .---.---.   .---.
+                     0xff < id <= 0xffff    | 1 | 1 | 1 | t | t | t | t | t | i |...| i | i |...| i |
+                                            '---'---'---'---'---'---'---'---'---'   '---'---'   '---'
+                                                          4               0   7       0   15      8
+
+
+                                            .---.---.---.---.---.---.---.---.
+   value             bool                   |   |   |   |   |   |   |   | v |
+                                            '---'---'---'---'---'---'---'---'
                                                                           0
 
                                             .---.---.---.---.---.---.---.---.
                      int8, uint8            | v | v | v | v | v | v | v | v |
                                             '---'---'---'---'---'---'---'---'
-                                              7                           0 
-                                                                                                      
-                                            .---.---.   .---.---.---.   .---.
-                     uint16, uint32,        | 1 | v |...| v | 0 | v |...| v |  [...]                       
-                     uint64                 '---'---'   '---'---'---'   '---'
-                                                  6       0       13      7                           
-                                                                                                      
-                                            variable encoding, high bit of every byte                 
-                                            indicates if there is another byte        
-                                                                                                      
-                                                                                                      
-                     int16, int32,          zig zag encoded to unsigned integer:                       
-                     int64                                                                                 
-                                             0 -> 0                                             
-                                            -1 -> 1                                                   
-                                             1 -> 2                                             
-                                            -2 -> 3                                                   
-                                            ...                                                 
-                                                                                                
-                                            and then encoded as unsigned integer                
+                                              7                           0
 
-                                            
+                                            .---.---.   .---.---.---.   .---.
+                     uint16, uint32,        | 1 | v |...| v | 0 | v |...| v |  [...]
+                     uint64                 '---'---'   '---'---'---'   '---'
+                                                  6       0       13      7
+
+                                            variable encoding, high bit of every byte
+                                            indicates if there is another byte
+
+
+                     int16, int32,          zig zag encoded to unsigned integer:
+                     int64
+                                             0 -> 0
+                                            -1 -> 1
+                                             1 -> 2
+                                            -2 -> 3
+                                            ...
+
+                                            and then encoded as unsigned integer
+
+
                      float, double          little endian
-                                            
+
 
                                             .-------.------------.
                      string, wstring        | count | characters |
@@ -97,12 +97,12 @@
                                             .---.---.---.---.---.---.---.---.
                            type (v1)        |   |   |   | t | t | t | t | t |
                                             '---'---'---'---'---'---'---'---'
-                                                          4               0 
+                                                          4               0
 
-                                            .---.---.---.---.---.---.---.---. 
-                           type (v2)        | c | c | c | t | t | t | t | t | 
-                                            '---'---'---'---'---'---'---'---' 
-                                              2       0   4               0   
+                                            .---.---.---.---.---.---.---.---.
+                           type (v2)        | c | c | c | t | t | t | t | t |
+                                            '---'---'---'---'---'---'---'---'
+                                              2       0   4               0
 
                                             if count of items is < 7, 'c' are bit of (count + 1),
                                             otherwise 'c' bits are 0.
@@ -120,7 +120,7 @@
                                             .---.---.---.---.---.---.---.---.
                             key type,       |   |   |   | t | t | t | t | t |
                             value type      '---'---'---'---'---'---'---'---'
-                                                          4               0 
+                                                          4               0
 
                             count           variable encoded uint32 count of {key,mapped} pairs
 
@@ -132,12 +132,6 @@ namespace bond
 {
 
 
-#pragma warning(push)
-// Disable warning when Buffer parameter is a reference
-// warning C4512: 'bond::CompactBinaryReader<Buffer>' : assignment operator could not be generated
-#pragma warning(disable:4512) 
-
-
 template <typename BufferT>
 class CompactBinaryWriter;
 
@@ -145,9 +139,9 @@ class CompactBinaryWriter;
 template <typename BufferT>
 class CompactBinaryReader
 {
-public:  
+public:
     typedef BufferT                             Buffer;
-    typedef DynamicParser<CompactBinaryReader&> Parser; 
+    typedef DynamicParser<CompactBinaryReader&> Parser;
     typedef CompactBinaryWriter<Buffer>         Writer;
 
     static const uint16_t magic; // = COMPACT_PROTOCOL
@@ -164,26 +158,26 @@ public:
             : _version == default_version<CompactBinaryReader>::value);
     }
 
-    
+
     // This identical to compiler generated ctor except for noexcept declaration.
     // Copy ctor that is explicitly declared throw() is needed for boost::variant
-    // to use optimized code path. 
+    // to use optimized code path.
     /// @brief Copy constructor
     CompactBinaryReader(const CompactBinaryReader& that) BOND_NOEXCEPT
         : _input(that._input),
           _version(that._version)
     {}
 
-    
+
     /// @brief Comparison operator
     bool operator==(const CompactBinaryReader& rhs) const
     {
         return _input == rhs._input;
     }
 
-    
+
     /// @brief Access to underlaying buffer
-    typename boost::call_traits<Buffer>::const_reference 
+    typename boost::call_traits<Buffer>::const_reference
     GetBuffer() const
     {
         return _input;
@@ -196,14 +190,14 @@ public:
 
         _input.Read(magic);
         _input.Read(_version);
-        
+
         return magic == CompactBinaryReader::magic
             && (protocol_has_multiple_versions<CompactBinaryReader>::value
                 ? _version <= CompactBinaryReader::version
                 : _version == default_version<CompactBinaryReader>::value);
     }
 
-    
+
     // ReadStructBegin
     void ReadStructBegin(bool base = false)
     {
@@ -222,7 +216,7 @@ public:
     void ReadFieldBegin(BondDataType& type, uint16_t& id)
     {
         uint8_t raw;
-        
+
         _input.Read(raw);
 
         type = static_cast<BondDataType>(raw & 0x1f);
@@ -246,12 +240,12 @@ public:
     void ReadFieldEnd()
     {}
 
-    
+
     // ReadContainerBegin
     void ReadContainerBegin(uint32_t& size, BondDataType& type)
     {
         uint8_t raw;
-        
+
         _input.Read(raw);
         type = static_cast<BondDataType>(raw & 0x1f);
 
@@ -261,7 +255,7 @@ public:
             Read(size);
     }
 
-    
+
     // container of 2-tuple (e.g. map)
     void ReadContainerBegin(uint32_t& size, std::pair<BondDataType, BondDataType>& type)
     {
@@ -276,12 +270,12 @@ public:
         Read(size);
     }
 
-    
+
     // ReadContainerEnd
     void ReadContainerEnd()
     {}
 
-    
+
     // Read for floating point
     template <typename T>
     typename boost::enable_if<is_floating_point<T> >::type
@@ -309,7 +303,7 @@ public:
         value = DecodeZigZag(unsigned_value);
     }
 
-    
+
     // Read for enums
     template <typename T>
     typename boost::enable_if<is_enum<T> >::type
@@ -319,14 +313,14 @@ public:
         Read(*reinterpret_cast<int32_t*>(&value));
     }
 
-    
+
     // Read for int8_t
     void Read(int8_t& value)
     {
         _input.Read(value);
     }
 
-    
+
     // Read for uint8_t
     void Read(uint8_t& value)
     {
@@ -340,14 +334,14 @@ public:
         _input.Read(value);
     }
 
-    
+
     // Read for strings
     template <typename T>
     typename boost::enable_if<is_string_type<T> >::type
     Read(T& value)
     {
         uint32_t length = 0;
-        
+
         Read(length);
         detail::ReadStringData(_input, value, length);
     }
@@ -372,7 +366,7 @@ public:
         SkipComplex(bond::BT_STRUCT);
     }
 
-    void Skip(BondDataType type) 
+    void Skip(BondDataType type)
     {
         switch (type)
         {
@@ -408,14 +402,14 @@ public:
     }
 
 protected:
-    void SkipComplex(BondDataType type) 
+    void SkipComplex(BondDataType type)
     {
         switch (type)
         {
             case bond::BT_STRING:
             {
                 uint32_t length;
-                
+
                 Read(length);
                 _input.Skip(length);
                 break;
@@ -423,7 +417,7 @@ protected:
             case bond::BT_WSTRING:
             {
                 uint32_t length;
-                
+
                 Read(length);
                 _input.Skip(length * sizeof(uint16_t));
                 break;
@@ -431,27 +425,27 @@ protected:
             case bond::BT_SET:
             case bond::BT_LIST:
             {
-                BondDataType type;
+                BondDataType element_type;
                 uint32_t     size;
-                
-                ReadContainerBegin(size, type);
+
+                ReadContainerBegin(size, element_type);
                 for(uint32_t i = 0; i < size; ++i)
                 {
-                    Skip(type);
+                    Skip(element_type);
                 }
                 ReadContainerEnd();
                 break;
             }
             case bond::BT_MAP:
             {
-                std::pair<BondDataType, BondDataType>   type;
+                std::pair<BondDataType, BondDataType>   element_type;
                 uint32_t                                size;
-                
-                ReadContainerBegin(size, type);
+
+                ReadContainerBegin(size, element_type);
                 for(uint32_t i = 0; i < size; ++i)
                 {
-                    Skip(type.first);
-                    Skip(type.second);
+                    Skip(element_type.first);
+                    Skip(element_type.second);
                 }
                 ReadContainerEnd();
                 break;
@@ -469,18 +463,18 @@ protected:
                     ReadStructBegin();
 
                     uint16_t     id;
-                    BondDataType type;
+                    BondDataType field_type;
 
-                    for (ReadFieldBegin(type, id);
-                            type != bond::BT_STOP && type != bond::BT_STOP_BASE;
-                            ReadFieldEnd(), ReadFieldBegin(type, id))
+                    for (ReadFieldBegin(field_type, id);
+                         field_type != bond::BT_STOP && field_type != bond::BT_STOP_BASE;
+                         ReadFieldEnd(), ReadFieldBegin(field_type, id))
                     {
-                        Skip(type);
+                        Skip(field_type);
                     }
 
                     ReadStructEnd();
-                
-                    if (type == bond::BT_STOP)
+
+                    if (field_type == bond::BT_STOP)
                         break;
                 }
 
@@ -495,15 +489,13 @@ protected:
     uint16_t _version;
 
     template <typename Input, typename Output>
-    friend 
-    bool is_protocol_version_same(const CompactBinaryReader<Input>&, 
+    friend
+    bool is_protocol_version_same(const CompactBinaryReader<Input>&,
                                   const CompactBinaryWriter<Output>&);
-}; 
+};
 
 template <typename Buffer>
 const uint16_t CompactBinaryReader<Buffer>::magic = COMPACT_PROTOCOL;
-
-#pragma warning(pop)
 
 
 class OutputCounter;
@@ -528,16 +520,16 @@ class CompactBinaryWriter
         CompactBinaryWriter* writer;
     };
 
-public:  
+public:
     typedef BufferT                             Buffer;
     typedef CompactBinaryReader<Buffer>         Reader;
     typedef CompactBinaryWriter<OutputCounter>  Pass0;
-    
+
 
     /// @brief Construct from output buffer/stream.
     CompactBinaryWriter(Buffer& output,
                         uint16_t version = default_version<Reader>::value)
-        : _output(output),     
+        : _output(output),
           _it(NULL),
           _version(version)
     {
@@ -547,7 +539,7 @@ public:
     }
 
     template<typename T>
-    CompactBinaryWriter(OutputCounter& output, 
+    CompactBinaryWriter(OutputCounter& output,
                         const CompactBinaryWriter<T>& pass1)
         : _output(output),
           _version(pass1._version)
@@ -572,7 +564,7 @@ public:
         _output.Write(_version);
     }
 
-    
+
     void WriteStructBegin(const Metadata& /*metadata*/, bool base)
     {
         if (!base)
@@ -596,7 +588,7 @@ public:
 
     // WriteField for basic types
     template <typename T>
-    void WriteField(uint16_t id, const bond::Metadata& /*metadata*/, const T& value) 
+    void WriteField(uint16_t id, const bond::Metadata& /*metadata*/, const T& value)
     {
         WriteFieldBegin(get_type_id<T>::value, id);
         Write(value);
@@ -705,7 +697,7 @@ public:
     {
         _output.Write(value);
     }
-    
+
     // Write for bool
     void Write(const bool& value)
     {
@@ -732,7 +724,7 @@ public:
 protected:
     template <typename Buffer>
     friend class CompactBinaryWriter;
-    
+
     void LengthBegin(OutputCounter& counter)
     {
         _stack.push(_lengths.size());
@@ -742,7 +734,7 @@ protected:
     void LengthEnd(OutputCounter& counter)
     {
         uint32_t& length = _lengths[_stack.pop()];
-        
+
         length = counter.GetCount() - length;
         counter.WriteVariableUnsigned(length);
     }
@@ -760,16 +752,16 @@ protected:
     void LengthEnd(T&)
     {}
 
-protected:    
+protected:
     Buffer&                         _output;
     const uint32_t*                 _it;
     uint16_t                        _version;
     detail::SimpleArray<uint32_t>   _stack;
-    detail::SimpleArray<uint32_t>   _lengths; 
+    detail::SimpleArray<uint32_t>   _lengths;
 
     template <typename Input, typename Output>
-    friend 
-    bool is_protocol_version_same(const CompactBinaryReader<Input>&, 
+    friend
+    bool is_protocol_version_same(const CompactBinaryReader<Input>&,
                                   const CompactBinaryWriter<Output>&);
 };
 
@@ -778,8 +770,8 @@ protocol_has_multiple_versions<CompactBinaryReader<Input> >
     : enable_protocol_versions<CompactBinaryReader<Input> > {};
 
 template <typename Input, typename Output>
-inline 
-bool is_protocol_version_same(const CompactBinaryReader<Input>& reader, 
+inline
+bool is_protocol_version_same(const CompactBinaryReader<Input>& reader,
                               const CompactBinaryWriter<Output>& writer)
 {
     return reader._version == writer._version;

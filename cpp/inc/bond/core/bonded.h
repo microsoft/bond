@@ -38,12 +38,6 @@ inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
     const Transform& transform);
 
 
-#pragma warning(push)
-// Disable warning when Reader parameter is a reference
-// warning C4512: 'bond::bonded<T,Reader>' : assignment operator could not be generated
-#pragma warning(disable : 4512)
-
-
 /// @brief Represents data for a struct T known at compile-time
 ///
 /// See [User's Manual](../../manual/bond_cpp.html#understanding-bondedt)
@@ -272,8 +266,5 @@ private:
     mutable bool _skip;
     bool _base;
 };
-
-
-#pragma warning(pop)
 
 } // namespace bond

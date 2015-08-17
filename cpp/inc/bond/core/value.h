@@ -586,11 +586,6 @@ private:
 };
 
 
-// warning C4512: 'bond::DeserializeElement::Deserialize' : assignment operator could not be generated
-#pragma warning(push)
-#pragma warning(disable: 4512)
-
-
 template <typename X, typename I, typename T>
 typename boost::enable_if<require_modify_element<X> >::type 
 inline DeserializeElement(X& var, const I& item, const T& element)
@@ -619,8 +614,6 @@ inline DeserializeElement(X&, I& item, const T& element)
 {
     element.Deserialize(item);
 }
-
-#pragma warning(pop)
 
 
 // Read elements of a list

@@ -3,14 +3,13 @@
 
 #pragma once
 
+// Disable some overeager MSC level 4 warnings.
+
 // C4296: '<' : expression is always false
 #pragma warning(disable: 4296)
 
 // C4127: conditional expression is constant
 #pragma warning(disable: 4127)
-
-// C4996: 'std::copy': Function call with parameters that may be unsafe
-#pragma warning(disable: 4996)
 
 // C4503: decorated name length exceeded, name was truncated
 #pragma warning(disable: 4503)
@@ -24,11 +23,11 @@
 // C4482: nonstandard extension used: enum 'enum' used in qualified name
 #pragma warning(disable: 4482)
 
-// C4456: declaration of 'symbol' hides previous local declaration
-#pragma warning(disable: 4456)
-
-// C4457: declaration of 'symbol' hides function parameter
-#pragma warning(disable: 4457)
-
 // C4458: declaration of 'symbol' hides class member
 #pragma warning(disable: 4458)
+
+// C4458: declaration of 'symbol' hides global declaration
+#pragma warning(disable: 4459)
+
+// C4512: assignment operator could not be generated
+#pragma warning(disable: 4512)

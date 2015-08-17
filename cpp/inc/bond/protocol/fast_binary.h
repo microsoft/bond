@@ -24,12 +24,12 @@
                      .---.---.---.---.---.---.---.---.                           i - id bits
    type              | 0 | 0 | 0 | t | t | t | t | t |                           t - type bits
                      '---'---'---'---'---'---'---'---'                           v - value bits
-                                   4               0 
+                                   4               0
 
    id                .---.   .---.---.   .---.
                      | i |...| i | i |...| i |
                      '---'   '---'---'   '---'
-                       7       0   15      8  
+                       7       0   15      8
 
                                             .---.---.---.---.---.---.---.---.
    value             bool                   |   |   |   |   |   |   |   | v |
@@ -55,9 +55,9 @@
                                             .---.---.---.---.---.---.---.---.
                            type             |   |   |   | t | t | t | t | t |
                                             '---'---'---'---'---'---'---'---'
-                                                          4               0 
+                                                          4               0
 
-                           count            variable uint32 count of items 
+                           count            variable uint32 count of items
 
                            items            each item encoded according to its type
 
@@ -69,7 +69,7 @@
                                             .---.---.---.---.---.---.---.---.
                             key type,       |   |   |   | t | t | t | t | t |
                             value type      '---'---'---'---'---'---'---'---'
-                                                          4               0 
+                                                          4               0
 
                             count           variable encoded uint32 count of {key,mapped} pairs
 
@@ -80,7 +80,7 @@
                      .---.---.   .---..---.---.   .---..---.---.   .---..---.---.   .---..---.---.---.---.   .---.
                      | 1 | v |...| v || 1 | v |...| v || 1 | v |...| v || 1 | v |...| v || 0 | 0 | 0 | v |...| v |
                      '---'---'   '---''---'---'   '---''---'---'   '---''---'---'   '---''---'---'---'---'   '---'
-                           6       0        13      7        20      14       27      21               31      28 
+                           6       0        13      7        20      14       27      21               31      28
 
                      1 to 5 bytes, high bit of every byte indicates if there is another byte
 
@@ -89,17 +89,12 @@
 namespace bond
 {
 
-#pragma warning(push)
-// Disable warning when Buffer parameter is a reference
-// warning C4512: 'bond::FastBinaryReader<Buffer>' : assignment operator could not be generated
-#pragma warning(disable:4512) 
-
 template <typename BufferT>
-class FastBinaryWriter; 
+class FastBinaryWriter;
 
 /// @brief Reader for Fast Binary protocol
 template <typename BufferT>
-class FastBinaryReader 
+class FastBinaryReader
 {
 public:
     typedef BufferT                             Buffer;
@@ -117,7 +112,7 @@ public:
 
     // This identical to compiler generated ctor except for noexcept declaration.
     // Copy ctor that is explicitly declared throw() is needed for boost::variant
-    // to use optimized code path. 
+    // to use optimized code path.
     /// @brief Copy constructor
     FastBinaryReader(const FastBinaryReader& that) BOND_NOEXCEPT
         : _input(that._input)
@@ -132,7 +127,7 @@ public:
 
 
     /// @brief Access to underlaying buffer
-    typename boost::call_traits<Buffer>::const_reference 
+    typename boost::call_traits<Buffer>::const_reference
     GetBuffer() const
     {
         return _input;
@@ -146,11 +141,11 @@ public:
         _input.Read(magic);
         _input.Read(version);
 
-        return magic == FastBinaryReader::magic 
+        return magic == FastBinaryReader::magic
             && version <= FastBinaryReader::version;
     }
 
-    
+
     // Read for primitive types
     template <typename T>
     typename boost::disable_if<is_string_type<T> >::type
@@ -166,7 +161,7 @@ public:
     Read(T& value)
     {
         uint32_t length = 0;
-        
+
         ReadVariableUnsigned(_input, length);
         detail::ReadStringData(_input, value, length);
     }
@@ -189,7 +184,7 @@ public:
     void ReadFieldBegin(BondDataType& type, uint16_t& id)
     {
         ReadType(type);
-        
+
         if (type != BT_STOP && type != BT_STOP_BASE)
             Read(id);
         else
@@ -278,7 +273,7 @@ protected:
     void ReadType(BondDataType& type)
     {
         uint8_t byte;
-        
+
         Read(byte);
         type = static_cast<BondDataType>(byte);
     }
@@ -290,7 +285,7 @@ protected:
             case BT_STRING:
             {
                 uint32_t size = 0;
-                
+
                 ReadVariableUnsigned(_input, size);
                 _input.Skip(size);
                 break;
@@ -298,7 +293,7 @@ protected:
             case BT_WSTRING:
             {
                 uint32_t size = 0;
-                
+
                 ReadVariableUnsigned(_input, size);
                 _input.Skip(size * sizeof(uint16_t));
                 break;
@@ -310,18 +305,18 @@ protected:
                     ReadStructBegin();
 
                     uint16_t     id;
-                    BondDataType type;
+                    BondDataType field_type;
 
-                    for (ReadFieldBegin(type, id);
-                            type != BT_STOP && type != BT_STOP_BASE;
-                            ReadFieldEnd(), ReadFieldBegin(type, id))
+                    for (ReadFieldBegin(field_type, id);
+                            field_type != BT_STOP && field_type != BT_STOP_BASE;
+                            ReadFieldEnd(), ReadFieldBegin(field_type, id))
                     {
-                        Skip(type);
+                        Skip(field_type);
                     }
 
                     ReadStructEnd();
-                
-                    if (type == BT_STOP)
+
+                    if (field_type == BT_STOP)
                         break;
                 }
 
@@ -330,14 +325,14 @@ protected:
             case BT_SET:
             case BT_LIST:
             {
-                BondDataType type;
+                BondDataType element_type;
                 uint32_t size;
-                
-                ReadContainerBegin(size, type);
+
+                ReadContainerBegin(size, element_type);
 
                 for(uint32_t i = 0; i < size; i++)
                 {
-                    Skip(type);
+                    Skip(element_type);
                 }
 
                 ReadContainerEnd();
@@ -345,15 +340,15 @@ protected:
             }
             case BT_MAP:
             {
-                std::pair<BondDataType, BondDataType> type;
+                std::pair<BondDataType, BondDataType> element_type;
                 uint32_t size;
-                
-                ReadContainerBegin(size, type);
+
+                ReadContainerBegin(size, element_type);
 
                 for(uint32_t i = 0; i < size; i++)
                 {
-                    Skip(type.first);
-                    Skip(type.second);
+                    Skip(element_type.first);
+                    Skip(element_type.second);
                 }
 
                 ReadContainerEnd();
@@ -373,12 +368,10 @@ const uint16_t FastBinaryReader<Buffer>::magic = FAST_PROTOCOL;
 template <typename Buffer>
 const uint16_t FastBinaryReader<Buffer>::version = v1;
 
-#pragma warning(pop)
-
 
 /// @brief Writer for Fast Binary protocol
 template <typename BufferT>
-class FastBinaryWriter 
+class FastBinaryWriter
     : boost::noncopyable
 {
 public:
@@ -461,7 +454,7 @@ public:
     Write(const T& value)
     {
         uint32_t length = string_length(value);
-        
+
         WriteVariableUnsigned(_output, length);
         detail::WriteStringData(_output, value, length);
     }

@@ -22,7 +22,7 @@ namespace bond
 
     // resize_list
     template <typename T, std::size_t N>
-    void resize_list(std::array<T, N>& a, uint32_t size)
+    void resize_list(std::array<T, N>&, uint32_t size)
     {
         if (size > N)
         {

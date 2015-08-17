@@ -2,9 +2,6 @@
 #   define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#pragma warning (disable: 4706 4068)
-#pragma clang diagnostic ignored "-Wunused-value"
-
 #include "compat_reflection.h"
 #include "compat_no_generics_reflection.h"
 #include "compat.h"

@@ -3,19 +3,12 @@
 
 #pragma once
 
-#pragma warning(push)
-// boost\variant\variant.hpp(762) :
-//      warning C4512: 'boost::detail::variant::comparer<Variant,Comp>' : assignment operator could not be generated
-#pragma warning(disable : 4512 4702)
-
 #include <boost/make_shared.hpp>
 #include <boost/variant.hpp>
 #include <boost/ref.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/mpl/push_front.hpp>
 #include <boost/mpl/copy_if.hpp>
-
-#pragma warning(pop)
 
 #include "customize.h"
 #include "detail/odr.h"

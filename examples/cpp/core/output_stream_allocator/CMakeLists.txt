@@ -1,1 +1,3 @@
 add_bond_test (output_stream_allocator output_stream_allocator.bond output_stream_allocator.cpp)
+
+target_use_cxx11 (output_stream_allocator)
