@@ -1,5 +1,9 @@
+#include <bond/core/config.h>
+
+#if defined(BOOST_MSVC)
 // warning C4351: new behavior: elements of array 'BondStruct<T>::field' will be default initialized
 #pragma warning (disable: 4351)
+#endif
 
 #include "custom_protocols.h"
 #include "multi_index.h"

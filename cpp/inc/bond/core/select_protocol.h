@@ -3,13 +3,16 @@
 
 #pragma once
 
+#include "config.h"
 #include "exception.h"
 #include "protocol.h"
 #include "runtime_schema.h"
 #include "exception.h"
 
+#if defined(BOOST_MSVC)
 #pragma warning(push)
 #pragma warning(disable: 4702)
+#endif
 
 namespace bond
 {
@@ -273,4 +276,6 @@ inline bool Apply(const T& value, Buffer& output, uint16_t protocol)
 
 } // namespace bond
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif

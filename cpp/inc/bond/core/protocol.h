@@ -3,10 +3,14 @@
 
 #pragma once
 
+#include "config.h"
+
+#if defined(BOOST_MSVC)
 #pragma warning(push)
 // boost\variant\variant.hpp(762) :
 //      warning C4512: 'boost::detail::variant::comparer<Variant,Comp>' : assignment operator could not be generated
 #pragma warning(disable : 4512 4702)
+#endif
 
 #include <boost/make_shared.hpp>
 #include <boost/variant.hpp>
@@ -15,7 +19,9 @@
 #include <boost/mpl/push_front.hpp>
 #include <boost/mpl/copy_if.hpp>
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif
 
 #include "customize.h"
 #include "detail/odr.h"

@@ -3,9 +3,13 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#if defined(BOOST_MSVC)
 #pragma warning (push)
 // warning C4512: 'boost::transform_iterator<UnaryFunc,Iterator,Reference,Value>' : assignment operator could not be generated
 #pragma warning (disable : 4512)
+#endif
 
 #include <iostream>
 #include <boost/algorithm/string.hpp>
@@ -559,3 +563,7 @@ protected:
 } // namespace detail
 } // namespace cmd
 } // namespace bond
+
+#if defined(BOOST_MSVC)
+#pragma warning (pop)
+#endif

@@ -37,9 +37,11 @@ void Init(std::wstring& wstr)
 }
 
 
+#if defined(BOOST_MSVC)
 #pragma warning(push)
 // warning C4310: cast truncates constant value
 #pragma warning(disable: 4310)
+#endif
 
 template <typename T>
 void Init(std::list<T>& x)
@@ -67,7 +69,9 @@ void Init(std::list<T>& x)
     }
 }
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif
 
 
 class InitEnums

@@ -96,9 +96,11 @@ struct SkipTypes
 };
 
 
+#if defined(BOOST_MSVC)
 #pragma warning(push)
 // warning C4310: cast truncates constant value
 #pragma warning(disable: 4310)
+#endif
 
 template <typename T>
 const std::vector<T>& IntegerConstants()
@@ -113,7 +115,9 @@ const std::vector<T>& IntegerConstants()
     return constants;
 }
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif
 
 
 // CreateSelfMappings creates mappings compatible with MapTo<T> transform

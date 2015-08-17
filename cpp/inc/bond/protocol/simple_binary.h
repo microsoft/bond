@@ -3,16 +3,19 @@
 
 #pragma once
 
+#include <bond/core/config.h>
 #include "encoding.h"
 #include <bond/core/traits.h>
 #include <bond/core/bond_version.h>
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
 
+#if defined(BOOST_MSVC)
 #pragma warning(push)
 // Disable warning when Buffer parameter is a reference
 // warning C4512: 'bond::SimpleBinaryReader<Buffer>' : assignment operator could not be generated
 #pragma warning(disable:4512) 
+#endif
 
 namespace bond
 {
@@ -214,7 +217,9 @@ protected:
 template <typename Buffer>
 const uint16_t SimpleBinaryReader<Buffer>::magic = SIMPLE_PROTOCOL;
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif
 
 
 /// @brief Writer for Simple Binary protocol

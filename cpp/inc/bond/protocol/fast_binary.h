@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <bond/core/config.h>
 #include "encoding.h"
 #include <bond/core/bond_version.h>
 #include <boost/call_traits.hpp>
@@ -89,10 +90,12 @@
 namespace bond
 {
 
+#if defined(BOOST_MSVC)
 #pragma warning(push)
 // Disable warning when Buffer parameter is a reference
 // warning C4512: 'bond::FastBinaryReader<Buffer>' : assignment operator could not be generated
 #pragma warning(disable:4512) 
+#endif
 
 template <typename BufferT>
 class FastBinaryWriter; 
@@ -373,7 +376,9 @@ const uint16_t FastBinaryReader<Buffer>::magic = FAST_PROTOCOL;
 template <typename Buffer>
 const uint16_t FastBinaryReader<Buffer>::version = v1;
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif
 
 
 /// @brief Writer for Fast Binary protocol

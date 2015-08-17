@@ -1,7 +1,10 @@
 #pragma once
 
+#if defined(BOOST_MSVC)
 // C4245: 'initializing' : conversion from 'int' to 'unsigned short', signed/unsigned mismatch
+#pragma warning(push)
 #pragma warning(disable: 4245)
+#endif
 
 #include <bond/core/scalar_interface.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -66,3 +69,6 @@ int64_t get_aliased_value(const boost::posix_time::ptime& value)
         + time_consts::min_date_time_ticks;
 }
 
+#if defined(BOOST_MSVC)
+#pragma warning(pop)
+#endif

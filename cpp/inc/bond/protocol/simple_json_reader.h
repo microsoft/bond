@@ -3,15 +3,17 @@
 
 #pragma once
 
+#include <bond/core/config.h>
 #include "encoding.h"
 #include "detail/rapidjson_helper.h"
 #include <boost/call_traits.hpp>
 
+#if defined(BOOST_MSVC)
 #pragma warning(push)
-
 // Disable warning when Buffer parameter is a reference
 // warning C4512: 'bond::SimpleJsonReader<Buffer>' : assignment operator could not be generated
-#pragma warning(disable:4512) 
+#pragma warning(disable:4512)
+#endif
 
 
 namespace bond
@@ -187,4 +189,6 @@ is_protocol_same<SimpleJsonReader<Input>, SimpleJsonWriter<Output> >
 
 } // namespace bond
 
+#if defined(BOOST_MSVC)
 #pragma warning(pop)
+#endif
