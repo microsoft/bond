@@ -326,7 +326,7 @@ private:
                 struct_<bond::SchemaDef>()
                     .def();
 
-                register_builtin_convereters();
+                register_builtin_converters();
             }
         }
 
