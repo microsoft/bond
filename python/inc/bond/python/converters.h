@@ -122,7 +122,8 @@ static PyObject* identity_unaryfunc(PyObject* x)
     return x;
 }
 
-unaryfunc py_object_identity = identity_unaryfunc;
+
+static unaryfunc py_object_identity = identity_unaryfunc;
 
 
 // Conversion policy from Python list to a list container
@@ -423,7 +424,7 @@ struct nullable_maybe_converter
 };
 
 
-void register_builtin_convereters()
+inline void register_builtin_converters()
 {
     static bool registered;
 
