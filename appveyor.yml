@@ -19,6 +19,9 @@
 
     environment:
         matrix:
+            - BOND_BUILD: Python
+              BOND_VS: "Visual Studio 14 2015"
+              BOND_BOOST: 59
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015 Win64"
               BOND_BOOST: 59
@@ -35,6 +38,26 @@
 
     install:
         - ps: >-
+            git submodule update --init
+
+            if ($env:BOND_BUILD -eq "Python") {
+
+                if (!(Test-Path boost.exe)) {
+
+                    echo "Downloading Boost 1.${env:BOND_BOOST} ..."
+
+                    Start-FileDownload "http://iweb.dl.sourceforge.net/project/boost/boost-binaries/1.${env:BOND_BOOST}.0/boost_1_${env:BOND_BOOST}_0-msvc-14.0-32.exe" -FileName boost.exe -Timeout 1200000
+
+                }
+
+                .\boost.exe /DIR="${env:APPVEYOR_BUILD_FOLDER}\\boost_1_${env:BOND_BOOST}_0" /VERYSILENT
+
+                $env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}/boost_1_${env:BOND_BOOST}_0"
+
+                $env:BOOST_LIBRARYDIR = "${env:BOOST_ROOT}/lib32-msvc-14.0"
+
+            }
+
             choco install haskellplatform -version 2014.2.0.0 -y
 
             $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
@@ -50,8 +73,6 @@
             }
 
             if ($env:BOND_BUILD -eq "C++") {
-
-                git submodule update --init
 
                 if (!(Test-Path boost.7z)) {
 
@@ -75,12 +96,25 @@
         - cs\packages -> cs\test\core\packages.config
         - compiler\.cabal-sandbox -> compiler\bond.cabal
         - boost.7z
+        - boost.exe
 
     before_build:
         - ps: >-
             if ($env:BOND_BUILD -eq "C#") {
 
                 nuget restore cs\cs.sln
+
+            }
+
+            if ($env:BOND_BUILD -eq "Python") {
+
+                mkdir build
+
+                cd build
+
+                Wait-Process -name boost
+
+                cmake "-DBoost_ADDITIONAL_VERSIONS=1.${env:BOND_BOOST}.0" -G $env:BOND_VS ..
 
             }
 
@@ -114,6 +148,12 @@
 
             }
 
+            if ($env:BOND_BUILD -eq "Python") {
+
+                cmake --build . --target bond_python_unit_test -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+            }
+
             if ($env:BOND_BUILD -eq "C++") {
 
                 cmake --build . --target check -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
@@ -131,6 +171,12 @@
     test_script:
         - ps: >-
             $ErrorActionPreference = "Stop"
+
+            if ($env:BOND_BUILD -eq "Python") {
+
+                ctest -C Debug --tests-regex bond_python_unit_test --output-on-failure
+
+            }
 
             if ($env:BOND_BUILD -eq "C#") {
 
