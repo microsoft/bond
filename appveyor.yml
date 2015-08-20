@@ -21,7 +21,7 @@
         matrix:
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015 Win64"
-              BOND_BOOST: 58
+              BOND_BOOST: 59
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug

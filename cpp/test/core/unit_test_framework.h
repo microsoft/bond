@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/version.hpp>
 #include <boost/test/unit_test.hpp>
 
 #define UT_AssertIsTrue(...) BOOST_CHECK((__VA_ARGS__)) 
@@ -66,6 +67,14 @@
 #   define ENABLE(Pred, Key) (Pred && ENABLE_TEST_CASE == ((ENABLE_TEST_CASE & 0xFFFF) ? Key : (Key & 0xFFFF0000)))
 #endif
 
+#if BOOST_VERSION >= 105900
+#   define MAKE_BOOST_TEST_CASE(test, name) \
+    boost::unit_test::make_test_case(boost::function<void ()>(test), (name), __FILE__, __LINE__)
+#else
+#   define MAKE_BOOST_TEST_CASE(test, name) \
+    boost::unit_test::make_test_case(boost::unit_test::callback0<>(test), (name))
+#endif
+
 // Abstracts Boost Test APIs for defining test suites and cases.
 class UnitTestSuite
 {
@@ -87,7 +96,7 @@ public:
             parent.add(suite);    
         }
 
-        suite->add(boost::unit_test::make_test_case(boost::unit_test::callback0<>(func), id + test));
+        suite->add(MAKE_BOOST_TEST_CASE(func, id + test));
     }
 
 private:
