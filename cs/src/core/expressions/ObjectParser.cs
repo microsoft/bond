@@ -324,11 +324,12 @@ namespace Bond.Expressions
         {
             Debug.Assert(schemaType.IsBondBlob());
 
+            var arraySegment = Expression.Variable(typeof(ArraySegment<byte>), "arraySegment");
             var count = Expression.Variable(typeof(int), "count");
             var index = Expression.Variable(typeof(int), "index");
             var end = Expression.Variable(typeof(int), "end");
             var blob = typeAlias.Convert(value, schemaType);
-            var item = Expression.ArrayIndex(Expression.Property(blob, "Array"), Expression.PostIncrementAssign(index));
+            var item = Expression.ArrayIndex(Expression.Property(arraySegment, "Array"), Expression.PostIncrementAssign(index));
 
             var loop = handler(
                 new ObjectParser(this, item, typeof(sbyte)),
@@ -337,9 +338,10 @@ namespace Bond.Expressions
                 count);
 
             return Expression.Block(
-                new[] { count, index, end },
-                Expression.Assign(index, Expression.Property(blob, "Offset")),
-                Expression.Assign(count, Expression.Property(blob, "Count")),
+                new[] { arraySegment, count, index, end },
+                Expression.Assign(arraySegment, blob),
+                Expression.Assign(index, Expression.Property(arraySegment, "Offset")),
+                Expression.Assign(count, Expression.Property(arraySegment, "Count")),
                 Expression.Assign(end, Expression.Add(index, count)),
                 loop);
         }

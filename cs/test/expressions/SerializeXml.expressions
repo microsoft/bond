@@ -334,11 +334,13 @@
                     .Constant<System.UInt16>(50),
                     .Constant<Bond.Metadata>(b));
                 .Block(
+                    System.ArraySegment`1[System.Byte] $arraySegment,
                     System.Int32 $count,
                     System.Int32 $index,
                     System.Int32 $end) {
-                    $index = ($Example.b).Offset;
-                    $count = ($Example.b).Count;
+                    $arraySegment = $Example.b;
+                    $index = $arraySegment.Offset;
+                    $count = $arraySegment.Count;
                     $end = $index + $count;
                     .Block() {
                         .Call $writer.WriteContainerBegin(
