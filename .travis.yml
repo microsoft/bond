@@ -1,84 +1,85 @@
-language: cpp
+sudo: false
+language: csharp
 os:
     - linux
     - osx
-compiler:
-    - clang
-    - gcc
 env:
-    - BOND_LANG=cpp
+    - BOND_LANG=cpp-clang
+    - BOND_LANG=cpp-gcc
     - BOND_LANG=cs
-    - BOND_LANG=py
+    - BOND_LANG=py-clang
+    - BOND_LANG=py-gcc
     - BOND_GHC_VERSION=-7.8.4
     - BOND_GHC_VERSION=-7.6.3
+addons:
+  apt:
+    sources:
+        - boost-latest
+        - ubuntu-toolchain-r-test
+        - hvr-ghc
+    packages:
+        - g++-4.8
+        - libboost1.55-all-dev
+        - cabal-install-1.22
+        - ghc-7.8.4
+        - ghc-7.6.3
+        - ghc
 matrix:
   exclude:
-    # linux VM is too small to build C++/Python unit tests
+    # linux VM is too small to build C++ unit tests with g++
     - os: linux
-      env: BOND_LANG=cpp
+      env: BOND_LANG=cpp-gcc
+    # linux C++ build/test already includes Python
     - os: linux
-      env: BOND_LANG=py
+      env: BOND_LANG=py-clang
     # don't test non-default versions of GHC on OSX
     - os: osx
       env: BOND_GHC_VERSION=-7.8.4
     - os: osx
       env: BOND_GHC_VERSION=-7.6.3
-    # don't need gcc variants for GHC test
-    - compiler: gcc
-      env: BOND_GHC_VERSION=-7.8.4
-    - compiler: gcc
-      env: BOND_GHC_VERSION=-7.6.3
-    # redundant combination (full C++ build tests GCC)
+    # on OS X g++ and clang++ are the same compiler
     - os: osx
-      env: BOND_LANG=cs
-      compiler: gcc
+      env: BOND_LANG=cpp-gcc
+    - os: osx
+      env: BOND_LANG=py-gcc
+
 before_install:
+    # select C++ compiler
+    - export CXX="clang++" CC="clang"
+    - if [[ $BOND_LANG == *gcc ]]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
     # linux prereqisite packages
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BOND_LANG" == "cs" ]; then echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BOND_LANG" == "cs" ]; then echo "deb http://download.mono-project.com/repo/debian wheezy-libtiff-compat main" | sudo tee -a /etc/apt/sources.list.d/mono-xamarin.list; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update -qq; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BOND_LANG" == "cs" ]; then sudo apt-get install -y mono-complete referenceassemblies-pcl; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository ppa:smspillaz/cmake-2.8.12 -y; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository ppa:boost-latest/ppa -y; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository ppa:hvr/ghc -y; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update -qq; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install -y cmake cmake-data make libboost1.55-all-dev cabal-install-1.22 ghc$BOND_GHC_VERSION; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=/opt/cabal/1.22/bin:/opt/ghc/${BOND_GHC_VERSION#?}/bin:$PATH; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then wget http://www.cmake.org/files/v3.2/cmake-3.2.3-Linux-x86_64.tar.gz; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then tar -xzvf cmake-3.2.3-Linux-x86_64.tar.gz; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PWD/cmake-3.2.3-Linux-x86_64/bin:$PATH; fi
     # OS X prerequisite packages
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install ghc cabal-install; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BOND_LANG" == "py" ]; then brew unlink boost; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BOND_LANG" == "py" ]; then brew install boost boost-python; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BOND_LANG" == "cs" ]; then curl -s -o mono.pkg http://download.mono-project.com/archive/3.12.0/macos-10-x86/MonoFramework-MDK-3.12.0.macos10.xamarin.x86.pkg; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BOND_LANG" == "cs" ]; then sudo installer -pkg "mono.pkg" -target /; fi
-    # nuget installation
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BOND_LANG" == "cs" ]; then sudo apt-get install nuget && export NUGET=nuget; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BOND_LANG" == "cs" ]; then curl -s -o "cs/nuget/nuget.exe" -L "http://www.nuget.org/nuget.exe" && export NUGET="mono cs/nuget/nuget.exe"; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [[ $BOND_LANG == py* ]]; then brew unlink boost; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [[ $BOND_LANG == py* ]]; then brew install boost boost-python; fi
     # nunit installation
-    - if [ "$BOND_LANG" == "cs" ]; then travis_retry $NUGET install NUnit.Runners -version 2.6.4; fi
+    - if [ "$BOND_LANG" == "cs" ]; then travis_retry nuget install NUnit.Runners -version 2.6.4; fi
+    - export PATH=/opt/cabal/1.22/bin:/opt/ghc/${BOND_GHC_VERSION#?}/bin:$PATH
     - cabal update
     - cabal install happy
 
 before_script:
     # restore nuget packages for solution
-    - if [ "$BOND_LANG" == "cs" ]; then travis_retry $NUGET restore cs/cs.sln; fi
+    - if [ "$BOND_LANG" == "cs" ]; then travis_retry nuget restore cs/cs.sln; fi
 
 script:
     - mkdir build && cd build
     - cmake ..
-    - if [ "$BOND_LANG" == "cs" ]; then make --jobs 2; fi
-    - if [ "$BOND_LANG" == "cpp" ]; then make --jobs 2 check; fi
-    - if [ "$BOND_LANG" == "py" ]; then make --jobs 2 bond_python_compatibility_test bond_python_unit_test python_extension bond_compatibility_test; fi
-    - if [ "$BOND_LANG" == "py" ]; then ctest --tests-regex .*python.* --output-on-failure; fi
-    - if [ "$BOND_GHC_VERSION" != "" ]; then make --jobs 2 gbc-tests; fi
-    - if [ "$BOND_GHC_VERSION" == "" ]; then sudo make install; fi
+    - if [ "$BOND_LANG" == "cs" ]; then make --jobs 2 DESTDIR=$HOME install; fi
+    - if [ "$BOND_LANG" == "cs" ]; then export BOND_COMPILER_PATH=$HOME/usr/local/bin; fi
+    - if [[ $BOND_LANG == cpp* ]]; then make --jobs 2 check; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export BOND_PYTHON_TARGETS="bond_python_unit_test python_extension" BOND_PYTHON_TESTS=bond_python_unit_test; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export BOND_PYTHON_TARGETS="bond_python_compatibility_test bond_python_unit_test python_extension bond_compatibility_test" BOND_PYTHON_TESTS=".*python.*"; fi
+    - if [[ $BOND_LANG == py* ]]; then make $BOND_PYTHON_TARGETS; fi
+    - if [[ $BOND_LANG == py* ]]; then ctest --tests-regex $BOND_PYTHON_TESTS --output-on-failure; fi
+    - if [ "$BOND_GHC_VERSION" != "" ]; then make gbc-tests; fi
     - cd ..
     - if [ "$BOND_LANG" == "cs" ]; then xbuild /p:Configuration=Debug cs/cs.sln; fi
     - if [ "$BOND_LANG" == "cs" ]; then xbuild /p:Configuration=Fields cs/cs.sln; fi
     - if [ "$BOND_LANG" == "cs" ]; then mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll; fi
-    - if [ "$BOND_GHC_VERSION" != "" ]; then cd compiler; fi 
-    - if [ "$BOND_GHC_VERSION" != "" ]; then ../build/compiler/build/gbc-tests/gbc-tests; fi 
+    - if [ "$BOND_GHC_VERSION" != "" ]; then cd compiler; fi
+    - if [ "$BOND_GHC_VERSION" != "" ]; then ../build/compiler/build/gbc-tests/gbc-tests; fi
