@@ -21,11 +21,11 @@ namespace python
 template <typename classT>
 class def_readwrite_property
 {
-public:    
+public:
     def_readwrite_property(classT& c)
         : c(c)
     {}
-    
+
     template <typename Field>
     void operator()(const Field&) const
     {
@@ -48,7 +48,7 @@ private:
     {
         using namespace boost::python;
 
-        c.add_property(name.c_str(), 
+        c.add_property(name.c_str(),
              make_getter(ptr, return_value_policy<return_by_value>()),
              make_setter(ptr, return_value_policy<return_by_value>()));
     }
@@ -58,21 +58,21 @@ private:
     {
         using namespace boost::python;
 
-        c.add_property(name.c_str(), 
+        c.add_property(name.c_str(),
              make_getter(ptr, return_value_policy<return_by_value>()),
              make_setter(ptr, return_value_policy<return_by_value>()));
     }
-    
+
     template <typename S>
     void add_property(const std::string& name, bond::blob S::* ptr) const
     {
         using namespace boost::python;
 
-        c.add_property(name.c_str(), 
+        c.add_property(name.c_str(),
              make_getter(ptr, return_value_policy<return_by_value>()),
              make_setter(ptr, return_value_policy<return_by_value>()));
     }
-    
+
     template <typename T>
     void def_type() const
     {
@@ -84,19 +84,19 @@ private:
         def_type(static_cast<T*>(nullptr));
     }
 
-    
+
     template <typename T>
     typename boost::enable_if<is_list_container<T> >::type
     def_type(T*) const
     {
         typedef typename boost::mpl::if_<
                 is_same<
-                    typename std::iterator_traits<typename T::iterator>::iterator_category, 
+                    typename std::iterator_traits<typename T::iterator>::iterator_category,
                     std::random_access_iterator_tag>,
-                boost::python::vector_indexing_suite<T>, 
+                boost::python::vector_indexing_suite<T>,
                 list_indexing_suite<T>
             >::type indexing_suite;
-        
+
         // Expose container class to Python
         boost::python::class_<T>(bond::python::make_pythonic_name<T>())
             .def(indexing_suite());
@@ -113,7 +113,7 @@ private:
     typename boost::enable_if<is_map_container<T> >::type
     def_type(T*) const
     {
-        static const bool NoProxy 
+        static const bool NoProxy
             = bond::is_string_type<typename element_type<T>::type::second_type>::value;
 
         // Expose container class to Python
@@ -144,7 +144,7 @@ private:
         def_type<typename element_type<T>::type>();
     }
 
-    
+
     template <typename T>
     void def_type(bonded<T>*) const
     {
@@ -163,7 +163,7 @@ private:
             .def();
     }
 
-    
+
     template <typename T>
     typename boost::enable_if<is_enum<T> >::type
     def_type(T*) const
@@ -180,7 +180,7 @@ private:
         def_nullable_maybe_type<bond::nullable<T> >();
     }
 
-    
+
     template <typename T>
     void def_type(bond::maybe<T>*) const
     {
@@ -205,13 +205,13 @@ private:
     }
 
 
-    void 
+    void
     def_type(bond::blob*) const
     {}
 
 
     template <typename T>
-    typename boost::enable_if_c<is_basic_type<T>::value 
+    typename boost::enable_if_c<is_basic_type<T>::value
                             && !is_enum<T>::value>::type
     def_type(T*) const
     {}
@@ -293,7 +293,7 @@ private:
             .def(schema_fields_visitor<U>())
             .def(self == self);
     }
-    
+
     template <typename U, bool Enable = true>
     class api
     {
@@ -305,7 +305,7 @@ private:
             if (!defined)
             {
                 defined = true;
-            
+
                 // Expose serialization APIs overloads for U
                 boost::python::def("Serialize", &serialize, serialize_overloads());
                 boost::python::def("Serialize", &serialize_bonded, serialize_bonded_overloads());
@@ -336,12 +336,12 @@ private:
         BOOST_PYTHON_FUNCTION_OVERLOADS(serialize_bonded_overloads, serialize_bonded, 1, 2)
         BOOST_PYTHON_FUNCTION_OVERLOADS(deserialize_overloads, deserialize, 2, 3)
         BOOST_PYTHON_FUNCTION_OVERLOADS(deserialize_schema_overloads, deserialize_schema, 3, 4)
-    
+
         static const bond::SchemaDef& schema(const U&)
         {
             return GetRuntimeSchema<U>().GetSchema();
         }
-    
+
         static bond::blob serialize(const U& obj, uint16_t protocol = COMPACT_PROTOCOL)
         {
             OutputBuffer output;
@@ -361,7 +361,13 @@ private:
         static void deserialize(const bond::blob& data, U& obj, uint16_t protocol = COMPACT_PROTOCOL)
         {
             InputBuffer input(data);
-            Apply<U>(To<U>(obj), input, protocol);
+            // A workaround for GCC 4.8 which doesn't resolve the Apply overload below properly.
+            // Apply<U>(To<U>(obj), input, protocol);
+            bond::detail::NextProtocol<U>(
+                typename Protocols<InputBuffer>::begin(),
+                input,
+                To<U>(obj),
+                protocol);
         }
 
         static void deserialize_schema(const bond::blob& data, U& obj, const bond::SchemaDef& schema, uint16_t protocol = COMPACT_PROTOCOL)
@@ -394,7 +400,7 @@ private:
         {
             InputBuffer input(data);
             bonded<U> bonded_obj;
-        
+
             Unmarshal(input, bonded_obj, bond::RuntimeSchema(schema));
             bonded_obj.Deserialize(obj);
         }
@@ -411,7 +417,7 @@ private:
     template <typename U>
     class api<U, false>
     {
-    public:        
+    public:
         void def()
         {}
     };
