@@ -15,7 +15,7 @@ description:        Bond is a cross-platform framework for handling schematized
                     code generation. The library includes built-in templates
                     for generating standard Bond C++ and C# code, as well as
                     utilities for writing custom codegen templates.
-                    .  
+                    .
                     The package also contains a command-line compiler/codegen
                     tool, named gbc, which is primarily used to generate code
                     for C++ and C# programs using Bond.
@@ -42,6 +42,7 @@ library
                     ghc-prim,
                     mtl >= 2.1,
                     parsec >= 3.1,
+                    process < 1.3,
                     shakespeare >= 2.0,
                     text >= 0.11
   ghc-options:      -Wall
