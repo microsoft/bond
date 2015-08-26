@@ -245,7 +245,7 @@ cmake <span class="op">--</span>build . <span class="op">--</span>target
 cmake <span class="op">--</span>build . <span class="op">--</span>target INSTALL</code></pre></div>
 <p>In order to build and execute the unit tests and examples run:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake <span class="op">--</span>build . <span class="op">--</span>target check <span class="op">--</span> <span class="op">/</span>maxcpucount:<span class="dv">8</span></code></pre></div>
-<p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed (Bond unit tests are too big to build with 32-bit tools). This variable works for Visual Studio 2014. For VS 2012 set the following variable instead:</p>
+<p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed (Bond unit tests are too big to build with 32-bit tools). This variable works for Visual Studio 2013 or 2015. For VS 2012 set the following variable instead:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> _IsNativeEnvironment<span class="op">=</span>true</code></pre></div>
 </div>    
 </div>
