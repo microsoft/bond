@@ -21,6 +21,8 @@
             IBonded<T> bondedInstance = new Bonded<D>(from);
             IBonded<T> bondedPayloadCB = Util.MakeBondedCB(from);
             IBonded<T> bondedPayloadSP = Util.MakeBondedSP(from);
+            IBonded<BondClass<IBonded<T>>> nestedBonded =
+                new Bonded<BondClass<IBonded<T>>>(new BondClass<IBonded<T>> { field = bondedInstance });
 
             for (var i = 2; --i != 0;)
             {
@@ -31,6 +33,7 @@
                 Assert.IsTrue(to1.IsEqual<T>(from));
                 Assert.IsTrue(to2.IsEqual<T>(from));
                 Assert.IsTrue(to3.IsEqual<T>(from));
+                Assert.IsTrue(nestedBonded.Deserialize().field.Deserialize().IsEqual(from));
             }
         }
 

@@ -22,14 +22,14 @@ namespace Bond
         /// </summary>
         /// <typeparam name="U">Type of object to deserialize</typeparam>
         /// <returns>Deserialized object</returns>
-        U Deserialize<U>() where U : class;
+        U Deserialize<U>();
 
         /// <summary>
         /// Convert to an instance of IBonded&lt;U>
         /// </summary>
         /// <typeparam name="U">Type representing a Bond schema</typeparam>
         /// <returns>An instance of IBonded&lt;U></returns>
-        IBonded<U> Convert<U>() where U : class;
+        IBonded<U> Convert<U>();
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ namespace Bond
 
         U IBonded.Deserialize<U>()
         {
-            return Clone<U>.From(instance as U);
+            return Clone<U>.From(instance);
         }
 
         void IBonded.Serialize<W>(W writer)
@@ -85,7 +85,7 @@ namespace Bond
 
         IBonded<U> IBonded.Convert<U>()
         {
-            return new Bonded<U>(instance as U);
+            return this as IBonded<U>;
         }
     }
     
