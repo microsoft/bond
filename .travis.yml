@@ -3,6 +3,10 @@ language: csharp
 os:
     - linux
     - osx
+cache:
+    directories:
+        - compiler/.cabal-sandbox
+        - cs/packages
 env:
     - BOND_LANG=cpp-clang
     - BOND_LANG=cpp-gcc
@@ -83,3 +87,6 @@ script:
     - if [ "$BOND_LANG" == "cs" ]; then mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll; fi
     - if [ "$BOND_GHC_VERSION" != "" ]; then cd compiler; fi
     - if [ "$BOND_GHC_VERSION" != "" ]; then ../build/compiler/build/gbc-tests/gbc-tests; fi
+
+before_cache:
+    - if [ "$BOND_GHC_VERSION" != "" ]; then rm -rf compiler/.cabal-sandbox; fi
