@@ -466,6 +466,18 @@ how to achieve the best performance.
     ```
     buffer.Position = 0;
     ```
+5. Choose the right protocol
+
+    The Fast Binary protocol is a little faster than Compact Binary, although the
+    difference is not big. Untagged protocols like Simple Binary can provide much
+    better performance (up to 4 times faster for some schemas). They are most
+    applicable in scenarios where runtime schema of the data is available during
+    deserialization and the same schema applies to many instances of the data, so
+    that the cost of creating the [`Deserializer`](#deserializer) can be
+    amortized. The canonical use case for an untagged protocol is record-based
+    data storage.
+
+6. Using .NET 4.5 will give better performance than 4.0.
 
 Runtime schema
 ==============
