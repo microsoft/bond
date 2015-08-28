@@ -524,6 +524,9 @@ exampleSerializer.<span class="fu">Serialize</span>(src, writer);
 <li><p>Pool memory buffers</p>
 <p>Creating a new <code>InputBuffer</code>/<code>OutputBuffer</code> every time may be more costly than the actual serialization or deserialization and it increases GC pressure. Whenever possible pool and reuse buffers, simply resetting their position after or before use:</p>
 <pre><code>buffer.Position = 0;</code></pre></li>
+<li><p>Choose the right protocol</p>
+<p>The Fast Binary protocol is a little faster than Compact Binary, although the difference is not big. Untagged protocols like Simple Binary can provide much better performance (up to 4 times faster for some schemas). They are most applicable in scenarios where runtime schema of the data is available during deserialization and the same schema applies to many instances of the data, so that the cost of creating the <a href="#deserializer"><code>Deserializer</code></a> can be amortized. The canonical use case for an untagged protocol is record-based data storage.</p></li>
+<li><p>Using .NET 4.5 will give better performance than 4.0.</p></li>
 </ol>
 <h1 id="runtime-schema">Runtime schema</h1>
 <p>Some generic applications may need to work with Bond schemas unknown at compile-time. In order to address such scenarios Bond defines a type <code>SchemaDef</code> to represent schemas at runtime. Applications can obtain an instance of <code>SchemaDef</code> for a particular type using the <code>Schema</code> class:</p>
