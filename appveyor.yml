@@ -148,7 +148,7 @@
 
                 cmake --build . --target documentation -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-                if ($? -And $env:BOND_TOKEN -ne "" -And $env:APPVEYOR_REPO_BRANCH -eq "master") {
+                if ($? -And $env:BOND_TOKEN -And $env:APPVEYOR_REPO_BRANCH -eq "master") {
 
                     git config --global user.email "bondlab@microsoft.com"
 
