@@ -97,7 +97,7 @@ schema = Schema
 mode :: Mode (CmdArgs Options)
 mode = cmdArgsMode $ modes [cpp, cs, schema] &=
     program "gbc" &=
-    help "Compile Bond schema file(s) and generate specified output. The schema file(s) can be in one of two formats: Bond IDL or JSON representation of the schema abstract syntax tree as produced by `gbc schema`" &=
+    help "Compile Bond schema file(s) and generate specified output. The schema file(s) can be in one of two formats: Bond IDL or JSON representation of the schema abstract syntax tree as produced by `gbc schema`. Multiple schema files can be specified either directly on the command line or by listing them in a text file passed to gbc via @listfile syntax." &=
     summary ("Bond Compiler " ++ showVersion version ++ ", (C) Microsoft")
 
 getOptions :: IO Options
