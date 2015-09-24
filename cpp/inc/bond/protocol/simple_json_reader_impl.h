@@ -56,7 +56,7 @@ inline void DeserializeContainer(blob& var, const T& /*element*/, SimpleJsonRead
 {
     if (uint32_t size = reader.ArraySize())
     {
-        boost::shared_ptr<char[]> buffer = boost::make_shared<char[]>(size);
+        boost::shared_ptr<char[]> buffer = boost::make_shared_noinit<char[]>(size);
         uint32_t i = 0;
 
         for (rapidjson::Value::ConstValueIterator it = reader.ArrayBegin(), end = reader.ArrayEnd(); it != end && i < size; ++it)

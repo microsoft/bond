@@ -119,7 +119,7 @@ public:
                                 uint32_t minChanningSize = 32,
                                 uint32_t maxChainLength = (uint32_t)-1)
         : _allocator(allocator),
-          _buffer(boost::allocate_shared<char[]>(_allocator, reserveSize)),
+          _buffer(boost::allocate_shared_noinit<char[]>(_allocator, reserveSize)),
           _bufferSize(reserveSize),
           _rangeSize(0),
           _rangeOffset(0),
@@ -238,7 +238,7 @@ public:
             _bufferSize += _bufferSize ? _bufferSize / 2 : 4096;
             _bufferSize = (std::max)(_bufferSize, size);
             
-            _buffer = boost::allocate_shared<char[]>(_allocator, _bufferSize);
+            _buffer = boost::allocate_shared_noinit<char[]>(_allocator, _bufferSize);
         
             //
             // init range

@@ -57,7 +57,7 @@ public:
     
     void Read(bond::blob& blob, uint32_t size)
     {
-        boost::shared_ptr<char[]> buffer = boost::make_shared<char[]>(size);
+        boost::shared_ptr<char[]> buffer = boost::make_shared_noinit<char[]>(size);
 
         Read(buffer.get(), size);
         blob.assign(buffer, 0, size);

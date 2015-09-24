@@ -291,7 +291,7 @@ inline blob merge(const A& allocator, const blob& x, const blob& y)
     else
     {
         uint32_t length = x.length() + y.length();
-        boost::shared_ptr<char[]> buffer = boost::allocate_shared<char[]>(allocator, length);
+        boost::shared_ptr<char[]> buffer = boost::allocate_shared_noinit<char[]>(allocator, length);
 
         ::memcpy(buffer.get(), x.content(), x.length());
         ::memcpy(buffer.get() + x.length(), y.content(), y.length());
@@ -334,7 +334,7 @@ inline blob merge(const A& allocator, t_It begin, t_It end)
         //
         BOOST_ASSERT(length > begin->length());
 
-        boost::shared_ptr<char[]> buffer = boost::allocate_shared<char[]>(allocator, length);
+        boost::shared_ptr<char[]> buffer = boost::allocate_shared_noinit<char[]>(allocator, length);
 
         uint32_t offset = 0;
         for (t_It it = begin; it != end; ++it)
