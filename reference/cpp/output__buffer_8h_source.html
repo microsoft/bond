@@ -207,7 +207,7 @@ $(document).ready(function(){initNavTree('output__buffer_8h_source.html','');});
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                                uint32_t minChanningSize = 32,</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                                uint32_t maxChainLength = (uint32_t)-1)</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        : _allocator(allocator),</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;          _buffer(boost::allocate_shared&lt;char[]&gt;(_allocator, reserveSize)),</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;          _buffer(boost::allocate_shared_noinit&lt;char[]&gt;(_allocator, reserveSize)),</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;          _bufferSize(reserveSize),</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;          _rangeSize(0),</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;          _rangeOffset(0),</div>
@@ -322,7 +322,7 @@ $(document).ready(function(){initNavTree('output__buffer_8h_source.html','');});
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;            _bufferSize += _bufferSize ? _bufferSize / 2 : 4096;</div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;            _bufferSize = (std::max)(_bufferSize, size);</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;            </div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;            _buffer = boost::allocate_shared&lt;char[]&gt;(_allocator, _bufferSize);</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;            _buffer = boost::allocate_shared_noinit&lt;char[]&gt;(_allocator, _bufferSize);</div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        </div>
 <div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;            <span class="comment">//</span></div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;            <span class="comment">// init range</span></div>

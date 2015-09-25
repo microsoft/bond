@@ -151,7 +151,7 @@ $(document).ready(function(){initNavTree('simple__json__reader__impl_8h_source.h
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;{</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">if</span> (uint32_t size = reader.ArraySize())</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        boost::shared_ptr&lt;char[]&gt; buffer = boost::make_shared&lt;char[]&gt;(size);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        boost::shared_ptr&lt;char[]&gt; buffer = boost::make_shared_noinit&lt;char[]&gt;(size);</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        uint32_t i = 0;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keywordflow">for</span> (rapidjson::Value::ConstValueIterator it = reader.ArrayBegin(), end = reader.ArrayEnd(); it != end &amp;&amp; i &lt; size; ++it)</div>
