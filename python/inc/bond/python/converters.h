@@ -35,6 +35,21 @@ namespace python
 {
 
 
+template <typename T> struct
+has_custom_converter
+    : std::false_type
+{};
+
+template <typename T> struct
+has_custom_converter<bond::nullable<T>>
+    : std::true_type
+{};
+
+template <> struct
+has_custom_converter<bond::blob>
+    : std::true_type
+{};
+
 // Convert Bond type name to a valid python identifier
 class pythonic_name
 {

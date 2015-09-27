@@ -79,17 +79,23 @@ struct NestedContainers
      7: vector<vector<NestedWithBase>> vvNS;
      8: vector<set<string>>            vss;
     11: vector<map<double, string>>    vmds;
+    12: list<blob>                     lb;
+    13: vector<blob>                   vb;
+    14: map<string, blob>              msb;
 };
 
 
 struct Nullable
 {
-     2: nullable<list<float>>      nullable_list;
-     3: nullable<SimpleStruct>     nullable_struct;
-     4: nullable<map<int8, int8>>  nullable_map;
-     5: nullable<string>           nullable_string;
-     6: nullable<blob>             nullable_blob;
-    10: nullable<nullable<uint32>> nullable_nullable_uint32;
+     2: nullable<list<float>>       nullable_list;
+     3: nullable<SimpleStruct>      nullable_struct;
+     4: nullable<map<int8, int8>>   nullable_map;
+     5: nullable<string>            nullable_string;
+     6: nullable<blob>              nullable_blob;
+    10: nullable<nullable<uint32>>  nullable_nullable_uint32;
+    11: list<nullable<SimpleStruct>> list_nullable_struct;
+    12: map<int8, nullable<float>>  map_nullable_float;
+    13: vector<nullable<string>>    vector_nullable_string;
 };
 
 struct Nothing

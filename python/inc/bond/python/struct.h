@@ -89,12 +89,15 @@ private:
     typename boost::enable_if<is_list_container<T> >::type
     def_type(T*) const
     {
+        static const bool NoProxy
+            = has_custom_converter<typename element_type<T>::type>::value;
+
         typedef typename boost::mpl::if_<
                 is_same<
                     typename std::iterator_traits<typename T::iterator>::iterator_category,
                     std::random_access_iterator_tag>,
-                boost::python::vector_indexing_suite<T>,
-                list_indexing_suite<T>
+                boost::python::vector_indexing_suite<T, NoProxy>,
+                list_indexing_suite<T, NoProxy>
             >::type indexing_suite;
 
         // Expose container class to Python
@@ -114,7 +117,8 @@ private:
     def_type(T*) const
     {
         static const bool NoProxy
-            = bond::is_string_type<typename element_type<T>::type::second_type>::value;
+            = bond::is_string_type<typename element_type<T>::type::second_type>::value
+            | has_custom_converter<typename element_type<T>::type::second_type>::value;
 
         // Expose container class to Python
         boost::python::class_<T>(bond::python::make_pythonic_name<T>())

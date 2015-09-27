@@ -149,6 +149,15 @@ class BondTest(unittest.TestCase):
         self.assertNotEqual(None, obj.nullable_string)
         self.assertNotEqual(None, obj.nullable_blob)
         self.assertNotEqual(None, obj.nullable_nullable_uint32)
+        obj.list_nullable_struct = [None, self.randomSimpleStruct()]
+        self.assertEqual(None, obj.list_nullable_struct[0])
+        self.assertNotEqual(None, obj.list_nullable_struct[1])
+        obj.map_nullable_float = dict([(0, None), (1, 3.14)])
+        self.assertEqual(None, obj.map_nullable_float[0])
+        self.assertNotEqual(None, obj.map_nullable_float[1])
+        obj.vector_nullable_string = [None, "str"]
+        self.assertEqual(None, obj.vector_nullable_string[0])
+        self.assertNotEqual(None, obj.vector_nullable_string[1])
 
     def initNestedContainers(self, obj):
         obj.lvls  = random_list(\
@@ -158,6 +167,11 @@ class BondTest(unittest.TestCase):
         obj.vlSLS = random_list(\
                         functools.partial(random_list, \
                                           self.randomSimpleContainers))
+
+        obj.vvNS = random_list(\
+                        functools.partial(random_list, \
+                                          test.NestedWithBase))
+
         obj.vss   = random_list(\
                         functools.partial(random_set, \
                                           random_string))
@@ -165,6 +179,9 @@ class BondTest(unittest.TestCase):
                         functools.partial(random_map, \
                                           random.random, \
                                           random_string))
+        obj.lb = random_list(random_blob)
+        obj.vb = random_list(random_blob)
+        obj.msb = random_map(random_string, random_blob)
 
     def initGeneric(self, obj):
         self.initSimpleStruct(obj)
@@ -191,6 +208,7 @@ class BondTest(unittest.TestCase):
             self.assertTrue(obj == new_obj)
 
     def list_operations(self, a):
+        self.assertTrue(len(a) != 0)
         b = [a[i] for i in range(0, len(a))]
         self.assertTrue(len(a)==len(b) and all(a[i] == b[i] for i in range(0, len(a))))
         a.append(a[0])
@@ -199,9 +217,6 @@ class BondTest(unittest.TestCase):
         self.assertTrue(len(a)==len(b) and all(a[i] == b[i] for i in range(0, len(a))))
         a.extend(b)
         self.assertTrue(all(a[i] == a[i+len(a)//2] for i in range(0, len(a)//2)))
-        s1 = set(a)
-        s2 = set(b)
-        self.assertTrue(s1 - s2 == set())
         del a[0:len(b)]
         self.assertTrue(len(a)==len(b) and all(a[i] == b[i] for i in range(0, len(a))))
         self.assertEqual(len(a), len(b))
@@ -224,6 +239,9 @@ class BondTest(unittest.TestCase):
         self.assertTrue(len(a)==len(b)-1 and all(b[i] in a for i in range(0, len(b)-1)))
         self.assertFalse(b[-1] in a)
         self.assertRaises(KeyError, a.remove, b[-1])
+        s1 = set(a)
+        s2 = set(b)
+        self.assertTrue(s1 - s2 == set())
         a.clear()
         self.assertTrue(len(a) == 0)
 
@@ -281,6 +299,9 @@ class BondTest(unittest.TestCase):
         self.assertEqual(None, obj.nullable_nullable_uint32)
         self.serialization(obj, self.initNullable)
         self.marshaling(obj, self.initNullable)
+        self.list_operations(obj.list_nullable_struct)
+        self.list_operations(obj.vector_nullable_string)
+        self.map_operations(obj.map_nullable_float)
         with self.assertRaises(TypeError):
             obj.nullable_list = "str"
         with self.assertRaises(TypeError):
@@ -300,6 +321,9 @@ class BondTest(unittest.TestCase):
         obj = test.NestedContainers()
         self.serialization(obj, self.initNestedContainers)
         self.marshaling(obj, self.initNestedContainers)
+        self.list_operations(obj.lb)
+        self.list_operations(obj.vb)
+        self.map_operations(obj.msb)
 
     def test_Generics(self):
         obj = test.Generic_unittest_SimpleStruct_()
