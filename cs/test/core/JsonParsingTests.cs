@@ -229,7 +229,7 @@ World", target._str);
                 ParseJson<BasicTypes>(json);
                 Assert.Fail("Deserialize did not throw an exception even though _bool field was null.");
             }
-            catch (NullReferenceException)
+            catch (InvalidDataException)
             {
             }
         }
@@ -627,8 +627,15 @@ World", target._str);
         {
             const string json = @"{ ""_bool"": null }";
 
-            var target = ParseJson<Nothing>(json);
-            Assert.IsNull(target._bool);
+            try
+            {
+                ParseJson<Nothing>(json);
+                Assert.Fail("Deserialize did not throw an exception even though _bool field was null.");
+            }
+            catch (InvalidDataException ex)
+            {
+                Assert.IsTrue(ex.Message.Contains("expected JSON token of type Boolean"));
+            }
         }
 
         [Test]

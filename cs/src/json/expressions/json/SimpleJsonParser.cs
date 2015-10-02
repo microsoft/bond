@@ -130,12 +130,9 @@ namespace Bond.Expressions.Json
             return
                 Expression.Block(
                     Expression.IfThenElse(
-                        JsonTokenEquals(JsonToken.Null),
-                        handler(Expression.Constant(null)),
-                        Expression.IfThenElse(
-                            JsonTokenEquals(scalarTokenType),
-                            handler(convertedValue),
-                            ThrowUnexpectedInput(errorMessage))),
+                        JsonTokenEquals(scalarTokenType),
+                        handler(convertedValue),
+                        ThrowUnexpectedInput(errorMessage)),
                     Reader.Read());
         }
 
