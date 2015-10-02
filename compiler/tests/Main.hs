@@ -77,7 +77,11 @@ tests = testGroup "Compiler tests"
             , verifyCsCodegen "generics"
             , verifyCsCodegen "inheritance"
             , verifyCsCodegen "aliases"
-            , verifyCsCodegen "nullable_alias"
+            , verifyCodegen 
+                [ "c#"
+                , "--using=time=System.DateTime"
+                ]
+                "nullable_alias"
             ]
         ]
     ]
