@@ -20,7 +20,7 @@ namespace test
         [global::Bond.Id(1), global::Bond.Type(typeof(global::Bond.Tag.nullable<long>))]
         public long? l { get; set; }
 
-        [global::Bond.Id(2), global::Bond.Type(typeof(long?))]
+        [global::Bond.Id(2), global::Bond.Type(typeof(long))]
         public System.DateTime? t { get; set; }
 
         public foo()

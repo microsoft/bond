@@ -200,6 +200,7 @@ struct Nothing
     32: vector<list<int32>> vl = nothing;
     33: blob b = nothing;
     34: map<string, double> m = nothing;
+    35: DateTime dt = nothing;
 };
 
 struct NotNothingView
