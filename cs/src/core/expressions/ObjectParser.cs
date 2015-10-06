@@ -180,7 +180,7 @@ namespace Bond.Expressions
         {
             if (schemaType.IsBonded())
             {
-                return handler(value);
+                return handler(PrunedExpression.Convert(value, typeof(IBonded)));
             }
             
             var bondedType = typeof(Bonded<>).MakeGenericType(objectType);

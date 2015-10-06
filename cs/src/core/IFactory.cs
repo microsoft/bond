@@ -4,6 +4,7 @@
 namespace Bond
 {
     using System;
+    using System.Linq.Expressions;
 
     /// <summary>
     /// Interface for custom factory to create objects during deserialization
@@ -27,4 +28,14 @@ namespace Bond
         /// <returns></returns>
         object CreateContainer(Type type, Type schemaType, int count);
     }
+
+    /// <summary>
+    /// Returns an expression to create an object
+    /// </summary>
+    /// <param name="type">Type of field/value the created object will be assigned to</param>
+    /// <param name="schemaType">Type in the schema</param>
+    /// <param name="arguments">Optional, type-specific argument(s). For example for containers 
+    /// number of items, for IBonded&lt;T> the IBonded instance from the parser.</param>
+    /// <returns></returns>
+    public delegate Expression Factory(Type type, Type schemaType, params Expression[] arguments);
 }
