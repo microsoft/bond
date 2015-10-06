@@ -41,7 +41,7 @@ data Symbols =
     , imports :: [FilePath]     -- list of imported files
     }
 
-type ImportResolver = 
+type ImportResolver =
     FilePath                    -- ^ path of the file containing the import statement
  -> FilePath                    -- ^ (usually relative) path of the imported file
  -> IO (FilePath, String)       -- ^ the resolver function returns the resolved path of the imported file and its content
@@ -58,7 +58,7 @@ data Environment =
 type Parser a = ParsecT String Symbols (ReaderT Environment IO) a
 
 -- | Parses content of a schema definition file.
-parseBond :: 
+parseBond ::
     SourceName                          -- ^ source name, used only for error messages
  -> String                              -- ^ content of a schema file to parse
  -> FilePath                            -- ^ path of the file being parsed, used to resolve relative import paths
@@ -92,7 +92,7 @@ processImport (Import file) = do
     (path, content) <- liftIO $ resolveImport currentFile file
     Symbols { imports = imports } <- getState
     if path `elem` imports then return () else do
-            modifyState (\u -> u { imports = path:imports } ) 
+            modifyState (\u -> u { imports = path:imports } )
             setInput content
             setPosition $ initialPos path
             void $ local (\e -> e { currentFile = path }) bond
@@ -127,7 +127,7 @@ updateSymbols decl = do
     reconcile _   _ = error "updateSymbols/reconcile: impossible happened."
     paramsMatch = (==) `on` (map paramConstraint . declParams)
     add x xs u = u { symbols = x:xs }
-    duplicateDeclaration left right = 
+    duplicateDeclaration left right =
         (declName left == declName right)
      && not (null $ intersect (declNamespaces left) (declNamespaces right))
 
@@ -151,7 +151,7 @@ findSymbol name = doFind <?> "qualified name"
         nsName ns1 == nsName ns2 && (lang1 == lang2 || lang1 == Nothing || lang2 == Nothing)
       where
         lang1 = nsLanguage ns1
-        lang2 = nsLanguage ns2 
+        lang2 = nsLanguage ns2
 
 findStruct :: QualifiedName -> Parser Declaration
 findStruct name = doFind <?> "qualified struct name"
@@ -173,7 +173,7 @@ namespace = Namespace <$ keyword "namespace" <*> language <*> qualifiedName <* o
 
 -- identifier optionally qualified with namespace
 qualifiedName :: Parser QualifiedName
-qualifiedName = sepBy1 identifier (char '.') <?> "qualified name"
+qualifiedName = sepBy1 namespaceIdentifier (char '.') <?> "qualified name"
 
 -- type parameters
 parameters :: Parser [TypeParam]

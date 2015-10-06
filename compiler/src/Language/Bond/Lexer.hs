@@ -16,6 +16,7 @@ module Language.Bond.Lexer
     , equal
     , float
     , identifier
+    , namespaceIdentifier
     , integer
     , keyword
     , lexeme
@@ -35,6 +36,7 @@ module Language.Bond.Lexer
     , whiteSpace
     ) where
 
+import Data.List
 import Control.Monad.Reader
 import Text.ParserCombinators.Parsec
 import qualified Text.Parsec.Token as P
@@ -114,6 +116,9 @@ semi        = P.semi lexer
 semiSep     = P.semiSep lexer
 symbol      = P.symbol lexer
 whiteSpace  = P.whiteSpace lexer
+
+namespaceLexer = P.makeTokenParser bondIdl { P.reservedNames = delete "Schema" (P.reservedNames bondIdl) }
+namespaceIdentifier  = P.identifier namespaceLexer
 
 equal       = symbol "="
 semiEnd p   = endBy p semi
