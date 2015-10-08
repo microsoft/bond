@@ -447,7 +447,6 @@ csInterfaceType t = csType t
 csTypeAnnotation :: (Type -> TypeNameBuilder) -> Type -> TypeNameBuilder
 csTypeAnnotation _ BT_WString = pure "global::Bond.Tag.wstring"
 csTypeAnnotation _ (BT_Nullable element) = "global::Bond.Tag.nullable<" <>> typeName element <<> ">"
-csTypeAnnotation _ (BT_Bonded type_) = "global::Bond.Tag.bonded<" <>> typeName type_ <<> ">"
 csTypeAnnotation _ (BT_Maybe a@(BT_UserDefined Alias{} _)) = typeName a
 csTypeAnnotation _ (BT_TypeParam (TypeParam _ Nothing)) = pure "global::Bond.Tag.classT"
 csTypeAnnotation _ (BT_TypeParam (TypeParam _ (Just Value))) = pure "global::Bond.Tag.structT"

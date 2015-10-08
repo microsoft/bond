@@ -39,10 +39,10 @@ namespace tests
         [global::Bond.Id(4), global::Bond.Type(typeof(Dictionary<string, global::Bond.Tag.wstring>))]
         public Dictionary<string, string> msws { get; set; }
 
-        [global::Bond.Id(5), global::Bond.Type(typeof(global::Bond.Tag.bonded<Foo>))]
+        [global::Bond.Id(5)]
         public global::Bond.IBonded<Foo> bfoo { get; set; }
 
-        [global::Bond.Id(6), global::Bond.Type(typeof(Dictionary<double, LinkedList<List<global::Bond.Tag.nullable<global::Bond.Tag.bonded<Bar>>>>>))]
+        [global::Bond.Id(6), global::Bond.Type(typeof(Dictionary<double, LinkedList<List<global::Bond.Tag.nullable<global::Bond.IBonded<Bar>>>>>))]
         public Dictionary<double, LinkedList<List<global::Bond.IBonded<Bar>>>> m { get; set; }
 
         public ComplexTypes()
