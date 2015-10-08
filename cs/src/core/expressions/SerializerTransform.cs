@@ -100,10 +100,10 @@ namespace Bond.Expressions
         readonly ProtocolWriter<W> writer = new ProtocolWriter<W>();
         readonly Dictionary<RuntimeSchema, Serialize> serializeDelegates = 
             new Dictionary<RuntimeSchema, Serialize>(new TypeDefComparer());
-        static readonly bool binaryWriter =
-            typeof(IUntaggedProtocolReader).IsAssignableFrom(typeof(W).GetAttribute<ReaderAttribute>().ReaderType)
-         || typeof(ITaggedProtocolReader).IsAssignableFrom(typeof(W).GetAttribute<ReaderAttribute>().ReaderType);
-
+        static readonly bool untaggedWriter =
+            typeof (IUntaggedProtocolReader).IsAssignableFrom(typeof (W).GetAttribute<ReaderAttribute>().ReaderType);
+        static readonly bool binaryWriter = untaggedWriter
+            || typeof(ITaggedProtocolReader).IsAssignableFrom(typeof(W).GetAttribute<ReaderAttribute>().ReaderType);
 
         public SerializerTransform(Expression<Action<R, W, int>> deferredSerialize, RuntimeSchema schema)
             : base(deferredSerialize)
@@ -316,7 +316,7 @@ namespace Bond.Expressions
         {
             Debug.Assert(schema.HasValue);
 
-            if (parser.IsBonded)
+            if (parser.IsBonded || (untaggedWriter && schema.IsBonded))
                 return parser.Bonded(writer.WriteBonded);
 
             if (schema.IsStruct)

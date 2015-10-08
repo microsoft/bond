@@ -53,8 +53,8 @@
     <Compile Include="Util.cs" />
     <Compile Include="XmlTests.cs" />
     <BondCodegen Include="Aliases.bond">
-      <Options Condition="'$(TargetFrameworkVersion)' == 'v4.5'">$(BondOptions) --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[] --using="SynchronizedList=SynchronizedCollection&lt;{0}&gt;"</Options>
-      <Options Condition="'$(TargetFrameworkVersion)' == 'v4.0'">$(BondOptions) --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[]</Options>
+      <Options Condition="'$(TargetFrameworkVersion)' == 'v4.5'">$(BondOptions) --using="Lazy=Lazy&lt;{0}&gt;" --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[] --using="SynchronizedList=SynchronizedCollection&lt;{0}&gt;"</Options>
+      <Options Condition="'$(TargetFrameworkVersion)' == 'v4.0'">$(BondOptions) --using="Lazy=Lazy&lt;{0}&gt;" --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[]</Options>
     </BondCodegen>
     <BondCodegen Include="NamespaceConflict.bond" />
     <BondCodegen Include="NamespaceConflictBond.bond" />

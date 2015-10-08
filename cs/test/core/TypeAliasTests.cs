@@ -6,6 +6,78 @@
     using NUnit.Framework;
     using System.Linq;
 
+    public class Lazy<T> : IBonded<T>
+    {
+        readonly IBonded<T> bonded;
+        T instance;
+
+        public Lazy()
+        {
+            bonded = Bonded<T>.Empty;
+        }
+
+        public Lazy(IBonded bonded)
+        {
+            this.bonded = bonded.Convert<T>();
+        }
+
+        public Lazy(T instance)
+        {
+            this.instance = instance;
+            this.bonded = new Bonded<T>(instance);
+        }
+
+        public T Value
+        {
+            get
+            {
+                if (instance == null)
+                    instance = bonded.Deserialize();
+                return instance;
+            }
+        }
+
+        public T Deserialize()
+        {
+            return bonded.Deserialize();
+        }
+
+        public void Serialize<W>(W writer)
+        {
+            bonded.Serialize(writer);
+        }
+
+        public U Deserialize<U>()
+        {
+            return bonded.Deserialize<U>();
+        }
+
+        public IBonded<U> Convert<U>()
+        {
+            return bonded.Convert<U>();
+        }
+
+        public static bool operator ==(Lazy<T> left, Lazy<T> right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Lazy<T> left, Lazy<T> right)
+        {
+            return !(left == right);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Comparer.Equal(Value, (obj as Lazy<T>).Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+    }
+
     public static class BondTypeAliasConverter
     {
         public static decimal Convert(ArraySegment<byte> value, decimal unused)
@@ -97,6 +169,20 @@
             var from = InitBlobAlias();
 
             TestTypeAliases<BlobAlias, BlobNotAliased>(from);
+        }
+
+        [Test]
+        public void AliasBonded()
+        {
+            var from = new BondedAlias {lazy = new Lazy<Foo>(UnitTest.Random.Init<Foo>())};
+            TestTypeAliases(from);
+        }
+
+        [Test]
+        public void AliasGenericBonded()
+        {
+            var from = new GenericBondedAlias<Foo> { lazy = new Lazy<Foo>(UnitTest.Random.Init<Foo>()) };
+            TestTypeAliases(from);
         }
 
         [Test]

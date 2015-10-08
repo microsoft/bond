@@ -654,8 +654,8 @@ namespace UnitTest
                 var ptr = RMarshal.AllocHGlobal(UnsafeBufferSize);
                 var data = serialize(from, ptr, UnsafeBufferSize);
                 var to = deserialize(data, UnsafeBufferSize);
-                RMarshal.FreeHGlobal(data);
                 Assert.IsTrue(from.IsEqual(to));
+                RMarshal.FreeHGlobal(data);
             };
 
             RoundtripMemoryPointer<From, To> memoryPointerRoundtrip = (serialize, deserialize) =>
@@ -663,8 +663,8 @@ namespace UnitTest
                 var data = serialize(from);
                 var pinned = GCHandle.Alloc(data.Array, GCHandleType.Pinned);
                 var to = deserialize(RMarshal.UnsafeAddrOfPinnedArrayElement(data.Array, data.Offset), data.Count);
-                pinned.Free();
                 Assert.IsTrue(from.IsEqual(to));
+                pinned.Free();
             };
 
             RoundtripStream<From, To> streamRoundtrip = (serialize, deserialize) =>

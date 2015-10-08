@@ -6,6 +6,7 @@ using Decimal = blob;
 using EnumString<T> = string;
 using Array<T> = vector<T>;
 using ArrayBlob = blob;
+using Lazy<T> = bonded<T>;
 
 enum Bar
 {
@@ -72,4 +73,14 @@ struct BlobNotAliased
 struct GenericAlias
 {
     0: EnumString<Bar> bar;
+}
+
+struct BondedAlias
+{
+    0: Lazy<Foo> lazy;
+}
+
+struct GenericBondedAlias<T>
+{
+    0: Lazy<T> lazy;
 }
