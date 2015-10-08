@@ -584,14 +584,14 @@ namespace UnitTest
             return Deserialize<T>.From(reader);
         }
 
-        public static T DeserializeTagged<T>(ITaggedProtocolReader reader)
+        public static T DeserializeTagged<T>(IClonableTaggedProtocolReader reader)
         {
             return Deserialize<T>.From(reader);
         }
 
-        public static To DeserializeUntagged<From, To>(IUntaggedProtocolReader reader)
+        public static To DeserializeUntagged<From, To>(IClonableUntaggedProtocolReader reader)
         {
-            var deserializer = new Deserializer<IUntaggedProtocolReader>(typeof(To), Schema<From>.RuntimeSchema);
+            var deserializer = new Deserializer<IClonableUntaggedProtocolReader>(typeof(To), Schema<From>.RuntimeSchema);
             return deserializer.Deserialize<To>(reader);
         }
 
@@ -777,12 +777,17 @@ namespace UnitTest
                 streamTranscode(SerializeSP, TranscodeSPSP<From>, DeserializeSP<From, To>);
                 streamTranscode(SerializeSP, TranscodeSPCB<From>, DeserializeCB<To>);
                 streamTranscode(SerializeSP, TranscodeSPFB<From>, DeserializeFB<To>);
-                streamTranscode(SerializeSP, TranscodeSPXml<From>, DeserializeXml<To>);
-                
-                // NewtonSoft JSON doesn't support uint64
-                if (typeof (From) != typeof (MaxUInt64))
+
+                // Pull parser doesn't supprot bonded<T>
+                if (AnyField<From>(Reflection.IsBonded))
                 {
-                    streamTranscode(SerializeSP, TranscodeSPJson<From>, DeserializeJson<To>);
+                    streamTranscode(SerializeSP, TranscodeSPXml<From>, DeserializeXml<To>);
+                
+                    // NewtonSoft JSON doesn't support uint64
+                    if (typeof (From) != typeof (MaxUInt64))
+                    {
+                        streamTranscode(SerializeSP, TranscodeSPJson<From>, DeserializeJson<To>);
+                    }
                 }
 
                 streamRoundtrip(SerializeSP, stream =>
@@ -795,17 +800,38 @@ namespace UnitTest
                 streamMarshalSchema(MarshalSP);
             }
 
-            streamRoundtrip(SerializeXml, DeserializeXml<To>);
-            streamTranscode(SerializeCB, TranscodeCBXml<From>, DeserializeXml<To>);
-            streamTranscode(SerializeFB, TranscodeFBXml<From>, DeserializeXml<To>);
-
-            // NewtonSoft JSON doesn't support uint64
-            if (typeof (From) != typeof (MaxUInt64))
+            // Pull parser doesn't supprot bonded<T>
+            if (AnyField<From>(Reflection.IsBonded))
             {
-                streamRoundtrip(SerializeJson, DeserializeJson<To>);
-                streamTranscode(SerializeCB, TranscodeCBJson<From>, DeserializeJson<To>);
-                streamTranscode(SerializeFB, TranscodeFBJson<From>, DeserializeJson<To>);
+                streamRoundtrip(SerializeXml, DeserializeXml<To>);
+                streamTranscode(SerializeCB, TranscodeCBXml<From>, DeserializeXml<To>);
+                streamTranscode(SerializeFB, TranscodeFBXml<From>, DeserializeXml<To>);
+
+                // NewtonSoft JSON doesn't support uint64
+                if (typeof (From) != typeof (MaxUInt64))
+                {
+                    streamRoundtrip(SerializeJson, DeserializeJson<To>);
+                    streamTranscode(SerializeCB, TranscodeCBJson<From>, DeserializeJson<To>);
+                    streamTranscode(SerializeFB, TranscodeFBJson<From>, DeserializeJson<To>);
+                }
             }
+        }
+
+        delegate bool TypePredicate(Type field);
+
+        static bool AnyField<T>(TypePredicate predicate)
+        {
+            var types = new HashSet<Type>();
+            return AnyField(types, typeof(T), predicate);
+        }
+
+        static bool AnyField(HashSet<Type> types, Type type, TypePredicate predicate)
+        {
+            types.Add(type);
+            return type.GetSchemaFields()
+                .Select(field => field.MemberType)
+                .Where(fieldType => !types.Contains(fieldType))
+                .Any(fieldType => predicate(fieldType) || fieldType.IsBondStruct() && AnyField(types, fieldType, predicate));
         }
     }
 }

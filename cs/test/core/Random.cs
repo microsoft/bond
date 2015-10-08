@@ -35,7 +35,7 @@ namespace UnitTest
         }
     }
 
-    internal class RandomReader : IUntaggedProtocolReader, ICloneable<RandomReader>
+    internal class RandomReader : IClonableUntaggedProtocolReader, ICloneable<RandomReader>
     {
         readonly System.Random random;
 
@@ -50,7 +50,12 @@ namespace UnitTest
             this.random = random;
         }
 
-        public RandomReader Clone()
+        RandomReader ICloneable<RandomReader>.Clone()
+        {
+            return this;
+        }
+
+        IClonableUntaggedProtocolReader ICloneable<IClonableUntaggedProtocolReader>.Clone()
         {
             return this;
         }

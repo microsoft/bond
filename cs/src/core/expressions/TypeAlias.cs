@@ -58,7 +58,7 @@ namespace Bond.Expressions
 
                 foreach (var converter in all)
                 {
-                    var convert = converter.FindMethod("Convert", value.Type, type);
+                    var convert = converter.ResolveMethod("Convert", value.Type, type);
                     if (convert != null)
                         return Expression.Call(null, convert, value, Expression.Default(type));
                 }

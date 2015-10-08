@@ -354,6 +354,11 @@ namespace Bond
 
         static Type GetBaseType(this Type type)
         {
+            if (type.IsInterface())
+            {
+                return type.GetInterfaces().FirstOrDefault();
+            }
+
             return type.GetTypeInfo().BaseType;
         }
 
@@ -362,7 +367,7 @@ namespace Bond
             return type.GetTypeInfo().IsAssignableFrom(that.GetTypeInfo());
         }
 
-        internal static MethodInfo GetMethod(this Type type, string name, params Type[] paramTypes)
+        internal static MethodInfo FindMethod(this Type type, string name, params Type[] paramTypes)
         {
             var methods = type.GetDeclaredMethods(name);
 
@@ -377,13 +382,13 @@ namespace Bond
             {
                 var baseType = type.GetBaseType();
                 if (baseType != null)
-                    result = baseType.GetMethod(name, paramTypes);
+                    result = baseType.FindMethod(name, paramTypes);
             }
 
             return result;
         }
 
-        internal static MethodInfo FindMethod(this Type type, string name, params Type[] argumentTypes)
+        internal static MethodInfo ResolveMethod(this Type type, string name, params Type[] argumentTypes)
         {
             var methods = type.GetDeclaredMethods(name);
             var typeArgs = new Type[0];
@@ -421,7 +426,7 @@ namespace Bond
 
         internal static MethodInfo GetMethod(this Type type, Type declaringType, string name, params Type[] paramTypes)
         {
-            return declaringType.MakeGenericTypeFrom(type).GetMethod(name, paramTypes);
+            return declaringType.MakeGenericTypeFrom(type).FindMethod(name, paramTypes);
         }
 
         internal static ConstructorInfo GetConstructor(this Type type, params Type[] paramTypes)

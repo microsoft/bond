@@ -424,7 +424,7 @@ namespace Bond.Protocols
     /// Reader for the Fast Binary tagged protocol
     /// </summary>
     /// <typeparam name="I">Implementation of IInputStream interface</typeparam>
-    public struct FastBinaryReader<I> : ITaggedProtocolReader, ICloneable<FastBinaryReader<I>>
+    public struct FastBinaryReader<I> : IClonableTaggedProtocolReader, ICloneable<FastBinaryReader<I>>
         where I : IInputStream, ICloneable<I>
     {
         readonly I input;
@@ -445,9 +445,17 @@ namespace Bond.Protocols
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public FastBinaryReader<I> Clone()
+        FastBinaryReader<I> ICloneable<FastBinaryReader<I>>.Clone()
         {
             return new FastBinaryReader<I>(input.Clone());
+        }
+
+#if NET45
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        IClonableTaggedProtocolReader ICloneable<IClonableTaggedProtocolReader>.Clone()
+        {
+            return (this as ICloneable<FastBinaryReader<I>>).Clone();
         }
 
 #region Complex types

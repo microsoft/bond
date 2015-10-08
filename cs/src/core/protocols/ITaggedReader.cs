@@ -5,6 +5,7 @@ namespace Bond.Protocols
 {
     using System;
     using System.IO;
+    using Bond.IO;
 
     /// <summary>
     /// Reads from serialize payload encoded using a tagged protocol
@@ -165,4 +166,11 @@ namespace Bond.Protocols
         /// <exception cref="EndOfStreamException"/>
         string ReadWString();
     }
+
+    /// <summary>
+    /// Extension of ITaggedProtocolReader that can be used as R in Bonded&lt;T, R>
+    /// </summary>
+    public interface IClonableTaggedProtocolReader
+        : ITaggedProtocolReader, ICloneable<IClonableTaggedProtocolReader>
+    { }
 }

@@ -481,7 +481,7 @@ namespace Bond.Protocols
     /// Reader for the Compact Binary tagged protocol
     /// </summary>
     /// <typeparam name="I">Implementation of IInputStream interface</typeparam>
-    public struct CompactBinaryReader<I> : ITaggedProtocolReader, ICloneable<CompactBinaryReader<I>>
+    public struct CompactBinaryReader<I> : IClonableTaggedProtocolReader, ICloneable<CompactBinaryReader<I>>
         where I : IInputStream, ICloneable<I>
     {
         readonly I input;
@@ -504,9 +504,17 @@ namespace Bond.Protocols
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public CompactBinaryReader<I> Clone()
+        CompactBinaryReader<I> ICloneable<CompactBinaryReader<I>>.Clone()
         {
             return new CompactBinaryReader<I>(input.Clone(), version);
+        }
+
+#if NET45
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        IClonableTaggedProtocolReader ICloneable<IClonableTaggedProtocolReader>.Clone()
+        {
+            return (this as ICloneable<CompactBinaryReader<I>>).Clone();
         }
 
         #region Complex types

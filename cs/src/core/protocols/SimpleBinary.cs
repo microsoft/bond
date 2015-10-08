@@ -414,7 +414,7 @@ namespace Bond.Protocols
 
     }
 
-    public struct SimpleBinaryReader<I> : IUntaggedProtocolReader, ICloneable<SimpleBinaryReader<I>> 
+    public struct SimpleBinaryReader<I> : IClonableUntaggedProtocolReader, ICloneable<SimpleBinaryReader<I>>
         where I : IInputStream, ICloneable<I>
     {
         readonly I input;
@@ -429,9 +429,17 @@ namespace Bond.Protocols
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public SimpleBinaryReader<I> Clone()
+        SimpleBinaryReader<I> ICloneable<SimpleBinaryReader<I>>.Clone()
         {
             return new SimpleBinaryReader<I>(input.Clone(), version);
+        }
+
+#if NET45
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        IClonableUntaggedProtocolReader ICloneable<IClonableUntaggedProtocolReader>.Clone()
+        {
+            return (this as ICloneable<SimpleBinaryReader<I>>).Clone();
         }
 
         #region Complex types

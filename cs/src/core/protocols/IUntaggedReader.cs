@@ -5,6 +5,7 @@ namespace Bond.Protocols
 {
     using System;
     using System.IO;
+    using Bond.IO;
 
     /// <summary>
     /// Reads from serialized payload encoded using a untagged protocol
@@ -197,4 +198,11 @@ namespace Bond.Protocols
         /// <exception cref="EndOfStreamException"/>
         void SkipWString();
     }
+
+    /// <summary>
+    /// Extension of IUntaggedProtocolReader that can be used as R in Bonded&lt;T, R>
+    /// </summary>
+    public interface IClonableUntaggedProtocolReader
+        : IUntaggedProtocolReader, ICloneable<IClonableUntaggedProtocolReader>
+    { }
 }

@@ -49,12 +49,12 @@ namespace Bond.Expressions
             // There is a method (sic!) to this madness. We need to get a method of type R, not method of the 
             // interface. Only this way the calls to methods of protocols that are implemented as a value types 
             // will be inlined by JIT. Inlining makes a big difference for performance.
-            return typeof(R).GetMethod(method.Name, method.GetParameters().Select(p => p.ParameterType).ToArray());
+            return typeof(R).FindMethod(method.Name, method.GetParameters().Select(p => p.ParameterType).ToArray());
         }
         
         static MethodInfo GetMethod(string name, params Type[] paramTypes)
         {
-            var result = typeof(R).GetMethod(name, paramTypes);
+            var result = typeof(R).FindMethod(name, paramTypes);
             Debug.Assert(result != null);
             return result;
         }
