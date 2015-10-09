@@ -78,12 +78,33 @@ Binary](bond_cpp.html#compact-binary) protocol:
 Code generation
 ===============
 
-In order to use a Bond schema in a C# program, it needs to be compiled using 
-the Bond compiler [`gbc`](compiler.html). The compiler generates C# classes that 
-represent the schema. By default schema fields are represented by public 
-auto-properties initialized in the default constructor. Code generation can be 
-customized by passing one or more of the following command line options to 
-`gbc`:
+In order to use a Bond schema in a C# program, it needs to be compiled using the
+Bond compiler [`gbc`](compiler.html). The compiler generates C# classes that
+represent the schema. By default schema fields are represented by public
+auto-properties initialized in the default constructor.
+
+The mapping between Bond and C# type systems is mostly obvious but it is worth
+noting that unlike C# reference types, Bond types are not nullable. This means,
+for a example, that while `string` in Bond IDL will be mapped to C# `string`,
+which is a reference type, the value `null` will not be valid. In order to allow
+`null` value a types must be declared as
+[`nullable`](bond_cpp.html#nullable-types), e.g.:
+
+    struct Foo
+    {
+        0: list<nullable<string>> listOfNullableStrings;
+    }
+
+The value `null` is also legal for fields declared in Bond IDL to have a [default
+of `nothing`](bond_cpp.html#default-value-of-nothing), e.g.:
+
+    struct Bar
+    {
+        0: string str = nothing;
+    }
+
+Code generation can be customized by passing one or more of the following
+command line options to `gbc`:
 
 `--fields` 
 
@@ -954,11 +975,12 @@ the uses for the `Type` is resolving such ambiguities.
     }
 
 Bond defines the following tag types that can be used in a `Type` attribute:
-    - `nullable`: specifies that a reference or nullable C# type represents 
-      a *nullable* type in the Bond type system. 
-    - `wstring`: specifies that a string is UTF16 (i.e. `wstring` in the Bond 
-      type system).
-    - `blob`: specifies that the type represents the schema type `blob`. 
+
+- `nullable`: specifies that a reference or nullable C# type represents 
+  a *nullable* type in the Bond type system. 
+- `wstring`: specifies that a string is UTF16 (i.e. `wstring` in the Bond 
+  type system).
+- `blob`: specifies that the type represents the schema type `blob`. 
 
 The `Type` attribute can also be used to specify type of object to be created 
 during deserialization when a field/property type is an interface.
