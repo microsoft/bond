@@ -43,17 +43,17 @@ public:
           count(that.count)
     {}
 
-	char Peek()
+    char Peek()
     {
         return current;
     }
 
-	size_t Tell() const
+    size_t Tell() const
     {
         return count;
     }
 
-	char Take()
+    char Take()
     {
         char c = current;
 
@@ -72,8 +72,8 @@ public:
 
     // not implemented for read only stream
     char* PutBegin() { BOOST_ASSERT(false); return 0; }
-	void Put(char) { BOOST_ASSERT(false); }
-	size_t PutEnd(char*) { BOOST_ASSERT(false); return 0; }
+    void Put(char) { BOOST_ASSERT(false); }
+    size_t PutEnd(char*) { BOOST_ASSERT(false); return 0; }
 
     RapidJsonInputStream& operator=(const RapidJsonInputStream& that)
     {
@@ -86,9 +86,9 @@ public:
     }
 
 private:
-	Buffer* input;
-	uint8_t current;
-	size_t count;
+    Buffer* input;
+    uint8_t current;
+    size_t count;
 };
 
 
@@ -106,24 +106,16 @@ public:
     char Peek() { BOOST_ASSERT(false); return 0; }
     size_t Tell() const { BOOST_ASSERT(false); return 0; }
     char Take() { BOOST_ASSERT(false); return 0; }
+    size_t PutEnd(char* begin) { BOOST_ASSERT(false); return 0; }
+    char* PutBegin() { BOOST_ASSERT(false); return 0; }
 
-    char* PutBegin()
-    {
-        return 0;
-    }
-
-	void Put(char c)
+    void Put(char c)
     {
         output.Write(c);
     }
 
-    size_t PutEnd(char* begin)
-    {
-        BOOST_ASSERT(begin == 0);
-    }
-
 private:
-	Buffer& output;
+    Buffer& output;
 };
 
 
