@@ -274,7 +274,26 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
     }
 }</code></pre></td></tr></table></div>
 <h1 id="code-generation">Code generation</h1>
-<p>In order to use a Bond schema in a C# program, it needs to be compiled using the Bond compiler <a href="compiler.html"><code>gbc</code></a>. The compiler generates C# classes that represent the schema. By default schema fields are represented by public auto-properties initialized in the default constructor. Code generation can be customized by passing one or more of the following command line options to <code>gbc</code>:</p>
+<p>In order to use a Bond schema in a C# program, it needs to be compiled using the Bond compiler <a href="compiler.html"><code>gbc</code></a>. The compiler generates C# classes that represent the schema. By default schema fields are represented by public auto-properties initialized in the default constructor.</p>
+<p>The mapping between Bond and C# type systems is mostly obvious but it is worth noting that unlike C# reference types, Bond types are not nullable. This means, for a example, that while <code>string</code> in Bond IDL will be mapped to C# <code>string</code>, which is a reference type, the value <code>null</code> will not be valid. In order to allow <code>null</code> value a types must be declared as <a href="bond_cpp.html#nullable-types"><code>nullable</code></a>, e.g.:</p>
+<div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="kw">struct</span> Foo
+{
+    <span class="dv">0</span>: list&lt;nullable&lt;<span class="dt">string</span>&gt;&gt; listOfNullableStrings;
+}</code></pre></td></tr></table></div>
+<p>The value <code>null</code> is also legal for fields declared in Bond IDL to have a <a href="bond_cpp.html#default-value-of-nothing">default of <code>nothing</code></a>, e.g.:</p>
+<div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="kw">struct</span> Bar
+{
+    <span class="dv">0</span>: <span class="dt">string</span> str = nothing;
+}</code></pre></td></tr></table></div>
+<p>Code generation can be customized by passing one or more of the following command line options to <code>gbc</code>:</p>
 <p><code>--fields</code></p>
 <p>Schema fields are represented by public fields with initializers and no constructor is generated.</p>
 <p><code>--readonly-properties</code></p>
@@ -984,7 +1003,12 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
     [Bond.<span class="fu">Id</span>(<span class="dv">1</span>)]
     <span class="kw">public</span> <span class="dt">string</span> str2 = <span class="kw">null</span>;
 }</code></pre></td></tr></table></div>
-<p>Bond defines the following tag types that can be used in a <code>Type</code> attribute: - <code>nullable</code>: specifies that a reference or nullable C# type represents a <em>nullable</em> type in the Bond type system. - <code>wstring</code>: specifies that a string is UTF16 (i.e. <code>wstring</code> in the Bond type system). - <code>blob</code>: specifies that the type represents the schema type <code>blob</code>.</p>
+<p>Bond defines the following tag types that can be used in a <code>Type</code> attribute:</p>
+<ul>
+<li><code>nullable</code>: specifies that a reference or nullable C# type represents a <em>nullable</em> type in the Bond type system.</li>
+<li><code>wstring</code>: specifies that a string is UTF16 (i.e. <code>wstring</code> in the Bond type system).</li>
+<li><code>blob</code>: specifies that the type represents the schema type <code>blob</code>.</li>
+</ul>
 <p>The <code>Type</code> attribute can also be used to specify type of object to be created during deserialization when a field/property type is an interface.</p>
 <div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
