@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['apply',['Apply',['../namespacebond.html#ac58e3ccf4d4e43e5759af6c2c9a37543',1,'bond::Apply(const Transform &amp;transform, const bonded&lt; T, Reader &gt; &amp;bonded)'],['../namespacebond.html#a3e933b206c2540c6b84f0c71ac03f519',1,'bond::Apply(const Transform &amp;transform, const value&lt; T, Reader &gt; &amp;value)'],['../namespacebond.html#ae7059831834eb92e0bf565a27c99ac28',1,'bond::Apply(const Transform &amp;transform, const T &amp;value)'],['../namespacebond.html#aa9fd8d7f7de553452218a22c94fe99e8',1,'bond::Apply(const Transform &amp;transform, T &amp;value)']]],
+  ['assign',['assign',['../classbond_1_1blob.html#a93806ec74749eccf98e19d23451bac64',1,'bond::blob::assign(const blob &amp;from, uint32_t offset, uint32_t length)'],['../classbond_1_1blob.html#a675ef175af807ce0864342dce6d19838',1,'bond::blob::assign(const T &amp;buffer, uint32_t length)'],['../classbond_1_1blob.html#ab112578d9c85f66fb0419eee100c12b8',1,'bond::blob::assign(const T &amp;buffer, uint32_t offset, uint32_t length)']]]
+];
