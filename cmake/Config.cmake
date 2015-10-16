@@ -44,8 +44,19 @@ message(STATUS "Boost Python Library: ${Boost_PYTHON_LIBRARY}")
 # disable Boost auto-linking
 add_definitions (-DBOOST_ALL_NO_LIB)
 
-cxx_add_compile_options(Clang -fPIC -Wall -Werror)
-cxx_add_compile_options(GNU -fPIC -Wall -Werror)
+cxx_add_compile_options(Clang
+    -fPIC
+    -Wall
+    -Werror
+    -Wno-unknown-warning-option
+    -Wno-unused-local-typedefs)
+
+cxx_add_compile_options(GNU
+    -fPIC
+    -Wall
+    -Werror
+    -Wno-unknown-warning-option
+    -Wno-unused-local-typedefs)
 
 include_directories (
     ${BOND_INCLUDE}

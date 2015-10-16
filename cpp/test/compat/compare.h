@@ -6,15 +6,15 @@ class Compare;
 inline bool Equal(double left, double right)
 {
     // http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
-    int64_t l = *(int*)&left;
+    int64_t l = *(int64_t*)&left;
     if (l < 0)
         l = 0x8000000000000000LL - l;
 
-    int64_t r = *(int*)&right;
+    int64_t r = *(int64_t*)&right;
     if (r < 0)
         r = 0x8000000000000000LL - r;
 
-    return abs(l - r) < 5;    
+    return (l - r) < 5 && (l - r) > -5;
 }
 
 
