@@ -3,8 +3,8 @@ import random
 import string
 import functools
 import sys
-from bond_python_unit_test import Serialize, Deserialize, Marshal, Unmarshal, GetRuntimeSchema
-import bond_python_unit_test as test
+from python_unit_test import Serialize, Deserialize, Marshal, Unmarshal, GetRuntimeSchema
+import python_unit_test as test
 
 def atleast_python3():
     return sys.version_info[0] >= 3

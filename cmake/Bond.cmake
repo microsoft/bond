@@ -1,9 +1,10 @@
 include (CMakeParseArguments)
+include (Folders)
 
 #
-# add_bond_codegen (file.bond [file2.bond ...] 
+# add_bond_codegen (file.bond [file2.bond ...]
 #   [ENUM_HEADER]
-#   [OUTPUT_DIR dir] 
+#   [OUTPUT_DIR dir]
 #   [IMPORT_DIR dir [dir2, ...]]
 #   [OPTIONS opt [opt2 ...]])
 #   [TARGET name]
@@ -12,7 +13,7 @@ function (add_bond_codegen)
     set (flagArgs ENUM_HEADER)
     set (oneValueArgs OUTPUT_DIR TARGET)
     set (multiValueArgs IMPORT_DIR OPTIONS)
-    cmake_parse_arguments (arg "${flagArgs}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}) 
+    cmake_parse_arguments (arg "${flagArgs}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     set (options)
     set (outputDir ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
     if (arg_OUTPUT_DIR)
@@ -23,7 +24,7 @@ function (add_bond_codegen)
     list (APPEND options --import-dir="${BOND_INCLUDE}")
     foreach (dir ${arg_IMPORT_DIR})
         list(APPEND options --import-dir="${dir}")
-    endforeach() 
+    endforeach()
     foreach (opt ${arg_OPTIONS})
         list (APPEND options "${opt}")
     endforeach()
@@ -34,7 +35,7 @@ function (add_bond_codegen)
     set (outputs)
     foreach (file ${inputs})
         get_filename_component (name ${file} NAME_WE)
-        list (APPEND outputs 
+        list (APPEND outputs
             "${outputDir}/${name}_reflection.h"
             "${outputDir}/${name}_types.h"
             "${outputDir}/${name}_types.cpp"
@@ -54,6 +55,7 @@ function (add_bond_codegen)
         add_custom_target (${arg_TARGET}
             DEPENDS ${outputs}
             SOURCES ${inputs})
+        add_target_to_folder(${arg_TARGET})
     endif()
 endfunction()
 
@@ -77,11 +79,12 @@ function (add_bond_executable target)
         add_bond_codegen (${schemas})
     endif()
     add_executable (${ARGV} ${sources})
+    add_target_to_folder(${target})
     target_link_libraries (${target} PRIVATE
-        bond 
+        bond
         bond_apply)
-    target_include_directories (${target} PRIVATE 
-        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} 
+    target_include_directories (${target} PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
         ${CMAKE_CURRENT_SOURCE_DIR})
 endfunction()
 
@@ -95,7 +98,7 @@ function (add_bond_test test)
     add_bond_executable (${ARGV})
     add_dependencies (check ${test})
     add_test (
-        NAME ${test} 
+        NAME ${test}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND ${test})
 endfunction()
@@ -122,19 +125,19 @@ function (add_bond_python_module target)
     list (INSERT ARGV 1 EXCLUDE_FROM_ALL)
     python_add_module (${ARGV} ${sources})
     add_dependencies (check ${target})
-    target_link_libraries (${target} PRIVATE 
+    add_target_to_folder(${target})
+    target_link_libraries (${target} PRIVATE
         bond
-        bond_apply 
+        bond_apply
         ${PYTHON_LIBRARIES}
         ${Boost_PYTHON_LIBRARY})
     target_include_directories (${target} PRIVATE
         ${BOND_PYTHON_INCLUDE}
         ${WINDOWSSDK_PREFERRED_DIR}/Include
         ${WINDOWSSDK_PREFERRED_DIR}/Include/shared
-        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} 
+        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${PYTHON_INCLUDE_DIR})
     target_compile_definitions (${target} PRIVATE
         -DBOOST_PYTHON_STATIC_LIB)
 endfunction()
-

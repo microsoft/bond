@@ -1,5 +1,5 @@
 from __future__ import print_function
-import bond_python_compatibility_test as test
+import python_compatibility_test as test
 import sys, getopt
 
 def schema(input_, output):

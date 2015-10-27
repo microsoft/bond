@@ -177,7 +177,7 @@
 
             if ($env:BOND_BUILD -eq "Python") {
 
-                cmake --build . --target bond_python_unit_test -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                cmake --build . --target python_unit_test -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
             }
 
@@ -201,7 +201,7 @@
 
             if ($env:BOND_BUILD -eq "Python") {
 
-                ctest -C Debug --tests-regex bond_python_unit_test --output-on-failure
+                ctest -C Debug --tests-regex python_unit_test --output-on-failure
 
             }
 

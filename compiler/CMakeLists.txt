@@ -4,6 +4,7 @@ set (CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
 
 include (CMakeParseArguments)
+include (Folders)
 
 # required Haskell components
 find_package (Cabal 1.18.0.0 REQUIRED)
@@ -18,10 +19,10 @@ function (add_cabal_build target)
     endif()
     add_custom_command (
         DEPENDS ${arg_SOURCES}
-        COMMAND ${CMAKE_COMMAND} 
+        COMMAND ${CMAKE_COMMAND}
             ${CMAKE_BINARY_DIR}
             -N
-            -Dbuild_dir=${CMAKE_CURRENT_BINARY_DIR} 
+            -Dbuild_dir=${CMAKE_CURRENT_BINARY_DIR}
             -Dtarget=${target}
             -Dcabal_options=${options}
             -P cabal_build.cmake
@@ -29,16 +30,17 @@ function (add_cabal_build target)
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/build/${target}/${target}${CMAKE_EXECUTABLE_SUFFIX})
     add_custom_target (${target}
         SOURCES ${arg_SOURCES}
-        DEPENDS ${arg_DEPENDS} 
+        DEPENDS ${arg_DEPENDS}
                 ${CMAKE_CURRENT_BINARY_DIR}/build/${target}/${target}${CMAKE_EXECUTABLE_SUFFIX})
-    add_dependencies (${target} sandbox)        
-endfunction()    
+    add_target_to_folder(${target})
+    add_dependencies (${target} sandbox)
+endfunction()
 
 function (add_cabal_test target)
-    list (INSERT ${target} 0 EXCLUDE_FROM_ALL) 
+    list (INSERT ${target} 0 EXCLUDE_FROM_ALL)
     add_cabal_build (${ARGV} ENABLE_TESTS)
     add_test (
-        NAME ${target} 
+        NAME ${target}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/build/${target}/${target})
 endfunction()
@@ -82,8 +84,8 @@ set (output ${CMAKE_CURRENT_BINARY_DIR}/build/gbc/gbc${CMAKE_EXECUTABLE_SUFFIX})
 set (GBC_EXECUTABLE ${output} PARENT_SCOPE)
 
 add_custom_command (
-    COMMAND ${CMAKE_COMMAND} 
-        ${CMAKE_BINARY_DIR} 
+    COMMAND ${CMAKE_COMMAND}
+        ${CMAKE_BINARY_DIR}
         -N
         -P sandbox_init.cmake
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -91,6 +93,7 @@ add_custom_command (
 
 add_custom_target (sandbox
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cabal.sandbox.config)
+add_target_to_folder(sandbox)
 
 add_custom_command (
     DEPENDS ${output}
@@ -111,6 +114,6 @@ install (FILES ${output}
 
 if(EXISTS "${completion_dir}" AND IS_DIRECTORY "${completion_dir}")
     install (FILES ${completion}
-        RENAME gbc 
+        RENAME gbc
         DESTINATION ${completion_dir})
 endif()

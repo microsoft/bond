@@ -1,2 +1,2 @@
 use_cxx11 ()
-add_subdirectory (core)
+add_subfolder (core "examples/python/core")

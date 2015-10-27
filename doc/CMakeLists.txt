@@ -5,6 +5,7 @@ set (CMAKE_MODULE_PATH
 
 include (CMakeParseArguments)
 include (HaskellUtil)
+include (Folders)
 
 # build the compiler when doc directory is build by itself
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
@@ -55,10 +56,11 @@ function (add_pandoc_markdown)
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             DEPENDS ${file} ${PANDOC_EXECUTABLE})
     endforeach()
-    add_custom_target ("documentation_${name}"
+    add_custom_target (${name}
         DEPENDS ${outputs}
         SOURCES ${sources})
-    add_dependencies (documentation "documentation_${name}")
+    add_target_to_folder (${name})
+    add_dependencies (documentation ${name})
 endfunction()
 
 add_custom_command(
@@ -70,6 +72,8 @@ add_custom_command(
 
 add_custom_target (documentation
     DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html")
+
+add_target_to_folder (documentation)
 
 find_haskell_program (pandoc)
 
@@ -126,9 +130,11 @@ if (Doxygen_EXECUTABLE)
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS ${doxygen_sources})
 
-    add_custom_target (documentation_cpp_reference
+    add_custom_target (cpp_reference
         DEPENDS "${doxygen_output_dir}/cpp/index.html"
         SOURCES ${doxygen_sources})
 
-    add_dependencies (documentation documentation_cpp_reference)
+    add_target_to_folder (cpp_reference)
+
+    add_dependencies (documentation cpp_reference)
 endif()

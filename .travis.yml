@@ -76,8 +76,8 @@ script:
     - if [ "$BOND_LANG" == "cs" ]; then make --jobs 2 DESTDIR=$HOME install; fi
     - if [ "$BOND_LANG" == "cs" ]; then export BOND_COMPILER_PATH=$HOME/usr/local/bin; fi
     - if [[ $BOND_LANG == cpp* ]]; then make --jobs 2 check; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export BOND_PYTHON_TARGETS="bond_python_unit_test python_extension" BOND_PYTHON_TESTS=bond_python_unit_test; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export BOND_PYTHON_TARGETS="bond_python_compatibility_test bond_python_unit_test python_extension bond_compatibility_test" BOND_PYTHON_TESTS=".*python.*"; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export BOND_PYTHON_TARGETS="python_unit_test python_extension" BOND_PYTHON_TESTS=python_unit_test; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export BOND_PYTHON_TARGETS="python_compatibility_test python_unit_test python_extension compatibility_test" BOND_PYTHON_TESTS=".*python.*"; fi
     - if [[ $BOND_LANG == py* ]]; then make $BOND_PYTHON_TARGETS; fi
     - if [[ $BOND_LANG == py* ]]; then ctest --tests-regex $BOND_PYTHON_TESTS --output-on-failure; fi
     - if [ "$BOND_GHC_VERSION" != "" ]; then make gbc-tests; fi

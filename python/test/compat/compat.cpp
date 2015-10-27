@@ -1,7 +1,7 @@
 #include "compat_reflection.h"
 #include <bond/python/struct.h>
 
-BOOST_PYTHON_MODULE(bond_python_compatibility_test)
+BOOST_PYTHON_MODULE(python_compatibility_test)
 {
     using namespace unittest::compat;
 

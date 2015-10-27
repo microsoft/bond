@@ -1,1 +1,1 @@
-add_subdirectory (core)
+add_subfolder (core "examples/core")
