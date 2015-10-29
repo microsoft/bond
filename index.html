@@ -215,14 +215,12 @@ sudo make install</code></pre></div>
 <p><a href="https://ci.appveyor.com/project/sapek/bond/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&amp;branch=master" alt="Build Status" /></a></p>
 <p>Install the following tools:</p>
 <ul>
-<li>Visual Studio 2013</li>
+<li>Visual Studio 2013 or 2015</li>
 <li>CMake (<a href="http://www.cmake.org/download/" class="uri">http://www.cmake.org/download/</a>)</li>
 <li>Haskell Platform (<a href="http://haskell.org/platform/" class="uri">http://haskell.org/platform/</a>)</li>
 </ul>
-<p>You can install them with <a href="http://chocolatey.org">Chocolatey</a>:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cinst haskellplatform cmake visualstudiocommunity2013</code></pre></div>
 <p>If you are building on a network behind a proxy, set the environment variable <code>HTTP_PROXY</code>, e.g.:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> HTTP_PROXY<span class="op">=</span>http:<span class="op">//</span>proxy:<span class="dv">80</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> HTTP_PROXY<span class="op">=</span>http:<span class="op">//</span>your<span class="op">-</span>proxy<span class="op">-</span>name:<span class="dv">80</span></code></pre></div>
 <p>Update cabal package database:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cabal update</code></pre></div>
 <p>Now you are ready to build the C# version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio 2013 and build as usual. The C# unit tests can also be run from within the solution.</p>
