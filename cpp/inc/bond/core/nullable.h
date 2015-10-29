@@ -335,6 +335,13 @@ public:
           _value(0)
     {}
 
+    /// @brief Construct from another nullable and propagate allocator
+    nullable(const nullable& other, 
+             const allocator_type& alloc)
+        : _alloc(alloc),
+          _value(other.hasvalue() ? new_value(_alloc, other.value()) : 0)
+    {}
+
     /// @brief Construct from an instance T
     explicit
     nullable(const value_type& value,
@@ -491,18 +498,15 @@ private:
         delete _value;
     }
 
-    template<typename AllocatorT, typename Arg1>
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
-    pointer new_value(AllocatorT& alloc, Arg1&& arg1)
-#else
-    pointer new_value(AllocatorT& alloc, const Arg1& arg1)
-#endif
+    template<typename AllocatorT, typename... Args>
+    pointer new_value(AllocatorT& alloc, Args&&... args)
     {
         T* p = alloc.allocate(1);
         try
         {
-            void* p1 = p;
-            return ::new(p1) T(arg1);
+            T * p1 = p;
+            std::allocator_traits<decltype(_alloc)>::construct(_alloc, p1, std::forward<Args>(args)...);
+            return p1;
         }
         catch (...)
         {
