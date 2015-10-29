@@ -134,18 +134,14 @@ variable, e.g.:
 
 Install the following tools:
 
-- Visual Studio 2013
+- Visual Studio 2013 or 2015
 - CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
 - Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
-
-You can install them with [Chocolatey](http://chocolatey.org):
-
-    cinst haskellplatform cmake visualstudiocommunity2013
 
 If you are building on a network behind a proxy, set the environment variable 
 `HTTP_PROXY`, e.g.:
 
-    set HTTP_PROXY=http://proxy:80
+    set HTTP_PROXY=http://your-proxy-name:80
 
 Update cabal package database:
 
