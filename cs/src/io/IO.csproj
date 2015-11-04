@@ -23,8 +23,12 @@
   <ItemGroup>
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="unsafe\InputBuffer.cs" />
+    <Compile Include="unsafe\InputPtrBuffer.cs" />
     <Compile Include="unsafe\InputStream.cs" />
+    <Compile Include="unsafe\IntegerHelper.cs" />
+    <Compile Include="unsafe\MemoryHelper.cs" />
     <Compile Include="unsafe\OutputBuffer.cs" />
+    <Compile Include="unsafe\OutputPtrBuffer.cs" />
     <Compile Include="unsafe\OutputStream.cs" />
     <Compile Include="unsafe\StreamCloning.cs" />
   </ItemGroup>

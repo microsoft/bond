@@ -75,8 +75,13 @@
 
             memoryRoundtrip(Util.SerializeUnsafeCB, Util.DeserializeSafeCB<BasicTypes>);
             memoryRoundtrip(Util.SerializeUnsafeCB, Util.DeserializeUnsafeCB<BasicTypes>);
+            memoryRoundtrip(Util.SerializeUnsafeCBWithPtr, Util.DeserializeSafeCB<BasicTypes>);
+            memoryRoundtrip(Util.SerializeUnsafeCBWithPtr, Util.DeserializeUnsafeCB<BasicTypes>);
+            memoryRoundtrip(Util.SerializeUnsafeCB, Util.DeserializeUnsafeCBWithPtr<BasicTypes>);
+            memoryRoundtrip(Util.SerializeUnsafeCBWithPtr, Util.DeserializeUnsafeCBWithPtr<BasicTypes>);
             memoryRoundtrip(Util.SerializeSP, Util.DeserializeSafeSP<BasicTypes, BasicTypes>);
             memoryRoundtrip(Util.SerializeSP, Util.DeserializeUnsafeSP<BasicTypes, BasicTypes>);
+            memoryRoundtrip(Util.SerializeSP, Util.DeserializeUnsafeSPWithPtr<BasicTypes, BasicTypes>);
         }
 
         [Test]

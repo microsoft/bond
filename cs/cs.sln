@@ -164,6 +164,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "import", "..\examples\cs\co
 	EndProjectSection
 EndProject
 Global
+	GlobalSection(CodealikeProperties) = postSolution
+		SolutionGuid = 2ead30bb-0d1a-4ead-b46f-388cc897f4b6
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
