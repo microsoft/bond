@@ -225,7 +225,16 @@ namespace Bond.Expressions
             if (container.Type.IsBondBlob())
                 return Expression.Property(container, "Count");
 
-            return Expression.Property(container, container.Type.GetDeclaredProperty(typeof(ICollection<>), "Count", typeof(int)));
+            Type genericParameter = container.Type.GetInterfaces().Union(new[] { container.Type })
+                .Where(type => type.IsGenericType())
+                .First(type => type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                .GenericTypeArguments
+                .First();
+            Type collectionType = typeof(ICollection<>).MakeGenericType(genericParameter);
+
+            return Expression.Property(
+                Expression.TypeAs(container, collectionType),
+                "Count");
         }
 
         Expression EnumerableContainer(ContainerItemHandler handler)
