@@ -92,7 +92,7 @@ namespace Bond.Protocols
     /// <summary>
     /// Writer for the Fast Binary tagged protocol
     /// </summary>
-    /// <typeparam name="O">Implemention of IOutputStream interface</typeparam>
+    /// <typeparam name="O">Implementation of IOutputStream interface</typeparam>
     [Reader(typeof(FastBinaryReader<>))]
     public struct FastBinaryWriter<O> : IProtocolWriter
         where O : IOutputStream
