@@ -480,7 +480,7 @@ namespace Bond.Protocols
     /// <summary>
     /// Reader for the Compact Binary tagged protocol
     /// </summary>
-    /// <typeparam name="I">Implemention of IInputStream interface</typeparam>
+    /// <typeparam name="I">Implementation of IInputStream interface</typeparam>
     public struct CompactBinaryReader<I> : ITaggedProtocolReader, ICloneable<CompactBinaryReader<I>>
         where I : IInputStream, ICloneable<I>
     {
