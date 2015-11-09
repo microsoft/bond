@@ -142,7 +142,7 @@ namespace Bond.Expressions
             {
                 serialize = serializeDelegates[schema] = p => serializeWithSchema(p, schema);
             }
-            // Tanscoding from tagged protocol with runtime schema generates enormous expression tree
+            // Transcoding from tagged protocol with runtime schema generates enormous expression tree
             // and for large schemas JIT fails to compile resulting lambda (InvalidProgramException).
             // As a workaround we don't inline nested serialize expressions in this case.
             var inline = !typeof(ITaggedProtocolReader).IsAssignableFrom(parser.ReaderParam.Type);
@@ -217,7 +217,7 @@ namespace Bond.Expressions
                             body);
 
                         // For binary protocols we can write blob directly using protocols's WriteBytes
-                        // even if the the container is not a blob (blob is BT_LIST of BT_INT8).
+                        // even if the container is not a blob (blob is BT_LIST of BT_INT8).
                         if (binaryWriter)
                             body = PrunedExpression.IfThenElse(
                                 Expression.Equal(elementType, Expression.Constant(BondDataType.BT_UINT8)),
