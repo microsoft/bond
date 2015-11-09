@@ -8,6 +8,7 @@ namespace Bond.IO.Unsafe
     using System.IO;
     using System.Text;
     using Bond.Protocols;
+    using RMarshal = System.Runtime.InteropServices.Marshal;
 
     /// <summary>
     /// Implements IInputStream on top of memory buffer
@@ -174,13 +175,10 @@ namespace Bond.IO.Unsafe
             //       when available. The scope of the change is a bit too involved to do it without review.
 
             byte[] result = new byte[count];
-            unsafe
-            {
-                fixed (byte* ptr = result)
-                {
-                    MemoryHelper.Copy(ptr, buffer + position, count);
-                }
-            }
+
+            IntPtr pointer = (IntPtr)(buffer + position);
+            RMarshal.Copy(pointer, result, 0, count);
+
             position += count;
             return new ArraySegment<byte>(result);
         }

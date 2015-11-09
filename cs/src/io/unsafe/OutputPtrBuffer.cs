@@ -147,13 +147,8 @@ namespace Bond.IO.Unsafe
                 EndOfStream(bytes.Count);
             }
 
-            // We don't use a BlockCopyMin because this implementation is even faster than looping after 3 bytes.
-            // In fact it is even faster than Buffer.BlockCopy and System.Buffer (.Net 4.6) by a wide margin in both Legacy and RyuJIT.
-            fixed ( byte* bytesPtr = bytes.Array )
-            {
-                byte* ptr = bytesPtr + bytes.Offset;
-                MemoryHelper.Copy(data + position, ptr, bytes.Count);
-            }
+            IntPtr pointer = (IntPtr) (data + position);
+            Marshal.Copy( bytes.Array, bytes.Offset,pointer, bytes.Count );
          
             position = newOffset;
         }
