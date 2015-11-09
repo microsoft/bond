@@ -11,7 +11,7 @@ namespace Bond.IO.Unsafe
     using RMarshal = System.Runtime.InteropServices.Marshal;
 
     /// <summary>
-    /// Implements IInputStream on top of memory buffer
+    /// Implements IInputStream on top of unmanaged memory buffer
     /// </summary>
     public unsafe sealed class InputPtrBuffer : IInputStream, ICloneable<InputPtrBuffer>
     {
