@@ -79,6 +79,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 
   div.sourceCode {
     overflow-x: auto;
+    max-height: 600px;
   }
 
   table.sourceCode { 
@@ -149,6 +150,8 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#comments">Comments</a></li>
 </ul></li>
 <li><a href="#schema-ast">Schema AST</a><ul>
+<li><a href="#example">Example</a></li>
+<li><a href="#bond">Bond</a></li>
 <li><a href="#import">Import</a></li>
 <li><a href="#namespace">Namespace</a></li>
 <li><a href="#declaration">Declaration</a><ul>
@@ -176,7 +179,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <h1 id="command-line-options">Command line options</h1>
 <div class="sourceCode">
-<object width="702" height="1000" data="gbc.html"></object>
+<object width="100%" height="1000" data="gbc.html"></object>
 </div>
 <h1 id="idl-syntax">IDL syntax</h1>
 <p>A Bond schema definition file can contain the following elements:</p>
@@ -343,6 +346,54 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 }</code></pre></div>
 <h1 id="schema-ast">Schema AST</h1>
 <p>The compiler exposes a JSON representation of the schema Abstract Syntax Tree. The AST is intended for tools that need to access to the schema information contained in Bond IDL files with the full fidelity. The compiler can also take the JSON representation of the AST as an input, enabling tools which programmatically construct/modify Bond schemas.</p>
+<h2 id="example">Example</h2>
+<p>Given the following schema definition:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">namespace</span> example.some
+
+<span class="kw">struct</span> SomeStruct
+{
+    <span class="dv">0</span>: int32 someField = <span class="dv">123</span>;
+}</code></pre></div>
+<p>Below is the JSON representation of the Abstract Syntax Tree for it:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
+  <span class="st">&quot;imports&quot;</span>: [],
+  <span class="st">&quot;namespaces&quot;</span>: [
+    {
+      <span class="st">&quot;name&quot;</span>: [
+          <span class="st">&quot;example&quot;</span>,
+          <span class="st">&quot;some&quot;</span>
+      ]
+    }
+  ],
+  <span class="st">&quot;declarations&quot;</span>: [
+    {
+      <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Struct&quot;</span>,
+      <span class="st">&quot;declNamespaces&quot;</span>: [
+        {
+          <span class="st">&quot;name&quot;</span>: [
+              <span class="st">&quot;example&quot;</span>,
+              <span class="st">&quot;some&quot;</span>
+          ]
+        }
+      ],
+      <span class="st">&quot;declAttributes&quot;</span>: [],
+      <span class="st">&quot;declParams&quot;</span>: [],
+      <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;SomeStruct&quot;</span>,
+      <span class="st">&quot;structFields&quot;</span>: [
+        {
+          <span class="st">&quot;fieldOrdinal&quot;</span>: <span class="dv">0</span>,
+          <span class="st">&quot;fieldType&quot;</span>: <span class="st">&quot;int32&quot;</span>,
+          <span class="st">&quot;fieldName&quot;</span>: <span class="st">&quot;someField&quot;</span>,
+          <span class="st">&quot;fieldDefault&quot;</span>: {
+            <span class="st">&quot;value&quot;</span>: <span class="dv">123</span>,
+            <span class="st">&quot;type&quot;</span>: <span class="st">&quot;integer&quot;</span>
+          }
+        }
+      ]
+    }
+  ]
+} </code></pre></div>
+<h2 id="bond">Bond</h2>
 <p>The top level JSON object represents the parsed Bond IDL file and has the following structure:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
   <span class="st">&quot;imports&quot;</span>: [
@@ -352,13 +403,19 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
   <span class="st">&quot;declarations&quot;</span>: [
   ]
 }</code></pre></div>
+<p>where:</p>
+<ul>
+<li><code>imports</code> is an array of <a href="#import">imports</a>.</li>
+<li><code>namespaces</code> is an array of <a href="#namespace">namespaces</a>. Each Bond file should have one namespace declaration, although the AST and IDL syntax have support for legacy schema files with multiple, language-specific namespaces.</li>
+<li><code>declarations</code> is an array of <a href="#declaration">declarations</a>.</li>
+</ul>
 <h2 id="import">Import</h2>
 <p>Imports are represented by JSON strings. For example the following IDL:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">import <span class="st">&quot;bond/core/bond.bond&quot;</span></code></pre></div>
 <p>is represented in the AST as:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="st">&quot;bond/core/bond.bond&quot;</span></code></pre></div>
 <h2 id="namespace">Namespace</h2>
-<p>Each Bond file should have one namespace declaration, although the AST and IDL syntax have support for legacy schema files with multiple, language-specific namespaces. The namespace declaration is represented by a JSON object:</p>
+<p>The namespace declaration is represented by a JSON object:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
   <span class="st">&quot;name&quot;</span>: [
   ]
@@ -367,6 +424,15 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li><code>name</code> is <a href="#qualified-name">qualified name</a> of the namespace.</li>
 </ul>
+<p>For example:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">namespace</span> foo.bar</code></pre></div>
+<p>is represented as:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
+  <span class="st">&quot;name&quot;</span>: [
+    <span class="st">&quot;foo&quot;</span>,
+    <span class="st">&quot;bar&quot;</span>
+  ]
+}</code></pre></div>
 <h2 id="declaration">Declaration</h2>
 <p>A declaration is represented by a JSON object with the following common properties:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
@@ -393,7 +459,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
   <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Struct&quot;</span>,
   <span class="st">&quot;declNamespaces&quot;</span>: [
   ],
-  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;Name&quot;</span>,
+  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;StructName&quot;</span>,
   <span class="st">&quot;declParams&quot;</span>: [
   ],
   <span class="st">&quot;declAttributes&quot;</span>: [
@@ -413,7 +479,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
   <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Enum&quot;</span>,
   <span class="st">&quot;declNamespaces&quot;</span>: [
   ],
-  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;Name&quot;</span>,
+  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;EnumName&quot;</span>,
   <span class="st">&quot;declAttributes&quot;</span>: [
   ],
   <span class="st">&quot;enumConstants&quot;</span>: [
@@ -426,7 +492,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <h4 id="constant">Constant</h4>
 <p>An enum constant is represented by the following JSON object:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;constantName&quot;</span>: <span class="st">&quot;Name&quot;</span>,
+  <span class="st">&quot;constantName&quot;</span>: <span class="st">&quot;ConstantName&quot;</span>,
   <span class="st">&quot;constantValue&quot;</span>: null
 }</code></pre></div>
 <p>where:</p>
@@ -440,7 +506,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
   <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Alias&quot;</span>,
   <span class="st">&quot;declNamespaces&quot;</span>: [
   ],
-  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;Name&quot;</span>,
+  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;AliasName&quot;</span>,
   <span class="st">&quot;declParams&quot;</span>: [
   ],
   <span class="st">&quot;aliasType&quot;</span>: {
@@ -456,7 +522,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
   <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Forward&quot;</span>,
   <span class="st">&quot;declNamespaces&quot;</span>: [
   ],
-  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;Name&quot;</span>,
+  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;StructName&quot;</span>,
   <span class="st">&quot;declParams&quot;</span>: [
   ]
 }</code></pre></div>
@@ -504,11 +570,11 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 }</code></pre></div>
 <p>where:</p>
 <ul>
-<li><code>fieldModifier</code> is one of the following strings: <code>&quot;Optional&quot;</code>, <code>&quot;Required&quot;</code>, <code>&quot;RequiredOptional&quot;</code>.</li>
+<li><code>fieldModifier</code> is one of the following strings: <code>&quot;Optional&quot;</code>, <code>&quot;Required&quot;</code>, <code>&quot;RequiredOptional&quot;</code>. The property is optional and <code>fieldModifier</code> defaults to <code>Optional</code> if omitted.</li>
 <li><code>fieldDefault</code> is <code>null</code> or a <a href="#field-default-value">default value</a>. The property is optional and may be omitted.</li>
 <li><code>fieldType</code> is a <a href="#type">type</a>.</li>
 <li><code>fieldName</code> is a string.</li>
-<li><code>fieldAttributes</code> is an array of zero or more <a href="#attribute">attributes</a>.</li>
+<li><code>fieldAttributes</code> is an array of zero or more <a href="#attribute">attributes</a>. The property is optional an may be omitted.</li>
 <li><code>fieldOrdinal</code> is an integer.</li>
 </ul>
 <h3 id="field-default-value">Field default value</h3>
