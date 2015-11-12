@@ -130,7 +130,7 @@ namespace Bond.Protocols
     /// <summary>
     /// Writer for the Compact Binary tagged protocol
     /// </summary>
-    /// <typeparam name="O">Implemention of IOutputStream interface</typeparam>
+    /// <typeparam name="O">Implementation of IOutputStream interface</typeparam>
     [Reader(typeof(CompactBinaryReader<>))]
     public struct CompactBinaryWriter<O> : IProtocolWriter
         where O : IOutputStream
