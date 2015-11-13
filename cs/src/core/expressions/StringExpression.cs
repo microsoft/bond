@@ -14,13 +14,13 @@ namespace Bond.Expressions
     /// </summary>
     internal static class StringExpression
     {
-        private static readonly Expression invariantCulture = Expression.Property(null, typeof(CultureInfo), "InvariantCulture");
-        private static readonly MethodInfo equals =      Reflection.MethodInfoOf(() => string.Equals(default(string), default(string), default(StringComparison)));
-        private static readonly MethodInfo format =      Reflection.MethodInfoOf(() => string.Format(default(IFormatProvider), default(string), default(object[])));
-        private static readonly MethodInfo getHashCode = Reflection.MethodInfoOf((string s) => s.GetHashCode());
-        private static readonly FieldInfo stringEmpty =  Reflection.FieldInfoOf((string s) => string.Empty);
+        static readonly Expression invariantCulture = Expression.Property(null, typeof(CultureInfo), "InvariantCulture");
+        static readonly MethodInfo equals =      Reflection.MethodInfoOf(() => string.Equals(default(string), default(string), default(StringComparison)));
+        static readonly MethodInfo format =      Reflection.MethodInfoOf(() => string.Format(default(IFormatProvider), default(string), default(object[])));
+        static readonly MethodInfo getHashCode = Reflection.MethodInfoOf((string s) => s.GetHashCode());
+        static readonly FieldInfo stringEmpty =  Reflection.FieldInfoOf((string s) => string.Empty);
         
-        private static readonly IDictionary<BondDataType, MethodInfo> methods =
+        static readonly IDictionary<BondDataType, MethodInfo> methods =
             new Dictionary<BondDataType, MethodInfo>
                 {
                     { BondDataType.BT_BOOL,   Reflection.MethodInfoOf(() => System.Convert.ToBoolean(default(string), default(IFormatProvider))) },

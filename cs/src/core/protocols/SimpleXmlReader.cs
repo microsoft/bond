@@ -12,7 +12,7 @@ namespace Bond.Protocols
     [Parser(typeof(SimpleXmlParser<>))]
     public struct SimpleXmlReader : IXmlReader
     {
-        private readonly XmlReader reader;
+        readonly XmlReader reader;
 
         public SimpleXmlReader(XmlReader reader)
             : this()
