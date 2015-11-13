@@ -15,7 +15,7 @@ namespace Bond.IO.Unsafe
     internal static class StreamCloning
     {
         delegate void GetOriginAndLength(MemoryStream stream, out int origin, out int length);
-        private static readonly GetOriginAndLength getOriginAndLength;
+        static readonly GetOriginAndLength getOriginAndLength;
 
         static readonly FileShare[] shareModes =
         {

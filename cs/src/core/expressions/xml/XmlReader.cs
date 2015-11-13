@@ -9,16 +9,16 @@ namespace Bond.Expressions.Xml
 
     public class XmlReader<R> where R : IXmlReader
     {
-        private static readonly MethodInfo read = Reflection.MethodInfoOf((IXmlReader r) => r.Read());
-        private static readonly MethodInfo skip = Reflection.MethodInfoOf((IXmlReader r) => r.Skip());
-        private static readonly PropertyInfo eof = Reflection.PropertyInfoOf((IXmlReader r) => r.EOF);
-        private static readonly PropertyInfo nodeType = Reflection.PropertyInfoOf((IXmlReader r) => r.NodeType);
-        private static readonly PropertyInfo localName = Reflection.PropertyInfoOf((IXmlReader r) => r.LocalName);
-        private static readonly PropertyInfo namespaceUri = Reflection.PropertyInfoOf((IXmlReader r) => r.NamespaceURI);
-        private static readonly PropertyInfo isEmptyElement = Reflection.PropertyInfoOf((IXmlReader r) => r.IsEmptyElement);
-        private static readonly PropertyInfo value = Reflection.PropertyInfoOf((IXmlReader r) => r.Value);
+        static readonly MethodInfo read = Reflection.MethodInfoOf((IXmlReader r) => r.Read());
+        static readonly MethodInfo skip = Reflection.MethodInfoOf((IXmlReader r) => r.Skip());
+        static readonly PropertyInfo eof = Reflection.PropertyInfoOf((IXmlReader r) => r.EOF);
+        static readonly PropertyInfo nodeType = Reflection.PropertyInfoOf((IXmlReader r) => r.NodeType);
+        static readonly PropertyInfo localName = Reflection.PropertyInfoOf((IXmlReader r) => r.LocalName);
+        static readonly PropertyInfo namespaceUri = Reflection.PropertyInfoOf((IXmlReader r) => r.NamespaceURI);
+        static readonly PropertyInfo isEmptyElement = Reflection.PropertyInfoOf((IXmlReader r) => r.IsEmptyElement);
+        static readonly PropertyInfo value = Reflection.PropertyInfoOf((IXmlReader r) => r.Value);
 
-        private readonly ParameterExpression reader = Expression.Parameter(typeof(R), "reader");
+        readonly ParameterExpression reader = Expression.Parameter(typeof(R), "reader");
 
         public ParameterExpression Param { get { return reader; } }
 

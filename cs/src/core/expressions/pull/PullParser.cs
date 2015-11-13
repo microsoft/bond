@@ -13,14 +13,14 @@ namespace Bond.Expressions.Pull
     
     public abstract class PullParser<T> : IParser
     {
-        private readonly RuntimeSchema schema;
+        readonly RuntimeSchema schema;
 
         /// <summary>
         /// Indicates whether fields parsing is flattened. When true, the generated state
         /// machine expression will include detection and handling of fields defined in
         /// the base schemas.
         /// </summary>
-        private readonly bool flatten;
+        readonly bool flatten;
         
         protected PullParser(RuntimeSchema schema, bool flatten)
         {
@@ -177,7 +177,7 @@ namespace Bond.Expressions.Pull
 
         #region State machine codeGen
 
-        private Expression SwitchToken(IStateMachine<T> machine, Expression state)
+        Expression SwitchToken(IStateMachine<T> machine, Expression state)
         {
             // add switch cases for each token
             var tokenCases = machine.TokenTransitions.Select(transition => CaseForToken(transition, state));
@@ -202,7 +202,7 @@ namespace Bond.Expressions.Pull
                 tokenCases.ToArray());
         }
         
-        private static SwitchCase CaseForToken(ITokenTransition<T> tokenTransition, Expression state)
+        static SwitchCase CaseForToken(ITokenTransition<T> tokenTransition, Expression state)
         {
             Expression caseForToken;
 

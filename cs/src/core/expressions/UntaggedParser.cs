@@ -81,7 +81,7 @@ namespace Bond.Expressions
             return Expression.Block(body);
         }
 
-        private Expression Field(ITransform transform, FieldDef fieldDef, IField field)
+        Expression Field(ITransform transform, FieldDef fieldDef, IField field)
         {
             var fieldId = Expression.Constant(fieldDef.id);
             var fieldType = Expression.Constant(fieldDef.type.id);

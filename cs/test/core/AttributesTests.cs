@@ -30,7 +30,7 @@
             Assert.AreEqual("Bar", attributeAttribute.Value);
         }
 
-        private class Foo
+        class Foo
         {
             [Default("a")]
             public string A { get; set; }
