@@ -15,20 +15,19 @@ namespace Bond.IO.Unsafe
     /// </summary>
     public unsafe sealed class InputPtrBuffer : IInputStream, ICloneable<InputPtrBuffer>
     {
-        readonly int offset;
-        internal byte* buffer;
-        internal int end;
-        internal int position;
+        readonly byte* buffer;
+        readonly int end;
+        int position;
 
         public long Length
         {
-            get { return end - offset; }
+            get { return end; }
         }
 
         public long Position
         {
-            get { return position - offset; }
-            set { position = offset + checked((int)value); }
+            get { return position; }
+            set { position = checked((int)value); }
         }
 
         public InputPtrBuffer(byte* data, int length)
@@ -39,10 +38,9 @@ namespace Bond.IO.Unsafe
         {
             Debug.Assert(BitConverter.IsLittleEndian);
 
-            buffer = data;
-            this.offset = offset;
-            end = offset + length;
-            position = offset;
+            buffer = data + offset;
+            end = length;
+            position = 0;
         }
 
         internal InputPtrBuffer(InputPtrBuffer that)
@@ -240,7 +238,7 @@ namespace Bond.IO.Unsafe
             return result;
         }
 
-        private ulong DecodeVarUInt64Checked()
+        ulong DecodeVarUInt64Checked()
         {
             ulong raw = 0x80;
             ulong result = 0;

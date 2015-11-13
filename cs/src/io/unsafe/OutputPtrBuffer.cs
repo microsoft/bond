@@ -14,9 +14,9 @@ namespace Bond.IO.Unsafe
     /// </summary>
     public sealed unsafe class OutputPtrBuffer : IOutputStream
     {
-        internal byte* data;
-        internal int position;
-        internal int length;
+        readonly byte* data;
+        readonly int end;
+        int position;
 
         /// <summary>
         /// Gets data inside the buffer
@@ -39,9 +39,17 @@ namespace Bond.IO.Unsafe
         {
             Debug.Assert(BitConverter.IsLittleEndian);
 
-            this.data = buffer;
-            this.length = length;
+            data = buffer;
+            end = length;
+            position = 0;
+        }
 
+        public OutputPtrBuffer(byte* data, int offset, int length)
+        {
+            Debug.Assert(BitConverter.IsLittleEndian);
+
+            data = data + offset;
+            end = length;
             position = 0;
         }
 
@@ -52,7 +60,7 @@ namespace Bond.IO.Unsafe
         /// </summary>
         public void WriteUInt8(byte value)
         {
-            if (position >= length)
+            if (position >= end)
             {
                 EndOfStream(sizeof(byte));
             }
@@ -65,7 +73,7 @@ namespace Bond.IO.Unsafe
         /// </summary>
         public void WriteUInt16(ushort value)
         {
-            if (position + sizeof(ushort) > length)
+            if (position + sizeof(ushort) > end)
             {
                 EndOfStream(sizeof(ushort));
             }
@@ -80,7 +88,7 @@ namespace Bond.IO.Unsafe
         /// </summary>
         public void WriteUInt32(uint value)
         {
-            if (position + sizeof(uint) > length)
+            if (position + sizeof(uint) > end)
             {
                 EndOfStream(sizeof(uint));
             }
@@ -95,7 +103,7 @@ namespace Bond.IO.Unsafe
         /// </summary>
         public void WriteUInt64(ulong value)
         {
-            if (position + sizeof(ulong) > length)
+            if (position + sizeof(ulong) > end)
             {
                 EndOfStream(sizeof(ulong));
             }
@@ -110,7 +118,7 @@ namespace Bond.IO.Unsafe
         /// </summary>
         public void WriteFloat(float value)
         {
-            if (position + sizeof(float) > length)
+            if (position + sizeof(float) > end)
             {
                 EndOfStream(sizeof(float));
             }
@@ -125,7 +133,7 @@ namespace Bond.IO.Unsafe
         /// </summary>
         public void WriteDouble(double value)
         {
-            if (position + sizeof(double) > length)
+            if (position + sizeof(double) > end)
             {
                 EndOfStream(sizeof(double));
             }
@@ -142,7 +150,7 @@ namespace Bond.IO.Unsafe
         public void WriteBytes(ArraySegment<byte> bytes)
         {
             var newOffset = position + bytes.Count;
-            if (newOffset > length)
+            if (newOffset > end)
             {
                 EndOfStream(bytes.Count);
             }
@@ -158,7 +166,7 @@ namespace Bond.IO.Unsafe
         /// </summary>
         public void WriteVarUInt16(ushort value)
         {
-            if (position + IntegerHelper.MaxBytesVarInt16 > length)
+            if (position + IntegerHelper.MaxBytesVarInt16 > end)
             {
                 EndOfStream(IntegerHelper.MaxBytesVarInt16);
             }
@@ -170,7 +178,7 @@ namespace Bond.IO.Unsafe
         /// </summary>
         public void WriteVarUInt32(uint value)
         {
-            if (position + IntegerHelper.MaxBytesVarInt32 > length)
+            if (position + IntegerHelper.MaxBytesVarInt32 > end)
             {
                 EndOfStream(IntegerHelper.MaxBytesVarInt32);
             }
@@ -182,7 +190,7 @@ namespace Bond.IO.Unsafe
         /// </summary>
         public void WriteVarUInt64(ulong value)
         {
-            if (position + IntegerHelper.MaxBytesVarInt64 > length)
+            if (position + IntegerHelper.MaxBytesVarInt64 > end)
             {
                 EndOfStream(IntegerHelper.MaxBytesVarInt64);
             }
@@ -198,14 +206,14 @@ namespace Bond.IO.Unsafe
         /// <param name="size">Size in bytes of encoded string</param>
         public void WriteString(Encoding encoding, string value, int size)
         {
-            if (position + size > length)
+            if (position + size > end)
             {
                 EndOfStream(size);
             }
 
             fixed (char* valuePtr = value)
             {
-                position += encoding.GetBytes(valuePtr, value.Length, data + position, length - position);
+                position += encoding.GetBytes(valuePtr, value.Length, data + position, end - position);
             }
         }
 
