@@ -155,9 +155,9 @@ namespace Bond.IO.Unsafe
                 EndOfStream(bytes.Count);
             }
 
-            IntPtr pointer = (IntPtr) (data + position);
-            Marshal.Copy( bytes.Array, bytes.Offset,pointer, bytes.Count );
-         
+            IntPtr pointer = (IntPtr)(data + position);
+            Marshal.Copy(bytes.Array, bytes.Offset, pointer, bytes.Count);
+
             position = newOffset;
         }
 
@@ -197,7 +197,6 @@ namespace Bond.IO.Unsafe
             position = IntegerHelper.EncodeVarUInt64(data, value, position);
         }
 
-
         /// <summary>
         /// Write UTF-8 or UTF-16 encoded string
         /// </summary>
@@ -217,7 +216,7 @@ namespace Bond.IO.Unsafe
             }
         }
 
-        #endregion
+        #endregion IOutputStream
 
         internal void EndOfStream(int count)
         {

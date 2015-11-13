@@ -3,9 +3,6 @@
 
 namespace Bond.IO.Unsafe
 {
-    using System;
-    using System.Runtime.CompilerServices;
-
     /// <summary>
     /// Helper methods for encoding and decoding integer values.
     /// </summary>
@@ -33,6 +30,7 @@ namespace Bond.IO.Unsafe
             data[index++] = (byte)value;
             return index;
         }
+
         public unsafe static int EncodeVarUInt32(byte* data, uint value, int index)
         {
             // byte 0

@@ -3,11 +3,11 @@
 
 namespace Bond.IO.Unsafe
 {
+    using Bond.Protocols;
     using System;
     using System.Diagnostics;
     using System.IO;
     using System.Text;
-    using Bond.Protocols;
     using RMarshal = System.Runtime.InteropServices.Marshal;
 
     /// <summary>
