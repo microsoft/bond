@@ -90,9 +90,11 @@ namespace Bond.IO.Unsafe
             {
                 EndOfStream(sizeof(ushort));
             }
-            uint result = buffer[position++];
-            result |= ((uint)buffer[position++]) << 8;
-            return (ushort)result;
+
+            var result = *((ushort*)(buffer + position));
+            position += sizeof(ushort);
+
+            return result;
         }
 
         /// <summary>
@@ -105,10 +107,10 @@ namespace Bond.IO.Unsafe
             {
                 EndOfStream(sizeof(uint));
             }
-            uint result = buffer[position++];
-            result |= ((uint)buffer[position++]) << 8;
-            result |= ((uint)buffer[position++]) << 16;
-            result |= ((uint)buffer[position++]) << 24;
+
+            var result = *((uint*)(buffer + position));
+            position += sizeof(uint);
+
             return result;
         }
 
@@ -170,9 +172,6 @@ namespace Bond.IO.Unsafe
             {
                 EndOfStream(count);
             }
-
-            // TODO: This can be optimized providing a different IPtrInputStream interface and instructing the caller to use that
-            //       when available. The scope of the change is a bit too involved to do it without review.
 
             byte[] result = new byte[count];
 

@@ -70,11 +70,9 @@ namespace Bond.IO.Unsafe
                 EndOfStream(sizeof(ushort));
             }
 
-            var i = position;
-            var b = data;
-            b[i++] = (byte)value;
-            b[i++] = (byte)(value >> 8);
-            position = i;
+            byte* ptr = (data + position);
+            *((ushort*)ptr) = value;
+            position += sizeof(ushort);
         }
 
         /// <summary>
@@ -87,13 +85,9 @@ namespace Bond.IO.Unsafe
                 EndOfStream(sizeof(uint));
             }
 
-            var i = position;
-            var b = data;
-            b[i++] = (byte)value;
-            b[i++] = (byte)(value >> 8);
-            b[i++] = (byte)(value >> 16);
-            b[i++] = (byte)(value >> 24);
-            position = i;
+            byte* ptr = (data + position);
+            *((uint*)ptr) = value;
+            position += sizeof(uint);
         }
 
         /// <summary>
@@ -106,17 +100,9 @@ namespace Bond.IO.Unsafe
                 EndOfStream(sizeof(ulong));
             }
 
-            var i = position;
-            var b = data;
-            b[i++] = (byte)value;
-            b[i++] = (byte)(value >> 8);
-            b[i++] = (byte)(value >> 16);
-            b[i++] = (byte)(value >> 24);
-            b[i++] = (byte)(value >> 32);
-            b[i++] = (byte)(value >> 40);
-            b[i++] = (byte)(value >> 48);
-            b[i++] = (byte)(value >> 56);
-            position = i;
+            byte* ptr = (data + position);
+            *((ulong*)ptr) = value;
+            position += sizeof(ulong);
         }
 
         /// <summary>
@@ -124,7 +110,14 @@ namespace Bond.IO.Unsafe
         /// </summary>
         public void WriteFloat(float value)
         {
-            WriteUInt32(new FloatLayout { value = value }.bytes);
+            if (position + sizeof(float) > length)
+            {
+                EndOfStream(sizeof(float));
+            }
+
+            byte* ptr = (data + position);
+            *((float*)ptr) = value;
+            position += sizeof(float);
         }
 
         /// <summary>
@@ -132,7 +125,14 @@ namespace Bond.IO.Unsafe
         /// </summary>
         public void WriteDouble(double value)
         {
-            WriteUInt64(new DoubleLayout { value = value }.bytes);
+            if (position + sizeof(double) > length)
+            {
+                EndOfStream(sizeof(double));
+            }
+
+            byte* ptr = (data + position);
+            *((double*)ptr) = value;
+            position += sizeof(double);
         }
 
         /// <summary>
@@ -215,29 +215,5 @@ namespace Bond.IO.Unsafe
         {
             Throw.EndOfStreamException();
         }
-
-        #region layouts
-
-        [StructLayout(LayoutKind.Explicit)]
-        struct DoubleLayout
-        {
-            [FieldOffset(0)]
-            public readonly ulong bytes;
-
-            [FieldOffset(0)]
-            public double value;
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        struct FloatLayout
-        {
-            [FieldOffset(0)]
-            public readonly uint bytes;
-
-            [FieldOffset(0)]
-            public float value;
-        }
-
-        #endregion
     }
 }
