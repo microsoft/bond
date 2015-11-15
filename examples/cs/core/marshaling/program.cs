@@ -22,7 +22,7 @@
 
             var input = new InputBuffer(output.Data);
 
-            // We don't need to specify protocol for unamrshaling, 
+            // We don't need to specify protocol for unmarshaling, 
             // it is determined from information stored in the payload.
             var dst = Unmarshal<Example>.From(input);
             Debug.Assert(Comparer.Equal(src, dst));

@@ -423,7 +423,7 @@ namespace Bond.Protocols
     /// <summary>
     /// Reader for the Fast Binary tagged protocol
     /// </summary>
-    /// <typeparam name="I">Implemention of IInputStream interface</typeparam>
+    /// <typeparam name="I">Implementation of IInputStream interface</typeparam>
     public struct FastBinaryReader<I> : ITaggedProtocolReader, ICloneable<FastBinaryReader<I>>
         where I : IInputStream, ICloneable<I>
     {
