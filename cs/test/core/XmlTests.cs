@@ -12,7 +12,7 @@
     [TestFixture]
     public class XmlTests
     {
-        private static readonly XmlReaderSettings xmlReaderSettings =
+        static readonly XmlReaderSettings xmlReaderSettings =
             new XmlReaderSettings
             {
                 IgnoreComments = true,
@@ -658,7 +658,7 @@ World</_str>
             Assert.AreEqual(null, target.root.right);
         }
 
-        private static T ParseXml<T>(string xml) where T : new()
+        static T ParseXml<T>(string xml) where T : new()
         {
             var reader = new SimpleXmlReader(XmlReader.Create(new StringReader(xml), xmlReaderSettings));
 
