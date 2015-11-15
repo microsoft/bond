@@ -73,10 +73,33 @@
                 }
             };
 
+            Util.RoundtripPtrMemory<BasicTypes, BasicTypes> ptrMemoryRoundtrip = (serialize, deserialize) =>
+            {
+                foreach (var from in limits)
+                {
+                    unsafe
+                    {
+                        var data = serialize(from);
+                        fixed (byte* ptr = data.Array)
+                        {
+                            var tuple = new Tuple<IntPtr, int>((IntPtr)(ptr + data.Offset), data.Count);
+
+                            var to = deserialize(tuple);
+                            Assert.IsTrue(from.IsEqual<BasicTypes>(to));
+                        }
+                    }                   
+                }
+            };
+
             memoryRoundtrip(Util.SerializeUnsafeCB, Util.DeserializeSafeCB<BasicTypes>);
             memoryRoundtrip(Util.SerializeUnsafeCB, Util.DeserializeUnsafeCB<BasicTypes>);
+            memoryRoundtrip(Util.SerializeUnsafeCBWithPtr, Util.DeserializeSafeCB<BasicTypes>);
+            memoryRoundtrip(Util.SerializeUnsafeCBWithPtr, Util.DeserializeUnsafeCB<BasicTypes>);
+            ptrMemoryRoundtrip(Util.SerializeUnsafeCB, Util.DeserializeUnsafeCBWithPtr<BasicTypes>);
+            ptrMemoryRoundtrip(Util.SerializeUnsafeCBWithPtr, Util.DeserializeUnsafeCBWithPtr<BasicTypes>);
             memoryRoundtrip(Util.SerializeSP, Util.DeserializeSafeSP<BasicTypes, BasicTypes>);
             memoryRoundtrip(Util.SerializeSP, Util.DeserializeUnsafeSP<BasicTypes, BasicTypes>);
+            ptrMemoryRoundtrip(Util.SerializeSP, Util.DeserializeUnsafeSPWithPtr<BasicTypes, BasicTypes>);
         }
 
         [Test]
