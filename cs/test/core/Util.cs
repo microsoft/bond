@@ -658,7 +658,12 @@ namespace UnitTest
                 streamTranscode(SerializeSP, TranscodeSPCB<From>, DeserializeCB<To>);
                 streamTranscode(SerializeSP, TranscodeSPFB<From>, DeserializeFB<To>);
                 streamTranscode(SerializeSP, TranscodeSPXml<From>, DeserializeXml<To>);
-                streamTranscode(SerializeSP, TranscodeSPJson<From>, DeserializeJson<To>);
+                
+                // NewtonSoft JSON doesn't support uint64
+                if (typeof (From) != typeof (MaxUInt64))
+                {
+                    streamTranscode(SerializeSP, TranscodeSPJson<From>, DeserializeJson<To>);
+                }
 
                 streamRoundtrip(SerializeSP, stream =>
                 {
@@ -671,11 +676,16 @@ namespace UnitTest
             }
 
             streamRoundtrip(SerializeXml, DeserializeXml<To>);
-            streamRoundtrip(SerializeJson, DeserializeJson<To>);
             streamTranscode(SerializeCB, TranscodeCBXml<From>, DeserializeXml<To>);
-            streamTranscode(SerializeCB, TranscodeCBJson<From>, DeserializeJson<To>);
             streamTranscode(SerializeFB, TranscodeFBXml<From>, DeserializeXml<To>);
-            streamTranscode(SerializeFB, TranscodeFBJson<From>, DeserializeJson<To>);
+
+            // NewtonSoft JSON doesn't support uint64
+            if (typeof (From) != typeof (MaxUInt64))
+            {
+                streamRoundtrip(SerializeJson, DeserializeJson<To>);
+                streamTranscode(SerializeCB, TranscodeCBJson<From>, DeserializeJson<To>);
+                streamTranscode(SerializeFB, TranscodeFBJson<From>, DeserializeJson<To>);
+            }
         }
     }
 }
