@@ -40,43 +40,35 @@
         [Test]
         public void IntegerLimits()
         {
-            var limits = new[] { 
-                new BasicTypes 
-                {
-                    _int8 = sbyte.MaxValue, 
-                    _int16 = short.MaxValue,
-                    _int32 = int.MaxValue,
-                    _int64 = long.MaxValue,
-                    _uint8 = byte.MaxValue,
-                    _uint16 = ushort.MaxValue,
-                    _uint32 = uint.MaxValue,
-                    _uint64 = ulong.MaxValue
-                },
-                new BasicTypes {
-                    _int8 = sbyte.MinValue,
-                    _int16 = short.MinValue,
-                    _int32 = int.MinValue,
-                    _int64 = long.MinValue,
-                    _uint8 = byte.MinValue,
-                    _uint16 = ushort.MinValue,
-                    _uint32 = uint.MinValue,
-                    _uint64 = ulong.MinValue
-                }};
-
-            Util.RoundtripMemory<BasicTypes, BasicTypes> memoryRoundtrip = (serialize, deserialize) =>
+            Util.AllSerializeDeserialize<Integers, Integers>(new Integers 
             {
-                foreach (var from in limits)
-                {
-                    var data = serialize(from);
-                    var to = deserialize(data);
-                    Assert.IsTrue(from.IsEqual<BasicTypes>(to));
-                }
-            };
+                _int8 = sbyte.MaxValue, 
+                _int16 = short.MaxValue,
+                _int32 = int.MaxValue,
+                _int64 = long.MaxValue,
+                _uint8 = byte.MaxValue,
+                _uint16 = ushort.MaxValue,
+                _uint32 = uint.MaxValue,
+                // Note: not ulong.MaxValue because NewtonSoft JSON doesn't support it
+                _uint64 = long.MaxValue
+            });
 
-            memoryRoundtrip(Util.SerializeUnsafeCB, Util.DeserializeSafeCB<BasicTypes>);
-            memoryRoundtrip(Util.SerializeUnsafeCB, Util.DeserializeUnsafeCB<BasicTypes>);
-            memoryRoundtrip(Util.SerializeSP, Util.DeserializeSafeSP<BasicTypes, BasicTypes>);
-            memoryRoundtrip(Util.SerializeSP, Util.DeserializeUnsafeSP<BasicTypes, BasicTypes>);
+            Util.AllSerializeDeserialize<Integers, Integers>(new Integers 
+            {
+                _int8 = sbyte.MinValue,
+                _int16 = short.MinValue,
+                _int32 = int.MinValue,
+                _int64 = long.MinValue,
+                _uint8 = byte.MinValue,
+                _uint16 = ushort.MinValue,
+                _uint32 = uint.MinValue,
+                _uint64 = ulong.MinValue
+            });
+
+            Util.AllSerializeDeserialize<MaxUInt64, MaxUInt64>(new MaxUInt64
+            {
+                _uint64 = ulong.MaxValue
+            });
         }
 
         [Test]
