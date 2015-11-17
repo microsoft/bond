@@ -87,7 +87,7 @@
         }
 
         [Reader(typeof(TestReader))]
-        private class TestWriter : IProtocolWriter, IWriterTest
+        class TestWriter : IProtocolWriter, IWriterTest
         {
             public bool WasCalled { get; private set; }
 
@@ -194,13 +194,13 @@
         }
 
         [Serializer(typeof(TestSerializer<,>))]
-        private class WriterWithAttribute : IWriterTest, IWriterTypeTest
+        class WriterWithAttribute : IWriterTest, IWriterTypeTest
         {
             public bool WasCalled { get; set; }
             public Type Type { get; set; }
         }
 
-        private class TestSerializer<R, W> : ISerializerGenerator<R, W>
+        class TestSerializer<R, W> : ISerializerGenerator<R, W>
         {
             readonly ParameterExpression writer = Expression.Parameter(typeof(W), "writer");
             readonly Type type;
@@ -229,7 +229,7 @@
         }
 
         [Schema]
-        private class Foo
+        class Foo
         {
         }
     }

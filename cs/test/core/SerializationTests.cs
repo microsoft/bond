@@ -413,7 +413,7 @@
             Assert.IsNotNull(new EnsureSpacesInPathsWork());
         }
 
-        private void TestTypePromotion<From, To>()
+        void TestTypePromotion<From, To>()
         {
             TestFieldSerialization<From, To>();
             TestFieldSerialization<List<From>, List<To>>();

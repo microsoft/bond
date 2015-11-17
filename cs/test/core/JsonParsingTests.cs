@@ -696,7 +696,7 @@ World", target._str);
             Assert.AreEqual("2015-02-26T13:18:13.1521765-08:00", target.value);
         }
 
-        private static T ParseJson<T>(string json) where T : new()
+        static T ParseJson<T>(string json) where T : new()
         {
             var deserializer = new Deserializer<SimpleJsonReader>(typeof(T));
             var reader = new SimpleJsonReader(new StringReader(json));

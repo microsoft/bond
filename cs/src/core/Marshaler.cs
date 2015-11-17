@@ -17,7 +17,7 @@ namespace Bond
         /// <summary>
         /// Unmarshal payload into an instance of IBonded
         /// </summary>
-        /// <typeparam name="I">Implemention of IInputStream</typeparam>
+        /// <typeparam name="I">Implementation of IInputStream</typeparam>
         /// <param name="input">Input stream with the payload</param>
         /// <returns>IBonded wrapping the input</returns>
         public static IBonded From<I>(I input)
@@ -29,7 +29,7 @@ namespace Bond
         /// <summary>
         /// Unmarshal payload with specified schema into an instance of IBonded
         /// </summary>
-        /// <typeparam name="I">Implemention of IInputStream</typeparam>
+        /// <typeparam name="I">Implementation of IInputStream</typeparam>
         /// <param name="input">Input stream with the payload</param>
         /// <param name="schema">Runtime schema of the payload</param>
         /// <returns>IBonded wrapping the input</returns>
@@ -87,7 +87,7 @@ namespace Bond
         /// <summary>
         /// Unmarshal object of type T from payload
         /// </summary>
-        /// <typeparam name="I">Implemention of IInputStream</typeparam>
+        /// <typeparam name="I">Implementation of IInputStream</typeparam>
         /// <param name="input">Input stream</param>
         /// <returns>Unmarshaled object</returns>
         public static T From<I>(I input)

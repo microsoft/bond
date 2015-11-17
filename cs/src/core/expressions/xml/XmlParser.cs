@@ -11,7 +11,7 @@ namespace Bond.Expressions.Xml
 
     public abstract class XmlParser<R> : PullParser<XmlNodeType> where R : IXmlReader
     {
-        private readonly XmlReader<R> reader = new XmlReader<R>();
+        readonly XmlReader<R> reader = new XmlReader<R>();
 
         protected XmlParser(RuntimeSchema schema, bool flatten) : base(schema, flatten)
         {

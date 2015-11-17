@@ -30,7 +30,7 @@ namespace Bond.Expressions.Xml
             : base(Bond.Schema.GetRuntimeSchema(type), flatten: true)
         {}
 
-        private SimpleXmlParser(XmlParser<R> that, RuntimeSchema schema)
+        SimpleXmlParser(XmlParser<R> that, RuntimeSchema schema)
             : base(that, schema, flatten: true)
         {}
 
@@ -76,7 +76,7 @@ namespace Bond.Expressions.Xml
             };
         }
 
-        private Expression ProcessStructElement(Expression state)
+        Expression ProcessStructElement(Expression state)
         {
             return Expression.Block(
                 Expression.IfThenElse(
@@ -86,7 +86,7 @@ namespace Bond.Expressions.Xml
                 Reader.Read());
         }
         
-        private Expression ProcessFieldElement(
+        Expression ProcessFieldElement(
             Expression state, 
             ParameterExpression requiredFields, 
             IEnumerable<TransformSchemaPair> transforms)
@@ -238,14 +238,14 @@ namespace Bond.Expressions.Xml
                 handler(next));
         }
 
-        private Expression IfNotNodeType(XmlNodeType type, Expression then)
+        Expression IfNotNodeType(XmlNodeType type, Expression then)
         {
             return Expression.IfThen(
                 Expression.NotEqual(Reader.NodeType, Expression.Constant(type)),
                 then);
         }
 
-        private Expression NodeNameEquals(string localName, string namespaceUri)
+        Expression NodeNameEquals(string localName, string namespaceUri)
         {
             if (string.IsNullOrEmpty(namespaceUri))
             {
@@ -277,7 +277,7 @@ namespace Bond.Expressions.Xml
                 state, type, name, value));
         }
 
-        private static class State
+        static class State
         {
             public const byte AtStructElement = 1;
             public const byte InsideStructElement = 2;

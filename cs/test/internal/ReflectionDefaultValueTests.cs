@@ -51,18 +51,18 @@
             Assert.IsNull(GetDefaultValue<IFoo>("NothingBlob"));
         }
         
-        private static object GetDefaultValue<T>(string name)
+        static object GetDefaultValue<T>(string name)
         {
             return GetMember<T>(name).GetDefaultValue();
         }
 
-        private static ISchemaField GetMember<T>(string name)
+        static ISchemaField GetMember<T>(string name)
         {
             return typeof(T).GetSchemaFields().Single(f => f.Name.Equals(name, StringComparison.Ordinal));
         }
 
         [Schema]
-        private interface IFoo
+        interface IFoo
         {
             [Id(1), Default(7)]
             int IntField { get; set; }
@@ -126,7 +126,7 @@
         }
 
         [Schema]
-        private class Foo
+        class Foo
         {
             [Id(1), Default(7)]
             int HasDefault { get; set; }

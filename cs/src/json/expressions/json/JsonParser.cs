@@ -12,7 +12,7 @@ namespace Bond.Expressions.Json
 
     public abstract class JsonParser<R> : PullParser<JsonToken> where R : IJsonReader
     {
-        private readonly JsonReader<R> reader = new JsonReader<R>();
+        readonly JsonReader<R> reader = new JsonReader<R>();
 
         protected JsonParser(RuntimeSchema schema, bool flatten)
             : base(schema, flatten)
