@@ -1,0 +1,6 @@
+namespace tests
+
+struct Foo
+{
+    0: blob b = nothing;
+}

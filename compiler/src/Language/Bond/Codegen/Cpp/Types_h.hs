@@ -74,10 +74,9 @@ types_h userHeaders enumHeader allocator cpp file imports declarations = ("_type
     -- True if declarations have any type satisfying f
     have f = getAny $ F.foldMap g declarations
       where
-        g s@Struct{..} = foldMapStructFields (foldMapType f . fieldType) s
-                      <> optional (foldMapType f) structBase
-        g Alias{..} = foldMapType f aliasType
-        g _ = Any False
+        g Struct{..} = F.foldMap (foldMapType f . fieldType) structFields
+                    <> optional (foldMapType f) structBase
+        g _ = mempty
 
     anyBonded (BT_Bonded _) = Any True
     anyBonded _ = Any False

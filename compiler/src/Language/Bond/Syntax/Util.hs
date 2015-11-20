@@ -105,6 +105,7 @@ isNullable _ = False
 
 mapType :: (Type -> Type) -> Type -> Type
 mapType f (BT_UserDefined decl args) = BT_UserDefined decl $ map f args
+mapType f (BT_Maybe element) = BT_Maybe $ f element
 mapType f (BT_Map key value) = BT_Map (f key) (f value)
 mapType f (BT_List element) = BT_List $ f element
 mapType f (BT_Vector element) = BT_Vector $ f element
@@ -113,7 +114,7 @@ mapType f (BT_Nullable element) = BT_Nullable $ f element
 mapType f (BT_Bonded struct) = BT_Bonded $ f struct
 mapType f x = f x
 
--- | Maps all fields, including fields of the base, to a monoid, and combines
+-- | Maps all fields, including fields of the base, to a 'Monoid', and combines
 -- the results.
 foldMapFields :: (Monoid m) => (Field -> m) -> Type -> m
 foldMapFields f t = case t of
@@ -125,7 +126,7 @@ foldMapFields f t = case t of
 foldMapStructFields :: Monoid m => (Field -> m) -> Declaration -> m
 foldMapStructFields f s = foldMapFields f $ BT_UserDefined s []
 
--- | Maps all parts of a 'Type' to a monoid and combines the results.
+-- | Maps all parts of a 'Type' to a 'Monoid' and combines the results.
 --
 -- E.g. for a type:
 --
@@ -135,7 +136,9 @@ foldMapStructFields f s = foldMapFields f $ BT_UserDefined s []
 --
 -- @ f (BT_List (BT_Nullable BT_Int32)) <> f (BT_Nullable BT_Int32) <> f BT_Int32@
 foldMapType :: (Monoid m) => (Type -> m) -> Type -> m
-foldMapType f t@(BT_UserDefined _decl args) = f t <> F.foldMap (foldMapType f) args
+foldMapType f t@(BT_UserDefined a@Alias {} args) = f t <> foldMapType f (resolveAlias a args)
+foldMapType f t@(BT_UserDefined _ args) = f t <> F.foldMap (foldMapType f) args
+foldMapType f t@(BT_Maybe element) = f t <> foldMapType f element
 foldMapType f t@(BT_Map key value) = f t <> foldMapType f key <> foldMapType f value
 foldMapType f t@(BT_List element) = f t <> foldMapType f element
 foldMapType f t@(BT_Vector element) = f t <> foldMapType f element

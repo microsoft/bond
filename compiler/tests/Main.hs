@@ -37,6 +37,7 @@ tests = testGroup "Compiler tests"
             , verifyCppCodegen "inheritance"
             , verifyCppCodegen "aliases"
             , verifyCppCodegen "alias_key"
+            , verifyCppCodegen "maybe_blob"
             , verifyCodegen
                 [ "c++"
                 , "--allocator=arena"
@@ -78,7 +79,7 @@ tests = testGroup "Compiler tests"
             , verifyCsCodegen "generics"
             , verifyCsCodegen "inheritance"
             , verifyCsCodegen "aliases"
-            , verifyCodegen 
+            , verifyCodegen
                 [ "c#"
                 , "--using=time=System.DateTime"
                 ]
