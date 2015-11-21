@@ -17,6 +17,9 @@ module Language.Bond.Syntax.Util
       -- functions will resolve type aliases and return answer based on the type
       -- the alias resolves to.
       isScalar
+    , isUnsigned
+    , isSigned
+    , isFloat
     , isString
     , isContainer
     , isList
@@ -24,6 +27,8 @@ module Language.Bond.Syntax.Util
     , isNullable
     , isStruct
     , isMetaName
+      -- * Type mapping
+    , fmapType
       -- * Folds
     , foldMapFields
     , foldMapStructFields
@@ -57,6 +62,31 @@ isScalar (BT_TypeParam (TypeParam _ (Just Value))) = True
 isScalar (BT_UserDefined Enum {..} _) = True
 isScalar (BT_UserDefined a@Alias {} args) = isScalar $ resolveAlias a args
 isScalar _ = False
+
+-- | Returns 'True' if the type represents unsigned integer
+isUnsigned :: Type -> Bool
+isUnsigned BT_UInt8 = True
+isUnsigned BT_UInt16 = True
+isUnsigned BT_UInt32 = True
+isUnsigned BT_UInt64 = True
+isUnsigned (BT_UserDefined a@Alias {} args) = isUnsigned $ resolveAlias a args
+isUnsigned _ = False
+
+-- | Returns 'True' if the type represents signed integer
+isSigned :: Type -> Bool
+isSigned BT_Int8 = True
+isSigned BT_Int16 = True
+isSigned BT_Int32 = True
+isSigned BT_Int64 = True
+isSigned (BT_UserDefined a@Alias {} args) = isSigned $ resolveAlias a args
+isSigned _ = False
+
+-- | Returns 'True' if the type represents floating point number
+isFloat :: Type -> Bool
+isFloat BT_Float = True
+isFloat BT_Double = True
+isFloat (BT_UserDefined a@Alias {} args) = isFloat $ resolveAlias a args
+isFloat _ = False
 
 -- | Returns 'True' if the type represents a meta-name type.
 isMetaName :: Type -> Bool
@@ -103,16 +133,26 @@ isNullable (BT_Nullable _) = True
 isNullable (BT_UserDefined a@Alias {} args) = isNullable $ resolveAlias a args
 isNullable _ = False
 
-mapType :: (Type -> Type) -> Type -> Type
-mapType f (BT_UserDefined decl args) = f $ BT_UserDefined decl $ map (mapType f) args
-mapType f (BT_Maybe element) = f $ BT_Maybe $ mapType f element
-mapType f (BT_Map key value) = f $ BT_Map (mapType f key) (mapType f value)
-mapType f (BT_List element) = f $ BT_List $ mapType f element
-mapType f (BT_Vector element) = f $ BT_Vector $ mapType f element
-mapType f (BT_Set element) = f $ BT_Set $ mapType f element
-mapType f (BT_Nullable element) = f $ BT_Nullable $ mapType f element
-mapType f (BT_Bonded struct) = f $ BT_Bonded $ mapType f struct
-mapType f x = f x
+-- | Recursively map a 'Type' into another 'Type'
+--
+-- ==== __Examples__
+--
+-- Change lists into vectors:
+--
+-- listToVector = fmapType f
+--   where
+--     f (BT_List x) = BT_Vector x
+--     f x = x
+fmapType :: (Type -> Type) -> Type -> Type
+fmapType f (BT_UserDefined decl args) = f $ BT_UserDefined decl $ map (fmapType f) args
+fmapType f (BT_Maybe element) = f $ BT_Maybe $ fmapType f element
+fmapType f (BT_Map key value) = f $ BT_Map (fmapType f key) (fmapType f value)
+fmapType f (BT_List element) = f $ BT_List $ fmapType f element
+fmapType f (BT_Vector element) = f $ BT_Vector $ fmapType f element
+fmapType f (BT_Set element) = f $ BT_Set $ fmapType f element
+fmapType f (BT_Nullable element) = f $ BT_Nullable $ fmapType f element
+fmapType f (BT_Bonded struct) = f $ BT_Bonded $ fmapType f struct
+fmapType f x = f x
 
 -- | Maps all fields, including fields of the base, to a 'Monoid', and combines
 -- the results.
@@ -166,7 +206,7 @@ foldMapType f x = f x
 -- | Resolves a type alias declaration with given type arguments. Note that the
 -- function resolves one level of aliasing and thus may return a type alias.
 resolveAlias :: Declaration -> [Type] -> Type
-resolveAlias Alias {..} args = mapType resolveParam aliasType
+resolveAlias Alias {..} args = fmapType resolveParam aliasType
   where
     resolveParam (BT_TypeParam param) = snd.fromJust $ find ((param ==).fst) paramsArgs
     resolveParam x = x

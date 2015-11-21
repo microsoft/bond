@@ -298,7 +298,8 @@ Given the following schema definition:
         0: int32 someField = 123;
     }
 
-Below is the JSON representation of the Abstract Syntax Tree for it:
+Below is the JSON representation of the schema's Abstract Syntax Tree generated
+using `gbc schema example.bond` command:
 
     {
       "imports": [],
@@ -704,3 +705,59 @@ Other complex types are:
     - `arguments` is an array of zero or more [types](#type) representing type 
     arguments for a generic user defined type. The property is optional and
     may be omitted for non-generic types.
+
+Runtime Schema
+==============
+
+Bond defines `SchemaDef` structure to represent Bond schemas at runtime.
+`SchemaDef` is accepted as an argument by various Bond APIs. For example when
+transcoding binary payload into a text protocol like JSON, the `SchemaDef` of
+the payload is used to provide the necessary meta-data such as names of the
+fields.
+
+Usually `SchemaDef` is produced at runtime using Bond APIs. However in some
+scenarios it may be desirable to be able to obtain `SchemaDef` object(s)
+directly from a schema definition IDL file. The compiler can generate
+`SchemaDef` serialized in Simple JSON protocol which can be deserialized using
+standard Bond APIs.
+
+Example
+-------
+
+Given the following schema definition contained a file `example.bond`:
+
+    namespace example.some
+
+    struct SomeStruct
+    {
+        0: int32 someField = 123;
+    }
+
+The command `gbc schema --runtime-schema example.bond` would produce a file
+named `example.SomeStruct.json` with the following content:
+
+    {
+      "structs": [
+        {
+          "metadata": {
+            "qualified_name": "example.some.SomeStruct",
+            "name": "SomeStruct"
+          },
+          "fields": [
+            {
+              "metadata": {
+                "default_value": {
+                  "int_value": 123
+                },
+                "name": "someField"
+              },
+              "id": 0,
+              "type": {
+                "id": 16
+              }
+            }
+          ]
+        }
+      ]
+    }
+    

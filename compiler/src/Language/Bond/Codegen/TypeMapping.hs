@@ -20,6 +20,7 @@ module Language.Bond.Codegen.TypeMapping
       MappingContext(..)
     , TypeMapping
       -- * Type mappings
+    , idlTypeMapping
     , cppTypeMapping
     , cppCustomAllocTypeMapping
     , csTypeMapping
@@ -68,7 +69,7 @@ data MappingContext = MappingContext
 
 -- | Opaque type representing type mapping.
 data TypeMapping = TypeMapping
-    { language :: Language
+    { language :: Maybe Language
     , global :: Builder
     , separator :: Builder
     , mapType :: Type -> TypeNameBuilder
@@ -142,10 +143,23 @@ getAnnotatedTypeName c t = runReader (annotatedTypeName t) c
 customAliasMapping :: MappingContext -> Declaration -> Bool
 customAliasMapping = (maybe False (const True) .) . findAliasMapping
 
+-- | The IDL type name mapping.
+idlTypeMapping :: TypeMapping
+idlTypeMapping = TypeMapping
+    Nothing
+    ""
+    "."
+    idlType
+    declName
+    id
+    idlTypeMapping
+    idlTypeMapping
+    idlTypeMapping
+
 -- | The default C++ type name mapping.
 cppTypeMapping :: TypeMapping
 cppTypeMapping = TypeMapping
-    Cpp
+    (Just Cpp)
     "::"
     "::"
     cppType
@@ -158,7 +172,7 @@ cppTypeMapping = TypeMapping
 -- | C++ type name mapping using a custom allocator.
 cppCustomAllocTypeMapping :: ToText a => a -> TypeMapping
 cppCustomAllocTypeMapping alloc = TypeMapping
-    Cpp
+    (Just Cpp)
     "::"
     "::"
     (cppTypeCustomAlloc $ toText alloc)
@@ -171,7 +185,7 @@ cppCustomAllocTypeMapping alloc = TypeMapping
 -- | The default C# type name mapping.
 csTypeMapping :: TypeMapping
 csTypeMapping = TypeMapping
-    Cs
+    (Just Cs)
     "global::"
     "."
     csType
@@ -185,7 +199,7 @@ csTypeMapping = TypeMapping
 -- represent collections.
 csCollectionInterfacesTypeMapping :: TypeMapping
 csCollectionInterfacesTypeMapping = TypeMapping
-    Cs
+    (Just Cs)
     "global::"
     "."
     csInterfaceType
@@ -200,7 +214,7 @@ csCollectionInstancesTypeMapping = csCollectionInterfacesTypeMapping {mapType = 
 
 csAnnotatedTypeMapping :: TypeMapping
 csAnnotatedTypeMapping = TypeMapping
-    Cs
+    (Just Cs)
     "global::"
     "."
     (csTypeAnnotation csType)
@@ -258,7 +272,10 @@ resolveNamespace c@MappingContext {..} ns = maybe namespace toNamespace $ find (
 -- last namespace that is language-neutral or matches the language of the context's type mapping
 findNamespace :: MappingContext -> [Namespace] -> QualifiedName
 findNamespace MappingContext {..} ns =
-    nsName . last . filter (maybe True (language typeMapping ==) . nsLanguage) $ ns
+    nsName . last . filter (matching (language typeMapping) . nsLanguage) $ ns
+  where  
+    matching (Just l1) (Just l2) = l1 == l2
+    matching _ _ = True
 
 declQualifiedName :: MappingContext -> Declaration -> QualifiedName
 declQualifiedName c decl = getDeclNamespace c decl ++ [declName decl]
@@ -291,6 +308,36 @@ aliasTypeName a args = do
   where
     fragment (Fragment s) = pureText s
     fragment (Placeholder i) = typeName $ args !! i
+
+-- IDL type mapping
+idlType :: Type -> TypeNameBuilder
+idlType BT_Int8 = pure "int8"
+idlType BT_Int16 = pure "int16"
+idlType BT_Int32 = pure "int32"
+idlType BT_Int64 = pure "int64"
+idlType BT_UInt8 = pure "uint8"
+idlType BT_UInt16 = pure "uint16"
+idlType BT_UInt32 = pure "uint32"
+idlType BT_UInt64 = pure "uint64"
+idlType BT_Float = pure "float"
+idlType BT_Double = pure "double"
+idlType BT_Bool = pure "bool"
+idlType BT_String = pure "string"
+idlType BT_WString = pure "wstring"
+idlType BT_MetaName = pure "bond_meta::name"
+idlType BT_MetaFullName = pure "bond_meta::full_name"
+idlType BT_Blob = pure "blob"
+idlType (BT_IntTypeArg x) = pureText x
+idlType (BT_Maybe type_) = elementTypeName type_
+idlType (BT_List element) = "list<" <>> elementTypeName element <<> ">"
+idlType (BT_Nullable element) = "nullable<" <>> elementTypeName element <<> ">"
+idlType (BT_Vector element) = "vector<" <>> elementTypeName element <<> ">"
+idlType (BT_Set element) = "set<" <>> elementTypeName element <<> ">"
+idlType (BT_Map key value) = "map<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> ">"
+idlType (BT_Bonded type_) = "bonded<" <>> elementTypeName type_ <<> ">"
+idlType (BT_TypeParam param) = pureText $ paramName param
+idlType (BT_UserDefined a@Alias {..} args) = aliasTypeName a args
+idlType (BT_UserDefined decl args) = declQualifiedTypeName decl <<>> (angles <$> commaSepTypeNames args)
 
 -- C++ type mapping
 cppType :: Type -> TypeNameBuilder

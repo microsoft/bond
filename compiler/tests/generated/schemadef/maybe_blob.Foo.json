@@ -1,0 +1,1 @@
+{"structs":[{"metadata":{"qualified_name":"tests.Foo","name":"Foo"},"fields":[{"metadata":{"default_value":{"nothing":true},"name":"b"},"id":0,"type":{"id":11,"element":[{"id":14}]}}]}]}

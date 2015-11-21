@@ -1,0 +1,48 @@
+namespace tests
+
+using Just<T> = T;
+using List<T> = list<T>;
+
+struct Generic<T> : T
+{
+    0: list<vector<T>> l;
+}
+
+using Alias<T> = Generic<T>;
+
+struct Foo
+{}
+
+struct AliasBase : Alias<Foo>
+{}
+
+enum Consts
+{
+    Zero,
+    One,
+    Three = 3,
+    Four,
+    Six = 6
+}
+
+struct EnumDefault
+{
+    0: Consts c0 = Zero;
+    1: Just<Consts> c1 = One;
+    3: Consts c3 = Three;
+    4: Consts c4 = Four;
+    6: Consts c6 = Six;
+}
+
+struct Node<T>;
+
+struct Node<T>
+{
+    0: nullable<Node<T>> left;
+    1: nullable<Node<T>> right;
+}
+
+struct StringTree
+{
+    0: Node<string> root;
+}

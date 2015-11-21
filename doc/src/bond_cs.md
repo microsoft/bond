@@ -535,6 +535,9 @@ de/serialized like any other Bond type:
 
     Serialize.To(writer, Schema<T>.RuntimeSchema.SchemaDef);
 
+A serialized representation of `SchemaDef` can be also obtained directly from
+a schema definition IDL file using [bond compiler](compiler.html#runtime-schema).
+
 See also the following example:
 
 - `examples/cs/core/runtime_schema`

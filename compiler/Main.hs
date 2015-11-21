@@ -15,8 +15,9 @@ import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy.IO as L
 import Data.Aeson (encode)
 import qualified Data.ByteString.Lazy as BL
-import Language.Bond.Syntax.Types (Bond(..), Declaration, Import)
+import Language.Bond.Syntax.Types (Bond(..), Declaration(..), Import, Type(..))
 import Language.Bond.Syntax.JSON()
+import Language.Bond.Syntax.SchemaDef
 import Language.Bond.Codegen.Util
 import Language.Bond.Codegen.Templates
 import Language.Bond.Codegen.TypeMapping
@@ -54,7 +55,15 @@ writeSchema Schema {..} =
     concurrentlyFor_ files $ \file -> do
         let fileName = takeBaseName file
         bond <- parseFile import_dir file
-        BL.writeFile (output_dir </> fileName <.> "json") $ encode bond
+        if runtime_schema then
+                forM_ (bondDeclarations bond) (writeSchemaDef fileName)
+            else
+                BL.writeFile (output_dir </> fileName <.> "json") $ encode bond
+  where
+    writeSchemaDef fileName s@Struct{..} | null declParams =
+        BL.writeFile (output_dir </> fileName <.> declName <.> "json") $ encodeSchemaDef $ BT_UserDefined s []
+    writeSchemaDef _ _ = return ()
+
 writeSchema _ = error "writeSchema: impossible happened."
 
 cppCodegen :: Options -> IO()

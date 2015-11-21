@@ -56,6 +56,7 @@ data Options
         , import_dir :: [FilePath]
         , output_dir :: FilePath
         , jobs :: Maybe Int
+        , runtime_schema :: Bool
         }
       deriving (Show, Data, Typeable)
 
@@ -88,10 +89,10 @@ cs = Cs
 
 schema :: Options
 schema = Schema
-    {
+    { runtime_schema = def &= help "Generate Simple JSON representation of runtime schema, aka SchemaDef"
     } &=
     name "schema" &=
-    help "Output the JSON representation of the schema abstract syntax tree"
+    help "Output the JSON representation of the schema"
 
 
 mode :: Mode (CmdArgs Options)

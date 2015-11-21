@@ -364,6 +364,13 @@ void Deserialize(const bond::blob& buffer, T& obj, uint16_t version)
     BOOST_VERIFY(Equal(obj2, obj));
 }
 
+void Deserialize(const bond::blob& buffer, bond::SchemaDef& schema)
+{
+    if (buffer.content()[0] == '{')
+        Deserialize(bond::SimpleJsonReader<bond::InputBuffer>(buffer), schema);
+    else
+        Unmarshal(bond::InputBuffer(buffer), schema);
+}
 
 void Deserialize(Test test, const bond::blob& buffer, Compat& obj, bond::SchemaDef& schema_def)
 {
@@ -388,7 +395,7 @@ void Deserialize(Test test, const bond::blob& buffer, Compat& obj, bond::SchemaD
             return Deserialize<bond::SimpleBinaryReader<bond::InputBuffer> >(buffer, obj, bond::v2);
 
         case schema:
-            return Unmarshal(bond::InputBuffer(buffer), schema_def);
+            return Deserialize(buffer, schema_def);
 
         default:
             BOOST_ASSERT(false);

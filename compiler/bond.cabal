@@ -36,8 +36,9 @@ source-repository head
 
 library
   hs-source-dirs:   src
-  build-depends:    aeson >= 0.7.0.6,
+  build-depends:    aeson >= 0.7.0.6 && < 0.10.0.0,
                     base >= 4.5 && < 5,
+                    bytestring >= 0.10,
                     filepath >= 1.0,
                     ghc-prim,
                     mtl >= 2.1,
@@ -50,6 +51,7 @@ library
                     Language.Bond.Syntax.Types
                     Language.Bond.Syntax.JSON
                     Language.Bond.Syntax.Util
+                    Language.Bond.Syntax.SchemaDef
                     Language.Bond.Codegen.Util
                     Language.Bond.Codegen.TypeMapping
                     Language.Bond.Codegen.CustomMapping
@@ -74,7 +76,7 @@ test-suite gbc-tests
   main-is:          Main.hs
   ghc-options:      -threaded -Wall
   build-depends:    bond,
-                    aeson >= 0.7.0.6,
+                    aeson >= 0.7.0.6 && < 0.10.0.0,
                     base >= 4.5 && < 5,
                     bytestring >= 0.10,
                     cmdargs >= 0.10.10,
@@ -96,7 +98,7 @@ executable gbc
   main-is:          Main.hs
   ghc-options:      -threaded -Wall
   build-depends:    bond,
-                    aeson >= 0.7.0.6,
+                    aeson >= 0.7.0.6 && < 0.10.0.0,
                     async >= 2.0.1.0,
                     base >= 4.5 && < 5,
                     bytestring >= 0.10,

@@ -1,0 +1,1 @@
+{"structs":[{"metadata":{"qualified_name":"tests.Foo","name":"Foo"},"fields":[{"metadata":{"name":"o"},"id":0,"type":{"id":2}},{"metadata":{"modifier":1,"name":"r"},"id":1,"type":{"id":15}},{"metadata":{"modifier":2,"name":"ro"},"id":2,"type":{"id":8}}]}]}

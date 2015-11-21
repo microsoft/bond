@@ -1,0 +1,1 @@
+{"structs":[{"metadata":{"qualified_name":"example.some.SomeStruct","name":"SomeStruct"},"fields":[{"metadata":{"default_value":{"int_value":123},"name":"someField"},"id":0,"type":{"id":16}}]}]}

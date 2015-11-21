@@ -1,22 +1,30 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings, RecordWildCards, TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tests.Syntax
     ( roundtripAST
     , compareAST
     , aliasResolution
+    , verifySchemaDef
     ) where
 
+import Data.Maybe
+import Data.List
 import Data.Aeson (encode, decode)
 import Data.DeriveTH
+import qualified Data.ByteString as B
+import qualified Data.ByteString.Lazy as BL
 import System.FilePath
 import Test.QuickCheck
 import Test.HUnit
+import Test.Tasty
+import Test.Tasty.Golden
 import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.Util
+import Language.Bond.Syntax.SchemaDef
 import IO
 
 derive makeArbitrary ''Attribute
@@ -82,3 +90,25 @@ aliasResolution = do
 
     assertEqual "" (BT_Vector $ BT_Vector $ BT_List BT_Double) $
         resolveAlias a6 [BT_IntTypeArg 10, BT_List BT_Double]
+
+verifySchemaDef :: FilePath -> String -> TestTree
+verifySchemaDef baseName schemaName =
+    goldenVsString
+        schemaName
+        ("tests" </> "generated" </> "schemadef" </> baseName <.> schemaName <.> "json")
+        schemaDef
+  where
+    schemaDef = do
+        (Bond _ _ declarations) <- parseBondFile [] $ "tests" </> "schema" </> baseName <.> "bond"
+        let schema = fromJust $ find ((schemaName ==) . declName) declarations
+        return $
+            -- some versions aeson encode angle brackets
+            BL.fromStrict $
+            replace "\\u003c" "<" $
+            replace "\\u003e" ">" $
+            BL.toStrict $ encodeSchemaDef $ BT_UserDefined schema []
+      where
+        replace s r bs = if B.null t then h else
+            B.append h (B.append r $ replace s r (B.drop (B.length s) t))
+          where
+            (h, t) = B.breakSubstring s bs

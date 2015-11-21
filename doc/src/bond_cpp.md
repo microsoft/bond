@@ -346,6 +346,9 @@ efficient way to achieve this. In order to encourage this, the
 constructable from `boost::shared_ptr<SchemaDef>` but only explicitly from 
 `const SchemaDef&`. 
 
+A serialized representation of `SchemaDef` can be also obtained directly from
+a schema definition IDL file using [bond compiler](compiler.html#runtime-schema).
+
 See example: `examples/cpp/core/runtime_schema`.
 
 Compile-time schema
