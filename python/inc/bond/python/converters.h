@@ -369,10 +369,10 @@ struct blob_converter
     // Conversion from bond::blob to Python2 string or Python3 bytes
     static PyObject* convert(const bond::blob& blob)
     {
-        return boost::python::incref(
 #if PY_VERSION_HEX >= 0x03000000
-            PyBytes_FromStringAndSize(blob.content(), blob.length()));
+        return PyBytes_FromStringAndSize(blob.content(), blob.length());
 #else
+        return boost::python::incref(
             boost::python::str(blob.content(), blob.length()).ptr());
 #endif
     }
