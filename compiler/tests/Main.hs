@@ -25,6 +25,9 @@ tests = testGroup "Compiler tests"
             , testCase "documentation example" $ compareAST "example"
             ]
         ]
+    , testGroup "Types"
+        [ testCase "type alias resolution" aliasResolution
+        ]
     , testGroup "Codegen"
         [ testGroup "C++"
             [ verifyCppCodegen "attributes"

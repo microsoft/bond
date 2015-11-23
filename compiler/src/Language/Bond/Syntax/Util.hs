@@ -104,14 +104,14 @@ isNullable (BT_UserDefined a@Alias {} args) = isNullable $ resolveAlias a args
 isNullable _ = False
 
 mapType :: (Type -> Type) -> Type -> Type
-mapType f (BT_UserDefined decl args) = BT_UserDefined decl $ map f args
-mapType f (BT_Maybe element) = BT_Maybe $ f element
-mapType f (BT_Map key value) = BT_Map (f key) (f value)
-mapType f (BT_List element) = BT_List $ f element
-mapType f (BT_Vector element) = BT_Vector $ f element
-mapType f (BT_Set element) = BT_Set $ f element
-mapType f (BT_Nullable element) = BT_Nullable $ f element
-mapType f (BT_Bonded struct) = BT_Bonded $ f struct
+mapType f (BT_UserDefined decl args) = f $ BT_UserDefined decl $ map (mapType f) args
+mapType f (BT_Maybe element) = f $ BT_Maybe $ mapType f element
+mapType f (BT_Map key value) = f $ BT_Map (mapType f key) (mapType f value)
+mapType f (BT_List element) = f $ BT_List $ mapType f element
+mapType f (BT_Vector element) = f $ BT_Vector $ mapType f element
+mapType f (BT_Set element) = f $ BT_Set $ mapType f element
+mapType f (BT_Nullable element) = f $ BT_Nullable $ mapType f element
+mapType f (BT_Bonded struct) = f $ BT_Bonded $ mapType f struct
 mapType f x = f x
 
 -- | Maps all fields, including fields of the base, to a 'Monoid', and combines
@@ -128,13 +128,28 @@ foldMapStructFields f s = foldMapFields f $ BT_UserDefined s []
 
 -- | Maps all parts of a 'Type' to a 'Monoid' and combines the results.
 --
--- E.g. for a type:
+-- ==== __Examples__
+--
+-- For a type:
 --
 -- @list\<nullable\<int32>>@
 --
 -- the result is:
 --
 -- @ f (BT_List (BT_Nullable BT_Int32)) <> f (BT_Nullable BT_Int32) <> f BT_Int32@
+--
+-- 'foldMapType' resolves type aliases so given the following type alias
+-- declaration (Bond IDL syntax):
+--
+-- @using Array<T, N> = vector<T>;
+--
+-- the result for the following type:
+--
+-- @Array<int32, 10>@
+--
+-- is:
+--
+-- @ f (BT_UserDefined Alias{..} [BT_Int32, BT_IntTypeArg 10]) <> f (BT_Vector BT_Int32) <> f BT_Int32@
 foldMapType :: (Monoid m) => (Type -> m) -> Type -> m
 foldMapType f t@(BT_UserDefined a@Alias {} args) = f t <> foldMapType f (resolveAlias a args)
 foldMapType f t@(BT_UserDefined _ args) = f t <> F.foldMap (foldMapType f) args
@@ -151,7 +166,7 @@ foldMapType f x = f x
 -- | Resolves a type alias declaration with given type arguments. Note that the
 -- function resolves one level of aliasing and thus may return a type alias.
 resolveAlias :: Declaration -> [Type] -> Type
-resolveAlias Alias {..} args = mapType resolveParam $ resolveParam aliasType
+resolveAlias Alias {..} args = mapType resolveParam aliasType
   where
     resolveParam (BT_TypeParam param) = snd.fromJust $ find ((param ==).fst) paramsArgs
     resolveParam x = x
