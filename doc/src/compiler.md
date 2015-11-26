@@ -3,7 +3,7 @@
 Command line options
 ====================
 
-<div class="sourceCode"><object width="702" height="1000" data="gbc.html"/></div>
+<div class="sourceCode"><object width="100%" height="600" data="gbc.html"/></div>
 
 IDL syntax
 ==========
@@ -286,6 +286,62 @@ contained in Bond IDL files with the full fidelity. The compiler can also take
 the JSON representation of the AST as an input, enabling tools which 
 programmatically construct/modify Bond schemas.
 
+Example
+-------
+
+Given the following schema definition:
+
+    namespace example.some
+
+    struct SomeStruct
+    {
+        0: int32 someField = 123;
+    }
+
+Below is the JSON representation of the Abstract Syntax Tree for it:
+
+    {
+      "imports": [],
+      "namespaces": [
+        {
+          "name": [
+              "example",
+              "some"
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "tag": "Struct",
+          "declNamespaces": [
+            {
+              "name": [
+                  "example",
+                  "some"
+              ]
+            }
+          ],
+          "declAttributes": [],
+          "declParams": [],
+          "declName": "SomeStruct",
+          "structFields": [
+            {
+              "fieldOrdinal": 0,
+              "fieldType": "int32",
+              "fieldName": "someField",
+              "fieldDefault": {
+                "value": 123,
+                "type": "integer"
+              }
+            }
+          ]
+        }
+      ]
+    } 
+    
+Bond
+----
+
 The top level JSON object represents the parsed Bond IDL file and has the 
 following structure:
 
@@ -297,6 +353,14 @@ following structure:
       "declarations": [
       ]
     }
+
+where:
+
+- `imports` is an array of [imports](#import).
+- `namespaces` is an array of [namespaces](#namespace). Each Bond file should
+have one namespace declaration, although the AST and IDL syntax have support
+for legacy schema files with multiple, language-specific namespaces. 
+- `declarations` is an array of [declarations](#declaration).
 
 Import
 ------
@@ -312,9 +376,7 @@ is represented in the AST as:
 Namespace
 ---------
 
-Each Bond file should have one namespace declaration, although the AST and IDL 
-syntax have support for legacy schema files with multiple, language-specific 
-namespaces. The namespace declaration is represented by a JSON object:
+The namespace declaration is represented by a JSON object:
 
     {
       "name": [
@@ -324,6 +386,19 @@ namespaces. The namespace declaration is represented by a JSON object:
 where:
 
 - `name` is [qualified name](#qualified-name) of the namespace.
+
+For example:
+
+    namespace foo.bar
+
+is represented as:
+
+    {
+      "name": [
+        "foo",
+        "bar"
+      ]
+    }
 
 Declaration
 -----------
@@ -360,7 +435,7 @@ A JSON object representing a `Struct` declaration has the following properties:
       "tag": "Struct",
       "declNamespaces": [
       ],
-      "declName": "Name",
+      "declName": "StructName",
       "declParams": [
       ],
       "declAttributes": [
@@ -384,7 +459,7 @@ A JSON object representing an `Enum` declaration has the following properties:
       "tag": "Enum",
       "declNamespaces": [
       ],
-      "declName": "Name",
+      "declName": "EnumName",
       "declAttributes": [
       ],
       "enumConstants": [
@@ -400,7 +475,7 @@ where:
 An enum constant is represented by the following JSON object:
 
     {
-      "constantName": "Name",
+      "constantName": "ConstantName",
       "constantValue": null
     }
 
@@ -418,7 +493,7 @@ A JSON object representing a type alias declaration has the following properties
       "tag": "Alias",
       "declNamespaces": [
       ],
-      "declName": "Name",
+      "declName": "AliasName",
       "declParams": [
       ],
       "aliasType": {
@@ -437,7 +512,7 @@ A JSON object representing a forward declaration has the following properties:
       "tag": "Forward",
       "declNamespaces": [
       ],
-      "declName": "Name",
+      "declName": "StructName",
       "declParams": [
       ]
     }
@@ -505,13 +580,15 @@ A struct field is represented by a JSON object with the following properties:
 
 where:
 
-- `fieldModifier` is one of the following strings: `"Optional"`, `"Required"`, 
-`"RequiredOptional"`.
+- `fieldModifier` is one of the following strings: `"Optional"`, `"Required"`,
+`"RequiredOptional"`. The property is optional and `fieldModifier` defaults to
+`Optional` if omitted.
 - `fieldDefault` is `null` or a [default value](#field-default-value). The 
 property is optional and may be omitted.
 - `fieldType` is a [type](#type).
 - `fieldName` is a string.
-- `fieldAttributes` is an array of zero or more [attributes](#attribute).
+- `fieldAttributes` is an array of zero or more [attributes](#attribute). The
+property is optional an may be omitted.
 - `fieldOrdinal` is an integer.
 
 ### Field default value

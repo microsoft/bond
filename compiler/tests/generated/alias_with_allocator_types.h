@@ -134,6 +134,75 @@ namespace test
     {
         left.swap(right);
     }
+
+    
+    struct withFoo
+    {
+        ::test::foo f;
+        ::test::foo f1;
+        
+        withFoo()
+        {
+        }
+
+        
+#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
+        // Compiler generated copy ctor OK
+        withFoo(const withFoo& other) = default;
+#endif
+        
+#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
+        withFoo(withFoo&& other)
+          : f(std::move(other.f)),
+            f1(std::move(other.f1))
+        {
+        }
+#endif
+        
+        explicit
+        withFoo(const arena& allocator)
+          : f(allocator),
+            f1(allocator)
+        {
+        }
+        
+        
+#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
+        // Compiler generated operator= OK
+        withFoo& operator=(const withFoo& other) = default;
+#endif
+
+        bool operator==(const withFoo& other) const
+        {
+            return true
+                && (f == other.f)
+                && (f1 == other.f1);
+        }
+
+        bool operator!=(const withFoo& other) const
+        {
+            return !(*this == other);
+        }
+
+        void swap(withFoo& other)
+        {
+            using std::swap;
+            swap(f, other.f);
+            swap(f1, other.f1);
+        }
+
+        struct Schema;
+
+    protected:
+        void InitMetadata(const char*, const char*)
+        {
+        }
+    };
+
+    inline void swap(withFoo& left, withFoo& right)
+    {
+        left.swap(right);
+    }
 } // namespace test
 
 #if !defined(BOND_NO_CXX11_ALLOCATOR)
@@ -141,6 +210,11 @@ namespace std
 {
     template <typename _Alloc>
     struct uses_allocator< ::test::foo, _Alloc>
+        : is_convertible<_Alloc, arena>
+    {};
+
+    template <typename _Alloc>
+    struct uses_allocator< ::test::withFoo, _Alloc>
         : is_convertible<_Alloc, arena>
     {};
 }

@@ -32,7 +32,7 @@ namespace Bond.Expressions
             fieldParser = this;
         }
 
-        private TaggedParser(TaggedParser<R> that, bool isBase)
+        TaggedParser(TaggedParser<R> that, bool isBase)
         {
             this.isBase = isBase;
             reader = that.reader;
@@ -178,7 +178,7 @@ namespace Bond.Expressions
             return reader.Skip(type);
         }
 
-        private static Expression MatchOrCompatible(Expression valueType, BondDataType? expectedType, TypeHandlerRuntime handler)
+        static Expression MatchOrCompatible(Expression valueType, BondDataType? expectedType, TypeHandlerRuntime handler)
         {
             return (expectedType == null) ?
                 handler(valueType) :
@@ -186,14 +186,14 @@ namespace Bond.Expressions
         }
 
         // Generate expression to handle exact match or compatible type
-        private static Expression MatchOrCompatible(Expression valueType, BondDataType expectedType, TypeHandlerCompiletime handler)
+        static Expression MatchOrCompatible(Expression valueType, BondDataType expectedType, TypeHandlerCompiletime handler)
         {
             return MatchOrElse(valueType, expectedType, handler,
                    TryCompatible(valueType, expectedType, handler));
         }
 
         // valueType maybe a ConstantExpression and then Prune optimizes unreachable branches out
-        private static Expression MatchOrElse(Expression valueType, BondDataType expectedType, TypeHandlerCompiletime handler, Expression orElse)
+        static Expression MatchOrElse(Expression valueType, BondDataType expectedType, TypeHandlerCompiletime handler, Expression orElse)
         {
             return PrunedExpression.IfThenElse(
                 Expression.Equal(valueType, Expression.Constant(expectedType)),
@@ -202,7 +202,7 @@ namespace Bond.Expressions
         }
 
         // Generates expression to handle value of type that is different but compatible with expected type
-        private static Expression TryCompatible(Expression valueType, BondDataType expectedType, TypeHandlerCompiletime handler)
+        static Expression TryCompatible(Expression valueType, BondDataType expectedType, TypeHandlerCompiletime handler)
         {
             if (expectedType == BondDataType.BT_DOUBLE)
             {
@@ -255,7 +255,7 @@ namespace Bond.Expressions
             return InvalidType(expectedType, valueType);
         }
 
-        private static Expression InvalidType(BondDataType expectedType, Expression valueType)
+        static Expression InvalidType(BondDataType expectedType, Expression valueType)
         {
             return ThrowExpression.InvalidTypeException(Expression.Constant(expectedType), valueType);
         }

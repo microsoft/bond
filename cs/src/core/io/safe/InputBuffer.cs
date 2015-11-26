@@ -185,7 +185,7 @@ namespace Bond.IO.Safe
         /// <exception cref="EndOfStreamException"/>
         public ushort ReadVarUInt16()
         {
-            if (position >= end - IntegerHelper.MaxBytesVarInt16)
+            if (position > end - IntegerHelper.MaxBytesVarInt16)
             {
                 return (ushort)DecodeVarUInt64Checked();
             }
@@ -198,7 +198,7 @@ namespace Bond.IO.Safe
         /// <exception cref="EndOfStreamException"/>
         public uint ReadVarUInt32()
         {
-            if (position >= end - IntegerHelper.MaxBytesVarInt32)
+            if (position > end - IntegerHelper.MaxBytesVarInt32)
             {
                 return (uint)DecodeVarUInt64Checked();
             }
@@ -211,7 +211,7 @@ namespace Bond.IO.Safe
         /// <exception cref="EndOfStreamException"/>
         public ulong ReadVarUInt64()
         {
-            if (position >= end - IntegerHelper.MaxBytesVarInt64)
+            if (position > end - IntegerHelper.MaxBytesVarInt64)
             {
                 return DecodeVarUInt64Checked();
             }

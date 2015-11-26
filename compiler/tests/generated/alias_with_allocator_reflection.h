@@ -165,5 +165,56 @@ namespace test
     };
     
 
+    //
+    // withFoo
+    //
+    struct withFoo::Schema
+    {
+        typedef bond::no_base base;
+
+        static const bond::Metadata metadata;
+        
+        private: static const bond::Metadata s_f_metadata;
+        private: static const bond::Metadata s_f1_metadata;
+
+        public: struct var
+        {
+            // f
+            typedef bond::reflection::FieldTemplate<
+                0,
+                bond::reflection::optional_field_modifier,
+                withFoo,
+                ::test::foo,
+                &withFoo::f,
+                &s_f_metadata
+            > f;
+        
+            // f1
+            typedef bond::reflection::FieldTemplate<
+                1,
+                bond::reflection::optional_field_modifier,
+                withFoo,
+                ::test::foo,
+                &withFoo::f1,
+                &s_f1_metadata
+            > f1;
+        };
+
+        private: typedef boost::mpl::list<> fields0;
+        private: typedef boost::mpl::push_front<fields0, var::f1>::type fields1;
+        private: typedef boost::mpl::push_front<fields1, var::f>::type fields2;
+
+        public: typedef fields2::type fields;
+        
+        
+        static bond::Metadata GetMetadata()
+        {
+            return bond::reflection::MetadataInit("withFoo", "test.withFoo",
+                bond::reflection::Attributes()
+            );
+        }
+    };
+    
+
     
 } // namespace test

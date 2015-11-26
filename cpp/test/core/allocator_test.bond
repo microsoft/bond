@@ -95,3 +95,9 @@ struct NullableSwappable
     30: required_optional nullable<nullable<list<float>>>       nullable_nullable_list;
     40: required_optional nullable<nullable<SimpleType>>       nullable_nullable_struct;
 };
+
+struct StructField
+{
+    0: Struct field;
+}
+

@@ -432,6 +432,7 @@ namespace Bond
                 from method in methods
                 let parameters = method.GetParameters()
                 where parameters != null
+                where method.IsStatic == false
                 where parameters.Select(p => p.ParameterType).SequenceEqual(paramTypes)
                 select method).FirstOrDefault();
         }

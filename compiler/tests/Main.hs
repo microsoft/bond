@@ -22,6 +22,7 @@ tests = testGroup "Compiler tests"
             , testCase "generics" $ compareAST "generics"
             , testCase "inheritance" $ compareAST "inheritance"
             , testCase "type aliases" $ compareAST "aliases"
+            , testCase "documentation example" $ compareAST "example"
             ]
         ]
     , testGroup "Codegen"

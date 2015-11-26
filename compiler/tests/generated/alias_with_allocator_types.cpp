@@ -42,4 +42,14 @@ namespace test
         = bond::reflection::MetadataInit(bond::nothing, "s1");
 
     
+    const bond::Metadata withFoo::Schema::metadata
+        = withFoo::Schema::GetMetadata();
+    
+    const bond::Metadata withFoo::Schema::s_f_metadata
+        = bond::reflection::MetadataInit("f");
+    
+    const bond::Metadata withFoo::Schema::s_f1_metadata
+        = bond::reflection::MetadataInit("f1");
+
+    
 } // namespace test

@@ -92,7 +92,7 @@ namespace Bond.Protocols
     /// <summary>
     /// Writer for the Fast Binary tagged protocol
     /// </summary>
-    /// <typeparam name="O">Implemention of IOutputStream interface</typeparam>
+    /// <typeparam name="O">Implementation of IOutputStream interface</typeparam>
     [Reader(typeof(FastBinaryReader<>))]
     public struct FastBinaryWriter<O> : IProtocolWriter
         where O : IOutputStream
@@ -423,7 +423,7 @@ namespace Bond.Protocols
     /// <summary>
     /// Reader for the Fast Binary tagged protocol
     /// </summary>
-    /// <typeparam name="I">Implemention of IInputStream interface</typeparam>
+    /// <typeparam name="I">Implementation of IInputStream interface</typeparam>
     public struct FastBinaryReader<I> : ITaggedProtocolReader, ICloneable<FastBinaryReader<I>>
         where I : IInputStream, ICloneable<I>
     {

@@ -242,7 +242,7 @@ namespace std
             keyType (BT_Map key _) = cppType key
             keyType (BT_UserDefined a@Alias {} args) = keyType $ resolveAlias a args
             keyType _ = error "allocatorCtor/keyType: impossible happened."
-            allocParameterized = L.isInfixOf (L.pack alloc) . toLazyText . cppType
+            allocParameterized t = (isStruct t) || (L.isInfixOf (L.pack alloc) . toLazyText $ cppType t)
 
         -- copy constructor
         copyCtor = if hasMetaFields then define else implicitlyDeclared

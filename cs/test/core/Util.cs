@@ -391,13 +391,23 @@ namespace UnitTest
             return Deserialize<T>.From(reader);
         }
 
-        public static void SerializeSP<T>(T obj, Stream stream)
+        public static void SerializeSP<T>(T obj, Stream stream, ushort version)
         {
             var output = new OutputStream(stream, 11);
-            var writer = new SimpleBinaryWriter<OutputStream>(output);
+            var writer = new SimpleBinaryWriter<OutputStream>(output, version);
 
             Serialize.To(writer, obj);
             output.Flush();
+        }
+
+        public static void SerializeSP<T>(T obj, Stream stream)
+        {
+            SerializeSP(obj, stream, 1);
+        }
+
+        public static void SerializeSP2<T>(T obj, Stream stream)
+        {
+            SerializeSP(obj, stream, 2);
         }
 
         public static void SerializeSP<T>(IBonded<T> obj, Stream stream)
@@ -409,13 +419,23 @@ namespace UnitTest
             output.Flush();
         }
 
-        public static ArraySegment<byte> SerializeSP<T>(T obj)
+        public static ArraySegment<byte> SerializeSP<T>(T obj, ushort version)
         {
             var output = new OutputBuffer();
-            var writer = new SimpleBinaryWriter<OutputBuffer>(output);
+            var writer = new SimpleBinaryWriter<OutputBuffer>(output, version);
 
             Serialize.To(writer, obj);
             return output.Data;
+        }
+
+        public static ArraySegment<byte> SerializeSP<T>(T obj)
+        {
+            return SerializeSP(obj, 1);
+        }
+
+        public static ArraySegment<byte> SerializeSP2<T>(T obj)
+        {
+            return SerializeSP(obj, 2);
         }
 
         public static void SerializeJson<T>(T obj, Stream stream)
@@ -434,31 +454,61 @@ namespace UnitTest
             output.Flush();
         }
 
-        public static To DeserializeSP<From, To>(Stream stream)
+        public static To DeserializeSP<From, To>(Stream stream, ushort version)
         {
             var input = new InputStream(stream);
-            var reader = new SimpleBinaryReader<InputStream>(input);
+            var reader = new SimpleBinaryReader<InputStream>(input, version);
             var deserializer = new Deserializer<SimpleBinaryReader<InputStream>>(typeof(To), Schema<From>.RuntimeSchema);
+
+            return deserializer.Deserialize<To>(reader);
+        }
+
+        public static To DeserializeSP<From, To>(Stream stream)
+        {
+            return DeserializeSP<From, To>(stream, 1);
+        }
+
+        public static To DeserializeSP2<From, To>(Stream stream)
+        {
+            return DeserializeSP<From, To>(stream, 2);
+        }
+
+        public static To DeserializeSafeSP<From, To>(ArraySegment<byte> data, ushort version)
+        {
+            var input = new Bond.IO.Safe.InputBuffer(data.Array, data.Offset, data.Count);
+            var reader = new SimpleBinaryReader<Bond.IO.Safe.InputBuffer>(input, version);
+            var deserializer = new Deserializer<SimpleBinaryReader<Bond.IO.Safe.InputBuffer>>(typeof(To), Schema<From>.RuntimeSchema);
 
             return deserializer.Deserialize<To>(reader);
         }
 
         public static To DeserializeSafeSP<From, To>(ArraySegment<byte> data)
         {
-            var input = new Bond.IO.Safe.InputBuffer(data.Array, data.Offset, data.Count);
-            var reader = new SimpleBinaryReader<Bond.IO.Safe.InputBuffer>(input);
-            var deserializer = new Deserializer<SimpleBinaryReader<Bond.IO.Safe.InputBuffer>>(typeof(To), Schema<From>.RuntimeSchema);
+            return DeserializeSafeSP<From, To>(data, 1);
+        }
+
+        public static To DeserializeSafeSP2<From, To>(ArraySegment<byte> data)
+        {
+            return DeserializeSafeSP<From, To>(data, 2);
+        }
+
+        public static To DeserializeUnsafeSP<From, To>(ArraySegment<byte> data, ushort version)
+        {
+            var input = new InputBuffer(data);
+            var reader = new SimpleBinaryReader<InputBuffer>(input, version);
+            var deserializer = new Deserializer<SimpleBinaryReader<InputBuffer>>(typeof(To), Schema<From>.RuntimeSchema);
 
             return deserializer.Deserialize<To>(reader);
         }
 
         public static To DeserializeUnsafeSP<From, To>(ArraySegment<byte> data)
         {
-            var input = new InputBuffer(data);
-            var reader = new SimpleBinaryReader<InputBuffer>(input);
-            var deserializer = new Deserializer<SimpleBinaryReader<InputBuffer>>(typeof(To), Schema<From>.RuntimeSchema);
+            return DeserializeUnsafeSP<From, To>(data, 1);
+        }
 
-            return deserializer.Deserialize<To>(reader);
+        public static To DeserializeUnsafeSP2<From, To>(ArraySegment<byte> data)
+        {
+            return DeserializeUnsafeSP<From, To>(data, 2);
         }
 
         public static void SerializeXml<T>(T obj, Stream stream)
@@ -652,13 +702,22 @@ namespace UnitTest
                 memoryRoundtrip(SerializeSP, DeserializeSafeSP<From, To>);
                 memoryRoundtrip(SerializeSP, DeserializeUnsafeSP<From, To>);
 
+                streamRoundtrip(SerializeSP2, DeserializeSP2<From, To>);
+                memoryRoundtrip(SerializeSP2, DeserializeSafeSP2<From, To>);
+                memoryRoundtrip(SerializeSP2, DeserializeUnsafeSP2<From, To>);
+
                 streamTranscode(SerializeCB, TranscodeCBSP<From>, DeserializeSP<From, To>);
                 streamTranscode(SerializeFB, TranscodeFBSP<From>, DeserializeSP<From, To>);
                 streamTranscode(SerializeSP, TranscodeSPSP<From>, DeserializeSP<From, To>);
                 streamTranscode(SerializeSP, TranscodeSPCB<From>, DeserializeCB<To>);
                 streamTranscode(SerializeSP, TranscodeSPFB<From>, DeserializeFB<To>);
                 streamTranscode(SerializeSP, TranscodeSPXml<From>, DeserializeXml<To>);
-                streamTranscode(SerializeSP, TranscodeSPJson<From>, DeserializeJson<To>);
+                
+                // NewtonSoft JSON doesn't support uint64
+                if (typeof (From) != typeof (MaxUInt64))
+                {
+                    streamTranscode(SerializeSP, TranscodeSPJson<From>, DeserializeJson<To>);
+                }
 
                 streamRoundtrip(SerializeSP, stream =>
                 {
@@ -671,11 +730,16 @@ namespace UnitTest
             }
 
             streamRoundtrip(SerializeXml, DeserializeXml<To>);
-            streamRoundtrip(SerializeJson, DeserializeJson<To>);
             streamTranscode(SerializeCB, TranscodeCBXml<From>, DeserializeXml<To>);
-            streamTranscode(SerializeCB, TranscodeCBJson<From>, DeserializeJson<To>);
             streamTranscode(SerializeFB, TranscodeFBXml<From>, DeserializeXml<To>);
-            streamTranscode(SerializeFB, TranscodeFBJson<From>, DeserializeJson<To>);
+
+            // NewtonSoft JSON doesn't support uint64
+            if (typeof (From) != typeof (MaxUInt64))
+            {
+                streamRoundtrip(SerializeJson, DeserializeJson<To>);
+                streamTranscode(SerializeCB, TranscodeCBJson<From>, DeserializeJson<To>);
+                streamTranscode(SerializeFB, TranscodeFBJson<From>, DeserializeJson<To>);
+            }
         }
     }
 }

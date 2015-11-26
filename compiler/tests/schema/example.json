@@ -1,0 +1,38 @@
+{
+  "imports": [],
+  "namespaces": [
+    {
+      "name": [
+          "example",
+          "some"
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "tag": "Struct",
+      "declNamespaces": [
+        {
+          "name": [
+              "example",
+              "some"
+          ]
+        }
+      ],
+      "declAttributes": [],
+      "declParams": [],
+      "declName": "SomeStruct",
+      "structFields": [
+        {
+          "fieldOrdinal": 0,
+          "fieldType": "int32",
+          "fieldName": "someField",
+          "fieldDefault": {
+            "value": 123,
+            "type": "integer"
+          }
+        }
+      ]
+    }
+  ]
+}

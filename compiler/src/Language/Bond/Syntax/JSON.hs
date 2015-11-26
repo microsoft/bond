@@ -13,9 +13,9 @@ Stability   : alpha
 Portability : portable
 -}
 
-module Language.Bond.Syntax.JSON 
+module Language.Bond.Syntax.JSON
     ( -- * FromJSON and ToJSON instances
-      -- $aeson 
+      -- $aeson
     )
     where
 
@@ -29,7 +29,7 @@ import Language.Bond.Syntax.Types
 -- $aeson
 --
 -- This module defines 'FromJSON' and 'ToJSON' instances for Bond abstract
--- syntax tree.  They allow using the <http://hackage.haskell.org/package/aeson aeson> 
+-- syntax tree.  They allow using the <http://hackage.haskell.org/package/aeson aeson>
 -- library to encode Bond AST types to <https://microsoft.github.io/bond/manual/compiler.html#schema-ast JSON format>:
 --
 -- > > encode (Bond [] [Namespace Nothing ["example"]] [])
@@ -203,9 +203,27 @@ deriving instance Generic Attribute
 instance FromJSON Attribute
 instance ToJSON Attribute
 
-deriving instance Generic Field
-instance FromJSON Field
-instance ToJSON Field
+instance FromJSON Field where
+    parseJSON (Object o) = Field <$>
+        o .:? "fieldAttributes" .!= [] <*>
+        o .:  "fieldOrdinal" <*>
+        o .:? "fieldModifier" .!= Optional <*>
+        o .:  "fieldType" <*>
+        o .:  "fieldName" <*>
+        o .:? "fieldDefault" .!= Nothing
+    parseJSON x = modifyFailure
+                    (const $ "Expected a representation of Field but found: " ++ show x)
+                    empty
+
+instance ToJSON Field where
+    toJSON f = object
+        [ "fieldAttributes" .= fieldAttributes f
+        , "fieldOrdinal" .= fieldOrdinal f
+        , "fieldModifier" .= fieldModifier f
+        , "fieldType" .= fieldType f 
+        , "fieldName" .= fieldName f
+        , "fieldDefault" .= fieldDefault f
+        ]
 
 deriving instance Generic Constant
 instance FromJSON Constant

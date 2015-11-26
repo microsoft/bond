@@ -38,6 +38,23 @@ struct BasicTypes
     22: DateTime dt;
 };
 
+struct Integers
+{
+    14: int8 _int8;
+    15: int16 _int16;
+    16: int32 _int32;
+    17: int64 _int64;
+    13: uint8 _uint8;
+    11: uint16 _uint16;
+    12: uint32 _uint32;
+    10: uint64 _uint64;
+};
+
+struct MaxUInt64
+{
+    10: uint64 _uint64;
+};
+
 struct FieldOfStructWithAliases
 {
     0: UnitTest.Aliases.BlobAlias b;
