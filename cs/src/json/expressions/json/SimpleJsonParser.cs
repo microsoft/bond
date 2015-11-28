@@ -127,12 +127,24 @@ namespace Bond.Expressions.Json
                     Expression.Constant(scalarTokenType, typeof(object)),
                     Expression.Convert(Reader.TokenType, typeof(object)));
 
+            var handleValue =
+                Expression.IfThenElse(
+                    JsonTokenEquals(scalarTokenType),
+                    handler(convertedValue),
+                    ThrowUnexpectedInput(errorMessage));
+
+            // If a floating point value is expected also accept an integer
+            if (scalarTokenType == JsonToken.Float)
+            {
+                handleValue = Expression.IfThenElse(
+                    JsonTokenEquals(JsonToken.Integer),
+                    handler(Expression.Convert(Reader.Value, typeof (long))),
+                    handleValue);
+            }
+
             return
                 Expression.Block(
-                    Expression.IfThenElse(
-                        JsonTokenEquals(scalarTokenType),
-                        handler(convertedValue),
-                        ThrowUnexpectedInput(errorMessage)),
+                    handleValue,
                     Reader.Read());
         }
 
