@@ -32,6 +32,7 @@ public:
 
     RapidJsonInputStream(typename boost::call_traits<Buffer>::reference input)
         : input(&input),
+          current(0),
           count(0)
     {
         input.Read(current);
@@ -45,6 +46,9 @@ public:
 
     char Peek()
     {
+        if (!current)
+            input->Read(current);
+
         return current;
     }
 
@@ -56,17 +60,12 @@ public:
     char Take()
     {
         char c = current;
+        current = '\0';
 
-        if (!input->IsEof())
-        {
-            input->Read(current);
-            ++count;
-        }
-        else
-        {
-            current = '\x0';
-        }
+        if (!c)
+            input->Read(c);
 
+        ++count;
         return c;
     }
 

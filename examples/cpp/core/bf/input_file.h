@@ -7,6 +7,9 @@
 class InputFile
 {
 public:
+    InputFile()
+    {}
+
     InputFile(const std::string& name)
         : file(name, std::ios::binary),
           name(name)
@@ -67,7 +70,7 @@ public:
     {
         file.seekg(size, std::ios::cur);
     }
-
+    
 private:
     mutable std::ifstream file;
     std::string name;

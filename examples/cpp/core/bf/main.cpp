@@ -96,14 +96,24 @@ Protocol Guess(InputFile input)
 
 struct UnknownSchema;
 
+bond::SchemaDef LoadSchema(const std::string& file)
+{
+    InputFile input(file), tryJson(input);
+
+    char c;
+    tryJson.Read(c);
+        
+    return (c == '{')
+        ? bond::Deserialize<bond::SchemaDef>(bond::SimpleJsonReader<InputFile>(input))
+        : bond::Unmarshal<bond::SchemaDef>(input);
+}
+
 template <typename Reader, typename Writer>
 void TranscodeFromTo(Reader& reader, Writer& writer, const Options& options)
 {
     if (!options.schema.empty())
     {
-        bond::SchemaDef schema;
-        bond::Unmarshal(InputFile(options.schema), schema);
-
+        bond::SchemaDef schema(LoadSchema(options.schema));
         bond::bonded<void, typename bond::ProtocolReader<typename Reader::Buffer> >(reader, bond::RuntimeSchema(schema)).Serialize(writer);
     }
     else
@@ -118,9 +128,7 @@ void TranscodeFromTo(InputFile& input, Writer& writer, const Options& options)
 {
     if (!options.schema.empty())
     {
-        bond::SchemaDef schema;
-        bond::Unmarshal(InputFile(options.schema), schema);
-
+        bond::SchemaDef schema(LoadSchema(options.schema));
         bond::SelectProtocolAndApply(bond::RuntimeSchema(schema), input, SerializeTo(writer));
     }
     else
