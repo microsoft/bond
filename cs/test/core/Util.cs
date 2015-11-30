@@ -5,15 +5,20 @@ namespace UnitTest
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using System.Text;
     using System.Xml;
+    using RMarshal = System.Runtime.InteropServices.Marshal;
     using NUnit.Framework;
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
+    using Marshal = Bond.Marshal;
 
     public static class Util
     {
+        private const int UnsafeBufferSize = 192 * 1024;
+
         public static IEnumerable<MethodInfo> GetDeclaredMethods(this Type type, string name)
         {
             return type.GetMethods().Where(m => m.Name == name);
@@ -271,6 +276,15 @@ namespace UnitTest
             return output.Data;
         }
 
+        public static IntPtr SerializePointerCB<T>(T obj, IntPtr ptr, int length)
+        {
+            var output = new OutputPointer(ptr, length);
+            var writer = new CompactBinaryWriter<OutputPointer>(output);
+
+            Serialize.To(writer, obj);
+            return output.Data;
+        }
+
         public static ArraySegment<byte> SerializeSafeCB<T>(T obj)
         {
             var output = new Bond.IO.Safe.OutputBuffer(new byte[11]);
@@ -300,6 +314,14 @@ namespace UnitTest
         {
             var input = new InputBuffer(data);
             var reader = new CompactBinaryReader<InputBuffer>(input);
+
+            return Deserialize<T>.From(reader);
+        }
+
+        public static T DeserializePointerCB<T>(IntPtr data, int length)
+        {
+            var input = new InputPointer(data, length);
+            var reader = new CompactBinaryReader<InputPointer>(input);
 
             return Deserialize<T>.From(reader);
         }
@@ -387,6 +409,14 @@ namespace UnitTest
         {
             var input = new InputBuffer(data);
             var reader = new FastBinaryReader<InputBuffer>(input);
+
+            return Deserialize<T>.From(reader);
+        }
+
+        public static T DeserializePointerFB<T>(IntPtr data, int length)
+        {
+            var input = new InputPointer(data, length);
+            var reader = new FastBinaryReader<InputPointer>(input);
 
             return Deserialize<T>.From(reader);
         }
@@ -511,6 +541,15 @@ namespace UnitTest
             return DeserializeUnsafeSP<From, To>(data, 2);
         }
 
+        public static To DeserializePointerSP<From, To>(IntPtr data, int length)
+        {
+            var input = new InputPointer(data, length);
+            var reader = new SimpleBinaryReader<InputPointer>(input);
+            var deserializer = new Deserializer<SimpleBinaryReader<InputPointer>>(typeof(To), Schema<From>.RuntimeSchema);
+
+            return deserializer.Deserialize<To>(reader);
+        }
+
         public static void SerializeXml<T>(T obj, Stream stream)
         {
             var hasBase = Schema<T>.RuntimeSchema.HasBase;
@@ -596,6 +635,8 @@ namespace UnitTest
         public delegate void MarshalMemory<From>(Func<From, ArraySegment<byte>> serialize);
         public delegate void TranscodeStream<From, To>(Action<From, Stream> serialize, Action<Stream, Stream> transcode, Func<Stream, To> deserialize);
         public delegate void RoundtripMemory<From, To>(Func<From, ArraySegment<byte>> serialize, Func<ArraySegment<byte>, To> deserialize);
+        public delegate void RoundtripPointer<From, To>(Func<From, IntPtr, int, IntPtr> serialize, Func<IntPtr, int, To> deserialize);
+        public delegate void RoundtripMemoryPointer<From, To>(Func<From, ArraySegment<byte>> serialize, Func<IntPtr, int, To> deserialize);
 
         public static void AllSerializeDeserialize<From, To>(From from, bool noTranscoding = false)
             where From : class
@@ -605,6 +646,24 @@ namespace UnitTest
             {
                 var data = serialize(from);
                 var to = deserialize(data);
+                Assert.IsTrue(from.IsEqual(to));
+            };
+
+            RoundtripPointer<From, To> pointerRoundtrip = (serialize, deserialize) =>
+            {
+                var ptr = RMarshal.AllocHGlobal(UnsafeBufferSize);
+                var data = serialize(from, ptr, UnsafeBufferSize);
+                var to = deserialize(data, UnsafeBufferSize);
+                RMarshal.FreeHGlobal(data);
+                Assert.IsTrue(from.IsEqual(to));
+            };
+
+            RoundtripMemoryPointer<From, To> memoryPointerRoundtrip = (serialize, deserialize) =>
+            {
+                var data = serialize(from);
+                var pinned = GCHandle.Alloc(data.Array, GCHandleType.Pinned);
+                var to = deserialize(RMarshal.UnsafeAddrOfPinnedArrayElement(data.Array, data.Offset), data.Count);
+                pinned.Free();
                 Assert.IsTrue(from.IsEqual(to));
             };
 
@@ -657,8 +716,12 @@ namespace UnitTest
             streamRoundtrip(SerializeCB, DeserializeCB<To>);
             memoryRoundtrip(SerializeUnsafeCB, DeserializeSafeCB<To>);
             memoryRoundtrip(SerializeUnsafeCB, DeserializeUnsafeCB<To>);
+            memoryPointerRoundtrip(SerializeUnsafeCB, DeserializePointerCB<To>);
+            pointerRoundtrip(SerializePointerCB, DeserializePointerCB<To>);
             memoryRoundtrip(SerializeSafeCB, DeserializeSafeCB<To>);
             memoryRoundtrip(SerializeSafeCB, DeserializeUnsafeCB<To>);
+            memoryPointerRoundtrip(SerializeSafeCB, DeserializePointerCB<To>);
+
             streamMarshal(MarshalCB);
             streamMarshal(SerializerMarshalCB);
             streamMarshalSchema(MarshalCB);
@@ -679,6 +742,8 @@ namespace UnitTest
             streamRoundtrip(SerializeFB, DeserializeFB<To>);
             memoryRoundtrip(SerializeFB, DeserializeSafeFB<To>);
             memoryRoundtrip(SerializeFB, DeserializeUnsafeFB<To>);
+            memoryPointerRoundtrip(SerializeFB, DeserializePointerFB<To>);
+
             streamMarshal(MarshalFB);
             streamMarshal(SerializerMarshalFB);
             streamMarshalSchema(MarshalFB);
@@ -701,6 +766,7 @@ namespace UnitTest
                 streamRoundtrip(SerializeSP, DeserializeSP<From, To>);
                 memoryRoundtrip(SerializeSP, DeserializeSafeSP<From, To>);
                 memoryRoundtrip(SerializeSP, DeserializeUnsafeSP<From, To>);
+                memoryPointerRoundtrip(SerializeSP, DeserializePointerSP<From, To>);
 
                 streamRoundtrip(SerializeSP2, DeserializeSP2<From, To>);
                 memoryRoundtrip(SerializeSP2, DeserializeSafeSP2<From, To>);
