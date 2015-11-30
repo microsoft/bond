@@ -34,12 +34,12 @@
         <file src="net45\Bond.JSON.xml" target="lib\net45" />
         <file src="net45\Bond.IO.dll" target="lib\net45" />
         <file src="net45\Bond.IO.xml" target="lib\net45" />
-        <file src="net45\Bond.dll" target="lib\portable-net45+wp80+win8+wpa81" />
-        <file src="net45\Bond.xml" target="lib\portable-net45+wp80+win8+wpa81" />
-        <file src="net45\Bond.Attributes.dll" target="lib\portable-net45+wp80+win8+wpa81" />
-        <file src="net45\Bond.Attributes.xml" target="lib\portable-net45+wp80+win8+wpa81" />
-        <file src="net45\Bond.JSON.dll" target="lib\portable-net45+wp80+win8+wpa81" />
-        <file src="net45\Bond.JSON.xml" target="lib\portable-net45+wp80+win8+wpa81" />
+        <file src="net45\Bond.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.Attributes.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.Attributes.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.JSON.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.JSON.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
         <file src="net40\Bond.dll" target="lib\net40" />
         <file src="net40\Bond.xml" target="lib\net40" />
         <file src="net40\Bond.Attributes.dll" target="lib\net40" />
