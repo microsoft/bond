@@ -58,7 +58,7 @@
       <HintPath>$(BOND_BINARY_PATH)\net45\Bond.JSON.dll</HintPath>
     </Reference>    
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\cs\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\cs\packages\Newtonsoft.Json.7.0.1\lib\portable-net45+wp80+win8+wpa81+dnxcore50\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
