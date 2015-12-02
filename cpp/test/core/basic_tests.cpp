@@ -274,6 +274,8 @@ TEST_CASE_BEGIN(EnumScopeTest)
     UT_AssertIsTrue(image1.fruit1 == 5);
     UT_AssertIsTrue(image1.fruit2 == 6);
 
+    UT_AssertIsTrue(EnumType1::MinInt == std::numeric_limits<int32_t>::min());
+
     // This test causes ambiguity on Clang - need to invetigate
     /*EnumHelperTest<enum ToEnum>("ToEnum");
     EnumHelperTest<enum ToString>("ToString");

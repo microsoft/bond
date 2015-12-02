@@ -13,6 +13,7 @@ enum EnumType1
     EnumValue3 = -10,
     EnumValue4 = 0x2A,
     EnumValue5 = 0XFFFFFFFFFFFFFFF6, //-10 in two's complement
+    MinInt = -2147483648,
 };
 
 

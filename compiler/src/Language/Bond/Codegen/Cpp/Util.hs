@@ -131,13 +131,14 @@ ifndef m = between [lt|
 #ifndef #{m}|] [lt|
 #endif|]
 
-enumDefinition :: Declaration -> Text 
+enumDefinition :: Declaration -> Text
 enumDefinition Enum {..} = [lt|enum #{declName}
         {
             #{commaLineSep 3 constant enumConstants}
         };|]
   where
     constant Constant {..} = [lt|#{constantName}#{optional value constantValue}|]
+    value (-2147483648) = [lt| = -2147483647-1|]
     value x = [lt| = #{x}|]
 enumDefinition _ = error "enumDefinition: impossible happened."
 
