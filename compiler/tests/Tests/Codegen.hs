@@ -52,9 +52,12 @@ verifyApplyCodegen args baseName =
         , apply_cpp protocols
         ]
     protocols =
-        [ Protocol "CompactBinaryReader" "CompactBinaryWriter"
-        , Protocol "FastBinaryReader" "FastBinaryWriter"
-        , Protocol "SimpleBinaryReader" "SimpleBinaryWriter"
+        [ Protocol "bond::CompactBinaryReader<bond::InputBuffer>"
+                   "bond::CompactBinaryWriter<bond::OutputBuffer>"
+        , Protocol "bond::FastBinaryReader<bond::InputBuffer>"
+                   "bond::FastBinaryWriter<bond::OutputBuffer>"
+        , Protocol "bond::SimpleBinaryReader<bond::InputBuffer>"
+                   "bond::SimpleBinaryWriter<bond::OutputBuffer>"
         ]
 
 

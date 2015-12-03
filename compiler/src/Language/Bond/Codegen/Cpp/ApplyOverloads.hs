@@ -45,21 +45,21 @@ applyOverloads protocols attr body Struct {..} | null declParams = [lt|
 
     deserialization Protocol {..} = [lt|
     #{attr}bool Apply(const bond::To<#{declName}>& transform,
-               const bond::bonded<#{declName}, bond::#{protocolReader}<bond::InputBuffer>&>& value)#{body}
+               const bond::bonded<#{declName}, #{protocolReader}&>& value)#{body}
 
     #{attr}bool Apply(const bond::To<#{declName}>& transform,
-               const bond::bonded<void, bond::#{protocolReader}<bond::InputBuffer>&>& value)#{body}|]
+               const bond::bonded<void, #{protocolReader}&>& value)#{body}|]
 
     serialization transform Protocol {..} = [lt|
-    #{attr}bool Apply(const bond::#{transform}<bond::#{protocolWriter}<bond::OutputBuffer> >& transform,
+    #{attr}bool Apply(const bond::#{transform}<#{protocolWriter} >& transform,
                const #{declName}& value)#{body}
 
-    #{attr}bool Apply(const bond::#{transform}<bond::#{protocolWriter}<bond::OutputBuffer> >& transform,
+    #{attr}bool Apply(const bond::#{transform}<#{protocolWriter} >& transform,
                const bond::bonded<#{declName}>& value)#{body}
     #{newlineSep 1 (transcoding transform) protocols}|]
       where
         transcoding transform' Protocol {protocolReader = fromReader} = [lt|
-    #{attr}bool Apply(const bond::#{transform'}<bond::#{protocolWriter}<bond::OutputBuffer> >& transform,
-               const bond::bonded<#{declName}, bond::#{fromReader}<bond::InputBuffer>&>& value)#{body}|]
+    #{attr}bool Apply(const bond::#{transform'}<#{protocolWriter} >& transform,
+               const bond::bonded<#{declName}, #{fromReader}&>& value)#{body}|]
 
 applyOverloads _ _ _ _ = mempty
