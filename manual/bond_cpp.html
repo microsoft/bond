@@ -79,7 +79,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 
   div.sourceCode {
     overflow-x: auto;
-    max-height: 600px;
+    max-height: 620px;
   }
 
   table.sourceCode { 
@@ -482,6 +482,7 @@ Deserialize(reader, obj, schema);</code></pre></td></tr></table></div>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">Serialize(data, writer);</code></pre></td></tr></table></div>
 <p>When an application creates an instance of <code>SchemaDef</code> in order to use it with Bond APIs, it is strongly recommended to always dynamically allocate the object and wrap it in a <code>boost::shared_ptr</code>, like in the example above. There are some subtle cases when Bond may need to keep a reference to the schema beyond the scope where it was created, and using a <code>shared_ptr</code> provides a safe and efficient way to achieve this. In order to encourage this, the <code>bond::RuntimeSchema</code> wrapper used by many Bond APIs is implicitly constructable from <code>boost::shared_ptr&lt;SchemaDef&gt;</code> but only explicitly from <code>const SchemaDef&amp;</code>.</p>
+<p>A serialized representation of <code>SchemaDef</code> can be also obtained directly from a schema definition IDL file using <a href="compiler.html#runtime-schema">bond compiler</a>.</p>
 <p>See example: <code>examples/cpp/core/runtime_schema</code>.</p>
 <h1 id="compile-time-schema">Compile-time schema</h1>
 <p>Bond generated C++ classes define a nested struct called <code>Schema</code> which describes the type’s schema. It is called compile-time schema because it supports reflection on the schema during C++ compilation, enabling various meta-programming techniques. The struct <code>Schema</code> has the following members:</p>

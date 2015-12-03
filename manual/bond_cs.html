@@ -79,7 +79,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 
   div.sourceCode {
     overflow-x: auto;
-    max-height: 600px;
+    max-height: 620px;
   }
 
   table.sourceCode { 
@@ -577,6 +577,7 @@ exampleSerializer.<span class="fu">Serialize</span>(src, writer);
 <p><code>SchemaDef</code> is a Bond type, defined in <code>bond.bond</code>, and as such can be de/serialized like any other Bond type:</p>
 <div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cs">Serialize.<span class="fu">To</span>(writer, Schema&lt;T&gt;.<span class="fu">RuntimeSchema</span>.<span class="fu">SchemaDef</span>);</code></pre></td></tr></table></div>
+<p>A serialized representation of <code>SchemaDef</code> can be also obtained directly from a schema definition IDL file using <a href="compiler.html#runtime-schema">bond compiler</a>.</p>
 <p>See also the following example:</p>
 <ul>
 <li><code>examples/cs/core/runtime_schema</code></li>
