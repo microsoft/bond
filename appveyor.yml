@@ -102,7 +102,7 @@
 
     before_build:
         - ps: >-
-            if ($env:BOND_BUILD -eq "C#") {
+            if ($env:BOND_BUILD -eq "C#" -Or $env:BOND_BUILD -eq "C++") {
 
                 nuget restore cs\cs.sln
 
@@ -121,6 +121,8 @@
             }
 
             if ($env:BOND_BUILD -eq "C++") {
+
+                msbuild cs\cs.sln /verbosity:minimal /target:Tests\Compat /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
                 mkdir build
 
