@@ -49,7 +49,7 @@ namespace #{csNamespace}
 } // #{csNamespace}
 |])
   where
-    idlNamespace = getIdlQualifiedName $ getIdlNamespace cs
+    idl = MappingContext idlTypeMapping [] [] []  
 
     -- C# type
     csType = getTypeName cs
@@ -101,7 +101,7 @@ namespace #{csNamespace}
         constructors = if noCtor then mempty else [lt|
 
         public #{declName}()
-            : this("#{idlNamespace}.#{declName}", "#{declName}")
+            : this("#{getDeclTypeName idl s}", "#{declName}")
         {}
 
         protected #{declName}(string fullName, string name)#{baseCtor}

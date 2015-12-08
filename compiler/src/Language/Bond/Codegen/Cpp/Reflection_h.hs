@@ -30,7 +30,7 @@ reflection_h cpp file imports declarations = ("_reflection.h", [lt|
 #{CPP.closeNamespace cpp}
 |])
   where
-    idlNamespace = getIdlQualifiedName $ getIdlNamespace cpp
+    idl = MappingContext idlTypeMapping [] [] []  
 
     -- C++ type
     cppType = getTypeName cpp
@@ -60,7 +60,7 @@ reflection_h cpp file imports declarations = ("_reflection.h", [lt|
         
         static bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit#{metadataInitArgs}("#{declName}", "#{idlNamespace}.#{declName}",
+            return bond::reflection::MetadataInit#{metadataInitArgs}("#{declName}", "#{getDeclTypeName idl s}",
                 #{CPP.attributeInit declAttributes}
             );
         }

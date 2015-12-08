@@ -62,7 +62,8 @@ attributeInit :: [Attribute] -> Text
 attributeInit [] = "bond::reflection::Attributes()"
 attributeInit xs = [lt|boost::assign::map_list_of<std::string, std::string>#{newlineBeginSep 5 attrNameValue xs}|]
   where
-    attrNameValue Attribute {..} = [lt|("#{getIdlQualifiedName attrName}", "#{attrValue}")|]
+    idl = MappingContext idlTypeMapping [] [] []  
+    attrNameValue Attribute {..} = [lt|("#{getQualifiedName idl attrName}", "#{attrValue}")|]
 
 
 -- modifier tag type for a field

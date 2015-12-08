@@ -32,10 +32,8 @@ module Language.Bond.Codegen.TypeMapping
     , getDeclTypeName
     , getQualifiedName
     , getGlobalQualifiedName
-    , getIdlQualifiedName
       -- * Helper functions
     , getNamespace
-    , getIdlNamespace
     , getDeclName
     , getDeclNamespace
     , customAliasMapping
@@ -43,6 +41,7 @@ module Language.Bond.Codegen.TypeMapping
 
 import Data.List
 import Data.Monoid
+import Data.Maybe
 import Control.Applicative
 import Control.Monad.Reader
 import Prelude
@@ -88,11 +87,6 @@ type TypeNameBuilder = Reader MappingContext Builder
 getNamespace :: MappingContext -> QualifiedName
 getNamespace c@MappingContext {..} = resolveNamespace c namespaces
 
--- | Returns the namespace for the 'MappingContext' as specified in the schema
--- definition file (i.e. ignoring namespace mapping).
-getIdlNamespace :: MappingContext -> QualifiedName
-getIdlNamespace c@MappingContext {..} = findNamespace c namespaces
-
 -- | Returns the namespace for a 'Declaration' in the specified 'MappingContext'.
 getDeclNamespace :: MappingContext -> Declaration -> QualifiedName
 getDeclNamespace c = resolveNamespace c . declNamespaces
@@ -100,11 +94,6 @@ getDeclNamespace c = resolveNamespace c . declNamespaces
 -- | Builds a qualified name in the specified 'MappingContext'.
 getQualifiedName :: MappingContext -> QualifiedName -> Builder
 getQualifiedName MappingContext { typeMapping = m } = sepBy (separator m) toText
-
--- | Builds qualified name in schema definition context (i.e. independent of
--- the code generation target language).
-getIdlQualifiedName :: QualifiedName -> Builder
-getIdlQualifiedName = sepBy "." toText
 
 -- | Builds a global qualified name in the specified 'MappingContext'.
 getGlobalQualifiedName :: MappingContext -> QualifiedName -> Builder
@@ -265,17 +254,15 @@ annotatedTypeName :: Type -> TypeNameBuilder
 annotatedTypeName = localWith annotatedMapping . typeName
 
 resolveNamespace :: MappingContext -> [Namespace] -> QualifiedName
-resolveNamespace c@MappingContext {..} ns = maybe namespace toNamespace $ find ((namespace ==) . fromNamespace) namespaceMapping
+resolveNamespace MappingContext {..} ns =
+    maybe namespaceName toNamespace $ find ((namespaceName ==) . fromNamespace) namespaceMapping
   where
-    namespace = findNamespace c ns
-
--- last namespace that is language-neutral or matches the language of the context's type mapping
-findNamespace :: MappingContext -> [Namespace] -> QualifiedName
-findNamespace MappingContext {..} ns =
-    nsName . last . filter (matching (language typeMapping) . nsLanguage) $ ns
-  where  
-    matching (Just l1) (Just l2) = l1 == l2
-    matching _ _ = True
+    namespaceName = nsName . fromJust $ mappingNamespace <|> neutralNamespace <|> fallbackNamespace
+    mappingNamespace = find ((language typeMapping ==) . nsLanguage) ns
+    neutralNamespace = find (isNothing . nsLanguage) ns
+    fallbackNamespace = case (language typeMapping) of 
+        Nothing -> Just $ last ns
+        Just l  -> error $ "No namespace declared for " ++ show l
 
 declQualifiedName :: MappingContext -> Declaration -> QualifiedName
 declQualifiedName c decl = getDeclNamespace c decl ++ [declName decl]

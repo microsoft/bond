@@ -58,7 +58,8 @@ types_h userHeaders enumHeader allocator cpp file imports declarations = ("_type
   where
     hexVersion (Version xs _) = foldr showHex "" xs
     cppType = getTypeName cpp
-    idlNamespace = getIdlQualifiedName $ getIdlNamespace cpp
+
+    idl = MappingContext idlTypeMapping [] [] []  
 
     cppDefaultValue = CPP.defaultValue cpp
 
@@ -197,7 +198,7 @@ namespace std
         -- constructor body
         ctorBody = if hasMetaFields then [lt|
         {
-            InitMetadata("#{declName}", "#{idlNamespace}.#{declName}");
+            InitMetadata("#{declName}", "#{getDeclTypeName idl s}");
         }|]
             else [lt|
         {
@@ -324,7 +325,7 @@ namespace std
         inline
         const char* GetTypeName(enum #{declName}, const bond::qualified_name_tag&)
         {
-            return "#{idlNamespace}.#{declName}";
+            return "#{getDeclTypeName idl e}";
         }
 
         inline
