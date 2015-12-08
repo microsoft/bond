@@ -31,7 +31,6 @@ module Language.Bond.Codegen.TypeMapping
     , getAnnotatedTypeName
     , getDeclTypeName
     , getQualifiedName
-    , getGlobalQualifiedName
       -- * Helper functions
     , getNamespace
     , getDeclName
@@ -93,11 +92,7 @@ getDeclNamespace c = resolveNamespace c . declNamespaces
 
 -- | Builds a qualified name in the specified 'MappingContext'.
 getQualifiedName :: MappingContext -> QualifiedName -> Builder
-getQualifiedName MappingContext { typeMapping = m } = sepBy (separator m) toText
-
--- | Builds a global qualified name in the specified 'MappingContext'.
-getGlobalQualifiedName :: MappingContext -> QualifiedName -> Builder
-getGlobalQualifiedName c@MappingContext { typeMapping = m } = (global m <>) . getQualifiedName c
+getQualifiedName MappingContext { typeMapping = m } = (global m <>) . sepBy (separator m) toText
 
 -- | Returns name of the declaration in given mapping context
 getDeclName :: MappingContext -> Declaration -> String
@@ -106,7 +101,7 @@ getDeclName MappingContext {..} = mapDeclName typeMapping
 -- | Builds the qualified name for a 'Declaration' in the specified
 -- 'MappingContext'.
 getDeclTypeName :: MappingContext -> Declaration -> Builder
-getDeclTypeName c = getGlobalQualifiedName c . declQualifiedName c
+getDeclTypeName c = getQualifiedName c . declQualifiedName c
 
 -- | Builds the name of a 'Type' in the specified 'MappingContext'.
 getTypeName :: MappingContext -> Type -> Builder

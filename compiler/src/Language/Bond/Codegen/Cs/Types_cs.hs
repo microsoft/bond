@@ -53,7 +53,7 @@ namespace #{csNamespace}
 
     -- C# type
     csType = getTypeName cs
-    csNamespace = getQualifiedName cs $ getNamespace cs
+    csNamespace = sepBy "." toText $ getNamespace cs
 
     access = case structMapping of
         _ -> [lt|public |]

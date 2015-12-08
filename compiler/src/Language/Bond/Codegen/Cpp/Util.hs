@@ -95,7 +95,7 @@ defaultValue _ _ _ = error "defaultValue: impossible happened."
 
 enumValue :: ToText a => MappingContext -> Type -> a -> Text
 enumValue cpp (BT_UserDefined e@Enum {..} _) x =
-    [lt|#{getGlobalQualifiedName cpp $ getDeclNamespace cpp e}::_bond_enumerators::#{declName}::#{x}|]
+    [lt|#{getQualifiedName cpp $ getDeclNamespace cpp e}::_bond_enumerators::#{declName}::#{x}|]
 enumValue _ _ _ = error "enumValue: impossible happened."
 
 -- schema metadata static member definitions
