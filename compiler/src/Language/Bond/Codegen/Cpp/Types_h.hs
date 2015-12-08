@@ -28,7 +28,7 @@ import qualified Language.Bond.Codegen.Cpp.Util as CPP
 -- of C++ types representing the schema. 
 types_h :: [String]     -- ^ list of optional header files to be @#include@'ed by the generated code
         -> Bool         -- ^ 'True' to generate enum definitions into a separate file /base_name/_enum.h
-        -> Maybe String -- ^ optional custom allocator to be used by the generated code
+        -> Maybe String -- ^ optional custom allocator to be used in the generated code
         -> MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
 types_h userHeaders enumHeader allocator cpp file imports declarations = ("_types.h", [lt|
 #pragma once

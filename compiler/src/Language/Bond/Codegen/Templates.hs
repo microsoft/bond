@@ -1,11 +1,13 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+{-# OPTIONS_GHC -fno-warn-unused-imports #-}
+
 {-|
 Copyright   : (c) Microsoft
 License     : MIT
 Maintainer  : adamsap@microsoft.com
-Stability   : alpha
+Stability   : provisional
 Portability : portable
 
 The module exports the built-in code generation templates.
@@ -31,15 +33,14 @@ module Language.Bond.Codegen.Templates
       -- The templates return the name suffix for the target file and lazy
       -- 'Text' with the generated code.
 
-      -- ** Protocol data type
-      Protocol(..)
       -- ** C++
-    , types_h
+      types_h
     , types_cpp
     , reflection_h
     , enum_h
     , apply_h
     , apply_cpp
+    ,  Protocol(..)
       -- ** C#
     , FieldMapping(..)
     , StructMapping(..)
@@ -55,4 +56,7 @@ import Language.Bond.Codegen.Cpp.Reflection_h
 import Language.Bond.Codegen.Cpp.Types_cpp
 import Language.Bond.Codegen.Cpp.Types_h
 import Language.Bond.Codegen.Cs.Types_cs
-
+-- redundant imports for haddock
+import Language.Bond.Codegen.TypeMapping
+import Language.Bond.Syntax.Types
+import Data.Text.Lazy

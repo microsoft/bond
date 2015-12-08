@@ -53,9 +53,9 @@ library
                     Language.Bond.Syntax.SchemaDef
                     Language.Bond.Codegen.Util
                     Language.Bond.Codegen.TypeMapping
-                    Language.Bond.Codegen.CustomMapping
                     Language.Bond.Codegen.Templates
-  other-modules:    Language.Bond.Codegen.Cpp.Apply_cpp
+  other-modules:    Language.Bond.Codegen.CustomMapping
+                    Language.Bond.Codegen.Cpp.Apply_cpp
                     Language.Bond.Codegen.Cpp.Apply_h
                     Language.Bond.Codegen.Cpp.Enum_h
                     Language.Bond.Codegen.Cpp.Reflection_h

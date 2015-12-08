@@ -7,7 +7,7 @@
 Copyright   : (c) Microsoft
 License     : MIT
 Maintainer  : adamsap@microsoft.com
-Stability   : alpha
+Stability   : provisional
 Portability : portable
 
 This module provides functionality necessary to parse Bond
@@ -42,7 +42,7 @@ data Symbols =
     }
 
 type ImportResolver =
-    FilePath                    -- ^ path of the file containing the import statement
+    FilePath                    -- ^ path of the file containing the <https://microsoft.github.io/bond/manual/compiler.html#import-statements import statement>
  -> FilePath                    -- ^ (usually relative) path of the imported file
  -> IO (FilePath, String)       -- ^ the resolver function returns the resolved path of the imported file and its content
 
@@ -63,7 +63,8 @@ parseBond ::
  -> String                              -- ^ content of a schema file to parse
  -> FilePath                            -- ^ path of the file being parsed, used to resolve relative import paths
  -> ImportResolver                      -- ^ function to resolve and load imported files
- -> IO (Either ParseError Bond)         -- ^ function returns 'Bond' which represents the parsed AST or 'ParserError' if parsing failed
+ -> IO (Either ParseError Bond)         -- ^ function returns 'Bond' which represents the parsed abstract syntax tree 
+                                        --   or 'ParserError' if parsing failed
 parseBond s c f r = runReaderT (runParserT bond (Symbols [] []) s c) (Environment [] [] f r)
 
 -- parser for .bond files

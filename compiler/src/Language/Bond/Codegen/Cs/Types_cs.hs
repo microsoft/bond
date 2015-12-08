@@ -34,7 +34,7 @@ data FieldMapping =
     ReadOnlyProperties      -- ^ auto-properties with private setter
     deriving Eq
 
--- | Codegen template for generating definitions of types representing the schema
+-- | Codegen template for generating definitions of C# types representing the schema.
 types_cs
     :: StructMapping        -- ^ Specifies how to represent schema structs
     -> FieldMapping         -- ^ Specifies how to represent schema fields

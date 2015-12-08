@@ -7,12 +7,11 @@
 Copyright   : (c) Microsoft
 License     : MIT
 Maintainer  : adamsap@microsoft.com
-Stability   : alpha
+Stability   : provisional
 Portability : portable
 
-The module defines types and functions abstracting mapping between Bond types
-and types in the code generation target language. Codegen templates can be used
-with different type name mappings to customize generated code.
+The module defines abstractions for mapping from the Bond type system into the
+type systems of a target programming language.
 -}
 
 module Language.Bond.Codegen.TypeMapping
@@ -25,6 +24,20 @@ module Language.Bond.Codegen.TypeMapping
     , cppCustomAllocTypeMapping
     , csTypeMapping
     , csCollectionInterfacesTypeMapping
+      -- * Alias mapping
+      --
+      -- | <https://microsoft.github.io/bond/manual/compiler.html#type-aliases Type aliases>
+      -- defined in a schema can optionally be mapped to user specified types.
+    , AliasMapping(..)
+    , Fragment(..)
+    , parseAliasMapping
+      -- #namespace-mapping#
+      -- * Namespace mapping
+      --
+      -- | Schema namespaces can be mapped into languange-specific namespaces in the
+      -- generated code.
+    , NamespaceMapping(..)
+    , parseNamespaceMapping
       -- * Name builders
     , getTypeName
     , getInstanceTypeName
@@ -51,12 +64,9 @@ import Language.Bond.Syntax.Util
 import Language.Bond.Util
 import Language.Bond.Codegen.CustomMapping
 
--- | The context that determines how a Bond 'Type' maps to a type name in
--- generated code. A context applies to code generation of one or more files in
--- the target language based on the information from a parsed Bond schema
--- definition file. The namespace from the schema definition is stored in the
--- context and all non-qualified names mapped in the context are considered to
--- be defined in that namespace.
+-- | The 'MappingContext' encapsulates information about mapping Bond types
+-- into types of code generation target language. A context instance is passed
+-- to code generation templates.
 data MappingContext = MappingContext
     { typeMapping :: TypeMapping
     , aliasMapping :: [AliasMapping]
@@ -64,7 +74,7 @@ data MappingContext = MappingContext
     , namespaces :: [Namespace]
     }
 
--- | Opaque type representing type mapping.
+-- | An opaque type representing type mapping.
 data TypeMapping = TypeMapping
     { language :: Maybe Language
     , global :: Builder
@@ -79,8 +89,8 @@ data TypeMapping = TypeMapping
 type TypeNameBuilder = Reader MappingContext Builder
 
 -- | Returns the namespace for the 'MappingContext'. The namespace may be
--- different than specified in schema definition file if namespace mapping is
--- in effect.
+-- different than specified in schema definition file due to
+-- <#namespace-mapping namespace mapping>.
 getNamespace :: MappingContext -> QualifiedName
 getNamespace c@MappingContext {..} = resolveNamespace c namespaces
 
@@ -121,7 +131,7 @@ getAnnotatedTypeName c t = runReader (annotatedTypeName t) c
 customAliasMapping :: MappingContext -> Declaration -> Bool
 customAliasMapping = (maybe False (const True) .) . findAliasMapping
 
--- | The IDL type name mapping.
+-- | The Bond IDL type name mapping.
 idlTypeMapping :: TypeMapping
 idlTypeMapping = TypeMapping
     Nothing
@@ -243,7 +253,7 @@ resolveNamespace MappingContext {..} ns =
     namespaceName = nsName . fromJust $ mappingNamespace <|> neutralNamespace <|> fallbackNamespace
     mappingNamespace = find ((language typeMapping ==) . nsLanguage) ns
     neutralNamespace = find (isNothing . nsLanguage) ns
-    fallbackNamespace = case (language typeMapping) of 
+    fallbackNamespace = case (language typeMapping) of
         Nothing -> Just $ last ns
         Just l  -> error $ "No namespace declared for " ++ show l
 

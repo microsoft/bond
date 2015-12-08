@@ -3,24 +3,10 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-{-|
-Copyright   : (c) Microsoft
-License     : MIT
-Maintainer  : adamsap@microsoft.com
-Stability   : alpha
-Portability : portable
-
-Types used to specify custom mapping of type aliases and namespaces during code
-generation, and parsers for the string specifications of these mappings used in
-command line arguments of <https://microsoft.github.io/bond/manual/compiler.html#command-line-options gbc>.
--}
-
 module Language.Bond.Codegen.CustomMapping
-    ( -- * Types
-      AliasMapping(..)
+    ( AliasMapping(..)
     , Fragment(..)
     , NamespaceMapping(..)
-      -- * Parsers
     , parseAliasMapping
     , parseNamespaceMapping
     ) where
@@ -31,21 +17,21 @@ import Prelude
 import Text.Parsec hiding (many, optional, (<|>))
 import Language.Bond.Syntax.Types
 
--- | Specification of a fragment used in type alias mappings.
+-- | Specification of a fragment of type alias mappings.
 data Fragment =
     Fragment String |                   -- ^ hardcoded string fragment
-    Placeholder Int                     -- ^ placeholder for the n-th type argument of the type alias
+    Placeholder Int                     -- ^ placeholder for the n-th type argument of the type alias, applicable only to generic aliases
 
 -- | Specification of a type alias mapping.
 data AliasMapping = AliasMapping
-    { aliasName :: QualifiedName        -- ^ type alias qualified name
-    , aliasTemplate :: [Fragment]       -- ^ list of fragments
+    { aliasName :: QualifiedName        -- ^ qualified name of a type alias
+    , aliasTemplate :: [Fragment]       -- ^ list of fragments comprising custom mapping for the alias
     }
 
 -- | Specification of namespace mapping.
 data NamespaceMapping = NamespaceMapping
-    { fromNamespace :: QualifiedName    -- ^ namespace used in schema definition
-    , toNamespace :: QualifiedName      -- ^ namespece to be used in the generated code
+    { fromNamespace :: QualifiedName    -- ^ schema namespace
+    , toNamespace :: QualifiedName      -- ^ namespace in the generated code
     }
 
 type Parser a = Parsec SourceName () a
@@ -65,7 +51,13 @@ integer = decimal <$> many1 digit <?> "decimal number"
   where
     decimal = foldl (\x d -> 10 * x + toInteger (digitToInt d)) 0
 
--- | Parse a type alias mapping specification, e.g.: @"Example.OrderedSet=SortedSet\<{0}\>"@
+-- | Parse a type alias mapping specification used in command-line arguments of 
+-- <https://microsoft.github.io/bond/manual/compiler.html#command-line-options gbc>.
+--
+-- ==== __Examples__
+--
+-- > > parseAliasMapping "Example.OrderedSet=SortedSet<{0}>"
+-- > Right (AliasMapping {aliasName = ["Example","OrderedSet"], aliasTemplate = [Fragment "SortedSet<",Placeholder 0,Fragment ">"]})
 parseAliasMapping :: String -> Either ParseError AliasMapping 
 parseAliasMapping s = parse aliasMapping s s
   where
@@ -73,7 +65,13 @@ parseAliasMapping s = parse aliasMapping s s
     placeholder = Placeholder <$> fromIntegral <$> between (char '{') (char '}') integer
     fragment = Fragment <$> many1 (noneOf "{")
 
--- | Parse a namespace mapping specification, e.g.: @"bond=Microsoft.Bond"@
+-- | Parse a namespace mapping specification used in command-line arguments of 
+-- <https://microsoft.github.io/bond/manual/compiler.html#command-line-options gbc>.
+--
+-- ==== __Examples__
+--
+-- > > parseNamespaceMapping "bond=Microsoft.Bond"
+-- > Right (NamespaceMapping {fromNamespace = ["bond"], toNamespace = ["Microsoft","Bond"]})
 parseNamespaceMapping :: String -> Either ParseError NamespaceMapping
 parseNamespaceMapping s = parse namespaceMapping s s
   where

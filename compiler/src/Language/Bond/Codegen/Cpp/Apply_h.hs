@@ -20,7 +20,7 @@ import qualified Language.Bond.Codegen.Cpp.Util as CPP
 -- <https://microsoft.github.io/bond/manual/bond_cpp.html#optimizing-build-time Apply>
 -- function overloads for the specified protocols.
 apply_h :: [Protocol]   -- ^ List of protocols for which @Apply@ overloads should be generated
-        -> Maybe String -- ^ Optional attribute to decorate function declarations
+        -> Maybe String -- ^ Optional attribute to decorate the @Apply@ function declarations
         -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
 apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
 #pragma once

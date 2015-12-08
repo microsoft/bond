@@ -7,7 +7,7 @@
 Copyright   : (c) Microsoft
 License     : MIT
 Maintainer  : adamsap@microsoft.com
-Stability   : alpha
+Stability   : provisional
 Portability : portable
 
 Helper functions for combining elements into common constructs. These functions
@@ -31,11 +31,12 @@ import Data.Monoid
 import Data.String (IsString)
 import Prelude
 
+sepEndBy, sepBeginBy, sepBy :: (Monoid a, Eq a) => a -> (b -> a) -> [b] -> a
+
 -- | Maps elements of a list and combines them with 'mappend' using given
 -- separator, ending with a separator.
-sepEndBy :: (Monoid a, Eq a) => a -> (t -> a) -> [t] -> a
 sepEndBy _ _ [] = mempty
-sepEndBy s f (x:xs) 
+sepEndBy s f (x:xs)
     | next == mempty = rest
     | otherwise = next <> s <> rest
         where
@@ -44,10 +45,9 @@ sepEndBy s f (x:xs)
 
 -- | Maps elements of a list and combines them with 'mappend' using given
 -- separator, starting with a separator.
-sepBeginBy :: (Monoid a, Eq a) => a -> (t -> a) -> [t] -> a
 sepBeginBy _ _ [] = mempty
 sepBeginBy s f (x:xs)
-    | next == mempty = rest 
+    | next == mempty = rest
     | otherwise = s <> next <> rest
     where
         next = f x
@@ -55,7 +55,6 @@ sepBeginBy s f (x:xs)
 
 -- | Maps elements of a list and combines them with 'mappend' using given
 -- separator.
-sepBy :: (Monoid a, Eq a) => a -> (t -> a) -> [t] -> a
 sepBy _ _ [] = mempty
 sepBy s f (x:xs)
     | null xs = next

@@ -15,7 +15,8 @@ import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- | Codegen template for generating /base_name/_apply.cpp containing
 -- definitions of the @Apply@ function overloads for the specified protocols.
-apply_cpp :: [Protocol] -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
+apply_cpp :: [Protocol]   -- ^ List of protocols for which @Apply@ overloads should be generated
+          -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
 apply_cpp protocols cpp file _imports declarations = ("_apply.cpp", [lt|
 #include "#{file}_apply.h"
 #include "#{file}_reflection.h"

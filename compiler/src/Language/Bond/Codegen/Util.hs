@@ -8,7 +8,7 @@
 Copyright   : (c) Microsoft
 License     : MIT
 Maintainer  : adamsap@microsoft.com
-Stability   : alpha
+Stability   : provisional
 Portability : portable
 
 Helper functions for creating common text structures useful in code generation.
@@ -60,7 +60,7 @@ doubleLine n = [lt|
 #{indent n}|]
 
 newlineSep, commaLineSep, newlineSepEnd, newlineBeginSep, doubleLineSep, doubleLineSepEnd 
-    :: Int64 -> (t -> Text) -> [t] -> Text
+    :: Int64 -> (a -> Text) -> [a] -> Text
 
 -- | Separates elements of a list with new lines. Starts new lines at the
 -- specified indentation level.

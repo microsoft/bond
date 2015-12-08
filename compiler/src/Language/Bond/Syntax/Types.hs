@@ -7,7 +7,7 @@
 Copyright   : (c) Microsoft
 License     : MIT
 Maintainer  : adamsap@microsoft.com
-Stability   : alpha
+Stability   : provisional
 Portability : portable
 
 A suite of types describing the abstract syntax tree of the Bond
@@ -41,7 +41,7 @@ import Data.Word
 -- | Represents fully qualified name
 type QualifiedName = [String]
 
--- | Specifies whether a field is required or optional
+-- | Specifies whether a field is required or optional.
 data Modifier =
     Optional |                              -- ^ field is optional and may be omitted during serialization
     Required |                              -- ^ field is required, deserialization will fail if it is missing
@@ -57,7 +57,7 @@ data Type =
     BT_String | BT_WString |
     BT_MetaName | BT_MetaFullName |
     BT_Blob |
-    BT_Maybe Type |                         -- ^ type of a field with the default value of @nothing@
+    BT_Maybe Type |                         -- ^ type for fields with the default value of @nothing@
     BT_List Type |
     BT_Vector Type |
     BT_Nullable Type |
@@ -69,7 +69,7 @@ data Type =
     BT_UserDefined Declaration [Type]       -- ^ user defined type or an instance of a generic type with the specified type arguments
     deriving (Eq, Show)
 
--- | Default value of a field
+-- | Default value of a field.
 data Default =
     DefaultBool Bool |
     DefaultInteger Integer |
@@ -87,7 +87,7 @@ data Attribute =
         }
     deriving (Eq, Show)
 
--- | Definition of a 'Struct' field
+-- | Definition of a 'Struct' field.
 data Field =
     Field
         { fieldAttributes :: [Attribute]    -- zero or more attributes
@@ -99,15 +99,15 @@ data Field =
         }
     deriving (Eq, Show)
 
--- | Definition of an 'Enum' constant
+-- | Definition of an 'Enum' constant.
 data Constant =
     Constant
         { constantName :: String            -- enum constant name
-        , constantValue :: Maybe Int        -- optional value
+        , constantValue :: Maybe Int        -- optional constant value
         }
     deriving (Eq, Show)
 
--- | Constraint on a 'TypeParam'
+-- | Constraint on a 'TypeParam'.
 data Constraint = Value                     -- ^ the type parameter allows only value types
     deriving (Eq, Show)
 
@@ -119,13 +119,13 @@ data TypeParam =
         }
     deriving (Eq, Show)
 
--- | Bond schema declaration
+-- | A declaration of a schema type.
 data Declaration =
     Struct
         { declNamespaces :: [Namespace]     -- namespace(s) in which the struct is declared
         , declAttributes :: [Attribute]     -- zero or more attributes
         , declName :: String                -- struct identifier
-        , declParams :: [TypeParam]         -- type parameters for generics
+        , declParams :: [TypeParam]         -- list of type parameters for generics
         , structBase :: Maybe Type          -- optional base struct
         , structFields :: [Field]           -- zero or more fields
         }
@@ -134,7 +134,7 @@ data Declaration =
         { declNamespaces :: [Namespace]     -- namespace(s) in which the enum is declared
         , declAttributes :: [Attribute]     -- zero or more attributes
         , declName :: String                -- enum identifier
-        , enumConstants :: [Constant]       -- one or more constant values
+        , enumConstants :: [Constant]       -- one or more enum constant values
         }
     |                                       -- ^ <https://microsoft.github.io/bond/manual/compiler.html#enum-definition enum definition>
     Forward
@@ -144,14 +144,14 @@ data Declaration =
         }
     |                                       -- ^ <https://microsoft.github.io/bond/manual/compiler.html#forward-declaration forward declaration>
     Alias
-        { declNamespaces :: [Namespace]     -- namespace(s) in which the alias is declared
+        { declNamespaces :: [Namespace]     -- namespace(s) in which the type alias is declared
         , declName :: String                -- alias identifier
         , declParams :: [TypeParam]         -- type parameters for generics
         , aliasType :: Type                 -- aliased type
         }                                   -- ^ <https://microsoft.github.io/bond/manual/compiler.html#type-aliases type alias definition>
     deriving (Eq, Show)
 
--- | <https://microsoft.github.io/bond/manual/compiler.html#import-statements Import> declaration
+-- | <https://microsoft.github.io/bond/manual/compiler.html#import-statements Import> declaration.
 data Import = Import FilePath
     deriving (Eq, Show)
 
@@ -161,7 +161,7 @@ data Import = Import FilePath
 data Language = Cpp | Cs | Java
     deriving (Eq, Show)
 
--- | <https://microsoft.github.io/bond/manual/compiler.html#namespace-definition Namespace> declaration
+-- | <https://microsoft.github.io/bond/manual/compiler.html#namespace-definition Namespace> declaration.
 data Namespace =
     Namespace
         { nsLanguage :: Maybe Language
@@ -169,8 +169,7 @@ data Namespace =
         }
     deriving (Eq, Show)
 
--- | The top level type representing the Bond schema definition abstract syntax
--- tree.
+-- | The top level type representing the Bond schema definition abstract syntax tree.
 data Bond =
     Bond
         { bondImports :: [Import]

@@ -22,7 +22,7 @@ import qualified Data.ByteString.Lazy as BL
 import Language.Bond.Syntax.Types (Bond(..))
 import Language.Bond.Syntax.JSON()
 import Language.Bond.Parser
-import Language.Bond.Codegen.CustomMapping
+import Language.Bond.Codegen.TypeMapping
 
 
 parseFile :: [FilePath] -> FilePath -> IO(Bond)
