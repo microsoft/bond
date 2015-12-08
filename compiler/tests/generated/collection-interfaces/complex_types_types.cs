@@ -14,14 +14,14 @@ namespace tests
     using System.Collections.Generic;
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.3.0.5")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.4.0.1")]
     public partial class Foo
     {
         
     }
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.3.0.5")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.4.0.1")]
     public partial class ComplexTypes
     {
         [global::Bond.Id(0), global::Bond.Type(typeof(LinkedList<sbyte>))]

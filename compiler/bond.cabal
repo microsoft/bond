@@ -2,7 +2,7 @@
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 name:               bond
-version:            0.3.0.5
+version:            0.4.0.1
 cabal-version:      >= 1.8
 synopsis:           Bond schema compiler and code generator
 description:        Bond is a cross-platform framework for handling schematized
@@ -73,6 +73,8 @@ test-suite gbc-tests
   type:             exitcode-stdio-1.0
   hs-source-dirs:   tests, .
   main-is:          Main.hs
+  other-modules:    Tests.Codegen
+                    Tests.Syntax
   ghc-options:      -threaded -Wall
   build-depends:    bond,
                     aeson >= 0.7.0.6 && < 0.10.0.0,
@@ -95,6 +97,8 @@ test-suite gbc-tests
 
 executable gbc
   main-is:          Main.hs
+  other-modules:    IO
+                    Options
   ghc-options:      -threaded -Wall
   build-depends:    bond,
                     aeson >= 0.7.0.6 && < 0.10.0.0,
