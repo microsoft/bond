@@ -33,7 +33,6 @@ module Language.Bond.Codegen.TypeMapping
     , getQualifiedName
       -- * Helper functions
     , getNamespace
-    , getDeclName
     , getDeclNamespace
     , customAliasMapping
     ) where
@@ -71,7 +70,6 @@ data TypeMapping = TypeMapping
     , global :: Builder
     , separator :: Builder
     , mapType :: Type -> TypeNameBuilder
-    , mapDeclName :: Declaration -> String
     , fixSyntax :: Builder -> Builder
     , instanceMapping :: TypeMapping
     , elementMapping :: TypeMapping
@@ -93,10 +91,6 @@ getDeclNamespace c = resolveNamespace c . declNamespaces
 -- | Builds a qualified name in the specified 'MappingContext'.
 getQualifiedName :: MappingContext -> QualifiedName -> Builder
 getQualifiedName MappingContext { typeMapping = m } = (global m <>) . sepBy (separator m) toText
-
--- | Returns name of the declaration in given mapping context
-getDeclName :: MappingContext -> Declaration -> String
-getDeclName MappingContext {..} = mapDeclName typeMapping
 
 -- | Builds the qualified name for a 'Declaration' in the specified
 -- 'MappingContext'.
@@ -134,7 +128,6 @@ idlTypeMapping = TypeMapping
     ""
     "."
     idlType
-    declName
     id
     idlTypeMapping
     idlTypeMapping
@@ -147,7 +140,6 @@ cppTypeMapping = TypeMapping
     "::"
     "::"
     cppType
-    declName
     cppSyntaxFix
     cppTypeMapping
     cppTypeMapping
@@ -160,7 +152,6 @@ cppCustomAllocTypeMapping alloc = TypeMapping
     "::"
     "::"
     (cppTypeCustomAlloc $ toText alloc)
-    declName
     cppSyntaxFix
     (cppCustomAllocTypeMapping alloc)
     (cppCustomAllocTypeMapping alloc)
@@ -173,7 +164,6 @@ csTypeMapping = TypeMapping
     "global::"
     "."
     csType
-    declName
     id
     csTypeMapping
     csTypeMapping
@@ -187,7 +177,6 @@ csCollectionInterfacesTypeMapping = TypeMapping
     "global::"
     "."
     csInterfaceType
-    declName
     id
     csCollectionInstancesTypeMapping
     csCollectionInterfacesTypeMapping
@@ -202,7 +191,6 @@ csAnnotatedTypeMapping = TypeMapping
     "global::"
     "."
     (csTypeAnnotation csType)
-    declName
     id
     csAnnotatedTypeMapping
     csAnnotatedTypeMapping
@@ -271,7 +259,7 @@ declTypeName :: Declaration -> TypeNameBuilder
 declTypeName decl = do
     ctx <- ask
     if namespaces ctx == declNamespaces decl
-            then pureText $ getDeclName ctx decl
+            then pureText $ declName decl
             else declQualifiedTypeName decl
 
 findAliasMapping :: MappingContext -> Declaration -> Maybe AliasMapping
