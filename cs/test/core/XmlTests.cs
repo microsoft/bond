@@ -15,7 +15,6 @@
         static readonly XmlReaderSettings xmlReaderSettings =
             new XmlReaderSettings
             {
-                IgnoreComments = true,
                 IgnoreProcessingInstructions = true,
                 ValidationType = ValidationType.None,
                 ValidationFlags = XmlSchemaValidationFlags.None,
@@ -51,6 +50,20 @@
         {
             const string xml = @"<?xml version=""1.0"" encoding=""UTF-16""?>
 <BasicTypes>
+    <_str>Hello</_str>
+</BasicTypes>";
+
+            var target = ParseXml<BasicTypes>(xml);
+
+            Assert.AreEqual("Hello", target._str);
+        }
+
+        [Test]
+        public void XmlParsing_IgnoresComments()
+        {
+            const string xml = @"
+<BasicTypes>
+    <!--comment-->
     <_str>Hello</_str>
 </BasicTypes>";
 
