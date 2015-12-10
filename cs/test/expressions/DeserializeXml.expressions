@@ -749,9 +749,10 @@
                                                                                                                                 $reader.LocalName,
                                                                                                                                 $reader.Value)
                                                                                                                     }
-                                                                                                            .Case (.Constant<System.Xml.XmlNodeType>(Whitespace)):
                                                                                                             .Case (.Constant<System.Xml.XmlNodeType>(Comment)):
                                                                                                             .Case (.Constant<System.Xml.XmlNodeType>(Text)):
+                                                                                                            .Case (.Constant<System.Xml.XmlNodeType>(Whitespace)):
+                                                                                                            .Case (.Constant<System.Xml.XmlNodeType>(XmlDeclaration)):
                                                                                                                     .Block() {
                                                                                                                         .Call $reader.Read();
                                                                                                                         .Default(System.Void)
@@ -1230,9 +1231,10 @@
                                                                                                                     $reader.LocalName,
                                                                                                                     $reader.Value)
                                                                                                         }
-                                                                                                .Case (.Constant<System.Xml.XmlNodeType>(Whitespace)):
                                                                                                 .Case (.Constant<System.Xml.XmlNodeType>(Comment)):
                                                                                                 .Case (.Constant<System.Xml.XmlNodeType>(Text)):
+                                                                                                .Case (.Constant<System.Xml.XmlNodeType>(Whitespace)):
+                                                                                                .Case (.Constant<System.Xml.XmlNodeType>(XmlDeclaration)):
                                                                                                         .Block() {
                                                                                                             .Call $reader.Read();
                                                                                                             .Default(System.Void)
@@ -1666,9 +1668,10 @@
                                                 $reader.LocalName,
                                                 $reader.Value)
                                     }
-                            .Case (.Constant<System.Xml.XmlNodeType>(Whitespace)):
                             .Case (.Constant<System.Xml.XmlNodeType>(Comment)):
                             .Case (.Constant<System.Xml.XmlNodeType>(Text)):
+                            .Case (.Constant<System.Xml.XmlNodeType>(Whitespace)):
+                            .Case (.Constant<System.Xml.XmlNodeType>(XmlDeclaration)):
                                     .Block() {
                                         .Call $reader.Read();
                                         .Default(System.Void)

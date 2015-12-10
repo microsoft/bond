@@ -45,7 +45,7 @@ namespace Bond.Expressions.Xml
             {
                 InitialState = State.AtStructElement,
                 FinalState = State.Finished,
-                IgnoredTokens = new[] { XmlNodeType.Whitespace, XmlNodeType.Comment, XmlNodeType.Text },
+                IgnoredTokens = new[] { XmlNodeType.Comment, XmlNodeType.Text, XmlNodeType.Whitespace, XmlNodeType.XmlDeclaration, },
                 Default = state => Expression.Invoke(unexpectedNodeError, Reader.NodeType),
                 TokenTransitions = new[]
                     {

@@ -47,6 +47,19 @@
         }
 
         [Test]
+        public void XmlParsing_HandlesXmlDeclaration()
+        {
+            const string xml = @"<?xml version=""1.0"" encoding=""UTF-16""?>
+<BasicTypes>
+    <_str>Hello</_str>
+</BasicTypes>";
+
+            var target = ParseXml<BasicTypes>(xml);
+
+            Assert.AreEqual("Hello", target._str);
+        }
+
+        [Test]
         public void XmlParsing_UnexpectedNodeType_Throws()
         {
             // We're currently using CDATA here to exercise the unexpected node code path. If we
