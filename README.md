@@ -11,7 +11,13 @@ Microsoft in high scale services.
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
-For details, see the User's Manuals for [C++](https://Microsoft.github.io/bond/manual/bond_cpp.html), [C#](https://Microsoft.github.io/bond/manual/bond_cs.html) and [Python](https://Microsoft.github.io/bond/manual/bond_py.html).
+For details, see the User's Manuals for
+[C++](https://Microsoft.github.io/bond/manual/bond_cpp.html),
+[C#](https://Microsoft.github.io/bond/manual/bond_cs.html) and
+[Python](https://Microsoft.github.io/bond/manual/bond_py.html), and the
+documentation of the compiler
+[tool](https://microsoft.github.io/bond/manual/compiler.html) and
+[library](https://hackage.haskell.org/package/bond).
 
 For a discussion how Bond compares to similar frameworks see [Why Bond](https://Microsoft.github.io/bond/why_bond.html).
 
