@@ -20,8 +20,11 @@ namespace Bond.Expressions.Xml
     {
         static readonly Expression<Action<byte, XmlNodeType, string, string>> parsingError =
             (s, t, n, v) => ParsingError(s, t, n, v);
+
+        static readonly Expression<Action<XmlNodeType>> unexpectedNodeError = n => UnexpectedNodeError(n);
+
         delegate Expression ContainerItemHandler(Expression nextItem);
-        
+
         public SimpleXmlParser(RuntimeSchema schema)
             : base(schema, flatten: true)
         {}
@@ -43,7 +46,7 @@ namespace Bond.Expressions.Xml
                 InitialState = State.AtStructElement,
                 FinalState = State.Finished,
                 IgnoredTokens = new[] { XmlNodeType.Whitespace, XmlNodeType.Comment, XmlNodeType.Text },
-                Default = state => ThrowExpression.InvalidDataException("Unexpected node type"),
+                Default = state => Expression.Invoke(unexpectedNodeError, Reader.NodeType),
                 TokenTransitions = new[]
                     {
                         new TokenTransition<XmlNodeType>
@@ -257,6 +260,11 @@ namespace Bond.Expressions.Xml
                 Expression.OrElse(
                     StringExpression.Equals(Reader.NamespaceURI, StringExpression.Empty(), StringComparison.OrdinalIgnoreCase),
                     StringExpression.Equals(Reader.NamespaceURI, namespaceUri, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        static void UnexpectedNodeError(XmlNodeType type)
+        {
+            throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture, "Unexpected node type: {0}", type));
         }
 
         Expression ParsingError(Expression state)

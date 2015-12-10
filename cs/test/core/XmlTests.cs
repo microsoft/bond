@@ -47,6 +47,22 @@
         }
 
         [Test]
+        public void XmlParsing_ThrowsOnUnexpectedNodeType()
+        {
+            // We're currently using CDATA here to exercise the unexpected node code path. If we
+            // use CDATA in the future for things like blobs, this test will need to be changed.
+            const string xml = @"
+<BasicTypes>
+   <![CDATA[here is an unexpected CDATA node]]>
+    <_str>Hello</_str>
+</BasicTypes>";
+
+            Assert.That(() => ParseXml<BasicTypes>(xml),
+                Throws.TypeOf<InvalidDataException>()
+                    .With.Message.ContainsSubstring("Unexpected node type: CDATA"));
+        }
+
+        [Test]
         public void XmlParsing_InvalidScalar()
         {
             const string xml = @"
@@ -512,7 +528,7 @@ World</_str>
     </Item>
     <Item>
       <BasicTypes>
-        <_str>second</_str>      
+        <_str>second</_str>
       </BasicTypes>
     </Item>
     <Item>
