@@ -10,8 +10,8 @@ Maintainer  : adamsap@microsoft.com
 Stability   : provisional
 Portability : portable
 
-The module defines abstractions for mapping from the Bond type system into the
-type systems of a target programming language.
+This module defines abstractions for mapping from the Bond type system into the
+type system of a target programming language.
 -}
 
 module Language.Bond.Codegen.TypeMapping
@@ -65,8 +65,8 @@ import Language.Bond.Util
 import Language.Bond.Codegen.CustomMapping
 
 -- | The 'MappingContext' encapsulates information about mapping Bond types
--- into types of code generation target language. A context instance is passed
--- to code generation templates.
+-- into types in the target language. A context instance is passed to code
+-- generation templates.
 data MappingContext = MappingContext
     { typeMapping :: TypeMapping
     , aliasMapping :: [AliasMapping]
@@ -74,7 +74,7 @@ data MappingContext = MappingContext
     , namespaces :: [Namespace]
     }
 
--- | An opaque type representing type mapping.
+-- | An opaque type representing a type mapping.
 data TypeMapping = TypeMapping
     { language :: Maybe Language
     , global :: Builder
@@ -89,7 +89,7 @@ data TypeMapping = TypeMapping
 type TypeNameBuilder = Reader MappingContext Builder
 
 -- | Returns the namespace for the 'MappingContext'. The namespace may be
--- different than specified in schema definition file due to
+-- different than specified in the schema definition file due to
 -- <#namespace-mapping namespace mapping>.
 getNamespace :: MappingContext -> QualifiedName
 getNamespace c@MappingContext {..} = resolveNamespace c namespaces

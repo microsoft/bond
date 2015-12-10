@@ -25,7 +25,7 @@ data Fragment =
 -- | Specification of a type alias mapping.
 data AliasMapping = AliasMapping
     { aliasName :: QualifiedName        -- ^ qualified name of a type alias
-    , aliasTemplate :: [Fragment]       -- ^ list of fragments comprising custom mapping for the alias
+    , aliasTemplate :: [Fragment]       -- ^ list of fragments comprising the custom mapping for the alias
     }
 
 -- | Specification of namespace mapping.

@@ -36,7 +36,7 @@ import Language.Bond.Syntax.Util
 import Language.Bond.Codegen.TypeMapping
 
 -- | Returns an instance of <https://microsoft.github.io/bond/manual/compiler.html#runtime-schema SchemaDef>
--- for the specified type. The SchemaDef is encoded using Bond Simple JSON
+-- for the specified type. The SchemaDef is encoded using the Bond Simple JSON
 -- protocol and returned as a lazy 'BL.ByteString'.
 encodeSchemaDef :: Type -> BL.ByteString
 encodeSchemaDef = encode . makeSchemaDef
