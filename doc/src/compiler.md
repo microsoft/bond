@@ -761,3 +761,10 @@ named `example.SomeStruct.json` with the following content:
       ]
     }
     
+Library
+=======
+
+The Bond IDL compiler and codegen functionality is accessible programatically
+via the [bond](https://hackage.haskell.org/package/bond) Haskell package. The
+library can be used to implement custom codegen tools. See examples/codegen in
+the repository.

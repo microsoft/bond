@@ -1,0 +1,19 @@
+-- Copyright (c) Microsoft. All rights reserved.
+-- Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+name:               rocs
+version:            0.0.0.1
+cabal-version:      >= 1.8
+synopsis:           Bond custom codegen example
+license:            MIT
+copyright:          Copyright (c) Microsoft. All rights reserved.
+build-type:         Simple
+
+executable rocs
+  main-is:          Main.hs
+  build-depends:    bond,
+                    base >= 4.5 && < 5,
+                    shakespeare >= 2.0,
+                    directory >= 1.1,
+                    filepath >= 1.0,
+                    text >= 0.11
