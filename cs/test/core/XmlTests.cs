@@ -47,7 +47,7 @@
         }
 
         [Test]
-        public void XmlParsing_ThrowsOnUnexpectedNodeType()
+        public void XmlParsing_UnexpectedNodeType_Throws()
         {
             // We're currently using CDATA here to exercise the unexpected node code path. If we
             // use CDATA in the future for things like blobs, this test will need to be changed.
@@ -59,26 +59,20 @@
 
             Assert.That(() => ParseXml<BasicTypes>(xml),
                 Throws.TypeOf<InvalidDataException>()
-                    .With.Message.ContainsSubstring("Unexpected node type: CDATA"));
+                    .With.Message.Contains("Unexpected node type: CDATA"));
         }
 
         [Test]
-        public void XmlParsing_InvalidScalar()
+        public void XmlParsing_InvalidScalar_Throws()
         {
             const string xml = @"
 <BasicTypes>
     <_double>13.2<foo/></_double>
 </BasicTypes>";
 
-            try
-            {
-                ParseXml<BasicTypes>(xml);
-                Assert.Fail("Deserialization succeeded even though \"_double\" is invalid");
-            }
-            catch (InvalidDataException ex)
-            {
-                Assert.IsTrue(ex.Message.Contains("Parsing error"), ex.Message);
-            }
+            Assert.That(() => ParseXml<BasicTypes>(xml),
+                Throws.TypeOf<InvalidDataException>()
+                    .With.Message.Contains("Parsing error"));
         }
 
         [Test]
@@ -164,18 +158,11 @@ World</_str>
         }
 
         [Test]
-        public void XmlParsing_FailOnEmptyField()
+        public void XmlParsing_EmptyFieldScalarField_Throws()
         {
             const string xml = @"<BasicTypes><_bool/></BasicTypes>";
 
-            try
-            {
-                ParseXml<BasicTypes>(xml);
-                Assert.Fail("Deserialize did not throw an exception even though _bool field was an empty element.");
-            }
-            catch (FormatException)
-            {
-            }
+            Assert.Throws<FormatException>(() => ParseXml<BasicTypes>(xml));
         }
 
         [Test]
@@ -187,7 +174,7 @@ World</_str>
     <BasicTypes>
       <_str>Hello</_str>
       <_bool>true</_bool>
-     <_double>13.2</_double>        
+     <_double>13.2</_double>
     </BasicTypes>
   </basic>
   <nested>
@@ -295,42 +282,30 @@ World</_str>
         }
 
         [Test]
-        public void XmlParsing_StructPropertyWithoutContent()
+        public void XmlParsing_StructPropertyWithoutContent_Throws()
         {
             const string xml = @"
 <Nested>
-  <basic/>  
+  <basic/>
 </Nested>";
 
-            try
-            {
-                ParseXml<Nested>(xml);
-                Assert.Fail("Deserialization succeeded even though \"basic\" element had no content.");
-            }
-            catch (InvalidDataException ex)
-            {
-                Assert.IsTrue(ex.Message.Contains("Parsing error"), ex.Message);
-            }
+            Assert.That(() => ParseXml<Nested>(xml),
+                Throws.TypeOf<InvalidDataException>()
+                    .With.Message.Contains("Parsing error"));
         }
 
         [Test]
-        public void XmlParsing_RequiredFieldEmptyRoot()
+        public void XmlParsing_MissingRequiredEmptyRoot_Throws()
         {
             const string xml = "<Required/>";
 
-            try
-            {
-                ParseXml<Required>(xml);
-                Assert.Fail("Deserialization succeeded even though required field is missing");
-            }
-            catch (InvalidDataException ex)
-            {
-                Assert.AreEqual("Required field UnitTest.Required.x missing", ex.Message);
-            }
+            Assert.That(() => ParseXml<Required>(xml),
+                Throws.TypeOf<InvalidDataException>()
+                    .With.Message.Contains("Required field UnitTest.Required.x missing"));
         }
 
         [Test]
-        public void XmlParsing_MissingRequiredScalarField()
+        public void XmlParsing_MissingRequiredScalarField_Throws()
         {
             const string xml = @"
 <Required>
@@ -339,19 +314,13 @@ World</_str>
     </y>
 </Required>";
 
-            try
-            {
-                ParseXml<Required>(xml);
-                Assert.Fail("Deserialization succeeded even though required field is missing");
-            }
-            catch (InvalidDataException ex)
-            {
-                Assert.AreEqual("Required field UnitTest.Required.x missing", ex.Message);
-            }
+            Assert.That(() => ParseXml<Required>(xml),
+                Throws.TypeOf<InvalidDataException>()
+                    .With.Message.Contains("Required field UnitTest.Required.x missing"));
         }
 
         [Test]
-        public void XmlParsing_MissingRequiredStructField()
+        public void XmlParsing_MissingRequiredStructField_Throws()
         {
             const string xml = @"
 <Required>
@@ -360,19 +329,13 @@ World</_str>
     </x>
 </Required>";
 
-            try
-            {
-                ParseXml<Required>(xml);
-                Assert.Fail("Deserialization succeeded even though required field is missing");
-            }
-            catch (InvalidDataException ex)
-            {
-                Assert.AreEqual("Required field UnitTest.Required.y missing", ex.Message);
-            }
+            Assert.That(() => ParseXml<Required>(xml),
+                Throws.TypeOf<InvalidDataException>()
+                    .With.Message.Contains("Required field UnitTest.Required.y missing"));
         }
 
         [Test]
-        public void XmlParsing_MissingRequiredInBase()
+        public void XmlParsing_MissingRequiredInBase_Throws()
         {
             const string xml = @"
 <RequiredInBase xmlns:b=""urn:UnitTest.Required""  xmlns:d=""urn:UnitTest.RequiredInBase"">
@@ -380,19 +343,13 @@ World</_str>
     <d:x>5</d:x>
 </RequiredInBase>";
 
-            try
-            {
-                ParseXml<RequiredInBase>(xml);
-                Assert.Fail("Deserialization succeeded even though required field is missing");
-            }
-            catch (InvalidDataException ex)
-            {
-                Assert.AreEqual("Required field UnitTest.Required.x missing", ex.Message);
-            }
+            Assert.That(() => ParseXml<RequiredInBase>(xml),
+                Throws.TypeOf<InvalidDataException>()
+                    .With.Message.Contains("Required field UnitTest.Required.x missing"));
         }
 
         [Test]
-        public void XmlParsing_MissingRequiredInDerived()
+        public void XmlParsing_MissingRequiredInDerived_Throws()
         {
             const string xml = @"
 <RequiredInDerived xmlns:b=""urn:UnitTest.Optional""  xmlns:d=""urn:UnitTest.RequiredInDerived"">
@@ -400,19 +357,13 @@ World</_str>
     <b:x>5</b:x>
 </RequiredInDerived>";
 
-            try
-            {
-                ParseXml<RequiredInDerived>(xml);
-                Assert.Fail("Deserialization succeeded even though required field is missing");
-            }
-            catch (InvalidDataException ex)
-            {
-                Assert.AreEqual("Required field UnitTest.RequiredInDerived.x missing", ex.Message);
-            }
+            Assert.That(() => ParseXml<RequiredInDerived>(xml),
+                Throws.TypeOf<InvalidDataException>()
+                    .With.Message.Contains("Required field UnitTest.RequiredInDerived.x missing"));
         }
 
         [Test]
-        public void XmlParsing_MissingRequiredInBasePresentInDerived()
+        public void XmlParsing_MissingRequiredInBasePresentInDerived_Throws()
         {
             const string xml = @"
 <RequiredInBaseAndDerived xmlns:b=""urn:UnitTest.Required""  xmlns:d=""urn:UnitTest.RequiredInBaseAndDerived"">
@@ -420,19 +371,13 @@ World</_str>
     <d:x>5</d:x>
 </RequiredInBaseAndDerived>";
 
-            try
-            {
-                ParseXml<RequiredInBaseAndDerived>(xml);
-                Assert.Fail("Deserialization succeeded even though required field is missing");
-            }
-            catch (InvalidDataException ex)
-            {
-                Assert.AreEqual("Required field UnitTest.Required.x missing", ex.Message);
-            }
+            Assert.That(() => ParseXml<RequiredInBaseAndDerived>(xml),
+                Throws.TypeOf<InvalidDataException>()
+                    .With.Message.Contains("Required field UnitTest.Required.x missing"));
         }
 
         [Test]
-        public void XmlParsing_MissingRequiredInDerivedPresentInBase()
+        public void XmlParsing_MissingRequiredInDerivedPresentInBase_Throws()
         {
             const string xml = @"
 <RequiredInBaseAndDerived xmlns:b=""urn:UnitTest.Required""  xmlns:d=""urn:UnitTest.RequiredInBaseAndDerived"">
@@ -440,15 +385,9 @@ World</_str>
     <b:x>5</b:x>
 </RequiredInBaseAndDerived>";
 
-            try
-            {
-                ParseXml<RequiredInBaseAndDerived>(xml);
-                Assert.Fail("Deserialization succeeded even though required field is missing");
-            }
-            catch (InvalidDataException ex)
-            {
-                Assert.AreEqual("Required field UnitTest.RequiredInBaseAndDerived.x missing", ex.Message);
-            }
+            Assert.That(() => ParseXml<RequiredInBaseAndDerived>(xml),
+                Throws.TypeOf<InvalidDataException>()
+                    .With.Message.Contains("Required field UnitTest.RequiredInBaseAndDerived.x missing"));
         }
 
         [Test]
@@ -484,7 +423,7 @@ World</_str>
     </Item>
     <Item>
       <BasicTypes>
-        <_str>second</_str>      
+        <_str>second</_str>
       </BasicTypes>
     </Item>
     <Item>
@@ -521,7 +460,7 @@ World</_str>
 <SimpleContainers>
   <strings/>
   <basics>
-    <Item>    
+    <Item>
       <BasicTypes>
         <_str>first</_str>
       </BasicTypes>
