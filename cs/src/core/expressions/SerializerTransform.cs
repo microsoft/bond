@@ -81,7 +81,7 @@ namespace Bond.Expressions
 
                 body = Expression.Invoke(
                     deferredSerialize,
-                    parser.ReaderValue,
+                    PrunedExpression.Convert(parser.ReaderValue, parser.ReaderParam.Type),
                     writer,
                     Expression.Constant(index));
             }
@@ -100,19 +100,21 @@ namespace Bond.Expressions
         readonly ProtocolWriter<W> writer = new ProtocolWriter<W>();
         readonly Dictionary<RuntimeSchema, Serialize> serializeDelegates = 
             new Dictionary<RuntimeSchema, Serialize>(new TypeDefComparer());
+        readonly bool inlineNested;
         static readonly bool untaggedWriter =
             typeof (IUntaggedProtocolReader).IsAssignableFrom(typeof (W).GetAttribute<ReaderAttribute>().ReaderType);
         static readonly bool binaryWriter = untaggedWriter
             || typeof(ITaggedProtocolReader).IsAssignableFrom(typeof(W).GetAttribute<ReaderAttribute>().ReaderType);
-
-        public SerializerTransform(Expression<Action<R, W, int>> deferredSerialize, RuntimeSchema schema)
+        
+        public SerializerTransform(Expression<Action<R, W, int>> deferredSerialize, RuntimeSchema schema, bool inlineNested = true)
             : base(deferredSerialize)
         {
             runtimeSchema = schema;
+            this.inlineNested = inlineNested;
         }
 
-        public SerializerTransform(Expression<Action<R, W, int>> deferredSerialize, Type type)
-            : this(deferredSerialize, Schema.GetRuntimeSchema(type))
+        public SerializerTransform(Expression<Action<R, W, int>> deferredSerialize, Type type, bool inlineNested = true)
+            : this(deferredSerialize, Schema.GetRuntimeSchema(type), inlineNested)
         {}
 
         public override IEnumerable<Expression<Action<R, W>>> Generate(IParser parser)
@@ -145,7 +147,9 @@ namespace Bond.Expressions
             // Transcoding from tagged protocol with runtime schema generates enormous expression tree
             // and for large schemas JIT fails to compile resulting lambda (InvalidProgramException).
             // As a workaround we don't inline nested serialize expressions in this case.
-            var inline = !typeof(ITaggedProtocolReader).IsAssignableFrom(parser.ReaderParam.Type);
+            var inline = !typeof(ITaggedProtocolReader).IsAssignableFrom(parser.ReaderParam.Type) && 
+                (this.inlineNested || !schema.IsStruct);
+
             return GenerateSerialize(serialize, parser, writer.Param, inline);
         }
 
@@ -266,7 +270,8 @@ namespace Bond.Expressions
         {
             if (parser.IsBonded)
             {
-                return parser.Bonded(writer.WriteBonded);
+                return parser.Bonded(value =>
+                    writer.WriteBonded(PrunedExpression.Convert(value, typeof(IBonded))));
             }
 
             var switchCases = new List<DeferredSwitchCase>
@@ -317,7 +322,9 @@ namespace Bond.Expressions
             Debug.Assert(schema.HasValue);
 
             if (parser.IsBonded || (untaggedWriter && schema.IsBonded))
-                return parser.Bonded(writer.WriteBonded);
+                return parser.Bonded(value =>
+                    writer.WriteBonded(PrunedExpression.Convert(value, typeof(IBonded))));
+
 
             if (schema.IsStruct)
                 return GenerateSerialize(Struct, parser, schema);

@@ -294,6 +294,16 @@ namespace UnitTest
             return output.Data;
         }
 
+        public static ArraySegment<byte> SerializeSafeCBNoInlining<T>(T obj)
+        {
+            var output = new Bond.IO.Safe.OutputBuffer(new byte[11]);
+            var writer = new CompactBinaryWriter<Bond.IO.Safe.OutputBuffer>(output);
+
+            var serializer = new Serializer<CompactBinaryWriter<Bond.IO.Safe.OutputBuffer>>(typeof(T), false);
+            serializer.Serialize(obj, writer);
+            return output.Data;
+        }
+
         public static T DeserializeCB<T>(Stream stream)
         {
             var input = new InputStream(stream);
@@ -721,6 +731,7 @@ namespace UnitTest
             memoryRoundtrip(SerializeSafeCB, DeserializeSafeCB<To>);
             memoryRoundtrip(SerializeSafeCB, DeserializeUnsafeCB<To>);
             memoryPointerRoundtrip(SerializeSafeCB, DeserializePointerCB<To>);
+            memoryRoundtrip(SerializeSafeCBNoInlining, DeserializeSafeCB<To>);
 
             streamMarshal(MarshalCB);
             streamMarshal(SerializerMarshalCB);
