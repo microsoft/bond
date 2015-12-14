@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Why Bond?</title>
+  <style type="text/css">
+  body {
+      line-height: 1.5; 
+      font-family: Helvetica, Arial, sans-serif; 
+      color: #333333;
+      font-size: 0.9em;
+  }
+  code {
+      font-size: 1em;
+      font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace, serif;
+  }
+  td.lineNumbers { width: 40px; }
+  div#all {
+    max-width: 1120px;
+    background-color: #ffffff;
+    margin: 0 auto;
+    padding: 25px;
+    overflow: auto;
+  }
+  code > span.kw { color: #000000; font-style:normal; }
+  code > span.dt { color: #000000; font-style:normal; }
+  code > span.dv { color: #000000; font-style:normal; }
+  code > span.bn { color: #000000; font-style:normal; }
+  code > span.fl { color: #000000; font-style:normal; }
+  code > span.ch { color: #000000; font-style:normal; }
+  code > span.st { color: #000000; font-style:normal; }
+  code > span.co { color: #000000; font-style:normal; }
+  code > span.ot { color: #000000; font-style:normal; }
+  code > span.al { color: #000000; font-style:normal; }
+  code > span.fu { color: #000000; font-style:normal; }
+  code > span.er { color: #000000; font-style:normal; }
+  code > span.cf { color: #000000; font-weight: normal; } /* ControlFlow */
+  code > span.op { color: #000000; font-weight: normal; } /* Operator */
+  code > span.pp { color: #000000; font-style: normal; } /* Preprocessor */
+  code > span.at { color: #000000; } /* Attribute */
+  code > span.do { color: #000000; font-weight: normal; font-style: normal; } /* Documentation */
+  code > span.an { color: #000000; font-weight: normal; font-style: normal; } /* Annotation */
+  code > span.cv { color: #000000; font-weight: normal; font-style: normal; } /* CommentVar */
+  code > span.in { color: #000000; font-weight: normal; font-style: normal; } /* Information */
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    border-bottom: 1px solid black;
+  }
+
+  div.sourceCode {
+    overflow-x: auto;
+  }
+
+  table.sourceCode { 
+    line-height: 120%;
+  }   
+
+  #toc {
+    width: 300px; 
+    position:fixed;
+    overflow: auto;
+    height: 95%;
+  }
+
+  #main {
+    margin-left: 320px;  
+    margin-rigth: auto;
+    max-width: 800px;
+  }
+  a {
+    text-decoration: none;
+  }
+  #toc a:visited {
+    color: #99c;
+  }
+  #main a:visited {
+    color: #36c;
+  }
+  a:link {
+    color: #36c;
+  }
+  @media screen and (max-width: 979px){
+  #main {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #toc {
+    left: -300px; 
+  }
+  }
+  </style>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58775439-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
+<body>
+<nav id="TOC"/>
+<div id="all">
+<div id="main">
+<div id="header">    
+<h1 class="title">Why Bond?</h1>
+</div>
+<p>Bond is an <a href="https://github.com/Microsoft/bond/">open source framework</a> which addresses similar scenarios to Protocol Buffers, Thrift and Avro. In this document we try to address similarities and differences between Bond and other solutions. We try to keep it objective and uncolored by opinions but inevitably our perspective is surely informed by specific use cases we most care about and the depth of knowledge we have of the various frameworks. If you find factual inaccuracies, or if you have written your own informed comparison and would like to include a link to it in this document, please send a pull request.</p>
+<h2 id="meta-schema">Meta schema</h2>
+<p>Bond has a very rich <a href="manual/compiler.html#idl-syntax">type system</a>. It is probably most similar to Thrift in this respect. Some notable additions in Bond are inheritance, <a href="manual/bond_cpp.html#type-aliases">type aliases</a> and <a href="manual/bond_cpp.html#generics">generics</a>. One type system feature not present in Bond that Avro, and recently Protocol Buffers, have are unions. We use schemas with optional fields to represent unions.</p>
+<h2 id="programming-model">Programming model</h2>
+<p>In terms of mapping to target languages, Bond again is much more similar to Thrift than Protocol Buffers. Like Thrift, Bond generates native types to represent schemas in the target language and uses native collections. Bond however doesn’t hard-code type mappings. For example in C++ the defaults are STL containers like <code>std::vector</code> however user can easily map custom types (e.g. use <code>boost::multi_index_container</code> in a generated C++ struct or map a <code>uint64</code> schema field to a <code>System.DateTime</code> field in a generated C# class). Bond generated C++ structs can also use custom allocators. See <a href="manual/bond_cpp.html#custom-type-mappings">custom type mappings</a> for <a href="manual/bond_cs.html#custom-type-mappings">more details</a>.</p>
+<h2 id="protocols">Protocols</h2>
+<p>Bond support three kinds of protocols. Tagged binary protocols are very similar to Thrift protocols and Protocol Buffers wire format. We use those in RPC scenarios because they don’t require any schema pre-negotiation. Bond untagged protocols are like Avro wire format. The payload is compact because it doesn’t contain any schema information, only data, but you need to provide schema of the payload at runtime in order to support schema versioning. We use these protocols in data storage scenarios, when many records using the same schema are stored in a file/stream. Finally Bond has first class support for text protocol like JSON and Xml.</p>
+<p>In Bond, like in Thrift, protocols are pluggable. Where possible, Bond implements protocols through generics so that there is no performance overhead: neither C++ or C# implementation incurs virtual dispatch cost when calling protocol implementation.</p>
+<h2 id="architecture">Architecture</h2>
+<p>One unique feature of Bond is that serialization and deserialization are not fundamental operations hard-coded in the generated code. In fact there is no code generated that is specific to serialization and deserialization. Instead Bond programming model exposes parsers and <a href="manual/bond_cpp.html#transforms">transforms</a> which are composable by the user using meta-programming techniques. Some examples how this is used internally should give a taste of the flexibility of the architecture:</p>
+<ul>
+<li><p>Bond Python implementation doesn’t involve <em>any</em> Python specific generated code. It is fully built by driving Boost Python library using meta-programming interfaces in Bond C++ implementation. A basic Python <a href="manual/bond_py.html#basic-example">example</a> is literally 7 lines of code.</p></li>
+<li><p>Bond can serialize and deserialize arbitrary instances of <code>std::tuple&lt;T...&gt;</code> without any generated code. This is possible because serializer and deserializer are constructed at C++ compile time and the C++ parameter pack expansion effectively gives us compile-time C++ reflection for <a href="manual/bond_cpp.html#tuples">tuples</a>.</p></li>
+<li><p>In C# implementation we have parsers for payload and for objects and we have transforms that can consume data from a parser and serialize or deserialize it. These primitives are internally composed into multiple high level APIs:</p>
+<ul>
+<li>ObjectParser + Serializer -&gt; Serialization</li>
+<li>PayloadParser + Deserializer -&gt; Deserialization</li>
+<li>ObjectParser + Deserializer -&gt; Cloning</li>
+<li>PayloadParser + Serializer -&gt; Transcoding</li>
+</ul></li>
+</ul>
+</div>    
+</div>
+</body>
+</html>
