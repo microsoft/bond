@@ -60,8 +60,9 @@ namespace Bond.IO.Unsafe
         /// <exception cref="EndOfStreamException"/>
         public override ArraySegment<byte> ReadBytes(int count)
         {
+            var result = base.ReadBytes(count);
             canReuseBuffer = false;
-            return base.ReadBytes(count);
+            return result;
         }
         
         internal override void EndOfStream(int count)

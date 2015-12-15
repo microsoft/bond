@@ -60,7 +60,31 @@
             Assert.IsTrue(input.Position == pos);
         }
 
-        
+        [Test]
+        public void StreamBufferReuseTest()
+        {
+            var buffer = new byte[5 * 1024];
+            
+            for (var i = 0; i < buffer.Length; ++i)
+                buffer[i] = (byte)(i % 256);
+
+            for (var k = 3; k < 20; ++k)
+            {
+                var stream = new MemoryStream(buffer, 0, buffer.Length, false, true);
+                var input = new InputStream(stream, 9);
+                
+                while (input.Position + k + sizeof(long) < input.Length)
+                {
+                    var x = input.Position;
+                    var bytes = input.ReadBytes(k);
+                    input.ReadUInt64();
+                    for (var j = 0; j < bytes.Count; ++j)
+                        Assert.AreEqual(bytes.Array[bytes.Offset + j], (x + j) % 256);
+                }
+            }
+        }
+
+
         delegate void IntTest<T>(T value);
 
         [Test]
