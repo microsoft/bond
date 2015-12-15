@@ -41,6 +41,7 @@ namespace Bond.IO.Unsafe
             : base(that)
         {
             stream = that.stream.Clone();
+            bufferLength = that.bufferLength;
             canReuseBuffer = false;
         }
 
