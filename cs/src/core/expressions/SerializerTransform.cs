@@ -147,8 +147,9 @@ namespace Bond.Expressions
             // Transcoding from tagged protocol with runtime schema generates enormous expression tree
             // and for large schemas JIT fails to compile resulting lambda (InvalidProgramException).
             // As a workaround we don't inline nested serialize expressions in this case.
-            var inline = !typeof(ITaggedProtocolReader).IsAssignableFrom(parser.ReaderParam.Type) && 
-                (this.inlineNested || !schema.IsStruct);
+            var inline = !typeof(ITaggedProtocolReader).IsAssignableFrom(parser.ReaderParam.Type);
+
+            inline = inline && (this.inlineNested || !schema.IsStruct);
 
             return GenerateSerialize(serialize, parser, writer.Param, inline);
         }

@@ -6,8 +6,7 @@ namespace Bond.Expressions
     using System;
     using System.Globalization;
     using System.Linq.Expressions;
-    using System.Reflection;
-
+    
     internal static class SerializerGeneratorFactory<R, W>
     {
         public static ISerializerGenerator<R, W> Create<S>(
@@ -51,8 +50,8 @@ namespace Bond.Expressions
                     }
                 }
 
-                var ctor = 
-                    generator.GetConstructor(typeof(Expression<Action<R, W, int>>), typeof(S), typeof(bool)) ?? 
+                var ctor =
+                    generator.GetConstructor(typeof(Expression<Action<R, W, int>>), typeof(S), typeof(bool)) ??
                     generator.GetConstructor(typeof(Expression<Action<R, W, int>>), typeof(S));
 
                 if (ctor == null)

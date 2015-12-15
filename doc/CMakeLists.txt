@@ -63,21 +63,22 @@ function (add_pandoc_markdown)
     add_dependencies (documentation ${name})
 endfunction()
 
-add_custom_command(
-    OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
-    COMMAND ${CMAKE_COMMAND} -E copy .pandoc/templates/cmdargs.html "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
-    COMMAND ${GBC_EXECUTABLE} --help=html >> "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS .pandoc/templates/cmdargs.html gbc ${GBC_EXECUTABLE})
-
-add_custom_target (documentation
-    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html")
-
-add_target_to_folder (documentation)
-
 find_haskell_program (pandoc)
+find_program (Doxygen_EXECUTABLE doxygen)
 
-if (Haskell_PANDOC_EXECUTABLE)
+if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
+    add_custom_command(
+        OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
+        COMMAND ${CMAKE_COMMAND} -E copy .pandoc/templates/cmdargs.html "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
+        COMMAND ${GBC_EXECUTABLE} --help=html >> "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS .pandoc/templates/cmdargs.html gbc ${GBC_EXECUTABLE})
+
+    add_custom_target (documentation
+        DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html")
+
+    add_target_to_folder (documentation)
+
     add_pandoc_markdown (src/bond_py.md src/bond_cpp.md
         CODE "cpp,numberLines"
         OPTIONS --self-contained --table-of-contents
@@ -107,11 +108,7 @@ if (Haskell_PANDOC_EXECUTABLE)
     add_pandoc_markdown (src/why_bond.md
         TEMPLATE index.html
         CODE python)
-endif()
 
-find_program (Doxygen_EXECUTABLE doxygen)
-
-if (Doxygen_EXECUTABLE)
     set (doxygen_sources
         doxygen/bond.doxygen
         doxygen/bond_layout.xml
