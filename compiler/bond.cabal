@@ -27,7 +27,7 @@ author:             Adam Sapek <adamsap@microsoft.com>
 maintainer:         Adam Sapek <adamsap@microsoft.com>
 bug-reports:        https://github.com/Microsoft/bond/issues
 copyright:          Copyright (c) Microsoft. All rights reserved.
-category:           Language
+category:           Language, Compiler, Code Generation
 build-type:         Simple
 
 source-repository head
