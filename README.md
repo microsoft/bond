@@ -171,7 +171,7 @@ found, e.g.:
 
 The core Bond library and most examples only require Boost headers. The 
 pre-built libraries are only needed for unit tests and Python support. If Boost
-or Python libraries are not found on the system then some tests and examples will 
+or Python libraries are not found on the system, then some tests and examples will 
 not be built.
 
 In order to configure solution for Visual Studio 2013 run the following 
