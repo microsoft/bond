@@ -114,7 +114,7 @@ order to generate and build makefiles, in the root `bond` directory run:
     make
     sudo make install
 
-Alternatively you can generate XCode project by passing `-G Xcode` option to 
+Alternatively, you can generate XCode project by passing `-G Xcode` option to 
 cmake:
 
     cmake -G Xcode ..
