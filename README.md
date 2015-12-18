@@ -114,7 +114,7 @@ order to generate and build makefiles, in the root `bond` directory run:
     make
     sudo make install
 
-Alternatively you can generate XCode project by passing `-G Xcode` option to 
+Alternatively, you can generate XCode project by passing `-G Xcode` option to 
 cmake:
 
     cmake -G Xcode ..
@@ -171,7 +171,7 @@ found, e.g.:
 
 The core Bond library and most examples only require Boost headers. The 
 pre-built libraries are only needed for unit tests and Python support. If Boost
-or Python libraries are not found on the system then some tests and examples will 
+or Python libraries are not found on the system, then some tests and examples will 
 not be built.
 
 In order to configure solution for Visual Studio 2013 run the following 
