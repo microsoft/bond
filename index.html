@@ -173,7 +173,7 @@ cd build
 cmake ..
 make
 sudo make install</code></pre></div>
-<p>The <code>build</code> directory is just an example. Any directory can be used for build destination.</p>
+<p>The <code>build</code> directory is just an example. Any directory can be used as the build destination.</p>
 <p>In order to build all the C++ and Python tests and examples, a few more packages are needed:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">sudo apt<span class="op">-</span>get install <span class="op">\</span>
     python2<span class="fl">.7</span><span class="op">-</span>dev <span class="op">\</span>
@@ -184,33 +184,34 @@ sudo make install</code></pre></div>
 cabal install happy</code></pre></div>
 <p>Running the following command in the build directory will build and execute all the tests and examples:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">make <span class="op">--</span>jobs <span class="dv">8</span> check</code></pre></div>
-<p>(unit tests are large so you may want to run 4-8 build jobs in parallel, assuming you have enough memory)</p>
+<p>(The unit tests are large so you may want to run 4-8 build jobs in parallel, assuming you have enough memory.)</p>
 <h3 id="os-x">OS X</h3>
-<p>Install XCode and then run the following command to install required packages using Homebrew (<a href="http://brew.sh/" class="uri">http://brew.sh/</a>):</p>
+<p>Install Xcode and then run the following command to install the required packages using Homebrew (<a href="http://brew.sh/" class="uri">http://brew.sh/</a>):</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">brew install <span class="op">\</span>
     cmake <span class="op">\</span>
     ghc <span class="op">\</span>
     cabal<span class="op">-</span>install <span class="op">\</span>
     boost <span class="op">\</span>
     boost<span class="op">-</span>python</code></pre></div>
-<p>(boost-python is optional and only needed for Python support)</p>
-<p>Update cabal package database and install <code>happy</code> (only needed for tests):</p>
+<p>(boost-python is optional and only needed for Python support.)</p>
+<p>Update the cabal package database and install <code>happy</code> (only needed for tests):</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cabal update
 cabal install happy</code></pre></div>
-<p>Bond can be built on OS X using either standard *nix makefiles or XCode. In order to generate and build makefiles, in the root <code>bond</code> directory run:</p>
+<p>Bond can be built on OS X using either standard *nix makefiles or Xcode. In order to generate and build from makefiles, in the root <code>bond</code> directory run:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
 cd build
 cmake ..
 make
 sudo make install</code></pre></div>
-<p>Alternatively you can generate XCode project by passing <code>-G Xcode</code> option to cmake:</p>
+<p>Alternatively, you can generate Xcode projects by passing the <code>-G Xcode</code> option to cmake:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake <span class="op">-</span>G Xcode ..</code></pre></div>
-<p>You can build and run unit tests by building the <code>check</code> target in XCode or by running make in the build directory:</p>
+<p>You can build and run unit tests by building the <code>check</code> target in Xcode or by running make in the build directory:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">make <span class="op">--</span>jobs <span class="dv">8</span> check</code></pre></div>
 <p>Note that if you are using Homebrew’s Python, you’ll need to build boost-python from source:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">brew install <span class="op">--</span>build<span class="op">-</span><span class="im">from</span><span class="op">-</span>source boost<span class="op">-</span>python</code></pre></div>
-<p>and tell cmake the location of Homebrew’s libpython by setting <code>PYTHON_LIBRARY</code> variable, e.g.:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake .. <span class="op">-</span>DPYTHON_LIBRARY<span class="op">=/</span>usr<span class="op">/</span>local<span class="op">/</span>Cellar<span class="op">/</span>python<span class="op">/</span><span class="fl">2.7.9</span><span class="op">/</span>Frameworks<span class="op">/</span>Python.framework<span class="op">/</span>Versions<span class="op">/</span><span class="fl">2.7</span><span class="op">/</span>lib<span class="op">/</span>libpython2<span class="fl">.7</span>.dylib</code></pre></div>
+<p>and tell cmake the location of Homebrew’s libpython by setting the <code>PYTHON_LIBRARY</code> variable, e.g.:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake .. <span class="op">\</span>
+    <span class="op">-</span>DPYTHON_LIBRARY<span class="op">=/</span>usr<span class="op">/</span>local<span class="op">/</span>Cellar<span class="op">/</span>python<span class="op">/</span><span class="fl">2.7.9</span><span class="op">/</span>Frameworks<span class="op">/</span>Python.framework<span class="op">/</span>Versions<span class="op">/</span><span class="fl">2.7</span><span class="op">/</span>lib<span class="op">/</span>libpython2<span class="fl">.7</span>.dylib</code></pre></div>
 <h3 id="windows">Windows</h3>
 <p><a href="https://ci.appveyor.com/project/sapek/bond/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&amp;branch=master" alt="Build Status" /></a></p>
 <p>Install the following tools:</p>
@@ -221,9 +222,9 @@ sudo make install</code></pre></div>
 </ul>
 <p>If you are building on a network behind a proxy, set the environment variable <code>HTTP_PROXY</code>, e.g.:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> HTTP_PROXY<span class="op">=</span>http:<span class="op">//</span>your<span class="op">-</span>proxy<span class="op">-</span>name:<span class="dv">80</span></code></pre></div>
-<p>Update cabal package database:</p>
+<p>Update the cabal package database:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cabal update</code></pre></div>
-<p>Now you are ready to build the C# version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio 2013 and build as usual. The C# unit tests can also be run from within the solution.</p>
+<p>Now you are ready to build the C# version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio and build as usual. The C# unit tests can also be run from within the solution.</p>
 <p>The C++ and Python versions of Bond additionally require:</p>
 <ul>
 <li>Boost 1.54+ (<a href="http://www.boost.org/users/download/" class="uri">http://www.boost.org/users/download/</a>)</li>
@@ -232,18 +233,18 @@ sudo make install</code></pre></div>
 <p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment can be found, e.g.:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> BOOST_ROOT<span class="op">=</span>D:<span class="op">\</span>boost_1_57_0
 <span class="bu">set</span> BOOST_LIBRARYDIR<span class="op">=</span>D:<span class="op">\</span>boost_1_57_0<span class="op">\</span>lib64<span class="op">-</span>msvc<span class="fl">-12.0</span></code></pre></div>
-<p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests and Python support. If Boost or Python libraries are not found on the system then some tests and examples will not be built.</p>
-<p>In order to configure solution for Visual Studio 2013 run the following commands from the root <code>bond</code> directory:</p>
+<p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests and Python support. If Boost or Python libraries are not found on the system, then some tests and examples will not be built.</p>
+<p>In order to generate a solution to build the C++ and Python versions with Visual Studio 2013 run the following commands from the root <code>bond</code> directory:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
 cd build
 cmake <span class="op">-</span>G <span class="st">&quot;Visual Studio 12 2013 Win64&quot;</span> ..</code></pre></div>
-<p>Instead of <code>cmake</code> you can also use <code>cmake-gui</code> and specify configuration settings in the UI. This configuration step has to be performed only once. From now on you can use the generated solution <code>build\bond.sln</code> from Visual Studio or build from command line using <code>cmake</code>:</p>
+<p>Instead of <code>cmake</code> you can also use <code>cmake-gui</code> and specify configuration settings in the UI. This configuration step has to be performed only once. From then on you can use the generated solution <code>build\bond.sln</code> from Visual Studio or build from command line using <code>cmake</code>:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> PreferredToolArchitecture<span class="op">=</span>x64
 cmake <span class="op">--</span>build . <span class="op">--</span>target
 cmake <span class="op">--</span>build . <span class="op">--</span>target INSTALL</code></pre></div>
 <p>In order to build and execute the unit tests and examples run:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake <span class="op">--</span>build . <span class="op">--</span>target check <span class="op">--</span> <span class="op">/</span>maxcpucount:<span class="dv">8</span></code></pre></div>
-<p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed (Bond unit tests are too big to build with 32-bit tools). This variable works for Visual Studio 2013 or 2015. For VS 2012 set the following variable instead:</p>
+<p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed. (The Bond unit tests are too big to build with 32-bit tools.) This variable works for Visual Studio 2013 or 2015. For Visual Studio 2012 set the following environment variable instead:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> _IsNativeEnvironment<span class="op">=</span>true</code></pre></div>
 </div>    
 </div>
