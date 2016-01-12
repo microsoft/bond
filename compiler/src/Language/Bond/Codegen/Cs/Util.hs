@@ -9,6 +9,7 @@ module Language.Bond.Codegen.Cs.Util
     , schemaAttributes
     , paramConstraints
     , defaultValue
+    , disableCscWarnings
     , disableReSharperWarnings
     ) where
 
@@ -23,6 +24,12 @@ import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
+
+disableCscWarnings :: Text
+disableCscWarnings = [lt|
+// suppress "Missing XML comment for publicly visible type or member"
+#pragma warning disable 1591
+|]
 
 disableReSharperWarnings :: Text
 disableReSharperWarnings = [lt|

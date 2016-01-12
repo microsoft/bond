@@ -1,5 +1,9 @@
 
 
+// suppress "Missing XML comment for publicly visible type or member"
+#pragma warning disable 1591
+
+
 #region ReSharper warnings
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantNameQualifier

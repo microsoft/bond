@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildFramework Condition="'$(Configuration)' == 'Net40'">net40</BuildFramework>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\Common.Internal.props" />
+  <PropertyGroup>
+    <ProjectGuid>{0cec3863-cfb1-44d5-a9da-9d860ef6f113}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CodegenTest</RootNamespace>
+    <AssemblyName>Bond.CodegenTest.NoWarnings</AssemblyName>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <DependentOutputPath>$(OutputPath)</DependentOutputPath>
+    <!-- re-enable all warnings to test the various #pragma warning disable lines emitted during codegen -->
+    <NoWarn />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <BondCodegen Include="simple.bond" />
+    <!-- Resharper Workaround -->
+    <Compile Include="$(IntermediateOutputPath)\simple_types.cs" Condition="False" />
+    <!-- End Resharper Workaround -->
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Bond.Attributes">
+      <HintPath>..\..\..\src\attributes\$(DependentOutputPath)\Bond.Attributes.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\Common.Internal.targets" />
+</Project>
