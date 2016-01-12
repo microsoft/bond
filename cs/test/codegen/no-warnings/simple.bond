@@ -1,0 +1,6 @@
+namespace CodegenTest.NoWarnings;
+
+struct SimpleType
+{
+    0: int32 _int32;
+}

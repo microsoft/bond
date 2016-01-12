@@ -40,6 +40,7 @@ types_cs
     -> FieldMapping         -- ^ Specifies how to represent schema fields
     -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
 types_cs structMapping fieldMapping cs _ _ declarations = (fileSuffix, [lt|
+#{CS.disableCscWarnings}
 #{CS.disableReSharperWarnings}
 namespace #{csNamespace}
 {
