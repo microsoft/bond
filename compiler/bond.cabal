@@ -43,8 +43,7 @@ library
                     mtl >= 2.1,
                     parsec >= 3.1,
                     shakespeare >= 2.0,
-                    text >= 0.11,
-                    transformers < 0.5
+                    text >= 0.11
   ghc-options:      -Wall
   exposed-modules:  Language.Bond.Parser
                     Language.Bond.Util
