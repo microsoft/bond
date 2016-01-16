@@ -3,8 +3,8 @@ var NAVTREE =
   [ "Bond", "index.html", [
     [ "Introduction", "index.html", null ],
     [ "Namespaces", "namespaces.html", "namespaces" ],
-    [ "Classes", null, [
-      [ "Class List", "annotated.html", "annotated" ],
+    [ "Classes", "annotated.html", [
+      [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", null ],
