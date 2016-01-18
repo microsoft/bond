@@ -772,7 +772,16 @@ namespace UnitTest
             });
 
             // Simple doesn't support omitting fields
-            if (typeof(From) != typeof(Nothing) && typeof(From) != typeof(GenericsWithNothing))
+            if (typeof(From) != typeof(Nothing)
+                && typeof(From) != typeof(GenericsWithNothing)
+                && typeof(From) != typeof(WithOptional)
+                && typeof(From) != typeof(WithOptionalAliased)
+                && typeof(From) != typeof(WithOptionalNullable)
+                && typeof(From) != typeof(WithOptionalNullableAliased)
+                && typeof(From) != typeof(InheritsWithOptional)
+                && typeof(From) != typeof(InheritsWithOptionalAliased)
+                && typeof(From) != typeof(InheritsWithOptionalNullable)
+                && typeof(From) != typeof(InheritsWithOptionalNullableAliased))
             {
                 streamRoundtrip(SerializeSP, DeserializeSP<From, To>);
                 memoryRoundtrip(SerializeSP, DeserializeSafeSP<From, To>);

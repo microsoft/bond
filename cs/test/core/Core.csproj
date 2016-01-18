@@ -3,6 +3,9 @@
   <PropertyGroup>
     <BuildFramework Condition="'$(Configuration)' == 'Net40'">net40</BuildFramework>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Fields|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NET45;BOND_LIST_INTERFACES</DefineConstants>
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.props" />
   <PropertyGroup>
@@ -43,6 +46,9 @@
     <Compile Include="Partial.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="Random.cs" />
+    <Compile Include="RuntimeBondedTests.cs" />
+    <Compile Include="RuntimeDeserializerTests.cs" />
+    <Compile Include="RuntimeSerializerTests.cs" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="SerializerGeneratorFactoryTests.cs" />
     <Compile Include="GenericsTests.cs" />

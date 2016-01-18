@@ -715,3 +715,43 @@ struct WithConflictingMeta
     2: string fullName = "Bar";
     3: bond_meta::full_name meta;
 }
+
+struct WithOptional
+{
+    1: optional int64 field;
+    2: optional int64 fieldWithDefault = nothing;
+}
+
+struct WithOptionalAliased
+{
+    1: optional DateTime field;
+    2: optional DateTime fieldWithDefault = nothing;
+}
+
+struct WithOptionalNullable
+{
+    1: optional nullable<int64> field;
+    2: optional nullable<int64> fieldWithDefault = nothing;
+}
+
+struct WithOptionalNullableAliased
+{
+    1: optional nullable<DateTime> field;
+    2: optional nullable<DateTime> fieldWithDefault = nothing;
+}
+
+struct InheritsWithOptional : WithOptional
+{
+}
+
+struct InheritsWithOptionalAliased : WithOptionalAliased
+{
+}
+
+struct InheritsWithOptionalNullable : WithOptionalNullable
+{
+}
+
+struct InheritsWithOptionalNullableAliased : WithOptionalNullableAliased
+{
+}

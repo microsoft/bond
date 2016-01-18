@@ -413,6 +413,48 @@
             Assert.IsNotNull(new EnsureSpacesInPathsWork());
         }
 
+        [Test]
+        public void OptionalAndNullable()
+        {
+            TestSerialization<WithOptional>();
+            TestSerialization<WithOptionalAliased>();
+            TestSerialization<WithOptionalNullable>();
+            TestSerialization<WithOptionalNullableAliased>();
+            TestSerialization<InheritsWithOptional>();
+            TestSerialization<InheritsWithOptionalAliased>();
+            TestSerialization<InheritsWithOptionalNullable>();
+            TestSerialization<InheritsWithOptionalNullableAliased>();
+        }
+
+        [Test]
+        public void TestCreateSerializer()
+        {
+            var serializer = new Serializer<
+                Bond.Protocols.CompactBinaryWriter<
+                    Bond.IO.Unsafe.OutputBuffer>>(typeof(WithOptional));
+            serializer = new Serializer<
+                Bond.Protocols.CompactBinaryWriter<
+                    Bond.IO.Unsafe.OutputBuffer>>(typeof(WithOptionalAliased));
+            serializer = new Serializer<
+                Bond.Protocols.CompactBinaryWriter<
+                    Bond.IO.Unsafe.OutputBuffer>>(typeof(WithOptionalNullable));
+            serializer = new Serializer<
+                Bond.Protocols.CompactBinaryWriter<
+                    Bond.IO.Unsafe.OutputBuffer>>(typeof(WithOptionalNullableAliased));
+            serializer = new Serializer<
+                Bond.Protocols.CompactBinaryWriter<
+                    Bond.IO.Unsafe.OutputBuffer>>(typeof(InheritsWithOptional));
+            serializer = new Serializer<
+                Bond.Protocols.CompactBinaryWriter<
+                    Bond.IO.Unsafe.OutputBuffer>>(typeof(InheritsWithOptionalAliased));
+            serializer = new Serializer<
+                Bond.Protocols.CompactBinaryWriter<
+                    Bond.IO.Unsafe.OutputBuffer>>(typeof(InheritsWithOptionalNullable));
+            serializer = new Serializer<
+                Bond.Protocols.CompactBinaryWriter<
+                    Bond.IO.Unsafe.OutputBuffer>>(typeof(InheritsWithOptionalNullableAliased));
+        }
+
         void TestTypePromotion<From, To>()
         {
             TestFieldSerialization<From, To>();
