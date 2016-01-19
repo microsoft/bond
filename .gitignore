@@ -1,3 +1,12 @@
+# CMake
+# Our documentation recommends that the root directory /build/ be used for
+# CMake files.
+/build/
+
+# Emacs
+*~
+\#*\#
+
 # Vim
 *.swp
 *.swo
