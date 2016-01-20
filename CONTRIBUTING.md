@@ -29,6 +29,7 @@ potential pitfalls before too much time is spent.
 * Make small and atomic commits that include tests.
 * Make sure that all the tests continue to pass. The CMake `check` target
   will run the tests for you.
+* Update the [changelog](https://github.com/Microsoft/bond/blob/master/CHANGELOG.md)
 
 ### Rebase commits
 

@@ -1,0 +1,74 @@
+# Bond Changelog #
+
+Notable changes--especially new features and breaking changes--are recorded
+here.
+
+Bond's version numbers follow [Semantic Versioning](http://semver.org/).
+Each release is tagged with a Git tag. The
+[NuGet packages](https://www.nuget.org/packages/Bond.CSharp/) follow the Git
+tag versions. The Bond compiler (`gbc`) and
+[compiler library](https://hackage.haskell.org/package/bond) have a slightly
+different versioning scheme, following the Haskell community's
+[package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
+
+## Yet to be released ##
+
+* `gbc` & compiler library: TBD
+* C# NuGet version: TBD
+
+### `gbc` ###
+
+* Field ordinals larger than 65535 are now rejected.
+  [Issue #111](https://github.com/Microsoft/bond/issues/111)
+* Fields that duplicate the name of an existing field are now rejected.
+  [Issue #123](https://github.com/Microsoft/bond/issues/123)
+* The generated C# code now compiles with no errors or warnings at
+  `/warn:4`. [Issue #82](https://github.com/Microsoft/bond/issues/82)
+* Added
+  [Visual Studio Code highlighting rules for `.bond` files](https://github.com/Microsoft/bond/tree/b2b9cd7256286fd484444dfaf7645d380a3ee936/tools/syntax/VsCode).
+* `gbc` C# mode now has
+  [`--compatibility-options`](https://microsoft.github.io/bond/manual/bond_cs.html#code-generation)
+  to adjust the generated code to be backward compatible with some bugs in
+  older versions of Bond.
+
+### C++ ###
+
+* Enums are now cast to 32-bit integers to avoid some compiler warnings.
+
+### C# ###
+
+* `bond_meta::full_name` and `bond_meta::name` fields now properly encode
+  generic paramaters.
+* Enums are now cast to 32-bit integers to avoid some compiler warnings.
+  [Issue #140](https://github.com/Microsoft/bond/issues/140)
+* Implicit conversion between `bond.GUID` and `System.Guid` has been added.
+  [Pull request #145](https://github.com/Microsoft/bond/pull/145)
+* The ability to
+  [customize the implementation of `IBonded<T>` used](https://microsoft.github.io/bond/manual/bond_cs.html#understanding-bondedt)
+  has been added.
+  [Pull request #153](https://github.com/Microsoft/bond/pull/153)
+
+## 4.0.2: 2015-12-14
+
+* `gbc` & compiler library: 0.4.0.1
+* C# NuGet version: 4.0.2
+
+### Bond compiler library ###
+
+* Added a
+  [custom codegen example](https://github.com/Microsoft/bond/tree/master/examples/codegen/read-only).
+
+### C# ###
+
+* Added support to
+  [not inline nested structs in `Serializers`](https://github.com/Microsoft/bond/blob/cb95fdb3e1e10c3e4cae2f2d55e2b116041010a8/cs/src/core/Serializer.cs#L69).
+  This can be used to speed up the time to create the serializer for very
+  complex schemas.
+* Fix for rare buffer corruption in InputStream.
+  [Issue #114](https://github.com/Microsoft/bond/issues/114).
+* Fix for SimpleXmlParser not handling XML declarations. [Issue #112](https://github.com/Microsoft/bond/issues/82)
+
+## Earlier release ##
+
+These sections need to be written. In the meantime, consult the
+[repository's history](https://github.com/Microsoft/bond/commits/master).
