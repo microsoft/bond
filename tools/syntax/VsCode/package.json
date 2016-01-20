@@ -1,0 +1,26 @@
+{
+    "name": "language-bond",
+    "displayName": "Bond",
+    "description": "Bond Language Support",
+    "version": "0.0.1",
+    "publisher": "robrodi",
+    "engines": {
+        "vscode": "^0.10.1"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "bond",
+            "aliases": ["Bond", "bond"],
+            "extensions": [".bond"],
+            "configuration": "./bond.configuration.json"
+        }],
+        "grammars": [{
+            "language": "bond",
+            "scopeName": "source.bond",
+            "path": "./syntaxes/bond.tmLanguage"
+        }]
+    }
+}
