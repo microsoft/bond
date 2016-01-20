@@ -129,7 +129,7 @@
             <array>
                 <dict>
                     <key>match</key>
-                    <string>u?int(8|16|32|64)|float|double|bool|string|wstring|map|set|list|vector|nullable|void|blob|bonded</string>
+                    <string>u?int(8|16|32|64)|blob|bonded|bool|double|float|list|map|nullable|set|string|vector|void|wstring</string>
                     <key>name</key>
                     <string>constant.language</string>
                 </dict>
