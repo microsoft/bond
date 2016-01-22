@@ -22,7 +22,7 @@ import Ctor_cs
 -- package. For code clarity the example omits error handling and doesn't
 -- implement some features (e.g. import directories).
 --
--- The example demonstrates how to parse .bond files and use the standard
+-- This example demonstrates how to parse .bond files and use the standard
 -- templates with custom options as well as how to write a custom codegen
 -- template.
 --
@@ -36,8 +36,8 @@ type Template = MappingContext -> String -> [Import] -> [Declaration] -> (String
 main :: IO()
 main = do
     files <- getArgs
-    forM_ files $ codeGen 
-        [ types_cs Class ReadOnlyProperties 
+    forM_ files $ codeGen
+        [ types_cs Class ReadOnlyProperties
         , ctor_cs
         ]
 
