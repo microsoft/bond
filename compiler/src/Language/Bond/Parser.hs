@@ -24,6 +24,7 @@ module Language.Bond.Parser
 import Data.Ord
 import Data.List
 import Data.Function
+import Data.Word
 import Control.Applicative
 import Control.Monad.Reader
 import Prelude
@@ -247,7 +248,13 @@ manySortedBy = manyAccum . insertBy
 field :: Parser Field
 field = makeField <$> attributes <*> ordinal <*> modifier <*> ftype <*> identifier <*> optional default_
   where
-    ordinal = (fromIntegral <$> integer) <* colon <?> "field ordinal"
+    ordinal = word16 <* colon <?> "field ordinal"
+      where
+        word16 = do
+            i <- integer
+            if i <= toInteger (maxBound :: Word16) && i >= toInteger (minBound :: Word16)
+                then return (fromInteger i)
+                else fail "Field ordinal must be within the range 0-65535"
     modifier = option Optional
                     (keyword "optional" *> pure Optional
                  <|> keyword "required" *> pure Required
