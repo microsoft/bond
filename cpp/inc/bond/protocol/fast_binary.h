@@ -185,7 +185,7 @@ public:
     {
         ReadType(type);
 
-        if (type != BT_STOP && type != BT_STOP_BASE)
+        if (type != BondDataType::BT_STOP && type != BondDataType::BT_STOP_BASE)
             Read(id);
         else
             id = 0;
@@ -226,7 +226,7 @@ public:
     template <typename T>
     void Skip(const bonded<T, FastBinaryReader&>&)
     {
-        SkipComplex(BT_STRUCT);
+        SkipComplex(BondDataType::BT_STRUCT);
     }
 
 
@@ -234,32 +234,32 @@ public:
     {
         switch (type)
         {
-            case BT_BOOL:
-            case BT_UINT8:
-            case BT_INT8:
+            case BondDataType::BT_BOOL:
+            case BondDataType::BT_UINT8:
+            case BondDataType::BT_INT8:
                 _input.Skip(sizeof(uint8_t));
                 break;
 
-            case BT_UINT16:
-            case BT_INT16:
+            case BondDataType::BT_UINT16:
+            case BondDataType::BT_INT16:
                 _input.Skip(sizeof(uint16_t));
                 break;
 
-            case BT_UINT32:
-            case BT_INT32:
+            case BondDataType::BT_UINT32:
+            case BondDataType::BT_INT32:
                 _input.Skip(sizeof(uint32_t));
                 break;
 
-            case BT_UINT64:
-            case BT_INT64:
+            case BondDataType::BT_UINT64:
+            case BondDataType::BT_INT64:
                 _input.Skip(sizeof(uint64_t));
                 break;
 
-            case BT_FLOAT:
+            case BondDataType::BT_FLOAT:
                 _input.Skip(sizeof(float));
                 break;
 
-            case BT_DOUBLE:
+            case BondDataType::BT_DOUBLE:
                 _input.Skip(sizeof(double));
                 break;
 
@@ -282,7 +282,7 @@ protected:
     {
         switch (type)
         {
-            case BT_STRING:
+            case BondDataType::BT_STRING:
             {
                 uint32_t size = 0;
 
@@ -290,7 +290,7 @@ protected:
                 _input.Skip(size);
                 break;
             }
-            case BT_WSTRING:
+            case BondDataType::BT_WSTRING:
             {
                 uint32_t size = 0;
 
@@ -298,7 +298,7 @@ protected:
                 _input.Skip(size * sizeof(uint16_t));
                 break;
             }
-            case BT_STRUCT:
+            case BondDataType::BT_STRUCT:
             {
                 for(;;)
                 {
@@ -308,7 +308,7 @@ protected:
                     BondDataType field_type;
 
                     for (ReadFieldBegin(field_type, id);
-                            field_type != BT_STOP && field_type != BT_STOP_BASE;
+                            field_type != BondDataType::BT_STOP && field_type != BondDataType::BT_STOP_BASE;
                             ReadFieldEnd(), ReadFieldBegin(field_type, id))
                     {
                         Skip(field_type);
@@ -316,14 +316,14 @@ protected:
 
                     ReadStructEnd();
 
-                    if (field_type == BT_STOP)
+                    if (field_type == BondDataType::BT_STOP)
                         break;
                 }
 
                 break;
             }
-            case BT_SET:
-            case BT_LIST:
+            case BondDataType::BT_SET:
+            case BondDataType::BT_LIST:
             {
                 BondDataType element_type;
                 uint32_t size;
@@ -338,7 +338,7 @@ protected:
                 ReadContainerEnd();
                 break;
             }
-            case BT_MAP:
+            case BondDataType::BT_MAP:
             {
                 std::pair<BondDataType, BondDataType> element_type;
                 uint32_t size;
@@ -363,7 +363,7 @@ protected:
 };
 
 template <typename Buffer>
-const uint16_t FastBinaryReader<Buffer>::magic = FAST_PROTOCOL;
+const uint16_t FastBinaryReader<Buffer>::magic = ProtocolType::FAST_PROTOCOL;
 
 template <typename Buffer>
 const uint16_t FastBinaryReader<Buffer>::version = v1;
@@ -398,7 +398,7 @@ public:
 
     void WriteStructEnd(bool base = false)
     {
-        WriteType(base ? BT_STOP_BASE : BT_STOP);
+        WriteType(base ? BondDataType::BT_STOP_BASE : BondDataType::BT_STOP);
     }
 
     template <typename T>
