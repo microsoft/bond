@@ -9,7 +9,7 @@ using namespace bf;
 
 inline bool IsValidType(bond::BondDataType type)
 {
-    return type >= bond::BT_BOOL && type <= bond::BT_WSTRING;
+    return type >= bond::BondDataType::BT_BOOL && type <= bond::BondDataType::BT_WSTRING;
 }
 
 template <typename Reader>
@@ -26,16 +26,16 @@ bool TryProtocol(Reader reader, int confidence = 5)
 
         for (int i = 0; i < confidence; ++i, reader.ReadFieldEnd(), reader.ReadFieldBegin(type, id))
         {
-            if (type == bond::BT_STOP)
+            if (type == bond::BondDataType::BT_STOP)
                 break;
 
-            if (type == bond::BT_STOP_BASE)
+            if (type == bond::BondDataType::BT_STOP_BASE)
                 continue;
 
             if (!IsValidType(type))
                 return false;
 
-            if (type == bond::BT_SET || type == bond::BT_LIST)
+            if (type == bond::BondDataType::BT_SET || type == bond::BondDataType::BT_LIST)
             {
                 bond::BondDataType element_type;
 
@@ -45,7 +45,7 @@ bool TryProtocol(Reader reader, int confidence = 5)
                     return false;
             }
 
-            if (type == bond::BT_MAP)
+            if (type == bond::BondDataType::BT_MAP)
             {
                 std::pair<bond::BondDataType, bond::BondDataType> element_type;
 
@@ -76,21 +76,21 @@ Protocol Guess(InputFile input)
 
     input.Read(word);
 
-    if (word == bond::FAST_PROTOCOL
-     || word == bond::COMPACT_PROTOCOL
-     || word == bond::SIMPLE_PROTOCOL)
-        return marshal;
+    if (word == static_cast<uint16_t>(bond::ProtocolType::FAST_PROTOCOL)
+     || word == static_cast<uint16_t>(bond::ProtocolType::COMPACT_PROTOCOL)
+     || word == static_cast<uint16_t>(bond::ProtocolType::SIMPLE_PROTOCOL))
+        return Protocol::marshal;
 
     if (TryProtocol(mbp))
-        return fast;
+        return Protocol::fast;
 
     if (TryProtocol(cbp))
-        return compact;
+        return Protocol::compact;
 
     if (TryProtocol(cbp2))
-        return compact2;
+        return Protocol::compact2;
 
-    return simple;
+    return Protocol::simple;
 }
 
 
@@ -152,37 +152,37 @@ bool TranscodeFrom(Reader reader, const Options& options)
 
     switch (options.to)
     {
-        case compact:
+        case Protocol::compact:
         {
             bond::CompactBinaryWriter<bond::StdioOutputStream> writer(out);
             TranscodeFromTo(reader, writer, options);
             return true;
         }
-        case compact2:
+        case Protocol::compact2:
         {
             bond::CompactBinaryWriter<bond::StdioOutputStream> writer(out, bond::v2);
             TranscodeFromTo(reader, writer, options);
             return true;
         }
-        case fast:
+        case Protocol::fast:
         {
             bond::FastBinaryWriter<bond::StdioOutputStream> writer(out);
             TranscodeFromTo(reader, writer, options);
             return true;
         }
-        case simple:
+        case Protocol::simple:
         {
             bond::SimpleBinaryWriter<bond::StdioOutputStream> writer(out);
             TranscodeFromTo(reader, writer, options);
             return true;
         }
-        case simple2:
+        case Protocol::simple2:
         {
             bond::SimpleBinaryWriter<bond::StdioOutputStream> writer(out, bond::v2);
             TranscodeFromTo(reader, writer, options);
             return true;
         }
-        case json:
+        case Protocol::json:
         {
             bond::SimpleJsonWriter<bond::StdioOutputStream> writer(out, true, 4, options.all_fields);
             TranscodeFromTo(reader, writer, options);
@@ -198,17 +198,17 @@ bool Transcode(InputFile& input, const Options& options)
 {
     switch (options.from)
     {
-        case marshal:
+        case Protocol::marshal:
             return TranscodeFrom(input, options);
-        case compact:
+        case Protocol::compact:
             return TranscodeFrom(bond::CompactBinaryReader<InputFile>(input), options);
-        case compact2:
+        case Protocol::compact2:
             return TranscodeFrom(bond::CompactBinaryReader<InputFile>(input, bond::v2), options);
-        case fast:
+        case Protocol::fast:
             return TranscodeFrom(bond::FastBinaryReader<InputFile>(input), options);
-        case simple:
+        case Protocol::simple:
             return TranscodeFrom(bond::SimpleBinaryReader<InputFile>(input), options);
-        case simple2:
+        case Protocol::simple2:
             return TranscodeFrom(bond::SimpleBinaryReader<InputFile>(input, bond::v2), options);
         default:
             return false;
@@ -226,7 +226,7 @@ int main(int argc, char** argv)
         {
             InputFile input(options.file);
 
-            if (options.from == guess)
+            if (options.from == Protocol::guess)
                 std::cerr << "Guessed " << ToString(options.from = Guess(input)) << std::endl;
 
             if (Transcode(input, options))
