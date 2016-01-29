@@ -47,8 +47,8 @@ TEST_CASE_BEGIN(OutputBufferBlobs)
         Serialize(blobs, writer);
         std::vector<bond::blob> buffers;
         stream.GetBuffers(buffers);
-
-        if (Reader::magic == bond::SIMPLE_JSON_PROTOCOL)
+        
+        if (Reader::magic == bond::ProtocolType::SIMPLE_JSON_PROTOCOL)
             UT_AssertAreEqual(std::size_t(1), buffers.size());
         else
             UT_AssertAreEqual(blobs.blobs.size() * 2 + 1, buffers.size());

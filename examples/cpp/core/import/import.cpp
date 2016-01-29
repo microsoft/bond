@@ -17,7 +17,7 @@ int main()
     // is by default in include path for Bond projects. 
     Struct obj, obj2;
 
-    obj.type.id = bond::BT_STRING;
+    obj.type.id = bond::BondDataType::BT_STRING;
 
     bond::OutputBuffer output;
     bond::CompactBinaryWriter<bond::OutputBuffer> writer(output);

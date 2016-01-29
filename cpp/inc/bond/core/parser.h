@@ -197,11 +197,11 @@ private:
                 continue;
             }
 
-            if (field.type.id == bond::BT_STRUCT)
+            if (field.type.id == bond::BondDataType::BT_STRUCT)
             {
                 done = transform.Field(field.id, field.metadata, bonded<void, Input>(_input, RuntimeSchema(schema, field)));
             }
-            else if (field.type.id == bond::BT_LIST || field.type.id == bond::BT_SET || field.type.id == bond::BT_MAP)
+            else if (field.type.id == bond::BondDataType::BT_LIST || field.type.id == bond::BondDataType::BT_SET || field.type.id == bond::BondDataType::BT_MAP)
             {
                 done = transform.Field(field.id, field.metadata, value<void, Input>(_input, RuntimeSchema(schema, field)));
             }
@@ -281,9 +281,9 @@ private:
             //
             // In both cases we emit remaining fields as unknown
             
-            for (; type != bond::BT_STOP; _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
+            for (; type != bond::BondDataType::BT_STOP; _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
             {
-                if (type == bond::BT_STOP_BASE)
+                if (type == bond::BondDataType::BT_STOP_BASE)
                     transform.UnknownEnd();
                 else
                     UnknownField(id, type, transform);
@@ -310,7 +310,7 @@ private:
                 // Exact match
                 NextField(Head(), transform);
             }
-            else if (Head::id >= id && type != bond::BT_STOP && type != bond::BT_STOP_BASE)
+            else if (Head::id >= id && type != bond::BondDataType::BT_STOP && type != bond::BondDataType::BT_STOP_BASE)
             {
                 // Unknown field or non-exact type match
                 UnknownFieldOrTypeMismatch(Head(), id, type, transform);
@@ -324,7 +324,7 @@ private:
             _input.ReadFieldEnd();
             _input.ReadFieldBegin(type, id);
 
-            if (Head::id < id || type == bond::BT_STOP || type == bond::BT_STOP_BASE)
+            if (Head::id < id || type == bond::BondDataType::BT_STOP || type == bond::BondDataType::BT_STOP_BASE)
             {
                 NextSchemaField: return ReadFields(typename boost::mpl::next<Fields>::type(), id, type, transform);
             }
@@ -336,7 +336,7 @@ private:
     void
     ReadFields(const boost::mpl::l_iter<boost::mpl::l_end>&, uint16_t& id, BondDataType& type, const Transform& transform)
     {
-        for (; type != bond::BT_STOP && type != bond::BT_STOP_BASE;
+        for (; type != bond::BondDataType::BT_STOP && type != bond::BondDataType::BT_STOP_BASE;
                _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
         {
             UnknownField(id, type, transform);
@@ -389,10 +389,10 @@ private:
     UnknownFieldOrTypeMismatch(const T&, uint16_t id, BondDataType type, const Transform& transform)
     {
         if (id == T::id &&
-            type != bond::BT_LIST &&
-            type != bond::BT_SET &&
-            type != bond::BT_MAP &&
-            type != bond::BT_STRUCT)
+            type != bond::BondDataType::BT_LIST &&
+            type != bond::BondDataType::BT_SET &&
+            type != bond::BondDataType::BT_MAP &&
+            type != bond::BondDataType::BT_STRUCT)
         {
             return detail::BasicTypeField(T::id, T::metadata, type, transform, _input);
         }
@@ -426,13 +426,13 @@ private:
 
         for (;; _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
         {
-            while (it != end && (it->id < id || type == bond::BT_STOP || type == bond::BT_STOP_BASE))
+            while (it != end && (it->id < id || type == bond::BondDataType::BT_STOP || type == bond::BondDataType::BT_STOP_BASE))
             {
                 const FieldDef& field = *it++;
                 transform.OmittedField(field.id, field.metadata, field.type.id);
             }
 
-            if (type == bond::BT_STOP || type == bond::BT_STOP_BASE)
+            if (type == bond::BondDataType::BT_STOP || type == bond::BondDataType::BT_STOP_BASE)
             {
                 break;
             }
@@ -441,7 +441,7 @@ private:
             {
                 const FieldDef& field = *it++;
 
-                if (type == bond::BT_STRUCT)
+                if (type == bond::BondDataType::BT_STRUCT)
                 {
                     if (field.type.id == type)
                     {
@@ -449,7 +449,7 @@ private:
                         continue;
                     }
                 }
-                else if (type == bond::BT_LIST || type == bond::BT_SET || type == bond::BT_MAP)
+                else if (type == bond::BondDataType::BT_LIST || type == bond::BondDataType::BT_SET || type == bond::BondDataType::BT_MAP)
                 {
                     if (field.type.id == type)
                     {
@@ -481,9 +481,9 @@ private:
             //
             // In both cases we emit remaining fields as unknown
             
-            for (; type != bond::BT_STOP; _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
+            for (; type != bond::BondDataType::BT_STOP; _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
             {
-                if (type == bond::BT_STOP_BASE)
+                if (type == bond::BondDataType::BT_STOP_BASE)
                 {
                     transform.UnknownEnd();
                 }
@@ -511,11 +511,11 @@ private:
     template <typename Transform>
     bool UnknownField(uint16_t id, BondDataType type, const Transform& transform)
     {
-        if (type == bond::BT_STRUCT)
+        if (type == bond::BondDataType::BT_STRUCT)
         {
             return transform.UnknownField(id, bonded<void, Input>(_input, GetRuntimeSchema<Unknown>()));
         }
-        else if (type == bond::BT_LIST || type == bond::BT_SET || type == bond::BT_MAP)
+        else if (type == bond::BondDataType::BT_LIST || type == bond::BondDataType::BT_SET || type == bond::BondDataType::BT_MAP)
             return transform.UnknownField(id, value<void, Input>(_input, type));
         else
             return detail::BasicTypeField(id, schema<Unknown>::type::metadata, type, BindUnknownField(transform), _input);
@@ -635,9 +635,9 @@ private:
             {
                 Reader input(_input, *field);
 
-                if (fieldDef.type.id == BT_STRUCT)
+                if (fieldDef.type.id == BondDataType::BT_STRUCT)
                     done = transform.Field(fieldDef.id, fieldDef.metadata, bonded<void, Input>(input, RuntimeSchema(schema, fieldDef)));
-                else if (fieldDef.type.id == BT_LIST || fieldDef.type.id == BT_SET || fieldDef.type.id == BT_MAP)
+                else if (fieldDef.type.id == BondDataType::BT_LIST || fieldDef.type.id == BondDataType::BT_SET || fieldDef.type.id == BondDataType::BT_MAP)
                     done = transform.Field(fieldDef.id, fieldDef.metadata, value<void, Input>(input, RuntimeSchema(schema, fieldDef)));
                 else
                     done = detail::BasicTypeField(fieldDef.id, fieldDef.metadata, fieldDef.type.id, transform, input);

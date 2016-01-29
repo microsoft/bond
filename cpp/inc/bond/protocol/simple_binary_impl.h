@@ -23,51 +23,51 @@ inline void SimpleBinaryWriter<BufferT>::WriteFieldOmitted(BondDataType type, ui
 
     switch (type)
     {
-        case BT_BOOL:
+        case BondDataType::BT_BOOL:
             Write(!!metadata.default_value.uint_value);
             break;
-        case BT_UINT8:
+        case BondDataType::BT_UINT8:
             Write(static_cast<uint8_t>(metadata.default_value.uint_value));
             break;
-        case BT_UINT16:
+        case BondDataType::BT_UINT16:
             Write(static_cast<uint16_t>(metadata.default_value.uint_value));
             break;
-        case BT_UINT32:
+        case BondDataType::BT_UINT32:
             Write(static_cast<uint32_t>(metadata.default_value.uint_value));
             break;
-        case BT_UINT64:
+        case BondDataType::BT_UINT64:
             Write(static_cast<uint64_t>(metadata.default_value.uint_value));
             break;
-        case BT_FLOAT:
+        case BondDataType::BT_FLOAT:
             Write(static_cast<float>(metadata.default_value.double_value));
             break;
-        case BT_DOUBLE:
+        case BondDataType::BT_DOUBLE:
             Write(metadata.default_value.double_value);
             break;
-        case BT_STRING:
+        case BondDataType::BT_STRING:
             Write(metadata.default_value.string_value);
             break;
-        case BT_STRUCT:
+        case BondDataType::BT_STRUCT:
             BOOST_ASSERT(false);
             break;
-        case BT_LIST:
-        case BT_SET:
-        case BT_MAP:
+        case BondDataType::BT_LIST:
+        case BondDataType::BT_SET:
+        case BondDataType::BT_MAP:
             WriteContainerBegin(0, type);
             break;
-        case BT_INT8:
+        case BondDataType::BT_INT8:
             Write(static_cast<int8_t>(metadata.default_value.int_value));
             break;
-        case BT_INT16:
+        case BondDataType::BT_INT16:
             Write(static_cast<int16_t>(metadata.default_value.int_value));
             break;
-        case BT_INT32:
+        case BondDataType::BT_INT32:
             Write(static_cast<int32_t>(metadata.default_value.int_value));
             break;
-        case BT_INT64:
+        case BondDataType::BT_INT64:
             Write(static_cast<int64_t>(metadata.default_value.int_value));
             break;
-        case BT_WSTRING:
+        case BondDataType::BT_WSTRING:
             Write(metadata.default_value.wstring_value);
             break;
         default:

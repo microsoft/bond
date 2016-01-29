@@ -51,19 +51,19 @@ typedef std::map<std::string, std::string> Attributes;
 // field is required
 struct required_field_modifier
 {
-    static const bond::Modifier value = bond::Required;
+    static const bond::Modifier value = bond::Modifier::Required;
 };
 
 // field is optional
 struct optional_field_modifier 
 {
-    static const bond::Modifier value = bond::Optional;
+    static const bond::Modifier value = bond::Modifier::Optional;
 };
 
 // field is required optional
 struct required_optional_field_modifier
 {
-    static const bond::Modifier value = bond::RequiredOptional;
+    static const bond::Modifier value = bond::Modifier::RequiredOptional;
 };
 
 
@@ -713,51 +713,51 @@ get_type_id<std::pair<T1, T2> >::value = std::make_pair(
 
 template <> struct 
 get_type_id<bool>
-    : boost::integral_constant<BondDataType, BT_BOOL> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_BOOL> {};
 
 template <> struct 
 get_type_id<uint8_t>
-    : boost::integral_constant<BondDataType, BT_UINT8> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_UINT8> {};
 
 template <> struct 
 get_type_id<uint16_t>
-    : boost::integral_constant<BondDataType, BT_UINT16> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_UINT16> {};
 
 template <> struct 
 get_type_id<uint32_t>
-    : boost::integral_constant<BondDataType, BT_UINT32> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_UINT32> {};
 
 template <> struct 
 get_type_id<uint64_t>
-    : boost::integral_constant<BondDataType, BT_UINT64> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_UINT64> {};
 
 template <> struct 
 get_type_id<int8_t>
-    : boost::integral_constant<BondDataType, BT_INT8> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_INT8> {};
 
 template <> struct 
 get_type_id<int16_t>
-    : boost::integral_constant<BondDataType, BT_INT16> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_INT16> {};
 
 template <> struct 
 get_type_id<int32_t>
-    : boost::integral_constant<BondDataType, BT_INT32> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_INT32> {};
 
 template <> struct 
 get_type_id<int64_t>
-    : boost::integral_constant<BondDataType, BT_INT64> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_INT64> {};
 
 template <> struct 
 get_type_id<float>
-    : boost::integral_constant<BondDataType, BT_FLOAT> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_FLOAT> {};
 
 template <> struct 
 get_type_id<double>
-    : boost::integral_constant<BondDataType, BT_DOUBLE> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_DOUBLE> {};
 
 template <> struct
 get_type_id<void>
-    : boost::integral_constant<BondDataType, BT_UNAVAILABLE> {};
+    : boost::integral_constant<BondDataType, BondDataType::BT_UNAVAILABLE> {};
 
 template <typename T> struct 
 get_type_id
@@ -766,12 +766,12 @@ get_type_id
 
     static const BondDataType value = 
         is_enum<T>::value           ? get_type_id<int32_t>::value :
-        is_bond_type<T>::value      ? BT_STRUCT :
-        is_set_container<U>::value  ? BT_SET :
-        is_map_container<U>::value  ? BT_MAP :
-        is_list_container<U>::value ? BT_LIST :
-        is_string<U>::value         ? BT_STRING :
-        is_wstring<U>::value        ? BT_WSTRING :
+        is_bond_type<T>::value      ? BondDataType::BT_STRUCT :
+        is_set_container<U>::value  ? BondDataType::BT_SET :
+        is_map_container<U>::value  ? BondDataType::BT_MAP :
+        is_list_container<U>::value ? BondDataType::BT_LIST :
+        is_string<U>::value         ? BondDataType::BT_STRING :
+        is_wstring<U>::value        ? BondDataType::BT_WSTRING :
                                       get_type_id<typename aliased_type<T>::type>::value;
 };
 

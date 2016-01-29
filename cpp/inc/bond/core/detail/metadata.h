@@ -210,17 +210,17 @@ GetTypeName(T, const qualified_name_tag&)
 {
     switch (get_type_id<T>::value)
     {
-        case BT_BOOL:   return "bool";
-        case BT_UINT8:  return "uint8";
-        case BT_UINT16: return "uint16";
-        case BT_UINT32: return "uint32";
-        case BT_UINT64: return "uint64";
-        case BT_FLOAT:  return "float";
-        case BT_DOUBLE: return "double";
-        case BT_INT8:   return "int8";
-        case BT_INT16:  return "int16";
-        case BT_INT32:  return "int32";
-        case BT_INT64:  return "int64";
+        case BondDataType::BT_BOOL:   return "bool";
+        case BondDataType::BT_UINT8:  return "uint8";
+        case BondDataType::BT_UINT16: return "uint16";
+        case BondDataType::BT_UINT32: return "uint32";
+        case BondDataType::BT_UINT64: return "uint64";
+        case BondDataType::BT_FLOAT:  return "float";
+        case BondDataType::BT_DOUBLE: return "double";
+        case BondDataType::BT_INT8:   return "int8";
+        case BondDataType::BT_INT16:  return "int16";
+        case BondDataType::BT_INT32:  return "int32";
+        case BondDataType::BT_INT64:  return "int64";
         default:        BOOST_ASSERT(false);
                         return "unknown_type";
     }

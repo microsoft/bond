@@ -99,7 +99,7 @@ public:
 
     bool IsOptional() const
     {
-        return metadata.modifier == bond::Optional;
+        return metadata.modifier == bond::Modifier::Optional;
     }
 
 private:

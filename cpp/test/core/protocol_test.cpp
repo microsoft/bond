@@ -129,11 +129,11 @@ template <typename Buffer>
 void WritePass0(Buffer& pass0, uint16_t val0, int64_t val1)
 {
     pass0.WriteStructBegin(bond::Metadata(), false);
-    pass0.WriteFieldBegin(bond::BT_UINT16, 0);
+    pass0.WriteFieldBegin(bond::BondDataType::BT_UINT16, 0);
     pass0.Write(val0);
     pass0.WriteFieldEnd();
 
-    pass0.WriteFieldBegin(bond::BT_INT64, 1);
+    pass0.WriteFieldBegin(bond::BondDataType::BT_INT64, 1);
     pass0.Write(val1);
     pass0.WriteFieldEnd();
     pass0.WriteStructEnd();
@@ -144,11 +144,11 @@ template <typename Reader, typename Writer, typename Buffer>
 void TestReadStruct(Writer& output, Buffer& output_buffer, uint16_t val0, int64_t val1)
 {
     output.WriteStructBegin(bond::Metadata(), false);
-    output.WriteFieldBegin(bond::BT_UINT16, 0);
+    output.WriteFieldBegin(bond::BondDataType::BT_UINT16, 0);
     output.Write(val0);
     output.WriteFieldEnd();
 
-    output.WriteFieldBegin(bond::BT_INT64, 1);
+    output.WriteFieldBegin(bond::BondDataType::BT_INT64, 1);
     output.Write(val1);
     output.WriteFieldEnd();
     output.WriteStructEnd();
@@ -165,7 +165,7 @@ void TestReadStruct(Writer& output, Buffer& output_buffer, uint16_t val0, int64_
     input.ReadFieldBegin(type, id);
     input.Read(value0);
     input.ReadFieldEnd();
-    UT_AssertAreEqual(type, bond::BT_UINT16);
+    UT_AssertAreEqual(type, bond::BondDataType::BT_UINT16);
     UT_AssertAreEqual(id, 0);
     UT_AssertAreEqual(val0, value0);
 
@@ -173,7 +173,7 @@ void TestReadStruct(Writer& output, Buffer& output_buffer, uint16_t val0, int64_
     input.Read(value1);
     input.ReadFieldEnd();
     input.ReadStructEnd();
-    UT_AssertAreEqual(type, bond::BT_INT64);
+    UT_AssertAreEqual(type, bond::BondDataType::BT_INT64);
     UT_AssertAreEqual(id, 1);
     UT_AssertAreEqual(val1, value1);
 
@@ -181,7 +181,7 @@ void TestReadStruct(Writer& output, Buffer& output_buffer, uint16_t val0, int64_
     typename Reader::Buffer input_buffer2(output_buffer.GetBuffer());
     Reader input2(input_buffer2, 2);   
 
-    input2.Skip(bond::BT_STRUCT);
+    input2.Skip(bond::BondDataType::BT_STRUCT);
     UT_AssertIsTrue(input2.GetBuffer().IsEof());
 }
 
