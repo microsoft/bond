@@ -94,7 +94,7 @@ omit_field(const Metadata& metadata, const T& value)
     (void)one_definition<may_omit_fields<Writer>, true_type>::value;
 
     // omit the field if it's optional and has default value
-    return metadata.modifier == Optional
+    return metadata.modifier == Modifier::Optional
         && is_default(value, metadata);
 }
 

@@ -13,36 +13,36 @@ inline bool ValidateType(BondDataType src, BondDataType dst)
 {
     switch (src)
     {
-        case BT_UINT8:
-        case BT_UINT16:
-        case BT_UINT32:
+        case BondDataType::BT_UINT8:
+        case BondDataType::BT_UINT16:
+        case BondDataType::BT_UINT32:
             switch (dst)
             {
-                case BT_UINT16:
-                case BT_UINT32:
-                case BT_UINT64:
+                case BondDataType::BT_UINT16:
+                case BondDataType::BT_UINT32:
+                case BondDataType::BT_UINT64:
                     return src <= dst;
                 default:
                     break;  
             }
             break;
 
-        case BT_INT8:
-        case BT_INT16:
-        case BT_INT32:
+        case BondDataType::BT_INT8:
+        case BondDataType::BT_INT16:
+        case BondDataType::BT_INT32:
             switch (dst)
             {
-                case BT_INT16:
-                case BT_INT32:
-                case BT_INT64:
+                case BondDataType::BT_INT16:
+                case BondDataType::BT_INT32:
+                case BondDataType::BT_INT64:
                     return src <= dst;
                 default:
                     break;  
             }
             break;
 
-        case BT_FLOAT:
-            return (dst == BT_DOUBLE);
+        case BondDataType::BT_FLOAT:
+            return (dst == BondDataType::BT_DOUBLE);
 
 	default:
             break;
@@ -79,7 +79,7 @@ inline bool ValidateType(const RuntimeSchema& src,
         identical = false;
     }
     
-    if (dst.GetTypeId() == BT_STRUCT && !dst.GetType().bonded_type)
+    if (dst.GetTypeId() == BondDataType::BT_STRUCT && !dst.GetType().bonded_type)
     {        
         ValidateStruct(src, dst, list, identical);
         return true;
@@ -139,7 +139,7 @@ inline void ValidateFields(const RuntimeSchema& src,
 
         if (!f_src || f_src->id > f_dst->id)
         {
-            if (f_dst->metadata.modifier == Required)
+            if (f_dst->metadata.modifier == Modifier::Required)
             {
                 RequiredFieldMissingException(s_dst, *f_dst);
             }
@@ -148,8 +148,8 @@ inline void ValidateFields(const RuntimeSchema& src,
             continue;
         }
 
-        if (f_dst->metadata.modifier == Required &&
-            f_src->metadata.modifier == Optional)
+        if (f_dst->metadata.modifier == Modifier::Required &&
+            f_src->metadata.modifier == Modifier::Optional)
         {
             OptionalToRequiredException(s_src, s_dst, *f_src, *f_dst);
         }

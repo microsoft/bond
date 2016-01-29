@@ -363,33 +363,33 @@ public:
     template <typename T>
     void Skip(const bonded<T, CompactBinaryReader&>&)
     {
-        SkipComplex(bond::BT_STRUCT);
+        SkipComplex(bond::BondDataType::BT_STRUCT);
     }
 
     void Skip(BondDataType type)
     {
         switch (type)
         {
-            case bond::BT_FLOAT:
+            case bond::BondDataType::BT_FLOAT:
                 _input.Skip(sizeof(float));
                 break;
 
-            case bond::BT_DOUBLE:
+            case bond::BondDataType::BT_DOUBLE:
                 _input.Skip(sizeof(double));
                 break;
 
-            case bond::BT_BOOL:
-            case bond::BT_UINT8:
-            case bond::BT_INT8:
+            case bond::BondDataType::BT_BOOL:
+            case bond::BondDataType::BT_UINT8:
+            case bond::BondDataType::BT_INT8:
                 _input.Skip(sizeof(uint8_t));
                 break;
 
-            case bond::BT_UINT64:
-            case bond::BT_UINT32:
-            case bond::BT_UINT16:
-            case bond::BT_INT64:
-            case bond::BT_INT32:
-            case bond::BT_INT16:
+            case bond::BondDataType::BT_UINT64:
+            case bond::BondDataType::BT_UINT32:
+            case bond::BondDataType::BT_UINT16:
+            case bond::BondDataType::BT_INT64:
+            case bond::BondDataType::BT_INT32:
+            case bond::BondDataType::BT_INT16:
             {
                 uint64_t value;
                 Read(value);
@@ -406,7 +406,7 @@ protected:
     {
         switch (type)
         {
-            case bond::BT_STRING:
+            case bond::BondDataType::BT_STRING:
             {
                 uint32_t length;
 
@@ -414,7 +414,7 @@ protected:
                 _input.Skip(length);
                 break;
             }
-            case bond::BT_WSTRING:
+            case bond::BondDataType::BT_WSTRING:
             {
                 uint32_t length;
 
@@ -422,8 +422,8 @@ protected:
                 _input.Skip(length * sizeof(uint16_t));
                 break;
             }
-            case bond::BT_SET:
-            case bond::BT_LIST:
+            case bond::BondDataType::BT_SET:
+            case bond::BondDataType::BT_LIST:
             {
                 BondDataType element_type;
                 uint32_t     size;
@@ -436,7 +436,7 @@ protected:
                 ReadContainerEnd();
                 break;
             }
-            case bond::BT_MAP:
+            case bond::BondDataType::BT_MAP:
             {
                 std::pair<BondDataType, BondDataType>   element_type;
                 uint32_t                                size;
@@ -450,7 +450,7 @@ protected:
                 ReadContainerEnd();
                 break;
             }
-            case bond::BT_STRUCT:
+            case bond::BondDataType::BT_STRUCT:
             {
                 if (v2 == _version)
                 {
@@ -466,7 +466,7 @@ protected:
                     BondDataType field_type;
 
                     for (ReadFieldBegin(field_type, id);
-                         field_type != bond::BT_STOP && field_type != bond::BT_STOP_BASE;
+                         field_type != bond::BondDataType::BT_STOP && field_type != bond::BondDataType::BT_STOP_BASE;
                          ReadFieldEnd(), ReadFieldBegin(field_type, id))
                     {
                         Skip(field_type);
@@ -474,7 +474,7 @@ protected:
 
                     ReadStructEnd();
 
-                    if (field_type == bond::BT_STOP)
+                    if (field_type == bond::BondDataType::BT_STOP)
                         break;
                 }
 
@@ -495,7 +495,7 @@ protected:
 };
 
 template <typename Buffer>
-const uint16_t CompactBinaryReader<Buffer>::magic = COMPACT_PROTOCOL;
+const uint16_t CompactBinaryReader<Buffer>::magic = ProtocolType::COMPACT_PROTOCOL;
 
 
 class OutputCounter;
@@ -577,11 +577,11 @@ public:
     {
         if (base)
         {
-            _output.Write(static_cast<uint8_t>(BT_STOP_BASE));
+            _output.Write(static_cast<uint8_t>(BondDataType::BT_STOP_BASE));
         }
         else
         {
-            _output.Write(static_cast<uint8_t>(BT_STOP));
+            _output.Write(static_cast<uint8_t>(BondDataType::BT_STOP));
             LengthEnd(_output);
         }
     }

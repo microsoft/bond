@@ -134,40 +134,40 @@ public:
     {
         switch (type)
         {
-            case BT_BOOL:
-            case BT_UINT8:
-            case BT_INT8:
+            case BondDataType::BT_BOOL:
+            case BondDataType::BT_UINT8:
+            case BondDataType::BT_INT8:
                 _input.Skip(sizeof(uint8_t));
                 break;
 
-            case BT_UINT16:
-            case BT_INT16:
+            case BondDataType::BT_UINT16:
+            case BondDataType::BT_INT16:
                 _input.Skip(sizeof(uint16_t));
                 break;
 
-            case BT_UINT32:
-            case BT_INT32:
+            case BondDataType::BT_UINT32:
+            case BondDataType::BT_INT32:
                 _input.Skip(sizeof(uint32_t));
                 break;
 
-            case BT_UINT64:
-            case BT_INT64:
+            case BondDataType::BT_UINT64:
+            case BondDataType::BT_INT64:
                 _input.Skip(sizeof(uint64_t));
                 break;
 
-            case BT_FLOAT:
+            case BondDataType::BT_FLOAT:
                 _input.Skip(sizeof(float));
                 break;
 
-            case BT_DOUBLE:
+            case BondDataType::BT_DOUBLE:
                 _input.Skip(sizeof(double));
                 break;
 
-            case BT_STRING:
+            case BondDataType::BT_STRING:
                 Skip<std::string>();
                 break;
 
-            case BT_WSTRING:
+            case BondDataType::BT_WSTRING:
                 Skip<std::wstring>();
                 break;
 
@@ -207,7 +207,7 @@ protected:
 
 
 template <typename Buffer>
-const uint16_t SimpleBinaryReader<Buffer>::magic = SIMPLE_PROTOCOL;
+const uint16_t SimpleBinaryReader<Buffer>::magic = ProtocolType::SIMPLE_PROTOCOL;
 
 
 /// @brief Writer for Simple Binary protocol

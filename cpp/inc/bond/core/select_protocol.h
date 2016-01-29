@@ -32,7 +32,7 @@ inline std::pair<ProtocolType, bool> NextProtocol(
     const Transform&)
 {
     UnknownProtocolException();
-    return std::make_pair(MARSHALED_PROTOCOL, false);
+    return std::make_pair(ProtocolType::MARSHALED_PROTOCOL, false);
 }
 
 
@@ -68,7 +68,7 @@ inline std::pair<ProtocolType, bool> NextProtocol(
     const Transform&)
 {
     UnknownProtocolException(); 
-    return std::make_pair(MARSHALED_PROTOCOL, false);
+    return std::make_pair(ProtocolType::MARSHALED_PROTOCOL, false);
 }
 
 

@@ -291,43 +291,43 @@ public:
         {
             switch (type)
             {
-                case BT_BOOL:
+                case BondDataType::BT_BOOL:
                     Field(id, metadata, !!metadata.default_value.uint_value);
                     break;
-                case BT_UINT8:
-                case BT_UINT16:
-                case BT_UINT32:
-                case BT_UINT64:
+                case BondDataType::BT_UINT8:
+                case BondDataType::BT_UINT16:
+                case BondDataType::BT_UINT32:
+                case BondDataType::BT_UINT64:
                     Field(id, metadata, metadata.default_value.uint_value);
                     break;
-                case BT_FLOAT:
-                case BT_DOUBLE:
+                case BondDataType::BT_FLOAT:
+                case BondDataType::BT_DOUBLE:
                     Field(id, metadata, metadata.default_value.double_value);
                     break;
-                case BT_STRING:
+                case BondDataType::BT_STRING:
                     Field(id, metadata, metadata.default_value.string_value);
                     break;
-                case BT_STRUCT:
+                case BondDataType::BT_STRUCT:
                     BOOST_ASSERT(false);
                     break;
-                case BT_LIST:
-                case BT_SET:
+                case BondDataType::BT_LIST:
+                case BondDataType::BT_SET:
                     WriteName(detail::FieldName(metadata));
                     _output.WriteOpen('[');
                     _output.WriteClose(']');
                     break;
-                case BT_MAP:
+                case BondDataType::BT_MAP:
                     WriteName(detail::FieldName(metadata));
                     _output.WriteOpen('{');
                     _output.WriteClose('}');
                     break;
-                case BT_INT8:
-                case BT_INT16:
-                case BT_INT32:
-                case BT_INT64:
+                case BondDataType::BT_INT8:
+                case BondDataType::BT_INT16:
+                case BondDataType::BT_INT32:
+                case BondDataType::BT_INT64:
                     Field(id, metadata, metadata.default_value.int_value);
                     break;
-                case BT_WSTRING:
+                case BondDataType::BT_WSTRING:
                     Field(id, metadata, metadata.default_value.wstring_value);
                     break;
                 default:
