@@ -6,6 +6,7 @@
 #include "encoding.h"
 #include "detail/simple_array.h"
 #include <bond/core/bond_version.h>
+#include <bond/core/bond_const_enum.h>
 #include <bond/core/traits.h>
 #include <bond/stream/output_counter.h>
 #include <boost/call_traits.hpp>

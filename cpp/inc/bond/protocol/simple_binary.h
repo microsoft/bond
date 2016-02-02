@@ -6,6 +6,7 @@
 #include "encoding.h"
 #include <bond/core/traits.h>
 #include <bond/core/bond_version.h>
+#include <bond/core/bond_const_enum.h>
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
 
