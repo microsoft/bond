@@ -23,44 +23,44 @@ use_value
     static const bool value = is_list_container<T>::value
                            || is_set_container<T>::value
                            || is_map_container<T>::value
-                           || is_string<T>::value 
+                           || is_string<T>::value
                            || is_wstring<T>::value
                            || !is_class<T>::value;
 };
 
-template<typename T, typename E = void> struct 
+template<typename T, typename E = void> struct
 has_compare
     : false_type {};
 
-template<typename T> struct 
+template<typename T> struct
 has_compare<T, typename boost::enable_if<is_class<typename T::key_compare> >::type>
     : true_type {};
 
-template<typename T, typename E = void> struct 
+template<typename T, typename E = void> struct
 has_allocator
     : false_type {};
 
-template<typename T> struct 
+template<typename T> struct
 has_allocator<T, typename boost::enable_if<is_class<typename T::allocator_type> >::type>
     : true_type {};
 
 struct no_allocator
 {
-    template<typename T> 
+    template<typename T>
     struct rebind
     {
         typedef no_allocator other;
     };
 };
 
-template<typename T, typename E = void> struct 
-allocator_type 
-{ 
+template<typename T, typename E = void> struct
+allocator_type
+{
     typedef no_allocator type;
 };
 
-template<typename T> struct 
-allocator_type<T, typename boost::enable_if<has_allocator<T> >::type> 
+template<typename T> struct
+allocator_type<T, typename boost::enable_if<has_allocator<T> >::type>
 {
     typedef typename T::allocator_type type;
 };
@@ -85,9 +85,9 @@ get_allocator(const T&)
 //
 // Nullable value
 //
-template<typename T, 
+template<typename T,
          typename Allocator = typename detail::allocator_type<T>::type,
-         bool useValue = detail::use_value<T>::value> 
+         bool useValue = detail::use_value<T>::value>
 class nullable;
 
 template<typename T, typename Allocator>
@@ -111,7 +111,7 @@ public:
         return !hasvalue();
     }
 
-    void swap(nullable& src) 
+    void swap(nullable& src)
     {
         std::swap(_alloc, src._alloc);
         std::swap(_hasvalue, src._hasvalue);
@@ -123,7 +123,7 @@ public:
           _hasvalue(false)
     {}
 
-    explicit 
+    explicit
     nullable(const allocator_type& alloc)
         : _alloc(alloc),
           _value(make_value<value_type>()),
@@ -133,8 +133,8 @@ public:
 
     // deprecated!
     template <typename Compare>
-    explicit 
-    nullable(const Compare&, 
+    explicit
+    nullable(const Compare&,
              const allocator_type& alloc)
         : _alloc(alloc),
           _value(make_value<value_type>()),
@@ -261,27 +261,30 @@ public:
 #endif
 
 private:
-    template<typename U>
-    typename boost::enable_if_c<detail::has_allocator<U>::value && 
-                                detail::has_compare<U>::value, U>::type
+    template<typename ValueType>
+    typename boost::enable_if_c<detail::has_allocator<ValueType>::value &&
+                                detail::has_compare<ValueType>::value, ValueType>::type
     make_value()
     {
-        return U(typename U::key_compare(), _alloc);
+        ValueType value(typename ValueType::key_compare(), _alloc);
+        return value;
     }
 
-    template<typename U>
-    typename boost::enable_if_c<detail::has_allocator<U>::value && 
-                                !detail::has_compare<U>::value, U>::type
+    template<typename ValueType>
+    typename boost::enable_if_c<detail::has_allocator<ValueType>::value &&
+                                !detail::has_compare<ValueType>::value, ValueType>::type
     make_value()
     {
-        return U(_alloc);
+        ValueType value(_alloc);
+        return value;
     }
 
-    template<typename U>
-    typename boost::disable_if<detail::has_allocator<U>, U>::type
+    template<typename ValueType>
+    typename boost::disable_if<detail::has_allocator<ValueType>, ValueType>::type
     make_value()
     {
-        return U();
+        ValueType value;
+        return value;
     }
 
 private:
@@ -410,7 +413,7 @@ public:
         return empty();
     }
 
-    /// @brief Set to default instance of T and return reference to the value 
+    /// @brief Set to default instance of T and return reference to the value
     reference set()
     {
         if (empty())
@@ -430,7 +433,7 @@ public:
     /// @brief Reset to null
     void reset()
     {
-        if (_value) 
+        if (_value)
         {
             destroy(_alloc);
             _value = 0;
@@ -474,7 +477,7 @@ public:
         if (empty())
             _value = new_value(_alloc, std::move(value));
         else
-            *_value = std::move(value);        
+            *_value = std::move(value);
     }
 #endif
 
@@ -483,7 +486,7 @@ private:
     void destroy(AllocatorT& alloc)
     {
         alloc.destroy(_value);
-        alloc.deallocate(_value, 1);       
+        alloc.deallocate(_value, 1);
     }
 
     void destroy(detail::no_allocator&)
@@ -539,7 +542,7 @@ private:
 
 
 template<typename T, typename Allocator, bool useValue>
-inline void swap(nullable<T, Allocator, useValue>& x, 
+inline void swap(nullable<T, Allocator, useValue>& x,
                  nullable<T, Allocator, useValue>& y)
 {
     x.swap(y);
@@ -584,7 +587,7 @@ void resize_list(nullable<T, Allocator, useValue>& value, uint32_t size)
 }
 
 
-template <typename T, typename Allocator, bool useValue> struct 
+template <typename T, typename Allocator, bool useValue> struct
 element_type<nullable<T, Allocator, useValue> >
 {
     typedef T type;
@@ -646,10 +649,9 @@ private:
 };
 
 
-template <typename T, typename Allocator, bool useValue> struct 
-is_list_container<nullable<T, Allocator, useValue> > 
+template <typename T, typename Allocator, bool useValue> struct
+is_list_container<nullable<T, Allocator, useValue> >
     : true_type {};
 
 
 } // namespace bond
-
