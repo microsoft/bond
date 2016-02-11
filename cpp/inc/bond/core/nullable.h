@@ -283,7 +283,7 @@ private:
     typename boost::disable_if<detail::has_allocator<ValueType>, ValueType>::type
     make_value()
     {
-        ValueType value;
+        ValueType value = ValueType();
         return value;
     }
 
