@@ -1,16 +1,16 @@
 namespace examples.multiprecision
 
 // Type aliases for large integers
-using int512 = blob;
-using int1024 = blob;
+using uint512 = blob;
+using uint1024 = blob;
 
 // Type alias for arbitrary precision integer
 using integer = blob;
 
 struct Example
 {
-    0: int1024 private_key;
-    1: int512 public_key;
+    0: uint1024 private_key;
+    1: uint512 public_key;
     2: integer product;
 }
 

@@ -13,8 +13,8 @@ int main()
 
     mt11213b gen1(clock());
     mt19937 gen2(clock());
-    independent_bits_engine<mt11213b, 512, int512_t> gen512(gen1);
-    independent_bits_engine<mt11213b, 1024, int1024_t> gen1024(gen1);
+    independent_bits_engine<mt11213b, 512, uint512_t> gen512(gen1);
+    independent_bits_engine<mt11213b, 1024, uint1024_t> gen1024(gen1);
 
     Example obj, obj2;
 

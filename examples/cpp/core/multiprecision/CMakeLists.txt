@@ -1,7 +1,7 @@
 add_bond_codegen (multiprecision.bond
     OPTIONS 
-        --using=int512=boost::multiprecision::int512_t
-        --using=int1024=boost::multiprecision::int1024_t
+        --using=uint512=boost::multiprecision::uint512_t
+        --using=uint1024=boost::multiprecision::uint1024_t
         --using=integer=boost::multiprecision::cpp_int
         --header=\"<multiprecision.h>\")
 
