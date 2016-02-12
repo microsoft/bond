@@ -136,16 +136,16 @@ class JsonTypeMatching : boost::noncopyable
 {
 public:
     JsonTypeMatching(BondDataType type, BondDataType schema, bool is_enum)
-        : matchesObject(type == BT_STRUCT && type == schema),
-          matchesArray((type == BT_MAP || type == BT_LIST || type == BT_SET) && type == schema),
-          matchesNull(type == BT_LIST && type == schema),
-          matchesInt(type >= BT_INT8 && type <= BT_INT64),
-          matchesInt64(type == BT_INT64),
-          matchesUint(type >= BT_UINT8 && type <= BT_UINT64),
-          matchesUint64(type == BT_UINT64),
-          matchesNumber(type >= BT_FLOAT && type <= BT_DOUBLE),
-          matchesString(type == BT_STRING || type == BT_WSTRING || is_enum),
-          matchesBool(type == BT_BOOL)
+        : matchesObject(type == BondDataType::BT_STRUCT && type == schema),
+          matchesArray((type == BondDataType::BT_MAP || type == BondDataType::BT_LIST || type == BondDataType::BT_SET) && type == schema),
+          matchesNull(type == BondDataType::BT_LIST && type == schema),
+          matchesInt(type >= BondDataType::BT_INT8 && type <= BondDataType::BT_INT64),
+          matchesInt64(type == BondDataType::BT_INT64),
+          matchesUint(type >= BondDataType::BT_UINT8 && type <= BondDataType::BT_UINT64),
+          matchesUint64(type == BondDataType::BT_UINT64),
+          matchesNumber(type >= BondDataType::BT_FLOAT && type <= BondDataType::BT_DOUBLE),
+          matchesString(type == BondDataType::BT_STRING || type == BondDataType::BT_WSTRING || is_enum),
+          matchesBool(type == BondDataType::BT_BOOL)
     {}
 
 
