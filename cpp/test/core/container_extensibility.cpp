@@ -9,7 +9,7 @@ namespace unittest
 template <typename T, size_t N, typename S>
 bool operator==(const std::array<T, N>& left, const S& right)
 {
-    for (int i = 0; i < right.length(); ++i)
+    for (typename S::size_type i = 0; i < right.length(); ++i)
         if (left[i] != static_cast<T>(right[i]))
             return false;
 

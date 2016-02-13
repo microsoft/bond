@@ -28,7 +28,7 @@ public:
         return false;
     }
 
-    
+
     template <typename T, typename Reader>
     bool Field(uint16_t /*id*/, const bond::Metadata& metadata, const bond::value<T, Reader>& value) const
     {
@@ -80,7 +80,7 @@ private:
     {
         UT_AssertAreEqual(!!variant.uint_value, value);
     }
-    
+
     void VerifyDefault(const bond::Variant& variant, const std::string& value) const
     {
         UT_AssertAreEqual(variant.string_value, value);
@@ -88,7 +88,7 @@ private:
 
     void VerifyDefault(const bond::Variant& variant, const std::wstring& value) const
     {
-        UT_AssertAreEqual(variant.wstring_value.c_str(), value.c_str()); 
+        UT_AssertAreEqual(variant.wstring_value.c_str(), value.c_str());
     }
 
     void VerifyDefault(const bond::Variant& variant, double value) const
@@ -108,11 +108,11 @@ public:
     MetadataVerifier(const char* name)
         : _name(name)
     {}
-    
+
     void Begin(const bond::Metadata& metadata) const
     {
         char name[100], qualified_name[100];
-    
+
         sprintf(name, "%sWithMetadata", _name);
         sprintf(qualified_name, "unittest.%sWithMetadata", _name);
 
@@ -145,13 +145,13 @@ public:
     {
         bond::Metadata  metadata_copy = metadata;
         char            name[100];
-    
+
         sprintf(name, "%s%d", _name, id);
 
         UT_AssertIsTrue(metadata_copy.name == name);
         UT_AssertIsTrue(metadata_copy.name == metadata_copy.attributes["field_name"]);
         UT_AssertIsTrue(ToString(metadata_copy.modifier) == metadata_copy.attributes["field_modifier"]);
-        
+
         return Nested(value);
     }
 
@@ -164,7 +164,7 @@ public:
 private:
     template <typename T>
     typename boost::enable_if<bond::is_bond_type<T>, bool>::type
-    Nested(const T& value) const 
+    Nested(const T& value) const
     {
         return bond::Apply(MetadataVerifier("Nested"), value);
     }
@@ -188,7 +188,7 @@ TEST_CASE_BEGIN(CompileTimeMetadataTests)
 
     {
         StructWithDefaults value;
-    
+
         bond::Apply(DefaultValueVerifier(), value);
 
         UT_AssertAreEqual(value.m_uint32_min, 0u);
@@ -209,7 +209,7 @@ TEST_CASE_BEGIN(RuntimeMetadataTests)
 {
     {
         StructWithMetadata               value;
-        bond::bonded<StructWithMetadata> bonded(Serialize<bond::SimpleBinaryReader<bond::InputBuffer>, 
+        bond::bonded<StructWithMetadata> bonded(Serialize<bond::SimpleBinaryReader<bond::InputBuffer>,
                                                           bond::SimpleBinaryWriter<bond::OutputBuffer> >(value));
         bond::bonded<void>               bonded_void(bonded);
 
@@ -218,7 +218,7 @@ TEST_CASE_BEGIN(RuntimeMetadataTests)
 
     {
         StructWithDefaults               value;
-        bond::bonded<StructWithDefaults> bonded(Serialize<bond::SimpleBinaryReader<bond::InputBuffer>, 
+        bond::bonded<StructWithDefaults> bonded(Serialize<bond::SimpleBinaryReader<bond::InputBuffer>,
                                                           bond::SimpleBinaryWriter<bond::OutputBuffer> >(value));
         bond::bonded<void>               bonded_void(bonded);
 
@@ -226,12 +226,12 @@ TEST_CASE_BEGIN(RuntimeMetadataTests)
     }
 
     {
-        UT_AssertIsFalse(BondStruct<import2::ImportedEnum>::Schema::metadata.name == 
+        UT_AssertIsFalse(BondStruct<import2::ImportedEnum>::Schema::metadata.name ==
                          BondStruct<unittest::ImportedEnum>::Schema::metadata.name);
 
         bond::SchemaDef schema = bond::GetRuntimeSchema<GenericMetadata>().GetSchema();
 
-        UT_AssertAreEqual(7, schema.structs.size());
+        UT_AssertAreEqual(std::size_t(7), schema.structs.size());
     }
 }
 TEST_CASE_END

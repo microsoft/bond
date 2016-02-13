@@ -38,7 +38,7 @@ template <typename Reader, typename Writer>
 TEST_CASE_BEGIN(OutputBufferBlobs)
 {
     Blobs blobs = InitRandom<Blobs>();
-    
+
     {
         // chain all blobs (minimum size 0 bytes)
         bond::OutputBuffer stream(1000, 1, std::allocator<char>(), 0);
@@ -47,9 +47,9 @@ TEST_CASE_BEGIN(OutputBufferBlobs)
         Serialize(blobs, writer);
         std::vector<bond::blob> buffers;
         stream.GetBuffers(buffers);
-        
+
         if (Reader::magic == bond::SIMPLE_JSON_PROTOCOL)
-            UT_AssertAreEqual(1, buffers.size());
+            UT_AssertAreEqual(std::size_t(1), buffers.size());
         else
             UT_AssertAreEqual(blobs.blobs.size() * 2 + 1, buffers.size());
     }
@@ -62,7 +62,7 @@ TEST_CASE_BEGIN(OutputBufferBlobs)
         Serialize(blobs, writer);
         std::vector<bond::blob> buffers;
         stream.GetBuffers(buffers);
-        UT_AssertAreEqual(buffers.size(), 1);
+        UT_AssertAreEqual(buffers.size(), std::size_t(1));
     }
 
     {
@@ -73,7 +73,7 @@ TEST_CASE_BEGIN(OutputBufferBlobs)
         Serialize(blobs, writer);
         std::vector<bond::blob> buffers;
         stream.GetBuffers(buffers);
-        UT_AssertAreEqual(buffers.size(), 1);
+        UT_AssertAreEqual(buffers.size(), std::size_t(1));
     }
 }
 TEST_CASE_END
@@ -84,20 +84,20 @@ void BlobTests(const char* name)
 {
     UnitTestSuite suite(name);
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping1, Reader, Writer, BondStruct<bond::blob> >(suite, "blob deserialization");
 
 #ifndef UNIT_TEST_SUBSET
     AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, BondStruct<bond::blob>, BondStruct<std::vector<int8_t> > >(suite, "blob-vector interop");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, BondStruct<std::vector<int8_t> >, BondStruct<bond::blob> >(suite, "vector-blob interop");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         LargeBlob, Reader, Writer>(suite, "large blob");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         OutputBufferBlobs, Reader, Writer>(suite, "OutputBuffer blobs");
 #endif
 }
