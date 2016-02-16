@@ -362,7 +362,20 @@
 
             foreach (string propertyName in actual.Properties.Keys)
             {
-                var expectedValue = expected.GetType().GetProperty(propertyName).GetValue(expected, null);
+                object expectedValue;
+
+                // The bond field could be created as either a property or field in the C# class
+                var propertyInfo = expected.GetType().GetProperty(propertyName);
+                if (propertyInfo != null)
+                {
+                    expectedValue = propertyInfo.GetValue(expected, null);
+                }
+                else
+                {
+                    var fieldInfo = expected.GetType().GetField(propertyName);
+                    expectedValue = fieldInfo.GetValue(expected);
+                }
+
                 var actualValue = actual.Properties[propertyName];
 
                 VerifyObjectsMatch(propertyName, expectedValue, actualValue);
