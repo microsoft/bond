@@ -27,13 +27,13 @@ namespace test
         std::vector<bool, typename arena::rebind<bool>::other> v;
         std::set<bool, std::less<bool>, typename arena::rebind<bool>::other> s;
         std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> m;
-        std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> s;
+        std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> st;
         std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> d;
         bond::maybe<std::list<bool, typename arena::rebind<bool>::other> > l1;
         bond::maybe<std::vector<bool, typename arena::rebind<bool>::other> > v1;
         bond::maybe<std::set<bool, std::less<bool>, typename arena::rebind<bool>::other> > s1;
         bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> > m1;
-        bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> > s1;
+        bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> > st1;
         
         foo()
           : d("foo")
@@ -52,13 +52,13 @@ namespace test
             v(std::move(other.v)),
             s(std::move(other.s)),
             m(std::move(other.m)),
-            s(std::move(other.s)),
+            st(std::move(other.st)),
             d(std::move(other.d)),
             l1(std::move(other.l1)),
             v1(std::move(other.v1)),
             s1(std::move(other.s1)),
             m1(std::move(other.m1)),
-            s1(std::move(other.s1))
+            st1(std::move(other.st1))
         {
         }
 #endif
@@ -69,13 +69,13 @@ namespace test
             v(allocator),
             s(std::less<bool>(), allocator),
             m(std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>>(), allocator),
-            s(allocator),
+            st(allocator),
             d("foo", allocator),
             l1(allocator),
             v1(allocator),
             s1(std::less<bool>(), allocator),
             m1(std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>>(), allocator),
-            s1(allocator)
+            st1(allocator)
         {
         }
         
@@ -92,13 +92,13 @@ namespace test
                 && (v == other.v)
                 && (s == other.s)
                 && (m == other.m)
-                && (s == other.s)
+                && (st == other.st)
                 && (d == other.d)
                 && (l1 == other.l1)
                 && (v1 == other.v1)
                 && (s1 == other.s1)
                 && (m1 == other.m1)
-                && (s1 == other.s1);
+                && (st1 == other.st1);
         }
 
         bool operator!=(const foo& other) const
@@ -113,13 +113,13 @@ namespace test
             swap(v, other.v);
             swap(s, other.s);
             swap(m, other.m);
-            swap(s, other.s);
+            swap(st, other.st);
             swap(d, other.d);
             swap(l1, other.l1);
             swap(v1, other.v1);
             swap(s1, other.s1);
             swap(m1, other.m1);
-            swap(s1, other.s1);
+            swap(st1, other.st1);
         }
 
         struct Schema;

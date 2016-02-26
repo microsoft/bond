@@ -234,12 +234,12 @@ struct = do
     with params e = e { currentParams = params }
     unique p = do
         fields' <- p
-        case findDuplicates fields' of
+        case findDuplicatesBy fieldOrdinal fields' ++ findDuplicatesBy fieldName fields' of
             [] -> return fields'
-            Field {..}:_ -> fail $ "Duplicate definition of the field with ordinal " ++ show fieldOrdinal
+            Field {..}:_ -> fail $ "Duplicate definition of the field with ordinal " ++ show fieldOrdinal ++
+                " and name " ++ show fieldName
       where
-        findDuplicates xs = deleteFirstsBy ordinal xs (nubBy ordinal xs)
-        ordinal = (==) `on` fieldOrdinal
+        findDuplicatesBy accessor xs = deleteFirstsBy ((==) `on` accessor) xs (nubBy ((==) `on` accessor) xs)
 
 manySortedBy :: (a -> a -> Ordering) -> ParsecT s u m a -> ParsecT s u m [a]
 manySortedBy = manyAccum . insertBy

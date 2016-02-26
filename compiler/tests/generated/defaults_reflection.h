@@ -44,7 +44,7 @@ namespace tests
         private: static const bond::Metadata s_m_float_7_metadata;
         private: static const bond::Metadata s_m_enum1_metadata;
         private: static const bond::Metadata s_m_enum2_metadata;
-        private: static const bond::Metadata s_m_enum2_metadata;
+        private: static const bond::Metadata s_m_enum3_metadata;
         private: static const bond::Metadata s_m_wstr_1_metadata;
         private: static const bond::Metadata s_m_wstr_2_metadata;
 
@@ -340,15 +340,15 @@ namespace tests
                 &s_m_enum2_metadata
             > m_enum2;
         
-            // m_enum2
+            // m_enum3
             typedef bond::reflection::FieldTemplate<
                 29,
                 bond::reflection::optional_field_modifier,
                 Foo,
                 bond::maybe< ::tests::EnumType1>,
-                &Foo::m_enum2,
-                &s_m_enum2_metadata
-            > m_enum2;
+                &Foo::m_enum3,
+                &s_m_enum3_metadata
+            > m_enum3;
         
             // m_wstr_1
             typedef bond::reflection::FieldTemplate<
@@ -374,7 +374,7 @@ namespace tests
         private: typedef boost::mpl::list<> fields0;
         private: typedef boost::mpl::push_front<fields0, var::m_wstr_2>::type fields1;
         private: typedef boost::mpl::push_front<fields1, var::m_wstr_1>::type fields2;
-        private: typedef boost::mpl::push_front<fields2, var::m_enum2>::type fields3;
+        private: typedef boost::mpl::push_front<fields2, var::m_enum3>::type fields3;
         private: typedef boost::mpl::push_front<fields3, var::m_enum2>::type fields4;
         private: typedef boost::mpl::push_front<fields4, var::m_enum1>::type fields5;
         private: typedef boost::mpl::push_front<fields5, var::m_float_7>::type fields6;

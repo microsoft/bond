@@ -27,20 +27,20 @@ namespace test
         my::vector<bool> v;
         my::set<bool> s;
         my::map<my::string, bool> m;
-        my::string s;
+        my::string st;
         my::string d;
         bond::maybe<my::list<bool> > l1;
         bond::maybe<my::vector<bool> > v1;
         bond::maybe<my::set<bool> > s1;
         bond::maybe<my::map<my::string, bool> > m1;
-        bond::maybe<my::string> s1;
+        bond::maybe<my::string> st1;
         
         foo()
           : l(),
             v(),
             s(),
             m(),
-            s(),
+            st(),
             d("foo")
         {
         }
@@ -57,13 +57,13 @@ namespace test
             v(std::move(other.v)),
             s(std::move(other.s)),
             m(std::move(other.m)),
-            s(std::move(other.s)),
+            st(std::move(other.st)),
             d(std::move(other.d)),
             l1(std::move(other.l1)),
             v1(std::move(other.v1)),
             s1(std::move(other.s1)),
             m1(std::move(other.m1)),
-            s1(std::move(other.s1))
+            st1(std::move(other.st1))
         {
         }
 #endif
@@ -74,13 +74,13 @@ namespace test
             v(),
             s(),
             m(),
-            s(),
+            st(),
             d("foo"),
             l1(),
             v1(),
             s1(),
             m1(),
-            s1()
+            st1()
         {
         }
         
@@ -97,13 +97,13 @@ namespace test
                 && (v == other.v)
                 && (s == other.s)
                 && (m == other.m)
-                && (s == other.s)
+                && (st == other.st)
                 && (d == other.d)
                 && (l1 == other.l1)
                 && (v1 == other.v1)
                 && (s1 == other.s1)
                 && (m1 == other.m1)
-                && (s1 == other.s1);
+                && (st1 == other.st1);
         }
 
         bool operator!=(const foo& other) const
@@ -118,13 +118,13 @@ namespace test
             swap(v, other.v);
             swap(s, other.s);
             swap(m, other.m);
-            swap(s, other.s);
+            swap(st, other.st);
             swap(d, other.d);
             swap(l1, other.l1);
             swap(v1, other.v1);
             swap(s1, other.s1);
             swap(m1, other.m1);
-            swap(s1, other.s1);
+            swap(st1, other.st1);
         }
 
         struct Schema;

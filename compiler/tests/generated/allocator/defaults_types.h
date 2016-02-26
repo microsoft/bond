@@ -117,7 +117,7 @@ namespace tests
         float m_float_7;
         ::tests::EnumType1 m_enum1;
         ::tests::EnumType1 m_enum2;
-        bond::maybe< ::tests::EnumType1> m_enum2;
+        bond::maybe< ::tests::EnumType1> m_enum3;
         std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other> m_wstr_1;
         bond::maybe<std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other> > m_wstr_2;
         
@@ -180,7 +180,7 @@ namespace tests
             m_float_7(std::move(other.m_float_7)),
             m_enum1(std::move(other.m_enum1)),
             m_enum2(std::move(other.m_enum2)),
-            m_enum2(std::move(other.m_enum2)),
+            m_enum3(std::move(other.m_enum3)),
             m_wstr_1(std::move(other.m_wstr_1)),
             m_wstr_2(std::move(other.m_wstr_2))
         {
@@ -218,7 +218,7 @@ namespace tests
             m_float_7(0.0f),
             m_enum1(::tests::_bond_enumerators::EnumType1::EnumValue1),
             m_enum2(::tests::_bond_enumerators::EnumType1::EnumValue3),
-            m_enum2(),
+            m_enum3(),
             m_wstr_1(L"default wstring value", allocator),
             m_wstr_2(allocator)
         {
@@ -262,7 +262,7 @@ namespace tests
                 && (m_float_7 == other.m_float_7)
                 && (m_enum1 == other.m_enum1)
                 && (m_enum2 == other.m_enum2)
-                && (m_enum2 == other.m_enum2)
+                && (m_enum3 == other.m_enum3)
                 && (m_wstr_1 == other.m_wstr_1)
                 && (m_wstr_2 == other.m_wstr_2);
         }
@@ -304,7 +304,7 @@ namespace tests
             swap(m_float_7, other.m_float_7);
             swap(m_enum1, other.m_enum1);
             swap(m_enum2, other.m_enum2);
-            swap(m_enum2, other.m_enum2);
+            swap(m_enum3, other.m_enum3);
             swap(m_wstr_1, other.m_wstr_1);
             swap(m_wstr_2, other.m_wstr_2);
         }
