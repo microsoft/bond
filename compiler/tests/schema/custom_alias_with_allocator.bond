@@ -12,11 +12,11 @@ struct foo
     1: Vector<bool> v;
     2: Set<bool> s;
     3: Map<String, bool> m;
-    4: String s;
+    4: String st;
     5: String d = "foo";
     10: List<bool> l1 = nothing;
     11: Vector<bool> v1 = nothing;
     12: Set<bool> s1 = nothing;
     13: Map<String, bool> m1 = nothing;
-    14: String s1 = nothing;
+    14: String st1 = nothing;
 }

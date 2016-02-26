@@ -19,13 +19,13 @@ namespace test
         private: static const bond::Metadata s_v_metadata;
         private: static const bond::Metadata s_s_metadata;
         private: static const bond::Metadata s_m_metadata;
-        private: static const bond::Metadata s_s_metadata;
+        private: static const bond::Metadata s_st_metadata;
         private: static const bond::Metadata s_d_metadata;
         private: static const bond::Metadata s_l1_metadata;
         private: static const bond::Metadata s_v1_metadata;
         private: static const bond::Metadata s_s1_metadata;
         private: static const bond::Metadata s_m1_metadata;
-        private: static const bond::Metadata s_s1_metadata;
+        private: static const bond::Metadata s_st1_metadata;
 
         public: struct var
         {
@@ -69,15 +69,15 @@ namespace test
                 &s_m_metadata
             > m;
         
-            // s
+            // st
             typedef bond::reflection::FieldTemplate<
                 4,
                 bond::reflection::optional_field_modifier,
                 foo,
                 my::string<arena>,
-                &foo::s,
-                &s_s_metadata
-            > s;
+                &foo::st,
+                &s_st_metadata
+            > st;
         
             // d
             typedef bond::reflection::FieldTemplate<
@@ -129,25 +129,25 @@ namespace test
                 &s_m1_metadata
             > m1;
         
-            // s1
+            // st1
             typedef bond::reflection::FieldTemplate<
                 14,
                 bond::reflection::optional_field_modifier,
                 foo,
                 bond::maybe<my::string<arena> >,
-                &foo::s1,
-                &s_s1_metadata
-            > s1;
+                &foo::st1,
+                &s_st1_metadata
+            > st1;
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::s1>::type fields1;
+        private: typedef boost::mpl::push_front<fields0, var::st1>::type fields1;
         private: typedef boost::mpl::push_front<fields1, var::m1>::type fields2;
         private: typedef boost::mpl::push_front<fields2, var::s1>::type fields3;
         private: typedef boost::mpl::push_front<fields3, var::v1>::type fields4;
         private: typedef boost::mpl::push_front<fields4, var::l1>::type fields5;
         private: typedef boost::mpl::push_front<fields5, var::d>::type fields6;
-        private: typedef boost::mpl::push_front<fields6, var::s>::type fields7;
+        private: typedef boost::mpl::push_front<fields6, var::st>::type fields7;
         private: typedef boost::mpl::push_front<fields7, var::m>::type fields8;
         private: typedef boost::mpl::push_front<fields8, var::s>::type fields9;
         private: typedef boost::mpl::push_front<fields9, var::v>::type fields10;

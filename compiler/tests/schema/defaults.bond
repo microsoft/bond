@@ -53,7 +53,7 @@ struct Foo
 
     27: EnumType1 m_enum1 = EnumValue1;
     28: EnumType1 m_enum2 = EnumValue3;
-    29: EnumType1 m_enum2 = nothing;    
+    29: EnumType1 m_enum3 = nothing;    
 
     30: wstring m_wstr_1 = L"default wstring value";
     31: wstring m_wstr_2 = nothing;

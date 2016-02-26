@@ -27,20 +27,20 @@ namespace test
         my::vector<bool, arena> v;
         my::set<bool, arena> s;
         my::map<my::string<arena>, bool, arena> m;
-        my::string<arena> s;
+        my::string<arena> st;
         my::string<arena> d;
         bond::maybe<my::list<bool, arena> > l1;
         bond::maybe<my::vector<bool, arena> > v1;
         bond::maybe<my::set<bool, arena> > s1;
         bond::maybe<my::map<my::string<arena>, bool, arena> > m1;
-        bond::maybe<my::string<arena> > s1;
+        bond::maybe<my::string<arena> > st1;
         
         foo()
           : l(),
             v(),
             s(),
             m(),
-            s(),
+            st(),
             d("foo")
         {
         }
@@ -57,13 +57,13 @@ namespace test
             v(std::move(other.v)),
             s(std::move(other.s)),
             m(std::move(other.m)),
-            s(std::move(other.s)),
+            st(std::move(other.st)),
             d(std::move(other.d)),
             l1(std::move(other.l1)),
             v1(std::move(other.v1)),
             s1(std::move(other.s1)),
             m1(std::move(other.m1)),
-            s1(std::move(other.s1))
+            st1(std::move(other.st1))
         {
         }
 #endif
@@ -74,13 +74,13 @@ namespace test
             v(allocator),
             s(std::less<bool>(), allocator),
             m(std::less<my::string<arena>>(), allocator),
-            s(allocator),
+            st(allocator),
             d("foo", allocator),
             l1(allocator),
             v1(allocator),
             s1(std::less<bool>(), allocator),
             m1(std::less<my::string<arena>>(), allocator),
-            s1(allocator)
+            st1(allocator)
         {
         }
         
@@ -97,13 +97,13 @@ namespace test
                 && (v == other.v)
                 && (s == other.s)
                 && (m == other.m)
-                && (s == other.s)
+                && (st == other.st)
                 && (d == other.d)
                 && (l1 == other.l1)
                 && (v1 == other.v1)
                 && (s1 == other.s1)
                 && (m1 == other.m1)
-                && (s1 == other.s1);
+                && (st1 == other.st1);
         }
 
         bool operator!=(const foo& other) const
@@ -118,13 +118,13 @@ namespace test
             swap(v, other.v);
             swap(s, other.s);
             swap(m, other.m);
-            swap(s, other.s);
+            swap(st, other.st);
             swap(d, other.d);
             swap(l1, other.l1);
             swap(v1, other.v1);
             swap(s1, other.s1);
             swap(m1, other.m1);
-            swap(s1, other.s1);
+            swap(st1, other.st1);
         }
 
         struct Schema;

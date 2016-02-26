@@ -139,8 +139,8 @@ namespace tests
     const bond::Metadata Foo::Schema::s_m_enum2_metadata
         = bond::reflection::MetadataInit(::tests::_bond_enumerators::EnumType1::EnumValue3, "m_enum2");
     
-    const bond::Metadata Foo::Schema::s_m_enum2_metadata
-        = bond::reflection::MetadataInit(bond::nothing, "m_enum2");
+    const bond::Metadata Foo::Schema::s_m_enum3_metadata
+        = bond::reflection::MetadataInit(bond::nothing, "m_enum3");
     
     const bond::Metadata Foo::Schema::s_m_wstr_1_metadata
         = bond::reflection::MetadataInit(L"default wstring value", "m_wstr_1");

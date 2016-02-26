@@ -120,7 +120,7 @@ namespace tests
         public EnumType1 m_enum2 { get; set; }
 
         [global::Bond.Id(29)]
-        public EnumType1? m_enum2 { get; set; }
+        public EnumType1? m_enum3 { get; set; }
 
         [global::Bond.Id(30), global::Bond.Type(typeof(global::Bond.Tag.wstring))]
         public string m_wstr_1 { get; set; }
