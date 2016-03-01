@@ -17,7 +17,12 @@ namespace tests
                 ("EnumValue3", EnumValue3)
                 ("EnumValue4", EnumValue4)
                 ("Low", Low)
-                ("EnumValue5", EnumValue5);
+                ("EnumValue5", EnumValue5)
+                ("EnumValue6", EnumValue6)
+                ("Int32Min", Int32Min)
+                ("Int32Max", Int32Max)
+                ("UInt32Min", UInt32Min)
+                ("UInt32Max", UInt32Max);
 
         const
         std::map<enum EnumType1, std::string> _value_to_name_EnumType1 =
@@ -141,6 +146,18 @@ namespace tests
     
     const bond::Metadata Foo::Schema::s_m_enum3_metadata
         = bond::reflection::MetadataInit(bond::nothing, "m_enum3");
+    
+    const bond::Metadata Foo::Schema::s_m_enum_int32min_metadata
+        = bond::reflection::MetadataInit(::tests::_bond_enumerators::EnumType1::Int32Min, "m_enum_int32min");
+    
+    const bond::Metadata Foo::Schema::s_m_enum_int32max_metadata
+        = bond::reflection::MetadataInit(::tests::_bond_enumerators::EnumType1::Int32Max, "m_enum_int32max");
+    
+    const bond::Metadata Foo::Schema::s_m_enum_uint32_min_metadata
+        = bond::reflection::MetadataInit(::tests::_bond_enumerators::EnumType1::UInt32Min, "m_enum_uint32_min");
+    
+    const bond::Metadata Foo::Schema::s_m_enum_uint32_max_metadata
+        = bond::reflection::MetadataInit(::tests::_bond_enumerators::EnumType1::UInt32Max, "m_enum_uint32_max");
     
     const bond::Metadata Foo::Schema::s_m_wstr_1_metadata
         = bond::reflection::MetadataInit(L"default wstring value", "m_wstr_1");

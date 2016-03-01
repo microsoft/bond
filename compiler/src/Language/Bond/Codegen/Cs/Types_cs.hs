@@ -140,7 +140,7 @@ namespace #{csNamespace}
     }|]
       where
         -- constant
-        constant Constant {..} = let value x = [lt| = #{x}|] in
+        constant Constant {..} = let value x = [lt| = unchecked((int)#{x})|] in
             [lt|#{constantName}#{optional value constantValue},|]
 
     typeDefinition _ = mempty

@@ -27,12 +27,17 @@ namespace tests
     {
         enum EnumType1
         {
-            EnumValue1 = 5,
-            EnumValue2 = 10,
-            EnumValue3 = -10,
-            EnumValue4 = 42,
-            Low = 1,
-            EnumValue5 = -10
+            EnumValue1 = static_cast<int32_t>(5),
+            EnumValue2 = static_cast<int32_t>(10),
+            EnumValue3 = static_cast<int32_t>(-10),
+            EnumValue4 = static_cast<int32_t>(42),
+            Low = static_cast<int32_t>(1),
+            EnumValue5 = static_cast<int32_t>(-10),
+            EnumValue6 = static_cast<int32_t>(4294967286),
+            Int32Min = static_cast<int32_t>(-2147483647-1),
+            Int32Max = static_cast<int32_t>(2147483647),
+            UInt32Min = static_cast<int32_t>(0),
+            UInt32Max = static_cast<int32_t>(4294967295)
         };
         
         extern const std::map<enum EnumType1, std::string> _value_to_name_EnumType1;
@@ -118,6 +123,10 @@ namespace tests
         ::tests::EnumType1 m_enum1;
         ::tests::EnumType1 m_enum2;
         bond::maybe< ::tests::EnumType1> m_enum3;
+        ::tests::EnumType1 m_enum_int32min;
+        ::tests::EnumType1 m_enum_int32max;
+        ::tests::EnumType1 m_enum_uint32_min;
+        ::tests::EnumType1 m_enum_uint32_max;
         std::wstring m_wstr_1;
         bond::maybe<std::wstring> m_wstr_2;
         
@@ -139,6 +148,10 @@ namespace tests
             m_float_7(0.0f),
             m_enum1(::tests::_bond_enumerators::EnumType1::EnumValue1),
             m_enum2(::tests::_bond_enumerators::EnumType1::EnumValue3),
+            m_enum_int32min(::tests::_bond_enumerators::EnumType1::Int32Min),
+            m_enum_int32max(::tests::_bond_enumerators::EnumType1::Int32Max),
+            m_enum_uint32_min(::tests::_bond_enumerators::EnumType1::UInt32Min),
+            m_enum_uint32_max(::tests::_bond_enumerators::EnumType1::UInt32Max),
             m_wstr_1(L"default wstring value")
         {
         }
@@ -181,6 +194,10 @@ namespace tests
             m_enum1(std::move(other.m_enum1)),
             m_enum2(std::move(other.m_enum2)),
             m_enum3(std::move(other.m_enum3)),
+            m_enum_int32min(std::move(other.m_enum_int32min)),
+            m_enum_int32max(std::move(other.m_enum_int32max)),
+            m_enum_uint32_min(std::move(other.m_enum_uint32_min)),
+            m_enum_uint32_max(std::move(other.m_enum_uint32_max)),
             m_wstr_1(std::move(other.m_wstr_1)),
             m_wstr_2(std::move(other.m_wstr_2))
         {
@@ -226,6 +243,10 @@ namespace tests
                 && (m_enum1 == other.m_enum1)
                 && (m_enum2 == other.m_enum2)
                 && (m_enum3 == other.m_enum3)
+                && (m_enum_int32min == other.m_enum_int32min)
+                && (m_enum_int32max == other.m_enum_int32max)
+                && (m_enum_uint32_min == other.m_enum_uint32_min)
+                && (m_enum_uint32_max == other.m_enum_uint32_max)
                 && (m_wstr_1 == other.m_wstr_1)
                 && (m_wstr_2 == other.m_wstr_2);
         }
@@ -268,6 +289,10 @@ namespace tests
             swap(m_enum1, other.m_enum1);
             swap(m_enum2, other.m_enum2);
             swap(m_enum3, other.m_enum3);
+            swap(m_enum_int32min, other.m_enum_int32min);
+            swap(m_enum_int32max, other.m_enum_int32max);
+            swap(m_enum_uint32_min, other.m_enum_uint32_min);
+            swap(m_enum_uint32_max, other.m_enum_uint32_max);
             swap(m_wstr_1, other.m_wstr_1);
             swap(m_wstr_2, other.m_wstr_2);
         }

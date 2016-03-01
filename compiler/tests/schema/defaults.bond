@@ -7,9 +7,14 @@ enum EnumType1
     EnumValue3 = -10,
     EnumValue4 = 0x2A,
     Low = 1,
-    EnumValue5 = 0XFFFFFFFFFFFFFFF6, //-10 in two's complement
+    EnumValue5 = 0xFFFFFFFFFFFFFFF6, //-10 in two's complement: 64-bits
+    EnumValue6 = 0xFFFFFFF6, //-10 in two's complement: 32-bits
+    Int32Min = -2147483648,
+    Int32Max = 2147483647,
+    UInt32Min = 0,
+    UInt32Max = 0xFFFFFFFF,
 }
-         
+
 struct Foo
 {
      0: bool m_bool_1 = true;
@@ -53,8 +58,12 @@ struct Foo
 
     27: EnumType1 m_enum1 = EnumValue1;
     28: EnumType1 m_enum2 = EnumValue3;
-    29: EnumType1 m_enum3 = nothing;    
+    29: EnumType1 m_enum3 = nothing;
+    30: EnumType1 m_enum_int32min = Int32Min;
+    31: EnumType1 m_enum_int32max = Int32Max;
+    32: EnumType1 m_enum_uint32_min = UInt32Min;
+    33: EnumType1 m_enum_uint32_max = UInt32Max;
 
-    30: wstring m_wstr_1 = L"default wstring value";
-    31: wstring m_wstr_2 = nothing;
+    34: wstring m_wstr_1 = L"default wstring value";
+    35: wstring m_wstr_2 = nothing;
 }
