@@ -177,6 +177,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Comm", "Comm", "{ED161076-6BB8-4A13-83ED-0E9C01461D5E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "interfaces", "src\comm\interfaces\interfaces.csproj", "{45EFB397-298A-4A32-A178-A2BDF8ABBBD9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1} = {21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{882B4409-F7A4-496A-AC2B-3E46A448D5D8}"
 EndProject
