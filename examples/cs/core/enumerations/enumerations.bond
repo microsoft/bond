@@ -1,4 +1,4 @@
-namespace examples.enumerations
+namespace Examples;
 
 enum Color
 {
