@@ -1,4 +1,4 @@
-﻿namespace bond.Comm;
+﻿namespace bond.comm;
 
 enum CommErrorCode
 {

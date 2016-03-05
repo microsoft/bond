@@ -43,12 +43,12 @@ namespace Bond.Comm.Interfaces
 
     // this feels like it is getting to big
     // perhaps split into sending context and receiving context
-    public class Message<TPayload, TLayer>
+    public class Message<TPayload, TLayerData>
     {
         private IBonded<TPayload> m_payload;
         // Could use bool and have one IBonded field for both. Let's let perf tests show the way.
         private IBonded<Error> m_error;
-        private IBonded<TLayer> m_layer;
+        private IBonded<TLayerData> m_layer;
         private TransportArgs m_args;
 
         // Should there be some way to replace the payload with a live
@@ -84,7 +84,7 @@ namespace Bond.Comm.Interfaces
             }
         }
 
-        public IBonded<TLayer> Layer
+        public IBonded<TLayerData> LayerData
         {
             get
             {
@@ -106,11 +106,11 @@ namespace Bond.Comm.Interfaces
         // For messages being sent, must be null.
         public readonly Connection Connection;
 
-        public Message(IBonded<TPayload> payload) : this(payload, default(IBonded<TLayer>), null) { }
+        public Message(IBonded<TPayload> payload) : this(payload, default(IBonded<TLayerData>), null) { }
 
         public Message(TPayload payload) : this(new Bonded<TPayload>(payload)) { }
 
-        public Message(IBonded<TPayload> payload, IBonded<TLayer> layer, TransportArgs args)
+        public Message(IBonded<TPayload> payload, IBonded<TLayerData> layer, TransportArgs args)
         {
             m_payload = payload;
             m_error = null;
@@ -118,11 +118,11 @@ namespace Bond.Comm.Interfaces
             m_args = args;
         }
 
-        public Message(IBonded<Error> error) : this(error, default(IBonded<TLayer>), null) { }
+        public Message(IBonded<Error> error) : this(error, default(IBonded<TLayerData>), null) { }
 
         public Message(Error error) : this(new Bonded<Error>(error)) { }
 
-        public Message(IBonded<Error> error, IBonded<TLayer> layer, TransportArgs args)
+        public Message(IBonded<Error> error, IBonded<TLayerData> layer, TransportArgs args)
         {
             m_payload = null;
             m_error = error;
@@ -144,12 +144,12 @@ namespace Bond.Comm.Interfaces
 
     public interface IRequestResponseConnection
     {
-        Task<Message<TResponse, TLayer>> RequestResponseAsync<TRequest, TResponse, TLayer>(Message<TRequest, TLayer> message, CancellationToken ct);
+        Task<Message<TResponse, TLayerData>> RequestResponseAsync<TRequest, TResponse, TLayerData>(Message<TRequest, TLayerData> message, CancellationToken ct);
     }
 
     public interface IEventConnection
     {
-        Task FireEventAsync<TPayload, TLayer>(Message<TPayload, TLayer> message, CancellationToken ct);
+        Task FireEventAsync<TPayload, TLayerData>(Message<TPayload, TLayerData> message, CancellationToken ct);
     }
 
     public class ConnectedEventArgs : EventArgs
@@ -206,14 +206,14 @@ namespace Bond.Comm.Interfaces
         public abstract Task StopAsync();
     }
 
-    public interface ILayer<TPayload, TLayer>
+    public interface ILayer<TPayload, TLayerData>
     {
-        void OnSend(Message<TPayload, TLayer> message);
+        void OnSend(Message<TPayload, TLayerData> message);
 
-        void OnReceive(Message<TPayload, TLayer> message);
+        void OnReceive(Message<TPayload, TLayerData> message);
     }
 
-    public interface ILayer<TLayer> : ILayer<Bond.Void, TLayer>
+    public interface ILayer<TLayerData> : ILayer<Bond.Void, TLayerData>
     {
     }
 
@@ -228,31 +228,31 @@ namespace Bond.Comm.Interfaces
     // pattern to avoid needing to handle changes later (e.g., if we
     // make service registration static we'd use the builder pattern there
     // as well).
-    public abstract class TransportBuilder<TTransport>
+    public abstract class TransportBuilder<TTransport, TLayerData>
     {
         // Order matters when adding a Layer. Messages being sent will
         // be passed through layer in the order they were added. When
         // messages are received, the opposite order will be used.
-        public abstract TransportBuilder<TTransport> AddLayer<TPayload, TLayer>(ILayer<TPayload, TLayer> layer);
+        public abstract TransportBuilder<TTransport, TLayerData> AddLayer<TPayload>(ILayer<TPayload, TLayerData> layer);
 
-        public abstract TransportBuilder<TTransport> SetDefaultMessageArgs(TransportArgs defaults);
+        public abstract TransportBuilder<TTransport, TLayerData> SetDefaultMessageArgs(TransportArgs defaults);
 
         // chain these like we chain layers?
-        public abstract TransportBuilder<TTransport> SetUnhandledExceptionHandler(UnhandledExceptionHandler handler);
+        public abstract TransportBuilder<TTransport, TLayerData> SetUnhandledExceptionHandler(UnhandledExceptionHandler handler);
 
         // Open question here: how to get an instance of the right
         // reader/writer for these.
         // Probably cut these from the first release and just use Serialize
         // and Deserialize's cached readers/writers.
-        public abstract TransportBuilder<TTransport> AddSerializer<TWriter>(Type type, Serializer<TWriter> serializer);
-        public abstract TransportBuilder<TTransport> AddSerializers<TWriter>(Dictionary<Type, Serializer<TWriter>> serializers);
-        public abstract TransportBuilder<TTransport> AddDeserializer<TReader>(Type type, Deserializer<TReader> deserializer);
-        public abstract TransportBuilder<TTransport> AddDeserializers<TReader>(Dictionary<Type, Deserializer<TReader>> deserializers);
+        public abstract TransportBuilder<TTransport, TLayerData> AddSerializer<TWriter>(Type type, Serializer<TWriter> serializer);
+        public abstract TransportBuilder<TTransport, TLayerData> AddSerializers<TWriter>(Dictionary<Type, Serializer<TWriter>> serializers);
+        public abstract TransportBuilder<TTransport, TLayerData> AddDeserializer<TReader>(Type type, Deserializer<TReader> deserializer);
+        public abstract TransportBuilder<TTransport, TLayerData> AddDeserializers<TReader>(Dictionary<Type, Deserializer<TReader>> deserializers);
 
         public abstract TTransport Construct();
     }
 
-    public abstract class Transport
+    public abstract class Transport<TLayerData>
     {
         // will have to return a clone of the internal state so that modifications can't be made
         public abstract TransportArgs DefaultMessageArgs { get; }
