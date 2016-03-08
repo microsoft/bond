@@ -7,14 +7,14 @@
     using Bond;
     using Bond.Comm.Interfaces;
 
-    class SomeLayer : ILayer<Bond.Void, Bond.Void>
+    class SomeOtherLayer : ILayer<TracingState>
     {
-        public void OnReceive(Message<Bond.Void, Bond.Void> message)
+        public void OnReceive(Message<Bond.Void> message, ReceiveContext context, ref TracingState layerData)
         {
             throw new NotImplementedException();
         }
 
-        public void OnSend(Message<Bond.Void, Bond.Void> message)
+        public void OnSend(Message<Bond.Void> message, SendContext context, ref TracingState layerData)
         {
             throw new NotImplementedException();
         }
@@ -51,29 +51,28 @@
         }
     }
 
+    class TcpTransportArgs : TransportArgs
+    {
+    }
+
     class TcpTransportBuilder : TransportBuilder<TcpTransport>
     {
-        public override TransportBuilder<TcpTransport> AddDeserializer<TReader>(Type type, Bond.Deserializer<TReader> deserializer)
+        public override TransportBuilder<TcpTransport> AddDeserializer<TReader>(Type type, Deserializer<TReader> deserializer)
         {
             throw new NotImplementedException();
         }
 
-        public override TransportBuilder<TcpTransport> AddDeserializers<TReader>(Dictionary<Type, Bond.Deserializer<TReader>> deserializers)
+        public override TransportBuilder<TcpTransport> AddDeserializers<TReader>(Dictionary<Type, Deserializer<TReader>> deserializers)
         {
             throw new NotImplementedException();
         }
 
-        public override TransportBuilder<TcpTransport> AddLayer<TPayload, TLayer>(ILayer<TPayload, TLayer> layer)
+        public override TransportBuilder<TcpTransport> AddSerializer<TWriter>(Type type, Serializer<TWriter> serializer)
         {
             throw new NotImplementedException();
         }
 
-        public override TransportBuilder<TcpTransport> AddSerializer<TWriter>(Type type, Bond.Serializer<TWriter> serializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override TransportBuilder<TcpTransport> AddSerializers<TWriter>(Dictionary<Type, Bond.Serializer<TWriter>> serializers)
+        public override TransportBuilder<TcpTransport> AddSerializers<TWriter>(Dictionary<Type, Serializer<TWriter>> serializers)
         {
             throw new NotImplementedException();
         }
@@ -83,7 +82,12 @@
             throw new NotImplementedException();
         }
 
-        public override TransportBuilder<TcpTransport> SetDefaultMessageArgs(TransportArgs defaults)
+        public override TransportBuilder<TcpTransport> SetDefaultTransportArgs(TransportArgs defaults)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override TransportBuilder<TcpTransport> SetLayerStack<TLayerData>(LayerStack<TLayerData> layerStack)
         {
             throw new NotImplementedException();
         }
@@ -101,7 +105,7 @@
             throw new NotImplementedException();
         }
 
-        public Task FireEventAsync<TPayload, TLayer>(Message<TPayload, TLayer> message, CancellationToken ct)
+        public Task FireEventAsync<TPayload>(Message<TPayload> message, CancellationToken ct)
         {
             throw new NotImplementedException();
         }
@@ -111,7 +115,7 @@
             throw new NotImplementedException();
         }
 
-        public Task<Message<TResponse, TLayer>> RequestResponseAsync<TRequest, TResponse, TLayer>(Message<TRequest, TLayer> message, CancellationToken ct)
+        public Task<Message<TResponse>> RequestResponseAsync<TRequest, TResponse>(Message<TRequest> message, CancellationToken ct)
         {
             throw new NotImplementedException();
         }

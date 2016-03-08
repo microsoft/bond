@@ -1,6 +1,6 @@
 ﻿namespace bond.comm;
 
-enum CommErrorCode
+enum ErrorCode
 {
     OK = 0x0;
     ConnectionClosed = 0x70BD0001; // TODO, switch to using 0xA when we fix the gbc bug for enum constants
@@ -9,7 +9,7 @@ enum CommErrorCode
 
 struct Error
 {
-    0: required string error_code;
+    0: required int32 error_code;
     1: string message;
     2: vector<bonded<Error>> inner_errors;
 }
