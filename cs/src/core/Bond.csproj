@@ -74,7 +74,11 @@
     <Compile Include="Reflection.cs" />
     <Compile Include="Reflection40.cs" Condition="'$(TargetFrameworkVersion)' == 'v4.0'" />
     <Compile Include="Reflection45.cs" Condition="'$(TargetFrameworkVersion)' == 'v4.5'" />
+    <Compile Include="RuntimeBonded.cs" />
+    <Compile Include="RuntimeDeserializer.cs" />
+    <Compile Include="RuntimeObject.cs" />
     <Compile Include="RuntimeSchema.cs" />
+    <Compile Include="RuntimeSerializer.cs" />
     <Compile Include="Schema.cs" />
     <Compile Include="Serializer.cs" />
     <Compile Include="Transcoder.cs" />
