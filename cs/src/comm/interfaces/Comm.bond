@@ -3,7 +3,7 @@
 enum ErrorCode
 {
     OK = 0x0;
-    ConnectionClosed = 0x70BD0001; // TODO, switch to using 0xA when we fix the gbc bug for enum constants
+    Impossible = 0xA0BD0001;
     // and so on
 }
 
