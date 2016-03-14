@@ -71,6 +71,11 @@ namespace Bond.Comm.Tcp
             return await ConnectToAsync(ParseStringAddress(address), ct);
         }
 
+        public Task<TcpConnection> ConnectToAsync(IPEndPoint endpoint)
+        {
+            return ConnectToAsync(endpoint, CancellationToken.None);
+        }
+
         public async Task<TcpConnection> ConnectToAsync(IPEndPoint endpoint, CancellationToken ct)
         {
             var tcpClient = new TcpClient();
@@ -94,11 +99,16 @@ namespace Bond.Comm.Tcp
 
         public override Task StopAsync()
         {
-            throw new NotImplementedException();
+            return TaskExt.CompletedTask;
         }
 
-        private IPEndPoint ParseStringAddress(string address)
+        public static IPEndPoint ParseStringAddress(string address)
         {
+            if (string.IsNullOrEmpty(address))
+            {
+                throw new ArgumentException("Address cannot be null or empty", nameof(address));
+            }
+
             int portStartIndex = address.IndexOf(':');
 
             string ipAddressPart;
@@ -115,7 +125,7 @@ namespace Bond.Comm.Tcp
             IPAddress ipAddr;
             if (!IPAddress.TryParse(ipAddressPart, out ipAddr))
             {
-                throw new ArgumentException("Couldn't parse IP address from \"" + address + "\"");
+                throw new ArgumentException("Couldn't parse IP address from \"" + address + "\"", nameof(address));
             }
 
             int port;
@@ -128,7 +138,7 @@ namespace Bond.Comm.Tcp
                 string portPart = address.Substring(portStartIndex + 1);
                 if (!int.TryParse(portPart, out port))
                 {
-                    throw new ArgumentException("Couldn't parse port from \"" + address + "\"");
+                    throw new ArgumentException("Couldn't parse port from \"" + address + "\"", nameof(address));
                 }
             }
 

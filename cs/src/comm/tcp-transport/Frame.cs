@@ -9,7 +9,7 @@ namespace Bond.Comm.Tcp
     using System.Net.Sockets;
     using System.Threading.Tasks;
 
-    enum FrameletType
+    internal enum FrameletType
     {
         TcpConfig = 0x4743,
         TcpHeaders = 0x5248,
@@ -18,7 +18,7 @@ namespace Bond.Comm.Tcp
         ProtocolError = 0x5245,
     }
 
-    struct Framelet
+    internal struct Framelet
     {
         private FrameletType m_type;
         private ArraySegment<byte> m_content;
@@ -47,17 +47,6 @@ namespace Bond.Comm.Tcp
             m_content = contents;
         }
 
-        public Framelet(FrameletType type, Int32 intValue)
-        {
-            if (type != FrameletType.ProtocolError)
-            {
-                throw new ArgumentException("Only the " + nameof(FrameletType.ProtocolError) + " framelet can be created from an integer.", nameof(intValue));
-            }
-
-            m_type = type;
-            m_content = new ArraySegment<byte>(BitConverter.GetBytes(intValue));
-        }
-
         public static bool IsKnownType(UInt16 value)
         {
             return value == (UInt16)FrameletType.LayerData
@@ -71,7 +60,7 @@ namespace Bond.Comm.Tcp
         public ArraySegment<byte> Contents { get { return m_content; } }
     }
 
-    class Frame
+    internal class Frame
     {
         // most frames will have at most three framelets: TcpHeaders, LayerData, PayloadData
         private const int DefaultFrameCount = 3;
@@ -101,6 +90,11 @@ namespace Bond.Comm.Tcp
 
         public void Write(BinaryWriter dest)
         {
+            if (dest == null)
+            {
+                throw new ArgumentNullException(nameof(dest));
+            }
+
             if (m_framelets.Count == 0)
             {
                 throw new InvalidOperationException("Must have at least one framelet to write a frame.");
@@ -123,51 +117,62 @@ namespace Bond.Comm.Tcp
             }
         }
 
-        public static Task<Frame> ReadAsync(NetworkStream stream)
+        public static Task<Frame> ReadAsync(Stream stream)
         {
             var reader = new BinaryReader(stream, encoding: System.Text.Encoding.UTF8, leaveOpen: true);
 
-            var frameletCount = reader.ReadUInt16();
-            if (frameletCount == 0)
+            try
             {
-                return TaskExt.FromException<Frame>(new ProtocolErrorException("Zero framelets"));
-            }
-
-            var frame = new Frame(frameletCount);
-
-            while (frameletCount > 0)
-            {
-                var frameletType = reader.ReadUInt16();
-                if (!Framelet.IsKnownType(frameletType))
+                var frameletCount = reader.ReadUInt16();
+                if (frameletCount == 0)
                 {
-                    return TaskExt.FromException<Frame>(new ProtocolErrorException("Unknown framelet type: " + frameletType));
+                    return TaskExt.FromException<Frame>(new ProtocolErrorException("Zero framelets"));
                 }
 
-                var frameletLength = reader.ReadUInt32();
-                if (frameletLength > int.MaxValue)
-                {
-                    return TaskExt.FromException<Frame>(new ProtocolErrorException("Framelet too big: " + frameletLength));
-                }
+                var frame = new Frame(frameletCount);
 
-                var frameletContents = new byte[frameletLength];
-                int bytesToRead = (int)frameletLength;
-                while (bytesToRead > 0)
+                while (frameletCount > 0)
                 {
-                    int dataRead = reader.Read(frameletContents, (int)frameletLength - bytesToRead, bytesToRead);
-                    if (dataRead == 0)
+                    var frameletType = reader.ReadUInt16();
+                    if (!Framelet.IsKnownType(frameletType))
                     {
-                        return TaskExt.FromException<Frame>(new ProtocolErrorException("EOS while reading contents"));
+                        return
+                            TaskExt.FromException<Frame>(
+                                new ProtocolErrorException("Unknown framelet type: " + frameletType));
                     }
 
-                    bytesToRead -= dataRead;
+                    var frameletLength = reader.ReadUInt32();
+                    if (frameletLength > int.MaxValue)
+                    {
+                        return
+                            TaskExt.FromException<Frame>(
+                                new ProtocolErrorException("Framelet too big: " + frameletLength));
+                    }
+
+                    var frameletContents = new byte[frameletLength];
+                    int bytesToRead = (int) frameletLength;
+                    while (bytesToRead > 0)
+                    {
+                        int dataRead = reader.Read(frameletContents, (int) frameletLength - bytesToRead, bytesToRead);
+                        if (dataRead == 0)
+                        {
+                            return TaskExt.FromException<Frame>(new ProtocolErrorException("EOS while reading contents"));
+                        }
+
+                        bytesToRead -= dataRead;
+                    }
+
+                    frame.Add(new Framelet((FrameletType) frameletType, new ArraySegment<byte>(frameletContents)));
+
+                    --frameletCount;
                 }
 
-                frame.Add(new Framelet((FrameletType)frameletType, new ArraySegment<byte>(frameletContents)));
-
-                --frameletCount;
+                return Task.FromResult(frame);
             }
-
-            return Task.FromResult(frame);
+            catch (IOException ioex)
+            {
+                return TaskExt.FromException<Frame>(new ProtocolErrorException("IO error", ioex));
+            }
         }
     }
 }

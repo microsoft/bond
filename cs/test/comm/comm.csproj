@@ -22,7 +22,9 @@
     <OutputPath>$(OutputPath)\Properties\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="FrameTests.cs" />
     <Compile Include="TcpListenerTests.cs" />
+    <Compile Include="TcpTransportTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="NUnit.VisualStudio.TestAdapter" Condition="'$(OS)' != 'Unix'">
