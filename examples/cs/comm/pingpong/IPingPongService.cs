@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Bond.Comm.Tcp
+namespace Bond.Examples.PingPong
 {
-    class TcpTransportArgs : TransportArgs
+    using System.Threading.Tasks;
+
+    interface IPingPongService
     {
+        Task<PingResponse> PingAsync(PingRequest request);
     }
 }

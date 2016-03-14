@@ -8,9 +8,6 @@ namespace Bond.Comm
     using System.Threading;
     using System.Threading.Tasks;
 
-    // TODO: logging
-    // TODO: performance data
-
     // Optional method to convert an unhandled service-side exception into
     // an error. If not set at the transport/connection level, default
     // behavior is to call Environment.FailFast

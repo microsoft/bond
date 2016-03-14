@@ -16,11 +16,11 @@
     <Compile Include="Connections.cs" />
     <Compile Include="Contexts.cs" />
     <Compile Include="IService.cs" />
-    <Compile Include="Transport.cs" />
     <Compile Include="Layers.cs" />
     <Compile Include="Listener.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
+    <Compile Include="Transport.cs" />
     <BondCodegen Include="Comm.bond">
       <Options>--namespace=bond.comm=Bond.Comm</Options>
     </BondCodegen>

@@ -1,4 +1,7 @@
-﻿namespace Bond.Comm
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+namespace Bond.Comm
 {
     using System;
     using System.Threading.Tasks;

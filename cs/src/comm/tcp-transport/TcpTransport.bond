@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 namespace bond.comm.tcp;
 
 enum PayloadType
@@ -12,5 +15,5 @@ struct TcpHeaders
     0: uint32 request_id;
     1: required PayloadType payload_type;
     2: string method_name;
-    4: uint32 error_code;
+    3: uint32 error_code;
 }

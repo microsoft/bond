@@ -5,6 +5,7 @@ namespace Bond.Comm
 {
     using System;
     using System.Diagnostics;
+
     public class Message<TPayload>
     {
         public Message(TPayload payload) : this(new Bonded<TPayload>(payload)) { }
@@ -36,7 +37,7 @@ namespace Bond.Comm
             {
                 if (IsError)
                 {
-                    throw new InvalidOperationException("Cannot access payload when there is an error.");
+                    throw new InvalidOperationException("The Payload of this message cannot be accessed, as this message contains an Error.");
                 }
 
                 Debug.Assert(m_payload != null);
@@ -48,6 +49,7 @@ namespace Bond.Comm
         {
             get
             {
+                Debug.Assert((m_payload == null) ^ (m_error == null));
                 return m_error;
             }
         }
@@ -56,6 +58,7 @@ namespace Bond.Comm
         {
             get
             {
+                Debug.Assert((m_payload == null) ^ (m_error == null));
                 return m_error != null;
             }
         }

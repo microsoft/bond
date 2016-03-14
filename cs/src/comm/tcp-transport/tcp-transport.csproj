@@ -12,12 +12,12 @@
     <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Contexts.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="ProtocolErrorException.cs" />
     <Compile Include="TaskExt.cs" />
     <Compile Include="TcpConnection.cs" />
+    <Compile Include="TcpContexts.cs" />
     <Compile Include="TcpListener.cs" />
     <Compile Include="TcpServiceHost.cs" />
     <Compile Include="TcpTransport.cs" />

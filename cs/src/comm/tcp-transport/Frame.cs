@@ -1,4 +1,7 @@
-﻿namespace Bond.Comm.Tcp
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+namespace Bond.Comm.Tcp
 {
     using System;
     using System.Collections.Generic;
@@ -73,7 +76,7 @@
         // most frames will have at most three framelets: TcpHeaders, LayerData, PayloadData
         private const int DefaultFrameCount = 3;
 
-        private List<Framelet> m_framelets;
+        private readonly List<Framelet> m_framelets;
 
         public Frame() : this(DefaultFrameCount) { }
 
@@ -84,11 +87,13 @@
 
         public IReadOnlyList<Framelet> Framelets { get { return m_framelets; } }
 
+        public int Count { get { return m_framelets.Count; } }
+
         public void Add(Framelet framelet)
         {
             if (m_framelets.Count == UInt16.MaxValue)
             {
-                throw new ArgumentException("Too many framelets");
+                throw new ArgumentException("Exceeded maximum allowed count of framelets.");
             }
 
             m_framelets.Add(framelet);
@@ -98,7 +103,7 @@
         {
             if (m_framelets.Count == 0)
             {
-                throw new ArgumentException("Must have at least one framelet");
+                throw new InvalidOperationException("Must have at least one framelet to write a frame.");
             }
 
             // Add ensures that we never have more than UInt16 framelets

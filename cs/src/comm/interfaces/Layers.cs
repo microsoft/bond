@@ -15,8 +15,8 @@ namespace Bond.Comm
 
     public interface ILayerStack
     {
-        IBonded<Bond.Void> OnSend(Message<Bond.Void> message, SendContext context, object layerData);
-        object OnReceive(Message<Bond.Void> message, ReceiveContext context, IBonded<Bond.Void> layerData);
+        IBonded OnSend(Message<Bond.Void> message, SendContext context, object layerData);
+        object OnReceive(Message<Bond.Void> message, ReceiveContext context, IBonded layerData);
     }
 
     public class LayerStack<TLayerData> : ILayerStack where TLayerData : class
@@ -42,87 +42,18 @@ namespace Bond.Comm
             return this;
         }
 
-        public IBonded<Bond.Void> OnSend(Message<Bond.Void> message, SendContext context, object layerData)
+        public IBonded OnSend(Message<Bond.Void> message, SendContext context, object layerData)
         {
-            TLayerData realLayerData;
-
-            if (layerData == null)
-            {
-                realLayerData = default(TLayerData);
-            }
-            else
-            {
-                realLayerData = layerData as TLayerData;
-                if (realLayerData == null)
-                {
-                    throw new ArgumentException("layerData is not of the expected type");
-                }
-            }
-
-            OnSendImpl(message, context, ref realLayerData);
-
-            // TODO: will want to serialize here to catch any errors
-            return ((IBonded<TLayerData>)new Bonded<TLayerData>(realLayerData)).Convert<Bond.Void>();
+            // apply the interfaces in the SAME order they were added on the sending side
+            // catch any exceptions that leak out and use the unhandled exception handler
+            throw new NotImplementedException();
         }
 
-        public object OnReceive(Message<Bond.Void> message, ReceiveContext context, IBonded<Bond.Void> layerData)
+        public object OnReceive(Message<Bond.Void> message, ReceiveContext context, IBonded layerData)
         {
-            TLayerData realLayerData;
-
-            if (layerData == null)
-            {
-                realLayerData = default(TLayerData);
-            }
-            else
-            {
-                try
-                {
-                    realLayerData = layerData.Deserialize<TLayerData>();
-                }
-                catch (Exception)
-                {
-                    // call into transport unhandled exception handler
-                    // but, for interface exposition purpuses, just rethrow
-                    throw;
-                }
-            }
-
-            OnReceiveImpl(message, context, ref realLayerData);
-            return realLayerData;
-        }
-
-        private void OnSendImpl(Message<Bond.Void> message, SendContext context, ref TLayerData layerData)
-        {
-            try
-            {
-                for (int layerIndex = 0; layerIndex < m_layers.Count; ++layerIndex)
-                {
-                    m_layers[layerIndex].OnSend(message, context, ref layerData);
-                }
-            }
-            catch (Exception)
-            {
-                // call into transport unhandled exception handler
-                // but, for interface exposition purpuses, just rethrow
-                throw;
-            }
-        }
-
-        private void OnReceiveImpl(Message<Bond.Void> message, ReceiveContext context, ref TLayerData layerData)
-        {
-            try
-            {
-                for (int layerIndex = m_layers.Count; layerIndex >= 0; --layerIndex)
-                {
-                    m_layers[layerIndex].OnReceive(message, context, ref layerData);
-                }
-            }
-            catch (Exception ex)
-            {
-                // TODO: figure out a more specific set of exceptions to catch
-                // TODO: figure out error handshake
-                m_exceptionHandler(ex);
-            }
+            // apply the interfaces in the REVERSE order they were added on the sending side
+            // catch any exceptions that leak out and use the unhandled exception handler
+            throw new NotImplementedException();
         }
     }
 }
