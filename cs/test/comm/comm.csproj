@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <BuildFramework Condition="'$(Configuration)' == 'Net40'">net40</BuildFramework>
@@ -31,8 +31,9 @@
       <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
     </BondCodegen>
     <Compile Include="Tcp\FrameTests.cs" />
-    <Compile Include="Tcp\TcpTransportTests.cs" />
+    <Compile Include="Tcp\MessageTests.cs" />
     <Compile Include="Tcp\TcpListenerTests.cs" />
+    <Compile Include="Tcp\TcpTransportTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="NUnit.VisualStudio.TestAdapter" Condition="'$(OS)' != 'Unix'">
@@ -80,6 +81,10 @@
     <ProjectReference Include="..\..\src\comm\tcp-transport\tcp-transport.csproj">
       <Project>{c687c52c-0a5b-4f10-8cb3-dbaf9a72d042}</Project>
       <Name>tcp-transport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\core\Core.csproj">
+      <Project>{ff056b62-225a-47bc-b177-550fadda4b41}</Project>
+      <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
