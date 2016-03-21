@@ -63,6 +63,27 @@ namespace Bond
     /// <typeparam name="W">Protocol writer</typeparam>
     public class Transcoder<R, W>
     {
+        static readonly Type helperType;
+        readonly TranscoderHelper helper;
+
+        static Transcoder()
+        {
+            var firstPassAttribute = typeof(W).GetAttribute<FirstPassWriterAttribute>();
+            if (firstPassAttribute != null)
+            {
+                if (!typeof(ITwoPassProtocolWriter).IsAssignableFrom(typeof(W)))
+                {
+                    throw new ArgumentException("Writers with FirstPassWriterAttribute must implement ITwoPassProtocolWriter");
+                }
+
+                helperType = typeof(TwoPassTranscoderHelper<>).MakeGenericType(typeof(R), typeof(W), firstPassAttribute.Type);
+            }
+            else
+            {
+                helperType = typeof(TranscoderHelper);
+            }
+        }
+
         /// <summary>
         /// Create a transcoder for payloads with specified runtime schema
         /// </summary>
@@ -86,14 +107,7 @@ namespace Bond
         /// <param name="parser">Custom <see cref="IParser"/> instance</param>
         public Transcoder(RuntimeSchema schema, IParser parser)
         {
-            if (typeof(W).GetAttribute<FirstPassWriterAttribute>() != null)
-            {
-                helper = new TwoPassTranscoderHelper<CompactBinaryCounter>(schema, parser);
-            }
-            else
-            {
-                helper = new TranscoderHelper(schema, parser);
-            }
+            helper = (TranscoderHelper)Activator.CreateInstance(helperType, schema, parser);
         }
 
         /// <summary>
@@ -103,17 +117,7 @@ namespace Bond
         /// <param name="parser">Custom <see cref="IParser"/> instance</param>
         public Transcoder(Type type, IParser parser)
         {
-            var firstPassAttribute = typeof(W).GetAttribute<FirstPassWriterAttribute>();
-            if (firstPassAttribute != null)
-            {
-                Type firstPassHelperType = typeof(TwoPassTranscoderHelper<>).MakeGenericType(typeof(R), typeof(W), firstPassAttribute.Type);
-
-                helper = (TranscoderHelper)Activator.CreateInstance(firstPassHelperType, type, parser);
-            }
-            else
-            {
-                helper = new TranscoderHelper(type, parser);
-            }
+            helper = (TranscoderHelper)Activator.CreateInstance(helperType, type, parser);
         }
 
         // Create a transcoder
@@ -130,8 +134,6 @@ namespace Bond
         {
             helper.Transcode(reader, writer);
         }
-
-        TranscoderHelper helper;
 
         private class TranscoderHelper
         {
@@ -152,7 +154,7 @@ namespace Bond
                 transcode[0](reader, writer);
             }
 
-            Action<R, W>[] Generate<S>(S schema, IParser parser)
+            private Action<R, W>[] Generate<S>(S schema, IParser parser)
             {
                 parser = parser ?? ParserFactory<R>.Create(schema);
                 return SerializerGeneratorFactory<R, W>.Create(
@@ -167,13 +169,13 @@ namespace Bond
             readonly Action<R, FPW>[] firstPassTranscode;
 
             public TwoPassTranscoderHelper(RuntimeSchema schema, IParser parser):
-                base(schema)
+                base(schema, null)
             {
                 firstPassTranscode = GenerateFirstPass(schema, parser);
             }
 
-            public TwoPassTranscoderHelper(Type type):
-                base(type)
+            public TwoPassTranscoderHelper(Type type, IParser parser):
+                base(type, null)
             {
                 firstPassTranscode = GenerateFirstPass(type, parser);
             }
@@ -183,6 +185,11 @@ namespace Bond
                 var firstPassWriter = ((ITwoPassProtocolWriter)writer).GetFirstPassWriter();
                 if (firstPassWriter != null)
                 {
+                    if (!typeof(ICloneable<R>).IsAssignableFrom(typeof(R)))
+                    {
+                        throw new ArgumentException("Two-pass transcoding requires a reader that implements ICloneable");
+                    }
+
                     R clonedReader = ((ICloneable<R>)reader).Clone();
                     firstPassTranscode[0](clonedReader, (FPW)firstPassWriter);
                 }
@@ -190,9 +197,9 @@ namespace Bond
                 base.Transcode(reader, writer);
             }
 
-            Action<R, FPW>[] GenerateFirstPass<S>(S schema, IParser parser)
+            private Action<R, FPW>[] GenerateFirstPass<S>(S schema, IParser parser)
             {
-                var parser = parser ?? ParserFactory<R>.Create(schema);
+                parser = parser ?? ParserFactory<R>.Create(schema);
                 return SerializerGeneratorFactory<R, FPW>.Create(
                         (r, w, i) => firstPassTranscode[i](r, w), schema)
                     .Generate(parser)

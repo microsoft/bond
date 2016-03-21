@@ -61,6 +61,27 @@ namespace Bond
     /// <typeparam name="W">Protocol writer</typeparam>
     public class Serializer<W>
     {
+        static readonly Type helperType;
+        readonly SerializerHelper helper;
+
+        static Serializer()
+        {
+            var firstPassAttribute = typeof(W).GetAttribute<FirstPassWriterAttribute>();
+            if (firstPassAttribute != null)
+            {
+                if (!typeof(ITwoPassProtocolWriter).IsAssignableFrom(typeof(W)))
+                {
+                    throw new ArgumentException("Writers with FirstPassWriterAttribute must implement ITwoPassProtocolWriter");
+                }
+
+                helperType = typeof(TwoPassSerializerHelper<>).MakeGenericType(typeof(W), firstPassAttribute.Type);
+            }
+            else
+            {
+                helperType = typeof(SerializerHelper);
+            }
+        }
+
         /// <summary>
         /// Create a serializer for specified type
         /// </summary>
@@ -91,17 +112,8 @@ namespace Bond
         {
             parser = parser ?? new ObjectParser(type);
 
-            var firstPassAttribute = typeof(W).GetAttribute<FirstPassWriterAttribute>();
-            if (firstPassAttribute != null)
-            {
-                Type firstPassHelperType = typeof(TwoPassSerializerHelper<>).MakeGenericType(typeof(W), firstPassAttribute.Type);
+            helper = (SerializerHelper)Activator.CreateInstance(helperType, parser, type, inlineNested);
 
-                helper = (SerializerHelper)Activator.CreateInstance(firstPassHelperType, parser, type, inlineNested);
-            }
-            else
-            {
-                helper = new SerializerHelper(parser, type, inlineNested);
-            }
         }
 
         /// <summary>
@@ -116,8 +128,6 @@ namespace Bond
         {
             helper.Serialize(obj, writer);
         }
-
-        SerializerHelper helper;
 
         private class SerializerHelper
         {

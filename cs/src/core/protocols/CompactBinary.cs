@@ -126,6 +126,7 @@ namespace Bond.Protocols
     using System.Runtime.CompilerServices;
     using System.Text;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using Bond.IO;
 
     /// <summary>
@@ -141,10 +142,8 @@ namespace Bond.Protocols
         readonly O output;
         readonly ushort version;
         CompactBinaryCounter? firstPassWriter;
-        List<uint> lengths;
-#if DEBUG
+        LinkedList<uint> lengths;
         Stack<long> lengthCheck;
-#endif
 
         /// <summary>
         /// Create an instance of CompactBinaryWriter
@@ -157,20 +156,17 @@ namespace Bond.Protocols
             this.version = version;
             if (version == 2)
             {
-                this.lengths = new List<uint>();
+                this.lengths = new LinkedList<uint>();
                 this.firstPassWriter = new CompactBinaryCounter(lengths);
-#if DEBUG
-                this.lengthCheck = new Stack<long>();
-#endif
             }
             else
             {
                 this.lengths = null;
                 this.firstPassWriter = null;
-#if DEBUG
-                this.lengthCheck = null;
-#endif
             }
+
+            this.lengthCheck = null;
+            InitLengthCheck();
         }
 
         public IProtocolWriter GetFirstPassWriter()
@@ -202,13 +198,11 @@ namespace Bond.Protocols
         {
             if (version == 2)
             {
-                uint length = lengths[0];
-                lengths.RemoveAt(0);
+                uint length = lengths.First.Value;
+                lengths.RemoveFirst();
 
                 output.WriteVarUInt32(length);
-#if DEBUG
-                lengthCheck.Push(output.Position + length);
-#endif
+                PushLengthCheck(output.Position + length);
             }
         }
 
@@ -231,15 +225,7 @@ namespace Bond.Protocols
         public void WriteStructEnd()
         {
             output.WriteUInt8((Byte)BondDataType.BT_STOP);
-#if DEBUG
-            if (version == 2)
-            {
-                if (output.Position != lengthCheck.Pop())
-                {
-                    Throw.EndOfStreamException();
-                }
-            }
-#endif
+            PopLengthCheck(output.Position);
         }
 
         /// <summary>
@@ -520,6 +506,35 @@ namespace Bond.Protocols
             {
                 WriteUInt32((UInt32)value.Length);
                 output.WriteString(Encoding.Unicode, value, value.Length << 1);
+            }
+        }
+        #endregion
+
+        #region Length check
+        [Conditional("DEBUG")]
+        private void InitLengthCheck()
+        {
+            if (this.version == 2)
+            {
+                this.lengthCheck = new Stack<long>();
+            }
+        }
+
+        [Conditional("DEBUG")]
+        private void PushLengthCheck(long position)
+        {
+            this.lengthCheck.Push(position);
+        }
+
+        [Conditional("DEBUG")]
+        private void PopLengthCheck(long position)
+        {
+            if (version == 2)
+            {
+                if (position != lengthCheck.Pop())
+                {
+                    Throw.EndOfStreamException();
+                }
             }
         }
         #endregion

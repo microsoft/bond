@@ -21,22 +21,22 @@ namespace Bond.Protocols
     {
         private class CounterStackFrame
         {
-            public Int32 lengthSlot;
+            public LinkedListNode<UInt32> lengthSlot;
             public int currentLength = 0;
 
-            public CounterStackFrame(Int32 slot)
+            public CounterStackFrame(LinkedListNode<UInt32> slot)
             {
                 lengthSlot = slot;
             }
         }
 
-        List<UInt32> lengths;
+        LinkedList<UInt32> lengths;
         Stack<CounterStackFrame> counterStack;
 
         /// <summary>
         /// Create an instance of CompactBinaryCounter
         /// </summary>
-        public CompactBinaryCounter(List<UInt32> lengthsOut)
+        public CompactBinaryCounter(LinkedList<UInt32> lengthsOut)
         {
            lengths = lengthsOut;
            counterStack = new Stack<CounterStackFrame>();
@@ -75,8 +75,6 @@ namespace Bond.Protocols
 #endif
         public void WriteVersion()
         {
-//             output.WriteUInt16(Magic);
-//             output.WriteUInt16(version);
         }
 
         #region Complex types
@@ -89,8 +87,8 @@ namespace Bond.Protocols
 #endif
         public void WriteStructBegin(Metadata metadata)
         {
-            lengths.Add(0);
-            counterStack.Push(new CounterStackFrame(lengths.Count - 1));
+            LinkedListNode<UInt32> frameNode = lengths.AddLast(0);
+            counterStack.Push(new CounterStackFrame(frameNode));
         }
 
         /// <summary>
@@ -103,7 +101,7 @@ namespace Bond.Protocols
         {
             CounterStackFrame frame = counterStack.Peek();
             uint structLength = (uint)frame.currentLength + 1;
-            lengths[frame.lengthSlot] = structLength;
+            frame.lengthSlot.Value = structLength;
             counterStack.Pop();
 
             if (counterStack.Count > 0)
@@ -207,7 +205,7 @@ namespace Bond.Protocols
         /// </summary>
         /// <param name="count">Number of elements in the container</param>
         /// <param name="keyType">Type of the keys</param>
-        /// /// <param name="valueType">Type of the values</param>
+        /// <param name="valueType">Type of the values</param>
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
