@@ -93,7 +93,7 @@ namespace Bond.Comm.Tcp
         {
             if (m_framelets.Count == UInt16.MaxValue)
             {
-                throw new ArgumentException("Exceeded maximum allowed count of framelets.");
+                throw new InvalidOperationException("Exceeded maximum allowed count of framelets.");
             }
 
             m_framelets.Add(framelet);
