@@ -61,6 +61,7 @@
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="Property.cs" />
     <Compile Include="protocols\CompactBinary.cs" />
+    <Compile Include="protocols\CompactBinaryCounter.cs" />
     <Compile Include="protocols\Exceptions.cs" />
     <Compile Include="protocols\FastBinary.cs" />
     <Compile Include="protocols\IProtocolWriter.cs" />

@@ -15,6 +15,22 @@ namespace Bond.IO
         public const int MaxBytesVarInt32 = 5;
         public const int MaxBytesVarInt64 = 10;
 
+        public static int GetVarUInt16Length(ushort value)
+        {
+            if (value < (1 << 7))
+            {
+                return 1;
+            }
+            else if (value < (1 << 14))
+            {
+                return 2;
+            }
+            else
+            {
+                return 3;
+            }
+        }
+
         public static int EncodeVarUInt16(byte[] data, ushort value, int index)
         {
             // byte 0
@@ -32,6 +48,30 @@ namespace Bond.IO
             // byte 2
             data[index++] = (byte)value;
             return index;
+        }
+
+        public static int GetVarUInt32Length(uint value)
+        {
+            if (value < (1 << 7))
+            {
+                return 1;
+            }
+            else if (value < (1 << 14))
+            {
+                return 2;
+            }
+            else if (value < (1 << 21))
+            {
+                return 3;
+            }
+            else if (value < (1 << 28))
+            {
+                return 4;
+            }
+            else
+            {
+                return 5;
+            }
         }
 
         public static int EncodeVarUInt32(byte[] data, uint value, int index)
@@ -63,6 +103,50 @@ namespace Bond.IO
             // last byte
             data[index++] = (byte)value;
             return index;
+        }
+
+        public static int GetVarUInt64Length(ulong value)
+        {
+            if (value < (1UL << 7))
+            {
+                return 1;
+            }
+            else if (value < (1UL << 14))
+            {
+                return 2;
+            }
+            else if (value < (1UL << 21))
+            {
+                return 3;
+            }
+            else if (value < (1UL << 28))
+            {
+                return 4;
+            }
+            else if (value < (1UL << 35))
+            {
+                return 5;
+            }
+            else if (value < (1UL << 42))
+            {
+                return 6;
+            }
+            else if (value < (1UL << 49))
+            {
+                return 7;
+            }
+            else if (value < (1UL << 56))
+            {
+                return 8;
+            }
+            else if (value < (1UL << 63))
+            {
+                return 9;
+            }
+            else
+            {
+                return 10;
+            }
         }
 
         public static int EncodeVarUInt64(byte[] data, ulong value, int index)

@@ -239,6 +239,24 @@
         }
 
         [Test]
+        public void DeserializeInterfacesCB2()
+        {
+            var factory = new Factory();
+            var deserializer = new Deserializer<CompactBinaryReader<InputStream>>(typeof(IBar<IFoo>), factory);
+            var from = Random.Init<IBar<IFoo>>(factory);
+
+            var stream = new MemoryStream();
+
+            Util.SerializeCB2(from, stream);
+            stream.Position = 0;
+            var input = new InputStream(stream);
+            var reader = new CompactBinaryReader<InputStream>(input, 2);
+
+            var to = deserializer.Deserialize<IBar<IFoo>>(reader);
+            Assert.IsTrue(Comparer.Equal(from, to));
+        }
+
+        [Test]
         public void DeserializeWithLazy()
         {
             var deserializer = MakeDeserializer<IWithLazy<IFoo>, CompactBinaryReader<InputStream>>();
@@ -257,6 +275,30 @@
             stream.Position = 0;
             var input = new InputStream(stream);
             var reader = new CompactBinaryReader<InputStream>(input);
+
+            var to = deserializer.Deserialize<IWithLazy<IFoo>>(reader);
+            Assert.IsTrue(Comparer.Equal(from, to));
+        }
+
+        [Test]
+        public void DeserializeWithLazyCB2()
+        {
+            var deserializer = MakeDeserializer<IWithLazy<IFoo>, CompactBinaryReader<InputStream>>();
+            IWithLazy<IFoo> from = new WithLazyFoo
+            {
+                LazyT = new LazyFoo<CompactBinaryReader<InputStream>>(MakeRandom<IFoo, CompactBinaryReader<InputStream>>()),
+                LazyFoo = new LazyFoo<CompactBinaryReader<InputStream>>(MakeRandom<IFoo, CompactBinaryReader<InputStream>>())
+            };
+
+            if (from.LazyFoo.List != null)
+                from.LazyFoo.List.Add("end");
+
+            var stream = new MemoryStream();
+
+            Util.SerializeCB2(from, stream);
+            stream.Position = 0;
+            var input = new InputStream(stream);
+            var reader = new CompactBinaryReader<InputStream>(input, 2);
 
             var to = deserializer.Deserialize<IWithLazy<IFoo>>(reader);
             Assert.IsTrue(Comparer.Equal(from, to));
