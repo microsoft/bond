@@ -15,6 +15,22 @@ namespace Bond.IO
         public const int MaxBytesVarInt32 = 5;
         public const int MaxBytesVarInt64 = 10;
 
+        public static int GetVarUInt16Length(ushort value)
+        {
+            int len = 1;
+
+            if (value >= 0x80)
+            {
+                len++;
+                value >>= 7;
+                if (value >= 0x80)
+                {
+                    len++;
+                }
+            }
+            return len;
+        }
+
         public static int EncodeVarUInt16(byte[] data, ushort value, int index)
         {
             // byte 0
@@ -32,6 +48,36 @@ namespace Bond.IO
             // byte 2
             data[index++] = (byte)value;
             return index;
+        }
+
+        public static int GetVarUInt32Length(uint value)
+        {
+            int len = 1;
+
+            // byte 0
+            if (value >= 0x80)
+            {
+                len++;
+                value >>= 7;
+                // byte 1
+                if (value >= 0x80)
+                {
+                    len++;
+                    value >>= 7;
+                    // byte 2
+                    if (value >= 0x80)
+                    {
+                        len++;
+                        value >>= 7;
+                        // byte 3
+                        if (value >= 0x80)
+                        {
+                            len++;
+                        }
+                    }
+                }
+            }
+            return len;
         }
 
         public static int EncodeVarUInt32(byte[] data, uint value, int index)
@@ -63,6 +109,65 @@ namespace Bond.IO
             // last byte
             data[index++] = (byte)value;
             return index;
+        }
+
+        public static int GetVarUInt64Length(ulong value)
+        {
+            int len = 1;
+            // byte 0
+            if (value >= 0x80)
+            {
+                len++;
+                value >>= 7;
+                // byte 1
+                if (value >= 0x80)
+                {
+                    len++;
+                    value >>= 7;
+                    // byte 2
+                    if (value >= 0x80)
+                    {
+                        len++;
+                        value >>= 7;
+                        // byte 3
+                        if (value >= 0x80)
+                        {
+                            len++;
+                            value >>= 7;
+                            // byte 4
+                            if (value >= 0x80)
+                            {
+                                len++;
+                                value >>= 7;
+                                // byte 5
+                                if (value >= 0x80)
+                                {
+                                    len++;
+                                    value >>= 7;
+                                    // byte 6
+                                    if (value >= 0x80)
+                                    {
+                                        len++;
+                                        value >>= 7;
+                                        // byte 7
+                                        if (value >= 0x80)
+                                        {
+                                            len++;
+                                            value >>= 7;
+                                            // byte 8
+                                            if (value >= 0x80)
+                                            {
+                                                len++;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return len;
         }
 
         public static int EncodeVarUInt64(byte[] data, ulong value, int index)

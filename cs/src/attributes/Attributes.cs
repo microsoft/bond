@@ -199,4 +199,18 @@ namespace Bond
 
         internal Type Type { get; private set; }
     }
+
+    /// <summary>
+    /// Applied to 2-pass protocol writers to indicate the implementation of IProtocolWriter used to generate the first-pass serializer
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface)]
+    public sealed class FirstPassWriterAttribute : Attribute
+    {
+        public FirstPassWriterAttribute(Type type)
+        {
+            Type = type;
+        }
+
+        internal Type Type { get; private set; }
+    }
 }

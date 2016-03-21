@@ -150,6 +150,18 @@ namespace Bond.Protocols
     }
 
     /// <summary>
+    /// Provides interface to a writer to pre-run for protocols (like Compact Binary v2) which need two passes.
+    /// </summary>
+    public interface ITwoPassProtocolWriter: IProtocolWriter
+    {
+        /// <summary>
+        /// Provide the first-pass writer, if one is needed for this writer.
+        /// Otherwise, returns null.
+        /// </summary>
+        IProtocolWriter GetFirstPassWriter();
+    }
+
+    /// <summary>
     /// Writes elements used in text protocols
     /// </summary>
     public interface ITextProtocolWriter

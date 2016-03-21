@@ -6,6 +6,8 @@ namespace Bond
     using System;
     using System.Linq;
     using Bond.Expressions;
+    using Bond.IO;
+    using Bond.Protocols;
 
     /// <summary>
     /// Transcode payload from one protocol into another
@@ -61,8 +63,6 @@ namespace Bond
     /// <typeparam name="W">Protocol writer</typeparam>
     public class Transcoder<R, W>
     {
-        readonly Action<R, W>[] transcode;
-
         /// <summary>
         /// Create a transcoder for payloads with specified runtime schema
         /// </summary>
@@ -86,7 +86,14 @@ namespace Bond
         /// <param name="parser">Custom <see cref="IParser"/> instance</param>
         public Transcoder(RuntimeSchema schema, IParser parser)
         {
-            transcode = Generate(schema, parser);
+            if (typeof(W).GetAttribute<FirstPassWriterAttribute>() != null)
+            {
+                helper = new TwoPassTranscoderHelper<CompactBinaryCounter>(schema, parser);
+            }
+            else
+            {
+                helper = new TranscoderHelper(schema, parser);
+            }
         }
 
         /// <summary>
@@ -96,7 +103,17 @@ namespace Bond
         /// <param name="parser">Custom <see cref="IParser"/> instance</param>
         public Transcoder(Type type, IParser parser)
         {
-            transcode = Generate(type, parser);
+            var firstPassAttribute = typeof(W).GetAttribute<FirstPassWriterAttribute>();
+            if (firstPassAttribute != null)
+            {
+                Type firstPassHelperType = typeof(TwoPassTranscoderHelper<>).MakeGenericType(typeof(R), typeof(W), firstPassAttribute.Type);
+
+                helper = (TranscoderHelper)Activator.CreateInstance(firstPassHelperType, type, parser);
+            }
+            else
+            {
+                helper = new TranscoderHelper(type, parser);
+            }
         }
 
         // Create a transcoder
@@ -111,16 +128,76 @@ namespace Bond
         /// <param name="writer">Writer instance</param>
         public void Transcode(R reader, W writer)
         {
-            transcode[0](reader, writer);
+            helper.Transcode(reader, writer);
         }
 
-        Action<R, W>[] Generate<S>(S schema, IParser parser)
+        TranscoderHelper helper;
+
+        private class TranscoderHelper
         {
-            parser = parser ?? ParserFactory<R>.Create(schema);
-            return SerializerGeneratorFactory<R, W>.Create(
-                    (r, w, i) => transcode[i](r, w), schema)
-                .Generate(parser)
-                .Select(lambda => lambda.Compile()).ToArray();
+            readonly Action<R, W>[] transcode;
+
+            public TranscoderHelper(RuntimeSchema schema, IParser parser)
+            {
+                transcode = Generate(schema, parser);
+            }
+
+            public TranscoderHelper(Type type, IParser parser)
+            {
+                transcode = Generate(type, parser);
+            }
+
+            virtual public void Transcode(R reader, W writer)
+            {
+                transcode[0](reader, writer);
+            }
+
+            Action<R, W>[] Generate<S>(S schema, IParser parser)
+            {
+                parser = parser ?? ParserFactory<R>.Create(schema);
+                return SerializerGeneratorFactory<R, W>.Create(
+                        (r, w, i) => transcode[i](r, w), schema)
+                    .Generate(parser)
+                    .Select(lambda => lambda.Compile()).ToArray();
+            }
+        }
+
+        private class TwoPassTranscoderHelper<FPW> : TranscoderHelper
+        {
+            readonly Action<R, FPW>[] firstPassTranscode;
+
+            public TwoPassTranscoderHelper(RuntimeSchema schema, IParser parser):
+                base(schema)
+            {
+                firstPassTranscode = GenerateFirstPass(schema, parser);
+            }
+
+            public TwoPassTranscoderHelper(Type type):
+                base(type)
+            {
+                firstPassTranscode = GenerateFirstPass(type, parser);
+            }
+
+            public override void Transcode(R reader, W writer)
+            {
+                var firstPassWriter = ((ITwoPassProtocolWriter)writer).GetFirstPassWriter();
+                if (firstPassWriter != null)
+                {
+                    R clonedReader = ((ICloneable<R>)reader).Clone();
+                    firstPassTranscode[0](clonedReader, (FPW)firstPassWriter);
+                }
+
+                base.Transcode(reader, writer);
+            }
+
+            Action<R, FPW>[] GenerateFirstPass<S>(S schema, IParser parser)
+            {
+                var parser = parser ?? ParserFactory<R>.Create(schema);
+                return SerializerGeneratorFactory<R, FPW>.Create(
+                        (r, w, i) => firstPassTranscode[i](r, w), schema)
+                    .Generate(parser)
+                    .Select(lambda => lambda.Compile()).ToArray();
+            }
         }
     }
 }

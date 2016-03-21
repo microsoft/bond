@@ -125,6 +125,7 @@ namespace Bond.Protocols
     using System.IO;
     using System.Runtime.CompilerServices;
     using System.Text;
+    using System.Collections.Generic;
     using Bond.IO;
 
     /// <summary>
@@ -132,12 +133,18 @@ namespace Bond.Protocols
     /// </summary>
     /// <typeparam name="O">Implementation of IOutputStream interface</typeparam>
     [Reader(typeof(CompactBinaryReader<>))]
-    public struct CompactBinaryWriter<O> : IProtocolWriter
+    [FirstPassWriter(typeof(CompactBinaryCounter))]
+    public struct CompactBinaryWriter<O> : ITwoPassProtocolWriter
         where O : IOutputStream
     {
         const ushort Magic = (ushort)ProtocolType.COMPACT_PROTOCOL;
         readonly O output;
         readonly ushort version;
+        CompactBinaryCounter? firstPassWriter;
+        List<uint> lengths;
+#if DEBUG
+        Stack<long> lengthCheck;
+#endif
 
         /// <summary>
         /// Create an instance of CompactBinaryWriter
@@ -148,6 +155,27 @@ namespace Bond.Protocols
         {
             this.output = output;
             this.version = version;
+            if (version == 2)
+            {
+                this.lengths = new List<uint>();
+                this.firstPassWriter = new CompactBinaryCounter(lengths);
+#if DEBUG
+                this.lengthCheck = new Stack<long>();
+#endif
+            }
+            else
+            {
+                this.lengths = null;
+                this.firstPassWriter = null;
+#if DEBUG
+                this.lengthCheck = null;
+#endif
+            }
+        }
+
+        public IProtocolWriter GetFirstPassWriter()
+        {
+            return version == 2 ? firstPassWriter : null;
         }
 
         /// <summary>
@@ -171,7 +199,18 @@ namespace Bond.Protocols
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
         public void WriteStructBegin(Metadata metadata)
-        {}
+        {
+            if (version == 2)
+            {
+                uint length = lengths[0];
+                lengths.RemoveAt(0);
+
+                output.WriteVarUInt32(length);
+#if DEBUG
+                lengthCheck.Push(output.Position + length);
+#endif
+            }
+        }
 
         /// <summary>
         /// Start writing a base struct
@@ -192,6 +231,15 @@ namespace Bond.Protocols
         public void WriteStructEnd()
         {
             output.WriteUInt8((Byte)BondDataType.BT_STOP);
+#if DEBUG
+            if (version == 2)
+            {
+                if (output.Position != lengthCheck.Pop())
+                {
+                    Throw.EndOfStreamException();
+                }
+            }
+#endif
         }
 
         /// <summary>
