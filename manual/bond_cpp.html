@@ -804,64 +804,64 @@ Serialize(payload, writer);</code></pre></td></tr></table></div>
 </colgroup>
 <thead>
 <tr class="header">
-<th align="left"></th>
-<th align="left">bonded&lt;T&gt;</th>
-<th align="left">C++ pointer</th>
+<th></th>
+<th>bonded&lt;T&gt;</th>
+<th>C++ pointer</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left"><p>Slicing to base</p></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bonded&lt;Derived&gt; b;
+<td><p>Slicing to base</p></td>
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bonded&lt;Derived&gt; b;
 Base obj;
 b.Deserialize(obj);</code></pre></div></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">Derived* p;
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">Derived* p;
 Base obj;
 obj = *p;</code></pre></div></td>
 </tr>
 <tr class="even">
-<td align="left"><p>Assigning to base part</p></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bonded&lt;Base&gt; b;
+<td><p>Assigning to base part</p></td>
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bonded&lt;Base&gt; b;
 Derived obj;
 b.Deserialize(obj);</code></pre></div></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">Base* p;
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">Base* p;
 Derived obj;
 <span class="kw">static_cast</span>&lt;Base&amp;&gt;(obj) = *p;</code></pre></div></td>
 </tr>
 <tr class="odd">
-<td align="left"><p>Implicit up-casting</p></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="dt">void</span> foo(bonded&lt;Base&gt;);
+<td><p>Implicit up-casting</p></td>
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="dt">void</span> foo(bonded&lt;Base&gt;);
 bonded&lt;Derived&gt; b;
 foo(b);</code></pre></div></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="dt">void</span> foo(Base*)
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="dt">void</span> foo(Base*)
 Derived* p;
 foo(p);</code></pre></div></td>
 </tr>
 <tr class="even">
-<td align="left"><p>Explicit down-casting</p></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bonded&lt;Base&gt; b;
+<td><p>Explicit down-casting</p></td>
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bonded&lt;Base&gt; b;
 Derived obj;
 bonded&lt;Derived&gt;(b)
     .Deserialize(obj);</code></pre></div></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">Base* p;
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">Base* p;
 Derived obj;
 obj = *<span class="kw">static_cast</span>&lt;Derived*&gt;(p);</code></pre></div></td>
 </tr>
 <tr class="odd">
-<td align="left"><p>Implicit cast to void</p></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="dt">void</span> foo(bonded&lt;<span class="dt">void</span>&gt;);
+<td><p>Implicit cast to void</p></td>
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="dt">void</span> foo(bonded&lt;<span class="dt">void</span>&gt;);
 bonded&lt;Bar&gt; b;
 foo(b);</code></pre></div></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="dt">void</span> foo(<span class="dt">void</span>*);
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="dt">void</span> foo(<span class="dt">void</span>*);
 Bar* p;
 foo(p);</code></pre></div></td>
 </tr>
 <tr class="even">
-<td align="left"><p>Explicit cast from void</p></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bonded&lt;<span class="dt">void</span>&gt; b(data, schema);
+<td><p>Explicit cast from void</p></td>
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bonded&lt;<span class="dt">void</span>&gt; b(data, schema);
 bonded&lt;Bar&gt; bb;
 bb = bonded&lt;Bar&gt;(b);</code></pre></div></td>
-<td align="left"><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="dt">void</span>* p = &amp;obj
+<td><div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="dt">void</span>* p = &amp;obj
 Bar* pp;
 pp = <span class="kw">static_cast</span>&lt;Bar*&gt;(p);</code></pre></div></td>
 </tr>
