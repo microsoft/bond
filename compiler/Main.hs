@@ -90,7 +90,6 @@ cppCodegen options@Cpp {..} = do
         ]
 cppCodegen _ = error "cppCodegen: impossible happened."
 
-
 csCodegen :: Options -> IO()
 csCodegen options@Cs {..} = do
     let fieldMapping = if readonly_properties
@@ -99,7 +98,7 @@ csCodegen options@Cs {..} = do
                  then PublicFields
                  else Properties
     let typeMapping = if collection_interfaces then csCollectionInterfacesTypeMapping else csTypeMapping
-    let templates = [ types_cs Class fieldMapping ]
+    let templates = [ comm_interface_cs , comm_proxy_cs , comm_service_cs , types_cs Class fieldMapping ]
     concurrentlyFor_ files $ codeGen options typeMapping templates
 csCodegen _ = error "csCodegen: impossible happened."
 
@@ -117,4 +116,3 @@ codeGen options typeMapping templates file = do
         createDirectoryIfMissing True outputDir
         let content = if (no_banner options) then code else (commonHeader "//" fileName <> code)
         L.writeFile (outputDir </> fileName) content
-

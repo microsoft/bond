@@ -64,6 +64,7 @@ library
                     Language.Bond.Codegen.Cpp.Types_cpp
                     Language.Bond.Codegen.Cpp.Types_h
                     Language.Bond.Codegen.Cs.Types_cs
+                    Language.Bond.Codegen.Cs.Comm_cs
                     Language.Bond.Codegen.Cpp.ApplyOverloads
                     Language.Bond.Codegen.Cpp.Util
                     Language.Bond.Codegen.Cs.Util
