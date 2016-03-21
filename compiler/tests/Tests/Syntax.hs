@@ -40,6 +40,7 @@ derive makeArbitrary ''Modifier
 derive makeArbitrary ''Namespace
 derive makeArbitrary ''Type
 derive makeArbitrary ''TypeParam
+derive makeArbitrary ''Method
 
 roundtripAST :: Bond -> Bool
 roundtripAST x = (decode . encode) x == Just x

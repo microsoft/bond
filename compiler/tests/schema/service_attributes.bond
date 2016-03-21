@@ -1,0 +1,13 @@
+namespace tests
+
+struct Result{}
+struct Param{}
+
+[FooAttribute("Bar")]
+service Foo
+{
+    [foo("method")]
+    [method("")]
+    Result foo(Param);
+}
+

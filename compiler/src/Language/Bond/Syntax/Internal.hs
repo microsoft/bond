@@ -43,6 +43,7 @@ instance ShowPretty Declaration where
     showPretty Enum {..} = "enum " ++ declName
     showPretty Forward {..} = "struct declaration " ++ declName ++ showTypeParams declParams
     showPretty Alias {..} = "alias " ++ declName ++ showTypeParams declParams
+    showPretty Service {..} = "service " ++ declName ++ showTypeParams declParams
 
 metaField :: Field -> Any
 metaField Field {..} = Any $ isMetaName fieldType

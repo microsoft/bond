@@ -30,6 +30,8 @@ module Language.Bond.Syntax.Types
     , Type(..)
     , TypeParam(..)
     , Constraint(..)
+      -- ** Comm
+    , Method(..)
       -- ** Metadata
     , Attribute(..)
       -- ** Deprecated
@@ -119,7 +121,23 @@ data TypeParam =
         }
     deriving (Eq, Show)
 
--- | A declaration of a schema type.
+-- | Method of a service
+data Method =
+    Function
+        { methodAttributes :: [Attribute]   -- zero or more attributes
+        , methodResult :: Maybe Type        -- method result
+        , methodName :: String              -- method name
+        , methodInput :: Maybe Type         -- method parameter
+        }
+    |
+    Event
+        { methodAttributes :: [Attribute]   -- zero or more attributes
+        , methodName :: String              -- method name
+        , methodInput :: Maybe Type         -- method parameter
+        }
+    deriving (Eq, Show)
+
+-- | Bond schema declaration
 data Declaration =
     Struct
         { declNamespaces :: [Namespace]     -- namespace(s) in which the struct is declared
@@ -149,6 +167,14 @@ data Declaration =
         , declParams :: [TypeParam]         -- type parameters for generics
         , aliasType :: Type                 -- aliased type
         }                                   -- ^ <https://microsoft.github.io/bond/manual/compiler.html#type-aliases type alias definition>
+    |
+    Service
+        { declNamespaces :: [Namespace]     -- namespace(s) in which the service is declared
+        , declAttributes :: [Attribute]     -- zero or more attributes
+        , declName :: String                -- service name
+        , declParams :: [TypeParam]         -- type parameters for generic service
+        , serviceMethods :: [Method]        -- zero or more methods
+        }                                   -- ^ <https://microsoft.github.io/bond/manual/compiler.html#service-definition service definition>
     deriving (Eq, Show)
 
 -- | <https://microsoft.github.io/bond/manual/compiler.html#import-statements Import> declaration.
