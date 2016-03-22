@@ -165,10 +165,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "import", "..\examples\cs\co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "no-warnings", "test\codegen\no-warnings\no-warnings.csproj", "{0CEC3863-CFB1-44D5-A9DA-9D860EF6F113}"
 	ProjectSection(ProjectDependencies) = postProject
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1} = {21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}
 		{92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89} = {92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "enumerations", "..\examples\cs\core\enumerations\enumerations.csproj", "{510BF771-C6F2-4A5E-B82B-2ACDC5E8E636}"
+	ProjectSection(ProjectDependencies) = postProject
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1} = {21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
