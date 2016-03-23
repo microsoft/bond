@@ -22,9 +22,16 @@
     <OutputPath>$(OutputPath)\Properties\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FrameTests.cs" />
-    <Compile Include="TcpListenerTests.cs" />
-    <Compile Include="TcpTransportTests.cs" />
+    <Compile Include="SimpleInMem\CalculatorService.cs" />
+    <Compile Include="SimpleInMem\SimpleInMemConnectionTest.cs" />
+    <Compile Include="SimpleInMem\SimpleInMemListenerTest.cs" />
+    <Compile Include="SimpleInMem\SimpleInMemTransportTest.cs" />
+    <BondCodegen Include="SimpleInMem\SimpleStruct.bond">
+      <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
+    </BondCodegen>
+	<Compile Include="Tcp\FrameTests.cs" />
+    <Compile Include="Tcp\TcpTransportTests.cs" />
+    <Compile Include="Tcp\TcpListenerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="NUnit.VisualStudio.TestAdapter" Condition="'$(OS)' != 'Unix'">
@@ -64,6 +71,10 @@
     <ProjectReference Include="..\..\src\comm\interfaces\interfaces.csproj">
       <Project>{45efb397-298a-4a32-a178-a2bdf8abbbd9}</Project>
       <Name>interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\comm\simpleinmem-transport\simpleinmem-transport.csproj">
+      <Project>{54a3432b-99e1-4deb-b4eb-2d6e158ecd24}</Project>
+      <Name>simpleinmem-transport</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\comm\tcp-transport\tcp-transport.csproj">
       <Project>{c687c52c-0a5b-4f10-8cb3-dbaf9a72d042}</Project>

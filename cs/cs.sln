@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Attributes", "src\attributes\Attributes.csproj", "{92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89}"
 EndProject
@@ -188,6 +188,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tcp-transport", "src\comm\tcp-transport\tcp-transport.csproj", "{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pingpong", "..\examples\cs\comm\pingpong\pingpong.csproj", "{92C5B98B-12A4-4995-90B8-A19E96524464}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleinmem-transport", "src\comm\simpleinmem-transport\simpleinmem-transport.csproj", "{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -882,6 +884,30 @@ Global
 		{92C5B98B-12A4-4995-90B8-A19E96524464}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{92C5B98B-12A4-4995-90B8-A19E96524464}.Release|Win32.ActiveCfg = Release|Any CPU
 		{92C5B98B-12A4-4995-90B8-A19E96524464}.Release|Win32.Build.0 = Release|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Debug|Win32.Build.0 = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Fields|Any CPU.ActiveCfg = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Fields|Any CPU.Build.0 = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Fields|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Fields|Mixed Platforms.Build.0 = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Fields|Win32.ActiveCfg = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Fields|Win32.Build.0 = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Any CPU.ActiveCfg = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Any CPU.Build.0 = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Mixed Platforms.Build.0 = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Win32.ActiveCfg = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Win32.Build.0 = Debug|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Release|Win32.ActiveCfg = Release|Any CPU
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Release|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -916,5 +942,6 @@ Global
 		{F13CB9C0-DB52-45DB-9BFD-05CB26512FC6} = {882B4409-F7A4-496A-AC2B-3E46A448D5D8}
 		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042} = {ED161076-6BB8-4A13-83ED-0E9C01461D5E}
 		{92C5B98B-12A4-4995-90B8-A19E96524464} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
+		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24} = {ED161076-6BB8-4A13-83ED-0E9C01461D5E}
 	EndGlobalSection
 EndGlobal
