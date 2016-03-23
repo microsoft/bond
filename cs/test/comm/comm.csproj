@@ -62,9 +62,6 @@
     <Reference Include="Bond.JSON">
       <HintPath>..\..\src\json\$(DependentOutputPath)\Bond.JSON.dll</HintPath>
     </Reference>
-    <Reference Include="Bond.Comm.Interfaces">
-      <HintPath>..\..\src\comm\interfaces\$(DependentOutputPath)\Bond.Comm.Interfaces.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
