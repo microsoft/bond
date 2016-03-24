@@ -22,14 +22,14 @@ namespace Bond.Comm
     public class LayerStack<TLayerData> : ILayerStack where TLayerData : class
     {
         private List<ILayer<TLayerData>> m_layers = new List<ILayer<TLayerData>>();
-        private UnhandledExceptionHandler m_exceptionHandler;
+        private ExceptionHandler m_exceptionHandler;
 
         public LayerStack()
         {
             m_exceptionHandler = (ex) =>
             {
                 Environment.FailFast("Unhandled exception", ex);
-                return new Error { error_code = (int)ErrorCode.Impossible, message = "Unhandled exception" };
+                return new Error { error_code = (int)ErrorCode.InternalServerError, message = "Unhandled exception" };
             };
         }
 

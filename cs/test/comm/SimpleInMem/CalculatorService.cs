@@ -3,14 +3,16 @@
 
 namespace UnitTest.SimpleInMem
 {
-    using Bond;
-    using Bond.Comm;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
+    using Bond.Comm;
+
     internal class CalculatorService : IService
     {
+        public const string ExpectedExceptionMessage = "This method is expected to throw.";
+
         private IEnumerable<ServiceMethodInfo> m_methods;
 
         internal CalculatorService()
@@ -19,21 +21,21 @@ namespace UnitTest.SimpleInMem
             var methodInfo = new ServiceMethodInfo
             {
                 MethodName = "Add",
-                Callback = new ServiceCallback(Add),
+                Callback = Add,
             };
             methodsInfo.Add(methodInfo);
 
             methodInfo = new ServiceMethodInfo
             {
                 MethodName = "Subtract",
-                Callback = new ServiceCallback(Subtract),
+                Callback = Subtract,
             };
             methodsInfo.Add(methodInfo);
 
             methodInfo = new ServiceMethodInfo
             {
                 MethodName = "Multiply",
-                Callback = new ServiceCallback(Multiply),
+                Callback = Multiply,
             };
             methodsInfo.Add(methodInfo);
 
@@ -48,30 +50,25 @@ namespace UnitTest.SimpleInMem
             }
         }
 
-        internal Task<IBonded> Add(IBonded request, ReceiveContext context)
+        internal Task<IMessage> Add(IMessage request, ReceiveContext context)
         {
-            PairedInput req = request.Deserialize<PairedInput>();
+            PairedInput req = request.Convert<PairedInput>().Payload.Deserialize();
             var res = new Output { Result = req.First + req.Second };
 
-            return Task.FromResult<IBonded>(new Bonded<Output>(res));
+            return Task.FromResult<IMessage>(Message.FromPayload(res));
         }
 
-        internal Task<IBonded> Subtract(IBonded request, ReceiveContext context)
+        internal Task<IMessage> Subtract(IMessage request, ReceiveContext context)
         {
-            PairedInput req = request.Deserialize<PairedInput>();
+            PairedInput req = request.Convert<PairedInput>().Payload.Deserialize();
             var res = new Output { Result = req.First - req.Second };
 
-            return Task.FromResult<IBonded>(new Bonded<Output>(res));
+            return Task.FromResult<IMessage>(Message.FromPayload(res));
         }
 
-        internal Task<IBonded> Multiply(IBonded request, ReceiveContext context)
+        internal Task<IMessage> Multiply(IMessage request, ReceiveContext context)
         {
-            throw new NotImplementedException();
-        }
-
-        private IBonded GetBonded<T>(T t)
-        {
-            return new Bonded<T>(t);
+            throw new NotImplementedException(ExpectedExceptionMessage);
         }
     }
 }

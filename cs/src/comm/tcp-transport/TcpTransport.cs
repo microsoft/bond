@@ -11,6 +11,8 @@ namespace Bond.Comm.Tcp
 
     public class TcpTransportBuilder : TransportBuilder<TcpTransport>
     {
+        private ExceptionHandler m_exceptionHandler = Transport.DefaultExceptionHandler;
+
         public override TransportBuilder<TcpTransport> AddDeserializer<TReader>(Type type, Deserializer<TReader> deserializer)
         {
             throw new NotImplementedException();
@@ -41,14 +43,15 @@ namespace Bond.Comm.Tcp
             throw new NotImplementedException();
         }
 
-        public override TransportBuilder<TcpTransport> SetUnhandledExceptionHandler(UnhandledExceptionHandler handler)
+        public override TransportBuilder<TcpTransport> SetUnhandledExceptionHandler(ExceptionHandler handler)
         {
-            throw new NotImplementedException();
+            m_exceptionHandler = handler;
+            return this;
         }
 
         public override TcpTransport Construct()
         {
-            return new TcpTransport();
+            return new TcpTransport(m_exceptionHandler);
         }
     }
 
@@ -56,13 +59,27 @@ namespace Bond.Comm.Tcp
     {
         public const int DefaultPort = 25188;
 
-        private TcpTransportArgs m_defaultTransportArgs = new TcpTransportArgs();
+        private readonly  TcpTransportArgs m_defaultTransportArgs = new TcpTransportArgs();
+        private readonly ExceptionHandler m_exceptionHandler;
+
+        public TcpTransport(ExceptionHandler exceptionHandler)
+        {
+            m_exceptionHandler = exceptionHandler;
+        }
 
         public override TransportArgs DefaultTransportArgs
         {
             get
             {
                 return m_defaultTransportArgs.Clone<TcpTransportArgs>();
+            }
+        }
+
+        public override ExceptionHandler UnhandledExceptionHandler
+        {
+            get
+            {
+                return m_exceptionHandler;
             }
         }
 
@@ -82,7 +99,7 @@ namespace Bond.Comm.Tcp
             await tcpClient.ConnectAsync(endpoint.Address, endpoint.Port);
 
             // TODO: keep these in some master collection for shutdown
-            var tcpConnection = new TcpConnection(tcpClient, ConnectionType.Client);
+            var tcpConnection = new TcpConnection(this, tcpClient, ConnectionType.Client);
             tcpConnection.Start();
             return tcpConnection;
         }
@@ -94,7 +111,7 @@ namespace Bond.Comm.Tcp
 
         public TcpListener MakeListener(IPEndPoint address)
         {
-            return new TcpListener(address);
+            return new TcpListener(this, address);
         }
 
         public override Task StopAsync()

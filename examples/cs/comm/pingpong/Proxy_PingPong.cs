@@ -11,18 +11,25 @@ namespace Bond.Examples.PingPong
 
     public class Proxy_PingPong : IPingPongService
     {
-        private IRequestResponseConnection m_connection;
+        private readonly IRequestResponseConnection m_connection;
 
         public Proxy_PingPong(IRequestResponseConnection connection)
         {
             m_connection = connection;
         }
 
-        public async Task<PingResponse> PingAsync(PingRequest request)
+        public Task<IMessage<PingResponse>> PingAsync(PingRequest request)
         {
             var message = new Message<PingRequest>(request);
-            var response = await m_connection.RequestResponseAsync<PingRequest, PingResponse>("Bond.Examples.PingPong.Ping", message, CancellationToken.None);
-            return response.Payload.Deserialize<PingResponse>();
+            return PingAsync(message);
+        }
+
+        public Task<IMessage<PingResponse>> PingAsync(IMessage<PingRequest> message)
+        {
+            return m_connection.RequestResponseAsync<PingRequest, PingResponse>(
+                "Bond.Examples.PingPong.Ping",
+                message,
+                CancellationToken.None);
         }
     }
 }

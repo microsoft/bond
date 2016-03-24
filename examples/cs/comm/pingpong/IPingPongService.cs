@@ -4,9 +4,10 @@
 namespace Bond.Examples.PingPong
 {
     using System.Threading.Tasks;
+    using Bond.Comm;
 
     interface IPingPongService
     {
-        Task<PingResponse> PingAsync(PingRequest request);
+        Task<IMessage<PingResponse>> PingAsync(IMessage<PingRequest> request);
     }
 }

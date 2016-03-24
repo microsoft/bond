@@ -6,7 +6,7 @@ namespace Bond.Comm
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public delegate Task<IBonded> ServiceCallback(IBonded request, ReceiveContext context);
+    public delegate Task<IMessage> ServiceCallback(IMessage request, ReceiveContext context);
 
     public class ServiceMethodInfo
     {

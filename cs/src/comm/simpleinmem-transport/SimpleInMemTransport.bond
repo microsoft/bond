@@ -15,5 +15,4 @@ struct SimpleInMemHeaders
     0: uint32 request_id;
     1: required PayloadType payload_type;
     2: string method_name;
-    4: uint32 error_code;
 }

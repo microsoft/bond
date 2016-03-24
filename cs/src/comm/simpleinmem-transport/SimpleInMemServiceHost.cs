@@ -3,17 +3,20 @@
 
 namespace Bond.Comm.SimpleInMem
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
     internal class SimpleInMemServiceHost
     {
-        private object m_lock;
-        private Dictionary<string, ServiceCallback> m_dispatchTable;
+        private readonly SimpleInMemTransport m_parentTransport;
+        private readonly object m_lock;
+        private readonly Dictionary<string, ServiceCallback> m_dispatchTable;
 
 
-        public SimpleInMemServiceHost()
+        public SimpleInMemServiceHost(SimpleInMemTransport parentTransport)
         {
+            m_parentTransport = parentTransport;
             m_lock = new object();
             m_dispatchTable = new Dictionary<string, ServiceCallback>();
         }
@@ -40,7 +43,7 @@ namespace Bond.Comm.SimpleInMem
             }
         }
 
-        public async Task<IBonded> DispatchRequest(SimpleInMemHeaders headers, SimpleInMemConnection connection, IBonded request, TaskCompletionSource<IBonded> taskSource)
+        public async Task<IMessage> DispatchRequest(SimpleInMemHeaders headers, SimpleInMemConnection connection, IMessage message, TaskCompletionSource<IMessage> taskSource)
         {
             ServiceCallback callback;
 
@@ -54,7 +57,35 @@ namespace Bond.Comm.SimpleInMem
             }
 
             var context = new SimpleInMemReceiveContext(connection);
-            return await callback(request, context);
+
+            IMessage result;
+
+            try
+            {
+                result = await callback(message, context);
+            }
+            catch (Exception callbackEx)
+            {
+                Error error = null;
+
+                try
+                {
+                    error = m_parentTransport.UnhandledExceptionHandler(callbackEx);
+                }
+                catch (Exception handlerEx)
+                {
+                    Transport.FailFastExceptionHandler(handlerEx);
+                }
+
+                if (error == null)
+                {
+                    Transport.FailFastExceptionHandler(callbackEx);
+                }
+
+                result = Message.FromError(error);
+            }
+
+            return result;
         }
     }
 }

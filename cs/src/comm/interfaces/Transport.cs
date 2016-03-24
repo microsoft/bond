@@ -8,12 +8,17 @@ namespace Bond.Comm
     using System.Threading;
     using System.Threading.Tasks;
 
-    // Optional method to convert an unhandled service-side exception into
-    // an error. If not set at the transport/connection level, default
-    // behavior is to call Environment.FailFast
-    // There will be a default implementation that returns a generic error
-    // saying something like "Unhandled Server-side Error: check server logs"
-    public delegate Error UnhandledExceptionHandler(Exception ex);
+    // Optional method to convert an service-side exception into
+    // an error. If not explicitly set on a transport,
+    // Transport.DefaultExceptionHandler will be called. The default
+    // implementation calls Environment.FailFast, which will kill the
+    // process, as Bond doesn't know the state of the rest of the
+    // application and assumes that it is irrecoverably corrupted.
+    // Transport.ToErrorExceptionHandler can be used to turn an
+    // exception into a generic error instead, and
+    // Transport.DebugExceptionHandler can be used to turn an
+    // exception into an Error with server-side details.
+    public delegate Error ExceptionHandler(Exception ex);
 
     // There are a number of places where we could use the builder
     // pattern to avoid needing to handle changes later (e.g., if we
@@ -26,7 +31,7 @@ namespace Bond.Comm
         public abstract TransportBuilder<TTransport> SetDefaultTransportArgs(TransportArgs defaults);
 
         // chain these like we chain layers?
-        public abstract TransportBuilder<TTransport> SetUnhandledExceptionHandler(UnhandledExceptionHandler handler);
+        public abstract TransportBuilder<TTransport> SetUnhandledExceptionHandler(ExceptionHandler handler);
 
         // Open question here: how to get an instance of the right
         // reader/writer for these.
@@ -45,6 +50,8 @@ namespace Bond.Comm
         // will have to return a clone of the internal state so that modifications can't be made
         public abstract TransportArgs DefaultTransportArgs { get; }
 
+        public abstract ExceptionHandler UnhandledExceptionHandler { get; }
+
         public virtual Task<Connection> ConnectToAsync(string address)
         {
             return ConnectToAsync(address, CancellationToken.None);
@@ -56,5 +63,64 @@ namespace Bond.Comm
 
         // close all connections and stop all listeners
         public abstract Task StopAsync();
+
+        public static readonly ExceptionHandler DefaultExceptionHandler = FailFastExceptionHandler;
+
+        public static Error FailFastExceptionHandler(Exception ex)
+        {
+            Environment.FailFast("An unhandled exception was encountered by Bond.Comm", ex);
+            return MakeInternalServerError(ex, includeDetails: false);
+        }
+
+        public static Error ToErrorExceptionHandler(Exception ex)
+        {
+            // TODO: log
+            return MakeInternalServerError(ex, includeDetails: false);
+        }
+
+        public static Error DebugExceptionHandler(Exception ex)
+        {
+            // TODO: log
+            return MakeInternalServerError(ex, includeDetails: true);
+        }
+
+        public static InternalServerError MakeInternalServerError(Exception exception, bool includeDetails)
+        {
+            var internalServerError = new InternalServerError
+            {
+                error_code = (int) ErrorCode.InternalServerError,
+                unique_id = Guid.NewGuid().ToString("D")
+            };
+
+            if (includeDetails && exception != null)
+            {
+                internalServerError.message = "The server has encounted an error: " + exception.Message;
+                internalServerError.server_stack_trace = exception.StackTrace;
+
+                var aggEx = exception as AggregateException;
+                if (aggEx != null)
+                {
+                    internalServerError.inner_errors = new List<IBonded<Error>>(aggEx.InnerExceptions.Count);
+
+                    foreach (var innerException in aggEx.InnerExceptions)
+                    {
+                        var innerError = MakeInternalServerError(innerException, includeDetails);
+                        internalServerError.inner_errors.Add(new Bonded<InternalServerError>(innerError));
+                    }
+                }
+                else if (exception.InnerException != null)
+                {
+                    internalServerError.inner_errors = new List<IBonded<Error>>(1);
+                    var innerError = MakeInternalServerError(exception.InnerException, includeDetails);
+                    internalServerError.inner_errors.Add(new Bonded<InternalServerError>(innerError));
+                }
+            }
+            else
+            {
+                internalServerError.message = "The server has encounted an error.";
+            }
+
+            return internalServerError;
+        }
     }
 }

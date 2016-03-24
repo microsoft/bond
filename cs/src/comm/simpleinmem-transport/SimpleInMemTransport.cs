@@ -10,6 +10,8 @@ namespace Bond.Comm.SimpleInMem
     
     public class SimpleInMemTransportBuilder : TransportBuilder<SimpleInMemTransport>
     {
+        private ExceptionHandler m_exceptionHandler = Transport.DefaultExceptionHandler;
+
         public override TransportBuilder<SimpleInMemTransport> AddDeserializer<TReader>(Type type, Deserializer<TReader> deserializer)
         {
             throw new NotImplementedException();
@@ -40,14 +42,15 @@ namespace Bond.Comm.SimpleInMem
             throw new NotImplementedException();
         }
 
-        public override TransportBuilder<SimpleInMemTransport> SetUnhandledExceptionHandler(UnhandledExceptionHandler handler)
+        public override TransportBuilder<SimpleInMemTransport> SetUnhandledExceptionHandler(ExceptionHandler handler)
         {
-            throw new NotImplementedException();
+            m_exceptionHandler = handler;
+            return this;
         }
 
         public override SimpleInMemTransport Construct()
         {
-            return new SimpleInMemTransport();
+            return new SimpleInMemTransport(m_exceptionHandler);
         }
     }
 
@@ -57,11 +60,26 @@ namespace Bond.Comm.SimpleInMem
         private IDictionary<string, SimpleInMemListener> m_listeners = new Dictionary<string, SimpleInMemListener>();
         private object m_lock = new object();
 
+        private readonly ExceptionHandler m_exceptionHandler;
+
+        public SimpleInMemTransport(ExceptionHandler exceptionHandler)
+        {
+            m_exceptionHandler = exceptionHandler;
+        }
+
         public override TransportArgs DefaultTransportArgs
         {
             get
             {
                 return m_defaultTransportArgs.Clone<SimpleInMemTransportArgs>();
+            }
+        }
+
+        public override ExceptionHandler UnhandledExceptionHandler
+        {
+            get
+            {
+                return m_exceptionHandler;
             }
         }
 
@@ -76,7 +94,7 @@ namespace Bond.Comm.SimpleInMem
             //TODO Invoke unhandled exception handler if this throws exception
             return await Task.Run<Connection>(() =>
             {
-                var connection = new SimpleInMemConnection(ConnectionType.Client);
+                var connection = new SimpleInMemConnection(this, ConnectionType.Client);
                 listener.Connection.AddRequestResponseQueue(connection.Id, connection.RequestResponseQueue);
                 connection.Start();
                 return connection;
@@ -93,7 +111,7 @@ namespace Bond.Comm.SimpleInMem
                 {
                     if (!m_listeners.TryGetValue(address, out listener))
                     {
-                        listener = new SimpleInMemListener(address);
+                        listener = new SimpleInMemListener(this, address);
                         m_listeners.Add(address, listener);
                     }
                 }

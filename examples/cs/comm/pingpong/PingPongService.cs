@@ -7,21 +7,25 @@ namespace Bond.Examples.PingPong
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class PingPongService : IPingPongService, Comm.IService
+    using Bond.Comm;
+
+    public class PingPongService : IPingPongService, IService
     {
         private const UInt16 MaxDelayMilliseconds = 2000;
 
-        public IEnumerable<Comm.ServiceMethodInfo> Methods
+        public IEnumerable<ServiceMethodInfo> Methods
         {
             get
             {
-                var pingMethodInfo = new Comm.ServiceMethodInfo { MethodName = "Bond.Examples.PingPong.Ping", Callback = PingAsync_Glue };
+                var pingMethodInfo = new ServiceMethodInfo { MethodName = "Bond.Examples.PingPong.Ping", Callback = PingAsync_Glue };
                 return new[] { pingMethodInfo };
             }
         }
 
-        public async Task<PingResponse> PingAsync(PingRequest request)
+        public async Task<IMessage<PingResponse>> PingAsync(IMessage<PingRequest> message)
         {
+            var request = message.Payload.Deserialize();
+
             if (request.DelayMilliseconds > 0)
             {
                 UInt16 delayMs = Math.Min(MaxDelayMilliseconds, request.DelayMilliseconds);
@@ -29,14 +33,12 @@ namespace Bond.Examples.PingPong
             }
 
             var response = new PingResponse { Payload = request.Payload };
-            return response;
+            return Message.FromPayload(response);
         }
 
-        private async Task<IBonded> PingAsync_Glue(IBonded request, Comm.ReceiveContext context)
+        private async Task<IMessage> PingAsync_Glue(IMessage message, ReceiveContext context)
         {
-            var req = request.Deserialize<PingRequest>();
-            var result = await PingAsync(req);
-            return new Bonded<PingResponse>(result);
+            return await PingAsync(message.Convert<PingRequest>());
         }
     }
 }

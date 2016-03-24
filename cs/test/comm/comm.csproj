@@ -23,6 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Interfaces\LogTests.cs" />
+    <Compile Include="Interfaces\TransportTests.cs" />
     <Compile Include="SimpleInMem\CalculatorService.cs" />
     <Compile Include="SimpleInMem\SimpleInMemConnectionTest.cs" />
     <Compile Include="SimpleInMem\SimpleInMemListenerTest.cs" />

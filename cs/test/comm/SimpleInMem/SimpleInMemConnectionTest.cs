@@ -18,15 +18,15 @@ namespace UnitTest.SimpleInMem
         [SetUp]
         public void Init()
         {
-            m_transport = new SimpleInMemTransportBuilder().Construct();
+            m_transport = new SimpleInMemTransportBuilder().SetUnhandledExceptionHandler(Transport.DebugExceptionHandler).Construct();
             m_service = new CalculatorService();
         }
 
         [Test]
         public async Task SimpleInMemMethodCall()
         {
-            int first = 91;
-            int second = 23;
+            const int first = 91;
+            const int second = 23;
             int addResult = first + second;
             int subResult = first - second;
 
@@ -34,7 +34,7 @@ namespace UnitTest.SimpleInMem
             listener.AddService<CalculatorService>(m_service);
             await listener.StartAsync();
             
-            //Client connection
+            // Client connection
             Connection connection = await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken());
             Assert.True(connection is SimpleInMemConnection);
             SimpleInMemConnection simpleConnection = (SimpleInMemConnection)connection;
@@ -44,8 +44,8 @@ namespace UnitTest.SimpleInMem
             input.First = first;
             input.Second = second;
             Message<PairedInput> request = new Message<PairedInput>(input);
-            Message<Output> addResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Add", request, System.Threading.CancellationToken.None);
-            Message<Output> subResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Subtract", request, System.Threading.CancellationToken.None);
+            IMessage<Output> addResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Add", request, System.Threading.CancellationToken.None);
+            IMessage<Output> subResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Subtract", request, System.Threading.CancellationToken.None);
 
             Output addOutput = addResponse.Payload.Deserialize();
             Output subOutput = subResponse.Payload.Deserialize();
@@ -54,18 +54,17 @@ namespace UnitTest.SimpleInMem
             await simpleConnection.StopAsync();
         }
 
-        //[Test] TODO implement error handling delegate in SimpleInMemTransport
+        [Test]
         public async Task SimpleInMemMethodCall_WithServiceError()
         {
-            int first = 91;
-            int second = 23;
-            int multiplyResult = first * second;
+            const int first = 91;
+            const int second = 23;
 
             SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
             listener.AddService<CalculatorService>(m_service);
             await listener.StartAsync();
 
-            //Client connection
+            // Client connection
             Connection connection = await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken());
             Assert.True(connection is SimpleInMemConnection);
             SimpleInMemConnection simpleConnection = (SimpleInMemConnection)connection;
@@ -75,8 +74,13 @@ namespace UnitTest.SimpleInMem
             input.First = first;
             input.Second = second;
             Message<PairedInput> request = new Message<PairedInput>(input);
-            Message<Output> multiplyResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Multiply", request, new System.Threading.CancellationToken());
-            //TODO Assert error returned by the service
+            IMessage<Output> multiplyResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Multiply", request, new System.Threading.CancellationToken());
+            Assert.IsTrue(multiplyResponse.IsError);
+            InternalServerError error = multiplyResponse.Error.Deserialize<InternalServerError>();
+            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.That(error.message, Is.StringContaining(CalculatorService.ExpectedExceptionMessage));
+
+            await connection.StopAsync();
         }
 
         [TearDown]

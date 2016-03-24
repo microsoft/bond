@@ -125,7 +125,7 @@ namespace Bond.Comm.SimpleInMem
     internal class InMemFrame
     {
         internal SimpleInMemHeaders m_headers;
-        internal IBonded m_bonded;
-        internal TaskCompletionSource<IBonded> m_outstandingRequest;
+        internal IMessage m_message;
+        internal TaskCompletionSource<IMessage> m_outstandingRequest;
     }
 }

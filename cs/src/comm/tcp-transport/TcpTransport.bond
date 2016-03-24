@@ -15,5 +15,5 @@ struct TcpHeaders
     0: uint32 request_id;
     1: required PayloadType payload_type;
     2: string method_name;
-    3: uint32 error_code;
+    3: int32 error_code;
 }

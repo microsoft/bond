@@ -8,7 +8,9 @@ namespace Bond.Examples.PingPong
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class ReversePingPongService : IPingPongService, Comm.IService
+    using Bond.Comm;
+
+    public class ReversePingPongService : IPingPongService, IService
     {
         private const UInt16 MaxDelayMilliseconds = 2000;
 
@@ -21,8 +23,10 @@ namespace Bond.Examples.PingPong
             }
         }
 
-        public async Task<PingResponse> PingAsync(PingRequest request)
+        public async Task<IMessage<PingResponse>> PingAsync(IMessage<PingRequest> message)
         {
+            PingRequest request = message.Payload.Deserialize();
+
             if (request.DelayMilliseconds > 0)
             {
                 UInt16 delayMs = Math.Min(MaxDelayMilliseconds, request.DelayMilliseconds);
@@ -30,14 +34,12 @@ namespace Bond.Examples.PingPong
             }
 
             var response = new PingResponse { Payload = string.Concat(request.Payload.Reverse()) };
-            return response;
+            return Message.FromPayload(response);
         }
 
-        private async Task<IBonded> PingAsync_Glue(IBonded request, Comm.ReceiveContext context)
+        private async Task<IMessage> PingAsync_Glue(IMessage message, ReceiveContext context)
         {
-            var req = request.Deserialize<PingRequest>();
-            var result = await PingAsync(req);
-            return new Bonded<PingResponse>(result);
+            return await PingAsync(message.Convert<PingRequest>());
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Bond.Comm.Tcp
 
     public class TcpListener : Listener
     {
+        private TcpTransport m_parentTransport;
         private System.Net.Sockets.TcpListener m_listener;
         private TcpServiceHost m_serviceHost;
 
@@ -22,10 +23,11 @@ namespace Bond.Comm.Tcp
 
         private CancellationTokenSource m_shutdownTokenSource;
 
-        public TcpListener(IPEndPoint listenEndpoint)
+        public TcpListener(TcpTransport parentTransport, IPEndPoint listenEndpoint)
         {
+            m_parentTransport = parentTransport;
             m_listener = new System.Net.Sockets.TcpListener(listenEndpoint);
-            m_serviceHost = new TcpServiceHost();
+            m_serviceHost = new TcpServiceHost(parentTransport);
             m_connections = new HashSet<TcpConnection>();
             m_shutdownTokenSource = new CancellationTokenSource();
         }
@@ -48,7 +50,7 @@ namespace Bond.Comm.Tcp
             throw new NotImplementedException();
         }
 
-        public override void SetUnhandledExceptionHandler(UnhandledExceptionHandler handler)
+        public override void SetUnhandledExceptionHandler(ExceptionHandler handler)
         {
             throw new NotImplementedException();
         }
@@ -75,7 +77,7 @@ namespace Bond.Comm.Tcp
                 try
                 {
                     TcpClient client = await m_listener.AcceptTcpClientAsync();
-                    var connection = new TcpConnection(client, m_serviceHost, ConnectionType.Server);
+                    var connection = new TcpConnection(m_parentTransport, client, m_serviceHost, ConnectionType.Server);
 
                     lock (m_connectionsLock)
                     {

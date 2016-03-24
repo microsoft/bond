@@ -7,8 +7,6 @@ namespace Bond.Comm.SimpleInMem
     using System.Threading;
     using System.Threading.Tasks;
     
-    using Bond;
-    
     public enum ConnectionType
     {
         Client,
@@ -27,7 +25,7 @@ namespace Bond.Comm.SimpleInMem
         private long m_requestId;
         private CancellationTokenSource m_cancelTokenSource = new CancellationTokenSource();
 
-        public SimpleInMemConnection(ConnectionType connectionType) : this (new SimpleInMemServiceHost(), connectionType)
+        public SimpleInMemConnection(SimpleInMemTransport parentTransport, ConnectionType connectionType) : this (new SimpleInMemServiceHost(parentTransport), connectionType)
         {
         }
 
@@ -66,10 +64,10 @@ namespace Bond.Comm.SimpleInMem
             m_serviceHost.Deregister((IService)service);
         }
 
-        public async Task<Message<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, Message<TRequest> message, CancellationToken ct)
+        public async Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, IMessage<TRequest> message, CancellationToken ct)
         {
-            IBonded response = await SendRequestAsync(methodName, message.Payload);
-            return new Message<TResponse>(response.Convert<TResponse>());
+            IMessage response = await SendRequestAsync(methodName, message);
+            return response.Convert<TResponse>();
         }
 
         public ConnectionType ConnectionType
@@ -96,10 +94,10 @@ namespace Bond.Comm.SimpleInMem
             }
         }
 
-        internal async Task<IBonded> SendRequestAsync(string methodName, IBonded request)
+        internal async Task<IMessage> SendRequestAsync(string methodName, IMessage request)
         {
             uint requestId = AllocateNextRequestId();
-            var payload = NewPayLoad(requestId, PayloadType.Request, request, new TaskCompletionSource<IBonded>());
+            var payload = NewPayLoad(requestId, PayloadType.Request, request, new TaskCompletionSource<IMessage>());
             payload.m_headers.method_name = methodName;
             m_clientreqresqueue.Enqueue(payload);
             
@@ -107,7 +105,7 @@ namespace Bond.Comm.SimpleInMem
         }
 
         
-        internal void SendReplyAsync(uint requestId, IBonded response, RequestResponseQueue queue, TaskCompletionSource<IBonded> taskSource)
+        internal void SendReplyAsync(uint requestId, IMessage response, RequestResponseQueue queue, TaskCompletionSource<IMessage> taskSource)
         {
             var payload = NewPayLoad(requestId, PayloadType.Response, response, taskSource);
             queue.Enqueue(payload);
@@ -124,7 +122,7 @@ namespace Bond.Comm.SimpleInMem
             return unchecked((UInt32)requestIdLong);
         }
 
-        private InMemFrame NewPayLoad(uint requestId, PayloadType payloadType, IBonded data, TaskCompletionSource<IBonded> taskSource)
+        private InMemFrame NewPayLoad(uint requestId, PayloadType payloadType, IMessage message, TaskCompletionSource<IMessage> taskSource)
         {
             var headers = new SimpleInMemHeaders
             {
@@ -135,7 +133,7 @@ namespace Bond.Comm.SimpleInMem
             return new InMemFrame
             {
                 m_headers = headers,
-                m_bonded = data,
+                m_message = message,
                 m_outstandingRequest = taskSource
             };
         }
@@ -193,10 +191,10 @@ namespace Bond.Comm.SimpleInMem
                 }
 
                 var headers = frame.m_headers;
-                var data = frame.m_bonded;
+                var message = frame.m_message;
                 var taskSource = frame.m_outstandingRequest;
 
-                await Task.Run(() => DispatchResponse(headers, data, taskSource));
+                await Task.Run(() => DispatchResponse(headers, message, taskSource));
             }
         }
 
@@ -231,10 +229,10 @@ namespace Bond.Comm.SimpleInMem
                     }
 
                     var headers = payload.m_headers;
-                    var data = payload.m_bonded;
+                    var message = payload.m_message;
                     var taskSource = payload.m_outstandingRequest;
 
-                    await Task.Run(() => DispatchRequest(headers, data, queue, taskSource));
+                    await Task.Run(() => DispatchRequest(headers, message, queue, taskSource));
                 }
             }
         }
@@ -245,7 +243,7 @@ namespace Bond.Comm.SimpleInMem
             {
                 throw new ProtocolErrorException("Missing headers");
             }
-            else if (frame.m_bonded == null)
+            else if (frame.m_message == null)
             {
                 throw new ProtocolErrorException("Missing payload");
             }
@@ -257,17 +255,15 @@ namespace Bond.Comm.SimpleInMem
             return frame;
         }
 
-        private async void DispatchRequest(SimpleInMemHeaders headers, IBonded payload, RequestResponseQueue queue, TaskCompletionSource<IBonded> taskSource)
+        private async void DispatchRequest(SimpleInMemHeaders headers, IMessage message, RequestResponseQueue queue, TaskCompletionSource<IMessage> taskSource)
         {
-            var bondedRequest = payload;
-            IBonded response = await m_serviceHost.DispatchRequest(headers, this, bondedRequest, taskSource);
+            IMessage response = await m_serviceHost.DispatchRequest(headers, this, message, taskSource);
             SendReplyAsync(headers.request_id, response, queue, taskSource);
         }
 
-        private void DispatchResponse(SimpleInMemHeaders headers, IBonded payload, TaskCompletionSource<IBonded> responseCompletionSource)
+        private void DispatchResponse(SimpleInMemHeaders headers, IMessage message, TaskCompletionSource<IMessage> responseCompletionSource)
         {
-            var bondedResopnse = payload;
-            responseCompletionSource.SetResult(bondedResopnse);
+            responseCompletionSource.SetResult(message);
         }
     }
 }

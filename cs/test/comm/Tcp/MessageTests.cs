@@ -22,8 +22,28 @@ namespace UnitTest
             int_field = 100,
         };
 
+        private static readonly IBonded AnyTypelessIBonded = (IBonded)new Bonded<SomePayloadType>(AnyPayload);
+
+        private static readonly SomeDerivedPayloadType AnyDerivedPayload = new SomeDerivedPayloadType
+        {
+            int_field = 500,
+            bool_field = true,
+        };
+
         [Test]
         public void Construct_WithPayload_IsPayload()
+        {
+            var msg = new Message(AnyTypelessIBonded);
+
+            Assert.IsFalse(msg.IsError);
+            Assert.IsNull(msg.Error);
+
+            var deserializedPayload = msg.RawPayload.Deserialize<SomePayloadType>();
+            Assert.IsTrue(AnyPayload.IsEqual<SomePayloadType>(deserializedPayload));
+        }
+
+        [Test]
+        public void ConstructT_WithPayload_IsPayload()
         {
             var msg = new Message<SomePayloadType>(AnyPayload);
 
@@ -37,6 +57,18 @@ namespace UnitTest
         [Test]
         public void FromPayload_WithPayload_IsPayload()
         {
+            var msg = Message.FromPayload(AnyTypelessIBonded);
+
+            Assert.IsFalse(msg.IsError);
+            Assert.IsNull(msg.Error);
+
+            var deserializedPayload = msg.RawPayload.Deserialize<SomePayloadType>();
+            Assert.IsTrue(AnyPayload.IsEqual<SomePayloadType>(deserializedPayload));
+        }
+
+        [Test]
+        public void FromPayloadT_WithPayload_IsPayload()
+        {
             var msg = Message.FromPayload(AnyPayload);
 
             Assert.IsFalse(msg.IsError);
@@ -48,6 +80,18 @@ namespace UnitTest
 
         [Test]
         public void Construct_WithBonded_IsPayload()
+        {
+            var msg = Message.FromPayload(AnyTypelessIBonded);
+
+            Assert.IsFalse(msg.IsError);
+            Assert.IsNull(msg.Error);
+
+            var deserializedPayload = msg.RawPayload.Deserialize<SomePayloadType>();
+            Assert.IsTrue(AnyPayload.IsEqual<SomePayloadType>(deserializedPayload));
+        }
+
+        [Test]
+        public void ConstructT_WithBonded_IsPayload()
         {
             var bondedPayload = new Bonded<SomePayloadType>(AnyPayload);
             var msg = new Message<SomePayloadType>(bondedPayload);
@@ -61,40 +105,56 @@ namespace UnitTest
         [Test]
         public void Construct_WithDerivedPayload_IsPayload()
         {
-            var derivedPayload = new SomeDerivedPayloadType
-            {
-                int_field = 100,
-                bool_field = true,
-            };
+            var msg = new Message(new Bonded<SomeDerivedPayloadType>(AnyDerivedPayload));
+            Assert.IsFalse(msg.IsError);
+            Assert.IsNull(msg.Error);
 
-            var msg = new Message<SomePayloadType>(derivedPayload);
+            var deserializedPayload = msg.RawPayload.Deserialize<SomeDerivedPayloadType>();
+            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayloadType>(deserializedPayload));
+        }
+
+        [Test]
+        public void ConstructT_WithDerivedPayload_IsPayload()
+        {
+            var msg = new Message<SomePayloadType>(AnyDerivedPayload);
             Assert.IsFalse(msg.IsError);
             Assert.IsNull(msg.Error);
 
             var deserializedPayload = msg.Payload.Deserialize<SomeDerivedPayloadType>();
-            Assert.IsTrue(derivedPayload.IsEqual<SomeDerivedPayloadType>(deserializedPayload));
+            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayloadType>(deserializedPayload));
         }
 
         [Test]
         public void FromPayload_WithDerivedPayload_IsPayload()
         {
-            var derivedPayload = new SomeDerivedPayloadType
-            {
-                int_field = 100,
-                bool_field = true,
-            };
+            IBonded typelessBonded = new Bonded<SomeDerivedPayloadType>(AnyDerivedPayload);
+            var msg = Message.FromPayload(typelessBonded);
+            Assert.IsFalse(msg.IsError);
+            Assert.IsNull(msg.Error);
 
-            var msg = Message.FromPayload<SomePayloadType>(derivedPayload);
+            var deserializedPayload = msg.RawPayload.Deserialize<SomeDerivedPayloadType>();
+            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayloadType>(deserializedPayload));
+        }
+
+        [Test]
+        public void FromPayloadT_WithDerivedPayload_IsPayload()
+        {
+            var msg = Message.FromPayload<SomePayloadType>(AnyDerivedPayload);
             Assert.IsFalse(msg.IsError);
             Assert.IsNull(msg.Error);
 
             var deserializedPayload = msg.Payload.Deserialize<SomeDerivedPayloadType>();
-            Assert.IsTrue(derivedPayload.IsEqual<SomeDerivedPayloadType>(deserializedPayload));
+            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayloadType>(deserializedPayload));
         }
 
         [Test]
-        public void Construct_WithError_IsPayload()
+        public void ConstructT_WithError_IsPayload()
         {
+            // There is no similar test for Message, as we have access to the
+            // internal ctor, which overload resolution will pick. Normal users
+            // of the library don't have access to this ctor and have to use
+            // FromError. We have tests for FromError already.
+
             var msg = new Message<Error>(AnyError);
 
             Assert.IsFalse(msg.IsError);
@@ -107,6 +167,18 @@ namespace UnitTest
         [Test]
         public void FromError_WithError_IsError()
         {
+            var msg = Message.FromError(new Bonded<Error>(AnyError));
+
+            Assert.IsTrue(msg.IsError);
+            Assert.IsNotNull(msg.Error);
+            Assert.IsTrue(AnyError.IsEqual<Error>(msg.Error.Deserialize()));
+
+            Assert.Throws<InvalidOperationException>(() => { var _ = msg.RawPayload; });
+        }
+
+        [Test]
+        public void FromErrorT_WithError_IsError()
+        {
             var msg = Message.FromError<Error>(AnyError);
 
             Assert.IsTrue(msg.IsError);
@@ -117,15 +189,24 @@ namespace UnitTest
         }
 
         [Test]
-        public void FromError_WithBondedError_IsError()
+        public void FromError_ZeroErrorCode_Throws()
         {
-            var msg = Message.FromError<Error>(new Bonded<Error>(AnyError));
+            var zeroErrorCode = new Error {error_code = 0};
+            Assert.Throws<ArgumentException>(() => Message.FromError<SomePayloadType>(zeroErrorCode));
+            Assert.Throws<ArgumentException>(() => Message.FromError(zeroErrorCode));
+        }
 
-            Assert.IsTrue(msg.IsError);
-            Assert.IsNotNull(msg.Error);
-            Assert.IsTrue(AnyError.IsEqual<Error>(msg.Error.Deserialize()));
+        [Test]
+        public void Message_ConvertToMessageT_Works()
+        {
+            IBonded typelessBonded = new Bonded<SomeDerivedPayloadType>(AnyDerivedPayload);
+            var msg = Message.FromPayload(typelessBonded);
 
-            Assert.Throws<InvalidOperationException>(() => { var _ = msg.Payload; });
+            var messageBase = msg.Convert<SomePayloadType>();
+            Assert.AreEqual(500, messageBase.Payload.Deserialize().int_field);
+
+            var messageDerived = msg.Convert<SomeDerivedPayloadType>();
+            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayloadType>(messageDerived.Payload.Deserialize()));
         }
 
         [Schema]

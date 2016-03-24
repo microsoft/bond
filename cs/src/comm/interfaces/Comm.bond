@@ -6,8 +6,7 @@ namespace bond.comm;
 enum ErrorCode
 {
     OK = 0x0;
-    Impossible = 0xA0BD0001;
-    // and so on
+    InternalServerError = 0xA0BD0002;
 }
 
 struct Error
@@ -15,4 +14,10 @@ struct Error
     0: required int32 error_code;
     1: string message;
     2: vector<bonded<Error>> inner_errors;
+}
+
+struct InternalServerError : Error
+{
+    0: string unique_id;
+    1: string server_stack_trace;
 }

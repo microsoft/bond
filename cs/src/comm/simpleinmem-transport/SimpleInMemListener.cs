@@ -12,10 +12,10 @@ namespace Bond.Comm.SimpleInMem
         private string m_address;
         private SimpleInMemConnection m_connection;
 
-        public SimpleInMemListener(string address)
+        public SimpleInMemListener(SimpleInMemTransport parentTransport, string address)
         {
             m_address = address;
-            m_serviceHost = new SimpleInMemServiceHost();
+            m_serviceHost = new SimpleInMemServiceHost(parentTransport);
             m_connection = new SimpleInMemConnection(m_serviceHost, ConnectionType.Server);
         }
 
@@ -29,7 +29,7 @@ namespace Bond.Comm.SimpleInMem
             throw new NotImplementedException();
         }
 
-        public override void SetUnhandledExceptionHandler(UnhandledExceptionHandler handler)
+        public override void SetUnhandledExceptionHandler(ExceptionHandler handler)
         {
             throw new NotImplementedException();
         }

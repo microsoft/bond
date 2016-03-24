@@ -8,12 +8,12 @@ namespace Bond.Comm
 
     public interface IRequestResponseConnection
     {
-        Task<Message<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, Message<TRequest> message, CancellationToken ct);
+        Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, IMessage<TRequest> message, CancellationToken ct);
     }
 
     public interface IEventConnection
     {
-        Task FireEventAsync<TPayload>(string methodName, Message<TPayload> message, CancellationToken ct);
+        Task FireEventAsync<TPayload>(string methodName, IMessage<TPayload> message, CancellationToken ct);
     }
 
     public abstract class Connection

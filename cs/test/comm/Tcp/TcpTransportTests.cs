@@ -6,7 +6,6 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Bond;
     using Bond.Comm;
     using Bond.Comm.Tcp;
     using NUnit.Framework;
@@ -16,7 +15,8 @@
     {
         private const string AnyIpAddressString = "10.1.2.3";
         private const int AnyPort = 12345;
-        private readonly IPAddress AnyIpAddress = new IPAddress(new byte[] { 10, 1, 2, 3 });
+        private static readonly IPAddress AnyIpAddress = new IPAddress(new byte[] { 10, 1, 2, 3 });
+        private static readonly Message<Bond.Void> EmptyMessage = new Message<Bond.Void>(new Bond.Void());
 
         [Test]
         public void DefaultPorts_AreExpected()
@@ -62,34 +62,91 @@
         }
 
         [Test]
-        public async Task SetupListener_RequestReply_Works()
+        public async Task SetupListener_RequestReply_PayloadResponse()
         {
-            var testService = new TestService();
+            TestClientServer testClientServer = await SetupTestClientServer();
 
-            TcpTransport transport = new TcpTransportBuilder().Construct();
-            TcpListener listener = transport.MakeListener(new IPEndPoint(IPAddress.Loopback, 0));
-            listener.AddService(testService);
-            await listener.StartAsync();
-
-            TcpConnection connection = await transport.ConnectToAsync(listener.ListenEndpoint);
-
-            var message = new Message<Bond.Void>(new Bond.Void());
-            var response = await connection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService.RespondWithEmpty", message, CancellationToken.None);
+            var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService.RespondWithEmpty", EmptyMessage, CancellationToken.None);
 
             Assert.IsFalse(response.IsError);
             Assert.IsNotNull(response.Payload);
             Assert.IsNull(response.Error);
 
-            Assert.AreEqual(1, testService.CallCount);
+            Assert.AreEqual(1, testClientServer.Service.RespondWithEmpty_CallCount);
 
-            var responseVoid = response.Payload.Deserialize<Bond.Void>();
+            await testClientServer.Transport.StopAsync();
+        }
 
-            await transport.StopAsync();
+        [Test]
+        public async Task SetupListener_RequestError_ErrorResponse()
+        {
+            TestClientServer testClientServer = await SetupTestClientServer();
+
+            var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService.RespondWithError", EmptyMessage, CancellationToken.None);
+
+            Assert.IsTrue(response.IsError);
+            Assert.IsNotNull(response.Error);
+
+            var error = response.Error.Deserialize<Error>();
+            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+
+            await testClientServer.Transport.StopAsync();
+        }
+
+        [Test]
+        public async Task SetupListenerWithErrorHandler_RequestThatThrows_ErrorResponse()
+        {
+            TestClientServer testClientServer = await SetupTestClientServer();
+
+            var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService.ThrowInsteadOfResponding", EmptyMessage, CancellationToken.None);
+
+            Assert.IsTrue(response.IsError);
+            Assert.IsNotNull(response.Error);
+
+            var error = response.Error.Deserialize<Error>();
+            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.That(error.message, Is.StringContaining(TestService.ExpectedExceptionMessage));
+
+            await testClientServer.Transport.StopAsync();
+        }
+
+
+        private class TestClientServer
+        {
+            public TestService Service;
+            public TcpTransport Transport;
+            public TcpListener Listener;
+            public TcpConnection ClientConnection;
+        }
+
+        private static async Task<TestClientServer> SetupTestClientServer()
+        {
+            var testService = new TestService();
+
+            TcpTransport transport = new TcpTransportBuilder()
+                // some tests rely on the use of DebugExceptionHandler to assert things about the error message
+                .SetUnhandledExceptionHandler(Transport.DebugExceptionHandler)
+                .Construct();
+            TcpListener listener = transport.MakeListener(new IPEndPoint(IPAddress.Loopback, 0));
+            listener.AddService(testService);
+            await listener.StartAsync();
+
+            TcpConnection clientConnection = await transport.ConnectToAsync(listener.ListenEndpoint);
+
+            return new TestClientServer
+            {
+                Service = testService,
+                Transport = transport,
+                Listener = listener,
+                ClientConnection = clientConnection,
+            };
         }
 
         private class TestService : IService
         {
-            private int m_callCount = 0;
+            public const string ExpectedExceptionMessage = "This method is expected to throw.";
+
+            private int m_respondWithEmpty_callCount = 0;
 
             public IEnumerable<ServiceMethodInfo> Methods
             {
@@ -101,23 +158,49 @@
                         {
                             MethodName = "TestService.RespondWithEmpty",
                             Callback = RespondWithEmpty
-                        }
+                        },
+                        new ServiceMethodInfo
+                        {
+                            MethodName = "TestService.RespondWithError",
+                            Callback = RespondWithError,
+                        },
+                        new ServiceMethodInfo
+                        {
+                            MethodName = "TestService.ThrowInsteadOfResponding",
+                            Callback = ThrowInsteadOfResponding,
+                        },
                     };
                 }
             }
 
-            public int CallCount
+            public int RespondWithEmpty_CallCount
             {
                 get
                 {
-                    return m_callCount;
+                    return m_respondWithEmpty_callCount;
                 }
             }
 
-            private Task<IBonded> RespondWithEmpty(IBonded request, ReceiveContext context)
+            private Task<IMessage> RespondWithEmpty(IMessage request, ReceiveContext context)
             {
-                Interlocked.Increment(ref m_callCount);
-                return Task.FromResult<IBonded>(new Bonded<Bond.Void>(new Bond.Void()));
+                Interlocked.Increment(ref m_respondWithEmpty_callCount);
+                var emptyMessage = Message.FromPayload(new Bond.Void());
+                return Task.FromResult<IMessage>(emptyMessage);
+            }
+
+            private Task<IMessage> RespondWithError(IMessage request, ReceiveContext context)
+            {
+                var error = new Error
+                {
+                    error_code = (int) ErrorCode.InternalServerError,
+                };
+
+                return Task.FromResult<IMessage>(Message.FromError(error));
+            }
+
+            private Task<IMessage> ThrowInsteadOfResponding(IMessage request, ReceiveContext context)
+            {
+                throw new InvalidOperationException(ExpectedExceptionMessage);
             }
         }
     }

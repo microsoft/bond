@@ -23,47 +23,67 @@ namespace Bond.Comm.Tcp
 
     public class TcpConnection : Connection, IRequestResponseConnection
     {
+        private TcpTransport m_parentTransport;
+
         TcpClient m_tcpClient;
         NetworkStream m_networkStream;
-        ConnectionType m_connectionType;
 
         TcpServiceHost m_serviceHost;
 
         object m_requestsLock;
-        Dictionary<uint, TaskCompletionSource<IBonded>> m_outstandingRequests;
+        Dictionary<uint, TaskCompletionSource<IMessage>> m_outstandingRequests;
 
         long m_requestId;
 
-        public TcpConnection(TcpClient tcpClient, ConnectionType connectionType) : this (tcpClient, new TcpServiceHost(), connectionType)
+        public TcpConnection(
+            TcpTransport parentTransport,
+            TcpClient tcpClient,
+            ConnectionType connectionType)
+            : this (
+                  parentTransport,
+                  tcpClient,
+                  new TcpServiceHost(parentTransport),
+                  connectionType)
         {
         }
 
-        internal TcpConnection(TcpClient tcpClient, TcpServiceHost serviceHost, ConnectionType connectionType)
+        internal TcpConnection(
+            TcpTransport parentTransport,
+            TcpClient tcpClient,
+            TcpServiceHost serviceHost,
+            ConnectionType connectionType)
         {
+            m_parentTransport = parentTransport;
             m_tcpClient = tcpClient;
             m_networkStream = tcpClient.GetStream();
-            m_connectionType = connectionType;
             m_serviceHost = serviceHost;
             m_requestsLock = new object();
-            m_outstandingRequests = new Dictionary<uint, TaskCompletionSource<IBonded>>();
+            m_outstandingRequests = new Dictionary<uint, TaskCompletionSource<IMessage>>();
 
             // start at -1 or 0 so the first request ID is 1 or 2.
             m_requestId = connectionType == ConnectionType.Client ? -1 : 0;
         }
 
-        // TODO: make async for real
-        internal async Task<IBonded> SendRequestAsync(string methodName, IBonded request)
+        internal static Frame MessageToFrame(uint requestId, string methodName, PayloadType type, IMessage payload)
         {
-            uint requestId = AllocateNextRequestId();
             var frame = new Frame();
 
             {
                 var tcpHeaders = new TcpHeaders
                 {
                     request_id = requestId,
-                    payload_type = PayloadType.Request,
-                    method_name = methodName
+                    payload_type = type,
+                    method_name = methodName ?? string.Empty, // method_name is not nullable
                 };
+
+                if (payload.IsError)
+                {
+                    tcpHeaders.error_code = payload.Error.Deserialize<Error>().error_code;
+                }
+                else
+                {
+                    tcpHeaders.error_code = (int)ErrorCode.OK;
+                }
 
                 var outputBuffer = new OutputBuffer(150);
                 var fastWriter = new FastBinaryWriter<OutputBuffer>(outputBuffer);
@@ -73,17 +93,28 @@ namespace Bond.Comm.Tcp
             }
 
             {
+                var userData = payload.IsError ? (IBonded)payload.Error : (IBonded)payload.RawPayload;
+
                 var outputBuffer = new OutputBuffer(1024);
                 var compactWriter = new CompactBinaryWriter<OutputBuffer>(outputBuffer);
                 // TODO: marshal dies on IBonded Marshal.To(compactWriter, request)
                 // understand more deeply why and consider fixing
                 compactWriter.WriteVersion();
-                request.Serialize(compactWriter);
+                userData.Serialize(compactWriter);
 
                 frame.Add(new Framelet(FrameletType.PayloadData, outputBuffer.Data));
             }
 
-            var responseCompletionSource = new TaskCompletionSource<IBonded>();
+            return frame;
+        }
+
+        // TODO: make async for real
+        internal async Task<IMessage> SendRequestAsync<TPayload>(string methodName, IMessage<TPayload> request)
+        {
+            uint requestId = AllocateNextRequestId();
+            var frame = MessageToFrame(requestId, methodName, PayloadType.Request, request);
+
+            var responseCompletionSource = new TaskCompletionSource<IMessage>();
             lock (m_requestsLock)
             {
                 m_outstandingRequests.Add(requestId, responseCompletionSource);
@@ -107,33 +138,9 @@ namespace Bond.Comm.Tcp
             return await responseCompletionSource.Task;
         }
 
-        internal async Task SendReplyAsync(uint requestId, IBonded response)
+        internal async Task SendReplyAsync(uint requestId, IMessage response)
         {
-            var frame = new Frame();
-
-            {
-                var tcpHeaders = new TcpHeaders
-                {
-                    request_id = requestId,
-                    payload_type = PayloadType.Response,
-                };
-
-                var outputBuffer = new OutputBuffer(150);
-                var fastWriter = new FastBinaryWriter<OutputBuffer>(outputBuffer);
-                Serialize.To(fastWriter, tcpHeaders);
-
-                frame.Add(new Framelet(FrameletType.TcpHeaders, outputBuffer.Data));
-            }
-
-            {
-                var outputBuffer = new OutputBuffer(1024);
-                var compactWriter = new CompactBinaryWriter<OutputBuffer>(outputBuffer);
-                // TODO: see above about Marshal.
-                compactWriter.WriteVersion();
-                response.Serialize(compactWriter);
-
-                frame.Add(new Framelet(FrameletType.PayloadData, outputBuffer.Data));
-            }
+            var frame = MessageToFrame(requestId, null, PayloadType.Response, response);
 
             try
             {
@@ -154,7 +161,7 @@ namespace Bond.Comm.Tcp
 
         internal void Start()
         {
-            Task.Run(() => ProcessFrameAsync(m_networkStream));
+            Task.Run(() => ProcessFramesAsync(m_networkStream));
         }
 
         private UInt32 AllocateNextRequestId()
@@ -168,7 +175,7 @@ namespace Bond.Comm.Tcp
             return unchecked((UInt32)requestIdLong);
         }
 
-        private async Task ProcessFrameAsync(NetworkStream stream)
+        private async Task ProcessFramesAsync(NetworkStream stream)
         {
             // TODO: shutdown
             for (;;)
@@ -226,13 +233,18 @@ namespace Bond.Comm.Tcp
 
         private void DispatchRequest(TcpHeaders headers, ArraySegment<byte> payload)
         {
-            var bondedRequest = Unmarshal.From(payload);
-            m_serviceHost.DispatchRequest(headers, this, bondedRequest);
+            if (headers.error_code != (int)ErrorCode.OK)
+            {
+                throw new ProtocolErrorException("Received a request with non-zero error code. Request ID " + headers.request_id);
+            }
+
+            IMessage request = Message.FromPayload(Unmarshal.From(payload));
+            m_serviceHost.DispatchRequest(headers, this, request);
         }
 
         private void DispatchResponse(TcpHeaders headers, ArraySegment<byte> payload)
         {
-            TaskCompletionSource<IBonded> responseCompletionSource;
+            TaskCompletionSource<IMessage> responseCompletionSource;
 
             lock (m_requestsLock)
             {
@@ -245,8 +257,17 @@ namespace Bond.Comm.Tcp
                 m_outstandingRequests.Remove(headers.request_id);
             }
 
-            var bondedResopnse = Unmarshal.From(payload);
-            responseCompletionSource.SetResult(bondedResopnse);
+            IMessage response;
+            if (headers.error_code != (int) ErrorCode.OK)
+            {
+                response = Message.FromError(Unmarshal<Error>.From(payload));
+            }
+            else
+            {
+                response = Message.FromPayload(Unmarshal.From(payload));
+            }
+
+            responseCompletionSource.SetResult(response);
         }
 
         public override Task StopAsync()
@@ -266,12 +287,11 @@ namespace Bond.Comm.Tcp
             throw new NotImplementedException();
         }
 
-        public async Task<Message<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, Message<TRequest> message, CancellationToken ct)
+        public async Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, IMessage<TRequest> message, CancellationToken ct)
         {
             // TODO: cancellation
-            IBonded response = await SendRequestAsync(methodName, message.Payload);
-            // TODO: handle error responses
-            return new Message<TResponse>(response.Convert<TResponse>());
+            IMessage response = await SendRequestAsync(methodName, message);
+            return response.Convert<TResponse>();
         }
     }
 }
