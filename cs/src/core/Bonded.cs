@@ -153,11 +153,14 @@ namespace Bond
         }
     }
 
-    internal class BondedVoid<R> : IBonded 
+    public class BondedVoid<R> : IBonded 
         where R : ICloneable<R>
     {
         readonly R reader;
         readonly RuntimeSchema schema;
+
+        public R Reader { get { return reader.Clone(); } }
+        public RuntimeSchema Schema { get { return schema; } }
 
         public BondedVoid(R reader)
         {
