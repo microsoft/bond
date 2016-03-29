@@ -212,6 +212,41 @@ namespace UnitTest
             public CustomBondedVoid(R reader)
                 : this(reader, RuntimeSchema.Empty)
             {
+                this.reader = reader.Clone();
+                this.schema = schema;
+            }
+
+            public CustomBondedVoid(R reader, RuntimeSchema schema)
+            {
+                this.reader = reader;
+                this.schema = schema;
+            }
+
+            public void Serialize<W>(W writer)
+            {
+                CustomTransformFactory.Default.Transcoder<R, W>(schema).Transcode(reader.Clone(), writer);
+            }
+
+            public U Deserialize<U>()
+            {
+                return CustomTransformFactory.Default.Deserializer<R, U>(schema).Deserialize<U>(reader.Clone());
+            }
+
+            IBonded<U> IBonded.Convert<U>()
+            {
+                return (IBonded<U>) Convert<U>();
+            }
+        }
+
+        internal class CustomBondedVoid<R> : IBonded
+            where R : ICloneable<R>
+        {
+            private readonly R reader;
+            private readonly RuntimeSchema schema;
+
+            public CustomBondedVoid(R reader)
+                : this(reader, RuntimeSchema.Empty)
+            {
             }
 
             public CustomBondedVoid(R reader, RuntimeSchema schema)
