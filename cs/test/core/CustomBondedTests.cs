@@ -339,7 +339,7 @@ namespace UnitTest
         }
 
         [Test]
-        public void SupportSettingCustomFactory()
+        public void SupportSettingCustomFactory_RoundTrip()
         {
             var y = new YDerived();
             y.Z = CustomBonded<Z>.From(new Z {Value = 42});
