@@ -3,8 +3,6 @@
 
 namespace Bond
 {
-    using System;
-    using System.Linq.Expressions;
     using Bond.IO;
 
     /// <summary>
@@ -155,10 +153,10 @@ namespace Bond
         }
     }
 
-    internal class BondedVoid<R> : IBonded
+    internal class BondedVoid<R> : IBonded 
         where R : ICloneable<R>
     {
-        internal readonly R reader;
+        readonly R reader;
         readonly RuntimeSchema schema;
 
         public BondedVoid(R reader)
