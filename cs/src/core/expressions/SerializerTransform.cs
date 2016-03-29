@@ -326,6 +326,7 @@ namespace Bond.Expressions
                 return parser.Bonded(value =>
                     writer.WriteBonded(PrunedExpression.Convert(value, typeof(IBonded))));
 
+
             if (schema.IsStruct)
                 return GenerateSerialize(Struct, parser, schema);
 
