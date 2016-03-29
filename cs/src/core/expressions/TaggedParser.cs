@@ -177,7 +177,7 @@ namespace Bond.Expressions
                 newBonded = factory(typeof (IBonded), typeof (Tag.bonded<>), reader.Param) ;
 
             return Expression.Block(
-                handler(newBonded ?? Expression.New(TaggedParser<R>.bondedCtor, reader.Param)),
+                handler(newBonded ?? Expression.New(bondedCtor, reader.Param)),
                 reader.Skip(Expression.Constant(BondDataType.BT_STRUCT)));
         }
 
