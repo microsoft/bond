@@ -16,19 +16,24 @@ namespace Bond.Expressions
         static readonly MethodInfo moveNext = Reflection.MethodInfoOf((IEnumerator e) => e.MoveNext());
         static readonly ConstructorInfo arraySegmentCtor = typeof(ArraySegment<byte>).GetConstructor(typeof(byte[]));
         delegate Expression ContainerItemHandler(Expression value, Expression next, Expression count);
+        readonly ConstructorInfo bondedCtor;
+
         readonly ParameterExpression objParam;
         readonly TypeAlias typeAlias;
         readonly Expression value;
         readonly Type schemaType;
         readonly Type objectType;
         readonly int hierarchyDepth;
+        private Factory factory;
 
-        public ObjectParser(Type type)
+        public ObjectParser(Type type, Factory factory = null)
         {
             typeAlias = new TypeAlias(type);
             value = objParam = Expression.Parameter(typeof(object), "obj");
             objectType = schemaType = type;
             hierarchyDepth = type.GetHierarchyDepth();
+            this.factory = factory;
+            bondedCtor = typeof(Bonded<>).MakeGenericType(objectType).GetConstructor(objectType);
         }
 
         ObjectParser(ObjectParser that, Expression value, Type schemaType)
@@ -39,6 +44,7 @@ namespace Bond.Expressions
             this.schemaType = schemaType;
             objectType = value.Type;
             hierarchyDepth = schemaType.GetHierarchyDepth();
+            bondedCtor = typeof(Bonded<>).MakeGenericType(objectType).GetConstructor(objectType);
         }
 
         public ParameterExpression ReaderParam { get { return objParam; } }
@@ -182,11 +188,14 @@ namespace Bond.Expressions
             {
                 return handler(value);
             }
-            
-            var bondedType = typeof(Bonded<>).MakeGenericType(objectType);
-            var bondedCtor = bondedType.GetConstructor(objectType);
 
-            return handler(Expression.New(bondedCtor, value));
+            var newBonded = factory != null
+                ? factory(typeof (IBonded<>).MakeGenericType(objectType), schemaType, value)
+                : Expression.New(bondedCtor, value);
+
+            var newExpression = Expression.New(bondedCtor, value);
+
+            return handler(newExpression);
         }
 
         public Expression Blob(Expression count)

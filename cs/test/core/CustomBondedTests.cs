@@ -164,7 +164,7 @@ namespace UnitTest
 
             public CustomBonded(R reader, RuntimeSchema schema)
             {
-                this.reader = reader;
+                this.reader = reader.Clone();
                 this.schema = schema;
 
                 this.value = new Lazy<T>(this.Deserialize<T>, LazyThreadSafetyMode.ExecutionAndPublication);
@@ -194,10 +194,43 @@ namespace UnitTest
 
             IBonded<U> IBonded.Convert<U>()
             {
-                return new CustomBonded<U, R>(reader, schema);
+                return (IBonded<U>) Convert<U>();
             }
 
             public override CustomBonded<U> Convert<U>()
+            {
+                return new CustomBonded<U, R>(reader, schema);
+            }
+        }
+
+        internal class CustomBondedVoid<R> : IBonded
+            where R : ICloneable<R>
+        {
+            private readonly R reader;
+            private readonly RuntimeSchema schema;
+
+            public CustomBondedVoid(R reader)
+                : this(reader, RuntimeSchema.Empty)
+            {
+            }
+
+            public CustomBondedVoid(R reader, RuntimeSchema schema)
+            {
+                this.reader = reader;
+                this.schema = schema;
+            }
+
+            public void Serialize<W>(W writer)
+            {
+                CustomTransformFactory.Default.Transcoder<R, W>(schema).Transcode(reader.Clone(), writer);
+            }
+
+            public U Deserialize<U>()
+            {
+                return CustomTransformFactory.Default.Deserializer<R, U>(schema).Deserialize<U>(reader.Clone());
+            }
+
+            IBonded<U> IBonded.Convert<U>()
             {
                 return new CustomBonded<U, R>(reader, schema);
             }
@@ -237,7 +270,7 @@ namespace UnitTest
 
             public Serializer<W> Serializer<W, T>()
             {
-                return new Serializer<W>(typeof (T), false);
+                return new Serializer<W>(typeof (T), false , Factory);
             }
 
             public Deserializer<R> Deserializer<R, T>(RuntimeSchema schema)
@@ -253,46 +286,29 @@ namespace UnitTest
                 return new Transcoder<R,W>();
             }
 
-            public Transcoder<R, W> Transcoder<R, W, T>()
-            {
-                return new Transcoder<R, W>(typeof(T));
-            }
-
             private static Expression Factory(Type type, Type schemaType, params Expression[] arguments)
             {
-                if (type.IsGenericType)
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (CustomBonded<>))
                 {
-                    var genericTypeDefinition = type.GetGenericTypeDefinition();
-                    if (genericTypeDefinition == typeof (CustomBonded<>))
-                    {
-                        return CreateCustomBondedExpression(type, arguments);
-                    }
+                    var arg = arguments[0]; // CustomBondedVoid<R>
+
+                    var bondedConvert = typeof (IBonded).GetMethod("Convert").MakeGenericMethod(type.GetGenericArguments());
+
+                    return Expression.ConvertChecked(Expression.Call(arg, bondedConvert), type);
                 }
+                if (type == typeof (IBonded))
+                    return CreateCustomBondedVoidExpression(type, arguments);
                 return null;
             }
 
-            private static Expression CreateCustomBondedExpression(Type type, Expression[] arguments)
+            private static Expression CreateCustomBondedVoidExpression(Type type, Expression[] arguments)
             {
-                var typeOfSchema = type.GetGenericArguments();
-
-                if (arguments.Length == 1 && arguments[0].Type == typeof (IBonded))
+                if (arguments.Length == 1)
                 {
-                    // we have (IBonded)new BondedVoid<R>(...)
+                    var reader = arguments[0];
 
-                    var arg = arguments[0] as UnaryExpression;
-                    if (arg == null || (arg.NodeType != ExpressionType.Convert && arg.NodeType != ExpressionType.ConvertChecked))
-                        return null;
-
-                    var bondedVoid = arg.Operand;
-                    var typeOfR = bondedVoid.Type.GetGenericArguments();
-
-                    var variable = Expression.Variable(bondedVoid.Type, "bondedVoid");
-                    var reader = Expression.Property(variable, "Reader");
-                    var schema = Expression.Property(variable, "Schema");
-
-                    var ctor = typeof (CustomBonded<,>).MakeGenericType(typeOfSchema[0], typeOfR[0]).GetConstructor(new[] { typeOfR[0], typeof(RuntimeSchema) });
-                    return
-                        Expression.Block(new[] {variable}, Expression.Assign(variable, bondedVoid), Expression.New(ctor, reader, schema));
+                    var ctor = typeof (CustomBondedVoid<>).MakeGenericType(reader.Type).GetConstructor(new[] {reader.Type});
+                    return Expression.New(ctor, reader);
                 }
 
                 return null;

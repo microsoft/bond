@@ -94,9 +94,9 @@ namespace Bond
             return (T)clone[0](source);
         }
 
-        static Func<object, object>[] Generate(Type type, DeserializerTransform<object> transform)
+        static Func<object, object>[] Generate(Type type, DeserializerTransform<object> transform, Factory factory = null)
         {
-            var parser = new ObjectParser(typeof(SourceT));
+            var parser = new ObjectParser(typeof(SourceT), factory);
             return transform.Generate(parser, type).Select(lambda => lambda.Compile()).ToArray();
         }
     }
