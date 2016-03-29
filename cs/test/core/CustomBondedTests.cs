@@ -162,6 +162,14 @@ namespace UnitTest
             private readonly R reader;
             private readonly RuntimeSchema schema;
 
+            public CustomBonded(R reader)
+            {
+                this.reader = reader.Clone();
+                this.schema = RuntimeSchema.Empty;
+
+                this.value = new Lazy<T>(this.Deserialize<T>, LazyThreadSafetyMode.ExecutionAndPublication);
+            }
+
             public CustomBonded(R reader, RuntimeSchema schema)
             {
                 this.reader = reader.Clone();
@@ -216,7 +224,7 @@ namespace UnitTest
 
             public CustomBondedVoid(R reader, RuntimeSchema schema)
             {
-                this.reader = reader;
+                this.reader = reader.Clone();
                 this.schema = schema;
             }
 
