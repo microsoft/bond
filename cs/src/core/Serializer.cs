@@ -66,16 +66,18 @@ namespace Bond
         /// Create a serializer for specified type
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
-        public Serializer(Type type) : this(type, inlineNested: true) { }
+        /// <param name="factory">Factory</param>
+        public Serializer(Type type, Factory factory = null) : this(type, inlineNested: true, factory: factory) { }
 
         /// <summary>
         /// Create a serializer for specified type
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
         /// <param name="inlineNested">Indicates whether nested struct serialization code may be inlined</param>
-        public Serializer(Type type, bool inlineNested)
+        /// <param name="factory"> </param>
+        public Serializer(Type type, bool inlineNested, Factory factory = null)
         {
-            var parser = new ObjectParser(type);
+            var parser = new ObjectParser(type, factory);
             serialize = SerializerGeneratorFactory<object, W>.Create(
                     (o, w, i) => serialize[i](o, w), type, inlineNested)
                 .Generate(parser)

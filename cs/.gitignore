@@ -22,4 +22,6 @@ _ReSharper.*
 *.opendb
 *.opensdf
 *.psess
-.vs/
+*.sln.ide/
+vs/
+

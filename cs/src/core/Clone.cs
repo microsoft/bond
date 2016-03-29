@@ -44,8 +44,9 @@ namespace Bond
         /// <param name="type">type of clone object, may be different than source object</param>
         public Cloner(Type type)
         {
-            clone = Generate(type, new DeserializerTransform<object>(
-                (o, i) => clone[i](o)));
+            clone = Generate(type,
+                             new DeserializerTransform<object>((o, i) => clone[i](o)),
+                             null);
         }
 
         /// <summary>
@@ -55,12 +56,13 @@ namespace Bond
         /// <param name="factory">factory implementing IFactory interface</param>
         public Cloner(Type type, IFactory factory)
         {
-            clone = Generate(type, 
-                new DeserializerTransform<object>(
-                    (o, i) => clone[i](o),
-                    true,
-                    (t1, t2) => factory.CreateObject(t1, t2),
-                    (t1, t2, count) => factory.CreateContainer(t1, t2, count)));
+            clone = Generate(type,
+                             new DeserializerTransform<object>(
+                                 (o, i) => clone[i](o),
+                                 true,
+                                 (t1, t2) => factory.CreateObject(t1, t2),
+                                 (t1, t2, count) => factory.CreateContainer(t1, t2, count)),
+                             null);
         }
 
         /// <summary>
@@ -71,9 +73,8 @@ namespace Bond
         public Cloner(Type type, Factory factory)
         {
             clone = Generate(type,
-                new DeserializerTransform<object>(
-                    (o, i) => clone[i](o),
-                    factory));
+                             new DeserializerTransform<object>((o, i) => clone[i](o), factory),
+                             factory);
         }
 
         /// <summary>
@@ -94,9 +95,9 @@ namespace Bond
             return (T)clone[0](source);
         }
 
-        static Func<object, object>[] Generate(Type type, DeserializerTransform<object> transform)
+        static Func<object, object>[] Generate(Type type, DeserializerTransform<object> transform, Factory factory)
         {
-            var parser = new ObjectParser(typeof(SourceT));
+            var parser = new ObjectParser(typeof(SourceT), factory);
             return transform.Generate(parser, type).Select(lambda => lambda.Compile()).ToArray();
         }
     }

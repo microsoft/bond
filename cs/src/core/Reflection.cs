@@ -728,7 +728,7 @@ namespace Bond
             return depth;
         }
 
-        internal static string GetSchemaName(this Type type)
+        public static string GetSchemaName(this Type type)
         {
             string name;
 
@@ -774,7 +774,7 @@ namespace Bond
             return builder.ToString();
         }
 
-        internal static string GetSchemaFullName(this Type type)
+        public static string GetSchemaFullName(this Type type)
         {
             if (type.IsBondStruct() || type.IsEnum())
                 return type.GetSchemaNamespace() + "." + type.GetSchemaName();

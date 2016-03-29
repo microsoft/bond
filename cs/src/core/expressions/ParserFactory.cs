@@ -10,14 +10,14 @@ namespace Bond.Expressions
 
     internal static class ParserFactory<R>
     {
-        public static IParser Create<S>(S schema)
+        public static IParser Create<S>(S schema, Factory factory = null)
         {
-            return Cache<S>.Create(schema);
+            return Cache<S>.Create(schema, factory);
         }
 
         static class Cache<S>
         {
-            public static readonly Func<S, IParser> Create;
+            public static readonly Func<S, Factory, IParser> Create;
 
             [System.Diagnostics.CodeAnalysis.SuppressMessage(
                 "Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
@@ -67,7 +67,11 @@ namespace Bond.Expressions
                 }
 
                 var schema = Expression.Parameter(typeof(S));
-                var ctor = parserType.GetConstructor(typeof(S));
+                var bondedFactory = Expression.Parameter(typeof(Factory));
+
+                var ctor = parserType.GetConstructor(typeof (S), typeof (Factory)) ??
+                           parserType.GetConstructor(typeof (S));
+
                 if (ctor == null)
                 {
                     throw new InvalidOperationException(
@@ -77,7 +81,11 @@ namespace Bond.Expressions
                             parserType, typeof(S)));
                 }
 
-                Create = Expression.Lambda<Func<S, IParser>>(Expression.New(ctor, schema), schema).Compile();
+                var newExpression = ctor.GetParameters().Length == 2
+                    ? Expression.New(ctor, schema, bondedFactory)
+                    : Expression.New(ctor, schema);
+
+                Create = Expression.Lambda<Func<S, Factory, IParser>>(newExpression, schema, bondedFactory).Compile();
             }
         }
     }
