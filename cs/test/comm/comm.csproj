@@ -22,6 +22,7 @@
     <OutputPath>$(OutputPath)\Properties\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\LogTests.cs" />
     <Compile Include="SimpleInMem\CalculatorService.cs" />
     <Compile Include="SimpleInMem\SimpleInMemConnectionTest.cs" />
     <Compile Include="SimpleInMem\SimpleInMemListenerTest.cs" />
@@ -29,7 +30,7 @@
     <BondCodegen Include="SimpleInMem\SimpleStruct.bond">
       <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
     </BondCodegen>
-	<Compile Include="Tcp\FrameTests.cs" />
+    <Compile Include="Tcp\FrameTests.cs" />
     <Compile Include="Tcp\TcpTransportTests.cs" />
     <Compile Include="Tcp\TcpListenerTests.cs" />
   </ItemGroup>

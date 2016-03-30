@@ -18,6 +18,7 @@
     <Compile Include="IService.cs" />
     <Compile Include="Layers.cs" />
     <Compile Include="Listener.cs" />
+    <Compile Include="Log.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="Transport.cs" />
