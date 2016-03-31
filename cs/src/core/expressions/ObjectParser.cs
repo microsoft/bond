@@ -192,7 +192,8 @@ namespace Bond.Expressions
                 return handler(value);
             }
 
-            var newBonded = this.bondedFactory(this.objectType, this.value);
+            var newBonded = bondedFactory(objectType, value);
+
             return handler(newBonded);
         }
 

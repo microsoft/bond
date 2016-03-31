@@ -27,6 +27,14 @@ namespace Bond.Expressions
             : this(bondedFactory)
         {}
 
+        private TaggedParser(PayloadBondedFactory bondedFactory)
+        {
+            isBase = false;
+            this.bondedFactory = bondedFactory ?? NewBonded;
+            baseParser = new TaggedParser<R>(this, isBase: true);
+            fieldParser = this;
+        }
+
         TaggedParser(TaggedParser<R> that, bool isBase)
         {
             this.isBase = isBase;
@@ -34,14 +42,6 @@ namespace Bond.Expressions
             reader = that.reader;
             baseParser = this;
             fieldParser = that;
-        }
-
-        private TaggedParser(PayloadBondedFactory bondedFactory)
-        {
-            isBase = false;
-            this.bondedFactory = bondedFactory ?? NewBonded;
-            baseParser = new TaggedParser<R>(this, isBase: true);
-            fieldParser = this;
         }
 
         public ParameterExpression ReaderParam { get { return reader.Param; } }

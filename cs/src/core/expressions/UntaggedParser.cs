@@ -164,7 +164,7 @@ namespace Bond.Expressions
                 return handler(reader.ReadMarshaledBonded());
             }
 
-            var newBonded = this.bondedFactory(this.reader.Param, Expression.Constant(schema));
+            var newBonded = bondedFactory(reader.Param, Expression.Constant(schema));
 
             return Expression.Block(handler(newBonded),
                                     SkipStruct());
