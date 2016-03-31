@@ -22,26 +22,26 @@ namespace Bond.Expressions
         readonly Type schemaType;
         readonly Type objectType;
         readonly int hierarchyDepth;
-        readonly Func<Type, Expression, Expression> newBondedFactory;
+        readonly InstanceBondedFactory bondedFactory;
 
-        public ObjectParser(Type type, Func<Type, Expression, Expression> newBondedFactory = null)
+        public ObjectParser(Type type, InstanceBondedFactory bondedFactory = null)
         {
             typeAlias = new TypeAlias(type);
             value = objParam = Expression.Parameter(typeof(object), "obj");
             objectType = schemaType = type;
             hierarchyDepth = type.GetHierarchyDepth();
-            this.newBondedFactory = newBondedFactory ?? NewBonded;
+            this.bondedFactory = bondedFactory ?? NewBonded;
         }
 
         ObjectParser(ObjectParser that, Expression value, Type schemaType)
         {
             typeAlias = that.typeAlias;
             objParam = that.objParam;
+            bondedFactory = that.bondedFactory ?? NewBonded;
             this.value = value;
             this.schemaType = schemaType;
             objectType = value.Type;
             hierarchyDepth = schemaType.GetHierarchyDepth();
-            this.newBondedFactory = that.newBondedFactory ?? NewBonded;
         }
 
         public ParameterExpression ReaderParam { get { return objParam; } }
@@ -192,7 +192,7 @@ namespace Bond.Expressions
                 return handler(value);
             }
 
-            var newBonded = this.newBondedFactory(this.objectType, this.value);
+            var newBonded = this.bondedFactory(this.objectType, this.value);
             return handler(newBonded);
         }
 

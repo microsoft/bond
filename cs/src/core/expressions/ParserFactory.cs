@@ -9,6 +9,7 @@ namespace Bond.Expressions
     using Bond.Protocols;
 
     public delegate Expression PayloadBondedFactory(Expression reader, Expression schema);
+    public delegate Expression InstanceBondedFactory(Type objectType, Expression value);
 
     internal static class ParserFactory<R>
     {

@@ -149,6 +149,14 @@ namespace Bond
             deserialize = new[] { (Func<R, object>)property.GetValue(null) };
         }
 
+        /// <summary>
+        /// Create a deserializer instance for specified type, using a custom object factory
+        /// </summary>
+        /// <param name="type">Type representing a Bond schema</param>
+        /// <param name="factory">IFactory providing expressions to create objects during deserialization</param>
+        /// <param name="factory2">Factory providing expressions to create objects during deserialization</param>
+        /// <param name="inlineNested">Inline nested types if possible (optimizes for reduction of execution time at the expense of initialization time and memory)</param>
+        /// <param name="parser">Custom IParser instance</param>
         public Deserializer(Type type, IParser parser, IFactory factory = null, Factory factory2 = null, bool inlineNested = true)
         {
             DeserializerTransform<R> transform;

@@ -66,6 +66,7 @@ namespace Bond
         /// Create a serializer for specified type
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
+        /// <param name="parser">Custom IParser instance</param>
         public Serializer(Type type, IParser parser = null) : this(type, inlineNested: true, parser: parser) { }
 
         /// <summary>
@@ -73,6 +74,7 @@ namespace Bond
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
         /// <param name="inlineNested">Indicates whether nested struct serialization code may be inlined</param>
+        /// <param name="parser">Custom IParser instance</param>
         public Serializer(Type type, bool inlineNested, IParser parser = null)
         {
             parser = parser ?? new ObjectParser(type);

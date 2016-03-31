@@ -20,31 +20,28 @@ namespace Bond.Expressions
         readonly bool isBase;
 
         public TaggedParser(RuntimeSchema schema, PayloadBondedFactory bondedFactory)
-        {
-            this.bondedFactory = bondedFactory ?? NewBonded;
-            
-            isBase = false;
-            baseParser = new TaggedParser<R>(this, isBase: true);
-            fieldParser = this;
-        }
+            : this(bondedFactory)
+        {}
 
         public TaggedParser(Type type, PayloadBondedFactory bondedFactory)
-        {
-            this.bondedFactory = bondedFactory ?? NewBonded;
-
-            isBase = false;
-            baseParser = new TaggedParser<R>(this, isBase: true);
-            fieldParser = this;
-        }
+            : this(bondedFactory)
+        {}
 
         TaggedParser(TaggedParser<R> that, bool isBase)
         {
             this.isBase = isBase;
-            this.bondedFactory = that.bondedFactory;
-            
+            bondedFactory = that.bondedFactory;
             reader = that.reader;
             baseParser = this;
             fieldParser = that;
+        }
+
+        private TaggedParser(PayloadBondedFactory bondedFactory)
+        {
+            isBase = false;
+            this.bondedFactory = bondedFactory ?? NewBonded;
+            baseParser = new TaggedParser<R>(this, isBase: true);
+            fieldParser = this;
         }
 
         public ParameterExpression ReaderParam { get { return reader.Param; } }
