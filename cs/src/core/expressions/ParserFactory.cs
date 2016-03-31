@@ -8,16 +8,23 @@ namespace Bond.Expressions
     using System.Linq.Expressions;
     using Bond.Protocols;
 
+    public delegate Expression PayloadBondedFactory(Expression reader, Expression schema);
+
     internal static class ParserFactory<R>
     {
-        public static IParser Create<S>(S schema, Factory factory = null)
+        public static IParser Create<S>(S schema)
         {
-            return Cache<S>.Create(schema, factory);
+            return Create(schema, null);
+        }
+
+        public static IParser Create<S>(S schema, PayloadBondedFactory bondedFactory)
+        {
+            return Cache<S>.Create(schema, bondedFactory);
         }
 
         static class Cache<S>
         {
-            public static readonly Func<S, Factory, IParser> Create;
+            public static readonly Func<S, PayloadBondedFactory, IParser> Create;
 
             [System.Diagnostics.CodeAnalysis.SuppressMessage(
                 "Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
@@ -67,10 +74,10 @@ namespace Bond.Expressions
                 }
 
                 var schema = Expression.Parameter(typeof(S));
-                var bondedFactory = Expression.Parameter(typeof(Factory));
+                var bondedFactory = Expression.Parameter(typeof(PayloadBondedFactory));
 
-                var ctor = parserType.GetConstructor(typeof (S), typeof (Factory)) ??
-                           parserType.GetConstructor(typeof (S));
+                var ctor = parserType.GetConstructor(typeof(S), typeof(PayloadBondedFactory)) ??
+                           parserType.GetConstructor(typeof(S));
 
                 if (ctor == null)
                 {
@@ -82,10 +89,10 @@ namespace Bond.Expressions
                 }
 
                 var newExpression = ctor.GetParameters().Length == 2
-                    ? Expression.New(ctor, schema, bondedFactory)
-                    : Expression.New(ctor, schema);
+                                        ? Expression.New(ctor, schema, bondedFactory)
+                                        : Expression.New(ctor, schema);
 
-                Create = Expression.Lambda<Func<S, Factory, IParser>>(newExpression, schema, bondedFactory).Compile();
+                Create = Expression.Lambda<Func<S, PayloadBondedFactory, IParser>>(newExpression, schema, bondedFactory).Compile();
             }
         }
     }

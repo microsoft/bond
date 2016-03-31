@@ -54,7 +54,8 @@ namespace Bond
         /// </summary>
         /// <param name="type">type of clone object, may be different than source object</param>
         /// <param name="factory">factory implementing IFactory interface</param>
-        public Cloner(Type type, IFactory factory)
+        /// <param name="parser"></param>
+        public Cloner(Type type, IFactory factory, IParser parser = null)
         {
             clone = Generate(type,
                              new DeserializerTransform<object>(
@@ -62,7 +63,7 @@ namespace Bond
                                  true,
                                  (t1, t2) => factory.CreateObject(t1, t2),
                                  (t1, t2, count) => factory.CreateContainer(t1, t2, count)),
-                             null);
+                             parser);
         }
 
         /// <summary>
@@ -70,11 +71,12 @@ namespace Bond
         /// </summary>
         /// <param name="type">type of clone object, may be different than source object</param>
         /// <param name="factory">factory delegate returning expressions to create objects</param>
-        public Cloner(Type type, Factory factory)
+        /// <param name="parser"></param>
+        public Cloner(Type type, Factory factory, IParser parser = null)
         {
             clone = Generate(type,
                              new DeserializerTransform<object>((o, i) => clone[i](o), factory),
-                             factory);
+                             parser);
         }
 
         /// <summary>
@@ -95,9 +97,10 @@ namespace Bond
             return (T)clone[0](source);
         }
 
-        static Func<object, object>[] Generate(Type type, DeserializerTransform<object> transform, Factory factory)
+        static Func<object, object>[] Generate(Type type, DeserializerTransform<object> transform, IParser parser)
         {
-            var parser = new ObjectParser(typeof(SourceT), factory);
+            parser = parser ?? new ObjectParser(typeof(SourceT));
+            
             return transform.Generate(parser, type).Select(lambda => lambda.Compile()).ToArray();
         }
     }

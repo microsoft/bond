@@ -7,31 +7,31 @@ namespace Bond.Expressions
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using System.Reflection;
 
     public class TaggedParser<R> : IParser
     {
-        static readonly ConstructorInfo bondedCtor = typeof(BondedVoid<>).MakeGenericType(typeof(R)).GetConstructor(typeof(R));
-
         delegate Expression TypeHandlerCompiletime(BondDataType type);
         delegate Expression TypeHandlerRuntime(Expression type);
 
         readonly TaggedReader<R> reader = new TaggedReader<R>();
-        readonly Factory factory;
+        readonly PayloadBondedFactory bondedFactory;
         readonly TaggedParser<R> baseParser;
         readonly TaggedParser<R> fieldParser;
         readonly bool isBase;
 
-        public TaggedParser(RuntimeSchema schema, Factory factory)
+        public TaggedParser(RuntimeSchema schema, PayloadBondedFactory bondedFactory)
         {
-            this.factory = factory;
+            this.bondedFactory = bondedFactory ?? NewBonded;
+            
             isBase = false;
             baseParser = new TaggedParser<R>(this, isBase: true);
             fieldParser = this;
         }
 
-        public TaggedParser(Type type)
+        public TaggedParser(Type type, PayloadBondedFactory bondedFactory)
         {
+            this.bondedFactory = bondedFactory ?? NewBonded;
+
             isBase = false;
             baseParser = new TaggedParser<R>(this, isBase: true);
             fieldParser = this;
@@ -40,7 +40,8 @@ namespace Bond.Expressions
         TaggedParser(TaggedParser<R> that, bool isBase)
         {
             this.isBase = isBase;
-            this.factory = that.factory;
+            this.bondedFactory = that.bondedFactory;
+            
             reader = that.reader;
             baseParser = this;
             fieldParser = that;
@@ -170,14 +171,18 @@ namespace Bond.Expressions
                 type => handler(reader.Read(type)));
         }
 
+        private static Expression NewBonded(Expression reader, Expression schema)
+        {
+            var ctor = typeof(BondedVoid<>).MakeGenericType(reader.Type).GetConstructor(reader.Type);
+            return Expression.New(ctor, reader);
+        }
+
         public Expression Bonded(ValueHandler handler)
         {
-            Expression newBonded = null;
-            if (factory != null)
-                newBonded = factory(typeof(IBonded), typeof(Tag.bonded<>), reader.Param);
-
+            var newBonded = bondedFactory(reader.Param, Expression.Constant(RuntimeSchema.Empty));
+            
             return Expression.Block(
-                handler(newBonded ?? Expression.New(bondedCtor, reader.Param)),
+                handler(newBonded),
                 reader.Skip(Expression.Constant(BondDataType.BT_STRUCT)));
         }
 

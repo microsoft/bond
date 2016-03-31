@@ -10,9 +10,9 @@ namespace UnitTest
     using System.IO;
     using System.Linq.Expressions;
     using System.Reflection;
-    using System.Text;
     using System.Threading;
     using Bond;
+    using Bond.Expressions;
     using Bond.IO;
     using Bond.IO.Unsafe;
     using Bond.Protocols;
@@ -217,11 +217,6 @@ namespace UnitTest
             private readonly R reader;
             private readonly RuntimeSchema schema;
 
-            public CustomBondedVoid(R reader)
-                : this(reader, RuntimeSchema.Empty)
-            {
-            }
-
             public CustomBondedVoid(R reader, RuntimeSchema schema)
             {
                 this.reader = reader.Clone();
@@ -265,73 +260,59 @@ namespace UnitTest
         /// </summary>
         private class CustomTransformFactory
         {
-            public  static readonly CustomTransformFactory Default = new CustomTransformFactory();
+            public static readonly CustomTransformFactory Default = new CustomTransformFactory();
 
-            private CustomTransformFactory()
-            {
-            }
+            private CustomTransformFactory() { }
 
             public Cloner<TSource> Cloner<TSource, T>()
             {
-                return new Cloner<TSource>(typeof (T), Factory);
+                return new Cloner<TSource>(typeof(T), Factory, new ObjectParser(typeof(TSource), InstanceBondedFactory));
             }
 
             public Serializer<W> Serializer<W, T>()
             {
-                return new Serializer<W>(typeof (T), false , Factory);
+                return new Serializer<W>(typeof(T), false, new ObjectParser(typeof(T), InstanceBondedFactory));
             }
 
             public Deserializer<R> Deserializer<R, T>(RuntimeSchema schema)
             {
-                return new Deserializer<R>(typeof (T), schema, Factory);
+                var parser = schema.HasValue
+                                 ? ParserFactory<R>.Create(schema, PayloadBondedFactory)
+                                 : ParserFactory<R>.Create(typeof(T), PayloadBondedFactory);
+
+                return new Deserializer<R>(typeof(T), parser, factory2: Factory, inlineNested: false);
             }
 
-            public Transcoder<R,W> Transcoder<R, W>(RuntimeSchema schema)
+            private static Expression InstanceBondedFactory(Type objectType, Expression value)
             {
-                if (schema.HasValue)
-                    return new Transcoder<R, W>(schema);
+                var method = typeof(CustomBonded<>).MakeGenericType(objectType).GetMethod("From", new[] {value.Type});
 
-                return new Transcoder<R,W>();
+                return Expression.Call(method, value);
+            }
+
+            private static Expression PayloadBondedFactory(Expression reader, Expression schema)
+            {
+                var ctor = typeof(CustomBondedVoid<>).MakeGenericType(reader.Type).GetConstructor(reader.Type, schema.Type);
+                return Expression.New(ctor, reader, schema);
+            }
+
+            public Transcoder<R, W> Transcoder<R, W>(RuntimeSchema schema)
+            {
+                return new Transcoder<R, W>(schema, ParserFactory<R>.Create(schema, PayloadBondedFactory));
             }
 
             private static Expression Factory(Type type, Type schemaType, params Expression[] arguments)
             {
-                if (type.IsGenericType )
+                if (type.IsGenericType)
                 {
                     var typeDefinition = type.GetGenericTypeDefinition();
                     if (typeDefinition == typeof(CustomBonded<>))
                     {
                         var arg = arguments[0]; // CustomBondedVoid<R>
-
                         var bondedConvert = typeof(IBonded).GetMethod("Convert").MakeGenericMethod(type.GetGenericArguments());
 
                         return Expression.ConvertChecked(Expression.Call(arg, bondedConvert), type);
                     }
-                }
-
-                if (type == typeof (IBonded))
-                    return CreateCustomBondedVoidExpression(type, arguments);
-
-                return null;
-            }
-
-            private static Expression CreateCustomBondedVoidExpression(Type type, Expression[] arguments)
-            {
-                if (arguments.Length == 1)
-                {
-                    var reader = arguments[0]; // should be of type R
-
-                    var ctor = typeof(CustomBondedVoid<>).MakeGenericType(reader.Type).GetConstructor(new[] { reader.Type });
-                    return Expression.New(ctor, reader);
-                }
-                if (arguments.Length == 2)
-                {
-                    var reader = arguments[0];
-                    var schema = arguments[1];
-
-                    var ctor = typeof(CustomBondedVoid<>).MakeGenericType(reader.Type).GetConstructor(new[] {reader.Type, typeof(RuntimeSchema)});
-
-                    return Expression.New(ctor, reader, schema);
                 }
 
                 return null;

@@ -16,23 +16,21 @@ namespace Bond.Expressions
         static readonly MethodInfo moveNext = Reflection.MethodInfoOf((IEnumerator e) => e.MoveNext());
         static readonly ConstructorInfo arraySegmentCtor = typeof(ArraySegment<byte>).GetConstructor(typeof(byte[]));
         delegate Expression ContainerItemHandler(Expression value, Expression next, Expression count);
-        readonly ConstructorInfo bondedCtor;
         readonly ParameterExpression objParam;
         readonly TypeAlias typeAlias;
         readonly Expression value;
         readonly Type schemaType;
         readonly Type objectType;
         readonly int hierarchyDepth;
-        readonly Factory factory;
+        readonly Func<Type, Expression, Expression> newBondedFactory;
 
-        public ObjectParser(Type type, Factory factory = null)
+        public ObjectParser(Type type, Func<Type, Expression, Expression> newBondedFactory = null)
         {
             typeAlias = new TypeAlias(type);
             value = objParam = Expression.Parameter(typeof(object), "obj");
             objectType = schemaType = type;
             hierarchyDepth = type.GetHierarchyDepth();
-            this.factory = factory;
-            bondedCtor = typeof(Bonded<>).MakeGenericType(objectType).GetConstructor(objectType);
+            this.newBondedFactory = newBondedFactory ?? NewBonded;
         }
 
         ObjectParser(ObjectParser that, Expression value, Type schemaType)
@@ -43,7 +41,7 @@ namespace Bond.Expressions
             this.schemaType = schemaType;
             objectType = value.Type;
             hierarchyDepth = schemaType.GetHierarchyDepth();
-            bondedCtor = typeof(Bonded<>).MakeGenericType(objectType).GetConstructor(objectType);
+            this.newBondedFactory = that.newBondedFactory ?? NewBonded;
         }
 
         public ParameterExpression ReaderParam { get { return objParam; } }
@@ -181,6 +179,12 @@ namespace Bond.Expressions
             return handler(typeAlias.Convert(value, schemaType));
         }
 
+        private static Expression NewBonded(Type objectType, Expression value)
+        {
+            var ctor = typeof(Bonded<>).MakeGenericType(objectType).GetConstructor(objectType);
+            return Expression.New(ctor, value);
+        }
+
         public Expression Bonded(ValueHandler handler)
         {
             if (schemaType.IsBonded())
@@ -188,11 +192,8 @@ namespace Bond.Expressions
                 return handler(value);
             }
 
-            Expression newBonded = null;
-            if (factory != null)
-                newBonded = factory(typeof (IBonded<>).MakeGenericType(objectType), schemaType, value);
-
-            return handler(newBonded ?? Expression.New(bondedCtor, value));
+            var newBonded = this.newBondedFactory(this.objectType, this.value);
+            return handler(newBonded);
         }
 
         public Expression Blob(Expression count)
