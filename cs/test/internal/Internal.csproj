@@ -31,6 +31,9 @@
     <Reference Include="Bond">
       <HintPath>..\..\src\core\$(OutputPath)\Bond.dll</HintPath>
     </Reference>
+    <Reference Include="Bond">
+      <HintPath>..\..\src\io\$(OutputPath)\Bond.IO.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -40,12 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\io\IO.csproj">
-      <Project>{2E6E238C-9017-445C-9611-66DA780609BE}</Project>
-      <Name>IO</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
 </Project>
