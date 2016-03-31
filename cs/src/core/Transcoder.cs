@@ -101,10 +101,10 @@ namespace Bond
         Action<R, W>[] Generate<S>(S schema, IParser parser = null)
         {
             parser = parser ?? ParserFactory<R>.Create(schema);
-
-            return SerializerGeneratorFactory<R, W>.Create((r, w, i) => transcode[i](r, w), schema)
-                                                   .Generate(parser)
-                                                   .Select(lambda => lambda.Compile()).ToArray();
+            return SerializerGeneratorFactory<R, W>.Create(
+                    (r, w, i) => transcode[i](r, w), schema)
+                .Generate(parser)
+                .Select(lambda => lambda.Compile()).ToArray();
         }
     }
 }

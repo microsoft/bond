@@ -266,12 +266,12 @@ namespace UnitTest
 
             public Cloner<TSource> Cloner<TSource, T>()
             {
-                return new Cloner<TSource>(typeof(T), Factory, new ObjectParser(typeof(TSource), InstanceBondedFactory));
+                return new Cloner<TSource>(typeof(T), new ObjectParser(typeof(TSource), InstanceBondedFactory), Factory);
             }
 
             public Serializer<W> Serializer<W, T>()
             {
-                return new Serializer<W>(typeof(T), false, new ObjectParser(typeof(T), InstanceBondedFactory));
+                return new Serializer<W>(typeof(T), new ObjectParser(typeof(T), InstanceBondedFactory), false);
             }
 
             public Deserializer<R> Deserializer<R, T>(RuntimeSchema schema)
@@ -280,7 +280,7 @@ namespace UnitTest
                                  ? ParserFactory<R>.Create(schema, PayloadBondedFactory)
                                  : ParserFactory<R>.Create(typeof(T), PayloadBondedFactory);
 
-                return new Deserializer<R>(typeof(T), parser, factory2: Factory, inlineNested: false);
+                return new Deserializer<R>(typeof(T), parser, Factory, false);
             }
 
             private static Expression InstanceBondedFactory(Type objectType, Expression value)
@@ -292,7 +292,7 @@ namespace UnitTest
 
             private static Expression PayloadBondedFactory(Expression reader, Expression schema)
             {
-                var ctor = typeof(CustomBondedVoid<>).MakeGenericType(reader.Type).GetConstructor(reader.Type, schema.Type);
+                var ctor = typeof(CustomBondedVoid<>).MakeGenericType(reader.Type).GetConstructor(BindingFlags.Instance | BindingFlags.Public, null, new [] { reader.Type, schema.Type }, null);
                 return Expression.New(ctor, reader, schema);
             }
 

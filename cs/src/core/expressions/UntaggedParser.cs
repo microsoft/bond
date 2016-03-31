@@ -149,14 +149,6 @@ namespace Bond.Expressions
             return handler(reader.Read((BondDataType)(valueType as ConstantExpression).Value));
         }
 
-        private static Expression NewBonded(Expression reader, Expression schema)
-        {
-            var ctor =
-                typeof(BondedVoid<>).MakeGenericType(reader.Type).GetConstructor(reader.Type, typeof(RuntimeSchema));
-
-            return Expression.New(ctor, reader, schema);
-        }
-
         public Expression Bonded(ValueHandler handler)
         {
             if (schema.IsBonded)
@@ -193,6 +185,13 @@ namespace Bond.Expressions
                 default:
                     return reader.Skip(dataType);
             }
+        }
+        static Expression NewBonded(Expression reader, Expression schema)
+        {
+            var ctor =
+                typeof(BondedVoid<>).MakeGenericType(reader.Type).GetConstructor(reader.Type, typeof(RuntimeSchema));
+
+            return Expression.New(ctor, reader, schema);
         }
 
         Expression SkipSet()

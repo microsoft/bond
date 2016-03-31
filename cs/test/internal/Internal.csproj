@@ -13,7 +13,6 @@
     <TestProjectType>UnitTest</TestProjectType>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CustomBondedTests.cs" />
     <Compile Include="ReflectionDefaultValueTests.cs" />
     <Compile Include="ReflectionTests.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />

@@ -66,22 +66,35 @@ namespace Bond
         /// Create a serializer for specified type
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
+        public Serializer(Type type) : this(type, null, inlineNested: true) { }
+
+        /// <summary>
+        /// Create a serializer for specified type
+        /// </summary>
+        /// <param name="type">Type representing a Bond schema</param>
         /// <param name="parser">Custom IParser instance</param>
-        public Serializer(Type type, IParser parser = null) : this(type, inlineNested: true, parser: parser) { }
+        public Serializer(Type type, IParser parser) : this(type, parser, inlineNested: true) { }
 
         /// <summary>
         /// Create a serializer for specified type
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
         /// <param name="inlineNested">Indicates whether nested struct serialization code may be inlined</param>
+        public Serializer(Type type, bool inlineNested) : this(type, null, inlineNested) { }
+
+        /// <summary>
+        /// Create a serializer for specified type
+        /// </summary>
+        /// <param name="type">Type representing a Bond schema</param>
         /// <param name="parser">Custom IParser instance</param>
-        public Serializer(Type type, bool inlineNested, IParser parser = null)
+        /// <param name="inlineNested">Indicates whether nested struct serialization code may be inlined</param>
+        public Serializer(Type type, IParser parser, bool inlineNested)
         {
             parser = parser ?? new ObjectParser(type);
-
-            serialize = SerializerGeneratorFactory<object, W>.Create((o, w, i) => serialize[i](o, w), type, inlineNested)
-                                                             .Generate(parser)
-                                                             .Select(lambda => lambda.Compile()).ToArray();
+            serialize = SerializerGeneratorFactory<object, W>.Create(
+                    (o, w, i) => serialize[i](o, w), type, inlineNested)
+                .Generate(parser)
+                .Select(lambda => lambda.Compile()).ToArray();
         }
 
         /// <summary>

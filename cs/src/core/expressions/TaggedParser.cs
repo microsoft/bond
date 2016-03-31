@@ -168,12 +168,6 @@ namespace Bond.Expressions
                 type => handler(reader.Read(type)));
         }
 
-        private static Expression NewBonded(Expression reader, Expression schema)
-        {
-            var ctor = typeof(BondedVoid<>).MakeGenericType(reader.Type).GetConstructor(reader.Type);
-            return Expression.New(ctor, reader);
-        }
-
         public Expression Bonded(ValueHandler handler)
         {
             var newBonded = bondedFactory(reader.Param, Expression.Constant(RuntimeSchema.Empty));
@@ -186,6 +180,12 @@ namespace Bond.Expressions
         public Expression Skip(Expression type)
         {
             return reader.Skip(type);
+        }
+
+        static Expression NewBonded(Expression reader, Expression schema)
+        {
+            var ctor = typeof(BondedVoid<>).MakeGenericType(reader.Type).GetConstructor(reader.Type);
+            return Expression.New(ctor, reader);
         }
 
         static Expression MatchOrCompatible(Expression valueType, BondDataType? expectedType, TypeHandlerRuntime handler)

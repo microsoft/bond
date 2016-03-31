@@ -11,6 +11,14 @@ namespace Bond.Expressions
     using System.Linq.Expressions;
     using System.Reflection;
 
+    /// <summary>
+    /// Creates expression of type <see cref="IBonded{T}"/> given a object type and value.
+    /// </summary>
+    /// <param name="objectType">Type of value stored in IBonded</param>
+    /// <param name="value">Expression representing the value to be stored in the bonded instance.</param>
+    /// <returns></returns>
+    public delegate Expression InstanceBondedFactory(Type objectType, Expression value);
+
     public class ObjectParser : IParser
     {
         static readonly MethodInfo moveNext = Reflection.MethodInfoOf((IEnumerator e) => e.MoveNext());
@@ -179,12 +187,6 @@ namespace Bond.Expressions
             return handler(typeAlias.Convert(value, schemaType));
         }
 
-        private static Expression NewBonded(Type objectType, Expression value)
-        {
-            var ctor = typeof(Bonded<>).MakeGenericType(objectType).GetConstructor(objectType);
-            return Expression.New(ctor, value);
-        }
-
         public Expression Bonded(ValueHandler handler)
         {
             if (schemaType.IsBonded())
@@ -223,6 +225,12 @@ namespace Bond.Expressions
         public override int GetHashCode()
         {
             return schemaType.GetHashCode();
+        }
+
+        static Expression NewBonded(Type objectType, Expression value)
+        {
+            var ctor = typeof(Bonded<>).MakeGenericType(objectType).GetConstructor(objectType);
+            return Expression.New(ctor, value);
         }
 
         static Expression ContainerCount(Expression container)
