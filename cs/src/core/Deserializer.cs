@@ -50,7 +50,7 @@ namespace Bond
         /// <param name="inlineNested">Inline nested types if possible (optimizes for reduction of execution time
         /// at the expense of initialization time and memory)</param>
         public Deserializer(Type type, RuntimeSchema schema, IFactory factory, bool inlineNested)
-            : this(type, ParserFactory<R>.Create(schema, null), factory, null, inlineNested)
+            : this(type, ParserFactory<R>.Create(schema), factory, null, inlineNested)
         { }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Bond
         /// <param name="inlineNested">Inline nested types if possible (optimizes for reduction of execution time
         /// at the expense of initialization time and memory)</param>
         public Deserializer(Type type, RuntimeSchema schema, Factory factory, bool inlineNested)
-            : this(type, ParserFactory<R>.Create(schema, factory), null, factory, inlineNested)
+            : this(type, ParserFactory<R>.Create(schema), null, factory, inlineNested)
         { }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Bond
         /// <param name="schema">Schema of the payload</param>
         /// <param name="factory">Factory to create objects during deserialization</param>
         public Deserializer(Type type, RuntimeSchema schema, IFactory factory)
-            : this(type, ParserFactory<R>.Create(schema, null), factory)
+            : this(type, ParserFactory<R>.Create(schema), factory)
         { }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Bond
         /// <param name="schema">Schema of the payload</param>
         /// <param name="factory">Factory providing expressions to create objects during deserialization</param>
         public Deserializer(Type type, RuntimeSchema schema, Factory factory)
-            : this(type, ParserFactory<R>.Create(schema, factory), null, factory)
+            : this(type, ParserFactory<R>.Create(schema), null, factory)
         { }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Bond
         /// <param name="type">Type representing a Bond schema</param>
         /// <param name="schema">Schema of the payload</param>
         public Deserializer(Type type, RuntimeSchema schema)
-            : this(type, ParserFactory<R>.Create(schema, null))
+            : this(type, ParserFactory<R>.Create(schema))
         { }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace Bond
         /// <param name="inlineNested">Inline nested types if possible (optimizes for reduction of execution time
         /// at the expense of initialization time and memory)</param>
         public Deserializer(Type type, IFactory factory, bool inlineNested)
-            : this(type, ParserFactory<R>.Create(type, null), factory, null, inlineNested)
+            : this(type, ParserFactory<R>.Create(type), factory, null, inlineNested)
         { }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Bond
         /// <param name="inlineNested">Inline nested types if possible (optimizes for reduction of execution time
         /// at the expense of initialization time and memory)</param>
         public Deserializer(Type type, Factory factory, bool inlineNested)
-            : this(type, ParserFactory<R>.Create(type, factory), null, factory, inlineNested)
+            : this(type, ParserFactory<R>.Create(type), null, factory, inlineNested)
         { }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Bond
         /// <param name="type">Type representing a Bond schema</param>
         /// <param name="factory">Factory to create objects during deserialization</param>
         public Deserializer(Type type, IFactory factory)
-            : this(type, ParserFactory<R>.Create(type, null), factory)
+            : this(type, ParserFactory<R>.Create(type), factory)
         { }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Bond
         /// <param name="type">Type representing a Bond schema</param>
         /// <param name="factory">Factory providing expressions to create objects during deserialization</param>
         public Deserializer(Type type, Factory factory)
-            : this(type, ParserFactory<R>.Create(type, factory), null, factory)
+            : this(type, ParserFactory<R>.Create(type), null, factory)
         { }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Bond
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
         public Deserializer(Type type)
-            : this(type, ParserFactory<R>.Create(type, null))
+            : this(type, ParserFactory<R>.Create(type))
         { }
 
         public Deserializer(Assembly precompiledAssembly, Type type)
@@ -149,7 +149,7 @@ namespace Bond
             deserialize = new[] { (Func<R, object>)property.GetValue(null) };
         }
 
-        Deserializer(Type type, IParser parser, IFactory factory = null, Factory factory2 = null, bool inlineNested = true)
+        public Deserializer(Type type, IParser parser, IFactory factory = null, Factory factory2 = null, bool inlineNested = true)
         {
             DeserializerTransform<R> transform;
             if (factory != null)

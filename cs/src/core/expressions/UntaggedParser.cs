@@ -8,20 +8,18 @@ namespace Bond.Expressions
     using System.Diagnostics;
     using System.Linq;
     using System.Linq.Expressions;
-    using System.Reflection;
+
+    public delegate Expression PayloadBondedFactory(Expression reader, Expression schema);
 
     public class UntaggedParser<R> : IParser
     {
-        private static readonly ConstructorInfo bondedCtor =
-            typeof (BondedVoid<>).MakeGenericType(typeof (R)).GetConstructor(typeof (R), typeof (RuntimeSchema));
-        
         static readonly ITransform skipStructTransform = new Transform(
             Base: baseParser => baseParser.Skip(Expression.Constant(BondDataType.BT_STRUCT)));
         RuntimeSchema schema;
         readonly UntaggedReader<R> reader;
         readonly DeferredSkip deferredSkip;
         readonly int hierarchyDepth;
-        readonly Factory factory;
+        readonly PayloadBondedFactory bondedFactory;
 
         class DeferredSkip
         {
@@ -32,28 +30,28 @@ namespace Bond.Expressions
                 new HashSet<RuntimeSchema>(new TypeDefComparer());
         }
 
-        public UntaggedParser(RuntimeSchema schema, Factory factory) 
-            : this(new UntaggedReader<R>(), new DeferredSkip(), schema, factory)
+        public UntaggedParser(RuntimeSchema schema, PayloadBondedFactory bondedFactory = null) 
+            : this(new UntaggedReader<R>(), new DeferredSkip(), schema, bondedFactory)
         {
             Audit.ArgRule(schema.HasValue, "UntaggedParser requires runtime schema");
         }
 
-        public UntaggedParser(Type type, Factory factory = null)
-            : this(Schema.GetRuntimeSchema(type), factory)
+        public UntaggedParser(Type type, PayloadBondedFactory bondedFactory = null)
+            : this(Schema.GetRuntimeSchema(type), bondedFactory)
         {
             Audit.ArgNotNull(type, "type");
         }
 
         UntaggedParser(UntaggedParser<R> that, RuntimeSchema schema)
-            : this(that.reader, that.deferredSkip, schema, that.factory)
+            : this(that.reader, that.deferredSkip, schema, that.bondedFactory)
         {}
 
-        UntaggedParser(UntaggedReader<R> reader, DeferredSkip deferredSkip, RuntimeSchema schema, Factory factory)
+        UntaggedParser(UntaggedReader<R> reader, DeferredSkip deferredSkip, RuntimeSchema schema, PayloadBondedFactory bondedFactory)
         {
             this.reader = reader;
             this.schema = schema;
             this.deferredSkip = deferredSkip;
-            this.factory = factory;
+            this.bondedFactory = bondedFactory ?? NewBonded;
             hierarchyDepth = schema.GetHierarchyDepth();
         }
 
@@ -153,6 +151,14 @@ namespace Bond.Expressions
             return handler(reader.Read((BondDataType)(valueType as ConstantExpression).Value));
         }
 
+        private static Expression NewBonded(Expression reader, Expression schema)
+        {
+            var ctor =
+                typeof(BondedVoid<>).MakeGenericType(reader.Type).GetConstructor(reader.Type, typeof(RuntimeSchema));
+
+            return Expression.New(ctor, reader, schema);
+        }
+
         public Expression Bonded(ValueHandler handler)
         {
             if (schema.IsBonded)
@@ -160,13 +166,10 @@ namespace Bond.Expressions
                 return handler(reader.ReadMarshaledBonded());
             }
 
-            Expression newBonded = null;
-            if (factory != null)
-                newBonded = factory(typeof (IBonded), typeof (Tag.bonded<>), reader.Param, Expression.Constant(schema));
+            var newBonded = this.bondedFactory(this.reader.Param, Expression.Constant(schema));
 
-            return Expression.Block(
-                handler(newBonded ?? Expression.New(bondedCtor, reader.Param, Expression.Constant(schema))),
-                SkipStruct());
+            return Expression.Block(handler(newBonded),
+                                    SkipStruct());
         }
 
         public Expression Skip(Expression valueType)

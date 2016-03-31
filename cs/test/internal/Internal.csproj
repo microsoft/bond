@@ -13,6 +13,7 @@
     <TestProjectType>UnitTest</TestProjectType>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CustomBondedTests.cs" />
     <Compile Include="ReflectionDefaultValueTests.cs" />
     <Compile Include="ReflectionTests.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
@@ -39,6 +40,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\io\IO.csproj">
+      <Project>{2E6E238C-9017-445C-9611-66DA780609BE}</Project>
+      <Name>IO</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
 </Project>

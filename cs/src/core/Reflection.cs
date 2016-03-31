@@ -774,7 +774,7 @@ namespace Bond
             return builder.ToString();
         }
 
-        public static string GetSchemaFullName(this Type type)
+        internal static string GetSchemaFullName(this Type type)
         {
             if (type.IsBondStruct() || type.IsEnum())
                 return type.GetSchemaNamespace() + "." + type.GetSchemaName();
