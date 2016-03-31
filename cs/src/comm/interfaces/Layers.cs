@@ -22,16 +22,6 @@ namespace Bond.Comm
     public class LayerStack<TLayerData> : ILayerStack where TLayerData : class
     {
         private List<ILayer<TLayerData>> m_layers = new List<ILayer<TLayerData>>();
-        private ExceptionHandler m_exceptionHandler;
-
-        public LayerStack()
-        {
-            m_exceptionHandler = (ex) =>
-            {
-                Environment.FailFast("Unhandled exception", ex);
-                return new Error { error_code = (int)ErrorCode.InternalServerError, message = "Unhandled exception" };
-            };
-        }
 
         // Order matters when adding a Layer. Messages being sent will
         // be passed through layer in the order they were added. When

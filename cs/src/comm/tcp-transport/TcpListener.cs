@@ -50,11 +50,6 @@ namespace Bond.Comm.Tcp
             throw new NotImplementedException();
         }
 
-        public override void SetUnhandledExceptionHandler(ExceptionHandler handler)
-        {
-            throw new NotImplementedException();
-        }
-
         public override Task StartAsync()
         {
             m_listener.Start();

@@ -44,8 +44,6 @@ namespace Bond.Comm
         public abstract void AddService<T>(T server);
         public abstract void RemoveService<T>(T service);
 
-        public abstract void SetUnhandledExceptionHandler(ExceptionHandler handler);
-
         public abstract Task StartAsync();
         public abstract Task StopAsync();
     }

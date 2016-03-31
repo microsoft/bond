@@ -29,11 +29,6 @@ namespace Bond.Comm.SimpleInMem
             throw new NotImplementedException();
         }
 
-        public override void SetUnhandledExceptionHandler(ExceptionHandler handler)
-        {
-            throw new NotImplementedException();
-        }
-
         public override Task StartAsync()
         {
             m_connection.Start();
