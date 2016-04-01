@@ -65,6 +65,12 @@
       <HintPath>$(BOND_BINARY_PATH)\net45\Bond.Comm.Tcp.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\logging\logging.csproj">
+      <Project>{5c8132a8-c4b1-45e0-bca6-379da23b86d3}</Project>
+      <Name>logging</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(BOND_PATH)\build\Bond.CSharp.targets" />
 </Project>

@@ -19,9 +19,15 @@ namespace Bond.Comm.SimpleInMem
             m_connection = new SimpleInMemConnection(m_serviceHost, ConnectionType.Server);
         }
 
-        public override void AddService<T>(T server)
+        public override string ToString()
         {
-            m_serviceHost.Register((IService)server);
+            return $"SimpleInMemListener({m_address})";
+        }
+
+        public override void AddService<T>(T service)
+        {
+            Log.Information($"{this}.AddService: Adding {typeof(T).Name}.");
+            m_serviceHost.Register(service);
         }
 
         public override void RemoveService<T>(T service)

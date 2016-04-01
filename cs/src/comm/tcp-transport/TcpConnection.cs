@@ -62,6 +62,11 @@ namespace Bond.Comm.Tcp
             m_requestId = connectionType == ConnectionType.Client ? -1 : 0;
         }
 
+        public override string ToString()
+        {
+            return $"TcpConnection(local: {m_tcpClient.Client.LocalEndPoint}, remote: {m_tcpClient.Client.RemoteEndPoint})";
+        }
+
         internal static Frame MessageToFrame(uint requestId, string methodName, PayloadType type, IMessage payload)
         {
             var frame = new Frame();
@@ -112,6 +117,7 @@ namespace Bond.Comm.Tcp
             uint requestId = AllocateNextRequestId();
             var frame = MessageToFrame(requestId, methodName, PayloadType.Request, request);
 
+            Log.Debug($"{this}.SendRequestAsync: Sending request {requestId}/{methodName}.");
             var responseCompletionSource = new TaskCompletionSource<IMessage>();
             lock (m_requestsLock)
             {
@@ -133,6 +139,7 @@ namespace Bond.Comm.Tcp
                 responseCompletionSource.TrySetException(ex);
             }
 
+            Log.Debug($"{this}.SendRequestAsync: Sent request {requestId}/{methodName}.");
             return await responseCompletionSource.Task;
         }
 
@@ -140,6 +147,7 @@ namespace Bond.Comm.Tcp
         {
             var frame = MessageToFrame(requestId, null, PayloadType.Response, response);
 
+            Log.Debug($"{this}.SendReplyAsync: Sending reply for request ID {requestId}.");
             try
             {
                 using (var binWriter = new BinaryWriter(m_networkStream, encoding: Encoding.UTF8, leaveOpen: true))
@@ -155,6 +163,7 @@ namespace Bond.Comm.Tcp
                 // TODO: convert to an Error?
                 throw;
             }
+            Log.Debug($"{this}.SendReplyAsync: Sent reply for request ID {requestId}.");
         }
 
         internal void Start()
@@ -183,6 +192,7 @@ namespace Bond.Comm.Tcp
                 var payload = default(ArraySegment<byte>);
                 var headers = default(TcpHeaders);
 
+                Log.Debug($"{this}.ProcessFrameAsync: Processing {frame.Framelets.Count} framelets.");
                 foreach(var framelet in frame.Framelets)
                 {
                     switch (framelet.Type)
@@ -191,24 +201,33 @@ namespace Bond.Comm.Tcp
                             var inputBuffer = new InputBuffer(framelet.Contents);
                             var fastBinaryReader = new FastBinaryReader<InputBuffer>(inputBuffer, version: 1);
                             headers = Deserialize<TcpHeaders>.From(fastBinaryReader);
+                            Log.Debug(
+                                $"{this}.ProcessFrameAsync: Extracted TcpHeaders with request ID {headers.request_id} and "
+                                + $"payload type {headers.payload_type}.");
                             break;
 
                         case FrameletType.PayloadData:
                             payload = framelet.Contents;
+                            Log.Debug($"{this}.ProcessFrameAsync: Extracted payload "
+                                + (headers.request_id == 0 ? "before any TcpHeaders." : $"in request ID {headers.request_id}."));
                             break;
 
                         default:
-                            System.Diagnostics.Debug.Write("Ignoring frame of type " + framelet.Type);
+                            Log.Warning($"{this}.ProcessFrameAsync: Ignoring frame of type {framelet.Type} "
+                                + (headers.request_id == 0 ? "before any TcpHeaders." : $"in request ID {headers.request_id}."));
                             break;
                     }
                 }
 
                 if (headers == null)
                 {
+                    Log.Warning($"{this}.ProcessFrameAsync: Received frame with no TcpHeaders.");
                     throw new ProtocolErrorException("Missing headers");
                 }
                 else if (payload.Array == null)
                 {
+                    Log.Warning($"{this}.ProcessFrameAsync: Received frame with no payload "
+                        + (headers.request_id == 0 ? "and no TcpHeaders." : $"in request ID {headers.request_id}."));
                     throw new ProtocolErrorException("Missing payload");
                 }
 
@@ -223,7 +242,11 @@ namespace Bond.Comm.Tcp
                         break;
 
                     case PayloadType.Event:
+                        Log.Warning($"{this}.ProcessFrameAsync: Received unimplemented payload type {headers.payload_type}.");
+                        throw new NotImplementedException(headers.payload_type.ToString());
+
                     default:
+                        Log.Warning($"{this}.ProcessFrameAsync: Received unrecognized payload type {headers.payload_type}.");
                         throw new NotImplementedException(headers.payload_type.ToString());
                 }
             }
@@ -248,8 +271,7 @@ namespace Bond.Comm.Tcp
             {
                 if (!m_outstandingRequests.TryGetValue(headers.request_id, out responseCompletionSource))
                 {
-                    // TODO: this should be something we just log
-                    throw new ProtocolErrorException("Response for unmatched request " + headers.request_id);
+                    Log.Error($"Response for unmatched request {headers.request_id}");
                 }
 
                 m_outstandingRequests.Remove(headers.request_id);
@@ -271,13 +293,14 @@ namespace Bond.Comm.Tcp
         public override Task StopAsync()
         {
             m_tcpClient.Close();
+            Log.Debug($"{this}.StopAsync: Shutting down.");
             return TaskExt.CompletedTask;
         }
 
-        public override void AddService<T>(T server)
+        public override void AddService<T>(T service)
         {
             // TODO: re-work when we use reflection to find service methods
-            m_serviceHost.Register((IService)server);
+            m_serviceHost.Register(service);
         }
 
         public override void RemoveService<T>(T service)

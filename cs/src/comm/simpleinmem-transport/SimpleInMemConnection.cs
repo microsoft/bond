@@ -29,6 +29,11 @@ namespace Bond.Comm.SimpleInMem
         {
         }
 
+        public override string ToString()
+        {
+            return $"SimpleInMemConnection({m_connectionId})";
+        }
+
         internal SimpleInMemConnection(SimpleInMemServiceHost serviceHost, ConnectionType connectionType)
         {
             m_connectionId = Guid.NewGuid();
@@ -116,7 +121,9 @@ namespace Bond.Comm.SimpleInMem
             var requestIdLong = Interlocked.Add(ref m_requestId, 2);
             if (requestIdLong > UInt32.MaxValue)
             {
-                throw new ProtocolErrorException("Exhausted request IDs");
+                var message = "Exhausted request IDs!";
+                Log.Fatal("SimpleInMemConnection.AllocateNextRequestId: " + message);
+                throw new ProtocolErrorException(message);
             }
 
             return unchecked((UInt32)requestIdLong);
@@ -150,7 +157,9 @@ namespace Bond.Comm.SimpleInMem
             }
             else
             {
-                throw new NotImplementedException(string.Format("Not implemented connection type: {0}", m_connectionType.ToString()));
+                var message = $"Connection type not implemented: {m_connectionType}";
+                Log.Fatal("SimpleInMemConnection.Start: " + message);
+                throw new NotImplementedException(message);
             }
         }
 
@@ -158,7 +167,9 @@ namespace Bond.Comm.SimpleInMem
         {
             if (m_connectionType == ConnectionType.Client)
             {
-                throw new NotSupportedException("Client connection does not support adding new request response queue");
+                var message = "Client connection does not support adding new request response queue";
+                Log.Fatal("SimpleInMemConnection.AddRequestResponseQueue: " + message);
+                throw new NotSupportedException(message);
             }
 
             m_serverqueues.AddRequestResponseQueue(id, queue);
@@ -185,8 +196,7 @@ namespace Bond.Comm.SimpleInMem
                 }
                 catch (Exception e)
                 {
-                    //TODO log it using the configured logging system
-                    Console.WriteLine(e.Message);
+                    Log.Error($"SimpleInMemConnection.ProcessResponseAsync: Exception while validating a frame: {e}", e);
                     continue;
                 }
 
@@ -223,7 +233,7 @@ namespace Bond.Comm.SimpleInMem
                     }
                     catch (Exception e)
                     {
-                        //TODO log it using the configured logging system
+                        Log.Error($"SimpleInMemConnection.ProcessRequestAsync: Exception while validating a frame: {e}", e);
                         Console.WriteLine(e.Message);
                         continue;
                     }

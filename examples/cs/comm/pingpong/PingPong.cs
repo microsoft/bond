@@ -10,6 +10,7 @@ namespace Bond.Examples.PingPong
     using System.Threading.Tasks;
     using Bond.Comm;
     using Bond.Comm.Tcp;
+    using Bond.Examples.Logging;
 
     public static class PingPong
     {
@@ -32,6 +33,9 @@ namespace Bond.Examples.PingPong
 
         private async static Task<TcpTransport> SetupAsync()
         {
+            var handler = new ConsoleLogger();
+            Log.AddHandler(handler);
+
             var transport = new TcpTransportBuilder()
                 .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
                 .Construct();

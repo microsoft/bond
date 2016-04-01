@@ -40,7 +40,9 @@ namespace Bond.Comm.SimpleInMem
                     break;
 
                 default:
-                    throw new NotImplementedException(string.Format("Payload type: {0}", frame.m_headers.payload_type.ToString()));
+                    var message = $"Payload type {frame.m_headers.payload_type} not supported!";
+                    Log.Fatal("InMemRequestResponse.Enqueue: " + message);
+                    throw new NotImplementedException(message);
             }
 
         }
@@ -65,7 +67,9 @@ namespace Bond.Comm.SimpleInMem
                     break;
 
                 default:
-                    throw new NotImplementedException(string.Format("Payload type: {0}", payloadType.ToString()));
+                    var message = $"Payload type {payloadType} not supported!";
+                    Log.Fatal("InMemRequestResponse.Dequeue: " + message);
+                    throw new NotImplementedException(message);
             }
 
             return frame;
@@ -85,7 +89,9 @@ namespace Bond.Comm.SimpleInMem
                     break;
 
                 default:
-                    throw new NotImplementedException(string.Format("PayloadType not supported: {0}", payloadType.ToString()));
+                    var message = $"Payload type {payloadType} not supported!";
+                    Log.Fatal("InMemRequestResponse.Count: " + message);
+                    throw new NotImplementedException(message);
             }
 
             return count;
@@ -105,7 +111,9 @@ namespace Bond.Comm.SimpleInMem
         {
             if (!m_reqresqueue.TryAdd(id, queue))
             {
-                throw new Exception(string.Format("Guid collison must never happen for client connection Ids: {0}", id.ToString()));
+                var message = $"Guid collison must never happen for client connection Ids: {id}";
+                Log.Fatal("InMemRequestResponse.AddRequestResponseQueue: " + message);
+                throw new Exception(message);
             }
         }
 

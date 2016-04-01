@@ -25,7 +25,7 @@ namespace Bond.Comm
 
         // register/remove per-connections services, like for server-to-client callbacks
         // won't be implemented in first version
-        public abstract void AddService<T>(T server);
-        public abstract void RemoveService<T>(T service);
+        public abstract void AddService<T>(T service) where T : IService;
+        public abstract void RemoveService<T>(T service) where T : IService;
     }
 }

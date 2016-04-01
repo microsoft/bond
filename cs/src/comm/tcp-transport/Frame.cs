@@ -81,7 +81,9 @@ namespace Bond.Comm.Tcp
         {
             if (m_framelets.Count == UInt16.MaxValue)
             {
-                throw new InvalidOperationException("Exceeded maximum allowed count of framelets.");
+                var message = "Exceeded maximum allowed count of framelets.";
+                Log.Error($"{nameof(Frame)}.{nameof(Add)}: {message}");
+                throw new InvalidOperationException(message);
             }
 
             m_framelets.Add(framelet);
@@ -103,16 +105,25 @@ namespace Bond.Comm.Tcp
             var numFramelets = unchecked((UInt16)m_framelets.Count);
             dest.Write(numFramelets);
 
-            foreach (var framelet in m_framelets)
+            var frameletsWritten = 0;
+            try
             {
-                // Framelet ctor checks that the type is valid, so we don't need to worry about overflow
-                var frameletType = unchecked((UInt16)framelet.Type);
-                // ArraySegment checks that the Count is not negative, so we don't need to worry about overflow
-                var frameletLength = unchecked((UInt32)framelet.Contents.Count);
+                foreach (var framelet in m_framelets)
+                {
+                    // Framelet ctor checks that the type is valid, so we don't need to worry about overflow
+                    var frameletType = unchecked((UInt16)framelet.Type);
+                    // ArraySegment checks that the Count is not negative, so we don't need to worry about overflow
+                    var frameletLength = unchecked((UInt32)framelet.Contents.Count);
 
-                dest.Write(frameletType);
-                dest.Write(frameletLength);
-                dest.Write(framelet.Contents.Array, framelet.Contents.Offset, framelet.Contents.Count);
+                    dest.Write(frameletType);
+                    dest.Write(frameletLength);
+                    dest.Write(framelet.Contents.Array, framelet.Contents.Offset, framelet.Contents.Count);
+                    frameletsWritten++;
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException)
+            {
+                Log.Error($"{nameof(Frame)}.{nameof(Write)}: Only wrote {frameletsWritten} of {numFramelets} framelets!", ex);
             }
         }
 

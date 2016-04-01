@@ -41,8 +41,8 @@ namespace Bond.Comm
         // Called whenever an existing connection has disconnected.
         public event EventHandler<DisconnectedEventArgs> Disconnected;
 
-        public abstract void AddService<T>(T server);
-        public abstract void RemoveService<T>(T service);
+        public abstract void AddService<T>(T service) where T : IService;
+        public abstract void RemoveService<T>(T service) where T : IService;
 
         public abstract Task StartAsync();
         public abstract Task StopAsync();

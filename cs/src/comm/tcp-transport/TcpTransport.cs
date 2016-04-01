@@ -115,6 +115,7 @@ namespace Bond.Comm.Tcp
 
         public async Task<TcpConnection> ConnectToAsync(IPEndPoint endpoint, CancellationToken ct)
         {
+            Log.Information($"TcpTransport.ConnectToAsync: Connecting to {endpoint}.");
             var tcpClient = new TcpClient();
             await tcpClient.ConnectAsync(endpoint.Address, endpoint.Port);
 

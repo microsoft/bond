@@ -31,11 +31,11 @@ namespace Bond.Comm
     /// </summary>
     public static class Log
     {
-        private static LogHandler handler = null;
+        private static LogHandler handler;
 
-        public static void AddHandler(LogHandler handler)
+        public static void AddHandler(LogHandler newHandler)
         {
-            if (handler == null)
+            if (newHandler == null)
             {
                 throw new ArgumentException("Attempted to add a null LogHandler");
             }
@@ -43,7 +43,7 @@ namespace Bond.Comm
             {
                 throw new InvalidOperationException("Attempted to add a LogHandler when there already was one");
             }
-            Log.handler = handler;
+            Log.handler = newHandler;
         }
 
         public static void RemoveHandler()

@@ -40,9 +40,15 @@ namespace Bond.Comm.Tcp
             }
         }
 
-        public override void AddService<T>(T server)
+        public override string ToString()
         {
-            m_serviceHost.Register((IService)server);
+            return $"TcpListener({ListenEndpoint})";
+        }
+
+        public override void AddService<T>(T service)
+        {
+            Log.Information($"{this}.AddService: Adding {typeof(T).Name}.");
+            m_serviceHost.Register(service);
         }
 
         public override void RemoveService<T>(T service)
@@ -67,6 +73,7 @@ namespace Bond.Comm.Tcp
 
         private async Task AcceptAsync(CancellationToken t)
         {
+            Log.Information($"{this}.AcceptAsync: Accepting connections...");
             while (!t.IsCancellationRequested)
             {
                 try
@@ -80,16 +87,18 @@ namespace Bond.Comm.Tcp
                     }
 
                     connection.Start();
+                    Log.Debug($"{this}.AcceptAsync: Accepted connection from {client.Client.RemoteEndPoint}.");
                 }
                 catch (SocketException ex)
                 {
-                    System.Diagnostics.Debug.Write("Accept failed with error " + ex.SocketErrorCode);
+                    Log.Fatal("Accept failed with error " + ex.SocketErrorCode, ex);
                 }
                 catch (ObjectDisposedException)
                 {
                     // TODO: this is needed during shutdown, but there should be a cleaner way
                 }
             }
+            Log.Information($"{this}.AcceptAsync: Shutting down.");
         }
     }
 }

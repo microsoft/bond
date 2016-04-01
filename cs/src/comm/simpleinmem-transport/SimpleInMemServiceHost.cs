@@ -4,7 +4,9 @@
 namespace Bond.Comm.SimpleInMem
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -22,18 +24,22 @@ namespace Bond.Comm.SimpleInMem
             m_dispatchTable = new Dictionary<string, ServiceCallback>();
         }
 
-        public void Register(IService service)
+        public void Register<T>(T service) where T : IService
         {
+            var methodNames = new SortedSet<string>();
             lock (m_lock)
             {
                 foreach (var serviceMethod in service.Methods)
                 {
                     m_dispatchTable.Add(serviceMethod.MethodName, serviceMethod.Callback);
+                    methodNames.Add(serviceMethod.MethodName);
                 }
             }
+
+            Log.Information($"SimpleInMemServiceHost.Register: Registered {typeof(T).Name} with methods: {String.Join(", ", methodNames)}");
         }
 
-        public void Deregister(IService service)
+        public void Deregister<T>(T service) where T : IService
         {
             lock (m_lock)
             {
@@ -42,18 +48,22 @@ namespace Bond.Comm.SimpleInMem
                     m_dispatchTable.Remove(serviceMethod.MethodName);
                 }
             }
+            Log.Information($"SimpleInMemServiceHost.Deregister: Deregistered {typeof(T).Name}.");
         }
 
         public async Task<IMessage> DispatchRequest(SimpleInMemHeaders headers, SimpleInMemConnection connection, IMessage message, TaskCompletionSource<IMessage> taskSource)
         {
+            Log.Information($"SimpleInMemServiceHost.DispatchRequest: Got request {headers.request_id}/{headers.method_name} "
+                + $"from {connection}.");
             ServiceCallback callback;
 
             lock (m_lock)
             {
                 if (!m_dispatchTable.TryGetValue(headers.method_name, out callback))
                 {
-                    // TODO: this should just be something we log
-                    throw new ProtocolErrorException("Method not found: " + headers.method_name);
+                    var errMsg = $"Got request for unknown method {headers.method_name}.";
+                    Log.Error("SimpleInMemServiceHost.DispatchRequest: " + errMsg);
+                    throw new ProtocolErrorException(errMsg);
                 }
             }
 
