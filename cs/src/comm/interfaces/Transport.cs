@@ -8,16 +8,8 @@ namespace Bond.Comm
     using System.Threading;
     using System.Threading.Tasks;
 
-    // Optional method to convert an service-side exception into
-    // an error. If not explicitly set on a transport,
-    // Transport.DefaultExceptionHandler will be called. The default
-    // implementation calls Environment.FailFast, which will kill the
-    // process, as Bond doesn't know the state of the rest of the
-    // application and assumes that it is irrecoverably corrupted.
-    // Transport.ToErrorExceptionHandler can be used to turn an
-    // exception into a generic error instead, and
-    // Transport.DebugExceptionHandler can be used to turn an
-    // exception into an Error with server-side details.
+    // Method to convert an service-side exception into
+    // an error.
     public delegate Error ExceptionHandler(Exception ex);
 
     // There are a number of places where we could use the builder
@@ -63,8 +55,6 @@ namespace Bond.Comm
 
         // close all connections and stop all listeners
         public abstract Task StopAsync();
-
-        public static readonly ExceptionHandler DefaultExceptionHandler = FailFastExceptionHandler;
 
         public static Error FailFastExceptionHandler(Exception ex)
         {

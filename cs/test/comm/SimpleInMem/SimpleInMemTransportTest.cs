@@ -18,7 +18,9 @@ namespace UnitTest.SimpleInMem
         [SetUp]
         public void Init()
         {
-            m_transport = new SimpleInMemTransportBuilder().Construct();
+            m_transport = new SimpleInMemTransportBuilder()
+                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
+                .Construct();
         }
 
         [TearDown]
@@ -26,6 +28,26 @@ namespace UnitTest.SimpleInMem
         {
             m_transport = null;
         }
+
+        [Test]
+        public void Builder_SetUnhandledExceptionHandler_Null_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() => new SimpleInMemTransportBuilder().SetUnhandledExceptionHandler(null));
+        }
+
+        [Test]
+        public void Builder_Construct_DidntSetUnhandledExceptionHandler_Throws()
+        {
+            var builder = new SimpleInMemTransportBuilder();
+            Assert.Throws<InvalidOperationException>(() => builder.Construct());
+        }
+
+        [Test]
+        public void Construct_InvalidArgs_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() => new SimpleInMemTransport(null));
+        }
+
 
         [ExpectedException(typeof(NotImplementedException))]
         public void StopAsync_NotImplemented()

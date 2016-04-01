@@ -62,6 +62,25 @@
         }
 
         [Test]
+        public void Builder_SetUnhandledExceptionHandler_Null_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() => new TcpTransportBuilder().SetUnhandledExceptionHandler(null));
+        }
+
+        [Test]
+        public void Builder_Construct_DidntSetUnhandledExceptionHandler_Throws()
+        {
+            var builder = new TcpTransportBuilder();
+            Assert.Throws<InvalidOperationException>(() => builder.Construct());
+        }
+
+        [Test]
+        public void Construct_InvalidArgs_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() => new TcpTransport(null));
+        }
+
+        [Test]
         public async Task SetupListener_RequestReply_PayloadResponse()
         {
             TestClientServer testClientServer = await SetupTestClientServer();

@@ -10,7 +10,7 @@ namespace Bond.Comm.SimpleInMem
     
     public class SimpleInMemTransportBuilder : TransportBuilder<SimpleInMemTransport>
     {
-        private ExceptionHandler m_exceptionHandler = Transport.DefaultExceptionHandler;
+        private ExceptionHandler m_exceptionHandler;
 
         public override TransportBuilder<SimpleInMemTransport> AddDeserializer<TReader>(Type type, Deserializer<TReader> deserializer)
         {
@@ -44,12 +44,27 @@ namespace Bond.Comm.SimpleInMem
 
         public override TransportBuilder<SimpleInMemTransport> SetUnhandledExceptionHandler(ExceptionHandler handler)
         {
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
             m_exceptionHandler = handler;
             return this;
         }
 
         public override SimpleInMemTransport Construct()
         {
+            if (m_exceptionHandler == null)
+            {
+                if (m_exceptionHandler == null)
+                {
+                    throw new InvalidOperationException(
+                        "Cannot create transport without an unhandled exception handler. "
+                        + nameof(SetUnhandledExceptionHandler) + " must be called before " + nameof(Construct));
+                }
+            }
+
             return new SimpleInMemTransport(m_exceptionHandler);
         }
     }
@@ -64,6 +79,11 @@ namespace Bond.Comm.SimpleInMem
 
         public SimpleInMemTransport(ExceptionHandler exceptionHandler)
         {
+            if (exceptionHandler == null)
+            {
+                throw new ArgumentNullException(nameof(exceptionHandler));
+            }
+
             m_exceptionHandler = exceptionHandler;
         }
 
@@ -91,7 +111,6 @@ namespace Bond.Comm.SimpleInMem
                 throw new InMemTransportListenerException(string.Format("Listener not found for address: {0}", address));
             }
 
-            //TODO Invoke unhandled exception handler if this throws exception
             return await Task.Run<Connection>(() =>
             {
                 var connection = new SimpleInMemConnection(this, ConnectionType.Client);

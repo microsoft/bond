@@ -6,6 +6,7 @@ namespace UnitTest.SimpleInMem
     using Bond.Comm.SimpleInMem;
     using NUnit.Framework;
     using System.Threading.Tasks;
+    using Bond.Comm;
 
     [TestFixture]
     public class SimpleInMemListenerTest
@@ -16,7 +17,10 @@ namespace UnitTest.SimpleInMem
         [SetUp]
         public void Init()
         {
-            m_transport = new SimpleInMemTransportBuilder().Construct();
+            m_transport =
+                new SimpleInMemTransportBuilder()
+                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
+                .Construct();
         }
 
         [TearDown]
@@ -35,7 +39,9 @@ namespace UnitTest.SimpleInMem
         [Test]
         public async Task StartStopInMemTransportListener()
         {
-            var transport = new SimpleInMemTransportBuilder().Construct();
+            var transport = new SimpleInMemTransportBuilder()
+                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
+                .Construct();
             var listener = transport.MakeListener(m_address);
             Assert.IsNotNull(listener);
             await listener.StartAsync();

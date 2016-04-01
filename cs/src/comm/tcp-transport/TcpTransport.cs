@@ -11,7 +11,7 @@ namespace Bond.Comm.Tcp
 
     public class TcpTransportBuilder : TransportBuilder<TcpTransport>
     {
-        private ExceptionHandler m_exceptionHandler = Transport.DefaultExceptionHandler;
+        private ExceptionHandler m_exceptionHandler;
 
         public override TransportBuilder<TcpTransport> AddDeserializer<TReader>(Type type, Deserializer<TReader> deserializer)
         {
@@ -45,12 +45,27 @@ namespace Bond.Comm.Tcp
 
         public override TransportBuilder<TcpTransport> SetUnhandledExceptionHandler(ExceptionHandler handler)
         {
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
             m_exceptionHandler = handler;
             return this;
         }
 
         public override TcpTransport Construct()
         {
+            if (m_exceptionHandler == null)
+            {
+                if (m_exceptionHandler == null)
+                {
+                    throw new InvalidOperationException(
+                        "Cannot create transport without an unhandled exception handler. "
+                        + nameof(SetUnhandledExceptionHandler) + " must be called before " + nameof(Construct));
+                }
+            }
+
             return new TcpTransport(m_exceptionHandler);
         }
     }
@@ -64,6 +79,11 @@ namespace Bond.Comm.Tcp
 
         public TcpTransport(ExceptionHandler exceptionHandler)
         {
+            if (exceptionHandler == null)
+            {
+                throw new ArgumentNullException(nameof(exceptionHandler));
+            }
+
             m_exceptionHandler = exceptionHandler;
         }
 
