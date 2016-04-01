@@ -186,6 +186,7 @@ namespace Bond.Expressions
                     return reader.Skip(dataType);
             }
         }
+
         static Expression NewBonded(Expression reader, Expression schema)
         {
             var ctor =
