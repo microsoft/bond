@@ -1,14 +1,15 @@
-﻿namespace UnitTest
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+namespace UnitTest.Interfaces
 {
     using System;
-
     using Bond.Comm;
     using NUnit.Framework;
 
     [TestFixture]
     class TransportTests
     {
-
         [Test]
         public void MakeInternalServerError_DontIncludeDetails_GenericErrorReturned()
         {
@@ -22,7 +23,6 @@
             Assert.IsEmpty(error.server_stack_trace);
             Assert.IsEmpty(error.inner_errors);
         }
-
 
         [Test]
         public void MakeInternalServerError_NullExIncludeDetails_GenericErrorReturned()

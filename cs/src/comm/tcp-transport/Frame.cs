@@ -6,7 +6,6 @@ namespace Bond.Comm.Tcp
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Net.Sockets;
     using System.Threading.Tasks;
 
     internal enum FrameletType

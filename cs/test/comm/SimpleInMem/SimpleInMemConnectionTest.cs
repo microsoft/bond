@@ -3,11 +3,11 @@
 
 namespace UnitTest.SimpleInMem
 {
+    using System.Threading.Tasks;
     using Bond.Comm;
     using Bond.Comm.SimpleInMem;
     using NUnit.Framework;
-    using System.Threading.Tasks;
-    
+
     [TestFixture]
     public class SimpleInMemConnectionTest
     {

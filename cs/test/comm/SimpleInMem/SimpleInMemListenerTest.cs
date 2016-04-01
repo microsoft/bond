@@ -3,10 +3,10 @@
 
 namespace UnitTest.SimpleInMem
 {
-    using Bond.Comm.SimpleInMem;
-    using NUnit.Framework;
     using System.Threading.Tasks;
     using Bond.Comm;
+    using Bond.Comm.SimpleInMem;
+    using NUnit.Framework;
 
     [TestFixture]
     public class SimpleInMemListenerTest

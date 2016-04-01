@@ -7,7 +7,7 @@ namespace Bond.Comm.SimpleInMem
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    
+
     public class SimpleInMemTransportBuilder : TransportBuilder<SimpleInMemTransport>
     {
         private ExceptionHandler m_exceptionHandler;

@@ -3,11 +3,11 @@
 
 namespace UnitTest.SimpleInMem
 {
+    using System;
+    using System.Threading.Tasks;
     using Bond.Comm;
     using Bond.Comm.SimpleInMem;
     using NUnit.Framework;
-    using System;
-    using System.Threading.Tasks;
 
     [TestFixture]
     public class SimpleInMemTransportTest
@@ -49,16 +49,16 @@ namespace UnitTest.SimpleInMem
         }
 
 
-        [ExpectedException(typeof(NotImplementedException))]
+        [Test]
         public void StopAsync_NotImplemented()
         {
-            m_transport.StopAsync();
+            Assert.Throws<NotImplementedException>(() => m_transport.StopAsync());
         }
 
-        [ExpectedException(typeof(InMemTransportListenerException))]
-        public async Task ConnectToAsync_NoListenerRunning()
+        [Test]
+        public void ConnectToAsync_NoListenerRunning()
         {
-            await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken());
+            Assert.Throws<InMemTransportListenerException>(async () => await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken()));
         }
 
         [Test]

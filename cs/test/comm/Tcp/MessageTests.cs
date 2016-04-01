@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace UnitTest
+namespace UnitTest.Tcp
 {
     using System;
-
     using Bond;
     using Bond.Comm;
     using NUnit.Framework;

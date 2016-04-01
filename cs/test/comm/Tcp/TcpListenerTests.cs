@@ -3,10 +3,11 @@
 
 namespace UnitTest.Tcp
 {
-    using Bond.Comm.Tcp;
-    using NUnit.Framework;
     using System.Net;
     using System.Threading.Tasks;
+    using Bond.Comm;
+    using Bond.Comm.Tcp;
+    using NUnit.Framework;
 
     [TestFixture]
     public class TcpListenerTests
@@ -15,7 +16,9 @@ namespace UnitTest.Tcp
         public async Task ListenOnPortZero_ActuallyListensOnSomeOtherPort()
         {
             var localhostEndpoint = new IPEndPoint(IPAddress.Loopback, 0);
-            var transport = new TcpTransportBuilder().Construct();
+            var transport = new TcpTransportBuilder()
+                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
+                .Construct();
             var listener = transport.MakeListener(localhostEndpoint);
 
             await listener.StartAsync();

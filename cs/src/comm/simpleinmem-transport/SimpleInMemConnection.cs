@@ -6,7 +6,7 @@ namespace Bond.Comm.SimpleInMem
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    
+
     public enum ConnectionType
     {
         Client,

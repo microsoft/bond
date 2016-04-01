@@ -7,11 +7,9 @@ namespace Bond.Comm.Tcp
     using System.Collections.Generic;
     using System.IO;
     using System.Net.Sockets;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Text;
-
-    using Bond;
     using Bond.IO.Safe;
     using Bond.Protocols;
 

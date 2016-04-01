@@ -6,7 +6,6 @@ namespace UnitTest.SimpleInMem
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-
     using Bond.Comm;
 
     internal class CalculatorService : IService
