@@ -16,7 +16,7 @@ namespace Bond.Expressions
     /// </summary>
     /// <param name="objectType">Type of value stored in IBonded</param>
     /// <param name="value">Expression representing the value to be stored in the bonded instance.</param>
-    /// <returns></returns>
+    /// <returns>Expression representing creation of bonded with the specified value.</returns>
     public delegate Expression InstanceBondedFactory(Type objectType, Expression value);
 
     public class ObjectParser : IParser

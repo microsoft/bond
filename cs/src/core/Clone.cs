@@ -61,7 +61,8 @@ namespace Bond
         public Cloner(Type type, IParser parser)
         {
             clone = Generate(type, new DeserializerTransform<object>(
-                (o, i) => clone[i](o)), parser);
+                                       (o, i) => clone[i](o)),
+                             parser);
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace Bond
         /// Create a cloner that uses specified factory and makes clones of the specified type.
         /// </summary>
         /// <param name="type">type of clone object, may be different than source object</param>
-        /// <param name="parser">Custom <see cref="IParser"/> instance</param>
+        /// <param name="parser">Custom IParser instance</param>
         /// <param name="factory">factory delegate returning expressions to create objects</param>
         public Cloner(Type type, IParser parser, Factory factory)
         {

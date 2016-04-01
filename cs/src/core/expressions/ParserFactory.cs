@@ -8,6 +8,12 @@ namespace Bond.Expressions
     using System.Linq.Expressions;
     using Bond.Protocols;
 
+    /// <summary>
+    /// Creates expression of type <see cref="IBonded{T}"/> given a reader and runtime schema.
+    /// </summary>
+    /// <param name="reader">Expression representing reader.</param>
+    /// <param name="schema">Expression representing RuntimeSchema.</param>
+    /// <returns>Expression representing creation of bonded with the specified reader and runtime schema.</returns>
     public delegate Expression PayloadBondedFactory(Expression reader, Expression schema);
 
     public static class ParserFactory<R>
