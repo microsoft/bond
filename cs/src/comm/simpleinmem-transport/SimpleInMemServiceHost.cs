@@ -5,6 +5,7 @@ namespace Bond.Comm.SimpleInMem
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     internal class SimpleInMemServiceHost
@@ -62,7 +63,7 @@ namespace Bond.Comm.SimpleInMem
 
             try
             {
-                result = await callback(message, context);
+                result = await callback(message, context, CancellationToken.None);
             }
             catch (Exception callbackEx)
             {

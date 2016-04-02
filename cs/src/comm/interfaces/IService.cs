@@ -4,9 +4,10 @@
 namespace Bond.Comm
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
-    public delegate Task<IMessage> ServiceCallback(IMessage request, ReceiveContext context);
+    public delegate Task<IMessage> ServiceCallback(IMessage request, ReceiveContext context, CancellationToken ct);
 
     public class ServiceMethodInfo
     {

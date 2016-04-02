@@ -5,6 +5,7 @@ namespace UnitTest.SimpleInMem
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm;
 
@@ -49,7 +50,7 @@ namespace UnitTest.SimpleInMem
             }
         }
 
-        internal Task<IMessage> Add(IMessage request, ReceiveContext context)
+        internal Task<IMessage> Add(IMessage request, ReceiveContext context, CancellationToken ct)
         {
             PairedInput req = request.Convert<PairedInput>().Payload.Deserialize();
             var res = new Output { Result = req.First + req.Second };
@@ -57,7 +58,7 @@ namespace UnitTest.SimpleInMem
             return Task.FromResult<IMessage>(Message.FromPayload(res));
         }
 
-        internal Task<IMessage> Subtract(IMessage request, ReceiveContext context)
+        internal Task<IMessage> Subtract(IMessage request, ReceiveContext context, CancellationToken ct)
         {
             PairedInput req = request.Convert<PairedInput>().Payload.Deserialize();
             var res = new Output { Result = req.First - req.Second };
@@ -65,7 +66,7 @@ namespace UnitTest.SimpleInMem
             return Task.FromResult<IMessage>(Message.FromPayload(res));
         }
 
-        internal Task<IMessage> Multiply(IMessage request, ReceiveContext context)
+        internal Task<IMessage> Multiply(IMessage request, ReceiveContext context, CancellationToken ct)
         {
             throw new NotImplementedException(ExpectedExceptionMessage);
         }

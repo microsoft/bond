@@ -5,6 +5,7 @@ namespace Bond.Comm.Tcp
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     internal class TcpServiceHost
@@ -55,7 +56,7 @@ namespace Bond.Comm.Tcp
 
                 try
                 {
-                    result = await callback(request, context);
+                    result = await callback(request, context, CancellationToken.None);
                 }
                 catch (Exception callbackEx)
                 {

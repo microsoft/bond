@@ -202,14 +202,14 @@ namespace UnitTest.Tcp
                 }
             }
 
-            private Task<IMessage> RespondWithEmpty(IMessage request, ReceiveContext context)
+            private Task<IMessage> RespondWithEmpty(IMessage request, ReceiveContext context, CancellationToken ct)
             {
                 Interlocked.Increment(ref m_respondWithEmpty_callCount);
                 var emptyMessage = Message.FromPayload(new Bond.Void());
                 return Task.FromResult<IMessage>(emptyMessage);
             }
 
-            private Task<IMessage> RespondWithError(IMessage request, ReceiveContext context)
+            private Task<IMessage> RespondWithError(IMessage request, ReceiveContext context, CancellationToken ct)
             {
                 var error = new Error
                 {
@@ -219,7 +219,7 @@ namespace UnitTest.Tcp
                 return Task.FromResult<IMessage>(Message.FromError(error));
             }
 
-            private Task<IMessage> ThrowInsteadOfResponding(IMessage request, ReceiveContext context)
+            private Task<IMessage> ThrowInsteadOfResponding(IMessage request, ReceiveContext context, CancellationToken ct)
             {
                 throw new InvalidOperationException(ExpectedExceptionMessage);
             }
