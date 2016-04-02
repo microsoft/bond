@@ -36,16 +36,17 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IPingPongService.cs" />
     <Compile Include="PingPong.cs" />
     <Compile Include="PingPongService.cs" />
-    <Compile Include="Proxy_PingPong.cs" />
-    <Compile Include="Proxy_ReversePingPong.cs" />
     <Compile Include="ReversePingPongService.cs" />
     <BondCodegen Include="pingpong.bond" />
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\pingpong_types.cs" Condition="False" />
     <!-- End Resharper Workaround -->
+    <!-- TODO: edit the .targets to automatically include the comm files -->
+    <Compile Include="$(IntermediateOutputPath)\pingpong_interfaces.cs" />
+    <Compile Include="$(IntermediateOutputPath)\pingpong_proxies.cs" />
+    <Compile Include="$(IntermediateOutputPath)\pingpong_services.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Attributes">

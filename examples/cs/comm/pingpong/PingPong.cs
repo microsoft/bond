@@ -8,13 +8,13 @@ namespace Bond.Examples.PingPong
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-
     using Bond.Comm;
     using Bond.Comm.Tcp;
 
     public static class PingPong
     {
-        private static TcpConnection s_connection;
+        private static TcpConnection s_pingConnection;
+        private static TcpConnection s_reverseConnection;
 
         public static void Main()
         {
@@ -28,31 +28,39 @@ namespace Bond.Examples.PingPong
 
             // TODO: Shutdown not yet implemented.
             // transport.StopAsync().Wait();
-
-            Console.ReadLine();
         }
 
         private async static Task<TcpTransport> SetupAsync()
         {
-            var pingPongService = new PingPongService();
-            var reversePingPongService = new ReversePingPongService();
+            var transport = new TcpTransportBuilder()
+                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
+                .Construct();
 
-            var listenEndpoint = new IPEndPoint(IPAddress.Loopback, 0);
+            var assignAPortEndPoint = new IPEndPoint(IPAddress.Loopback, 0);
 
-            var transport = new TcpTransportBuilder().Construct();
+            var pingPongService = new PingPongServiceImpl();
+            TcpListener pingPongListener = transport.MakeListener(assignAPortEndPoint);
+            pingPongListener.AddService(pingPongService);
 
-            var listener = transport.MakeListener(listenEndpoint);
-            listener.AddService(pingPongService);
-            listener.AddService(reversePingPongService);
-            await listener.StartAsync();
+            var reversePingPongService = new ReversePingPongServiceImpl();
+            TcpListener reversePingPongListener = transport.MakeListener(assignAPortEndPoint);
+            reversePingPongListener.AddService(reversePingPongService);
 
-            s_connection = await transport.ConnectToAsync(listener.ListenEndpoint, CancellationToken.None);
+            await Task.WhenAll(
+                pingPongListener.StartAsync(),
+                reversePingPongListener.StartAsync());
+
+            s_pingConnection = await transport.ConnectToAsync(pingPongListener.ListenEndpoint, CancellationToken.None);
+            s_reverseConnection = await transport.ConnectToAsync(reversePingPongListener.ListenEndpoint, CancellationToken.None);
 
             return transport;
         }
 
         private static Task[] MakeRequestsAndPrintAsync(int numRequests)
         {
+            var pingPongProxy = new Proxy_PingPong<TcpConnection>(s_pingConnection);
+            var reversePingPongProxy = new Proxy_PingPong<TcpConnection>(s_reverseConnection);
+
             var tasks = new Task[2 * numRequests];
 
             var rnd = new Random();
@@ -60,33 +68,30 @@ namespace Bond.Examples.PingPong
             foreach (var requestNum in Enumerable.Range(0, numRequests))
             {
                 UInt16 delay = (UInt16)rnd.Next(2000);
-                tasks[(2 * requestNum)] = DoPingPong(s_connection, requestNum, "ping" + requestNum.ToString(), delay);
+                tasks[(2 * requestNum)] = DoPingPong(pingPongProxy, requestNum, "ping" + requestNum.ToString(), delay);
 
                 delay = (UInt16)rnd.Next(2000);
-                tasks[(2 * requestNum) + 1] = DoReversePingPong(s_connection, requestNum, "gnipr" + requestNum.ToString(), delay);
+                tasks[(2 * requestNum) + 1] = DoPingPong(reversePingPongProxy, requestNum, "gnipr" + requestNum.ToString(), delay);
             }
 
             return tasks;
         }
 
-        private static async Task DoPingPong(IRequestResponseConnection connection, int requestNum, string message, UInt16 delay)
+        private static async Task DoPingPong(Proxy_PingPong<TcpConnection> proxy, int requestNum, string payload, UInt16 delay)
         {
-            var proxy = new Proxy_PingPong(connection);
+            var request = new PingRequest { Payload = payload, DelayMilliseconds = delay };
+            IMessage<PingResponse> message = await proxy.PingAsync(request);
 
-            var request = new PingRequest { Payload = message, DelayMilliseconds = delay };
-            var response = await proxy.PingAsync(request);
-
-            Console.WriteLine($"P Request #{requestNum} response: \"{response.Payload}\". Delay: {delay}");
-        }
-
-        private static async Task DoReversePingPong(IRequestResponseConnection connection, int requestNum, string message, UInt16 delay)
-        {
-            var proxy = new Proxy_ReversePingPong(connection);
-
-            var request = new PingRequest { Payload = message, DelayMilliseconds = delay };
-            var response = await proxy.PingAsync(request);
-
-            Console.WriteLine($"R Request #{requestNum} response: \"{response.Payload}\". Delay: {delay}");
+            if (message.IsError)
+            {
+                Error error = message.Error.Deserialize();
+                Console.WriteLine($"Request #{requestNum} failed: {error.error_code}: {error.message}");
+            }
+            else
+            {
+                PingResponse response = message.Payload.Deserialize();
+                Console.WriteLine($"Request #{requestNum} response: \"{response.Payload}\". Delay: {delay}");
+            }
         }
     }
 }

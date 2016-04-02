@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Attributes", "src\attributes\Attributes.csproj", "{92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89}"
 EndProject
@@ -188,6 +188,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tcp-transport", "src\comm\tcp-transport\tcp-transport.csproj", "{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pingpong", "..\examples\cs\comm\pingpong\pingpong.csproj", "{92C5B98B-12A4-4995-90B8-A19E96524464}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042} = {C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}
+		{45EFB397-298A-4A32-A178-A2BDF8ABBBD9} = {45EFB397-298A-4A32-A178-A2BDF8ABBBD9}
+		{43CBBA9B-C4BC-4E64-8733-7B72562D2E91} = {43CBBA9B-C4BC-4E64-8733-7B72562D2E91}
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1} = {21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}
+		{92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89} = {92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleinmem-transport", "src\comm\simpleinmem-transport\simpleinmem-transport.csproj", "{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}"
 EndProject
@@ -857,8 +864,8 @@ Global
 		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}.Net40|Win32.Build.0 = Debug|Any CPU
 		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}.Release|Win32.ActiveCfg = Debug|Any CPU
 		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}.Release|Win32.Build.0 = Debug|Any CPU
 		{92C5B98B-12A4-4995-90B8-A19E96524464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -899,7 +906,6 @@ Global
 		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Any CPU.ActiveCfg = Debug|Any CPU
 		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Any CPU.Build.0 = Debug|Any CPU
 		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Mixed Platforms.Build.0 = Debug|Any CPU
 		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Win32.ActiveCfg = Debug|Any CPU
 		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Net40|Win32.Build.0 = Debug|Any CPU
 		{54A3432B-99E1-4DEB-B4EB-2D6E158ECD24}.Release|Any CPU.ActiveCfg = Release|Any CPU
