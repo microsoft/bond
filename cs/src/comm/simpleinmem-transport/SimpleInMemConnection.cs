@@ -29,17 +29,12 @@ namespace Bond.Comm.SimpleInMem
         {
         }
 
-        public override string ToString()
-        {
-            return $"SimpleInMemConnection({m_connectionId})";
-        }
-
         internal SimpleInMemConnection(SimpleInMemServiceHost serviceHost, ConnectionType connectionType)
         {
             m_connectionId = Guid.NewGuid();
             m_connectionType = connectionType;
             m_serviceHost = serviceHost;
-            
+
             if (connectionType == ConnectionType.Client)
             {
                 m_clientreqresqueue = new RequestResponseQueue();
@@ -51,6 +46,11 @@ namespace Bond.Comm.SimpleInMem
 
             // start at -1 or 0 so the first request ID is 1 or 2.
             m_requestId = connectionType == ConnectionType.Client ? -1 : 0;
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(SimpleInMemConnection)}({m_connectionId})";
         }
 
         public override Task StopAsync()
@@ -105,11 +105,11 @@ namespace Bond.Comm.SimpleInMem
             var payload = NewPayLoad(requestId, PayloadType.Request, request, new TaskCompletionSource<IMessage>());
             payload.m_headers.method_name = methodName;
             m_clientreqresqueue.Enqueue(payload);
-            
+
             return await payload.m_outstandingRequest.Task;
         }
 
-        
+
         internal void SendReplyAsync(uint requestId, IMessage response, RequestResponseQueue queue, TaskCompletionSource<IMessage> taskSource)
         {
             var payload = NewPayLoad(requestId, PayloadType.Response, response, taskSource);
@@ -121,8 +121,8 @@ namespace Bond.Comm.SimpleInMem
             var requestIdLong = Interlocked.Add(ref m_requestId, 2);
             if (requestIdLong > UInt32.MaxValue)
             {
-                var message = "Exhausted request IDs!";
-                Log.Fatal("SimpleInMemConnection.AllocateNextRequestId: " + message);
+                var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Exhausted request IDs!",
+                    this, nameof(AllocateNextRequestId));
                 throw new ProtocolErrorException(message);
             }
 
@@ -157,8 +157,8 @@ namespace Bond.Comm.SimpleInMem
             }
             else
             {
-                var message = $"Connection type not implemented: {m_connectionType}";
-                Log.Fatal("SimpleInMemConnection.Start: " + message);
+                var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Connection type {2} not implemented.",
+                    this, nameof(Start), m_connectionType);
                 throw new NotImplementedException(message);
             }
         }
@@ -167,8 +167,9 @@ namespace Bond.Comm.SimpleInMem
         {
             if (m_connectionType == ConnectionType.Client)
             {
-                var message = "Client connection does not support adding new request response queue";
-                Log.Fatal("SimpleInMemConnection.AddRequestResponseQueue: " + message);
+                var message = LogUtil.FatalAndReturnFormatted(
+                    "{0}.{1}: Client connection does not support adding new request response queue.",
+                    this, nameof(AddRequestResponseQueue));
                 throw new NotSupportedException(message);
             }
 
@@ -196,7 +197,7 @@ namespace Bond.Comm.SimpleInMem
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"SimpleInMemConnection.ProcessResponseAsync: Exception while validating a frame: {e}", e);
+                    Log.Error(e, "{0}.{1}: Exception while validating a frame: {2}", this, nameof(ProcessResponseAsync), e);
                     continue;
                 }
 
@@ -233,8 +234,7 @@ namespace Bond.Comm.SimpleInMem
                     }
                     catch (Exception e)
                     {
-                        Log.Error($"SimpleInMemConnection.ProcessRequestAsync: Exception while validating a frame: {e}", e);
-                        Console.WriteLine(e.Message);
+                        Log.Error(e, "{0}.{1}: Exception while validating a frame: {2}", this, nameof(ProcessRequestAsync), e);
                         continue;
                     }
 

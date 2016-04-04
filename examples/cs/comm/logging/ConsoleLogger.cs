@@ -9,9 +9,11 @@ namespace Bond.Examples.Logging
 
     public class ConsoleLogger : LogHandler
     {
-        public void Handle(LogSeverity severity, string message, Exception exception = null)
+        public void Handle(LogSeverity severity, Exception exception, String format, params object[] args)
         {
-            // This example logs everything. You may want to drop messages above LogSeverity.Debug.
+            if (severity < LogSeverity.Information) { return; }
+
+            var message = string.Format(format, args);
             Console.WriteLine($"[bond] {severity.ToString().ToUpper()}: {message}");
             if (exception != null)
             {

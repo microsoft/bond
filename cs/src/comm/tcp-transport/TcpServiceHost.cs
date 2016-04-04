@@ -26,31 +26,32 @@ namespace Bond.Comm.Tcp
 
         public void Register<T>(T service) where T : IService
         {
+            var methodNames = new SortedSet<string>();
             lock (m_lock)
             {
                 foreach (var serviceMethod in service.Methods)
                 {
                     m_dispatchTable.Add(serviceMethod.MethodName, serviceMethod.Callback);
+                    methodNames.Add(serviceMethod.MethodName);
                 }
             }
 
-            var methods = service.Methods.Select(m => m.MethodName).ToList();
-            methods.Sort();
-            Log.Information($"TcpServiceHost.Register: Registered {typeof(T).Name} with methods: {string.Join(", ", methods)}");
+            Log.Information("{0}.{1}: Registered {2} with methods: {3}",
+                nameof(TcpServiceHost), nameof(Register), typeof(T).Name, string.Join(", ", methodNames));
         }
 
         public void DispatchRequest(TcpHeaders headers, TcpConnection connection, IMessage request)
         {
-            Log.Information($"TcpServiceHost.DispatchRequest: Got request {headers.request_id}/{headers.method_name}."
-                + $"from {connection}.");
+            Log.Information("{0}.{1}: Got request {2}/{3} from {4}.",
+                nameof(TcpServiceHost), nameof(DispatchRequest), headers.request_id, headers.method_name, connection);
             ServiceCallback callback;
 
             lock (m_lock)
             {
                 if (!m_dispatchTable.TryGetValue(headers.method_name, out callback))
                 {
-                    var message = $"Got request for unknown method {headers.method_name}.";
-                    Log.Error("TcpServiceHost.DispatchRequest: " + message);
+                    var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Got request for unknown method {2}.",
+                        nameof(TcpServiceHost), nameof(DispatchRequest), headers.method_name);
                     throw new ProtocolErrorException(message);
                 }
             }
@@ -87,7 +88,8 @@ namespace Bond.Comm.Tcp
                     result = Message.FromError(error);
                 }
 
-                Log.Debug($"TcpServiceHost.DispatchRequest: Replying to request {headers.request_id}/{headers.method_name}.");
+                Log.Debug("{0}.{1}: Replying to request {2}/{3}.",
+                    nameof(TcpServiceHost), nameof(DispatchRequest), headers.request_id, headers.method_name);
                 await connection.SendReplyAsync(headers.request_id, result);
             });
         }

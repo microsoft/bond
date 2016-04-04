@@ -6,7 +6,7 @@ namespace Bond.Comm
     using System;
 
     /// <summary>
-    /// Represents the severity of a message.
+    /// Represents the severity of a message. Severities compare with &lt; and &gt;. e.g., Debug &lt Information.
     /// </summary>
     public enum LogSeverity
     {
@@ -22,7 +22,7 @@ namespace Bond.Comm
     /// </summary>
     public interface LogHandler
     {
-        void Handle(LogSeverity severity, String message, Exception exception = null);
+        void Handle(LogSeverity severity, Exception exception, string format, object[] args);
     }
 
     /// <summary>
@@ -51,34 +51,74 @@ namespace Bond.Comm
             handler = null;
         }
 
-        private static void LogMessage(LogSeverity severity, string message, Exception exception = null)
+        private static void LogMessage(LogSeverity severity, Exception exception, string format, object[] args)
         {
-            handler?.Handle(severity, message, exception);
+            handler?.Handle(severity, exception, format, args);
         }
 
-        public static void Fatal(string message, Exception exception = null)
+        public static void Fatal(Exception exception, string format, params object[] args)
         {
-            LogMessage(LogSeverity.Fatal, message, exception);
+            LogMessage(LogSeverity.Fatal, exception, format, args);
         }
 
-        public static void Error(string message, Exception exception = null)
+        public static void Fatal(string format, params object[] args)
         {
-            LogMessage(LogSeverity.Error, message, exception);
+            LogMessage(LogSeverity.Fatal, null, format, args);
         }
 
-        public static void Warning(string message, Exception exception = null)
+        public static void Error(Exception exception, string format, params object[] args)
         {
-            LogMessage(LogSeverity.Warning, message, exception);
+            LogMessage(LogSeverity.Error, exception, format, args);
         }
 
-        public static void Information(string message, Exception exception = null)
+        public static void Error(string format, params object[] args)
         {
-            LogMessage(LogSeverity.Information, message, exception);
+            LogMessage(LogSeverity.Error, null, format, args);
         }
 
-        public static void Debug(string message, Exception exception = null)
+        public static void Warning(Exception exception, string format, params object[] args)
         {
-            LogMessage(LogSeverity.Debug, message, exception);
+            LogMessage(LogSeverity.Warning, exception, format, args);
+        }
+
+        public static void Warning(string format, params object[] args)
+        {
+            LogMessage(LogSeverity.Warning, null, format, args);
+        }
+
+        public static void Information(Exception exception, string format, params object[] args)
+        {
+            LogMessage(LogSeverity.Information, exception, format, args);
+        }
+
+        public static void Information(string format, params object[] args)
+        {
+            LogMessage(LogSeverity.Information, null, format, args);
+        }
+
+        public static void Debug(Exception exception, string format, params object[] args)
+        {
+            LogMessage(LogSeverity.Debug, exception, format, args);
+        }
+
+        public static void Debug(string format, params object[] args)
+        {
+            LogMessage(LogSeverity.Debug, null, format, args);
+        }
+    }
+
+    public class LogUtil
+    {
+        public static string FatalAndReturnFormatted(Exception exception, string format, params object[] args)
+        {
+            Log.Fatal(exception, format, args);
+            return string.Format(format, args);
+        }
+
+        public static string FatalAndReturnFormatted(string format, params object[] args)
+        {
+            Log.Fatal(null, format, args);
+            return string.Format(format, args);
         }
     }
 }

@@ -11,22 +11,19 @@ namespace Bond.Comm.SimpleInMem
         private SimpleInMemServiceHost m_serviceHost;
         private string m_address;
         private SimpleInMemConnection m_connection;
+        private readonly string m_logname;
 
         public SimpleInMemListener(SimpleInMemTransport parentTransport, string address)
         {
             m_address = address;
             m_serviceHost = new SimpleInMemServiceHost(parentTransport);
             m_connection = new SimpleInMemConnection(m_serviceHost, ConnectionType.Server);
-        }
-
-        public override string ToString()
-        {
-            return $"SimpleInMemListener({m_address})";
+            m_logname = $"{nameof(SimpleInMemListener)}({m_address})";
         }
 
         public override void AddService<T>(T service)
         {
-            Log.Information($"{this}.AddService: Adding {typeof(T).Name}.");
+            Log.Information("{0}.{1}: Adding {2}.", m_logname, nameof(AddService), typeof(T).Name);
             m_serviceHost.Register(service);
         }
 

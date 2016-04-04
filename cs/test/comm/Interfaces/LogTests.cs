@@ -15,14 +15,14 @@ namespace UnitTest.Interfaces
         private class TestLogHandler : LogHandler
         {
             public LogSeverity? LastMessageSeverity;
-            public String LastMessage;
+            public string LastMessage;
             public Exception LastException;
             public int MessagesHandled;
 
-            public void Handle(LogSeverity severity, string message, Exception exception)
+            public void Handle(LogSeverity severity, Exception exception, string format, params object[] args)
             {
                 LastMessageSeverity = severity;
-                LastMessage = message;
+                LastMessage = string.Format(format, args);
                 LastException = exception;
                 MessagesHandled++;
             }
@@ -41,7 +41,7 @@ namespace UnitTest.Interfaces
         /// </summary>
         private class TestException : Exception
         {
-            public LogSeverity Severity;
+            public readonly LogSeverity Severity;
 
             public TestException(LogSeverity severity)
             {
@@ -49,19 +49,32 @@ namespace UnitTest.Interfaces
             }
         }
 
-        private readonly Dictionary<LogSeverity, Action<string, Exception>> levelLoggers =
-            new Dictionary<LogSeverity, Action<string, Exception>>()
-        {
-                { LogSeverity.Fatal, Log.Fatal },
-                { LogSeverity.Error, Log.Error },
-                { LogSeverity.Warning, Log.Warning },
-                { LogSeverity.Information, Log.Information },
+        private readonly List<LogSeverity> allSeverities = Enum.GetValues(typeof(LogSeverity)).Cast<LogSeverity>().ToList();
+
+        private readonly Dictionary<LogSeverity, Action<string, object[]>> levelLoggers =
+            new Dictionary<LogSeverity, Action<string, object[]>>
+            {
                 { LogSeverity.Debug, Log.Debug },
+                { LogSeverity.Information, Log.Information },
+                { LogSeverity.Warning, Log.Warning },
+                { LogSeverity.Error, Log.Error },
+                { LogSeverity.Fatal, Log.Fatal },
         };
 
-        private String MakeMessage(LogSeverity severity, bool withException)
+        private readonly Dictionary<LogSeverity, Action<Exception, string, object[]>> exceptionLevelLoggers =
+            new Dictionary<LogSeverity, Action<Exception, string, object[]>>
+            {
+                { LogSeverity.Debug, Log.Debug },
+                { LogSeverity.Information, Log.Information },
+                { LogSeverity.Warning, Log.Warning },
+                { LogSeverity.Error, Log.Error },
+                { LogSeverity.Fatal, Log.Fatal },
+        };
+
+        private static Tuple<string, object[]> MakeMessage(LogSeverity severity, bool withException)
         {
-            return String.Format("logged at {0} with{1} an Exception", severity, withException ? "" : "out");
+            var args = new object[] {severity, withException ? "" : "out" };
+            return new Tuple<string, object[]>("logged at {0} with{1} an Exception", args);
         }
 
         [SetUp]
@@ -78,36 +91,83 @@ namespace UnitTest.Interfaces
         }
 
         [Test]
-        public void AllSeveritiesCovered()
+        public void SeveritiesAreSorted()
         {
-            var allSeverities = Enum.GetValues(typeof(LogSeverity)).Cast<LogSeverity>().ToList();
-            CollectionAssert.AreEquivalent(allSeverities, levelLoggers.Keys);
+            var severitiesAscending = new List<LogSeverity>(new[]
+            {
+                LogSeverity.Debug,
+                LogSeverity.Information,
+                LogSeverity.Warning,
+                LogSeverity.Error,
+                LogSeverity.Fatal
+            });
+            var numSeverities = severitiesAscending.Count;
+            // Make sure this list is complete.
+            CollectionAssert.AreEquivalent(allSeverities, severitiesAscending);
+
+            var lower = severitiesAscending.GetRange(0, numSeverities - 1);
+            var higher = severitiesAscending.GetRange(1, numSeverities - 1);
+            var pairs = lower.Zip(higher, (l, h) => new Tuple<LogSeverity, LogSeverity>(l, h));
+            foreach (var pair in pairs)
+            {
+                Assert.Less(pair.Item1, pair.Item2);
+            }
+        }
+
+        [Test]
+        public void DuplicateHandlersAreRejected()
+        {
+            Assert.Throws<InvalidOperationException>(() => Log.AddHandler(handler));
+        }
+
+        [Test]
+        public void NullHandlersAreRejected()
+        {
+            Assert.Throws<ArgumentException>(() => Log.AddHandler(null));
+        }
+
+        [Test]
+        public void LoggingWithNullHandlerIsANoOp()
+        {
+            // Clear the handler registered by SetUp().
+            Log.RemoveHandler();
+            Log.Information("no-op");
         }
 
         [Test]
         public void Levels()
         {
+            // Make sure we're testing all severities.
+            CollectionAssert.AreEquivalent(allSeverities, levelLoggers.Keys);
+            CollectionAssert.AreEquivalent(allSeverities, exceptionLevelLoggers.Keys);
+
             var messagesLogged = 0;
 
-            foreach (var entry in levelLoggers)
+            foreach (var severity in allSeverities)
             {
-                var severity = entry.Key;
-                var logger = entry.Value;
+                var logger = levelLoggers[severity];
+                var exceptionLogger = exceptionLevelLoggers[severity];
                 var exception = new TestException(severity);
 
-                var message = MakeMessage(severity, withException: false);
-                logger(message, null);
+                var formatArgs = MakeMessage(severity, withException: false);
+                var format = formatArgs.Item1;
+                var args = formatArgs.Item2;
+                var formatted = string.Format(format, args);
+                logger(format, args);
                 Assert.AreEqual(severity, handler.LastMessageSeverity);
-                Assert.AreEqual(message, handler.LastMessage);
+                Assert.AreEqual(formatted, handler.LastMessage);
                 Assert.IsNull(handler.LastException);
                 Assert.AreEqual(messagesLogged + 1, handler.MessagesHandled);
                 messagesLogged++;
                 handler.Clear();
 
-                message = MakeMessage(severity, withException: true);
-                logger(message, exception);
+                formatArgs = MakeMessage(severity, withException: true);
+                format = formatArgs.Item1;
+                args = formatArgs.Item2;
+                formatted = string.Format(format, args);
+                exceptionLogger(exception, format, args);
                 Assert.AreEqual(severity, handler.LastMessageSeverity);
-                Assert.AreEqual(message, handler.LastMessage);
+                Assert.AreEqual(formatted, handler.LastMessage);
                 Assert.NotNull(handler.LastException);
                 Assert.AreEqual(severity, ((TestException) handler.LastException).Severity);
                 Assert.AreEqual(messagesLogged + 1, handler.MessagesHandled);
@@ -117,23 +177,35 @@ namespace UnitTest.Interfaces
         }
 
         [Test]
-        public void DuplicateHandlersAreRejected()
+        public void FatalWithFormatted()
         {
-            Assert.Throws<InvalidOperationException>(delegate { Log.AddHandler(handler); });
-        }
+            var messagesLogged = 0;
+            var exception = new TestException(LogSeverity.Fatal);
 
-        [Test]
-        public void NullHandlersAreRejected()
-        {
-            Assert.Throws<ArgumentException>(delegate { Log.AddHandler(null); });
-        }
+            var formatArgs = MakeMessage(LogSeverity.Fatal, withException: false);
+            var format = formatArgs.Item1;
+            var args = formatArgs.Item2;
+            var formatted = string.Format(format, args);
+            var messageReturned = LogUtil.FatalAndReturnFormatted(format, args);
+            Assert.AreEqual(LogSeverity.Fatal, handler.LastMessageSeverity);
+            Assert.AreEqual(formatted, handler.LastMessage);
+            Assert.AreEqual(messageReturned, handler.LastMessage);
+            Assert.IsNull(handler.LastException);
+            Assert.AreEqual(messagesLogged + 1, handler.MessagesHandled);
+            messagesLogged++;
+            handler.Clear();
 
-        [Test]
-        public void LoggingWithNullHandlerIsANoOp()
-        {
-            // Clear the handler registered by SetUp().
-            Log.RemoveHandler();
-            Log.Information("no-op");
+            formatArgs = MakeMessage(LogSeverity.Fatal, withException: true);
+            format = formatArgs.Item1;
+            args = formatArgs.Item2;
+            formatted = string.Format(format, args);
+            messageReturned = LogUtil.FatalAndReturnFormatted(exception, format, args);
+            Assert.AreEqual(LogSeverity.Fatal, handler.LastMessageSeverity);
+            Assert.AreEqual(formatted, handler.LastMessage);
+            Assert.AreEqual(messageReturned, handler.LastMessage);
+            Assert.NotNull(handler.LastException);
+            Assert.AreEqual(LogSeverity.Fatal, ((TestException)handler.LastException).Severity);
+            Assert.AreEqual(messagesLogged + 1, handler.MessagesHandled);
         }
     }
 }

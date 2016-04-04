@@ -81,8 +81,8 @@ namespace Bond.Comm.Tcp
         {
             if (m_framelets.Count == UInt16.MaxValue)
             {
-                var message = "Exceeded maximum allowed count of framelets.";
-                Log.Error($"{nameof(Frame)}.{nameof(Add)}: {message}");
+                var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Exceeded maximum allowed count of framelets.",
+                    nameof(Frame), nameof(Add));
                 throw new InvalidOperationException(message);
             }
 
@@ -123,7 +123,7 @@ namespace Bond.Comm.Tcp
             }
             catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException)
             {
-                Log.Error($"{nameof(Frame)}.{nameof(Write)}: Only wrote {frameletsWritten} of {numFramelets} framelets!", ex);
+                Log.Error(ex, "{0}.{1}: Only wrote {2} of {3} framelets!", nameof(Frame), nameof(Write), frameletsWritten, numFramelets);
             }
         }
 

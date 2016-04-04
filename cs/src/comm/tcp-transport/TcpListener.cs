@@ -47,7 +47,7 @@ namespace Bond.Comm.Tcp
 
         public override void AddService<T>(T service)
         {
-            Log.Information($"{this}.AddService: Adding {typeof(T).Name}.");
+            Log.Information("{0}.{1}: Adding {2}.", this, nameof(AddService), typeof(T).Name);
             m_serviceHost.Register(service);
         }
 
@@ -73,7 +73,7 @@ namespace Bond.Comm.Tcp
 
         private async Task AcceptAsync(CancellationToken t)
         {
-            Log.Information($"{this}.AcceptAsync: Accepting connections...");
+            Log.Information("{0}.{1}: Accepting connections...", this, nameof(AcceptAsync));
             while (!t.IsCancellationRequested)
             {
                 try
@@ -87,18 +87,20 @@ namespace Bond.Comm.Tcp
                     }
 
                     connection.Start();
-                    Log.Debug($"{this}.AcceptAsync: Accepted connection from {client.Client.RemoteEndPoint}.");
+                    Log.Debug("{0}.{1}: Accepted connection from {2}.", 
+                        this, nameof(AcceptAsync), client.Client.RemoteEndPoint);
                 }
                 catch (SocketException ex)
                 {
-                    Log.Fatal("Accept failed with error " + ex.SocketErrorCode, ex);
+                    Log.Fatal(ex, "{0}.{1}: Accept failed with error {2}.",
+                        this, nameof(AcceptAsync), ex.SocketErrorCode);
                 }
                 catch (ObjectDisposedException)
                 {
                     // TODO: this is needed during shutdown, but there should be a cleaner way
                 }
             }
-            Log.Information($"{this}.AcceptAsync: Shutting down.");
+            Log.Information("{0}.{1}: Shutting down.", this, nameof(AcceptAsync));
         }
     }
 }

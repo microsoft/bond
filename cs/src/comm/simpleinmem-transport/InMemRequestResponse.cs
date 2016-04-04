@@ -40,8 +40,8 @@ namespace Bond.Comm.SimpleInMem
                     break;
 
                 default:
-                    var message = $"Payload type {frame.m_headers.payload_type} not supported!";
-                    Log.Fatal("InMemRequestResponse.Enqueue: " + message);
+                    var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Payload type {2} not supported!",
+                        nameof(RequestResponseQueue), nameof(Enqueue), frame.m_headers.payload_type);
                     throw new NotImplementedException(message);
             }
 
@@ -67,8 +67,8 @@ namespace Bond.Comm.SimpleInMem
                     break;
 
                 default:
-                    var message = $"Payload type {payloadType} not supported!";
-                    Log.Fatal("InMemRequestResponse.Dequeue: " + message);
+                    var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Payload type {2} not supported!",
+                        nameof(RequestResponseQueue), nameof(Dequeue), payloadType);
                     throw new NotImplementedException(message);
             }
 
@@ -89,8 +89,8 @@ namespace Bond.Comm.SimpleInMem
                     break;
 
                 default:
-                    var message = $"Payload type {payloadType} not supported!";
-                    Log.Fatal("InMemRequestResponse.Count: " + message);
+                    var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Payload type {2} not supported!",
+                        nameof(RequestResponseQueue), nameof(Count), payloadType);
                     throw new NotImplementedException(message);
             }
 
@@ -111,9 +111,10 @@ namespace Bond.Comm.SimpleInMem
         {
             if (!m_reqresqueue.TryAdd(id, queue))
             {
-                var message = $"Guid collison must never happen for client connection Ids: {id}";
-                Log.Fatal("InMemRequestResponse.AddRequestResponseQueue: " + message);
-                throw new Exception(message);
+                var message = LogUtil.FatalAndReturnFormatted(
+                    "{0}.{1}: Guid collison must never happen for client connection Ids: {2}",
+                    nameof(RequestResponseQueueCollection), nameof(AddRequestResponseQueue), id);
+                throw new InvalidOperationException(message);
             }
         }
 

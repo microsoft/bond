@@ -36,7 +36,8 @@ namespace Bond.Comm.SimpleInMem
                 }
             }
 
-            Log.Information($"SimpleInMemServiceHost.Register: Registered {typeof(T).Name} with methods: {String.Join(", ", methodNames)}");
+            Log.Information("{0}.{1}: Registered {2} with methods: {3}",
+                nameof(SimpleInMemServiceHost), nameof(Register), typeof(T).Name, string.Join(", ", methodNames));
         }
 
         public void Deregister<T>(T service) where T : IService
@@ -48,22 +49,24 @@ namespace Bond.Comm.SimpleInMem
                     m_dispatchTable.Remove(serviceMethod.MethodName);
                 }
             }
-            Log.Information($"SimpleInMemServiceHost.Deregister: Deregistered {typeof(T).Name}.");
+            Log.Information("{0}.{1}: Deregistered {2} with methods: {3}",
+                nameof(SimpleInMemServiceHost), nameof(Deregister), typeof (T).Name);
         }
 
         public async Task<IMessage> DispatchRequest(SimpleInMemHeaders headers, SimpleInMemConnection connection, IMessage message, TaskCompletionSource<IMessage> taskSource)
         {
-            Log.Information($"SimpleInMemServiceHost.DispatchRequest: Got request {headers.request_id}/{headers.method_name} "
-                + $"from {connection}.");
+            Log.Information("{0}.{1}: Got request {2}/{3} from {4}.",
+                nameof(SimpleInMemServiceHost), nameof(DispatchRequest), headers.request_id, headers.method_name,
+                connection);
             ServiceCallback callback;
 
             lock (m_lock)
             {
                 if (!m_dispatchTable.TryGetValue(headers.method_name, out callback))
                 {
-                    var errMsg = $"Got request for unknown method {headers.method_name}.";
-                    Log.Error("SimpleInMemServiceHost.DispatchRequest: " + errMsg);
-                    throw new ProtocolErrorException(errMsg);
+                    var errorMessage = LogUtil.FatalAndReturnFormatted("{0}.{1}: Got request for unknown method {2}.",
+                        nameof(SimpleInMemServiceHost), nameof(DispatchRequest), headers.method_name);
+                    throw new ProtocolErrorException(errorMessage);
                 }
             }
 

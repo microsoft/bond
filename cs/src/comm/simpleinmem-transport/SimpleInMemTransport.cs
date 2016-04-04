@@ -105,12 +105,14 @@ namespace Bond.Comm.SimpleInMem
 
         public async override Task<Connection> ConnectToAsync(string address, CancellationToken ct)
         {
-            Log.Information($"SimpleInMemTransport.ConnectToAsync: Connecting to {address}.");
+            Log.Information("{0}.{1}: Connecting to {2}.",
+                nameof(SimpleInMemTransport), nameof(ConnectToAsync), address);
             SimpleInMemListener listener;
             if (!m_listeners.TryGetValue(address, out listener))
             {
-                var message = $"Listener not found for address: {address}";
-                Log.Fatal("SimpleInMemTransport.ConnectToAsync: " + message);
+                var errorFormat = "{0}.{1}: Listener not found for address: {2}";
+                var message = LogUtil.FatalAndReturnFormatted(errorFormat,
+                    nameof(SimpleInMemTransport), nameof(ConnectToAsync), address);
                 throw new InMemTransportListenerException(message);
             }
 
