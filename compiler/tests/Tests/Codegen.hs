@@ -9,6 +9,7 @@ module Tests.Codegen
     , verifyCppCodegen
     , verifyApplyCodegen
     , verifyCsCodegen
+    , verifyCsCommCodegen
     ) where
 
 import System.FilePath
@@ -60,6 +61,22 @@ verifyApplyCodegen args baseName =
                    "bond::SimpleBinaryWriter<bond::OutputBuffer>"
         ]
 
+
+verifyCsCommCodegen :: [String] -> FilePath -> TestTree
+verifyCsCommCodegen args baseName =
+    testGroup baseName $
+        map (verifyFile (processOptions args) baseName csTypeMapping "")
+            [ comm_interface_cs
+            , comm_proxy_cs
+            , comm_service_cs
+            , types_cs Class (fieldMapping (processOptions args))
+            ]
+  where
+    fieldMapping Cs {..} = if readonly_properties
+        then ReadOnlyProperties
+        else if fields
+             then PublicFields
+             else Properties
 
 verifyFiles :: Options -> FilePath -> [TestTree]
 verifyFiles options baseName =
@@ -115,4 +132,3 @@ verifyFile options baseName typeMapping subfolder template =
                             (text "test output")
                             (text . BS.unpack)
                             (getContextDiff 3 (BS.lines x) (BS.lines y))
-

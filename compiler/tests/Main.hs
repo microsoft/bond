@@ -104,6 +104,16 @@ tests = testGroup "Compiler tests"
                 , "--using=time=System.DateTime"
                 ]
                 "nullable_alias"
+            , testGroup "Comm"
+                [ verifyCsCommCodegen
+                    [ "c#"
+                    ]
+                    "service"
+                , verifyCsCommCodegen
+                    [ "c#"
+                    ]
+                    "generic_service"
+                ]
             ]
         ]
     ]
