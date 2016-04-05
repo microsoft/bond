@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Bond.Comm.CSharp</id>
+        <title>Bond C# communication runtime</title>
+        <version>$version$</version>
+        <authors>Microsoft</authors>
+        <owners>Microsoft</owners>
+        <projectUrl>https://github.com/Microsoft/bond/</projectUrl>
+        <licenseUrl>https://github.com/Microsoft/bond/blob/master/LICENSE</licenseUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <summary>Bond Comm is an open source, cross-platform, cross-language framework for cross-process and cross-server messaging using Bond schematized data.</summary>
+        <description>
+            Bond Comm is an open source, cross-platform, cross-language framework for cross-process and cross-server messaging using Bond schematized data.
+
+            Bond is published on GitHub at https://github.com/Microsoft/bond/
+
+            This package contains the full Bond C# communications library.
+        </description>
+        <copyright>Copyright (c) Microsoft</copyright>
+        <tags>Bond .NET C# RPC messaging network communication</tags>
+        <dependencies>
+            <dependency id="Bond.CSharp" version ="[$version$]"/>
+        </dependencies>
+    </metadata>
+    <files>
+      <file src="net45\Bond.Comm.SimpleInMem.dll" target="lib\net45" />
+      <file src="net45\Bond.Comm.SimpleInMem.pdb" target="lib\net45" />
+      <file src="net45\Bond.Comm.SimpleInMem.xml" target="lib\net45" />
+      <file src="net45\Bond.Comm.Tcp.dll" target="lib\net45" />
+      <file src="net45\Bond.Comm.Tcp.pdb" target="lib\net45" />
+      <file src="net45\Bond.Comm.Tcp.xml" target="lib\net45" />
+    </files>
+</package>
