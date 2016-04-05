@@ -122,7 +122,7 @@ namespace #{csNamespace}
     csNamespace = sepBy "." toText $ getNamespace cs
     idl = MappingContext idlTypeMapping [] [] []  
 
-    comm s@Service{..} = [lt|#{CS.typeAttributes cs s}public abstract class #{declName}Service#{generics} : I#{declName}, global::Bond.Comm.IService
+    comm s@Service{..} = [lt|#{CS.typeAttributes cs s}public abstract class #{declName}Service#{generics} : I#{declName}#{generics}, global::Bond.Comm.IService
     {
         public global::System.Collections.Generic.IEnumerable<global::Bond.Comm.ServiceMethodInfo> Methods
         {
