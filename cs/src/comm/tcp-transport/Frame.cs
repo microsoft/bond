@@ -7,6 +7,7 @@ namespace Bond.Comm.Tcp
     using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
+    using Bond.Comm.Service;
 
     internal enum FrameletType
     {
@@ -136,7 +137,7 @@ namespace Bond.Comm.Tcp
                 var frameletCount = reader.ReadUInt16();
                 if (frameletCount == 0)
                 {
-                    return TaskExt.FromException<Frame>(new ProtocolErrorException("Zero framelets"));
+                    return TaskExt.FromException<Frame>(new TcpProtocolErrorException("Zero framelets"));
                 }
 
                 var frame = new Frame(frameletCount);
@@ -148,7 +149,7 @@ namespace Bond.Comm.Tcp
                     {
                         return
                             TaskExt.FromException<Frame>(
-                                new ProtocolErrorException("Unknown framelet type: " + frameletType));
+                                new TcpProtocolErrorException("Unknown framelet type: " + frameletType));
                     }
 
                     var frameletLength = reader.ReadUInt32();
@@ -156,7 +157,7 @@ namespace Bond.Comm.Tcp
                     {
                         return
                             TaskExt.FromException<Frame>(
-                                new ProtocolErrorException("Framelet too big: " + frameletLength));
+                                new TcpProtocolErrorException("Framelet too big: " + frameletLength));
                     }
 
                     var frameletContents = new byte[frameletLength];
@@ -166,7 +167,7 @@ namespace Bond.Comm.Tcp
                         int dataRead = reader.Read(frameletContents, (int) frameletLength - bytesToRead, bytesToRead);
                         if (dataRead == 0)
                         {
-                            return TaskExt.FromException<Frame>(new ProtocolErrorException("EOS while reading contents"));
+                            return TaskExt.FromException<Frame>(new TcpProtocolErrorException("EOS while reading contents"));
                         }
 
                         bytesToRead -= dataRead;
@@ -181,7 +182,7 @@ namespace Bond.Comm.Tcp
             }
             catch (IOException ioex)
             {
-                return TaskExt.FromException<Frame>(new ProtocolErrorException("IO error", ioex));
+                return TaskExt.FromException<Frame>(new TcpProtocolErrorException("IO error", ioex));
             }
         }
     }

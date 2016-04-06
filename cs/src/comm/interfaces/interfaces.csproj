@@ -22,12 +22,13 @@
     <Compile Include="Message.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="Transport.cs" />
+    <Compile Include="TransportArgs.cs" />
+    <Compile Include="TransportException.cs" />
     <BondCodegen Include="Comm.bond">
       <Options>--namespace=bond.comm=Bond.Comm</Options>
     </BondCodegen>
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\Comm_types.cs" Condition="False" />
-    <Compile Include="TransportArgs.cs" />
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>

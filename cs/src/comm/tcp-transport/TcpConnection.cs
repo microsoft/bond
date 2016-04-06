@@ -10,6 +10,7 @@ namespace Bond.Comm.Tcp
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Bond.Comm.Service;
     using Bond.IO.Safe;
     using Bond.Protocols;
 
@@ -26,7 +27,7 @@ namespace Bond.Comm.Tcp
         TcpClient m_tcpClient;
         NetworkStream m_networkStream;
 
-        TcpServiceHost m_serviceHost;
+        ServiceHost m_serviceHost;
 
         object m_requestsLock;
         Dictionary<uint, TaskCompletionSource<IMessage>> m_outstandingRequests;
@@ -40,7 +41,7 @@ namespace Bond.Comm.Tcp
             : this (
                   parentTransport,
                   tcpClient,
-                  new TcpServiceHost(parentTransport),
+                  new ServiceHost(parentTransport),
                   connectionType)
         {
         }
@@ -48,7 +49,7 @@ namespace Bond.Comm.Tcp
         internal TcpConnection(
             TcpTransport parentTransport,
             TcpClient tcpClient,
-            TcpServiceHost serviceHost,
+            ServiceHost serviceHost,
             ConnectionType connectionType)
         {
             m_parentTransport = parentTransport;
@@ -168,7 +169,7 @@ namespace Bond.Comm.Tcp
             var requestIdLong = Interlocked.Add(ref m_requestId, 2);
             if (requestIdLong > UInt32.MaxValue)
             {
-                throw new ProtocolErrorException("Exhausted request IDs");
+                throw new TcpProtocolErrorException("Exhausted request IDs");
             }
 
             return unchecked((UInt32)requestIdLong);
@@ -229,7 +230,7 @@ namespace Bond.Comm.Tcp
                 if (headers == null)
                 {
                     Log.Warning("{0}.{1}: Received frame with no TcpHeaders.", this, nameof(ProcessFramesAsync));
-                    throw new ProtocolErrorException("Missing headers");
+                    throw new TcpProtocolErrorException("Missing headers");
                 }
                 else if (payload.Array == null)
                 {
@@ -244,7 +245,11 @@ namespace Bond.Comm.Tcp
                             this, nameof(ProcessFramesAsync), headers.request_id);
 
                     }
-                    throw new ProtocolErrorException("Missing payload");
+                    throw new TcpProtocolErrorException("Missing headers");
+                }
+                else if (payload.Array == null)
+                {
+                    throw new TcpProtocolErrorException("Missing payload");
                 }
 
                 switch (headers.payload_type)
@@ -274,11 +279,16 @@ namespace Bond.Comm.Tcp
         {
             if (headers.error_code != (int)ErrorCode.OK)
             {
-                throw new ProtocolErrorException("Received a request with non-zero error code. Request ID " + headers.request_id);
+                throw new TcpProtocolErrorException("Received a request with non-zero error code. Request ID " + headers.request_id);
             }
 
             IMessage request = Message.FromPayload(Unmarshal.From(payload));
-            m_serviceHost.DispatchRequest(headers, this, request);
+
+            Task.Run(async () =>
+            {
+                IMessage result = await m_serviceHost.DispatchRequest(headers.method_name, new TcpReceiveContext(this), request);
+                await SendReplyAsync(headers.request_id, result);
+            });
         }
 
         private void DispatchResponse(TcpHeaders headers, ArraySegment<byte> payload)
@@ -291,6 +301,7 @@ namespace Bond.Comm.Tcp
                 {
                     Log.Error("{0}.{1}: Response for unmatched request {2}.",
                         this, nameof(DispatchResponse), headers.request_id);
+                    throw new TcpProtocolErrorException($"{this}.{nameof(DispatchResponse)}: Response for unmatched request {headers.request_id}.");
                 }
 
                 m_outstandingRequests.Remove(headers.request_id);

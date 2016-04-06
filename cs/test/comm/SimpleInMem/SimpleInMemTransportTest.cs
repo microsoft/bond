@@ -58,7 +58,7 @@ namespace UnitTest.SimpleInMem
         [Test]
         public void ConnectToAsync_NoListenerRunning()
         {
-            Assert.Throws<InMemTransportListenerException>(async () => await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken()));
+            Assert.Throws<ArgumentException>(async () => await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken()));
         }
 
         [Test]

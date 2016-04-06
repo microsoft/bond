@@ -12,21 +12,17 @@
     <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Contexts.cs" />
+    <Compile Include="SimpleInMemContexts.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
-    <Compile Include="ProtocolErrorException.cs" />
     <Compile Include="InMemRequestResponse.cs" />
-    <Compile Include="TaskExt.cs" />
     <Compile Include="SimpleInMemConnection.cs" />
     <Compile Include="SimpleInMemListener.cs" />
-    <Compile Include="SimpleInMemServiceHost.cs" />
+    <Compile Include="SimpleInMemProtocolErrorException.cs" />
     <Compile Include="SimpleInMemTransport.cs" />
     <Compile Include="SimpleInMemTransportArgs.cs" />
     <BondCodegen Include="SimpleInMemTransport.bond">
       <Options>--namespace=bond.comm.simpleinmem=Bond.Comm.SimpleInMem</Options>
     </BondCodegen>
-    <!-- Resharper Workaround -->
-    <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\attributes\Attributes.csproj">
@@ -40,6 +36,10 @@
     <ProjectReference Include="..\interfaces\interfaces.csproj">
       <Project>{45efb397-298a-4a32-a178-a2bdf8abbbd9}</Project>
       <Name>interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\service\service.csproj">
+      <Project>{79d2423a-87c8-44a2-89c2-2fa94521747e}</Project>
+      <Name>service</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\Common.Internal.targets" />

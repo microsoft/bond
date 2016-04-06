@@ -10,6 +10,7 @@ namespace UnitTest.Tcp
     using System.Text;
     using System.Threading.Tasks;
     using Bond.Comm.Tcp;
+    using Bond.Comm;
     using NUnit.Framework;
 
     [TestFixture]
@@ -168,14 +169,14 @@ namespace UnitTest.Tcp
         public void Frame_ReadAsync_ZeroFramelets_Throws()
         {
             var zeroFrameletsStream = new FrameBuilder().Count(0).TakeStream();
-            Assert.Throws<ProtocolErrorException>(async () => await Frame.ReadAsync(zeroFrameletsStream));
+            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(zeroFrameletsStream));
         }
 
         [Test]
         public void Frame_ReadAsync_UnknownFramelet_Throws()
         {
             var unknownFrameletStream = new FrameBuilder().Count(1).Type((FrameletType) UnknownFramelet).TakeStream();
-            Assert.Throws<ProtocolErrorException>(async () => await Frame.ReadAsync(unknownFrameletStream));
+            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(unknownFrameletStream));
         }
 
         [Test]
@@ -186,35 +187,35 @@ namespace UnitTest.Tcp
                     .Type(FrameletType.PayloadData)
                     .Size((UInt32) Int32.MaxValue + 1)
                     .TakeStream();
-            Assert.Throws<ProtocolErrorException>(async () => await Frame.ReadAsync(frameletTooLargeStream));
+            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(frameletTooLargeStream));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInCount_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).TakeTooShortStream();
-            Assert.Throws<ProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInType_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).TakeTooShortStream();
-            Assert.Throws<ProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInSize_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).TakeTooShortStream();
-            Assert.Throws<ProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInContent_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).Content(AnyContents).TakeTooShortStream();
-            Assert.Throws<ProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
         }
 
         [Test]

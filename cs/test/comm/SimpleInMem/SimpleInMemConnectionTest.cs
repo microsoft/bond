@@ -36,13 +36,15 @@ namespace UnitTest.SimpleInMem
             
             // Client connection
             Connection connection = await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken());
-            Assert.True(connection is SimpleInMemConnection);
+            Assert.That(connection, Is.InstanceOf<SimpleInMemConnection>());
             SimpleInMemConnection simpleConnection = (SimpleInMemConnection)connection;
 
             Assert.True(simpleConnection.ConnectionType == ConnectionType.Client);
-            PairedInput input = new PairedInput();
-            input.First = first;
-            input.Second = second;
+            PairedInput input = new PairedInput
+            {
+                First = first,
+                Second = second
+            };
             Message<PairedInput> request = new Message<PairedInput>(input);
             IMessage<Output> addResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Add", request, System.Threading.CancellationToken.None);
             IMessage<Output> subResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Subtract", request, System.Threading.CancellationToken.None);
@@ -66,19 +68,52 @@ namespace UnitTest.SimpleInMem
 
             // Client connection
             Connection connection = await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken());
-            Assert.True(connection is SimpleInMemConnection);
+            Assert.That(connection, Is.InstanceOf<SimpleInMemConnection>());
             SimpleInMemConnection simpleConnection = (SimpleInMemConnection)connection;
 
             Assert.True(simpleConnection.ConnectionType == ConnectionType.Client);
-            PairedInput input = new PairedInput();
-            input.First = first;
-            input.Second = second;
+            PairedInput input = new PairedInput
+            {
+                First = first,
+                Second = second
+            };
             Message<PairedInput> request = new Message<PairedInput>(input);
             IMessage<Output> multiplyResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Multiply", request, new System.Threading.CancellationToken());
             Assert.IsTrue(multiplyResponse.IsError);
             InternalServerError error = multiplyResponse.Error.Deserialize<InternalServerError>();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.That(error.message, Is.StringContaining(CalculatorService.ExpectedExceptionMessage));
+
+            await connection.StopAsync();
+        }
+
+        [Test]
+        public async Task SimpleInMemMethodCall_WithMethodNotFound()
+        {
+            const int first = 91;
+            const int second = 23;
+            const string methodName = "Divide";
+            SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
+            listener.AddService<CalculatorService>(m_service);
+            await listener.StartAsync();
+
+            // Client connection
+            Connection connection = await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken());
+            Assert.That(connection, Is.InstanceOf<SimpleInMemConnection>());
+            SimpleInMemConnection simpleConnection = (SimpleInMemConnection)connection;
+
+            Assert.True(simpleConnection.ConnectionType == ConnectionType.Client);
+            PairedInput input = new PairedInput
+            {
+                First = first,
+                Second = second
+            };
+            Message<PairedInput> request = new Message<PairedInput>(input);
+            IMessage<Output> divideResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>(methodName, request, new System.Threading.CancellationToken());
+            Assert.IsTrue(divideResponse.IsError);
+            Error error = divideResponse.Error.Deserialize<Error>();
+            Assert.AreEqual((int)ErrorCode.MethodNotFound, error.error_code);
+            Assert.That(error.message, Is.StringContaining($"ServiceHost.DispatchRequest: Got request for unknown method {methodName}."));
 
             await connection.StopAsync();
         }

@@ -6,6 +6,7 @@ namespace Bond.Comm.SimpleInMem
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Bond.Comm.Service;
 
     public enum ConnectionType
     {
@@ -18,18 +19,18 @@ namespace Bond.Comm.SimpleInMem
         private readonly int m_connection_delay = 20;
         private Guid m_connectionId;
         private ConnectionType m_connectionType;
-        private SimpleInMemServiceHost m_serviceHost;
+        private ServiceHost m_serviceHost;
         private RequestResponseQueue m_clientreqresqueue;
         private RequestResponseQueueCollection m_serverqueues;
         private object m_requestsLock = new object();
         private long m_requestId;
         private CancellationTokenSource m_cancelTokenSource = new CancellationTokenSource();
 
-        public SimpleInMemConnection(SimpleInMemTransport parentTransport, ConnectionType connectionType) : this (new SimpleInMemServiceHost(parentTransport), connectionType)
+        public SimpleInMemConnection(SimpleInMemTransport parentTransport, ConnectionType connectionType) : this (new ServiceHost(parentTransport), connectionType)
         {
         }
 
-        internal SimpleInMemConnection(SimpleInMemServiceHost serviceHost, ConnectionType connectionType)
+        internal SimpleInMemConnection(ServiceHost serviceHost, ConnectionType connectionType)
         {
             m_connectionId = Guid.NewGuid();
             m_connectionType = connectionType;
@@ -123,7 +124,7 @@ namespace Bond.Comm.SimpleInMem
             {
                 var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Exhausted request IDs!",
                     this, nameof(AllocateNextRequestId));
-                throw new ProtocolErrorException(message);
+                throw new SimpleInMemProtocolErrorException("Exhausted request IDs!");
             }
 
             return unchecked((UInt32)requestIdLong);
@@ -251,11 +252,11 @@ namespace Bond.Comm.SimpleInMem
         {
             if (frame.m_headers == null)
             {
-                throw new ProtocolErrorException("Missing headers");
+                throw new SimpleInMemProtocolErrorException("Missing headers");
             }
             else if (frame.m_message == null)
             {
-                throw new ProtocolErrorException("Missing payload");
+                throw new SimpleInMemProtocolErrorException("Missing payload");
             }
             else if (PayloadType.Event == frame.m_headers.payload_type)
             {
@@ -267,7 +268,7 @@ namespace Bond.Comm.SimpleInMem
 
         private async void DispatchRequest(SimpleInMemHeaders headers, IMessage message, RequestResponseQueue queue, TaskCompletionSource<IMessage> taskSource)
         {
-            IMessage response = await m_serviceHost.DispatchRequest(headers, this, message, taskSource);
+            IMessage response = await m_serviceHost.DispatchRequest(headers.method_name, new SimpleInMemReceiveContext(this), message);
             SendReplyAsync(headers.request_id, response, queue, taskSource);
         }
 

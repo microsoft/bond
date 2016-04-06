@@ -113,7 +113,7 @@ namespace Bond.Comm.SimpleInMem
                 var errorFormat = "{0}.{1}: Listener not found for address: {2}";
                 var message = LogUtil.FatalAndReturnFormatted(errorFormat,
                     nameof(SimpleInMemTransport), nameof(ConnectToAsync), address);
-                throw new InMemTransportListenerException(message);
+                throw new ArgumentException(message);
             }
 
             return await Task.Run<Connection>(() =>

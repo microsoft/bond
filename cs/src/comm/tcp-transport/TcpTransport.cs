@@ -8,6 +8,7 @@ namespace Bond.Comm.Tcp
     using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
+    using Bond.Comm.Service;
 
     public class TcpTransportBuilder : TransportBuilder<TcpTransport>
     {

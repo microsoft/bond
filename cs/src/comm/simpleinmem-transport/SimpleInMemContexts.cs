@@ -3,7 +3,7 @@
 
 namespace Bond.Comm.SimpleInMem
 {
-    public class SimpleInMemReceiveContext : ReceiveContext
+    internal class SimpleInMemReceiveContext : ReceiveContext
     {
         SimpleInMemConnection m_connection;
 

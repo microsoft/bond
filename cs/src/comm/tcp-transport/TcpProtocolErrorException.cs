@@ -5,13 +5,13 @@ namespace Bond.Comm.Tcp
 {
     using System;
 
-    public class ProtocolErrorException : Exception
+    public class TcpProtocolErrorException : TransportException
     {
-        public ProtocolErrorException(string message) : base(message)
+        public TcpProtocolErrorException(string message) : base(message)
         {
         }
 
-        public ProtocolErrorException(string message, Exception innerException) : base(message, innerException)
+        public TcpProtocolErrorException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }

@@ -9,12 +9,13 @@ namespace Bond.Comm.Tcp
     using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
+    using Bond.Comm.Service;
 
     public class TcpListener : Listener
     {
         private TcpTransport m_parentTransport;
         private System.Net.Sockets.TcpListener m_listener;
-        private TcpServiceHost m_serviceHost;
+        private ServiceHost m_serviceHost;
 
         private object m_connectionsLock = new object();
         private HashSet<TcpConnection> m_connections;
@@ -27,7 +28,7 @@ namespace Bond.Comm.Tcp
         {
             m_parentTransport = parentTransport;
             m_listener = new System.Net.Sockets.TcpListener(listenEndpoint);
-            m_serviceHost = new TcpServiceHost(parentTransport);
+            m_serviceHost = new ServiceHost(parentTransport);
             m_connections = new HashSet<TcpConnection>();
             m_shutdownTokenSource = new CancellationTokenSource();
         }
@@ -43,6 +44,11 @@ namespace Bond.Comm.Tcp
         public override string ToString()
         {
             return $"TcpListener({ListenEndpoint})";
+        }
+
+        public override bool IsRegistered(string serviceMethodName)
+        {
+            return m_serviceHost.IsRegistered(serviceMethodName);
         }
 
         public override void AddService<T>(T service)

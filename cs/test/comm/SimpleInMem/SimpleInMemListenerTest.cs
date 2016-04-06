@@ -13,6 +13,7 @@ namespace UnitTest.SimpleInMem
     {
         private readonly string m_address = "SimpleInMemTakesAnyRandomConnectionString";
         private SimpleInMemTransport m_transport;
+        private CalculatorService m_service;
 
         [SetUp]
         public void Init()
@@ -21,6 +22,7 @@ namespace UnitTest.SimpleInMem
                 new SimpleInMemTransportBuilder()
                 .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
                 .Construct();
+             m_service = new CalculatorService();
         }
 
         [TearDown]
@@ -46,6 +48,30 @@ namespace UnitTest.SimpleInMem
             Assert.IsNotNull(listener);
             await listener.StartAsync();
             await listener.StopAsync();
+        }
+
+        [Test]
+        public void AddRemoveService()
+        {
+            var transport = new SimpleInMemTransportBuilder()
+                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
+                .Construct();
+            SimpleInMemListener listener = (SimpleInMemListener)transport.MakeListener(m_address);
+            listener.AddService<CalculatorService>(m_service);
+
+            foreach (var serviceMethod in m_service.Methods)
+            {
+                Assert.True(listener.IsRegistered($"{serviceMethod.MethodName}"));
+            }
+
+            Assert.False(listener.IsRegistered("Divide"));
+            listener.RemoveService<CalculatorService>(m_service);
+
+            foreach (var serviceMethod in m_service.Methods)
+            {
+                Assert.False(listener.IsRegistered($"{serviceMethod.MethodName}"));
+            }
+            Assert.False(listener.IsRegistered("Divide"));
         }
     }
 }

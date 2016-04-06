@@ -43,7 +43,7 @@ namespace Bond.Comm
 
         public abstract void AddService<T>(T service) where T : IService;
         public abstract void RemoveService<T>(T service) where T : IService;
-
+        public abstract bool IsRegistered(string serviceMethodName);
         public abstract Task StartAsync();
         public abstract Task StopAsync();
     }

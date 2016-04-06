@@ -3,12 +3,12 @@
 
 namespace Bond.Comm.SimpleInMem
 {
-    using System;
+    using Bond.Comm.Service;
     using System.Threading.Tasks;
 
     public class SimpleInMemListener : Listener
     {
-        private SimpleInMemServiceHost m_serviceHost;
+        private ServiceHost m_serviceHost;
         private string m_address;
         private SimpleInMemConnection m_connection;
         private readonly string m_logname;
@@ -16,9 +16,14 @@ namespace Bond.Comm.SimpleInMem
         public SimpleInMemListener(SimpleInMemTransport parentTransport, string address)
         {
             m_address = address;
-            m_serviceHost = new SimpleInMemServiceHost(parentTransport);
+            m_serviceHost = new ServiceHost(parentTransport);
             m_connection = new SimpleInMemConnection(m_serviceHost, ConnectionType.Server);
             m_logname = $"{nameof(SimpleInMemListener)}({m_address})";
+        }
+
+        public override bool IsRegistered(string serviceMethodName)
+        {
+            return m_serviceHost.IsRegistered(serviceMethodName);
         }
 
         public override void AddService<T>(T service)
@@ -29,7 +34,7 @@ namespace Bond.Comm.SimpleInMem
 
         public override void RemoveService<T>(T service)
         {
-            throw new NotImplementedException();
+            m_serviceHost.Deregister((IService)service);
         }
 
         public override Task StartAsync()
@@ -40,8 +45,7 @@ namespace Bond.Comm.SimpleInMem
 
         public override Task StopAsync()
         {
-            m_connection.StopAsync();
-            return TaskExt.CompletedTask;
+            return m_connection.StopAsync();
         }
 
         internal SimpleInMemConnection Connection
