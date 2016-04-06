@@ -68,7 +68,7 @@ namespace #{csNamespace}
     csNamespace = sepBy "." toText $ getNamespace cs
     idl = MappingContext idlTypeMapping [] [] []  
 
-    comm s@Service{..} = [lt|#{CS.typeAttributes cs s}public class Proxy_#{declName}<#{generics}TConnection> : I#{declName}#{connConstraint}
+    comm s@Service{..} = [lt|#{CS.typeAttributes cs s}public class Proxy_#{declName}<#{proxyGenerics}TConnection> : I#{declName}#{interfaceGenerics}#{connConstraint}
     {
         private readonly TConnection m_connection;
 
@@ -87,7 +87,8 @@ namespace #{csNamespace}
         getCapabilities m = nub $ map methodCapability m 
         connConstraint = " where TConnection : " ++ sepBy ", " (\p -> p) (getCapabilities serviceMethods)
 
-        generics = sepEndBy ", " paramName declParams
+        interfaceGenerics = angles $ sepBy "," paramName declParams -- of the form "<T1, T2, T3>"
+        proxyGenerics = sepEndBy ", " paramName declParams -- of the form "T1, T2, T3, "
 
         proxyMethod Function{..} = [lt|public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>> #{methodName}Async(#{getMessageInputTypeName} param)
         {

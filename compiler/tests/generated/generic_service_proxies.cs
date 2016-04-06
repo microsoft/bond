@@ -16,7 +16,7 @@
 namespace tests
 {
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.4.0.2")]
-    public class Proxy_Foo<Payload, TConnection> : IFoo where TConnection : global::Bond.Comm.IRequestResponseConnection
+    public class Proxy_Foo<Payload, TConnection> : IFoo<Payload> where TConnection : global::Bond.Comm.IRequestResponseConnection
     {
         private readonly TConnection m_connection;
 
