@@ -11,6 +11,7 @@ namespace UnitTest.Tcp
     using Bond.Comm;
     using Bond.Comm.Tcp;
     using NUnit.Framework;
+    using UnitTest.Comm;
 
     [TestFixture]
     public class TcpTransportTests
@@ -85,7 +86,7 @@ namespace UnitTest.Tcp
         [Test]
         public async Task SetupListener_RequestReply_PayloadResponse()
         {
-            TestClientServer testClientServer = await SetupTestClientServer();
+            TestClientServer<TestService> testClientServer = await SetupTestClientServer<TestService>();
 
             var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService.RespondWithEmpty", EmptyMessage, CancellationToken.None);
 
@@ -101,7 +102,7 @@ namespace UnitTest.Tcp
         [Test]
         public async Task SetupListener_RequestError_ErrorResponse()
         {
-            TestClientServer testClientServer = await SetupTestClientServer();
+            TestClientServer<TestService> testClientServer = await SetupTestClientServer<TestService>();
 
             var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService.RespondWithError", EmptyMessage, CancellationToken.None);
 
@@ -117,7 +118,7 @@ namespace UnitTest.Tcp
         [Test]
         public async Task SetupListenerWithErrorHandler_RequestThatThrows_ErrorResponse()
         {
-            TestClientServer testClientServer = await SetupTestClientServer();
+            TestClientServer<TestService> testClientServer = await SetupTestClientServer<TestService>();
 
             var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService.ThrowInsteadOfResponding", EmptyMessage, CancellationToken.None);
 
@@ -131,18 +132,45 @@ namespace UnitTest.Tcp
             await testClientServer.Transport.StopAsync();
         }
 
-
-        private class TestClientServer
+        [Test]
+        public async Task GeneratedService_GeneratedProxy_PayloadResponse()
         {
-            public TestService Service;
+            TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>();
+            var proxy = new ReqRespProxy<TcpConnection>(testClientServer.ClientConnection);
+            var request = new Dummy { int_value = 100 };
+            IMessage<Dummy> response = await proxy.MethodAsync(request);
+
+            Assert.IsFalse(response.IsError);
+            Assert.AreEqual(101, response.Payload.Deserialize().int_value);
+
+            await testClientServer.Transport.StopAsync();
+        }
+
+        [Test]
+        public async Task GeneratedGenericService_GeneratedGenericProxy_PayloadResponse()
+        {
+            TestClientServer<GenericReqRespService> testClientServer = await SetupTestClientServer<GenericReqRespService>();
+            var proxy = new GenericReqRespProxy<Dummy, TcpConnection>(testClientServer.ClientConnection);
+            var request = new Dummy { int_value = 100 };
+            IMessage<Dummy> response = await proxy.MethodAsync(request);
+
+            Assert.IsFalse(response.IsError);
+            Assert.AreEqual(101, response.Payload.Deserialize().int_value);
+
+            await testClientServer.Transport.StopAsync();
+        }
+
+        private class TestClientServer<TService>
+        {
+            public TService Service;
             public TcpTransport Transport;
             public TcpListener Listener;
             public TcpConnection ClientConnection;
         }
 
-        private static async Task<TestClientServer> SetupTestClientServer()
+        private static async Task<TestClientServer<TService>> SetupTestClientServer<TService>() where TService : class, IService, new()
         {
-            var testService = new TestService();
+            var testService = new TService();
 
             TcpTransport transport = new TcpTransportBuilder()
                 // some tests rely on the use of DebugExceptionHandler to assert things about the error message
@@ -154,7 +182,7 @@ namespace UnitTest.Tcp
 
             TcpConnection clientConnection = await transport.ConnectToAsync(listener.ListenEndpoint);
 
-            return new TestClientServer
+            return new TestClientServer<TService>
             {
                 Service = testService,
                 Transport = transport,
@@ -222,6 +250,28 @@ namespace UnitTest.Tcp
             private Task<IMessage> ThrowInsteadOfResponding(IMessage request, ReceiveContext context, CancellationToken ct)
             {
                 throw new InvalidOperationException(ExpectedExceptionMessage);
+            }
+        }
+
+        private class ReqRespService : ReqRespServiceBase
+        {
+            public override Task<IMessage<Dummy>> MethodAsync(IMessage<Dummy> param, CancellationToken ct)
+            {
+                var request = param.Payload.Deserialize();
+                var result = new Dummy { int_value = request.int_value + 1 };
+
+                return Task.FromResult<IMessage<Dummy>>(Message.FromPayload(result));
+            }
+        }
+
+        private class GenericReqRespService : GenericReqRespServiceBase<Dummy>
+        {
+            public override Task<IMessage<Dummy>> MethodAsync(IMessage<Dummy> param, CancellationToken ct)
+            {
+                var request = param.Payload.Deserialize();
+                var result = new Dummy { int_value = request.int_value + 1 };
+
+                return Task.FromResult<IMessage<Dummy>>(Message.FromPayload(result));
             }
         }
     }
