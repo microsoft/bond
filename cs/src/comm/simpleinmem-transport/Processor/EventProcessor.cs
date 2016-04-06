@@ -62,7 +62,9 @@ namespace Bond.Comm.SimpleInMem.Processor
         {
             Task.Run(async () =>
             {
-                await m_serviceHost.DispatchEvent(headers.method_name, new SimpleInMemReceiveContext(m_connection), message);
+                await m_serviceHost.DispatchEvent(
+                    headers.method_name, new SimpleInMemReceiveContext(m_connection),  message,
+                    m_connection.ConnectionMetrics);
             });
         }
     }

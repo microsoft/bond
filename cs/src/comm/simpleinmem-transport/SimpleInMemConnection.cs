@@ -40,8 +40,9 @@ namespace Bond.Comm.SimpleInMem
         private CnxState m_state;
         private object m_stateLock = new object();
         private HashSet<SimpleInMemConnection> m_clientConnections;
+        public ConnectionMetrics ConnectionMetrics { get; } = new ConnectionMetrics();
 
-        public SimpleInMemConnection(SimpleInMemTransport parentTransport, SimpleInMemListener parentListener, ConnectionType connectionType) : 
+        public SimpleInMemConnection(SimpleInMemTransport parentTransport, SimpleInMemListener parentListener, ConnectionType connectionType) :
             this (new ServiceHost(parentTransport), parentListener, connectionType)
         {
         }
@@ -50,7 +51,7 @@ namespace Bond.Comm.SimpleInMem
         {
             if (serviceHost == null) throw new ArgumentNullException(nameof(serviceHost));
             if (parentListener == null) throw new ArgumentNullException(nameof(parentListener));
-            
+
             m_connectionId = Guid.NewGuid();
             m_connectionType = connectionType;
             m_serviceHost = serviceHost;
@@ -75,6 +76,8 @@ namespace Bond.Comm.SimpleInMem
             prevConversationId = (connectionType == ConnectionType.Client) ? -1 : 0;
 
             m_state = CnxState.Created;
+
+            ConnectionMetrics.connection_id = m_connectionId.ToString();
         }
 
         public CnxState State
@@ -266,7 +269,7 @@ namespace Bond.Comm.SimpleInMem
 
         private void EnsureCorrectState(CnxState allowedStates, [CallerMemberName] string methodName = "<unknown>")
         {
-            
+
             if ((m_state & allowedStates) == 0)
             {
                 var message = $"Connection (${this}) is not in the correct state for the requested operation (${methodName}). Current state: ${m_state} Allowed states: ${allowedStates}";

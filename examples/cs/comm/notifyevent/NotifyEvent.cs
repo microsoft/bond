@@ -33,7 +33,7 @@ namespace Bond.Examples.NotifyEvent
         private async static Task<EpoxyTransport> SetupAsync()
         {
             var handler = new ConsoleLogger();
-            Log.AddHandler(handler);
+            Log.SetHandler(handler);
 
             var transport = new EpoxyTransportBuilder().Construct();
 

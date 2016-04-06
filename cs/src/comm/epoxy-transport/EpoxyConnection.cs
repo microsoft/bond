@@ -58,6 +58,9 @@ namespace Bond.Comm.Epoxy
         ProtocolErrorCode m_protocolError;
         Error m_errorDetails;
 
+        readonly private ConnectionMetrics connectionMetrics = new ConnectionMetrics();
+        private Stopwatch duration;
+
         private EpoxyConnection(
             ConnectionType connectionType,
             EpoxyTransport parentTransport,
@@ -92,6 +95,10 @@ namespace Bond.Comm.Epoxy
 
             // start at -1 or 0 so the first conversation ID is 1 or 2.
             prevConversationId = (connectionType == ConnectionType.Client) ? -1 : 0;
+
+            connectionMetrics.connection_id = Guid.NewGuid().ToString();
+            connectionMetrics.local_endpoint = LocalEndPoint.ToString();
+            connectionMetrics.remote_endpoint = RemoteEndPoint.ToString();
         }
 
         internal static EpoxyConnection MakeClientConnection(
@@ -311,6 +318,7 @@ namespace Bond.Comm.Epoxy
         internal Task StartAsync()
         {
             EnsureCorrectState(State.Created);
+            duration = Stopwatch.StartNew();
             Task.Run((Func<Task>)ConnectionLoop);
             return m_startTask.Task;
         }
@@ -365,10 +373,7 @@ namespace Bond.Comm.Epoxy
                             break;
 
                         case State.Disconnected:
-                            // signal after state change to prevent races with
-                            // EnsureCorrectState
-                            m_startTask.TrySetResult(true);
-                            m_stopTask.SetResult(true);
+                            DoDisconnected();
                             return;
 
                         default:
@@ -534,6 +539,18 @@ namespace Bond.Comm.Epoxy
             return State.Disconnected;
         }
 
+        private void DoDisconnected()
+        {
+            // signal after state change to prevent races with
+            // EnsureCorrectState
+            m_startTask.TrySetResult(true);
+            m_stopTask.SetResult(true);
+
+            duration.Stop();
+            connectionMetrics.duration_millis = (float) duration.Elapsed.TotalMilliseconds;
+            Metrics.Emit(connectionMetrics);
+        }
+
         private State? DispatchRequest(EpoxyHeaders headers, ArraySegment<byte> payload, ArraySegment<byte> layerData)
         {
             if (headers.error_code != (int)ErrorCode.OK)
@@ -556,7 +573,8 @@ namespace Bond.Comm.Epoxy
 
                 if (layerError == null)
                 {
-                    result = await m_serviceHost.DispatchRequest(headers.method_name, receiveContext, request);
+                    result = await m_serviceHost.DispatchRequest(headers.method_name, receiveContext, request,
+                            connectionMetrics);
                 }
                 else
                 {
@@ -627,7 +645,8 @@ namespace Bond.Comm.Epoxy
             {
                 Task.Run(async () =>
                 {
-                    await m_serviceHost.DispatchEvent(headers.method_name, new EpoxyReceiveContext(this), request);
+                    await m_serviceHost.DispatchEvent(headers.method_name, new EpoxyReceiveContext(this), request,
+                            connectionMetrics);
                 });
             }
         }
@@ -637,6 +656,7 @@ namespace Bond.Comm.Epoxy
             EnsureCorrectState(State.Connected | State.SendProtocolError | State.Disconnecting | State.Disconnected);
             m_shutdownTokenSource.Cancel();
             netSocket.Shutdown();
+
             return m_stopTask.Task;
         }
 

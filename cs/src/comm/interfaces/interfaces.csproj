@@ -21,6 +21,7 @@
     <Compile Include="Listener.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="Metrics.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="Transport.cs" />
     <Compile Include="TransportException.cs" />

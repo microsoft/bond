@@ -81,7 +81,7 @@ namespace UnitTest.Interfaces
         public void SetUp()
         {
             handler = new TestLogHandler();
-            Log.AddHandler(handler);
+            Log.SetHandler(handler);
         }
 
         [TearDown]
@@ -117,13 +117,13 @@ namespace UnitTest.Interfaces
         [Test]
         public void DuplicateHandlersAreRejected()
         {
-            Assert.Throws<InvalidOperationException>(() => Log.AddHandler(handler));
+            Assert.Throws<InvalidOperationException>(() => Log.SetHandler(handler));
         }
 
         [Test]
         public void NullHandlersAreRejected()
         {
-            Assert.Throws<ArgumentNullException>(() => Log.AddHandler(null));
+            Assert.Throws<ArgumentNullException>(() => Log.SetHandler(null));
         }
 
         [Test]

@@ -11,6 +11,7 @@ namespace Bond.Examples.PingPong
     using Bond.Comm;
     using Bond.Comm.Epoxy;
     using Bond.Examples.Logging;
+    using Bond.Examples.Metrics;
 
     public static class PingPong
     {
@@ -28,16 +29,19 @@ namespace Bond.Examples.PingPong
 
             Task.WaitAll(tasks);
 
+            Shutdown(transport);
+
             Console.WriteLine("Done with all requests.");
             Console.ReadLine();
-
-            transport.StopAsync().Wait();
         }
 
         private async static Task<EpoxyTransport> SetupAsync()
         {
-            var handler = new ConsoleLogger();
-            Log.AddHandler(handler);
+            var logHandler = new ConsoleLogger();
+            Log.SetHandler(logHandler);
+
+            var metricsHandler = new ConsoleMetricsHandler();
+            Metrics.SetHandler(metricsHandler);
 
             var transport = new EpoxyTransportBuilder().Construct();
 
@@ -60,6 +64,11 @@ namespace Bond.Examples.PingPong
             s_reverseConnection = await transport.ConnectToAsync(reversePingPongListener.ListenEndpoint, CancellationToken.None);
 
             return transport;
+        }
+
+        private static void Shutdown(Transport transport)
+        {
+            Task.WaitAll(transport.StopAsync(), s_pingConnection.StopAsync(), s_reverseConnection.StopAsync());
         }
 
         private static Task[] MakeRequestsAndPrintAsync(int numRequests)

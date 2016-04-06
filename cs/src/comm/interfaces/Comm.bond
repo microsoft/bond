@@ -19,6 +19,17 @@ enum ErrorCode
     UnhandledLayerError = 0xA0BD0005;
 }
 
+enum ConnectionShutdownReason
+{
+    Unknown = 0x0;
+    ClientGraceful = 0x1;
+    ServerGraceful = 0x2;
+    ClientProtocolError = 0x3;
+    BondInternalError = 0x4;
+    ServiceInternalError = 0x5;
+    NetworkError = 0x6;
+}
+
 struct Error
 {
     0: required int32 error_code;
@@ -30,4 +41,25 @@ struct InternalServerError : Error
 {
     0: string unique_id;
     1: string server_stack_trace;
+}
+
+struct ConnectionMetrics
+{
+    0: string connection_id;
+    1: string local_endpoint;
+    2: string remote_endpoint;
+    3: ConnectionShutdownReason shutdown_reason;
+    4: double duration_millis;
+}
+
+struct RequestMetrics
+{
+    0: string request_id;
+    1: string connection_id;
+    2: string method_name;
+    3: string local_endpoint;
+    4: string remote_endpoint;
+    5: nullable<InternalServerError> error;
+    6: double total_time_millis;
+    7: double service_method_time_millis;
 }

@@ -60,7 +60,9 @@ namespace Bond.Comm.SimpleInMem.Processor
 
         private async void DispatchRequest(SimpleInMemHeaders headers, IMessage message, InMemFrameQueue queue, TaskCompletionSource<IMessage> taskSource)
         {
-            IMessage response = await m_serviceHost.DispatchRequest(headers.method_name, new SimpleInMemReceiveContext(m_connection), message);
+            IMessage response = await m_serviceHost.DispatchRequest(
+                    headers.method_name, new SimpleInMemReceiveContext(m_connection), message,
+                    m_connection.ConnectionMetrics);
             SendReply(headers.conversation_id, response, queue, taskSource);
         }
 

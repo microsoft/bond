@@ -19,7 +19,7 @@ namespace Bond.Comm
     }
 
     /// <summary>
-    /// Once passed to <see cref="Log.AddHandler"/>, will receive callbacks for
+    /// Once passed to <see cref="Log.SetHandler"/>, will receive callbacks for
     /// messages logged by Bond.
     /// </summary>
     public interface LogHandler
@@ -42,7 +42,7 @@ namespace Bond.Comm
 
     /// <summary>
     /// By default, Bond is silent. Implement a <see cref="LogHandler"/> and
-    /// pass it to <see cref="AddHandler"/> to receive log messages.
+    /// pass it to <see cref="SetHandler"/> to receive log messages.
     /// </summary>
     public static class Log
     {
@@ -55,7 +55,7 @@ namespace Bond.Comm
         /// <exception cref="InvalidOperationException">
         /// Thrown when there is another handler registered.
         /// </exception>
-        public static void AddHandler(LogHandler newHandler)
+        public static void SetHandler(LogHandler newHandler)
         {
             if (newHandler == null)
             {

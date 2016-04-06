@@ -210,6 +210,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "notifyevent", "..\examples\
 		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1} = {21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "metrics", "..\examples\cs\comm\metrics\metrics.csproj", "{72ECA320-121F-4F3A-B455-B9EDE3364D9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -805,6 +807,24 @@ Global
 		{12279366-F646-4FEC-8CAA-B62A8EC477BB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{12279366-F646-4FEC-8CAA-B62A8EC477BB}.Release|Win32.ActiveCfg = Release|Any CPU
 		{12279366-F646-4FEC-8CAA-B62A8EC477BB}.Release|Win32.Build.0 = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Debug|Win32.Build.0 = Debug|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Fields|Any CPU.ActiveCfg = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Fields|Any CPU.Build.0 = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Fields|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Fields|Mixed Platforms.Build.0 = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Fields|Win32.ActiveCfg = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Fields|Win32.Build.0 = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Release|Win32.ActiveCfg = Release|Any CPU
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Release|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -843,5 +863,6 @@ Global
 		{5C8132A8-C4B1-45E0-BCA6-379DA23B86D3} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
 		{79D2423A-87C8-44A2-89C2-2FA94521747E} = {ED161076-6BB8-4A13-83ED-0E9C01461D5E}
 		{12279366-F646-4FEC-8CAA-B62A8EC477BB} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
+		{72ECA320-121F-4F3A-B455-B9EDE3364D9D} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
 	EndGlobalSection
 EndGlobal

@@ -6,6 +6,7 @@ namespace Bond.Comm.Service
     using System;
     using System.Collections.Generic;
     using System.Reflection;
+    using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm;
@@ -109,10 +110,15 @@ namespace Bond.Comm.Service
                 nameof(ServiceHost), nameof(Deregister), typeof (T).Name);
         }
 
-        public async Task<IMessage> DispatchRequest(string methodName, ReceiveContext context, IMessage message)
+        public async Task<IMessage> DispatchRequest(
+            string methodName, ReceiveContext context, IMessage message, ConnectionMetrics connectionMetrics)
         {
+            var totalTime = Stopwatch.StartNew();
+            Stopwatch serviceTime = null;
+            var requestMetrics = StartRequestMetrics(methodName, connectionMetrics);
             Log.Information("{0}.{1}: Got request [{2}] from {3}.",
                 nameof(ServiceHost), nameof(DispatchRequest), methodName, context.Connection);
+
             ServiceMethodInfo methodInfo;
 
             lock (m_lock)
@@ -150,8 +156,10 @@ namespace Bond.Comm.Service
 
             try
             {
+                serviceTime = Stopwatch.StartNew();
                 // Cast to appropriate return type which we validated when registering the service 
                 result = await (Task<IMessage>)methodInfo.Callback(message, context, CancellationToken.None);
+                serviceTime.Stop();
             }
             catch (Exception ex)
             {
@@ -160,11 +168,18 @@ namespace Bond.Comm.Service
                 result = Message.FromError(Transport.MakeInternalServerError(ex));
             }
 
+            FinishRequestMetrics(requestMetrics, totalTime, serviceTime);
+            Metrics.Emit(requestMetrics);
+
             return result;
         }
 
-        public async Task DispatchEvent(string methodName, ReceiveContext context, IMessage message)
+        public async Task DispatchEvent(
+            string methodName, ReceiveContext context, IMessage message, ConnectionMetrics connectionMetrics)
         {
+            var totalTime = Stopwatch.StartNew();
+            Stopwatch serviceTime = null;
+            var requestMetrics = StartRequestMetrics(methodName, connectionMetrics);
             Log.Information("{0}.{1}: Got event [{2}] from {3}.",
                 nameof(ServiceHost), nameof(DispatchEvent), methodName, context.Connection);
             ServiceMethodInfo methodInfo;
@@ -189,6 +204,7 @@ namespace Bond.Comm.Service
 
             try
             {
+                serviceTime = Stopwatch.StartNew();
                 await methodInfo.Callback(message, context, CancellationToken.None);
             }
             catch (Exception ex)
@@ -196,6 +212,29 @@ namespace Bond.Comm.Service
                 Log.Error(ex, "{0}.{1}: Failed to complete method [{2}]. With exception: {3}",
                     nameof(ServiceHost), nameof(DispatchEvent), methodName, ex.Message);
             }
+
+            FinishRequestMetrics(requestMetrics, totalTime, serviceTime);
+            Metrics.Emit(requestMetrics);
+        }
+
+        private static RequestMetrics StartRequestMetrics(string methodName, ConnectionMetrics connectionMetrics)
+        {
+            var requestMetrics = new RequestMetrics
+            {
+                request_id = Guid.NewGuid().ToString(),
+                connection_id = connectionMetrics.connection_id,
+                local_endpoint = connectionMetrics.local_endpoint,
+                remote_endpoint = connectionMetrics.remote_endpoint,
+                method_name = methodName,
+                error = null
+            };
+            return requestMetrics;
+        }
+
+        private static void FinishRequestMetrics(RequestMetrics requestMetrics, Stopwatch totalTime, Stopwatch serviceTime)
+        {
+            requestMetrics.total_time_millis = (float)totalTime.Elapsed.TotalMilliseconds;
+            requestMetrics.service_method_time_millis = (float)(serviceTime?.Elapsed.TotalMilliseconds ?? 0);
         }
     }
 }
