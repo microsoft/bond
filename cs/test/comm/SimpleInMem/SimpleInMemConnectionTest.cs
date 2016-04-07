@@ -13,13 +13,13 @@ namespace UnitTest.SimpleInMem
     {
         private const string m_address = "SimpleInMemTakesAnyRandomConnectionString";
         private SimpleInMemTransport m_transport;
-        private CalculatorService m_service;
+        private CalculatorServiceImpl m_service;
 
         [SetUp]
         public void Init()
         {
             m_transport = new SimpleInMemTransportBuilder().SetUnhandledExceptionHandler(Transport.DebugExceptionHandler).Construct();
-            m_service = new CalculatorService();
+            m_service = new CalculatorServiceImpl();
         }
 
         [Test]
@@ -31,7 +31,7 @@ namespace UnitTest.SimpleInMem
             int subResult = first - second;
 
             SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
-            listener.AddService<CalculatorService>(m_service);
+            listener.AddService(m_service);
             await listener.StartAsync();
             
             // Client connection
@@ -40,15 +40,17 @@ namespace UnitTest.SimpleInMem
             SimpleInMemConnection simpleConnection = (SimpleInMemConnection)connection;
 
             Assert.True(simpleConnection.ConnectionType == ConnectionType.Client);
+
+            var calculatorProxy = new Proxy_Calculator<SimpleInMemConnection>(simpleConnection);
+
             PairedInput input = new PairedInput
             {
                 First = first,
                 Second = second
             };
             Message<PairedInput> request = new Message<PairedInput>(input);
-            IMessage<Output> addResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Add", request, System.Threading.CancellationToken.None);
-            IMessage<Output> subResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Subtract", request, System.Threading.CancellationToken.None);
-
+            IMessage<Output> addResponse = await calculatorProxy.AddAsync(request, System.Threading.CancellationToken.None);
+            IMessage<Output> subResponse = await calculatorProxy.SubtractAsync(request, System.Threading.CancellationToken.None);
             Output addOutput = addResponse.Payload.Deserialize();
             Output subOutput = subResponse.Payload.Deserialize();
             Assert.True(addOutput.Result == addResult);
@@ -63,7 +65,7 @@ namespace UnitTest.SimpleInMem
             const int second = 23;
 
             SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
-            listener.AddService<CalculatorService>(m_service);
+            listener.AddService(m_service);
             await listener.StartAsync();
 
             // Client connection
@@ -72,17 +74,19 @@ namespace UnitTest.SimpleInMem
             SimpleInMemConnection simpleConnection = (SimpleInMemConnection)connection;
 
             Assert.True(simpleConnection.ConnectionType == ConnectionType.Client);
+            var calculatorProxy = new Proxy_Calculator<SimpleInMemConnection>(simpleConnection);
+
             PairedInput input = new PairedInput
             {
                 First = first,
                 Second = second
             };
             Message<PairedInput> request = new Message<PairedInput>(input);
-            IMessage<Output> multiplyResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>("Multiply", request, new System.Threading.CancellationToken());
+            IMessage<Output> multiplyResponse = await calculatorProxy.MultiplyAsync(request, System.Threading.CancellationToken.None);
             Assert.IsTrue(multiplyResponse.IsError);
             InternalServerError error = multiplyResponse.Error.Deserialize<InternalServerError>();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
-            Assert.That(error.message, Is.StringContaining(CalculatorService.ExpectedExceptionMessage));
+            Assert.That(error.message, Is.StringContaining(CalculatorServiceImpl.ExpectedExceptionMessage));
 
             await connection.StopAsync();
         }
@@ -94,7 +98,7 @@ namespace UnitTest.SimpleInMem
             const int second = 23;
             const string methodName = "Divide";
             SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
-            listener.AddService<CalculatorService>(m_service);
+            listener.AddService(m_service);
             await listener.StartAsync();
 
             // Client connection

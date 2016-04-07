@@ -36,6 +36,12 @@ namespace Bond.Comm.Service
             var methodNames = new SortedSet<string>();
             lock (m_lock)
             {
+                // Service methods are registerd as a unit - either register all or none.
+                // This code could have been greedy to do both check and register in a single loop,
+                // plus a nested loop to clean up / rollback in case of a method already registered.
+                // Now services registration is expected to be infrequent and very light weight event, 
+                // so we decided in favor of looping twice over the same collection to avoid nested loop 
+                // for clean up.
                 foreach (var serviceMethod in service.Methods)
                 {
                     if (m_dispatchTable.ContainsKey(serviceMethod.MethodName))

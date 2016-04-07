@@ -24,17 +24,24 @@
   <ItemGroup>
     <Compile Include="Interfaces\LogTests.cs" />
     <Compile Include="Interfaces\TransportTests.cs" />
-    <Compile Include="SimpleInMem\CalculatorService.cs" />
+    <Compile Include="SimpleInMem\CalculatorServiceImpl.cs" />
     <Compile Include="SimpleInMem\SimpleInMemConnectionTest.cs" />
     <Compile Include="SimpleInMem\SimpleInMemListenerTest.cs" />
     <Compile Include="SimpleInMem\SimpleInMemTransportTest.cs" />
     <BondCodegen Include="SimpleInMem\SimpleStruct.bond">
       <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
     </BondCodegen>
+    <BondCodegen Include="SimpleInMem\Calculator.bond">
+      <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
+    </BondCodegen>
     <Compile Include="Tcp\FrameTests.cs" />
     <Compile Include="Tcp\MessageTests.cs" />
     <Compile Include="Tcp\TcpListenerTests.cs" />
     <Compile Include="Tcp\TcpTransportTests.cs" />
+    <!-- TODO: edit the .targets to automatically include the comm files -->
+    <Compile Include="$(IntermediateOutputPath)\calculator_interfaces.cs" />
+    <Compile Include="$(IntermediateOutputPath)\calculator_proxies.cs" />
+    <Compile Include="$(IntermediateOutputPath)\calculator_services.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="NUnit.VisualStudio.TestAdapter" Condition="'$(OS)' != 'Unix'">

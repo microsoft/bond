@@ -41,8 +41,5 @@
       <Name>Bond</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Comm.bond" />
-  </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\Common.Internal.targets" />
 </Project>
