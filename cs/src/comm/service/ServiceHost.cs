@@ -70,7 +70,7 @@ namespace Bond.Comm.Service
 
         public async Task<IMessage> DispatchRequest(string methodName, ReceiveContext context, IMessage message)
         {
-            Log.Information("{0}.{1}: Got request {2} from {4}.",
+            Log.Information("{0}.{1}: Got request {2} from {3}.",
                 nameof(ServiceHost), nameof(DispatchRequest), methodName, context.Connection);
             ServiceCallback callback;
             IMessage result = null;
