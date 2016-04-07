@@ -22,6 +22,17 @@
         }
 
         [Test]
+        public void Schema_Bond_Meta()
+        {
+            var example_name_meta_basictypes = new Names_Bond_Meta<BasicTypes>();
+            Assert.AreEqual("InternalTest.Names_Bond_Meta<InternalTest.BasicTypes>", example_name_meta_basictypes.schemaFullName);
+            Assert.AreEqual("Names_Bond_Meta<InternalTest.BasicTypes>", example_name_meta_basictypes.schemaName);
+            var example_name_meta_string = new Names_Bond_Meta<string>();
+            Assert.AreEqual("InternalTest.Names_Bond_Meta<string>", example_name_meta_string.schemaFullName);
+            Assert.AreEqual("Names_Bond_Meta<string>", example_name_meta_string.schemaName);
+        }
+
+        [Test]
         public void Schema_Fields()
         {
             Assert.AreEqual("_bool", Schema<BasicTypes>.Fields[0].name);
@@ -80,5 +91,17 @@
             Assert.AreEqual("default wstring value", Schema<StructWithDefaults>.Fields[29].default_value.wstring_value);
             Assert.AreEqual(String.Empty, Schema<StructWithDefaults>.Fields[30].default_value.string_value);
         }
+
+        [Test]
+        public void Schemaless_Error()
+        {
+            Assert.That(() => Bond.Reflection.GetSchemaFullName(typeof(SomeGeneric<int>)),
+                Throws.TypeOf<ArgumentException>()
+                    .With.Message.Contains("Not a valid Bond type. Are you missing the [Schema] attribute?"));
+        }
+    }
+
+    class SomeGeneric<T>
+    {
     }
 }

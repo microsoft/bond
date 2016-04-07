@@ -21,11 +21,14 @@ namespace tests
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.4.0.1")]
     public partial class Foo<T>
     {
+        private static readonly string _schemaName = global::Bond.Reflection.GetSchemaName(typeof(Foo<T>));
+        private static readonly string _schemaFullName = global::Bond.Reflection.GetSchemaFullName(typeof(Foo<T>));
+
         [global::Bond.Id(0), global::Bond.Type(typeof(List<List<global::Bond.Tag.classT>>))]
         public List<List<T>> aa { get; set; }
 
         public Foo()
-            : this("tests.Foo", "Foo")
+            : this(_schemaFullName, _schemaName)
         {}
 
         protected Foo(string fullName, string name)
