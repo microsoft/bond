@@ -3,7 +3,39 @@
 
 namespace Bond
 {
+    using System;
     using System.Collections.Generic;
+
+    public partial class GUID
+    {
+        public static implicit operator Guid(GUID bondGuid)
+        {
+            return new Guid(
+                (int)bondGuid.Data1,
+                (short)bondGuid.Data2,
+                (short)bondGuid.Data3,
+                (byte)(bondGuid.Data4 >> 0),
+                (byte)(bondGuid.Data4 >> 8),
+                (byte)(bondGuid.Data4 >> 16),
+                (byte)(bondGuid.Data4 >> 24),
+                (byte)(bondGuid.Data4 >> 32),
+                (byte)(bondGuid.Data4 >> 40),
+                (byte)(bondGuid.Data4 >> 48),
+                (byte)(bondGuid.Data4 >> 56));
+        }
+
+        public static implicit operator GUID(Guid systemGuid)
+        {
+            var bytes = systemGuid.ToByteArray();
+            return new GUID
+            {
+                Data1 = BitConverter.ToUInt32(bytes, 0),
+                Data2 = BitConverter.ToUInt16(bytes, 4),
+                Data3 = BitConverter.ToUInt16(bytes, 6),
+                Data4 = BitConverter.ToUInt64(bytes, 8),
+            };
+        }
+    }
 
     public partial class Metadata
     {
@@ -39,9 +71,9 @@ namespace Bond
 
     internal static class TypeDefExtensions
     {
-        // We intentionally don't implement GetHashCode override for Bond generated classes like 
-        // TypeDef because they are mutable and we can't guarantee value semantics in general case. 
-        // CalculateHashCode is used internally by parsers to implement their own GetHashCode 
+        // We intentionally don't implement GetHashCode override for Bond generated classes like
+        // TypeDef because they are mutable and we can't guarantee value semantics in general case.
+        // CalculateHashCode is used internally by parsers to implement their own GetHashCode
         // override which some transforms expect.
         internal static int CalculateHashCode(this TypeDef typeDef)
         {

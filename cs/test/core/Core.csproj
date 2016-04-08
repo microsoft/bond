@@ -37,6 +37,7 @@
     <Compile Include="CloningTests.cs" />
     <Compile Include="EnumString.cs" />
     <Compile Include="Equal.cs" />
+    <Compile Include="GuidConversionTests.cs" />
     <Compile Include="InterfaceTests.cs" />
     <Compile Include="JsonParsingTests.cs" />
     <Compile Include="MetaInitializationTests.cs" />
