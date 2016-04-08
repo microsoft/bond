@@ -41,6 +41,7 @@
     </BondCodegen>
     <Compile Include="Tcp\FrameTests.cs" />
     <Compile Include="Tcp\TcpListenerTests.cs" />
+    <Compile Include="Tcp\TcpProtocolTests.cs" />
     <Compile Include="Tcp\TcpTransportTests.cs" />
     <!-- TODO: edit the .targets to automatically include the comm files -->
     <Compile Include="$(IntermediateOutputPath)calculator_interfaces.cs" />

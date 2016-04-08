@@ -178,99 +178,24 @@ namespace Bond.Comm.Tcp
         private async Task ProcessFramesAsync(NetworkStream stream)
         {
             // TODO: shutdown
-            for (;;)
+            while (true)
             {
                 var frame = await Frame.ReadAsync(stream);
-
-                var payload = default(ArraySegment<byte>);
-                var headers = default(TcpHeaders);
-
-                Log.Debug("{0}.{1}: Processing {2} framelets.", this, nameof(ProcessFramesAsync), frame.Count);
-                foreach(var framelet in frame.Framelets)
+                var result = TcpProtocol.Classify(frame);
+                switch (result.Disposition)
                 {
-                    switch (framelet.Type)
-                    {
-                        case FrameletType.TcpHeaders:
-                            var inputBuffer = new InputBuffer(framelet.Contents);
-                            var fastBinaryReader = new FastBinaryReader<InputBuffer>(inputBuffer, version: 1);
-                            headers = Deserialize<TcpHeaders>.From(fastBinaryReader);
-                            Log.Debug("{0}.{1}: Extracted TcpHeaders with request ID {2} and payload type {3}.",
-                                this, nameof(ProcessFramesAsync), headers.request_id, headers.payload_type);
-                            break;
-
-                        case FrameletType.PayloadData:
-                            payload = framelet.Contents;
-                            if (headers.request_id == 0)
-                            {
-                                Log.Warning("{0}.{1}: Extracted payload before any TcpHeaders.",
-                                    this, nameof(ProcessFramesAsync));
-                            }
-                            else
-                            {
-                                Log.Debug("{0}.{1}: Extracted payload in request ID {2}.",
-                                    this, nameof(ProcessFramesAsync), headers.request_id);
-                            }
-                            break;
-
-                        default:
-                            if (headers.request_id == 0)
-                            {
-                                Log.Warning("{0}.{1}: Ignoring frame of type {2} before any TcpHeaders.",
-                                    this, nameof(ProcessFramesAsync), framelet.Type);
-                            }
-                            else
-                            {
-                                Log.Warning("{0}.{1}: Ignoring frame of type {2} in request ID {3}.",
-                                    this, nameof(ProcessFramesAsync), framelet.Type, headers.request_id);
-                            }
-                            break;
-                    }
-                }
-
-                if (headers == null)
-                {
-                    Log.Warning("{0}.{1}: Received frame with no TcpHeaders.", this, nameof(ProcessFramesAsync));
-                    throw new TcpProtocolErrorException("Missing headers");
-                }
-                else if (payload.Array == null)
-                {
-                    if (headers.request_id == 0)
-                    {
-                        Log.Warning("{0}.{1}: Received frame with no payload and no TcpHeaders.",
-                            this, nameof(ProcessFramesAsync));
-                    }
-                    else
-                    {
-                        Log.Warning("{0}.{1}: Received frame with no payload in request ID {2}.",
-                            this, nameof(ProcessFramesAsync), headers.request_id);
-
-                    }
-                    throw new TcpProtocolErrorException("Missing headers");
-                }
-                else if (payload.Array == null)
-                {
-                    throw new TcpProtocolErrorException("Missing payload");
-                }
-
-                switch (headers.payload_type)
-                {
-                    case PayloadType.Request:
-                        DispatchRequest(headers, payload);
+                    case FrameDisposition.DeliverRequestToService:
+                        DispatchRequest(result.Headers, result.Payload);
                         break;
 
-                    case PayloadType.Response:
-                        DispatchResponse(headers, payload);
+                    case FrameDisposition.DeliverResponseToProxy:
+                        DispatchResponse(result.Headers, result.Payload);
                         break;
-
-                    case PayloadType.Event:
-                        Log.Warning("{0}.{1}: Received unimplemented payload type {2}.",
-                            this, nameof(ProcessFramesAsync), headers.payload_type);
-                        throw new NotImplementedException(headers.payload_type.ToString());
 
                     default:
-                        Log.Warning("{0}.{1}: Received unrecognized payload type {2}.",
-                            this, nameof(ProcessFramesAsync), headers.payload_type);
-                        throw new NotImplementedException(headers.payload_type.ToString());
+                        var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Unsupported FrameDisposition",
+                            this, nameof(ProcessFramesAsync), result.Disposition);
+                        throw new NotImplementedException(message);
                 }
             }
         }

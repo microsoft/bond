@@ -17,6 +17,7 @@
     <Compile Include="TcpConnection.cs" />
     <Compile Include="TcpContexts.cs" />
     <Compile Include="TcpListener.cs" />
+    <Compile Include="TcpProtocol.cs" />
     <Compile Include="TcpProtocolErrorException.cs" />
     <Compile Include="TcpTransport.cs" />
     <Compile Include="TcpTransportArgs.cs" />
