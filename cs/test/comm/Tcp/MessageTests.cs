@@ -30,6 +30,17 @@ namespace UnitTest.Tcp
         };
 
         [Test]
+        public void Construct_Null_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() => new Message((IBonded) null));
+            Assert.Throws<ArgumentNullException>(() => new Message((IBonded<Error>)null));
+
+            Assert.Throws<ArgumentNullException>(() => new Message<SomePayloadType>((SomePayloadType)null));
+            Assert.Throws<ArgumentNullException>(() => new Message<SomePayloadType>((IBonded<SomePayloadType>)null));
+            Assert.Throws<ArgumentNullException>(() => new Message<SomePayloadType>((IBonded<Error>)null));
+        }
+
+        [Test]
         public void Construct_WithPayload_IsPayload()
         {
             var msg = new Message(AnyTypelessIBonded);
@@ -63,6 +74,23 @@ namespace UnitTest.Tcp
 
             var deserializedPayload = msg.RawPayload.Deserialize<SomePayloadType>();
             Assert.IsTrue(AnyPayload.IsEqual<SomePayloadType>(deserializedPayload));
+        }
+
+        [Test]
+        public void FromPayload_BondedNull_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() => Message.FromPayload((SomePayloadType) null));
+            Assert.Throws<ArgumentNullException>(() => Message.FromPayload((IBonded) null));
+            Assert.Throws<ArgumentNullException>(() => Message.FromPayload((IBonded<SomePayloadType>)null));
+        }
+
+        [Test]
+        public void FromError_Null_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() => Message.FromError((Error) null));
+            Assert.Throws<ArgumentNullException>(() => Message.FromError((IBonded<Error>)null));
+            Assert.Throws<ArgumentNullException>(() => Message.FromError<SomePayloadType>((Error)null));
+            Assert.Throws<ArgumentNullException>(() => Message.FromError<SomePayloadType>((IBonded<Error>)null));
         }
 
         [Test]
@@ -211,7 +239,14 @@ namespace UnitTest.Tcp
         [Schema]
         private class SomePayloadType
         {
+            public const int DefaultIntValue = 50;
+
             [Bond.Id(0)] public int int_field;
+
+            public SomePayloadType()
+            {
+                int_field = DefaultIntValue;
+            }
         }
 
         [Schema]

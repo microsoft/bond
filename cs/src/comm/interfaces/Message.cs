@@ -30,6 +30,11 @@ namespace Bond.Comm
 
         public Message(IBonded payload)
         {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             m_payload = payload;
             m_error = null;
         }
@@ -42,27 +47,52 @@ namespace Bond.Comm
         // resolve to the generic ctor to create a non-error Message.
         internal Message(IBonded<Error> error)
         {
+            if (error == null)
+            {
+                throw new ArgumentNullException(nameof(error));
+            }
+
             m_payload = null;
             m_error = error;
         }
 
         public static Message FromPayload(IBonded payload)
         {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             return new Message(payload);
         }
 
         public static Message<TPayload> FromPayload<TPayload>(TPayload payload)
         {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             return FromPayload(MakeIBonded(payload));
         }
 
         public static Message<TPayload> FromPayload<TPayload>(IBonded<TPayload> payload)
         {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             return new Message<TPayload>(payload);
         }
 
         public static Message<TPayload> FromError<TPayload>(Error err)
         {
+            if (err == null)
+            {
+                throw new ArgumentNullException(nameof(err));
+            }
+
             if (err.error_code == (int)ErrorCode.OK)
             {
                 throw new ArgumentException("Error must have a non-zero error code.", nameof(err));
@@ -73,11 +103,21 @@ namespace Bond.Comm
 
         public static Message<TPayload> FromError<TPayload>(IBonded<Error> err)
         {
+            if (err == null)
+            {
+                throw new ArgumentNullException(nameof(err));
+            }
+
             return new Message<TPayload>(err);
         }
 
         public static Message FromError(Error err)
         {
+            if (err == null)
+            {
+                throw new ArgumentNullException(nameof(err));
+            }
+
             if (err.error_code == (int)ErrorCode.OK)
             {
                 throw new ArgumentException("Error must have a non-zero error code.", nameof(err));
@@ -88,16 +128,26 @@ namespace Bond.Comm
 
         public static Message FromError(IBonded<Error> err)
         {
+            if (err == null)
+            {
+                throw new ArgumentNullException(nameof(err));
+            }
+
             // can't check that err has a non-zero error code without deserializaing, so we skip that
             return new Message(err);
         }
 
-        internal static IBonded<TBonded> MakeIBonded<TBonded>(TBonded payload)
+        internal static IBonded<TActual> MakeIBonded<TActual>(TActual payload)
         {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             var payloadBondedType = typeof (Bonded<>).MakeGenericType(payload.GetType());
             var ctor = payloadBondedType.GetTypeInfo().DeclaredConstructors.First();
             var bonded = ctor.Invoke(new object[] { payload });
-            return (IBonded<TBonded>)bonded;
+            return (IBonded<TActual>)bonded;
         }
 
         public IBonded RawPayload
