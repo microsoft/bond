@@ -27,5 +27,8 @@
       <file src="net45\Bond.Comm.Interfaces.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
       <file src="net45\Bond.Comm.Interfaces.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
       <file src="net45\Bond.Comm.Interfaces.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+      <file src="net45\Bond.Comm.Service.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+      <file src="net45\Bond.Comm.Service.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+      <file src="net45\Bond.Comm.Service.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
     </files>
 </package>
