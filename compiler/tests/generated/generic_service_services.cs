@@ -34,19 +34,25 @@ namespace tests
 
         public abstract global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<Payload>> foo33Async(global::Bond.Comm.IMessage<Payload> param, global::System.Threading.CancellationToken ct);
 
-        private async global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage> foo31Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
+        private global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage> foo31Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
         {
-            return await foo31Async(param.Convert<Payload>(), ct);
+            return global::Bond.Comm.CodegenHelpers.Upcast<global::Bond.Comm.IMessage<global::Bond.Void>,
+                                                           global::Bond.Comm.IMessage>(
+                foo31Async(param.Convert<Payload>(), ct));
         }
 
-        private async global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage> foo32Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
+        private global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage> foo32Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
         {
-            return await foo32Async(param.Convert<global::Bond.Void>(), ct);
+            return global::Bond.Comm.CodegenHelpers.Upcast<global::Bond.Comm.IMessage<Payload>,
+                                                           global::Bond.Comm.IMessage>(
+                foo32Async(param.Convert<global::Bond.Void>(), ct));
         }
 
-        private async global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage> foo33Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
+        private global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage> foo33Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
         {
-            return await foo33Async(param.Convert<Payload>(), ct);
+            return global::Bond.Comm.CodegenHelpers.Upcast<global::Bond.Comm.IMessage<Payload>,
+                                                           global::Bond.Comm.IMessage>(
+                foo33Async(param.Convert<Payload>(), ct));
         }
     }
     

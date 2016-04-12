@@ -100,14 +100,14 @@ namespace Bond.Comm.SimpleInMem
             }
         }
 
-        internal async Task<IMessage> SendRequestAsync(string methodName, IMessage request)
+        internal Task<IMessage> SendRequestAsync(string methodName, IMessage request)
         {
             uint requestId = AllocateNextRequestId();
             var payload = NewPayLoad(requestId, PayloadType.Request, request, new TaskCompletionSource<IMessage>());
             payload.m_headers.method_name = methodName;
             m_clientreqresqueue.Enqueue(payload);
 
-            return await payload.m_outstandingRequest.Task;
+            return payload.m_outstandingRequest.Task;
         }
 
 

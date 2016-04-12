@@ -22,6 +22,7 @@
     <OutputPath>$(OutputPath)\Properties\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\CodegenHelpersTests.cs" />
     <Compile Include="Interfaces\LogTests.cs" />
     <Compile Include="Interfaces\MessageTests.cs" />
     <Compile Include="Interfaces\TransportTests.cs" />

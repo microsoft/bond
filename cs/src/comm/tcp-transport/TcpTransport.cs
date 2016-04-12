@@ -104,9 +104,9 @@ namespace Bond.Comm.Tcp
             }
         }
 
-        public async override Task<Connection> ConnectToAsync(string address, CancellationToken ct)
+        public override Task<Connection> ConnectToAsync(string address, CancellationToken ct)
         {
-            return await ConnectToAsync(ParseStringAddress(address), ct);
+            return ConnectToAsync(ParseStringAddress(address), ct).Upcast<TcpConnection, Connection>();
         }
 
         public Task<TcpConnection> ConnectToAsync(IPEndPoint endpoint)

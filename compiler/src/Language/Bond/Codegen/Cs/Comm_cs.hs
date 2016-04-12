@@ -150,11 +150,14 @@ namespace #{csNamespace}
             getMessageInputTypeName = getMessageTypeName cs methodInput
         methodAbstract _ = mempty
 
-        methodGlue Function{..} = [lt|private async global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage> #{methodName}Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
+        methodGlue Function{..} = [lt|private global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage> #{methodName}Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
         {
-            return await #{methodName}Async(param.Convert<#{getMessageInputTypeName}>(), ct);
+            return global::Bond.Comm.CodegenHelpers.Upcast<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>,
+                                                           global::Bond.Comm.IMessage>(
+                #{methodName}Async(param.Convert<#{getMessageInputTypeName}>(), ct));
         }|]
           where
+            getMessageResultTypeName = getMessageTypeName cs methodResult
             getMessageInputTypeName = getMessageTypeName cs methodInput
         methodGlue _ = mempty
     comm _ = mempty
