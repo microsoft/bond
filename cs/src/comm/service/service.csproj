@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\Common.Internal.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\Portable.Internal.props" />
   <PropertyGroup>
     <ProjectGuid>{79D2423A-87C8-44A2-89C2-2FA94521747E}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -17,10 +17,6 @@
     <Compile Include="TaskExt.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\attributes\Attributes.csproj">
-      <Project>{92915bd9-8ab1-4e4d-a2ac-95bbf4f82d89}</Project>
-      <Name>Attributes</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\core\Bond.csproj">
       <Project>{43cbba9b-c4bc-4e64-8733-7b72562d2e91}</Project>
       <Name>Bond</Name>
