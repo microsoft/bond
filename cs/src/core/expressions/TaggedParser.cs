@@ -19,9 +19,17 @@ namespace Bond.Expressions
         readonly TaggedParser<R> fieldParser;
         readonly bool isBase;
 
+        public TaggedParser(RuntimeSchema schema)
+            : this(schema, null)
+        { }
+
         public TaggedParser(RuntimeSchema schema, PayloadBondedFactory bondedFactory)
             : this(bondedFactory)
         {}
+
+        public TaggedParser(Type type)
+            : this(type, null)
+        { }
 
         public TaggedParser(Type type, PayloadBondedFactory bondedFactory)
             : this(bondedFactory)

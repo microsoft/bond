@@ -555,7 +555,20 @@ standard implementation of the `IBonded<T>` interface, `Bonded<T>` which can
 hold and instance of type `T`, and `Bonded<T, R>` which can hold a serialized 
 payload represented by a protocol reader `R`. The former is usually used by 
 producers to initialize `bonded<T>` values, the latter is implicitly used 
-during deserialization.
+during deserialization. 
+
+Standard implementations of `Bonded<T>` and `Bonded<T,R>` always use default
+`Serializer/Deserializer/Cloner/Transcoder`. In order to customize this behavior,
+user can pass custom `InstanceBondedFactory` or `PayloadBondedFactory` delegates
+as parameters to `ObjectParser` or `ParserFactory<R>.Create()`:
+
+    // create serializer for schema type T and protocol reader W
+    // using custom InstanceBondedFactory
+    new Serializer<W>(typeof(T), new ObjectParser(typeof(T), InstanceBondedFactory), ...); 
+
+    // create deserializer for schema type T and protocol reader R
+    // using custom PayloadBondedFactory 
+    new Deserializer<R>(typeof(T), ParserFactory<R>.Create(typeof(T), PayloadBondedFactory), ...);
 
 Lazy deserialization
 --------------------
@@ -671,6 +684,13 @@ following:
 See also the following example:
 
 - `examples/cs/core/polymorphic_container`
+
+Customizing `bonded<T>`
+-------------------------------------------------------
+
+By default, 
+
+
 
 Custom type mappings
 ====================

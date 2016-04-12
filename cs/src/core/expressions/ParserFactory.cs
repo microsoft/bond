@@ -9,11 +9,11 @@ namespace Bond.Expressions
     using Bond.Protocols;
 
     /// <summary>
-    /// Creates expression of type <see cref="IBonded{T}"/> given a reader and runtime schema.
+    /// Creates expression of type <see cref="IBonded"/> given a reader and runtime schema.
     /// </summary>
     /// <param name="reader">Expression representing reader.</param>
     /// <param name="schema">Expression representing RuntimeSchema.</param>
-    /// <returns>Expression representing creation of bonded with the specified reader and runtime schema.</returns>
+    /// <returns>Expression representing creation of <see cref="IBonded"/> with the specified reader and runtime schema.</returns>
     public delegate Expression PayloadBondedFactory(Expression reader, Expression schema);
 
     public static class ParserFactory<R>
@@ -79,21 +79,19 @@ namespace Bond.Expressions
                     }
                 }
 
-                var schema = Expression.Parameter(typeof(S));
-                var bondedFactory = Expression.Parameter(typeof(PayloadBondedFactory));
-
                 var ctor = parserType.GetConstructor(typeof(S), typeof(PayloadBondedFactory)) ??
                            parserType.GetConstructor(typeof(S));
 
                 if (ctor == null)
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Constructor {0}({1}) not defined.",
-                            parserType, typeof(S)));
+                        string.Format(CultureInfo.InvariantCulture,
+                                      "Can't find constructor for type '{0}' with either ({1}) or ({1}, {2}) signature.",
+                                      parserType, typeof(S), typeof(PayloadBondedFactory)));
                 }
 
+                var schema = Expression.Parameter(typeof(S));
+                var bondedFactory = Expression.Parameter(typeof(PayloadBondedFactory));
                 var newExpression = ctor.GetParameters().Length == 2
                                         ? Expression.New(ctor, schema, bondedFactory)
                                         : Expression.New(ctor, schema);

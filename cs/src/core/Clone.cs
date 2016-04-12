@@ -60,8 +60,8 @@ namespace Bond
         /// <param name="parser">Custom <see cref="IParser"/> instance</param>
         public Cloner(Type type, IParser parser)
         {
-            clone = Generate(type, new DeserializerTransform<object>(
-                                       (o, i) => clone[i](o)),
+            clone = Generate(type,
+                             new DeserializerTransform<object>((o, i) => clone[i](o)),
                              parser);
         }
 

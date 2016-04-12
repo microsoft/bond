@@ -67,8 +67,24 @@ namespace Bond
         /// Create a transcoder for payloads with specified runtime schema
         /// </summary>
         /// <param name="schema">Payload schema, required for transcoding from untagged protocols</param>
+        public Transcoder(RuntimeSchema schema)
+            : this(schema, null)
+        {}
+
+        /// <summary>
+        /// Create a transcoder for payloads with specified compile-time schema
+        /// </summary>
+        /// <param name="type">Type representing a Bond schema</param>
+        public Transcoder(Type type)
+            : this(type, null)
+        {}
+
+        /// <summary>
+        /// Create a transcoder for payloads with specified runtime schema
+        /// </summary>
+        /// <param name="schema">Payload schema, required for transcoding from untagged protocols</param>
         /// <param name="parser">Custom IParser instance</param>
-        public Transcoder(RuntimeSchema schema, IParser parser = null)
+        public Transcoder(RuntimeSchema schema, IParser parser)
         {
             transcode = Generate(schema, parser);
         }
@@ -78,7 +94,7 @@ namespace Bond
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
         /// <param name="parser">Custom IParser instance</param>
-        public Transcoder(Type type, IParser parser = null)
+        public Transcoder(Type type, IParser parser)
         {
             transcode = Generate(type, parser);
         }
@@ -98,7 +114,7 @@ namespace Bond
             transcode[0](reader, writer);
         }
 
-        Action<R, W>[] Generate<S>(S schema, IParser parser = null)
+        Action<R, W>[] Generate<S>(S schema, IParser parser)
         {
             parser = parser ?? ParserFactory<R>.Create(schema);
             return SerializerGeneratorFactory<R, W>.Create(

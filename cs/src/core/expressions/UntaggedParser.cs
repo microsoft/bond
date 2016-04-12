@@ -27,12 +27,20 @@ namespace Bond.Expressions
             public readonly HashSet<RuntimeSchema> InProgress = 
                 new HashSet<RuntimeSchema>(new TypeDefComparer());
         }
+        
+        public UntaggedParser(RuntimeSchema schema)
+            : this(schema, null)
+        {}
 
-        public UntaggedParser(RuntimeSchema schema, PayloadBondedFactory bondedFactory = null) 
+        public UntaggedParser(RuntimeSchema schema, PayloadBondedFactory bondedFactory) 
             : this(new UntaggedReader<R>(), new DeferredSkip(), schema, bondedFactory)
         {
             Audit.ArgRule(schema.HasValue, "UntaggedParser requires runtime schema");
         }
+
+        public UntaggedParser(Type type)
+            : this(type, null)
+        { }
 
         public UntaggedParser(Type type, PayloadBondedFactory bondedFactory = null)
             : this(Schema.GetRuntimeSchema(type), bondedFactory)

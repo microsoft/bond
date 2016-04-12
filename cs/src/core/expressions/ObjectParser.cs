@@ -32,7 +32,11 @@ namespace Bond.Expressions
         readonly int hierarchyDepth;
         readonly InstanceBondedFactory bondedFactory;
 
-        public ObjectParser(Type type, InstanceBondedFactory bondedFactory = null)
+        public ObjectParser(Type type)
+            : this(type, null)
+        {}
+
+        public ObjectParser(Type type, InstanceBondedFactory bondedFactory)
         {
             typeAlias = new TypeAlias(type);
             value = objParam = Expression.Parameter(typeof(object), "obj");
@@ -45,7 +49,7 @@ namespace Bond.Expressions
         {
             typeAlias = that.typeAlias;
             objParam = that.objParam;
-            bondedFactory = that.bondedFactory ?? NewBonded;
+            bondedFactory = that.bondedFactory;
             this.value = value;
             this.schemaType = schemaType;
             objectType = value.Type;

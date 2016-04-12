@@ -161,6 +161,7 @@ namespace UnitTest
         {
             private readonly R reader;
             private readonly RuntimeSchema schema;
+            private readonly Lazy<T> value;
 
             public CustomBonded(R reader)
             {
@@ -177,8 +178,6 @@ namespace UnitTest
 
                 this.value = new Lazy<T>(this.Deserialize<T>, LazyThreadSafetyMode.ExecutionAndPublication);
             }
-
-            private readonly Lazy<T> value;
 
             public override T Value
             {
@@ -236,22 +235,6 @@ namespace UnitTest
             IBonded<U> IBonded.Convert<U>()
             {
                 return new CustomBonded<U, R>(reader, schema);
-            }
-        }
-
-        /// <summary>
-        ///     Custom conversion for making Serializer work
-        /// </summary>
-        public class BondTypeAliasConverter
-        {
-            public static IBonded<T> Convert<T>(CustomBonded<T> value, IBonded<T> unused)
-            {
-                return value as IBonded<T>;
-            }
-
-            public static CustomBonded<T> Convert<T>(IBonded<T> value, CustomBonded<T> unused)
-            {
-                throw new NotSupportedException();
             }
         }
 
@@ -326,21 +309,20 @@ namespace UnitTest
             y.Z = CustomBonded<Z>.From(new Z {Value = 42});
             var x = new X();
             x.bonded_Y = CustomBonded<Y>.From(y);
-
-            var stream = new MemoryStream();
-            var outputStream = new OutputStream(stream);
-            var writer = new CompactBinaryWriter<OutputStream>(outputStream);
-            CustomTransformFactory.Default.Serializer<CompactBinaryWriter<OutputStream>, X>().Serialize(x, writer);
-            outputStream.Flush();
-
-            stream.Position = 0;
-            var inputStream = new InputStream(stream);
-            var reader = new CompactBinaryReader<InputStream>(inputStream);
-            var x1 = CustomTransformFactory.Default.Deserializer<CompactBinaryReader<InputStream>, X>(RuntimeSchema.Empty).Deserialize<X>(reader);
+            
+            var buffer = new OutputBuffer();
+            var writer = new CompactBinaryWriter<OutputBuffer>(buffer);
+            CustomTransformFactory.Default.Serializer<CompactBinaryWriter<OutputBuffer>, X>().Serialize(x, writer);
+            
+            var inputStream = new InputBuffer(buffer.Data);
+            var reader = new CompactBinaryReader<InputBuffer>(inputStream);
+            var x1 = CustomTransformFactory.Default.Deserializer<CompactBinaryReader<InputBuffer>, X>(RuntimeSchema.Empty).Deserialize<X>(reader);
 
             Assert.That(x1, Is.Not.Null);
+            Assert.That(x1.bonded_Y, Is.InstanceOf<CustomBonded<Y, CompactBinaryReader<InputBuffer>>>());
             Assert.That(x1.bonded_Y.Value.FullName, Is.EqualTo("CustomBondedTests.YDerived"));
             Assert.That(x1.bonded_Y.Convert<YDerived>().Value.Z.Value.Value, Is.EqualTo(42));
+            
         }
 
         [Test]
