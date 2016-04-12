@@ -685,13 +685,6 @@ See also the following example:
 
 - `examples/cs/core/polymorphic_container`
 
-Customizing `bonded<T>`
--------------------------------------------------------
-
-By default, 
-
-
-
 Custom type mappings
 ====================
 
