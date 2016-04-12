@@ -6,7 +6,7 @@ namespace Bond.Comm
     using System;
 
     /// <summary>
-    /// Represents the severity of a message. Severities compare with &lt; and &gt;. e.g., Debug &lt Information.
+    /// Represents the severity of a message. Severities compare with &lt; and &gt;. e.g., Debug &lt; Information.
     /// </summary>
     public enum LogSeverity
     {
