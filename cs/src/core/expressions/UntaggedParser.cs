@@ -42,7 +42,7 @@ namespace Bond.Expressions
             : this(type, null)
         { }
 
-        public UntaggedParser(Type type, PayloadBondedFactory bondedFactory = null)
+        public UntaggedParser(Type type, PayloadBondedFactory bondedFactory)
             : this(Schema.GetRuntimeSchema(type), bondedFactory)
         {
             Audit.ArgNotNull(type, "type");
