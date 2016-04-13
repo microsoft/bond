@@ -4,6 +4,7 @@
 name:               bond
 version:            0.4.0.1
 cabal-version:      >= 1.8
+tested-with:        GHC>=7.4.1
 synopsis:           Bond schema compiler and code generator
 description:        Bond is a cross-platform framework for handling schematized
                     data. It supports cross-language de/serialization and

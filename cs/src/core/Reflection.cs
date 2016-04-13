@@ -323,6 +323,38 @@ namespace Bond
             return type;
         }
 
+        /// <summary>
+        /// Get the Bond schema name of the type
+        /// </summary>
+        public static string GetSchemaName(this Type type)
+        {
+            return GetCorrespondingSchemaName(type, useLegacyNaming: false);
+        }
+
+        /// <summary>
+        /// Get the Bond schema full name (qualified) of the type
+        /// </summary>
+        public static string GetSchemaFullName(this Type type)
+        {
+            return GetCorrespondingSchemaFullName(type, useLegacyNaming: false);
+        }
+
+        /// <summary>
+        /// Get the legacy, language-specific schema name of the type
+        /// </summary>
+        public static string GetSchemaLegacyName(this Type type)
+        {
+            return GetCorrespondingSchemaName(type, useLegacyNaming: true);
+        }
+
+        /// <summary>
+        /// Get the legacy, language-specific schema full name (qualified) of the type
+        /// </summary>
+        public static string GetSchemaLegacyFullName(this Type type)
+        {
+            return GetCorrespondingSchemaFullName(type, useLegacyNaming: true);
+        }
+
         #endregion
 
         #region PCL compatibility
@@ -728,7 +760,7 @@ namespace Bond
             return depth;
         }
 
-        internal static string GetSchemaName(this Type type)
+        private static string GetCorrespondingSchemaName(Type type, bool useLegacyNaming)
         {
             string name;
 
@@ -753,7 +785,8 @@ namespace Bond
             }
             else
             {
-                name = bondTypeName[type.GetBondDataType()];
+                if(!bondTypeName.TryGetValue(type.GetBondDataType(), out name))
+                    throw new ArgumentException("Not a valid Bond type. Are you missing the [Schema] attribute?");
             }
 
             if (!type.IsGenericType())
@@ -768,18 +801,25 @@ namespace Bond
                 if (i != 0)
                     builder.Append(", ");
 
-                builder.Append(args[i].GetSchemaFullName());
+                builder.Append(GetCorrespondingSchemaFullName(args[i], useLegacyNaming));
             }
             builder.Append(">");
             return builder.ToString();
         }
 
-        internal static string GetSchemaFullName(this Type type)
+        private static string GetCorrespondingSchemaFullName(Type type, bool useLegacyNaming)
         {
-            if (type.IsBondStruct() || type.IsEnum())
-                return type.GetSchemaNamespace() + "." + type.GetSchemaName();
+            string schemaNamespace;
 
-            return type.GetSchemaName();
+            if (useLegacyNaming)
+                schemaNamespace = type.Namespace;
+            else
+                schemaNamespace = type.GetSchemaNamespace();
+
+            if (type.IsBondStruct() || type.IsEnum())
+                return schemaNamespace + "." + GetCorrespondingSchemaName(type, useLegacyNaming);
+
+            return GetCorrespondingSchemaName(type, useLegacyNaming);
         }
 
         static string GetSchemaNamespace(this Type type)

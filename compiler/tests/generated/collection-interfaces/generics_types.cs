@@ -22,6 +22,9 @@ namespace tests
     public partial class Foo<T1, T2>
         where T2 : struct
     {
+        private static readonly string _schemaName = global::Bond.Reflection.GetSchemaName(typeof(Foo<T1, T2>));
+        private static readonly string _schemaFullName = global::Bond.Reflection.GetSchemaFullName(typeof(Foo<T1, T2>));
+
         [global::Bond.Id(0), global::Bond.Type(typeof(global::Bond.Tag.structT))]
         public T2 t2 { get; set; }
 
@@ -29,7 +32,7 @@ namespace tests
         public Foo<T1, bool> n { get; set; }
 
         public Foo()
-            : this("tests.Foo", "Foo")
+            : this(_schemaFullName, _schemaName)
         {}
 
         protected Foo(string fullName, string name)

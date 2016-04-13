@@ -123,6 +123,20 @@ Collection types `vector<T>`, `map<K, V>`, `list<T>` and `set<T>` are
 represented by respective generic collection interfaces: `IList<T>`, 
 `IDictionary<K, V>`, `ICollection<T>` and `ISet<T>`.
 
+`--compatibility-options`
+
+The Bond compiler command line switch `--compatibility-options` can be used to
+specify compatibility behaviour.
+
+The `LegacyMetaNamespaces` flag can be used to resolve bond_meta fields
+to C# namespaces instead of Bond namespaces.
+
+    gbc c# --compatibility-option=LegacyMetaNamespaces example.bond
+
+To override any other compatibility option specified used the `None` flag.
+
+    gbc c# --compatibility-option=None example.bond
+
 Serializer
 ==========
 

@@ -9,6 +9,7 @@ module Tests.Codegen
     , verifyCppCodegen
     , verifyApplyCodegen
     , verifyCsCodegen
+    , verifyLegacyMetaNamespacesCodegen
     ) where
 
 import System.FilePath
@@ -60,6 +61,19 @@ verifyApplyCodegen args baseName =
                    "bond::SimpleBinaryWriter<bond::OutputBuffer>"
         ]
 
+verifyLegacyMetaNamespacesCodegen :: [String] -> FilePath -> TestTree
+verifyLegacyMetaNamespacesCodegen args baseName =
+    testGroup baseName $
+        map (verifyFile (processOptions args) baseName csTypeMapping "")
+            [ types_cs Class (fieldMapping (processOptions args)) enableLegacyMetaNamespace
+            ]
+  where
+    enableLegacyMetaNamespace = True
+    fieldMapping Cs {..} = if readonly_properties
+        then ReadOnlyProperties
+        else if fields
+             then PublicFields
+             else Properties
 
 verifyFiles :: Options -> FilePath -> [TestTree]
 verifyFiles options baseName =
@@ -68,6 +82,7 @@ verifyFiles options baseName =
     extra options
   where
     verify = verifyFile options baseName
+    enableLegacyMetaNamespace = False
     fieldMapping Cs {..} = if readonly_properties
         then ReadOnlyProperties
         else if fields
@@ -81,7 +96,7 @@ verifyFiles options baseName =
         , types_h header enum_header allocator
         ]
     templates Cs {..} =
-        [ types_cs Class $ fieldMapping options
+        [ types_cs Class (fieldMapping options) enableLegacyMetaNamespace
         ]
     extra Cs {} =
         [ testGroup "collection interfaces" $

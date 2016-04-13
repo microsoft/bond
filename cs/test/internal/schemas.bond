@@ -95,3 +95,10 @@ struct Names
     2: Generic<nullable<BasicTypes>> gnb;
     3: Generic<map<int8, EnumType1>> gmie;
 }
+
+struct Names_Bond_Meta<T>
+{
+    0: bond_meta::full_name schemaFullName;
+    1: bond_meta::name schemaName;
+    2: Generic<T> g;
+}
