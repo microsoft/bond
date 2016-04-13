@@ -16,7 +16,7 @@
 namespace tests
 {
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.4.0.2")]
-    public abstract class FooService : IFoo, global::Bond.Comm.IService
+    public abstract class FooServiceBase : IFoo, global::Bond.Comm.IService
     {
         public global::System.Collections.Generic.IEnumerable<global::Bond.Comm.ServiceMethodInfo> Methods
         {

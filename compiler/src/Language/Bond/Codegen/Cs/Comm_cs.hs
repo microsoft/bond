@@ -68,11 +68,11 @@ namespace #{csNamespace}
     csNamespace = sepBy "." toText $ getNamespace cs
     idl = MappingContext idlTypeMapping [] [] []  
 
-    comm s@Service{..} = [lt|#{CS.typeAttributes cs s}public class Proxy_#{declName}<#{proxyGenerics}TConnection> : I#{declName}#{interfaceGenerics}#{connConstraint}
+    comm s@Service{..} = [lt|#{CS.typeAttributes cs s}public class #{declName}Proxy<#{proxyGenerics}TConnection> : I#{declName}#{interfaceGenerics}#{connConstraint}
     {
         private readonly TConnection m_connection;
 
-        public Proxy_#{declName}(TConnection connection)
+        public #{declName}Proxy(TConnection connection)
         {
             m_connection = connection;
         }
@@ -123,7 +123,7 @@ namespace #{csNamespace}
     csNamespace = sepBy "." toText $ getNamespace cs
     idl = MappingContext idlTypeMapping [] [] []  
 
-    comm s@Service{..} = [lt|#{CS.typeAttributes cs s}public abstract class #{declName}Service#{generics} : I#{declName}#{generics}, global::Bond.Comm.IService
+    comm s@Service{..} = [lt|#{CS.typeAttributes cs s}public abstract class #{declName}ServiceBase#{generics} : I#{declName}#{generics}, global::Bond.Comm.IService
     {
         public global::System.Collections.Generic.IEnumerable<global::Bond.Comm.ServiceMethodInfo> Methods
         {

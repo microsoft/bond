@@ -8,7 +8,7 @@ namespace UnitTest.SimpleInMem
     using System.Threading.Tasks;
     using Bond.Comm;
 
-    internal class CalculatorServiceImpl : CalculatorService
+    internal class CalculatorService : CalculatorServiceBase
     {
         public const string ExpectedExceptionMessage = "This method is expected to throw.";
         private const UInt16 DelayMilliseconds = 30;

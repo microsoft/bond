@@ -13,13 +13,13 @@ namespace UnitTest.SimpleInMem
     {
         private const string m_address = "SimpleInMemTakesAnyRandomConnectionString";
         private SimpleInMemTransport m_transport;
-        private CalculatorServiceImpl m_service;
+        private CalculatorService m_service;
 
         [SetUp]
         public void Init()
         {
             m_transport = new SimpleInMemTransportBuilder().SetUnhandledExceptionHandler(Transport.DebugExceptionHandler).Construct();
-            m_service = new CalculatorServiceImpl();
+            m_service = new CalculatorService();
         }
 
         [Test]
@@ -41,7 +41,7 @@ namespace UnitTest.SimpleInMem
 
             Assert.True(simpleConnection.ConnectionType == ConnectionType.Client);
 
-            var calculatorProxy = new Proxy_Calculator<SimpleInMemConnection>(simpleConnection);
+            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(simpleConnection);
 
             PairedInput input = new PairedInput
             {
@@ -74,7 +74,7 @@ namespace UnitTest.SimpleInMem
             SimpleInMemConnection simpleConnection = (SimpleInMemConnection)connection;
 
             Assert.True(simpleConnection.ConnectionType == ConnectionType.Client);
-            var calculatorProxy = new Proxy_Calculator<SimpleInMemConnection>(simpleConnection);
+            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(simpleConnection);
 
             PairedInput input = new PairedInput
             {
@@ -86,7 +86,7 @@ namespace UnitTest.SimpleInMem
             Assert.IsTrue(multiplyResponse.IsError);
             InternalServerError error = multiplyResponse.Error.Deserialize<InternalServerError>();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
-            Assert.That(error.message, Is.StringContaining(CalculatorServiceImpl.ExpectedExceptionMessage));
+            Assert.That(error.message, Is.StringContaining(CalculatorService.ExpectedExceptionMessage));
 
             await connection.StopAsync();
         }

@@ -8,7 +8,7 @@ namespace Bond.Examples.PingPong
     using System.Threading.Tasks;
     using Bond.Comm;
 
-    public class PingPongServiceImpl : PingPongService
+    public class PingPongService : PingPongServiceBase
     {
         private const UInt16 MaxDelayMilliseconds = 2000;
 

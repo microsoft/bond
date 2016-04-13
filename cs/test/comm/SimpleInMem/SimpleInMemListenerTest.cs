@@ -13,7 +13,7 @@ namespace UnitTest.SimpleInMem
     {
         private readonly string m_address = "SimpleInMemTakesAnyRandomConnectionString";
         private SimpleInMemTransport m_transport;
-        private CalculatorServiceImpl m_service;
+        private CalculatorService m_service;
 
         [SetUp]
         public void Init()
@@ -22,7 +22,7 @@ namespace UnitTest.SimpleInMem
                 new SimpleInMemTransportBuilder()
                 .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
                 .Construct();
-             m_service = new CalculatorServiceImpl();
+             m_service = new CalculatorService();
         }
 
         [TearDown]

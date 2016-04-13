@@ -16,11 +16,11 @@
 namespace tests
 {
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.4.0.2")]
-    public class Proxy_Foo<Payload, TConnection> : IFoo<Payload> where TConnection : global::Bond.Comm.IRequestResponseConnection
+    public class FooProxy<Payload, TConnection> : IFoo<Payload> where TConnection : global::Bond.Comm.IRequestResponseConnection
     {
         private readonly TConnection m_connection;
 
-        public Proxy_Foo(TConnection connection)
+        public FooProxy(TConnection connection)
         {
             m_connection = connection;
         }

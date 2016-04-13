@@ -42,11 +42,11 @@ namespace Bond.Examples.PingPong
 
             var assignAPortEndPoint = new IPEndPoint(IPAddress.Loopback, 0);
 
-            var pingPongService = new PingPongServiceImpl();
+            var pingPongService = new PingPongService();
             TcpListener pingPongListener = transport.MakeListener(assignAPortEndPoint);
             pingPongListener.AddService(pingPongService);
 
-            var reversePingPongService = new ReversePingPongServiceImpl();
+            var reversePingPongService = new ReversePingPongService();
             TcpListener reversePingPongListener = transport.MakeListener(assignAPortEndPoint);
             reversePingPongListener.AddService(reversePingPongService);
 
@@ -62,8 +62,8 @@ namespace Bond.Examples.PingPong
 
         private static Task[] MakeRequestsAndPrintAsync(int numRequests)
         {
-            var pingPongProxy = new Proxy_PingPong<TcpConnection>(s_pingConnection);
-            var reversePingPongProxy = new Proxy_PingPong<TcpConnection>(s_reverseConnection);
+            var pingPongProxy = new PingPongProxy<TcpConnection>(s_pingConnection);
+            var reversePingPongProxy = new PingPongProxy<TcpConnection>(s_reverseConnection);
 
             var tasks = new Task[2 * numRequests];
 
@@ -81,7 +81,7 @@ namespace Bond.Examples.PingPong
             return tasks;
         }
 
-        private static async Task DoPingPong(Proxy_PingPong<TcpConnection> proxy, int requestNum, string payload, UInt16 delay)
+        private static async Task DoPingPong(PingPongProxy<TcpConnection> proxy, int requestNum, string payload, UInt16 delay)
         {
             var request = new PingRequest { Payload = payload, DelayMilliseconds = delay };
             IMessage<PingResponse> message = await proxy.PingAsync(request);
