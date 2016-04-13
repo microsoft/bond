@@ -564,11 +564,11 @@ as parameters to `ObjectParser` or `ParserFactory<R>.Create()`:
 
     // create serializer for schema type T and protocol reader W
     // using custom InstanceBondedFactory
-    new Serializer<W>(typeof(T), new ObjectParser(typeof(T), InstanceBondedFactory), ...); 
+    new Serializer<W>(typeof(T), new ObjectParser(typeof(T), CustomInstanceBondedFactory), ...); 
 
     // create deserializer for schema type T and protocol reader R
     // using custom PayloadBondedFactory 
-    new Deserializer<R>(typeof(T), ParserFactory<R>.Create(typeof(T), PayloadBondedFactory), ...);
+    new Deserializer<R>(typeof(T), ParserFactory<R>.Create(typeof(T), CustomPayloadBondedFactory), ...);
 
 Lazy deserialization
 --------------------
