@@ -301,6 +301,14 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>Schema fields are represented by properties with public getter and private setter and initialized to the default values in the default constructor. Classes with read-only properties are fully supported by all Bond APIs.</p>
 <p><code>--collection-interfaces</code></p>
 <p>Collection types <code>vector&lt;T&gt;</code>, <code>map&lt;K, V&gt;</code>, <code>list&lt;T&gt;</code> and <code>set&lt;T&gt;</code> are represented by respective generic collection interfaces: <code>IList&lt;T&gt;</code>, <code>IDictionary&lt;K, V&gt;</code>, <code>ICollection&lt;T&gt;</code> and <code>ISet&lt;T&gt;</code>.</p>
+<p><code>--compatibility-options</code></p>
+<p>The Bond compiler command line switch <code>--compatibility-options</code> can be used to specify compatibility behaviour.</p>
+<p>The <code>LegacyMetaNamespaces</code> flag can be used to resolve bond_meta fields to C# namespaces instead of Bond namespaces.</p>
+<div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs">gbc c# --compatibility-option=LegacyMetaNamespaces example.<span class="fu">bond</span></code></pre></td></tr></table></div>
+<p>To override any other compatibility option specified used the <code>None</code> flag.</p>
+<div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs">gbc c# --compatibility-option=None example.<span class="fu">bond</span></code></pre></td></tr></table></div>
 <h1 id="serializer">Serializer</h1>
 <p>Bond serialization API is provided by the <code>Serializer</code> class. It is a generic class parameterized with type of protocol writer used for serialization:</p>
 <div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
