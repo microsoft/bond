@@ -388,7 +388,7 @@ namespace Bond
         {
             if (type.IsInterface())
             {
-                return type.GetInterfaces().FirstOrDefault();
+                throw new ArgumentException("GetBaseType cannot be called on an interface, as there may be multiple base interfaces", "type");
             }
 
             return type.GetTypeInfo().BaseType;
@@ -412,9 +412,26 @@ namespace Bond
             
             if (result == null)
             {
-                var baseType = type.GetBaseType();
-                if (baseType != null)
-                    result = baseType.FindMethod(name, paramTypes);
+                if (type.IsInterface())
+                {
+                    var interfaces = type.GetInterfaces();
+                    var matchedMethods = interfaces.Select(x => x.FindMethod(name, paramTypes)).Where(x => x != null).ToList();
+
+                    if (matchedMethods.Count > 1)
+                    {
+                        throw new AmbiguousMatchException("FindMethod found more than one matching method");
+                    }
+                    else
+                    {
+                        result = matchedMethods.FirstOrDefault();
+                    }
+                }
+                else
+                {
+                    var baseType = type.GetBaseType();
+                    if (baseType != null)
+                        result = baseType.FindMethod(name, paramTypes);
+                }
             }
 
             return result;
