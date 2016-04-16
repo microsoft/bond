@@ -109,11 +109,35 @@ namespace Bond
         /// Create a deserializer instance for specified type, using a custom object factory
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
+        /// <param name="parser">Custom IParser instance</param>
+        /// <param name="factory">Factory providing expressions to create objects during deserialization</param>
+        /// <param name="inlineNested">Inline nested types if possible (optimizes for reduction of execution time
+        /// at the expense of initialization time and memory)</param>
+        public Deserializer(Type type, IParser parser, IFactory factory, bool inlineNested)
+            : this(type, parser, factory, null, inlineNested)
+        { }
+
+        /// <summary>
+        /// Create a deserializer instance for specified type, using a custom object factory
+        /// </summary>
+        /// <param name="type">Type representing a Bond schema</param>
         /// <param name="factory">Factory providing expressions to create objects during deserialization</param>
         /// <param name="inlineNested">Inline nested types if possible (optimizes for reduction of execution time
         /// at the expense of initialization time and memory)</param>
         public Deserializer(Type type, Factory factory, bool inlineNested)
             : this(type, ParserFactory<R>.Create(type), null, factory, inlineNested)
+        { }
+
+        /// <summary>
+        /// Create a deserializer instance for specified type, using a custom object factory
+        /// </summary>
+        /// <param name="type">Type representing a Bond schema</param>
+        /// <param name="parser">Custom IParser instance</param>
+        /// <param name="factory">Factory providing expressions to create objects during deserialization</param>
+        /// <param name="inlineNested">Inline nested types if possible (optimizes for reduction of execution time
+        /// at the expense of initialization time and memory)</param>
+        public Deserializer(Type type, IParser parser, Factory factory, bool inlineNested)
+            : this(type, parser, null, factory, inlineNested)
         { }
 
         /// <summary>

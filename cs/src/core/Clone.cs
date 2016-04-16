@@ -37,30 +37,58 @@ namespace Bond
     public class Cloner<SourceT>
     {
         readonly Func<object, object>[] clone;
-        
+
+        /// <summary>
+        /// Create a cloner that makes clones of the same type SourceT as source objects.
+        /// </summary>
+        public Cloner()
+            : this(typeof(SourceT))
+        {}
+
         /// <summary>
         /// Create a cloner that makes clones of the specified type.
         /// </summary>
         /// <param name="type">type of clone object, may be different than source object</param>
         public Cloner(Type type)
+            : this(type, (IParser) null)
+        {}
+
+        /// <summary>
+        /// Create a cloner that makes clones of the specified type.
+        /// </summary>
+        /// <param name="type">type of clone object, may be different than source object</param>
+        /// <param name="parser">Custom <see cref="IParser"/> instance</param>
+        public Cloner(Type type, IParser parser)
         {
-            clone = Generate(type, new DeserializerTransform<object>(
-                (o, i) => clone[i](o)));
+            clone = Generate(type,
+                             new DeserializerTransform<object>((o, i) => clone[i](o)),
+                             parser);
         }
+
+        /// <summary>
+        /// Create a cloner that makes clones of the specified type.
+        /// </summary>
+        /// <param name="type">type of clone object, may be different than source object</param>
+        /// /// <param name="factory">factory implementing IFactory interface</param>
+        public Cloner(Type type, IFactory factory)
+            : this(type, null, factory)
+        {}
 
         /// <summary>
         /// Create a cloner that uses specified factory and makes clones of the specified type.
         /// </summary>
         /// <param name="type">type of clone object, may be different than source object</param>
+        /// <param name="parser">Custom <see cref="IParser"/> instance</param>
         /// <param name="factory">factory implementing IFactory interface</param>
-        public Cloner(Type type, IFactory factory)
+        public Cloner(Type type, IParser parser, IFactory factory)
         {
-            clone = Generate(type, 
-                new DeserializerTransform<object>(
-                    (o, i) => clone[i](o),
-                    true,
-                    (t1, t2) => factory.CreateObject(t1, t2),
-                    (t1, t2, count) => factory.CreateContainer(t1, t2, count)));
+            clone = Generate(type,
+                             new DeserializerTransform<object>(
+                                 (o, i) => clone[i](o),
+                                 true,
+                                 (t1, t2) => factory.CreateObject(t1, t2),
+                                 (t1, t2, count) => factory.CreateContainer(t1, t2, count)),
+                             parser);
         }
 
         /// <summary>
@@ -69,19 +97,23 @@ namespace Bond
         /// <param name="type">type of clone object, may be different than source object</param>
         /// <param name="factory">factory delegate returning expressions to create objects</param>
         public Cloner(Type type, Factory factory)
-        {
-            clone = Generate(type,
-                new DeserializerTransform<object>(
-                    (o, i) => clone[i](o),
-                    factory));
-        }
+            : this(type, null, factory)
+        {}
 
         /// <summary>
-        /// Create a cloner that makes clones of the same type SourceT as source objects.
+        /// Create a cloner that uses specified factory and makes clones of the specified type.
         /// </summary>
-        public Cloner()
-            : this(typeof(SourceT))
-        {}
+        /// <param name="type">type of clone object, may be different than source object</param>
+        /// <param name="parser">Custom IParser instance</param>
+        /// <param name="factory">factory delegate returning expressions to create objects</param>
+        public Cloner(Type type, IParser parser, Factory factory)
+        {
+            clone = Generate(type,
+                             new DeserializerTransform<object>(
+                                 (o, i) => clone[i](o),
+                                 factory),
+                             parser);
+        }
 
         /// <summary>
         /// Clone the source object into an object of type T.
@@ -94,9 +126,10 @@ namespace Bond
             return (T)clone[0](source);
         }
 
-        static Func<object, object>[] Generate(Type type, DeserializerTransform<object> transform)
+        static Func<object, object>[] Generate(Type type, DeserializerTransform<object> transform, IParser parser)
         {
-            var parser = new ObjectParser(typeof(SourceT));
+            parser = parser ?? new ObjectParser(typeof(SourceT));
+            
             return transform.Generate(parser, type).Select(lambda => lambda.Compile()).ToArray();
         }
     }
