@@ -17,37 +17,47 @@ namespace Bond.Expressions
         readonly UntaggedReader<R> reader;
         readonly DeferredSkip deferredSkip;
         readonly int hierarchyDepth;
+        readonly PayloadBondedFactory bondedFactory;
 
         class DeferredSkip
         {
             public readonly List<Action<R>> Lambdas = new List<Action<R>>();
-            public readonly Dictionary<RuntimeSchema, int> Index = 
+            public readonly Dictionary<RuntimeSchema, int> Index =
                 new Dictionary<RuntimeSchema, int>(new TypeDefComparer());
-            public readonly HashSet<RuntimeSchema> InProgress = 
+            public readonly HashSet<RuntimeSchema> InProgress =
                 new HashSet<RuntimeSchema>(new TypeDefComparer());
         }
 
-        public UntaggedParser(RuntimeSchema schema) 
-            : this(new UntaggedReader<R>(), new DeferredSkip(), schema)
+        public UntaggedParser(RuntimeSchema schema)
+            : this(schema, null)
+        {}
+
+        public UntaggedParser(RuntimeSchema schema, PayloadBondedFactory bondedFactory)
+            : this(new UntaggedReader<R>(), new DeferredSkip(), schema, bondedFactory)
         {
             Audit.ArgRule(schema.HasValue, "UntaggedParser requires runtime schema");
         }
 
         public UntaggedParser(Type type)
-            : this(Schema.GetRuntimeSchema(type))
+            : this(type, null)
+        { }
+
+        public UntaggedParser(Type type, PayloadBondedFactory bondedFactory)
+            : this(Schema.GetRuntimeSchema(type), bondedFactory)
         {
             Audit.ArgNotNull(type, "type");
         }
 
         UntaggedParser(UntaggedParser<R> that, RuntimeSchema schema)
-            : this(that.reader, that.deferredSkip, schema)
+            : this(that.reader, that.deferredSkip, schema, that.bondedFactory)
         {}
 
-        UntaggedParser(UntaggedReader<R> reader, DeferredSkip deferredSkip, RuntimeSchema schema)
+        UntaggedParser(UntaggedReader<R> reader, DeferredSkip deferredSkip, RuntimeSchema schema, PayloadBondedFactory bondedFactory)
         {
             this.reader = reader;
             this.schema = schema;
             this.deferredSkip = deferredSkip;
+            this.bondedFactory = bondedFactory ?? NewBonded;
             hierarchyDepth = schema.GetHierarchyDepth();
         }
 
@@ -69,7 +79,7 @@ namespace Bond.Expressions
                 body.Add(transform.Base(new UntaggedParser<R>(this, schema.GetBaseSchema())));
 
             // Performs left outer join of schema fields with transform fields.
-            // The result contains entry for each schema field. For fields not handled 
+            // The result contains entry for each schema field. For fields not handled
             // by the transform default to Skip.
             body.AddRange(
                 from fieldDef in schema.StructDef.fields
@@ -153,12 +163,11 @@ namespace Bond.Expressions
             {
                 return handler(reader.ReadMarshaledBonded());
             }
-            
-            var bondedCtor = typeof(BondedVoid<>).MakeGenericType(typeof(R))
-                .GetConstructor(typeof(R), typeof(RuntimeSchema));
+
+            var newBonded = bondedFactory(reader.Param, Expression.Constant(schema));
 
             return Expression.Block(
-                handler(Expression.New(bondedCtor, reader.Param, Expression.Constant(schema))),
+                handler(newBonded),
                 SkipStruct());
         }
 
@@ -178,13 +187,21 @@ namespace Bond.Expressions
 
                 case BondDataType.BT_MAP:
                     return SkipMap();
-                
+
                 case BondDataType.BT_STRUCT:
                     return SkipStruct();
 
                 default:
                     return reader.Skip(dataType);
             }
+        }
+
+        static Expression NewBonded(Expression reader, Expression schema)
+        {
+            var ctor =
+                typeof(BondedVoid<>).MakeGenericType(reader.Type).GetConstructor(reader.Type, typeof(RuntimeSchema));
+
+            return Expression.New(ctor, reader, schema);
         }
 
         Expression SkipSet()
@@ -210,7 +227,7 @@ namespace Bond.Expressions
         Expression SkipMap()
         {
             return Map(null, null, (keyParser, valueParser, keyType, valueType, nextKey, nextValue, count) =>
-                ControlExpression.While(nextKey, 
+                ControlExpression.While(nextKey,
                     Expression.Block(
                         keyParser.Skip(keyType),
                         valueParser.Skip(valueType))));

@@ -19,7 +19,7 @@ namespace Bond
         }
 
         /// <summary>
-        /// Serialize object of type T to protocol writer of type W
+        /// Serialize object of type <typeparamref name="T"/> to protocol writer of type <typeparamref name="W"/>
         /// </summary>
         /// <typeparam name="W">Protocol writer</typeparam>
         /// <typeparam name="T">Type representing a Bond schema</typeparam>
@@ -31,23 +31,23 @@ namespace Bond
         }
 
         /// <summary>
-        /// Serialize IBonded&lt;T> to protocol writer of type W
+        /// Serialize <see cref="IBonded{T}" /> to protocol writer of type <typeparamref name="W"/>
         /// </summary>
         /// <typeparam name="W">Protocol writer</typeparam>
         /// <typeparam name="T">Type representing a Bond schema</typeparam>
         /// <param name="writer">Writer instance</param>
-        /// <param name="bonded">IBonded instance</param>
+        /// <param name="bonded"><see cref="IBonded"/> instance</param>
         public static void To<W, T>(W writer, IBonded<T> bonded)
         {
             bonded.Serialize(writer);
         }
 
         /// <summary>
-        /// Serialize IBonded to protocol writer of type W
+        /// Serialize <see cref="IBonded"/> to protocol writer of type <typeparamref name="W"/>
         /// </summary>
         /// <typeparam name="W">Protocol writer</typeparam>
         /// <param name="writer">Writer instance</param>
-        /// <param name="bonded">IBonded instance</param>
+        /// <param name="bonded"><see cref="IBonded"/> instance</param>
         public static void To<W>(W writer, IBonded bonded)
         {
             bonded.Serialize(writer);
@@ -55,7 +55,7 @@ namespace Bond
     }
 
     /// <summary>
-    /// Serializer for protocol writer W
+    /// Serializer for protocol writer <typeparamref name="W"/>
     /// </summary>
     /// <typeparam name="W">Protocol writer</typeparam>
     public class Serializer<W>
@@ -66,16 +66,31 @@ namespace Bond
         /// Create a serializer for specified type
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
-        public Serializer(Type type) : this(type, inlineNested: true) { }
+        public Serializer(Type type) : this(type, null, inlineNested: true) { }
+
+        /// <summary>
+        /// Create a serializer for specified type
+        /// </summary>
+        /// <param name="type">Type representing a Bond schema</param>
+        /// <param name="parser">Custom <see cref="IParser"/> instance</param>
+        public Serializer(Type type, IParser parser) : this(type, parser, inlineNested: true) { }
 
         /// <summary>
         /// Create a serializer for specified type
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
         /// <param name="inlineNested">Indicates whether nested struct serialization code may be inlined</param>
-        public Serializer(Type type, bool inlineNested)
+        public Serializer(Type type, bool inlineNested) : this(type, null, inlineNested) { }
+
+        /// <summary>
+        /// Create a serializer for specified type
+        /// </summary>
+        /// <param name="type">Type representing a Bond schema</param>
+        /// <param name="parser">Custom <see cref="IParser"/> instance</param>
+        /// <param name="inlineNested">Indicates whether nested struct serialization code may be inlined</param>
+        public Serializer(Type type, IParser parser, bool inlineNested)
         {
-            var parser = new ObjectParser(type);
+            parser = parser ?? new ObjectParser(type);
             serialize = SerializerGeneratorFactory<object, W>.Create(
                     (o, w, i) => serialize[i](o, w), type, inlineNested)
                 .Generate(parser)
@@ -83,12 +98,12 @@ namespace Bond
         }
 
         /// <summary>
-        /// Serialize object using protocol writer of type W
+        /// Serialize object using protocol writer of type <typeparamref name="W"/>
         /// </summary>
         /// <param name="obj">Object to serialize</param>
         /// <param name="writer">Writer instance</param>
         /// <remarks>
-        /// The object must be of type used to create the Serializer, otherwise behavior is undefined
+        /// The object must be of type used to create the <see cref="Serializer{W}"/>, otherwise behavior is undefined
         /// </remarks>
         public void Serialize(object obj, W writer)
         {

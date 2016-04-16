@@ -11,6 +11,14 @@ namespace Bond.Expressions
     using System.Linq.Expressions;
     using System.Reflection;
 
+    /// <summary>
+    /// Creates expression of type <see cref="IBonded{T}"/> given a object type and value.
+    /// </summary>
+    /// <param name="objectType">Type of object to be stored in <see cref="IBonded"/></param>
+    /// <param name="value">Expression representing the value to be stored in the bonded instance.</param>
+    /// <returns>Expression representing creation of bonded with the specified value.</returns>
+    public delegate Expression ObjectBondedFactory(Type objectType, Expression value);
+
     public class ObjectParser : IParser
     {
         static readonly MethodInfo moveNext = Reflection.MethodInfoOf((IEnumerator e) => e.MoveNext());
@@ -22,19 +30,26 @@ namespace Bond.Expressions
         readonly Type schemaType;
         readonly Type objectType;
         readonly int hierarchyDepth;
+        readonly ObjectBondedFactory bondedFactory;
 
         public ObjectParser(Type type)
+            : this(type, null)
+        {}
+
+        public ObjectParser(Type type, ObjectBondedFactory bondedFactory)
         {
             typeAlias = new TypeAlias(type);
             value = objParam = Expression.Parameter(typeof(object), "obj");
             objectType = schemaType = type;
             hierarchyDepth = type.GetHierarchyDepth();
+            this.bondedFactory = bondedFactory ?? NewBonded;
         }
 
         ObjectParser(ObjectParser that, Expression value, Type schemaType)
         {
             typeAlias = that.typeAlias;
             objParam = that.objParam;
+            bondedFactory = that.bondedFactory;
             this.value = value;
             this.schemaType = schemaType;
             objectType = value.Type;
@@ -182,11 +197,9 @@ namespace Bond.Expressions
             {
                 return handler(value);
             }
-            
-            var bondedType = typeof(Bonded<>).MakeGenericType(objectType);
-            var bondedCtor = bondedType.GetConstructor(objectType);
 
-            return handler(Expression.New(bondedCtor, value));
+            var newBonded = bondedFactory(objectType, value);
+            return handler(newBonded);
         }
 
         public Expression Blob(Expression count)
@@ -215,6 +228,12 @@ namespace Bond.Expressions
         public override int GetHashCode()
         {
             return schemaType.GetHashCode();
+        }
+
+        static Expression NewBonded(Type objectType, Expression value)
+        {
+            var ctor = typeof(Bonded<>).MakeGenericType(objectType).GetConstructor(objectType);
+            return Expression.New(ctor, value);
         }
 
         static Expression ContainerCount(Expression container)

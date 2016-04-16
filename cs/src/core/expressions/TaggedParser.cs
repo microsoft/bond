@@ -14,20 +14,31 @@ namespace Bond.Expressions
         delegate Expression TypeHandlerRuntime(Expression type);
 
         readonly TaggedReader<R> reader = new TaggedReader<R>();
+        readonly PayloadBondedFactory bondedFactory;
         readonly TaggedParser<R> baseParser;
         readonly TaggedParser<R> fieldParser;
         readonly bool isBase;
 
         public TaggedParser(RuntimeSchema schema)
-        {
-            isBase = false;
-            baseParser = new TaggedParser<R>(this, isBase: true);
-            fieldParser = this;
-        }
+            : this(schema, null)
+        { }
+
+        public TaggedParser(RuntimeSchema schema, PayloadBondedFactory bondedFactory)
+            : this(bondedFactory)
+        { }
 
         public TaggedParser(Type type)
+            : this(type, null)
+        { }
+
+        public TaggedParser(Type type, PayloadBondedFactory bondedFactory)
+            : this(bondedFactory)
+        { }
+
+        private TaggedParser(PayloadBondedFactory bondedFactory)
         {
             isBase = false;
+            this.bondedFactory = bondedFactory ?? NewBonded;
             baseParser = new TaggedParser<R>(this, isBase: true);
             fieldParser = this;
         }
@@ -35,6 +46,7 @@ namespace Bond.Expressions
         TaggedParser(TaggedParser<R> that, bool isBase)
         {
             this.isBase = isBase;
+            bondedFactory = that.bondedFactory;
             reader = that.reader;
             baseParser = this;
             fieldParser = that;
@@ -111,7 +123,7 @@ namespace Bond.Expressions
 
             body.Add(isBase ? reader.ReadBaseEnd() : reader.ReadStructEnd());
             body.Add(transform.End);
-            
+
             return Expression.Block(
                 new[] { fieldType, fieldId },
                 body);
@@ -124,7 +136,7 @@ namespace Bond.Expressions
             var next = Expression.GreaterThan(Expression.PostDecrementAssign(count), Expression.Constant(0));
 
             var loops = MatchOrCompatible(
-                elementType, 
+                elementType,
                 expectedType,
                 type => handler(this, type, next, count));
 
@@ -160,22 +172,28 @@ namespace Bond.Expressions
 
         public Expression Scalar(Expression valueType, BondDataType expectedType, ValueHandler handler)
         {
-            return MatchOrCompatible(valueType, expectedType, 
+            return MatchOrCompatible(valueType, expectedType,
                 type => handler(reader.Read(type)));
         }
 
         public Expression Bonded(ValueHandler handler)
         {
-            var bondedCtor = typeof(BondedVoid<>).MakeGenericType(typeof(R)).GetConstructor(typeof(R));
+            var newBonded = bondedFactory(reader.Param, Expression.Constant(RuntimeSchema.Empty));
 
             return Expression.Block(
-                handler(Expression.New(bondedCtor, reader.Param)),
+                handler(newBonded),
                 reader.Skip(Expression.Constant(BondDataType.BT_STRUCT)));
         }
 
         public Expression Skip(Expression type)
         {
             return reader.Skip(type);
+        }
+
+        static Expression NewBonded(Expression reader, Expression schema)
+        {
+            var ctor = typeof(BondedVoid<>).MakeGenericType(reader.Type).GetConstructor(reader.Type);
+            return Expression.New(ctor, reader);
         }
 
         static Expression MatchOrCompatible(Expression valueType, BondDataType? expectedType, TypeHandlerRuntime handler)
@@ -212,15 +230,15 @@ namespace Bond.Expressions
 
             if (expectedType == BondDataType.BT_UINT64)
             {
-                return MatchOrElse(valueType, BondDataType.BT_UINT32, handler, 
-                       MatchOrElse(valueType, BondDataType.BT_UINT16, handler, 
+                return MatchOrElse(valueType, BondDataType.BT_UINT32, handler,
+                       MatchOrElse(valueType, BondDataType.BT_UINT16, handler,
                        MatchOrElse(valueType, BondDataType.BT_UINT8, handler,
                        InvalidType(expectedType, valueType))));
             }
 
             if (expectedType == BondDataType.BT_UINT32)
             {
-                return MatchOrElse(valueType, BondDataType.BT_UINT16, handler, 
+                return MatchOrElse(valueType, BondDataType.BT_UINT16, handler,
                        MatchOrElse(valueType, BondDataType.BT_UINT8, handler,
                        InvalidType(expectedType, valueType)));
             }
@@ -233,7 +251,7 @@ namespace Bond.Expressions
 
             if (expectedType == BondDataType.BT_INT64)
             {
-                return MatchOrElse(valueType, BondDataType.BT_INT32, handler, 
+                return MatchOrElse(valueType, BondDataType.BT_INT32, handler,
                        MatchOrElse(valueType, BondDataType.BT_INT16, handler,
                        MatchOrElse(valueType, BondDataType.BT_INT8, handler,
                        InvalidType(expectedType, valueType))));
