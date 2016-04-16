@@ -1,46 +1,102 @@
 ﻿using System;
+using System.IO;
+using Bond.IO.Safe;
+using Bond.Protocols;
 
 namespace Bond.Comm.Tcp
 {
-    using System.IO;
-    using Bond.IO.Safe;
-    using Bond.Protocols;
-
-    internal enum FrameDisposition
+    internal static class TcpProtocol
     {
-        Indeterminate,
-        DeliverRequestToService,
-        DeliverResponseToProxy,
-        SendProtocolError,
-        HangUp
-    }
+        /// <summary>
+        /// Indicates what action should be taken in response to a Frame.
+        /// </summary>
+        internal enum FrameDisposition
+        {
+            /// <summary>
+            /// The disposition of a Frame about which we know nothing. If this is ever returned by Classify(), it
+            /// indicates that Classify() detected a bug and refused to continue.
+            /// </summary>
+            Indeterminate,
 
-    internal struct ClassifyResult
-    {
-        public FrameDisposition Disposition;
-        public TcpHeaders Headers;
-        public ArraySegment<byte> Payload;
-    }
+            /// <summary>
+            /// The frame was a valid Request.
+            /// </summary>
+            DeliverRequestToService,
 
-    internal enum ClassifyState
-    {
-        ExpectFrame,
-        ExpectTcpHeaders,
-        ExpectPayload,
-        ExpectEndOfFrame,
-        FrameComplete,
+            /// <summary>
+            /// The frame was a valid Response.
+            /// </summary>
+            DeliverResponseToProxy,
 
-        ValidFrame,
-        ReturnDisposition,
-        MalformedFrame,
+            /// <summary>
+            /// The frame was not valid, and the caller should send an error to the remote host.
+            /// </summary>
+            SendProtocolError,
 
-        InternalStateError      // Indicates a bug in the state machine.
-    }
+            /// <summary>
+            /// The caller should silently close the connection.
+            /// </summary>
+            HangUp
+        }
 
-    internal class TcpProtocol
-    {
+        /// <summary>
+        /// Encapsulates an action that should be taken in response to a Frame and its contents, if it was determined
+        /// to be a valid Frame.
+        /// </summary>
+        internal struct ClassifyResult
+        {
+            public FrameDisposition Disposition;
+            public TcpHeaders Headers;
+            public ArraySegment<byte> Payload;
+        }
+
+        /// <summary>
+        /// States for the state machine inside <see cref="TcpProtocol.Classify"/>. <c>internal</c> for testing.
+        /// </summary>
+        internal enum ClassifyState
+        {
+            // These states are the happy path from no knowledge to proving a frame is good. Each is implemented in its
+            // own function below.
+
+            // Do we have a frame at all?
+            ExpectFrame,
+
+            // Does the frame begin with a valid TcpHeaders?
+            ExpectTcpHeaders,
+
+            // Does the frame have a Payload immediately after the TcpHeaders?
+            ExpectPayload,
+
+            // The frame has all required framelets. Does it have any trailing ones?
+            ExpectEndOfFrame,
+
+            // Do we know what to do with frames with this PayloadType?
+            FrameComplete,
+
+            // There are no problems with this frame. What should we do with it?
+            ValidFrame,
+
+            // Terminal states. Each of these indicates that we have classified the frame and need to return something.
+            // Because these frames always mean the next step is to return, their implementations are inlined in
+            // Classify().
+
+            // There are no problems with this frame, and we know what to do with it. Return from Classify().
+            ReturnDisposition,
+
+            // We could not interpret the frame, or it violated the protocol. Return from Classify().
+            MalformedFrame,
+
+            // We detected a bug in the state machine. Return from Classify() with a FrameDisposition of Indeterminate.
+            // This should never happen.
+            InternalStateError
+        }
+
+        // This needs to be larger than the longest valid path through the state machine.
         private static readonly uint maximumTransitions = (uint) Enum.GetNames(typeof(ClassifyState)).Length;
 
+        // These values are hard-coded because the protocol, as implemented, does not permit any framelet sequences
+        // other than [TcpHeaders, PayloadData]. We will need to get rid of these indices and track the index of the
+        // next unexamined Framelet once we implement Layers.
         private const int TcpHeadersIndex = 0;
         private const int PayloadDataIndex = 1;
         private const int FrameSize = 2;
@@ -51,7 +107,7 @@ namespace Bond.Comm.Tcp
             {
                 return new ClassifyResult
                 {
-                    Disposition = FrameDisposition.SendProtocolError
+                    Disposition = FrameDisposition.Indeterminate
                 };
             }
 
@@ -62,11 +118,12 @@ namespace Bond.Comm.Tcp
             uint transitions = 0;
             while (true)
             {
+                // If it looks like we have a bug and are looping forever, bail out of the state machine.
                 if (transitions++ > maximumTransitions)
                 {
                     return new ClassifyResult
                     {
-                        Disposition = FrameDisposition.SendProtocolError
+                        Disposition = FrameDisposition.Indeterminate
                     };
                 }
 
@@ -119,7 +176,7 @@ namespace Bond.Comm.Tcp
                     case ClassifyState.InternalStateError:
                         return new ClassifyResult
                         {
-                            Disposition = FrameDisposition.SendProtocolError
+                            Disposition = FrameDisposition.Indeterminate
                         };
 
                     default:
@@ -127,11 +184,14 @@ namespace Bond.Comm.Tcp
                             nameof(TcpProtocol), nameof(Classify), state);
                         return new ClassifyResult
                         {
-                            Disposition = FrameDisposition.SendProtocolError
+                            Disposition = FrameDisposition.Indeterminate
                         };
                 }
             }
         }
+
+        // Terminal states need to be inlined in Classify() so they can return, but everything else fits nicely in its
+        // own function. These are internal for testing.
 
         internal static ClassifyState TransitionExpectFrame(ClassifyState state, Frame frame)
         {

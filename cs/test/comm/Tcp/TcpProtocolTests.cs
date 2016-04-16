@@ -11,8 +11,8 @@ namespace UnitTest.Tcp
     [TestFixture]
     class TcpProtocolTests
     {
-        private static readonly IEnumerable<ClassifyState> allStates =
-                Enum.GetValues(typeof (ClassifyState)).Cast<ClassifyState>();
+        private static readonly IEnumerable<TcpProtocol.ClassifyState> allStates =
+                Enum.GetValues(typeof (TcpProtocol.ClassifyState)).Cast<TcpProtocol.ClassifyState>();
 
         private const uint GoodRequestId = 1;
         private const uint GoodResponseId = 1;
@@ -52,7 +52,7 @@ namespace UnitTest.Tcp
         private static readonly Frame emptyFrame = new Frame(0);
 
 
-        private static IEnumerable<ClassifyState> StatesExcept(params ClassifyState[] excludedStates)
+        private static IEnumerable<TcpProtocol.ClassifyState> StatesExcept(params TcpProtocol.ClassifyState[] excludedStates)
         {
             return allStates.Where(state => !excludedStates.Contains(state));
         }
@@ -106,25 +106,25 @@ namespace UnitTest.Tcp
         [Test]
         public void TransitionExpectFrame_Valid()
         {
-            var after = TcpProtocol.TransitionExpectFrame(ClassifyState.ExpectFrame, goodRequestFrame);
-            Assert.AreEqual(ClassifyState.ExpectTcpHeaders, after);
+            var after = TcpProtocol.TransitionExpectFrame(TcpProtocol.ClassifyState.ExpectFrame, goodRequestFrame);
+            Assert.AreEqual(TcpProtocol.ClassifyState.ExpectTcpHeaders, after);
         }
 
         [Test]
         public void TransitionExpectFrame_InvalidStates()
         {
-            foreach (var invalid in StatesExcept(ClassifyState.ExpectFrame))
+            foreach (var invalid in StatesExcept(TcpProtocol.ClassifyState.ExpectFrame))
             {
                 var after = TcpProtocol.TransitionExpectFrame(invalid, goodRequestFrame);
-                Assert.AreEqual(ClassifyState.InternalStateError, after);
+                Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
             }
         }
 
         [Test]
         public void TransitionExpectFrame_InvalidPreconditions()
         {
-            var after = TcpProtocol.TransitionExpectFrame(ClassifyState.ExpectFrame, null);
-            Assert.AreEqual(ClassifyState.InternalStateError, after);
+            var after = TcpProtocol.TransitionExpectFrame(TcpProtocol.ClassifyState.ExpectFrame, null);
+            Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
         }
 
         [Test]
@@ -133,8 +133,8 @@ namespace UnitTest.Tcp
             TcpHeaders headers = null;
 
             var after = TcpProtocol.TransitionExpectTcpHeaders(
-                ClassifyState.ExpectTcpHeaders, goodRequestFrame, ref headers);
-            Assert.AreEqual(ClassifyState.ExpectPayload, after);
+                TcpProtocol.ClassifyState.ExpectTcpHeaders, goodRequestFrame, ref headers);
+            Assert.AreEqual(TcpProtocol.ClassifyState.ExpectPayload, after);
             Assert.NotNull(headers);
             Assert.AreEqual(GoodRequestId, headers.request_id);
             Assert.AreEqual(0, headers.error_code);
@@ -145,12 +145,12 @@ namespace UnitTest.Tcp
         [Test]
         public void TransitionExpectTcpHeaders_InvalidStates()
         {
-            foreach (var invalid in StatesExcept(ClassifyState.ExpectTcpHeaders))
+            foreach (var invalid in StatesExcept(TcpProtocol.ClassifyState.ExpectTcpHeaders))
             {
                 TcpHeaders headers = null;
 
                 var after = TcpProtocol.TransitionExpectTcpHeaders(invalid, goodRequestFrame, ref headers);
-                Assert.AreEqual(ClassifyState.InternalStateError, after);
+                Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
                 Assert.Null(headers);
             }
         }
@@ -161,8 +161,8 @@ namespace UnitTest.Tcp
             TcpHeaders headers = null;
 
             var after = TcpProtocol.TransitionExpectTcpHeaders(
-                ClassifyState.ExpectTcpHeaders, null, ref headers);
-            Assert.AreEqual(ClassifyState.InternalStateError, after);
+                TcpProtocol.ClassifyState.ExpectTcpHeaders, null, ref headers);
+            Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
         }
 
         [Test]
@@ -171,8 +171,8 @@ namespace UnitTest.Tcp
             TcpHeaders headers = null;
 
             var after = TcpProtocol.TransitionExpectTcpHeaders(
-                ClassifyState.ExpectTcpHeaders, emptyFrame, ref headers);
-            Assert.AreEqual(ClassifyState.MalformedFrame, after);
+                TcpProtocol.ClassifyState.ExpectTcpHeaders, emptyFrame, ref headers);
+            Assert.AreEqual(TcpProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(headers);
         }
 
@@ -182,21 +182,21 @@ namespace UnitTest.Tcp
             ArraySegment<byte>? payload = null;
 
             var after = TcpProtocol.TransitionExpectPayload(
-                ClassifyState.ExpectPayload, goodRequestFrame, goodRequestHeaders, ref payload);
-            Assert.AreEqual(ClassifyState.ExpectEndOfFrame, after);
+                TcpProtocol.ClassifyState.ExpectPayload, goodRequestFrame, goodRequestHeaders, ref payload);
+            Assert.AreEqual(TcpProtocol.ClassifyState.ExpectEndOfFrame, after);
             Assert.NotNull(payload);
         }
 
         [Test]
         public void TransitionExpectPayload_InvalidStates()
         {
-            foreach (var invalid in StatesExcept(ClassifyState.ExpectPayload))
+            foreach (var invalid in StatesExcept(TcpProtocol.ClassifyState.ExpectPayload))
             {
                 ArraySegment<byte>? payload = null;
 
                 var after = TcpProtocol.TransitionExpectPayload(
                     invalid, goodRequestFrame, goodRequestHeaders, ref payload);
-                Assert.AreEqual(ClassifyState.InternalStateError, after);
+                Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
                 Assert.Null(payload);
             }
         }
@@ -207,13 +207,13 @@ namespace UnitTest.Tcp
             ArraySegment<byte>? payload = null;
 
             var after = TcpProtocol.TransitionExpectPayload(
-                ClassifyState.ExpectPayload, null, goodRequestHeaders, ref payload);
-            Assert.AreEqual(ClassifyState.InternalStateError, after);
+                TcpProtocol.ClassifyState.ExpectPayload, null, goodRequestHeaders, ref payload);
+            Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(payload);
 
             after = TcpProtocol.TransitionExpectPayload(
-                ClassifyState.ExpectPayload, goodRequestFrame, null, ref payload);
-            Assert.AreEqual(ClassifyState.InternalStateError, after);
+                TcpProtocol.ClassifyState.ExpectPayload, goodRequestFrame, null, ref payload);
+            Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(payload);
         }
 
@@ -223,123 +223,128 @@ namespace UnitTest.Tcp
             ArraySegment<byte>? payload = null;
 
             var after = TcpProtocol.TransitionExpectPayload(
-                ClassifyState.ExpectPayload, emptyFrame, goodRequestHeaders, ref payload);
-            Assert.AreEqual(ClassifyState.MalformedFrame, after);
+                TcpProtocol.ClassifyState.ExpectPayload, emptyFrame, goodRequestHeaders, ref payload);
+            Assert.AreEqual(TcpProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(payload);
 
             after = TcpProtocol.TransitionExpectPayload(
-                ClassifyState.ExpectPayload, shortRequestFrame, goodRequestHeaders, ref payload);
-            Assert.AreEqual(ClassifyState.MalformedFrame, after);
+                TcpProtocol.ClassifyState.ExpectPayload, shortRequestFrame, goodRequestHeaders, ref payload);
+            Assert.AreEqual(TcpProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(payload);
         }
 
         [Test]
         public void TransitionExpectEndOfFrame_Valid()
         {
-            var after = TcpProtocol.TransitionExpectEndOfFrame(ClassifyState.ExpectEndOfFrame, goodRequestFrame);
-            Assert.AreEqual(ClassifyState.FrameComplete, after);
+            var after = TcpProtocol.TransitionExpectEndOfFrame(
+                TcpProtocol.ClassifyState.ExpectEndOfFrame, goodRequestFrame);
+            Assert.AreEqual(TcpProtocol.ClassifyState.FrameComplete, after);
         }
 
         [Test]
         public void TransitionExpectEndOfFrame_InvalidStates()
         {
-            foreach (var invalid in StatesExcept(ClassifyState.ExpectEndOfFrame))
+            foreach (var invalid in StatesExcept(TcpProtocol.ClassifyState.ExpectEndOfFrame))
             {
                 var after = TcpProtocol.TransitionExpectEndOfFrame(invalid, goodRequestFrame);
-                Assert.AreEqual(ClassifyState.InternalStateError, after);
+                Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
             }
         }
 
         [Test]
         public void TransitionExpectEndOfFrame_InvalidPrecondition()
         {
-            var after = TcpProtocol.TransitionExpectEndOfFrame(ClassifyState.ExpectEndOfFrame, null);
-            Assert.AreEqual(ClassifyState.InternalStateError, after);
+            var after = TcpProtocol.TransitionExpectEndOfFrame(TcpProtocol.ClassifyState.ExpectEndOfFrame, null);
+            Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
         }
 
         [Test]
         public void TransitionExpectEndOfFrame_MalformedFrame()
         {
-            var after = TcpProtocol.TransitionExpectEndOfFrame(ClassifyState.ExpectEndOfFrame, doublePayloadRequestFrame);
-            Assert.AreEqual(ClassifyState.MalformedFrame, after);
+            var after = TcpProtocol.TransitionExpectEndOfFrame(
+                TcpProtocol.ClassifyState.ExpectEndOfFrame, doublePayloadRequestFrame);
+            Assert.AreEqual(TcpProtocol.ClassifyState.MalformedFrame, after);
         }
 
         [Test]
         public void TransitionFrameComplete_Valid()
         {
-            var after = TcpProtocol.TransitionFrameComplete(ClassifyState.FrameComplete, goodRequestHeaders);
-            Assert.AreEqual(ClassifyState.ValidFrame, after);
+            var after = TcpProtocol.TransitionFrameComplete(
+                TcpProtocol.ClassifyState.FrameComplete, goodRequestHeaders);
+            Assert.AreEqual(TcpProtocol.ClassifyState.ValidFrame, after);
 
-            after = TcpProtocol.TransitionFrameComplete(ClassifyState.FrameComplete, goodResponseHeaders);
-            Assert.AreEqual(ClassifyState.ValidFrame, after);
+            after = TcpProtocol.TransitionFrameComplete(TcpProtocol.ClassifyState.FrameComplete, goodResponseHeaders);
+            Assert.AreEqual(TcpProtocol.ClassifyState.ValidFrame, after);
         }
 
         [Test]
         public void TransitionFrameComplete_InvalidStates()
         {
-            foreach (var invalid in StatesExcept(ClassifyState.FrameComplete))
+            foreach (var invalid in StatesExcept(TcpProtocol.ClassifyState.FrameComplete))
             {
                 var after = TcpProtocol.TransitionFrameComplete(invalid, goodRequestHeaders);
-                Assert.AreEqual(ClassifyState.InternalStateError, after);
+                Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
             }
         }
 
         [Test]
         public void TransitionFrameComplete_InvalidPreconditions()
         {
-            var after = TcpProtocol.TransitionFrameComplete(ClassifyState.FrameComplete, null);
-            Assert.AreEqual(ClassifyState.InternalStateError, after);
+            var after = TcpProtocol.TransitionFrameComplete(TcpProtocol.ClassifyState.FrameComplete, null);
+            Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
         }
 
         [Test]
         public void TransitionFrameComplete_MalformedFrame()
         {
-            var after = TcpProtocol.TransitionFrameComplete(ClassifyState.FrameComplete, goodEventHeaders);
-            Assert.AreEqual(ClassifyState.MalformedFrame, after);
+            var after = TcpProtocol.TransitionFrameComplete(TcpProtocol.ClassifyState.FrameComplete, goodEventHeaders);
+            Assert.AreEqual(TcpProtocol.ClassifyState.MalformedFrame, after);
         }
 
         [Test]
         public void TransitionValidFrame_Valid()
         {
-            var disposition = FrameDisposition.Indeterminate;
+            var disposition = TcpProtocol.FrameDisposition.Indeterminate;
 
             var after = TcpProtocol.TransitionValidFrame(
-                ClassifyState.ValidFrame, goodRequestHeaders, ref disposition);
-            Assert.AreEqual(ClassifyState.ReturnDisposition, after);
-            Assert.AreEqual(FrameDisposition.DeliverRequestToService, disposition);
+                TcpProtocol.ClassifyState.ValidFrame, goodRequestHeaders, ref disposition);
+            Assert.AreEqual(TcpProtocol.ClassifyState.ReturnDisposition, after);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.DeliverRequestToService, disposition);
 
-            disposition = FrameDisposition.Indeterminate;
+            disposition = TcpProtocol.FrameDisposition.Indeterminate;
 
-            after = TcpProtocol.TransitionValidFrame(ClassifyState.ValidFrame, goodResponseHeaders, ref disposition);
-            Assert.AreEqual(ClassifyState.ReturnDisposition, after);
-            Assert.AreEqual(FrameDisposition.DeliverResponseToProxy, disposition);
+            after = TcpProtocol.TransitionValidFrame(
+                TcpProtocol.ClassifyState.ValidFrame, goodResponseHeaders, ref disposition);
+            Assert.AreEqual(TcpProtocol.ClassifyState.ReturnDisposition, after);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.DeliverResponseToProxy, disposition);
         }
 
         [Test]
         public void TransitionValidFrame_InvalidStates()
         {
-            foreach (var invalid in StatesExcept(ClassifyState.ValidFrame))
+            foreach (var invalid in StatesExcept(TcpProtocol.ClassifyState.ValidFrame))
             {
-                var disposition = FrameDisposition.Indeterminate;
+                var disposition = TcpProtocol.FrameDisposition.Indeterminate;
 
                 var after = TcpProtocol.TransitionValidFrame(invalid, goodRequestHeaders, ref disposition);
-                Assert.AreEqual(ClassifyState.InternalStateError, after);
-                Assert.AreEqual(FrameDisposition.Indeterminate, disposition);
+                Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
+                Assert.AreEqual(TcpProtocol.FrameDisposition.Indeterminate, disposition);
             }
         }
 
         [Test]
         public void TransitionValidFrame_InvalidPreconditions()
         {
-            var disposition = FrameDisposition.Indeterminate;
+            var disposition = TcpProtocol.FrameDisposition.Indeterminate;
 
-            var after = TcpProtocol.TransitionValidFrame(ClassifyState.ValidFrame, null, ref disposition);
-            Assert.AreEqual(ClassifyState.InternalStateError, after);
-            Assert.AreEqual(FrameDisposition.Indeterminate, disposition);
+            var after = TcpProtocol.TransitionValidFrame(TcpProtocol.ClassifyState.ValidFrame, null, ref disposition);
+            Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.Indeterminate, disposition);
 
-            after = TcpProtocol.TransitionValidFrame(ClassifyState.ValidFrame, goodEventHeaders, ref disposition);
-            Assert.AreEqual(ClassifyState.InternalStateError, after);
-            Assert.AreEqual(FrameDisposition.Indeterminate, disposition);
+            after = TcpProtocol.TransitionValidFrame(
+                TcpProtocol.ClassifyState.ValidFrame, goodEventHeaders, ref disposition);
+            Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.Indeterminate, disposition);
         }
 
 
@@ -350,7 +355,7 @@ namespace UnitTest.Tcp
         public void Classify_Valid()
         {
             var requestResult = TcpProtocol.Classify(goodRequestFrame);
-            Assert.AreEqual(FrameDisposition.DeliverRequestToService, requestResult.Disposition);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.DeliverRequestToService, requestResult.Disposition);
             Assert.AreEqual(goodRequestHeaders.error_code, requestResult.Headers.error_code);
             Assert.AreEqual(goodRequestHeaders.method_name, requestResult.Headers.method_name);
             Assert.AreEqual(goodRequestHeaders.payload_type, requestResult.Headers.payload_type);
@@ -358,7 +363,7 @@ namespace UnitTest.Tcp
             Assert.AreEqual(goodRequestFrame.Framelets[goodRequestFrame.Count - 1].Contents, requestResult.Payload);
 
             var responseResult = TcpProtocol.Classify(goodResponseFrame);
-            Assert.AreEqual(FrameDisposition.DeliverResponseToProxy, responseResult.Disposition);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.DeliverResponseToProxy, responseResult.Disposition);
             Assert.AreEqual(goodResponseHeaders.error_code, responseResult.Headers.error_code);
             Assert.AreEqual(goodResponseHeaders.method_name, responseResult.Headers.method_name);
             Assert.AreEqual(goodResponseHeaders.payload_type, responseResult.Headers.payload_type);
@@ -370,7 +375,7 @@ namespace UnitTest.Tcp
         public void Classify_InvalidPreconditions()
         {
             var nullResult = TcpProtocol.Classify(null);
-            Assert.AreEqual(FrameDisposition.SendProtocolError, nullResult.Disposition);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.Indeterminate, nullResult.Disposition);
             Assert.Null(nullResult.Headers);
             Assert.Null(nullResult.Payload.Array);
         }
@@ -379,32 +384,32 @@ namespace UnitTest.Tcp
         public void Classify_MalformedFrame()
         {
             var eventResult = TcpProtocol.Classify(goodEventFrame);
-            Assert.AreEqual(FrameDisposition.SendProtocolError, eventResult.Disposition);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.SendProtocolError, eventResult.Disposition);
             Assert.Null(eventResult.Headers);
             Assert.Null(eventResult.Payload.Array);
 
             var emptyResult = TcpProtocol.Classify(emptyFrame);
-            Assert.AreEqual(FrameDisposition.SendProtocolError, emptyResult.Disposition);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.SendProtocolError, emptyResult.Disposition);
             Assert.Null(emptyResult.Headers);
             Assert.Null(emptyResult.Payload.Array);
 
             var shortResult = TcpProtocol.Classify(shortRequestFrame);
-            Assert.AreEqual(FrameDisposition.SendProtocolError, shortResult.Disposition);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.SendProtocolError, shortResult.Disposition);
             Assert.Null(shortResult.Headers);
             Assert.Null(shortResult.Payload.Array);
 
             var doubleHeadersResult = TcpProtocol.Classify(doubleHeadersRequestFrame);
-            Assert.AreEqual(FrameDisposition.SendProtocolError, doubleHeadersResult.Disposition);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.SendProtocolError, doubleHeadersResult.Disposition);
             Assert.Null(doubleHeadersResult.Headers);
             Assert.Null(doubleHeadersResult.Payload.Array);
 
             var doublePayloadResult = TcpProtocol.Classify(doublePayloadRequestFrame);
-            Assert.AreEqual(FrameDisposition.SendProtocolError, doublePayloadResult.Disposition);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.SendProtocolError, doublePayloadResult.Disposition);
             Assert.Null(doublePayloadResult.Headers);
             Assert.Null(doublePayloadResult.Payload.Array);
 
             var backwardsResult = TcpProtocol.Classify(backwardsRequestFrame);
-            Assert.AreEqual(FrameDisposition.SendProtocolError, backwardsResult.Disposition);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.SendProtocolError, backwardsResult.Disposition);
             Assert.Null(backwardsResult.Headers);
             Assert.Null(backwardsResult.Payload.Array);
         }

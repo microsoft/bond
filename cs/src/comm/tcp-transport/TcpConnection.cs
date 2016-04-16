@@ -184,11 +184,11 @@ namespace Bond.Comm.Tcp
                 var result = TcpProtocol.Classify(frame);
                 switch (result.Disposition)
                 {
-                    case FrameDisposition.DeliverRequestToService:
+                    case TcpProtocol.FrameDisposition.DeliverRequestToService:
                         DispatchRequest(result.Headers, result.Payload);
                         break;
 
-                    case FrameDisposition.DeliverResponseToProxy:
+                    case TcpProtocol.FrameDisposition.DeliverResponseToProxy:
                         DispatchResponse(result.Headers, result.Payload);
                         break;
 
