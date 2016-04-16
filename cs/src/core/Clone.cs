@@ -19,9 +19,9 @@ namespace Bond
         }
 
         /// <summary>
-        /// Create an instance of type T by deep cloning properties/fields of a source object of type SourceT.
+        /// Create an instance of type <typeparamref name="T"/> by deep cloning properties/fields of a source object of type <typeparamref name="SourceT"/>.
         /// </summary>
-        /// <typeparam name="SourceT">type representing a source schema compatible with schema T</typeparam>
+        /// <typeparam name="SourceT">type representing a source schema compatible with schema <typeparamref name="T"/></typeparam>
         /// <param name="source">source object to create a clone from</param>
         /// <returns></returns>
         public static T From<SourceT>(SourceT source)
@@ -31,7 +31,7 @@ namespace Bond
     }
 
     /// <summary>
-    /// Utility for cloning objects of type SourceT.
+    /// Utility for cloning objects of type <typeparamref name="SourceT"/>.
     /// </summary>
     /// <typeparam name="SourceT">type representing a Bond schema</typeparam>
     public class Cloner<SourceT>
@@ -39,7 +39,7 @@ namespace Bond
         readonly Func<object, object>[] clone;
 
         /// <summary>
-        /// Create a cloner that makes clones of the same type SourceT as source objects.
+        /// Create a cloner that makes clones of the same type <typeparamref name="SourceT"/> as source objects.
         /// </summary>
         public Cloner()
             : this(typeof(SourceT))
@@ -69,7 +69,7 @@ namespace Bond
         /// Create a cloner that makes clones of the specified type.
         /// </summary>
         /// <param name="type">type of clone object, may be different than source object</param>
-        /// /// <param name="factory">factory implementing IFactory interface</param>
+        /// /// <param name="factory">factory implementing <see cref="IFactory"/> interface</param>
         public Cloner(Type type, IFactory factory)
             : this(type, null, factory)
         {}
@@ -79,7 +79,7 @@ namespace Bond
         /// </summary>
         /// <param name="type">type of clone object, may be different than source object</param>
         /// <param name="parser">Custom <see cref="IParser"/> instance</param>
-        /// <param name="factory">factory implementing IFactory interface</param>
+        /// <param name="factory">factory implementing <see cref="IFactory"/> interface</param>
         public Cloner(Type type, IParser parser, IFactory factory)
         {
             clone = Generate(type,
@@ -104,7 +104,7 @@ namespace Bond
         /// Create a cloner that uses specified factory and makes clones of the specified type.
         /// </summary>
         /// <param name="type">type of clone object, may be different than source object</param>
-        /// <param name="parser">Custom IParser instance</param>
+        /// <param name="parser">Custom <see cref="IParser"/> instance</param>
         /// <param name="factory">factory delegate returning expressions to create objects</param>
         public Cloner(Type type, IParser parser, Factory factory)
         {
@@ -116,11 +116,11 @@ namespace Bond
         }
 
         /// <summary>
-        /// Clone the source object into an object of type T.
+        /// Clone the source object into an object of type <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="T">type of result, must be the same as types specified during Cloner construction</typeparam>
+        /// <typeparam name="T">type of result, must be the same as types specified during <see cref="Cloner{SourceT}" /> construction</typeparam>
         /// <param name="source">source object to be cloned</param>
-        /// <returns>clone of the source object projected on type T</returns>
+        /// <returns>clone of the source object projected on type <typeparamref name="T"/></returns>
         public T Clone<T>(SourceT source)
         {
             return (T)clone[0](source);

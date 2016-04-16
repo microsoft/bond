@@ -18,7 +18,7 @@ namespace Bond
         }
 
         /// <summary>
-        /// Transcode data from protocol reader R to protocol writer W
+        /// Transcode data from protocol reader <typeparamref name="R"/> to protocol writer <typeparamref name="W"/>
         /// </summary>
         /// <typeparam name="R">Protocol reader</typeparam>
         /// <typeparam name="W">Protocol writer</typeparam>
@@ -31,7 +31,7 @@ namespace Bond
     }
 
     /// <summary>
-    /// Transcode payload from one protocol into another using compile-time schema T
+    /// Transcode payload from one protocol into another using compile-time schema <typeparamref name="T"/>
     /// </summary>
     /// <typeparam name="T">Type representing a Bond schema</typeparam>
     public static class Transcode<T>
@@ -42,7 +42,7 @@ namespace Bond
         }
 
         /// <summary>
-        /// Transcode data from protocol reader R to protocol writer W
+        /// Transcode data from protocol reader <typeparamref name="R"/> to protocol writer <typeparamref name="W"/>
         /// </summary>
         /// <typeparam name="R">Protocol reader</typeparam>
         /// <typeparam name="W">Protocol writer</typeparam>
@@ -55,7 +55,7 @@ namespace Bond
     }
 
     /// <summary>
-    /// Transcoder from protocol reader R to protocol writer W
+    /// Transcoder from protocol reader <typeparamref name="R"/> to protocol writer <typeparamref name="W"/>
     /// </summary>
     /// <typeparam name="R">Protocol reader</typeparam>
     /// <typeparam name="W">Protocol writer</typeparam>
@@ -83,7 +83,7 @@ namespace Bond
         /// Create a transcoder for payloads with specified runtime schema
         /// </summary>
         /// <param name="schema">Payload schema, required for transcoding from untagged protocols</param>
-        /// <param name="parser">Custom IParser instance</param>
+        /// <param name="parser">Custom <see cref="IParser"/> instance</param>
         public Transcoder(RuntimeSchema schema, IParser parser)
         {
             transcode = Generate(schema, parser);
@@ -93,7 +93,7 @@ namespace Bond
         /// Create a transcoder for payloads with specified compile-time schema
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
-        /// <param name="parser">Custom IParser instance</param>
+        /// <param name="parser">Custom <see cref="IParser"/> instance</param>
         public Transcoder(Type type, IParser parser)
         {
             transcode = Generate(type, parser);

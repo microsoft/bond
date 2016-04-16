@@ -14,10 +14,10 @@ namespace Bond.Expressions
     /// <summary>
     /// Creates expression of type <see cref="IBonded{T}"/> given a object type and value.
     /// </summary>
-    /// <param name="objectType">Type of value stored in IBonded</param>
+    /// <param name="objectType">Type of object to be stored in <see cref="IBonded"/></param>
     /// <param name="value">Expression representing the value to be stored in the bonded instance.</param>
     /// <returns>Expression representing creation of bonded with the specified value.</returns>
-    public delegate Expression InstanceBondedFactory(Type objectType, Expression value);
+    public delegate Expression ObjectBondedFactory(Type objectType, Expression value);
 
     public class ObjectParser : IParser
     {
@@ -30,13 +30,13 @@ namespace Bond.Expressions
         readonly Type schemaType;
         readonly Type objectType;
         readonly int hierarchyDepth;
-        readonly InstanceBondedFactory bondedFactory;
+        readonly ObjectBondedFactory bondedFactory;
 
         public ObjectParser(Type type)
             : this(type, null)
         {}
 
-        public ObjectParser(Type type, InstanceBondedFactory bondedFactory)
+        public ObjectParser(Type type, ObjectBondedFactory bondedFactory)
         {
             typeAlias = new TypeAlias(type);
             value = objParam = Expression.Parameter(typeof(object), "obj");

@@ -573,12 +573,12 @@ during deserialization.
 
 Standard implementations of `Bonded<T>` and `Bonded<T,R>` always use default
 `Serializer/Deserializer/Cloner/Transcoder`. In order to customize this behavior,
-user can pass custom `InstanceBondedFactory` or `PayloadBondedFactory` delegates
+user can pass custom `ObjectBondedFactory` or `PayloadBondedFactory` delegates
 as parameters to `ObjectParser` or `ParserFactory<R>.Create()`:
 
     // create serializer for schema type T and protocol reader W
     // using custom InstanceBondedFactory
-    new Serializer<W>(typeof(T), new ObjectParser(typeof(T), CustomInstanceBondedFactory), ...); 
+    new Serializer<W>(typeof(T), new ObjectParser(typeof(T), CustomObjectBondedFactory), ...); 
 
     // create deserializer for schema type T and protocol reader R
     // using custom PayloadBondedFactory 

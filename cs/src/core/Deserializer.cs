@@ -11,7 +11,7 @@ namespace Bond
     using Bond.IO;
 
     /// <summary>
-    /// Deserialize objects of type T
+    /// Deserialize objects of type <typeparamref name="T"/>
     /// </summary>
     /// <typeparam name="T">Type representing a Bond schema</typeparam>
     public static class Deserialize<T>
@@ -22,7 +22,7 @@ namespace Bond
         }
 
         /// <summary>
-        /// Deserialize an object of type T from a payload
+        /// Deserialize an object of type <typeparamref name="T"/> from a payload
         /// </summary>
         /// <typeparam name="R">Protocol reader</typeparam>
         /// <param name="reader">Protocol reader representing payload</param>
@@ -34,7 +34,7 @@ namespace Bond
     }
 
     /// <summary>
-    /// Deserializer for a protocol reader R
+    /// Deserializer for a protocol reader <typeparamref name="R"/>
     /// </summary>
     /// <typeparam name="R">Protocol reader</typeparam>
     public class Deserializer<R>
@@ -109,7 +109,7 @@ namespace Bond
         /// Create a deserializer instance for specified type, using a custom object factory
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
-        /// <param name="parser">Custom IParser instance</param>
+        /// <param name="parser">Custom <see cref="IParser"/> instance</param>
         /// <param name="factory">Factory providing expressions to create objects during deserialization</param>
         /// <param name="inlineNested">Inline nested types if possible (optimizes for reduction of execution time
         /// at the expense of initialization time and memory)</param>
@@ -132,7 +132,7 @@ namespace Bond
         /// Create a deserializer instance for specified type, using a custom object factory
         /// </summary>
         /// <param name="type">Type representing a Bond schema</param>
-        /// <param name="parser">Custom IParser instance</param>
+        /// <param name="parser">Custom <see cref="IParser"/> instance</param>
         /// <param name="factory">Factory providing expressions to create objects during deserialization</param>
         /// <param name="inlineNested">Inline nested types if possible (optimizes for reduction of execution time
         /// at the expense of initialization time and memory)</param>
@@ -198,7 +198,7 @@ namespace Bond
         }
 
         /// <summary>
-        /// Deserialize an object of type T from a payload
+        /// Deserialize an object of type <typeparamref name="T"/> from a payload
         /// </summary>
         /// <typeparam name="T">Type representing a Bond schema</typeparam>
         /// <param name="reader">Protocol reader representing the payload</param>
@@ -231,11 +231,13 @@ namespace Bond
     public static class Deserializer
     {
         /// <summary>
-        /// Deserialize an object from an IBonded&lt;T> instance using a specific deserializer
+        /// Deserialize an object from an <see cref="IBonded{T}"/> instance using a specific deserializer
         /// </summary>
-        /// <param name="deserializer">Deserializer to be used to deserialize IBonded&lt;T> payload</param>
-        /// <param name="bonded">IBonded&lt;T> instance representing payload</param>
-        /// <remarks>Implemented as an extension method to avoid ICloneable&lt;R> constraint on Deserializer&lt;R></remarks>
+        /// <typeparam name="R">Protocol reader</typeparam>
+        /// <typeparam name="T">Type of source object in the bonded</typeparam>
+        /// <param name="deserializer">Deserializer to be used to deserialize <see cref="IBonded{T}"/> payload</param>
+        /// <param name="bonded"><see cref="IBonded{T}"/> instance representing payload</param>
+        /// <remarks>Implemented as an extension method to avoid <see cref="ICloneable{R}"/> constraint on <see cref="Deserializer{R}"/></remarks>
         /// <returns>Deserialized object</returns>
         public static T Deserialize<T, R>(this Deserializer<R> deserializer, IBonded<T> bonded)
             where R : ICloneable<R>

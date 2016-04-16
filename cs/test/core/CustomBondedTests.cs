@@ -245,12 +245,12 @@ namespace UnitTest
 
             public Cloner<TSource> Cloner<TSource, T>()
             {
-                return new Cloner<TSource>(typeof(T), new ObjectParser(typeof(TSource), InstanceBondedFactory), Factory);
+                return new Cloner<TSource>(typeof(T), new ObjectParser(typeof(TSource), ObjectBondedFactory), Factory);
             }
 
             public Serializer<W> Serializer<W, T>()
             {
-                return new Serializer<W>(typeof(T), new ObjectParser(typeof(T), InstanceBondedFactory), false);
+                return new Serializer<W>(typeof(T), new ObjectParser(typeof(T), ObjectBondedFactory), false);
             }
 
             public Deserializer<R> Deserializer<R, T>(RuntimeSchema schema)
@@ -262,7 +262,7 @@ namespace UnitTest
                 return new Deserializer<R>(typeof(T), parser, Factory, false);
             }
 
-            private static Expression InstanceBondedFactory(Type objectType, Expression value)
+            private static Expression ObjectBondedFactory(Type objectType, Expression value)
             {
                 var method = typeof(CustomBonded<>).MakeGenericType(objectType).GetMethod("From", new[] {value.Type});
 
