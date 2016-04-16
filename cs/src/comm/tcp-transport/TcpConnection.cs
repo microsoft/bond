@@ -25,7 +25,7 @@ namespace Bond.Comm.Tcp
         private TcpTransport m_parentTransport;
 
         TcpClient m_tcpClient;
-        NetworkStream m_networkStream;
+        private readonly NetworkStream m_networkStream;
 
         ServiceHost m_serviceHost;
 
@@ -34,7 +34,7 @@ namespace Bond.Comm.Tcp
 
         long m_requestId;
 
-        public TcpConnection(
+        internal TcpConnection(
             TcpTransport parentTransport,
             TcpClient tcpClient,
             ConnectionType connectionType)
@@ -129,8 +129,11 @@ namespace Bond.Comm.Tcp
             {
                 using (var binWriter = new BinaryWriter(m_networkStream, encoding: Encoding.UTF8, leaveOpen: true))
                 {
-                    frame.Write(binWriter);
-                    binWriter.Flush();
+                    lock (m_networkStream)
+                    {
+                        frame.Write(binWriter);
+                        binWriter.Flush();
+                    }
                 }
 
                 await m_networkStream.FlushAsync();
@@ -151,8 +154,11 @@ namespace Bond.Comm.Tcp
             Log.Debug("{0}.{1}: Sending reply for request ID {1}.", this, nameof(SendReplyAsync), requestId);
             using (var binWriter = new BinaryWriter(m_networkStream, encoding: Encoding.UTF8, leaveOpen: true))
             {
-                frame.Write(binWriter);
-                binWriter.Flush();
+                lock (m_networkStream)
+                {
+                    frame.Write(binWriter);
+                    binWriter.Flush();
+                }
             }
 
             await m_networkStream.FlushAsync();
