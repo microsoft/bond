@@ -1,1 +1,4 @@
+# For the generated files in the compiler test suite, we need these files to
+# be treated as-is to avoid spurious test failures.
+
 generated/** -text
