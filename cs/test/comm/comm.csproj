@@ -40,6 +40,7 @@
       <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
     </BondCodegen>
     <Compile Include="Tcp\FrameTests.cs" />
+    <Compile Include="Tcp\TcpConnectionTests.cs" />
     <Compile Include="Tcp\TcpListenerTests.cs" />
     <Compile Include="Tcp\TcpProtocolTests.cs" />
     <Compile Include="Tcp\TcpTransportTests.cs" />

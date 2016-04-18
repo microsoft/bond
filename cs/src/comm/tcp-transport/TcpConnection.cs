@@ -112,6 +112,22 @@ namespace Bond.Comm.Tcp
             return frame;
         }
 
+        internal static Frame MakeProtocolErrorFrame(ProtocolErrorCode errorCode)
+        {
+            var protocolError = new ProtocolError
+            {
+                error_code = errorCode
+            };
+
+            var outputBuffer = new OutputBuffer(16);
+            var fastWriter = new FastBinaryWriter<OutputBuffer>(outputBuffer);
+            Serialize.To(fastWriter, protocolError);
+
+            var frame = new Frame(1);
+            frame.Add(new Framelet(FrameletType.ProtocolError, outputBuffer.Data));
+            return frame;
+        }
+
         // TODO: make async for real
         internal async Task<IMessage> SendRequestAsync<TPayload>(string methodName, IMessage<TPayload> request)
         {
@@ -125,6 +141,32 @@ namespace Bond.Comm.Tcp
                 m_outstandingRequests.Add(requestId, responseCompletionSource);
             }
 
+            await SendFrameAsync(frame, responseCompletionSource);
+            Log.Debug("{0}.{1}: Sent request {2}/{3}.", this, nameof(SendRequestAsync), requestId, methodName);
+            return await responseCompletionSource.Task;
+        }
+
+        internal async Task SendReplyAsync(uint requestId, IMessage response)
+        {
+            var frame = MessageToFrame(requestId, null, PayloadType.Response, response);
+            Log.Debug("{0}.{1}: Sending reply for request ID {2}.", this, nameof(SendReplyAsync), requestId);
+
+            await SendFrameAsync(frame);
+            Log.Debug("{0}.{1}: Sent reply for request ID {2}.", this, nameof(SendReplyAsync), requestId);
+        }
+
+        internal async Task SendProtocolErrorAsync(ProtocolErrorCode errorCode)
+        {
+            var frame = MakeProtocolErrorFrame(errorCode);
+            Log.Debug("{0}.{1}: Sending protocol error with code {2}.", this, nameof(SendProtocolErrorAsync),
+                errorCode);
+
+            await SendFrameAsync(frame);
+            Log.Debug("{0}.{1}: Sent protocol error with code {2}.", this, nameof(SendProtocolErrorAsync), errorCode);
+        }
+
+        internal async Task SendFrameAsync(Frame frame, TaskCompletionSource<IMessage> responseCompletionSource = null)
+        {
             try
             {
                 using (var binWriter = new BinaryWriter(m_networkStream, encoding: Encoding.UTF8, leaveOpen: true))
@@ -140,29 +182,10 @@ namespace Bond.Comm.Tcp
             }
             catch (IOException ex)
             {
-                responseCompletionSource.TrySetException(ex);
+                Log.Error(ex, "{0}.{1}: While writing a Frame to the network: {2}", this, nameof(SendFrameAsync),
+                    ex.Message);
+                responseCompletionSource?.TrySetException(ex);
             }
-
-            Log.Debug("{0}.{1}: Sent request {2}/{3}.", this, nameof(SendRequestAsync), requestId, methodName);
-            return await responseCompletionSource.Task;
-        }
-
-        internal async Task SendReplyAsync(uint requestId, IMessage response)
-        {
-            var frame = MessageToFrame(requestId, null, PayloadType.Response, response);
-
-            Log.Debug("{0}.{1}: Sending reply for request ID {1}.", this, nameof(SendReplyAsync), requestId);
-            using (var binWriter = new BinaryWriter(m_networkStream, encoding: Encoding.UTF8, leaveOpen: true))
-            {
-                lock (m_networkStream)
-                {
-                    frame.Write(binWriter);
-                    binWriter.Flush();
-                }
-            }
-
-            await m_networkStream.FlushAsync();
-            Log.Debug("{0}.{1}: Sent reply for request ID {1}.", this, nameof(SendReplyAsync), requestId);
         }
 
         internal void Start()
@@ -196,6 +219,10 @@ namespace Bond.Comm.Tcp
 
                     case TcpProtocol.FrameDisposition.DeliverResponseToProxy:
                         DispatchResponse(result.Headers, result.Payload);
+                        break;
+
+                    case TcpProtocol.FrameDisposition.SendProtocolError:
+                        await SendProtocolErrorAsync(result.ErrorCode ?? ProtocolErrorCode.INTERNAL_ERROR);
                         break;
 
                     default:

@@ -45,9 +45,36 @@ namespace Bond.Comm.Tcp
         /// </summary>
         internal struct ClassifyResult
         {
+            /// <summary>
+            /// What <see cref="Classify"/> thinks its caller should do with the <see cref="Frame"/> it was given.
+            /// </summary>
             public FrameDisposition Disposition;
+
+            /// <summary>
+            /// The <see cref="TcpHeaders"/> from the <see cref="Frame"/> given to
+            /// <see cref="Classify"/>. If <c>Classify</c> was unable to find <c>TcpHeaders</c>, was unable to
+            /// understand the <c>TcpHeaders</c> it found, or returned before it
+            /// reached the <c>TcpHeaders</c>, this will be <c>null</c>.
+            /// </summary>
             public TcpHeaders Headers;
+
+            /// <summary>
+            /// The payload from the <see cref="Frame"/> given to <see cref="Classify"/>. If <c>Classify</c> was unable
+            /// to find a payload or returned before it reached the payload, <c>Payload.Array</c> will be <c>null</c>.
+            /// </summary>
             public ArraySegment<byte> Payload;
+
+            /// <summary>
+            /// If the <see cref="Frame"/> given to <see cref="Classify"/> contained a <see cref="ProtocolError"/>,
+            /// this will point to it. Otherwise, this will be null.
+            /// </summary>
+            public ProtocolError Error;
+
+            /// <summary>
+            /// If <see cref="Disposition"/> is <see cref="FrameDisposition.SendProtocolError"/>, this will contain the
+            /// relevant <see cref="ProtocolErrorCode"/>. For all other dispositions, this will be <c>null</c>.
+            /// </summary>
+            public ProtocolErrorCode? ErrorCode;
         }
 
         /// <summary>
@@ -55,11 +82,14 @@ namespace Bond.Comm.Tcp
         /// </summary>
         internal enum ClassifyState
         {
-            // These states are the happy path from no knowledge to proving a frame is good. Each is implemented in its
-            // own function below.
+            // These states are the happy path from no knowledge to proving a frame is good and knowing what to do with
+            // its contents. Each is implemented in its own function below.
 
             // Do we have a frame at all?
             ExpectFrame,
+
+            // Does the frame have at least one framelet? Is the first one valid?
+            ExpectFirstFramelet,
 
             // Does the frame begin with a valid TcpHeaders?
             ExpectTcpHeaders,
@@ -76,15 +106,22 @@ namespace Bond.Comm.Tcp
             // There are no problems with this frame. What should we do with it?
             ValidFrame,
 
+            // This state is the happy path from believing the frame represents an error to proving the frame is good
+            // and knowing what to do with that error.
+            ExpectProtocolError,
+
             // Terminal states. Each of these indicates that we have classified the frame and need to return something.
             // Because these frames always mean the next step is to return, their implementations are inlined in
             // Classify().
 
             // There are no problems with this frame, and we know what to do with it. Return from Classify().
-            ReturnDisposition,
+            ClassifiedValidFrame,
 
             // We could not interpret the frame, or it violated the protocol. Return from Classify().
             MalformedFrame,
+
+            // We got an error, but couldn't interpret it.
+            ErrorInErrorFrame,
 
             // We detected a bug in the state machine. Return from Classify() with a FrameDisposition of Indeterminate.
             // This should never happen.
@@ -95,11 +132,10 @@ namespace Bond.Comm.Tcp
         private static readonly uint maximumTransitions = (uint) Enum.GetNames(typeof(ClassifyState)).Length;
 
         // These values are hard-coded because the protocol, as implemented, does not permit any framelet sequences
-        // other than [TcpHeaders, PayloadData]. We will need to get rid of these indices and track the index of the
-        // next unexamined Framelet once we implement Layers.
-        private const int TcpHeadersIndex = 0;
+        // other than [TcpHeaders, PayloadData] and [ProtocolError]. We will need to get rid of these indices and track
+        // the index of the next unexamined Framelet once we implement Layers.
         private const int PayloadDataIndex = 1;
-        private const int FrameSize = 2;
+        private const int ValidFrameSize = 2;
 
         internal static ClassifyResult Classify(Frame frame)
         {
@@ -113,8 +149,10 @@ namespace Bond.Comm.Tcp
 
             var state = ClassifyState.ExpectFrame;
             TcpHeaders headers = null;
-            ArraySegment<byte>? payload = null;
+            var payload = new ArraySegment<byte>();
+            ProtocolError error = null;
             var disposition = FrameDisposition.Indeterminate;
+            ProtocolErrorCode? errorCode = null;
             uint transitions = 0;
             while (true)
             {
@@ -133,28 +171,36 @@ namespace Bond.Comm.Tcp
                         state = TransitionExpectFrame(state, frame);
                         continue;
 
+                    case ClassifyState.ExpectFirstFramelet:
+                        state = TransitionExpectFirstFramelet(state, frame, ref errorCode);
+                        continue;
+
                     case ClassifyState.ExpectTcpHeaders:
-                        state = TransitionExpectTcpHeaders(state, frame, ref headers);
+                        state = TransitionExpectTcpHeaders(state, frame, ref headers, ref errorCode);
                         continue;
 
                     case ClassifyState.ExpectPayload:
-                        state = TransitionExpectPayload(state, frame, headers, ref payload);
+                        state = TransitionExpectPayload(state, frame, headers, ref payload, ref errorCode);
                         continue;
 
                     case ClassifyState.ExpectEndOfFrame:
-                        state = TransitionExpectEndOfFrame(state, frame);
+                        state = TransitionExpectEndOfFrame(state, frame, ref errorCode);
                         continue;
 
                     case ClassifyState.FrameComplete:
-                        state = TransitionFrameComplete(state, headers);
+                        state = TransitionFrameComplete(state, headers, ref errorCode);
                         continue;
 
                     case ClassifyState.ValidFrame:
                         state = TransitionValidFrame(state, headers, ref disposition);
                         continue;
 
-                    case ClassifyState.ReturnDisposition:
-                        if (disposition == FrameDisposition.Indeterminate || headers == null || payload == null)
+                    case ClassifyState.ExpectProtocolError:
+                        state = TransitionExpectProtocolError(state, frame, ref error, ref disposition);
+                        continue;
+
+                    case ClassifyState.ClassifiedValidFrame:
+                        if (disposition == FrameDisposition.Indeterminate)
                         {
                             state = ClassifyState.InternalStateError;
                             continue;
@@ -164,13 +210,31 @@ namespace Bond.Comm.Tcp
                         {
                             Disposition = disposition,
                             Headers = headers,
-                            Payload = payload.Value
+                            Payload = payload,
+                            Error = error
                         };
 
                     case ClassifyState.MalformedFrame:
+                        if (errorCode == null)
+                        {
+                            state = ClassifyState.InternalStateError;
+                            continue;
+                        }
+
                         return new ClassifyResult
                         {
-                            Disposition = FrameDisposition.SendProtocolError
+                            Disposition = FrameDisposition.SendProtocolError,
+                            ErrorCode = errorCode
+                        };
+
+                    case ClassifyState.ErrorInErrorFrame:
+                        return new ClassifyResult
+                        {
+                            Disposition = FrameDisposition.HangUp,
+                            Error = new ProtocolError
+                            {
+                                error_code = ProtocolErrorCode.ERROR_IN_ERROR
+                            }
                         };
 
                     case ClassifyState.InternalStateError:
@@ -202,30 +266,51 @@ namespace Bond.Comm.Tcp
 
             Log.Debug("{0}.{1}: Processing {2} framelets.",
                 nameof(TcpProtocol), nameof(TransitionExpectFrame), frame.Count);
-            state = ClassifyState.ExpectTcpHeaders;
+            state = ClassifyState.ExpectFirstFramelet;
             return state;
         }
 
-        internal static ClassifyState TransitionExpectTcpHeaders(
-            ClassifyState state, Frame frame, ref TcpHeaders headers)
+        internal static ClassifyState TransitionExpectFirstFramelet(
+            ClassifyState state, Frame frame, ref ProtocolErrorCode? errorCode)
         {
-            if (state != ClassifyState.ExpectTcpHeaders || frame == null)
+            if (state != ClassifyState.ExpectFirstFramelet || frame == null)
             {
                 return ClassifyState.InternalStateError;
             }
 
-            if (TcpHeadersIndex >= frame.Count)
+            if (frame.Framelets.Count == 0)
             {
+                Log.Error("{0}.{1}: Frame was empty.", nameof(TcpProtocol), nameof(TransitionExpectFirstFramelet));
+                errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
-            var framelet = frame.Framelets[TcpHeadersIndex];
-            if (framelet.Type != FrameletType.TcpHeaders)
+            switch (frame.Framelets[0].Type)
             {
-                Log.Error("{0}.{1}: Frame did not begin with TcpHeaders.",
-                    nameof(TcpProtocol), nameof(TransitionExpectTcpHeaders));
-                return ClassifyState.MalformedFrame;
+                case FrameletType.TcpHeaders:
+                    return ClassifyState.ExpectTcpHeaders;
+
+                case FrameletType.ProtocolError:
+                    return ClassifyState.ExpectProtocolError;
+
+                default:
+                    Log.Error("{0}.{1}: Frame began with invalid FrameletType {2}.",
+                        nameof(TcpProtocol), nameof(TransitionExpectTcpHeaders), frame.Framelets[0].Type);
+                    errorCode = ProtocolErrorCode.MALFORMED_DATA;
+                    return ClassifyState.MalformedFrame;
             }
+        }
+
+        internal static ClassifyState TransitionExpectTcpHeaders(
+            ClassifyState state, Frame frame, ref TcpHeaders headers, ref ProtocolErrorCode? errorCode)
+        {
+            if (state != ClassifyState.ExpectTcpHeaders || frame == null || frame.Count == 0
+                || frame.Framelets[0].Type != FrameletType.TcpHeaders)
+            {
+                return ClassifyState.InternalStateError;
+            }
+
+            var framelet = frame.Framelets[0];
 
             var inputBuffer = new InputBuffer(framelet.Contents);
             var fastBinaryReader = new FastBinaryReader<InputBuffer>(inputBuffer, version: 1);
@@ -237,6 +322,7 @@ namespace Bond.Comm.Tcp
             {
                 Log.Error(ex, "{0}.{1}: Failed to parse TcpHeaders: {2}.",
                     nameof(TcpProtocol), nameof(TransitionExpectTcpHeaders), ex.Message);
+                errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
@@ -246,7 +332,8 @@ namespace Bond.Comm.Tcp
         }
 
         internal static ClassifyState TransitionExpectPayload(
-            ClassifyState state, Frame frame, TcpHeaders headers, ref ArraySegment<byte>? payload)
+            ClassifyState state, Frame frame, TcpHeaders headers, ref ArraySegment<byte> payload,
+            ref ProtocolErrorCode? errorCode)
         {
             if (state != ClassifyState.ExpectPayload || frame == null || headers == null)
             {
@@ -255,6 +342,9 @@ namespace Bond.Comm.Tcp
 
             if (PayloadDataIndex >= frame.Count)
             {
+                Log.Error("{0}.{1}: Frame did not continue with PayloadData.",
+                    nameof(TcpProtocol), nameof(TransitionExpectTcpHeaders));
+                errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
@@ -263,26 +353,39 @@ namespace Bond.Comm.Tcp
             {
                 Log.Error("{0}.{1}: Frame did not continue with PayloadData.",
                     nameof(TcpProtocol), nameof(TransitionExpectTcpHeaders));
+                errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
             payload = framelet.Contents;
             Log.Debug("{0}.{1}: Extracted {2}-byte payload in request ID {3}.",
-                nameof(TcpProtocol), nameof(TransitionExpectPayload), payload.Value.Count, headers.request_id);
+                nameof(TcpProtocol), nameof(TransitionExpectPayload), payload.Count, headers.request_id);
             return ClassifyState.ExpectEndOfFrame;
         }
 
-        internal static ClassifyState TransitionExpectEndOfFrame(ClassifyState state, Frame frame)
+        internal static ClassifyState TransitionExpectEndOfFrame(
+            ClassifyState state, Frame frame, ref ProtocolErrorCode? errorCode)
         {
             if (state != ClassifyState.ExpectEndOfFrame || frame == null)
             {
                 return ClassifyState.InternalStateError;
             }
 
-            return frame.Count == FrameSize ? ClassifyState.FrameComplete : ClassifyState.MalformedFrame;
+            if (frame.Count == ValidFrameSize)
+            {
+                return ClassifyState.FrameComplete;
+            }
+            else
+            {
+                Log.Error("{0}.{1}: Frame had trailing framelets.",
+                    nameof(TcpProtocol), nameof(TransitionExpectEndOfFrame));
+                errorCode = ProtocolErrorCode.MALFORMED_DATA;
+                return ClassifyState.MalformedFrame;
+            }
         }
 
-        internal static ClassifyState TransitionFrameComplete(ClassifyState state, TcpHeaders headers)
+        internal static ClassifyState TransitionFrameComplete(
+            ClassifyState state, TcpHeaders headers, ref ProtocolErrorCode? errorCode)
         {
             if (state != ClassifyState.FrameComplete || headers == null)
             {
@@ -298,6 +401,7 @@ namespace Bond.Comm.Tcp
                 case PayloadType.Event:
                     Log.Warning("{0}.{1}: Received unimplemented payload type {2}.",
                         nameof(TcpProtocol), nameof(TransitionFrameComplete), headers.payload_type);
+                    errorCode = ProtocolErrorCode.NOT_SUPPORTED;
                     return ClassifyState.MalformedFrame;
 
                 default:
@@ -319,15 +423,45 @@ namespace Bond.Comm.Tcp
             {
                 case PayloadType.Request:
                     disposition = FrameDisposition.DeliverRequestToService;
-                    return ClassifyState.ReturnDisposition;
+                    return ClassifyState.ClassifiedValidFrame;
 
                 case PayloadType.Response:
                     disposition = FrameDisposition.DeliverResponseToProxy;
-                    return ClassifyState.ReturnDisposition;
+                    return ClassifyState.ClassifiedValidFrame;
 
                 default:
                     return ClassifyState.InternalStateError;
             }
+        }
+
+        internal static ClassifyState TransitionExpectProtocolError(
+            ClassifyState state, Frame frame, ref ProtocolError error, ref FrameDisposition disposition)
+        {
+            if (state != ClassifyState.ExpectProtocolError || frame == null || frame.Count == 0
+                || frame.Framelets[0].Type != FrameletType.ProtocolError)
+            {
+                return ClassifyState.InternalStateError;
+            }
+
+            var framelet = frame.Framelets[0];
+
+            var inputBuffer = new InputBuffer(framelet.Contents);
+            var fastBinaryReader = new FastBinaryReader<InputBuffer>(inputBuffer, version: 1);
+            try
+            {
+                error = Deserialize<ProtocolError>.From(fastBinaryReader);
+            }
+            catch (Exception ex) when (ex is InvalidDataException || ex is IOException)
+            {
+                Log.Error(ex, "{0}.{1}: Failed to parse ProtocolError: {2}.",
+                    nameof(TcpProtocol), nameof(TransitionExpectProtocolError), ex.Message);
+                return ClassifyState.ErrorInErrorFrame;
+            }
+
+            Log.Debug("{0}.{1}: Extracted ProtocolError with code {2}.",
+                nameof(TcpProtocol), nameof(TransitionExpectProtocolError), error.error_code);
+            disposition = FrameDisposition.HangUp;
+            return ClassifyState.ClassifiedValidFrame;
         }
     }
 }
