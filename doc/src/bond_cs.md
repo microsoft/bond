@@ -571,9 +571,8 @@ payload represented by a protocol reader `R`. The former is usually used by
 producers to initialize `bonded<T>` values, the latter is implicitly used 
 during deserialization.
 
-Standard implementations of `Bonded<T>` and `Bonded<T,R>` always use default
-`Serializer/Deserializer/Cloner/Transcoder`. In order to customize this behavior,
-user can pass custom `ObjectBondedFactory` or `PayloadBondedFactory` delegates
+The standard implementations always use default implementations of `Serializer/Deserializer/Cloner/Transcoder`. 
+In order to customize this behavior, the user can pass custom `ObjectBondedFactory` or `PayloadBondedFactory` delegates
 as parameters to `ObjectParser` or `ParserFactory<R>.Create()`:
 
     // create serializer for schema type T and protocol reader W

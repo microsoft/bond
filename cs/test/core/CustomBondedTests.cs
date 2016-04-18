@@ -127,17 +127,17 @@ namespace UnitTest
 
                 public T Deserialize()
                 {
-                    return CustomTransformFactory.Default.Cloner<TActual, T>().Clone<T>(instance);
+                    return CustomTransformFactory.Instance.Cloner<TActual, T>().Clone<T>(instance);
                 }
 
                 public void Serialize<W>(W writer)
                 {
-                    CustomTransformFactory.Default.Serializer<W, TActual>().Serialize(instance, writer);
+                    CustomTransformFactory.Instance.Serializer<W, TActual>().Serialize(instance, writer);
                 }
 
                 public U Deserialize<U>()
                 {
-                    return CustomTransformFactory.Default.Cloner<TActual, U>().Clone<U>(instance);
+                    return CustomTransformFactory.Instance.Cloner<TActual, U>().Clone<U>(instance);
                 }
 
                 IBonded<U> IBonded.Convert<U>()
@@ -187,12 +187,12 @@ namespace UnitTest
 
             public void Serialize<W>(W writer)
             {
-                CustomTransformFactory.Default.Transcoder<R, W>(schema).Transcode(reader.Clone(), writer);
+                CustomTransformFactory.Instance.Transcoder<R, W>(schema).Transcode(reader.Clone(), writer);
             }
 
             public U Deserialize<U>()
             {
-                return CustomTransformFactory.Default.Deserializer<R, U>(schema).Deserialize<U>(reader.Clone());
+                return CustomTransformFactory.Instance.Deserializer<R, U>(schema).Deserialize<U>(reader.Clone());
             }
 
             IBonded<U> IBonded.Convert<U>()
@@ -220,12 +220,12 @@ namespace UnitTest
 
             public void Serialize<W>(W writer)
             {
-                CustomTransformFactory.Default.Transcoder<R, W>(schema).Transcode(reader.Clone(), writer);
+                CustomTransformFactory.Instance.Transcoder<R, W>(schema).Transcode(reader.Clone(), writer);
             }
 
             public U Deserialize<U>()
             {
-                return CustomTransformFactory.Default.Deserializer<R, U>(schema).Deserialize<U>(reader.Clone());
+                return CustomTransformFactory.Instance.Deserializer<R, U>(schema).Deserialize<U>(reader.Clone());
             }
 
             IBonded<U> IBonded.Convert<U>()
@@ -239,7 +239,7 @@ namespace UnitTest
         /// </summary>
         private class CustomTransformFactory
         {
-            public static readonly CustomTransformFactory Default = new CustomTransformFactory();
+            public static readonly CustomTransformFactory Instance = new CustomTransformFactory();
 
             private CustomTransformFactory() { }
 
@@ -308,11 +308,11 @@ namespace UnitTest
             
             var buffer = new OutputBuffer();
             var writer = new CompactBinaryWriter<OutputBuffer>(buffer);
-            CustomTransformFactory.Default.Serializer<CompactBinaryWriter<OutputBuffer>, X>().Serialize(x, writer);
+            CustomTransformFactory.Instance.Serializer<CompactBinaryWriter<OutputBuffer>, X>().Serialize(x, writer);
             
             var inputStream = new InputBuffer(buffer.Data);
             var reader = new CompactBinaryReader<InputBuffer>(inputStream);
-            var x1 = CustomTransformFactory.Default.Deserializer<CompactBinaryReader<InputBuffer>, X>(RuntimeSchema.Empty).Deserialize<X>(reader);
+            var x1 = CustomTransformFactory.Instance.Deserializer<CompactBinaryReader<InputBuffer>, X>(RuntimeSchema.Empty).Deserialize<X>(reader);
 
             Assert.That(x1, Is.Not.Null);
             Assert.That(x1.bonded_Y, Is.InstanceOf<CustomBonded<Y, CompactBinaryReader<InputBuffer>>>());
@@ -329,7 +329,7 @@ namespace UnitTest
             var x = new X();
             x.bonded_Y = CustomBonded<Y>.From(y);
 
-            var x1 = CustomTransformFactory.Default.Cloner<X, X>().Clone<X>(x);
+            var x1 = CustomTransformFactory.Instance.Cloner<X, X>().Clone<X>(x);
 
             Assert.That(x1, Is.Not.Null);
             Assert.That(x1.bonded_Y.Value.FullName, Is.EqualTo("CustomBondedTests.YDerived"));
