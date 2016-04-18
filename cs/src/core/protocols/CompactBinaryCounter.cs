@@ -15,14 +15,13 @@ namespace Bond.Protocols
     /// <summary>
     /// Length-calculator for Bond CompactBinary protocol V2
     /// </summary>
-    ///
     [Reader(typeof(CompactBinaryReader<>))]
     public struct CompactBinaryCounter : IProtocolWriter
     {
         private class CounterStackFrame
         {
             public LinkedListNode<UInt32> lengthSlot;
-            public int currentLength = 0;
+            public int currentLength;
 
             public CounterStackFrame(LinkedListNode<UInt32> slot)
             {
@@ -100,7 +99,7 @@ namespace Bond.Protocols
         public void WriteStructEnd()
         {
             CounterStackFrame frame = counterStack.Peek();
-            uint structLength = (uint)frame.currentLength + 1;
+            uint structLength = (uint)frame.currentLength + 1; // +1 for the BT_STOP byte
             frame.lengthSlot.Value = structLength;
             counterStack.Pop();
 
