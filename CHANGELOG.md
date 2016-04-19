@@ -38,10 +38,10 @@ different versioning scheme, following the Haskell community's
 ### C# ###
 
 * `bond_meta::full_name` and `bond_meta::name` fields now properly encode
-  generic paramaters.
+  generic paramaters. [Issue #140](https://github.com/Microsoft/bond/issues/140)
 * Enums are now cast to 32-bit integers to avoid some compiler warnings.
-  [Issue #140](https://github.com/Microsoft/bond/issues/140)
-* Implicit conversion between `bond.GUID` and `System.Guid` has been added.
+* [Implicit conversion between `bond.GUID` and `System.Guid`](https://github.com/Microsoft/bond/blob/bc4c56a3ca0858f4bd93916e80ceff9bbeada606/cs/test/core/GuidConversionTests.cs#L14)
+  has been added.
   [Pull request #145](https://github.com/Microsoft/bond/pull/145)
 * The ability to
   [customize the implementation of `IBonded<T>` used](https://microsoft.github.io/bond/manual/bond_cs.html#understanding-bondedt)
