@@ -263,7 +263,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
             <span class="dt">var</span> writer = <span class="kw">new</span> CompactBinaryWriter&lt;OutputBuffer&gt;(output);
 
             <span class="co">// The first calls to Serialize.To and Deserialize&lt;T&gt;.From can take</span>
-            <span class="co">// a relatively long time because they generate the de/serializer </span>
+            <span class="co">// a relatively long time because they generate the de/serializer</span>
             <span class="co">// for a given type and protocol.</span>
             Serialize.<span class="fu">To</span>(writer, src);
 
@@ -593,6 +593,21 @@ exampleSerializer.<span class="fu">Serialize</span>(src, writer);
 <h1 id="understanding-bondedt">Understanding <code>bonded&lt;T&gt;</code></h1>
 <p>The generic type <code>bonded&lt;T&gt;</code> is a simple yet powerful abstraction which is a fundamental part of Bond APIs and enables such usage scenarios as lazy deserialization, pass-through and polymorphism.</p>
 <p>In C# <code>bonded&lt;T&gt;</code> maps to <code>IBonded&lt;T&gt;</code> interface which supports three operations: <code>Serialize</code>, <code>Deserialize</code> and <code>Convert</code>. Bond provides two standard implementation of the <code>IBonded&lt;T&gt;</code> interface, <code>Bonded&lt;T&gt;</code> which can hold and instance of type <code>T</code>, and <code>Bonded&lt;T, R&gt;</code> which can hold a serialized payload represented by a protocol reader <code>R</code>. The former is usually used by producers to initialize <code>bonded&lt;T&gt;</code> values, the latter is implicitly used during deserialization.</p>
+<p>The standard implementations always use default implementations of <code>Serializer/Deserializer/Cloner/Transcoder</code>. In order to customize this behavior, the user can pass custom <code>ObjectBondedFactory</code> or <code>PayloadBondedFactory</code> delegates as parameters to <code>ObjectParser</code> or <code>ParserFactory&lt;R&gt;.Create()</code>:</p>
+<div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="co">// create serializer for schema type T and protocol reader W</span>
+<span class="co">// using custom InstanceBondedFactory</span>
+<span class="kw">new</span> Serializer&lt;W&gt;(<span class="kw">typeof</span>(T), <span class="kw">new</span> <span class="fu">ObjectParser</span>(<span class="kw">typeof</span>(T), CustomObjectBondedFactory), ...);
+
+<span class="co">// create deserializer for schema type T and protocol reader R</span>
+<span class="co">// using custom PayloadBondedFactory</span>
+<span class="kw">new</span> Deserializer&lt;R&gt;(<span class="kw">typeof</span>(T), ParserFactory&lt;R&gt;.<span class="fu">Create</span>(<span class="kw">typeof</span>(T), CustomPayloadBondedFactory), ...);</code></pre></td></tr></table></div>
 <h2 id="lazy-deserialization">Lazy deserialization</h2>
 <p>Because <code>bonded&lt;T&gt;</code> can store (or more accurately, refer to) data representing a serialized data, it can be used to de facto delay deserialization of some parts of payload:</p>
 <div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -725,7 +740,7 @@ exampleSerializer.<span class="fu">Serialize</span>(src, writer);
 8
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="dt">var</span> src = <span class="kw">new</span> Example
 {
-    shapes = 
+    shapes =
     {
         <span class="kw">new</span> Bonded&lt;Circle&gt;(<span class="kw">new</span> Circle {kind = Kind.<span class="fu">circle</span>, radius = <span class="dv">10</span>),
         <span class="kw">new</span> Bonded&lt;Rectangle&gt;(<span class="kw">new</span> Rectangle {kind = Kind.<span class="fu">rectangle</span>, width = <span class="dv">4</span>, height = <span class="dv">5</span>)
@@ -839,7 +854,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 2
 3
 4
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="dt">var</span> writer = <span class="kw">new</span> <span class="fu">SimpleXmlWriter</span>(stream, <span class="kw">new</span> SimpleXmlWriter.<span class="fu">Settings</span> 
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="dt">var</span> writer = <span class="kw">new</span> <span class="fu">SimpleXmlWriter</span>(stream, <span class="kw">new</span> SimpleXmlWriter.<span class="fu">Settings</span>
 {
     UseNamespaces = <span class="kw">true</span>
 });</code></pre></td></tr></table></div>
@@ -930,7 +945,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 [Bond.<span class="fu">Schema</span>]
 <span class="kw">public</span> <span class="kw">interface</span> IFoo {}</code></pre></td></tr></table></div>
 <p>The <code>Schema</code> attribute applies to the specific type only and is not inherited. When a class decorated with the <code>Schema</code> attribute derives from another class also decorated with the attribute then it represents Bond schema hierarchy. When a class representing schema derives from a class that is not marked with the <code>Schema</code> attribute then it represents a simple schema without a base, the C# base class is ignored by Bond.</p>
-<p>When a C# class/interfaces representing a schema derives from multiple interfaces, at most one can be an interface representing a schema (i.e. decorated with <code>[Schema]</code> attribute).</p>
+<p>When a C# class/interfaces representing a schema derives from multiple interfaces, at most one can be an interface representing a schema (i.e. decorated with <code>[Schema]</code> attribute).</p>
 <h3 id="namespaceattribute">NamespaceAttribute</h3>
 <p>The <code>Namespace</code> attribute can be optionally used to annotate C# classes, interfaces and enums if their C# namespace is different than the schema namespace (i.e. namespace in .bond idl file), for example when C# code is generated with <code>--namespace</code> flag.</p>
 <p>Bond will use the <code>Namespace</code> attribute, when present, to create qualified name of the type. If the attribute is absent the qualified name will use the C# namespace in which the type is defined.</p>
@@ -1002,7 +1017,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <span class="co">{</span>
 <span class="co">    0: nullable&lt;wstring&gt; str1;</span>
 <span class="co">    1: string str2 = nothing;</span>
-<span class="co">} </span>
+<span class="co">}</span>
 <span class="co">*/</span>
 [Bond.<span class="fu">Schema</span>]
 <span class="kw">public</span> <span class="kw">class</span> Foo
