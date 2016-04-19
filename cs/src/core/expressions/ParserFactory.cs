@@ -8,16 +8,29 @@ namespace Bond.Expressions
     using System.Linq.Expressions;
     using Bond.Protocols;
 
-    internal static class ParserFactory<R>
+    /// <summary>
+    /// Creates expression of type <see cref="IBonded"/> given a reader and runtime schema.
+    /// </summary>
+    /// <param name="reader">Expression representing reader.</param>
+    /// <param name="schema">Expression representing RuntimeSchema.</param>
+    /// <returns>Expression representing creation of <see cref="IBonded"/> with the specified reader and runtime schema.</returns>
+    public delegate Expression PayloadBondedFactory(Expression reader, Expression schema);
+
+    public static class ParserFactory<R>
     {
         public static IParser Create<S>(S schema)
         {
-            return Cache<S>.Create(schema);
+            return Create(schema, null);
+        }
+
+        public static IParser Create<S>(S schema, PayloadBondedFactory bondedFactory)
+        {
+            return Cache<S>.Create(schema, bondedFactory);
         }
 
         static class Cache<S>
         {
-            public static readonly Func<S, IParser> Create;
+            public static readonly Func<S, PayloadBondedFactory, IParser> Create;
 
             [System.Diagnostics.CodeAnalysis.SuppressMessage(
                 "Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
@@ -66,18 +79,24 @@ namespace Bond.Expressions
                     }
                 }
 
-                var schema = Expression.Parameter(typeof(S));
-                var ctor = parserType.GetConstructor(typeof(S));
+                var ctor = parserType.GetConstructor(typeof(S), typeof(PayloadBondedFactory)) ??
+                           parserType.GetConstructor(typeof(S));
+
                 if (ctor == null)
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Constructor {0}({1}) not defined.",
-                            parserType, typeof(S)));
+                        string.Format(CultureInfo.InvariantCulture,
+                                      "Can't find constructor for type '{0}' with either ({1}) or ({1}, {2}) signature.",
+                                      parserType, typeof(S), typeof(PayloadBondedFactory)));
                 }
 
-                Create = Expression.Lambda<Func<S, IParser>>(Expression.New(ctor, schema), schema).Compile();
+                var schema = Expression.Parameter(typeof(S));
+                var bondedFactory = Expression.Parameter(typeof(PayloadBondedFactory));
+                var newExpression = ctor.GetParameters().Length == 2
+                                        ? Expression.New(ctor, schema, bondedFactory)
+                                        : Expression.New(ctor, schema);
+
+                Create = Expression.Lambda<Func<S, PayloadBondedFactory, IParser>>(newExpression, schema, bondedFactory).Compile();
             }
         }
     }

@@ -35,6 +35,7 @@
     <Compile Include="BondClass.cs" />
     <Compile Include="BondedTests.cs" />
     <Compile Include="CloningTests.cs" />
+    <Compile Include="CustomBondedTests.cs" />
     <Compile Include="EnumString.cs" />
     <Compile Include="Equal.cs" />
     <Compile Include="GuidConversionTests.cs" />
