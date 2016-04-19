@@ -258,17 +258,6 @@ namespace Bond.Comm.Tcp
             return TaskExt.CompletedTask;
         }
 
-        public override void AddService<T>(T service)
-        {
-            // TODO: re-work when we use reflection to find service methods
-            m_serviceHost.Register(service);
-        }
-
-        public override void RemoveService<T>(T service)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, IMessage<TRequest> message, CancellationToken ct)
         {
             // TODO: cancellation

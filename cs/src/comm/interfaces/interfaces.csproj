@@ -12,18 +12,15 @@
     <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Attributes.cs" />
     <Compile Include="CodegenHelpers.cs" />
     <Compile Include="Connections.cs" />
     <Compile Include="Contexts.cs" />
     <Compile Include="IService.cs" />
-    <Compile Include="Layers.cs" />
     <Compile Include="Listener.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="Transport.cs" />
-    <Compile Include="TransportArgs.cs" />
     <Compile Include="TransportException.cs" />
     <BondCodegen Include="Comm.bond">
       <Options>--namespace=bond.comm=Bond.Comm</Options>

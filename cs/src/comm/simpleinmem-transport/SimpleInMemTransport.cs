@@ -12,36 +12,6 @@ namespace Bond.Comm.SimpleInMem
     {
         private ExceptionHandler m_exceptionHandler;
 
-        public override TransportBuilder<SimpleInMemTransport> AddDeserializer<TReader>(Type type, Deserializer<TReader> deserializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override TransportBuilder<SimpleInMemTransport> AddDeserializers<TReader>(System.Collections.Generic.Dictionary<Type, Deserializer<TReader>> deserializers)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override TransportBuilder<SimpleInMemTransport> AddSerializer<TWriter>(Type type, Serializer<TWriter> serializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override TransportBuilder<SimpleInMemTransport> AddSerializers<TWriter>(System.Collections.Generic.Dictionary<Type, Serializer<TWriter>> serializers)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override TransportBuilder<SimpleInMemTransport> SetDefaultTransportArgs(TransportArgs defaults)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override TransportBuilder<SimpleInMemTransport> SetLayerStack<TLayerData>(LayerStack<TLayerData> layerStack)
-        {
-            throw new NotImplementedException();
-        }
-
         public override TransportBuilder<SimpleInMemTransport> SetUnhandledExceptionHandler(ExceptionHandler handler)
         {
             if (handler == null)
@@ -71,7 +41,6 @@ namespace Bond.Comm.SimpleInMem
 
     public class SimpleInMemTransport : Transport
     {
-        private SimpleInMemTransportArgs m_defaultTransportArgs = new SimpleInMemTransportArgs();
         private IDictionary<string, SimpleInMemListener> m_listeners = new Dictionary<string, SimpleInMemListener>();
         private object m_lock = new object();
 
@@ -85,14 +54,6 @@ namespace Bond.Comm.SimpleInMem
             }
 
             m_exceptionHandler = exceptionHandler;
-        }
-
-        public override TransportArgs DefaultTransportArgs
-        {
-            get
-            {
-                return m_defaultTransportArgs.Clone<SimpleInMemTransportArgs>();
-            }
         }
 
         public override ExceptionHandler UnhandledExceptionHandler

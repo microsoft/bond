@@ -5,8 +5,22 @@ namespace Bond.Comm
 {
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Contains a collection of helper methods used primarily by
+    /// Bond-generated code.
+    /// </summary>
     public static class CodegenHelpers
     {
+        /// <summary>
+        /// Upcasts a Task&lt;Derived&gt; to Task&lt;Base&gt;
+        /// </summary>
+        /// <typeparam name="TDerived">The derived type.</typeparam>
+        /// <typeparam name="TBase">The base type.</typeparam>
+        /// <param name="task">The task to upcast.</param>
+        /// <returns>The upcast task.</returns>
+        /// <remarks>
+        /// Work around for Task&lt;T&gt;'s lack of co-variance.
+        /// </remarks>
         public static Task<TBase> Upcast<TDerived, TBase>(this Task<TDerived> task) where TDerived : TBase
         {
             var tcsOuter = new TaskCompletionSource<TBase>();

@@ -3,22 +3,42 @@
 
 namespace Bond.Comm
 {
+    /// <summary>
+    /// Represents the details about the current operation.
+    /// </summary>
     public abstract class Context
     {
-        // For received messages, the connection the message was
-        // received on. For messages being sent, will be set to the connection
-        // that is being used.
-        // Allows getting things like the remote endpoint information.
-        // Maybe be null if a connection-less protocol is being used.
+        /// <summary>
+        /// The connection being used.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// May be <c>null</c> if a connection-less protocol is being used.
+        /// </para>
+        /// <para>
+        /// For received messages, this is the connection the message was
+        /// received on. For messages that are being sent, this is the
+        /// connection that is being used to transmit the message.
+        /// </para>
+        /// <para>
+        /// Typically, this is cast to a more derived type, depending on the
+        /// transport that is being used, to get access to the
+        /// transport-specific members of a connection.
+        /// </para>
+        /// </remarks>
         public abstract Connection Connection { get; }
     }
 
+    /// <summary>
+    /// Represents the details about the current send operation.
+    /// </summary>
     public abstract class SendContext : Context
     {
-        // TransportArgs specific to this request. If null, will use the transport/connection default.
-        public abstract TransportArgs TransportArgs { get; }
     }
 
+    /// <summary>
+    /// Represents the details about the receive operation.
+    /// </summary>
     public abstract class ReceiveContext : Context
     {
     }

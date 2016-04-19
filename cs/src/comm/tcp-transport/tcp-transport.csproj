@@ -20,7 +20,6 @@
     <Compile Include="TcpProtocol.cs" />
     <Compile Include="TcpProtocolErrorException.cs" />
     <Compile Include="TcpTransport.cs" />
-    <Compile Include="TcpTransportArgs.cs" />
     <BondCodegen Include="TcpTransport.bond">
       <Options>--namespace=bond.comm.tcp=Bond.Comm.Tcp</Options>
     </BondCodegen>

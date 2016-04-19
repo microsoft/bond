@@ -19,7 +19,6 @@
     <Compile Include="SimpleInMemListener.cs" />
     <Compile Include="SimpleInMemProtocolErrorException.cs" />
     <Compile Include="SimpleInMemTransport.cs" />
-    <Compile Include="SimpleInMemTransportArgs.cs" />
     <BondCodegen Include="SimpleInMemTransport.bond">
       <Options>--namespace=bond.comm.simpleinmem=Bond.Comm.SimpleInMem</Options>
     </BondCodegen>

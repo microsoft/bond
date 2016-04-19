@@ -60,16 +60,6 @@ namespace Bond.Comm.SimpleInMem
             return TaskExt.CompletedTask;
         }
 
-        public override void AddService<T>(T service)
-        {
-            m_serviceHost.Register((IService)service);
-        }
-
-        public override void RemoveService<T>(T service)
-        {
-            m_serviceHost.Deregister((IService)service);
-        }
-
         public async Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, IMessage<TRequest> message, CancellationToken ct)
         {
             IMessage response = await SendRequestAsync(methodName, message);

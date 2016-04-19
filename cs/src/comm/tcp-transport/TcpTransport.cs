@@ -14,36 +14,6 @@ namespace Bond.Comm.Tcp
     {
         private ExceptionHandler m_exceptionHandler;
 
-        public override TransportBuilder<TcpTransport> AddDeserializer<TReader>(Type type, Deserializer<TReader> deserializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override TransportBuilder<TcpTransport> AddDeserializers<TReader>(System.Collections.Generic.Dictionary<Type, Deserializer<TReader>> deserializers)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override TransportBuilder<TcpTransport> AddSerializer<TWriter>(Type type, Serializer<TWriter> serializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override TransportBuilder<TcpTransport> AddSerializers<TWriter>(System.Collections.Generic.Dictionary<Type, Serializer<TWriter>> serializers)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override TransportBuilder<TcpTransport> SetDefaultTransportArgs(TransportArgs defaults)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override TransportBuilder<TcpTransport> SetLayerStack<TLayerData>(LayerStack<TLayerData> layerStack)
-        {
-            throw new NotImplementedException();
-        }
-
         public override TransportBuilder<TcpTransport> SetUnhandledExceptionHandler(ExceptionHandler handler)
         {
             if (handler == null)
@@ -75,7 +45,6 @@ namespace Bond.Comm.Tcp
     {
         public const int DefaultPort = 25188;
 
-        private readonly  TcpTransportArgs m_defaultTransportArgs = new TcpTransportArgs();
         private readonly ExceptionHandler m_exceptionHandler;
 
         public TcpTransport(ExceptionHandler exceptionHandler)
@@ -86,14 +55,6 @@ namespace Bond.Comm.Tcp
             }
 
             m_exceptionHandler = exceptionHandler;
-        }
-
-        public override TransportArgs DefaultTransportArgs
-        {
-            get
-            {
-                return m_defaultTransportArgs.Clone<TcpTransportArgs>();
-            }
         }
 
         public override ExceptionHandler UnhandledExceptionHandler
