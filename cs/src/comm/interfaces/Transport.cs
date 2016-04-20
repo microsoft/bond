@@ -128,6 +128,10 @@ namespace Bond.Comm
         /// <returns>Does not return.</returns>
         public static Error FailFastExceptionHandler(Exception ex)
         {
+            // We intentionally don't use Log.Fatal here, as that might cause
+            // the logger to kill the process, and this exception handler
+            // explicitly uses Environment.FailFast.
+            Log.Error(ex, "An unhandled exception was encountered by Bond.Comm. Calling Environment.FailFast");
             Environment.FailFast("An unhandled exception was encountered by Bond.Comm", ex);
             return MakeInternalServerError(ex, includeDetails: false);
         }
@@ -148,7 +152,7 @@ namespace Bond.Comm
         /// </remarks>
         public static Error ToErrorExceptionHandler(Exception ex)
         {
-            // TODO: log
+            Log.Error(ex, "An unhandled exception was encountered by Bond.Comm. It has been converted to an Error.");
             return MakeInternalServerError(ex, includeDetails: false);
         }
 
@@ -166,7 +170,7 @@ namespace Bond.Comm
         /// </remarks>
         public static Error DebugExceptionHandler(Exception ex)
         {
-            // TODO: log
+            Log.Error(ex, "An unhandled exception was encountered by Bond.Comm. It has been converted to an Error with debug details.");
             return MakeInternalServerError(ex, includeDetails: true);
         }
 
