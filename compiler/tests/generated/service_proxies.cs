@@ -16,13 +16,65 @@
 namespace tests
 {
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.4.0.2")]
-    public class FooProxy<TConnection> : IFoo where TConnection : global::Bond.Comm.IRequestResponseConnection
+    public class FooProxy<TConnection> : IFoo where TConnection : global::Bond.Comm.IEventConnection, global::Bond.Comm.IRequestResponseConnection
     {
         private readonly TConnection m_connection;
 
         public FooProxy(TConnection connection)
         {
             m_connection = connection;
+        }
+
+        public void foo11Async(global::Bond.Void param)
+        {
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(param);
+            foo11Async(message);
+        }
+
+        public void foo11Async(global::Bond.Comm.IMessage<global::Bond.Void> param)
+        {
+            m_connection.FireEventAsync<global::Bond.Void>(
+                "tests.Foo.foo11",
+                param);
+        }
+
+        public void foo12Async(global::Bond.Void param)
+        {
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(param);
+            foo12Async(message);
+        }
+
+        public void foo12Async(global::Bond.Comm.IMessage<global::Bond.Void> param)
+        {
+            m_connection.FireEventAsync<global::Bond.Void>(
+                "tests.Foo.foo12",
+                param);
+        }
+
+        public void foo13Async(BasicTypes param)
+        {
+            var message = new global::Bond.Comm.Message<BasicTypes>(param);
+            foo13Async(message);
+        }
+
+        public void foo13Async(global::Bond.Comm.IMessage<BasicTypes> param)
+        {
+            m_connection.FireEventAsync<BasicTypes>(
+                "tests.Foo.foo13",
+                param);
+        }
+
+        public void foo14Async(dummy param)
+        {
+            var message = new global::Bond.Comm.Message<dummy>(param);
+            foo14Async(message);
+        }
+
+        public void foo14Async(global::Bond.Comm.IMessage<dummy> param)
+        {
+            m_connection.FireEventAsync<dummy>(
+                "tests.Foo.foo14",
+                param);
         }
 
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo21Async(global::Bond.Void param)

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -43,6 +46,13 @@ namespace UnitTest.Tcp
             error_code = 0,
             method_name = GoodMethod,
             payload_type = PayloadType.Event,
+            request_id = GoodRequestId
+        };
+        private static readonly TcpHeaders unknownTypeHeaders = new TcpHeaders
+        {
+            error_code = 0,
+            method_name = GoodMethod,
+            payload_type = (PayloadType)(-100),
             request_id = GoodRequestId
         };
 
@@ -411,7 +421,7 @@ namespace UnitTest.Tcp
             ProtocolErrorCode? errorCode = null;
 
             var after = TcpProtocol.TransitionFrameComplete(
-                TcpProtocol.ClassifyState.FrameComplete, goodEventHeaders, ref errorCode);
+                TcpProtocol.ClassifyState.FrameComplete, unknownTypeHeaders, ref errorCode);
             Assert.AreEqual(TcpProtocol.ClassifyState.MalformedFrame, after);
             Assert.AreEqual(ProtocolErrorCode.NOT_SUPPORTED, errorCode);
         }
@@ -453,11 +463,6 @@ namespace UnitTest.Tcp
             var disposition = TcpProtocol.FrameDisposition.Indeterminate;
 
             var after = TcpProtocol.TransitionValidFrame(TcpProtocol.ClassifyState.ValidFrame, null, ref disposition);
-            Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
-            Assert.AreEqual(TcpProtocol.FrameDisposition.Indeterminate, disposition);
-
-            after = TcpProtocol.TransitionValidFrame(
-                TcpProtocol.ClassifyState.ValidFrame, goodEventHeaders, ref disposition);
             Assert.AreEqual(TcpProtocol.ClassifyState.InternalStateError, after);
             Assert.AreEqual(TcpProtocol.FrameDisposition.Indeterminate, disposition);
         }
@@ -538,6 +543,14 @@ namespace UnitTest.Tcp
             Assert.Null(protocolErrorResult.Headers);
             Assert.Null(protocolErrorResult.Payload.Array);
             Assert.AreEqual(meaninglessErrorCode, protocolErrorResult.Error.error_code);
+
+            var eventResult = TcpProtocol.Classify(goodEventFrame);
+            Assert.AreEqual(TcpProtocol.FrameDisposition.DeliverEventToService, eventResult.Disposition);
+            Assert.AreEqual(goodEventHeaders.error_code, eventResult.Headers.error_code);
+            Assert.AreEqual(goodEventHeaders.method_name, eventResult.Headers.method_name);
+            Assert.AreEqual(goodEventHeaders.payload_type, eventResult.Headers.payload_type);
+            Assert.AreEqual(goodEventHeaders.request_id, eventResult.Headers.request_id);
+            Assert.AreEqual(goodEventFrame.Framelets[goodEventFrame.Count - 1].Contents, eventResult.Payload);
         }
 
         [Test]
@@ -553,12 +566,6 @@ namespace UnitTest.Tcp
         [Test]
         public void Classify_MalformedFrame()
         {
-            var eventResult = TcpProtocol.Classify(goodEventFrame);
-            Assert.AreEqual(TcpProtocol.FrameDisposition.SendProtocolError, eventResult.Disposition);
-            Assert.Null(eventResult.Headers);
-            Assert.Null(eventResult.Payload.Array);
-            Assert.AreEqual(ProtocolErrorCode.NOT_SUPPORTED, eventResult.ErrorCode);
-
             var emptyResult = TcpProtocol.Classify(emptyFrame);
             Assert.AreEqual(TcpProtocol.FrameDisposition.SendProtocolError, emptyResult.Disposition);
             Assert.Null(emptyResult.Headers);

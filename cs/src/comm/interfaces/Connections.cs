@@ -48,16 +48,13 @@ namespace Bond.Comm
         /// invoke.
         /// </param>
         /// <param name="message">The message to send.</param>
-        /// <param name="ct">
-        /// The cancellation token for cooperative cancellation.
-        /// </param>
         /// <returns>A task representing the asynchronous operation.</returns>
         /// <remarks>
         /// Event methods cannot send responses or error. However, the returned
         /// task may represent an error if there was a local error sending the
         /// message.
         /// </remarks>
-        Task FireEventAsync<TPayload>(string methodName, IMessage<TPayload> message, CancellationToken ct);
+        Task FireEventAsync<TPayload>(string methodName, IMessage<TPayload> message);
     }
 
     /// <summary>

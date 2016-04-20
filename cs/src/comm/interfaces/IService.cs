@@ -22,7 +22,23 @@ namespace Bond.Comm
     /// This class is primarily used by Bond's generated service
     /// implementations.
     /// </remarks>
-    public delegate Task<IMessage> ServiceCallback(IMessage request, ReceiveContext context, CancellationToken ct);
+    public delegate Task ServiceCallback(IMessage request, ReceiveContext context, CancellationToken ct);
+
+    /// <summary>
+    /// Indicates the type of ServiceCallback
+    /// </summary>
+    public enum ServiceCallbackType
+    {
+        /// <summary>
+        /// Method returns a Task&lt;IMessage&gt;
+        /// </summary>
+        RequestResponse,
+
+        /// <summary>
+        /// Method returns a Task
+        /// </summary>
+        Event
+    };
 
     /// <summary>
     /// Data about a Bond service method.
@@ -38,6 +54,7 @@ namespace Bond.Comm
         /// The delegate to invoke for this method.
         /// </summary>
         public ServiceCallback Callback;
+        public ServiceCallbackType CallbackType;
     }
 
     /// <summary>

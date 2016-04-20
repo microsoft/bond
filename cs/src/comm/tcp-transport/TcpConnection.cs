@@ -20,7 +20,7 @@ namespace Bond.Comm.Tcp
         Server
     }
 
-    public class TcpConnection : Connection, IRequestResponseConnection
+    public class TcpConnection : Connection, IRequestResponseConnection, IEventConnection
     {
         private TcpTransport m_parentTransport;
 
@@ -188,6 +188,25 @@ namespace Bond.Comm.Tcp
             }
         }
 
+        internal async Task SendEventAsync(string methodName, IMessage message)
+        {
+            uint requestId = AllocateNextRequestId();
+            var frame = MessageToFrame(requestId, methodName, PayloadType.Event, message);
+
+            Log.Debug("{0}.{1}: Sending event {2}/{3}.", this, nameof(SendEventAsync), requestId, methodName);
+            using (var binWriter = new BinaryWriter(m_networkStream, encoding: Encoding.UTF8, leaveOpen: true))
+            {
+                lock (m_networkStream)
+                {
+                    frame.Write(binWriter);
+                    binWriter.Flush();
+                }
+            }
+
+            await m_networkStream.FlushAsync();
+            Log.Debug("{0}.{1}: Sent event {2}/{3}.", this, nameof(SendEventAsync), requestId, methodName);
+        }
+
         internal void Start()
         {
             Task.Run(() => ProcessFramesAsync(m_networkStream));
@@ -219,6 +238,10 @@ namespace Bond.Comm.Tcp
 
                     case TcpProtocol.FrameDisposition.DeliverResponseToProxy:
                         DispatchResponse(result.Headers, result.Payload);
+                        break;
+
+                    case TcpProtocol.FrameDisposition.DeliverEventToService:
+                        DispatchEvent(result.Headers, result.Payload);
                         break;
 
                     case TcpProtocol.FrameDisposition.SendProtocolError:
@@ -278,6 +301,21 @@ namespace Bond.Comm.Tcp
             responseCompletionSource.SetResult(response);
         }
 
+        private void DispatchEvent(TcpHeaders headers, ArraySegment<byte> payload)
+        {
+            if (headers.error_code != (int)ErrorCode.OK)
+            {
+                throw new TcpProtocolErrorException("Received a request with non-zero error code. Request ID " + headers.request_id);
+            }
+
+            IMessage request = Message.FromPayload(Unmarshal.From(payload));
+
+            Task.Run(async () =>
+            {
+                await m_serviceHost.DispatchEvent(headers.method_name, new TcpReceiveContext(this), request);
+            });
+        }
+
         public override Task StopAsync()
         {
             Log.Debug("{0}.{1}: Shutting down.", this, nameof(StopAsync));
@@ -290,6 +328,11 @@ namespace Bond.Comm.Tcp
             // TODO: cancellation
             IMessage response = await SendRequestAsync(methodName, message);
             return response.Convert<TResponse>();
+        }
+
+        public Task FireEventAsync<TPayload>(string methodName, IMessage<TPayload> message)
+        {
+            return SendEventAsync(methodName, message);
         }
     }
 }

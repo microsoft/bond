@@ -48,5 +48,18 @@ namespace Bond.Comm
 
             return tcsOuter.Task;
         }
+
+        private static Task s_completedTask = Task.FromResult(default(object));
+
+        /// <summary>
+        /// Returns a completed Task
+        /// </summary>
+        public static Task CompletedTask
+        {
+            get
+            {
+                return s_completedTask;
+            }
+        }
     }
 }

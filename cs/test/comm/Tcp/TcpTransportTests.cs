@@ -160,6 +160,17 @@ namespace UnitTest.Tcp
             await testClientServer.Transport.StopAsync();
         }
 
+        [Test]
+        public void TestServiceMethodTypeValidation_Throws()
+        {
+            var exception = Assert.Throws<ArgumentException>(async () => await SetupTestClientServer<TestServiceEventMismatch>());
+            Assert.That(exception.Message, Is.StringContaining("registered as Event but callback not implemented as such"));
+            exception = Assert.Throws<ArgumentException>(async () => await SetupTestClientServer<TestServiceReqResMismatch>());
+            Assert.That(exception.Message, Is.StringContaining("registered as RequestResponse but callback not implemented as such"));
+            exception = Assert.Throws<ArgumentException>(async () => await SetupTestClientServer<TestServiceUnsupported>());
+            Assert.That(exception.Message, Is.StringContaining("registered as invalid type"));
+        }
+
         private class TestClientServer<TService>
         {
             public TService Service;
@@ -272,6 +283,76 @@ namespace UnitTest.Tcp
                 var result = new Dummy { int_value = request.int_value + 1 };
 
                 return Task.FromResult<IMessage<Dummy>>(Message.FromPayload(result));
+            }
+        }
+        private class TestServiceEventMismatch : IService
+        {
+            public IEnumerable<ServiceMethodInfo> Methods
+            {
+                get
+                {
+                    return new[]
+                    {
+                        new ServiceMethodInfo
+                        {
+                            MethodName = "TestService.RespondWithEmpty",
+                            Callback = RespondWithEmpty,
+                            CallbackType = ServiceCallbackType.Event
+                        },
+                    };
+                }
+            }
+
+            private Task<IMessage> RespondWithEmpty(IMessage request, ReceiveContext context, CancellationToken ct)
+            {
+                var emptyMessage = Message.FromPayload(new Bond.Void());
+                return Task.FromResult<IMessage>(emptyMessage);
+            }
+        }
+        private class TestServiceReqResMismatch : IService
+        {
+            public IEnumerable<ServiceMethodInfo> Methods
+            {
+                get
+                {
+                    return new[]
+                    {
+                        new ServiceMethodInfo
+                        {
+                            MethodName = "TestService.DoBeep",
+                            Callback = DoBeep,
+                            CallbackType = ServiceCallbackType.RequestResponse
+                        },
+                    };
+                }
+            }
+
+            private Task DoBeep(IMessage request, ReceiveContext context, CancellationToken ct)
+            {
+                return CodegenHelpers.CompletedTask;
+            }
+        }
+        private class TestServiceUnsupported : IService
+        {
+            public IEnumerable<ServiceMethodInfo> Methods
+            {
+                get
+                {
+                    return new[]
+                    {
+                        new ServiceMethodInfo
+                        {
+                            MethodName = "TestService.DoBeep",
+                            Callback = DoBeep,
+                            CallbackType = (ServiceCallbackType)(-100)
+                        },
+                    };
+                }
+            }
+
+            private Task DoBeep(IMessage request, ReceiveContext context, CancellationToken ct)
+            {
+                return CodegenHelpers.CompletedTask;
             }
         }
     }

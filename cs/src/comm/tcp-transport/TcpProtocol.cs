@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.IO;
 using Bond.IO.Safe;
 using Bond.Protocols;
@@ -27,6 +30,11 @@ namespace Bond.Comm.Tcp
             /// The frame was a valid Response.
             /// </summary>
             DeliverResponseToProxy,
+
+            /// <summary>
+            /// The frame was a valid Event.
+            /// </summary>
+            DeliverEventToService,
 
             /// <summary>
             /// The frame was not valid, and the caller should send an error to the remote host.
@@ -396,17 +404,12 @@ namespace Bond.Comm.Tcp
             {
                 case PayloadType.Request:
                 case PayloadType.Response:
-                    return ClassifyState.ValidFrame;
-
                 case PayloadType.Event:
-                    Log.Warning("{0}.{1}: Received unimplemented payload type {2}.",
-                        nameof(TcpProtocol), nameof(TransitionFrameComplete), headers.payload_type);
-                    errorCode = ProtocolErrorCode.NOT_SUPPORTED;
-                    return ClassifyState.MalformedFrame;
-
+                    return ClassifyState.ValidFrame;
                 default:
                     Log.Warning("{0}.{1}: Received unrecognized payload type {2}.",
                         nameof(TcpProtocol), nameof(TransitionFrameComplete), headers.payload_type);
+                    errorCode = ProtocolErrorCode.NOT_SUPPORTED;
                     return ClassifyState.MalformedFrame;
             }
         }
@@ -427,6 +430,10 @@ namespace Bond.Comm.Tcp
 
                 case PayloadType.Response:
                     disposition = FrameDisposition.DeliverResponseToProxy;
+                    return ClassifyState.ClassifiedValidFrame;
+
+                case PayloadType.Event:
+                    disposition = FrameDisposition.DeliverEventToService;
                     return ClassifyState.ClassifiedValidFrame;
 
                 default:

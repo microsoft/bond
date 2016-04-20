@@ -22,9 +22,9 @@ namespace tests
         {
             get
             {
-                yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo31", Callback = foo31Async_Glue};
-                yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo32", Callback = foo32Async_Glue};
-                yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo33", Callback = foo33Async_Glue};
+                yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo31", Callback = foo31Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.RequestResponse};
+                yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo32", Callback = foo32Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.RequestResponse};
+                yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo33", Callback = foo33Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.RequestResponse};
             }
         }
 

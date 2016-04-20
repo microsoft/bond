@@ -8,6 +8,7 @@ enum ErrorCode
     OK = 0x0;
     InternalServerError = 0xA0BD0002;
     MethodNotFound = 0xA0BD0003;
+    InvalidInvocation = 0xA0BD0004;
 }
 
 struct Error

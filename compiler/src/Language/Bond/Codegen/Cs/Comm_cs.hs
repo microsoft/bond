@@ -52,7 +52,11 @@ namespace #{csNamespace}
           where
             getMessageResultTypeName = getMessageTypeName cs methodResult
             getMessageInputTypeName = getMessageTypeName cs methodInput
-        methodDeclaration _ = mempty
+
+        methodDeclaration Event{..} = [lt|void #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param);|]
+          where
+            getMessageInputTypeName = getMessageTypeName cs methodInput
+
     comm _ = mempty
 
 comm_proxy_cs :: MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
@@ -81,7 +85,7 @@ namespace #{csNamespace}
     }|]
       where
         methodCapability Function {} = "global::Bond.Comm.IRequestResponseConnection"
-        methodCapability _ = ""
+        methodCapability Event {} = "global::Bond.Comm.IEventConnection"
 
         getCapabilities :: [Method] -> [String]
         getCapabilities m = nub $ map methodCapability m 
@@ -106,7 +110,21 @@ namespace #{csNamespace}
           where
             getMessageResultTypeName = getMessageTypeName cs methodResult
             getMessageInputTypeName = getMessageTypeName cs methodInput
-        proxyMethod _ = mempty
+
+        proxyMethod Event{..} = [lt|public void #{methodName}Async(#{getMessageInputTypeName} param)
+        {
+            var message = new global::Bond.Comm.Message<#{getMessageInputTypeName}>(param);
+            #{methodName}Async(message);
+        }
+
+        public void #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param)
+        {
+            m_connection.FireEventAsync<#{getMessageInputTypeName}>(
+                "#{getDeclTypeName idl s}.#{methodName}",
+                param);
+        }|]
+          where
+            getMessageInputTypeName = getMessageTypeName cs methodInput
 
     comm _ = mempty
 
@@ -141,14 +159,17 @@ namespace #{csNamespace}
       where
         generics = angles $ sepBy ", " paramName declParams
 
-        methodInfo Function{..} = [lt|yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="#{getDeclTypeName idl s}.#{methodName}", Callback = #{methodName}Async_Glue};|]
-        methodInfo _ = mempty
+        methodInfo Function{..} = [lt|yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="#{getDeclTypeName idl s}.#{methodName}", Callback = #{methodName}Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.RequestResponse};|]
+        methodInfo Event{..} = [lt|yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="#{getDeclTypeName idl s}.#{methodName}", Callback = #{methodName}Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.Event};|]
 
         methodAbstract Function{..} = [lt|public abstract global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>> #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param, global::System.Threading.CancellationToken ct);|]
           where
             getMessageResultTypeName = getMessageTypeName cs methodResult
             getMessageInputTypeName = getMessageTypeName cs methodInput
-        methodAbstract _ = mempty
+
+        methodAbstract Event{..} = [lt|public abstract void #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param);|]
+          where
+            getMessageInputTypeName = getMessageTypeName cs methodInput
 
         methodGlue Function{..} = [lt|private global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage> #{methodName}Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
         {
@@ -159,5 +180,13 @@ namespace #{csNamespace}
           where
             getMessageResultTypeName = getMessageTypeName cs methodResult
             getMessageInputTypeName = getMessageTypeName cs methodInput
-        methodGlue _ = mempty
+
+        methodGlue Event{..} = [lt|private global::System.Threading.Tasks.Task #{methodName}Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
+        {
+            #{methodName}Async(param.Convert<#{getMessageInputTypeName}>());
+            return global::Bond.Comm.CodegenHelpers.CompletedTask;
+        }|]
+          where
+            getMessageInputTypeName = getMessageTypeName cs methodInput
+
     comm _ = mempty

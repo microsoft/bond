@@ -18,6 +18,14 @@ namespace tests
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.4.0.2")]
     interface IFoo
     {
+        void foo11Async(global::Bond.Comm.IMessage<global::Bond.Void> param);
+
+        void foo12Async(global::Bond.Comm.IMessage<global::Bond.Void> param);
+
+        void foo13Async(global::Bond.Comm.IMessage<BasicTypes> param);
+
+        void foo14Async(global::Bond.Comm.IMessage<dummy> param);
+
         global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo21Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct);
 
         global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo22Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct);
