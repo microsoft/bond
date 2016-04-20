@@ -27,8 +27,7 @@ namespace Bond.Examples.PingPong
 
             Console.WriteLine("Done with all requests.");
 
-            // TODO: Shutdown not yet implemented.
-            // transport.StopAsync().Wait();
+            transport.StopAsync().Wait();
         }
 
         private async static Task<TcpTransport> SetupAsync()
