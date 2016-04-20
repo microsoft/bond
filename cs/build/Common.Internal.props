@@ -24,6 +24,7 @@
     <FileAlignment>512</FileAlignment>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <NoWarn>1591</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
@@ -54,5 +55,4 @@
     <AssemblyOriginatorKeyFile>$(DELAY_SIGN_KEY)</AssemblyOriginatorKeyFile>
     <DefineConstants>$(DefineConstants);DELAY_SIGN</DefineConstants>
   </PropertyGroup>
-</Project> 
-
+</Project>
