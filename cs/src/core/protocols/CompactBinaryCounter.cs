@@ -243,7 +243,7 @@ namespace Bond.Protocols
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public void WriteUInt8(Byte value)
+        public void WriteUInt8(byte value)
         {
             AddBytes(1);
         }

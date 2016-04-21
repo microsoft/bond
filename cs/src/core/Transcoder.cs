@@ -5,10 +5,11 @@ namespace Bond
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using Bond.Expressions;
     using Bond.IO;
     using Bond.Protocols;
-
+    using System.Collections.Generic;
     /// <summary>
     /// Transcode payload from one protocol into another
     /// </summary>
@@ -135,7 +136,7 @@ namespace Bond
             helper.Transcode(reader, writer);
         }
 
-        private class TranscoderHelper
+        class TranscoderHelper
         {
             readonly Action<R, W>[] transcode;
 
@@ -154,7 +155,7 @@ namespace Bond
                 transcode[0](reader, writer);
             }
 
-            private Action<R, W>[] Generate<S>(S schema, IParser parser)
+            Action<R, W>[] Generate<S>(S schema, IParser parser)
             {
                 parser = parser ?? ParserFactory<R>.Create(schema);
                 return SerializerGeneratorFactory<R, W>.Create(
@@ -164,20 +165,25 @@ namespace Bond
             }
         }
 
-        private class TwoPassTranscoderHelper<FPW> : TranscoderHelper
+        class TwoPassTranscoderHelper<FPW> : TranscoderHelper
         {
-            readonly Action<R, FPW>[] firstPassTranscode;
+            readonly Lazy<Action<R, FPW>[]> firstPassTranscode;
 
             public TwoPassTranscoderHelper(RuntimeSchema schema, IParser parser):
-                base(schema, null)
+                base(schema, parser)
             {
-                firstPassTranscode = GenerateFirstPass(schema, parser);
+                firstPassTranscode = new Lazy<Action<R, FPW>[]>(() => {
+                    return GenerateFirstPass(schema, parser);
+                }, LazyThreadSafetyMode.PublicationOnly);
             }
 
             public TwoPassTranscoderHelper(Type type, IParser parser):
-                base(type, null)
+                base(type, parser)
             {
-                firstPassTranscode = GenerateFirstPass(type, parser);
+                firstPassTranscode = new Lazy<Action<R, FPW>[]>(() =>
+                {
+                    return GenerateFirstPass(type, parser);
+                }, LazyThreadSafetyMode.PublicationOnly);
             }
 
             public override void Transcode(R reader, W writer)
@@ -191,17 +197,17 @@ namespace Bond
                     }
 
                     R clonedReader = ((ICloneable<R>)reader).Clone();
-                    firstPassTranscode[0](clonedReader, (FPW)firstPassWriter);
+                    firstPassTranscode.Value[0](clonedReader, (FPW)firstPassWriter);
                 }
 
                 base.Transcode(reader, writer);
             }
 
-            private Action<R, FPW>[] GenerateFirstPass<S>(S schema, IParser parser)
+            Action<R, FPW>[] GenerateFirstPass<S>(S schema, IParser parser)
             {
                 parser = parser ?? ParserFactory<R>.Create(schema);
                 return SerializerGeneratorFactory<R, FPW>.Create(
-                        (r, w, i) => firstPassTranscode[i](r, w), schema)
+                        (r, w, i) => firstPassTranscode.Value[i](r, w), schema)
                     .Generate(parser)
                     .Select(lambda => lambda.Compile()).ToArray();
             }

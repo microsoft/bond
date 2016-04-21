@@ -5,6 +5,7 @@ namespace Bond
 {
     using System;
     using System.Linq;
+    using System.Threading;
 
     using Bond.Expressions;
     using Bond.Protocols;
@@ -129,7 +130,7 @@ namespace Bond
             helper.Serialize(obj, writer);
         }
 
-        private class SerializerHelper
+        class SerializerHelper
         {
             readonly Action<object, W>[] serialize;
 
@@ -141,31 +142,33 @@ namespace Bond
                 .Select(lambda => lambda.Compile()).ToArray();
             }
 
-            public virtual void Serialize(Object obj, W writer)
+            public virtual void Serialize(object obj, W writer)
             {
                 serialize[0](obj, writer);
             }
         }
 
-        private class TwoPassSerializerHelper<FPW> : SerializerHelper
+        class TwoPassSerializerHelper<FPW> : SerializerHelper
         {
-            readonly Action<object, FPW>[] firstPassSerialize;
+            readonly Lazy<Action<object, FPW>[]> firstPassSerialize;
 
             public TwoPassSerializerHelper(ObjectParser parser, Type type, bool inlineNested) :
                 base(parser, type, inlineNested)
             {
-                firstPassSerialize = SerializerGeneratorFactory<object, FPW>.Create(
-                    (o, w, i) => firstPassSerialize[i](o, w), type, inlineNested)
-                .Generate(parser)
-                .Select(lambda => lambda.Compile()).ToArray();
+                firstPassSerialize = new Lazy<Action<object, FPW>[]>(() => {
+                    return SerializerGeneratorFactory<object, FPW>.Create(
+                        (o, w, i) => firstPassSerialize.Value[i](o, w), type, inlineNested)
+                    .Generate(parser)
+                    .Select(lambda => lambda.Compile()).ToArray();
+                }, LazyThreadSafetyMode.PublicationOnly);
             }
 
-            public override void Serialize(Object obj, W writer)
+            public override void Serialize(object obj, W writer)
             {
                 var firstPassWriter = ((ITwoPassProtocolWriter)writer).GetFirstPassWriter();
                 if (firstPassWriter != null)
                 {
-                    firstPassSerialize[0](obj, (FPW)firstPassWriter);
+                    firstPassSerialize.Value[0](obj, (FPW)firstPassWriter);
                 }
 
                 base.Serialize(obj, writer);
