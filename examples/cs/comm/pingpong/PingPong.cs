@@ -14,6 +14,9 @@ namespace Bond.Examples.PingPong
 
     public static class PingPong
     {
+        private const ushort pingPort = TcpTransport.DefaultPort;
+        private const ushort reversePingPort = TcpTransport.DefaultPort + 1;
+
         private static TcpConnection s_pingConnection;
         private static TcpConnection s_reverseConnection;
 
@@ -26,6 +29,7 @@ namespace Bond.Examples.PingPong
             Task.WaitAll(tasks);
 
             Console.WriteLine("Done with all requests.");
+            Console.ReadLine();
 
             transport.StopAsync().Wait();
         }
@@ -39,14 +43,15 @@ namespace Bond.Examples.PingPong
                 .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
                 .Construct();
 
-            var assignAPortEndPoint = new IPEndPoint(IPAddress.Loopback, 0);
+            var pingEndpoint = new IPEndPoint(IPAddress.Loopback, pingPort);
+            var reversePingEndpoint = new IPEndPoint(IPAddress.Loopback, reversePingPort);
 
             var pingPongService = new PingPongService();
-            TcpListener pingPongListener = transport.MakeListener(assignAPortEndPoint);
+            TcpListener pingPongListener = transport.MakeListener(pingEndpoint);
             pingPongListener.AddService(pingPongService);
 
             var reversePingPongService = new ReversePingPongService();
-            TcpListener reversePingPongListener = transport.MakeListener(assignAPortEndPoint);
+            TcpListener reversePingPongListener = transport.MakeListener(reversePingEndpoint);
             reversePingPongListener.AddService(reversePingPongService);
 
             await Task.WhenAll(
