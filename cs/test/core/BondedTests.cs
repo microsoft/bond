@@ -122,8 +122,8 @@
             BondedSerialize(from, bondedPayloadCB2);
             BondedSerialize(from, bondedPayloadSP);
 
-            BondedSerialize(from, bondedPayloadCB as IBonded);
-            BondedSerialize(from, bondedPayloadCB2 as IBonded);
+            BondedSerialize(from, (IBonded)bondedPayloadCB);
+            BondedSerialize(from, (IBonded)bondedPayloadCB2);
         }
 
         // Serialize a class with IBonded<From> field an deserialize into class with non-lazy struct To field.

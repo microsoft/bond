@@ -9,7 +9,7 @@ namespace Bond
     using Bond.Expressions;
     using Bond.IO;
     using Bond.Protocols;
-    using System.Collections.Generic;
+
     /// <summary>
     /// Transcode payload from one protocol into another
     /// </summary>
@@ -150,7 +150,7 @@ namespace Bond
                 transcode = Generate(type, parser);
             }
 
-            virtual public void Transcode(R reader, W writer)
+            public virtual void Transcode(R reader, W writer)
             {
                 transcode[0](reader, writer);
             }
@@ -172,18 +172,13 @@ namespace Bond
             public TwoPassTranscoderHelper(RuntimeSchema schema, IParser parser):
                 base(schema, parser)
             {
-                firstPassTranscode = new Lazy<Action<R, FPW>[]>(() => {
-                    return GenerateFirstPass(schema, parser);
-                }, LazyThreadSafetyMode.PublicationOnly);
+                firstPassTranscode = new Lazy<Action<R, FPW>[]>(() => GenerateFirstPass(schema, parser), LazyThreadSafetyMode.PublicationOnly);
             }
 
             public TwoPassTranscoderHelper(Type type, IParser parser):
                 base(type, parser)
             {
-                firstPassTranscode = new Lazy<Action<R, FPW>[]>(() =>
-                {
-                    return GenerateFirstPass(type, parser);
-                }, LazyThreadSafetyMode.PublicationOnly);
+                firstPassTranscode = new Lazy<Action<R, FPW>[]>(() => GenerateFirstPass(type, parser), LazyThreadSafetyMode.PublicationOnly);
             }
 
             public override void Transcode(R reader, W writer)

@@ -141,8 +141,8 @@ namespace Bond.Protocols
         const ushort Magic = (ushort)ProtocolType.COMPACT_PROTOCOL;
         readonly O output;
         readonly ushort version;
-        CompactBinaryCounter? firstPassWriter;
-        LinkedList<uint> lengths;
+        readonly CompactBinaryCounter? firstPassWriter;
+        readonly LinkedList<uint> lengths;
         Stack<long> lengthCheck;
 
         /// <summary>
@@ -156,16 +156,16 @@ namespace Bond.Protocols
             this.version = version;
             if (version == 2)
             {
-                this.lengths = new LinkedList<uint>();
-                this.firstPassWriter = new CompactBinaryCounter(lengths);
+                lengths = new LinkedList<uint>();
+                firstPassWriter = new CompactBinaryCounter(lengths);
             }
             else
             {
-                this.lengths = null;
-                this.firstPassWriter = null;
+                lengths = null;
+                firstPassWriter = null;
             }
 
-            this.lengthCheck = null;
+            lengthCheck = null;
             InitLengthCheck();
         }
 
@@ -514,16 +514,16 @@ namespace Bond.Protocols
         [Conditional("DEBUG")]
         private void InitLengthCheck()
         {
-            if (this.version == 2)
+            if (version == 2)
             {
-                this.lengthCheck = new Stack<long>();
+                lengthCheck = new Stack<long>();
             }
         }
 
         [Conditional("DEBUG")]
         private void PushLengthCheck(long position)
         {
-            this.lengthCheck.Push(position);
+            lengthCheck.Push(position);
         }
 
         [Conditional("DEBUG")]

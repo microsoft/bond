@@ -6,7 +6,6 @@
 namespace Bond.Protocols
 {
     using System;
-    using System.IO;
     using System.Runtime.CompilerServices;
     using System.Text;
     using System.Collections.Generic;
@@ -20,7 +19,7 @@ namespace Bond.Protocols
     {
         private class CounterStackFrame
         {
-            public LinkedListNode<UInt32> lengthSlot;
+            public readonly LinkedListNode<UInt32> lengthSlot;
             public int currentLength;
 
             public CounterStackFrame(LinkedListNode<UInt32> slot)
@@ -29,8 +28,8 @@ namespace Bond.Protocols
             }
         }
 
-        LinkedList<UInt32> lengths;
-        Stack<CounterStackFrame> counterStack;
+        readonly LinkedList<UInt32> lengths;
+        readonly Stack<CounterStackFrame> counterStack;
 
         /// <summary>
         /// Create an instance of CompactBinaryCounter
