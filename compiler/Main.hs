@@ -99,8 +99,7 @@ csCodegen options@Cs {..} = do
                  then PublicFields
                  else Properties
     let typeMapping = if collection_interfaces then csCollectionInterfacesTypeMapping else csTypeMapping
-    let legacy_meta_namespace = LegacyMetaNamespaces `elem` (filterCompatibilityOptions compatibility_options)
-    let templates = [ types_cs Class fieldMapping legacy_meta_namespace ]
+    let templates = [ types_cs Class fieldMapping ]
     concurrentlyFor_ files $ codeGen options typeMapping templates
 csCodegen _ = error "csCodegen: impossible happened."
 

@@ -38,9 +38,8 @@ data FieldMapping =
 types_cs
     :: StructMapping        -- ^ Specifies how to represent schema structs
     -> FieldMapping         -- ^ Specifies how to represent schema fields
-    -> Bool                 -- ^ Specifies if we use the language namespaces 
     -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
-types_cs structMapping fieldMapping legacy_meta_namespaces cs _ _ declarations = (fileSuffix, [lt|
+types_cs structMapping fieldMapping cs _ _ declarations = (fileSuffix, [lt|
 #{CS.disableCscWarnings}
 #{CS.disableReSharperWarnings}
 namespace #{csNamespace}
@@ -75,25 +74,11 @@ namespace #{csNamespace}
     -- C# type definition for schema struct
     typeDefinition s@Struct {..} = [lt|#{typeAttributes s}#{struct}#{declName}#{params}#{maybe interface baseClass structBase}#{constraints}
     {
-        #{staticVarInitializer}#{doubleLineSep 2 property structFields}#{constructors}
+        #{doubleLineSep 2 property structFields}#{constructors}
     }|]
       where
         interface = case structMapping of
             _ -> mempty
-
-        isLegacy :: Bool -> String
-        isLegacy True = "Legacy"
-        isLegacy False = ""
-
-        staticSchemaVar = not (null declParams) || legacy_meta_namespaces
-
-        -- static variables containing the schema name are only codegen if you use generics or the bond legacy namespaces
-        staticVarInitializer = if staticSchemaVar
-          then [lt|private static readonly string _schemaName = global::Bond.Reflection.GetSchema#{isLegacy legacy_meta_namespaces}Name(typeof(#{declName}#{params}));
-        private static readonly string _schemaFullName = global::Bond.Reflection.GetSchema#{isLegacy legacy_meta_namespaces}FullName(typeof(#{declName}#{params}));
-
-        |]
-          else mempty
 
         -- type parameters
         params = angles $ sepBy ", " paramName declParams
@@ -117,7 +102,7 @@ namespace #{csNamespace}
         constructors = if noCtor then mempty else [lt|
 
         public #{declName}()
-            : this(#{initValues})
+            : this("#{getDeclTypeName idl s}", "#{declName}")
         {}
 
         protected #{declName}(string fullName, string name)#{baseCtor}
@@ -127,10 +112,6 @@ namespace #{csNamespace}
           where
             noCtor = not callBaseCtor && (fieldMapping == PublicFields && noMetaFields || null structFields)
             noMetaFields = not $ getAny $ F.foldMap metaField structFields
-
-            initValues = if staticSchemaVar
-              then "_schemaFullName, _schemaName"
-              else [lt|"#{getDeclTypeName idl s}", "#{declName}"|]
 
         -- property or field
         property f@Field {..} =

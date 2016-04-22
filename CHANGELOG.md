@@ -26,10 +26,6 @@ different versioning scheme, following the Haskell community's
   `/warn:4`. [Issue #82](https://github.com/Microsoft/bond/issues/82)
 * Added
   [Visual Studio Code highlighting rules for `.bond` files](https://github.com/Microsoft/bond/tree/b2b9cd7256286fd484444dfaf7645d380a3ee936/tools/syntax/VsCode).
-* `gbc` C# mode now has
-  [`--compatibility-options`](https://microsoft.github.io/bond/manual/bond_cs.html#code-generation)
-  to adjust the generated code to be backward compatible with some bugs in
-  older versions of Bond.
 
 ### C++ ###
 
@@ -37,8 +33,6 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
-* `bond_meta::full_name` and `bond_meta::name` fields now properly encode
-  generic paramaters. [Issue #140](https://github.com/Microsoft/bond/issues/140)
 * Enums are now cast to 32-bit integers to avoid some compiler warnings.
 * [Implicit conversion between `bond.GUID` and `System.Guid`](https://github.com/Microsoft/bond/blob/bc4c56a3ca0858f4bd93916e80ceff9bbeada606/cs/test/core/GuidConversionTests.cs#L14)
   has been added.

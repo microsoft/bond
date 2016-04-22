@@ -101,12 +101,6 @@ tests = testGroup "Compiler tests"
                 , "--using=time=System.DateTime"
                 ]
                 "nullable_alias"
-            , testGroup "legacyMetaNamespaces"
-                [ verifyLegacyMetaNamespacesCodegen
-                    [ "c#"
-                    ]
-                    "legacy_meta_namespaces"
-                ]
             ]
         ]
     ]
