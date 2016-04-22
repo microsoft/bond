@@ -11,10 +11,10 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Yet to be released ##
+## 4.1.0: 2016-04-22
 
-* `gbc` & compiler library: TBD
-* C# NuGet version: TBD
+* `gbc` & compiler library: 0.4.0.2
+* C# NuGet version: 4.1.0
 
 ### `gbc` ###
 
@@ -33,6 +33,8 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
+* The generated C# code now compiles with no errors or warnings at
+  `/warn:4`. [Issue #82](https://github.com/Microsoft/bond/issues/82)
 * Enums are now cast to 32-bit integers to avoid some compiler warnings.
 * [Implicit conversion between `bond.GUID` and `System.Guid`](https://github.com/Microsoft/bond/blob/bc4c56a3ca0858f4bd93916e80ceff9bbeada606/cs/test/core/GuidConversionTests.cs#L14)
   has been added.
