@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\Bond.CSharp.4.0.2\build\Bond.CSharp.props" Condition="Exists('packages\Bond.CSharp.4.0.2\build\Bond.CSharp.props')" />
+  <Import Project="..\packages\Bond.CSharp.4.1.0\build\Bond.CSharp.props" Condition="Exists('..\packages\Bond.CSharp.4.1.0\build\Bond.CSharp.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -16,7 +16,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <NuGetPackageImportStamp>6253de09</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>de3261ed</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,16 +37,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Bond">
-      <HintPath>packages\Bond.Core.CSharp.4.0.2\lib\net45\Bond.dll</HintPath>
+      <HintPath>..\packages\Bond.Core.CSharp.4.1.0\lib\net45\Bond.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Bond.Attributes">
-      <HintPath>packages\Bond.Core.CSharp.4.0.2\lib\net45\Bond.Attributes.dll</HintPath>
+      <HintPath>..\packages\Bond.Core.CSharp.4.1.0\lib\net45\Bond.Attributes.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Bond.IO">
-      <HintPath>packages\Bond.Core.CSharp.4.0.2\lib\net45\Bond.IO.dll</HintPath>
+      <HintPath>..\packages\Bond.Core.CSharp.4.1.0\lib\net45\Bond.IO.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Bond.JSON">
-      <HintPath>packages\Bond.Runtime.CSharp.4.0.2\lib\net45\Bond.JSON.dll</HintPath>
+      <HintPath>..\packages\Bond.Runtime.CSharp.4.1.0\lib\net45\Bond.JSON.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -107,13 +111,13 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>packages\Newtonsoft.Json.7.0.1\lib\portable-net45+wp80+win8+wpa81+dnxcore50\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\portable-net45+wp80+win8+wpa81+dnxcore50\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="NUnit.VisualStudio.TestAdapter" Condition="'$(OS)' != 'Unix'">
-      <HintPath>packages\NUnitTestAdapter.2.0.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
+      <HintPath>..\packages\NUnitTestAdapter.2.0.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -125,8 +129,8 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\Bond.CSharp.4.0.2\build\Bond.CSharp.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Bond.CSharp.4.0.2\build\Bond.CSharp.props'))" />
-    <Error Condition="!Exists('packages\Bond.CSharp.4.0.2\build\Bond.CSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Bond.CSharp.4.0.2\build\Bond.CSharp.targets'))" />
+    <Error Condition="!Exists('..\packages\Bond.CSharp.4.1.0\build\Bond.CSharp.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Bond.CSharp.4.1.0\build\Bond.CSharp.props'))" />
+    <Error Condition="!Exists('..\packages\Bond.CSharp.4.1.0\build\Bond.CSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Bond.CSharp.4.1.0\build\Bond.CSharp.targets'))" />
   </Target>
-  <Import Project="packages\Bond.CSharp.4.0.2\build\Bond.CSharp.targets" Condition="Exists('packages\Bond.CSharp.4.0.2\build\Bond.CSharp.targets')" />
+  <Import Project="..\packages\Bond.CSharp.4.1.0\build\Bond.CSharp.targets" Condition="Exists('..\packages\Bond.CSharp.4.1.0\build\Bond.CSharp.targets')" />
 </Project>
