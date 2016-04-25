@@ -90,7 +90,7 @@ test-suite gbc-tests
                     derive,
                     HUnit,
                     QuickCheck,
-                    Diff >= 0.2 && <= 0.3.2,
+                    Diff >= 0.2 && < 0.4,
                     pretty,
                     tasty,
                     tasty-golden,
