@@ -201,7 +201,7 @@ namespace Bond
     }
 
     /// <summary>
-    /// Applied to 2-pass protocol writers to indicate the implementation of <see cref="IProtocolWriter" /> used to generate the first-pass serializer
+    /// Applied to 2-pass protocol writers to indicate the implementation of IProtocolWriter used to generate the first-pass serializer
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface)]
     public sealed class FirstPassWriterAttribute : Attribute
