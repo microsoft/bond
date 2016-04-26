@@ -5,8 +5,10 @@ namespace Bond
 {
     using System;
     using System.Linq;
+    using System.Threading;
 
     using Bond.Expressions;
+    using Bond.Protocols;
 
     /// <summary>
     /// Serialize objects
@@ -60,7 +62,26 @@ namespace Bond
     /// <typeparam name="W">Protocol writer</typeparam>
     public class Serializer<W>
     {
-        readonly Action<object, W>[] serialize;
+        static readonly Type helperType;
+        readonly SerializerHelper helper;
+
+        static Serializer()
+        {
+            var firstPassAttribute = typeof(W).GetAttribute<FirstPassWriterAttribute>();
+            if (firstPassAttribute != null)
+            {
+                if (!typeof(ITwoPassProtocolWriter).IsAssignableFrom(typeof(W)))
+                {
+                    throw new ArgumentException("Writers with FirstPassWriterAttribute must implement ITwoPassProtocolWriter");
+                }
+
+                helperType = typeof(TwoPassSerializerHelper<>).MakeGenericType(typeof(W), firstPassAttribute.Type);
+            }
+            else
+            {
+                helperType = typeof(SerializerHelper);
+            }
+        }
 
         /// <summary>
         /// Create a serializer for specified type
@@ -91,10 +112,9 @@ namespace Bond
         public Serializer(Type type, IParser parser, bool inlineNested)
         {
             parser = parser ?? new ObjectParser(type);
-            serialize = SerializerGeneratorFactory<object, W>.Create(
-                    (o, w, i) => serialize[i](o, w), type, inlineNested)
-                .Generate(parser)
-                .Select(lambda => lambda.Compile()).ToArray();
+
+            helper = (SerializerHelper)Activator.CreateInstance(helperType, parser, type, inlineNested);
+
         }
 
         /// <summary>
@@ -107,7 +127,52 @@ namespace Bond
         /// </remarks>
         public void Serialize(object obj, W writer)
         {
-            serialize[0](obj, writer);
+            helper.Serialize(obj, writer);
+        }
+
+        class SerializerHelper
+        {
+            readonly Action<object, W>[] serialize;
+
+            public SerializerHelper(ObjectParser parser, Type type, bool inlineNested)
+            {
+                serialize = SerializerGeneratorFactory<object, W>.Create(
+                    (o, w, i) => serialize[i](o, w), type, inlineNested)
+                .Generate(parser)
+                .Select(lambda => lambda.Compile()).ToArray();
+            }
+
+            public virtual void Serialize(object obj, W writer)
+            {
+                serialize[0](obj, writer);
+            }
+        }
+
+        class TwoPassSerializerHelper<FPW> : SerializerHelper
+        {
+            readonly Lazy<Action<object, FPW>[]> firstPassSerialize;
+
+            public TwoPassSerializerHelper(ObjectParser parser, Type type, bool inlineNested) :
+                base(parser, type, inlineNested)
+            {
+                firstPassSerialize = new Lazy<Action<object, FPW>[]>(() => {
+                    return SerializerGeneratorFactory<object, FPW>.Create(
+                        (o, w, i) => firstPassSerialize.Value[i](o, w), type, inlineNested)
+                    .Generate(parser)
+                    .Select(lambda => lambda.Compile()).ToArray();
+                }, LazyThreadSafetyMode.PublicationOnly);
+            }
+
+            public override void Serialize(object obj, W writer)
+            {
+                var firstPassWriter = ((ITwoPassProtocolWriter)writer).GetFirstPassWriter();
+                if (firstPassWriter != null)
+                {
+                    firstPassSerialize.Value[0](obj, (FPW)firstPassWriter);
+                }
+
+                base.Serialize(obj, writer);
+            }
         }
     }
 }
