@@ -247,10 +247,8 @@ namespace Bond.Comm
                 throw new ArgumentNullException(nameof(payload));
             }
 
-            var payloadBondedType = typeof (Bonded<>).MakeGenericType(payload.GetType());
-            var ctor = payloadBondedType.GetTypeInfo().DeclaredConstructors.First();
-            var bonded = ctor.Invoke(new object[] { payload });
-            return (IBonded<TActual>)bonded;
+            Type ibondedType = typeof (Bonded<>).MakeGenericType(payload.GetType());
+            return (IBonded<TActual>) Activator.CreateInstance(ibondedType, payload);
         }
 
         public IBonded RawPayload
