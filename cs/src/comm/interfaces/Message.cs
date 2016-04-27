@@ -113,7 +113,7 @@ namespace Bond.Comm
         /// </summary>
         /// <param name="payload">The payload for the message.</param>
         /// <returns>A payload message of unknown payload type.</returns>
-        public static Message FromPayload(IBonded payload)
+        public static IMessage FromPayload(IBonded payload)
         {
             if (payload == null)
             {
@@ -131,7 +131,7 @@ namespace Bond.Comm
         /// </typeparam>
         /// <param name="payload">The payload for the message.</param>
         /// <returns>A payload message of the given payload type.</returns>
-        public static Message<TPayload> FromPayload<TPayload>(TPayload payload)
+        public static IMessage<TPayload> FromPayload<TPayload>(TPayload payload)
         {
             if (payload == null)
             {
@@ -149,7 +149,7 @@ namespace Bond.Comm
         /// </typeparam>
         /// <param name="payload">The payload for the message.</param>
         /// <returns>A payload message of the given payload type.</returns>
-        public static Message<TPayload> FromPayload<TPayload>(IBonded<TPayload> payload)
+        public static IMessage<TPayload> FromPayload<TPayload>(IBonded<TPayload> payload)
         {
             if (payload == null)
             {
@@ -167,7 +167,7 @@ namespace Bond.Comm
         /// </typeparam>
         /// <param name="err">The error for the message.</param>
         /// <returns>An error message of the given payload type.</returns>
-        public static Message<TPayload> FromError<TPayload>(Error err)
+        public static IMessage<TPayload> FromError<TPayload>(Error err)
         {
             if (err == null)
             {
@@ -190,7 +190,7 @@ namespace Bond.Comm
         /// </typeparam>
         /// <param name="err">The error for the message.</param>
         /// <returns>An error message of the given payload type.</returns>
-        public static Message<TPayload> FromError<TPayload>(IBonded<Error> err)
+        public static IMessage<TPayload> FromError<TPayload>(IBonded<Error> err)
         {
             if (err == null)
             {
@@ -209,7 +209,7 @@ namespace Bond.Comm
         /// Thrown when <paramref name="err"/> has a zero
         /// <see cref="Comm.Error.error_code"/>.
         /// </exception>
-        public static Message FromError(Error err)
+        public static IMessage FromError(Error err)
         {
             if (err == null)
             {
@@ -229,7 +229,7 @@ namespace Bond.Comm
         /// </summary>
         /// <param name="err">The error for the message.</param>
         /// <returns>An error message of unknown payload type.</returns>
-        public static Message FromError(IBonded<Error> err)
+        public static IMessage FromError(IBonded<Error> err)
         {
             if (err == null)
             {
