@@ -17,7 +17,7 @@ namespace Bond.Examples.Logging
             Console.WriteLine($"[bond] {severity.ToString().ToUpper()}: {message}");
             if (exception != null)
             {
-                Console.Write(exception);
+                Console.WriteLine(exception);
             }
         }
     }
