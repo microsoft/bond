@@ -59,12 +59,23 @@
 
         void TestSerialization<T>()
         {
-            var stream = new MemoryStream();
-            var from = Random.Init<T>();
-            Util.SerializeCB(from, stream);
-            stream.Position = 0;
-            var to = Util.DeserializeCB<T>(stream);
-            Assert.IsTrue(Comparer.Equal(from, to));
+            {
+                var stream = new MemoryStream();
+                var from = Random.Init<T>();
+                Util.SerializeCB(from, stream);
+                stream.Position = 0;
+                var to = Util.DeserializeCB<T>(stream);
+                Assert.IsTrue(Comparer.Equal(from, to));
+            }
+
+            {
+                var stream = new MemoryStream();
+                var from = Random.Init<T>();
+                Util.SerializeCB2(from, stream);
+                stream.Position = 0;
+                var to = Util.DeserializeCB2<T>(stream);
+                Assert.IsTrue(Comparer.Equal(from, to));
+            }
         }
 
         void TestCloning<T>()

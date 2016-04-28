@@ -11,6 +11,16 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Yet to be released ##
+
+* `gbc` & compiler library: TBD
+* C# NuGet version: TBD
+
+### C# ###
+
+* Add support for Compact Binary v2 writing.
+  [Issue #70](https://github.com/Microsoft/bond/issues/70)
+
 ## 4.1.0: 2016-04-22
 
 * `gbc` & compiler library: 0.4.0.2
