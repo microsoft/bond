@@ -11,10 +11,10 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Yet to be released ##
+## 4.2.0: 2016-04-28 ##
 
-* `gbc` & compiler library: TBD
-* C# NuGet version: TBD
+* `gbc` & compiler library: 0.4.0.2
+* C# NuGet version: 4.2.0
 
 ### C# ###
 
