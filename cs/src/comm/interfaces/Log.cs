@@ -148,5 +148,17 @@ namespace Bond.Comm
             Log.Fatal(null, format, args);
             return string.Format(format, args);
         }
+
+        public static string ErrorAndReturnFormatted(Exception exception, string format, params object[] args)
+        {
+            Log.Error(exception, format, args);
+            return string.Format(format, args);
+        }
+
+        public static string ErrorAndReturnFormatted(string format, params object[] args)
+        {
+            Log.Error(null, format, args);
+            return string.Format(format, args);
+        }
     }
 }

@@ -82,7 +82,7 @@ namespace Bond.Comm.Tcp
         {
             if (m_framelets.Count == UInt16.MaxValue)
             {
-                var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Exceeded maximum allowed count of framelets.",
+                var message = LogUtil.ErrorAndReturnFormatted("{0}.{1}: Exceeded maximum allowed count of framelets.",
                     nameof(Frame), nameof(Add));
                 throw new InvalidOperationException(message);
             }

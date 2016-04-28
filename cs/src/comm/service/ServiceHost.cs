@@ -119,7 +119,7 @@ namespace Bond.Comm.Service
             {
                 if (!m_dispatchTable.TryGetValue(methodName, out methodInfo))
                 {
-                    var errorMessage = LogUtil.FatalAndReturnFormatted("{0}.{1}: Got request for unknown method {2}.",
+                    var errorMessage = LogUtil.ErrorAndReturnFormatted("{0}.{1}: Got request for unknown method {2}.",
                         nameof(ServiceHost), nameof(DispatchRequest), methodName);
 
                     var error = new Error
@@ -133,7 +133,7 @@ namespace Bond.Comm.Service
 
             if (methodInfo.CallbackType != ServiceCallbackType.RequestResponse)
             {
-                var errorMessage = LogUtil.FatalAndReturnFormatted("{0}.{1}: Method {2} invoked as if it were {3}, but it was registered as {4}.",
+                var errorMessage = LogUtil.ErrorAndReturnFormatted("{0}.{1}: Method {2} invoked as if it were {3}, but it was registered as {4}.",
                     nameof(ServiceHost), nameof(DispatchRequest), methodName, ServiceCallbackType.RequestResponse, methodInfo.CallbackType);
 
                 var error = new Error
@@ -185,7 +185,7 @@ namespace Bond.Comm.Service
             {
                 if (!m_dispatchTable.TryGetValue(methodName, out methodInfo))
                 {
-                    LogUtil.FatalAndReturnFormatted("{0}.{1}: Got request for unknown method {2}.",
+                    Log.Error("{0}.{1}: Got request for unknown method {2}.",
                         nameof(ServiceHost), nameof(DispatchRequest), methodName);
                     return;
                 }
@@ -193,7 +193,7 @@ namespace Bond.Comm.Service
 
             if (methodInfo.CallbackType != ServiceCallbackType.Event)
             {
-                LogUtil.FatalAndReturnFormatted("{0}.{1}: Method {2} invoked as if it were {3}, but it was registered as {4}.",
+                Log.Error("{0}.{1}: Method {2} invoked as if it were {3}, but it was registered as {4}.",
                     nameof(ServiceHost), nameof(DispatchRequest), methodName, ServiceCallbackType.Event, methodInfo.CallbackType);
                 return;
             }
@@ -220,7 +220,7 @@ namespace Bond.Comm.Service
                     Transport.FailFastExceptionHandler(callbackEx);
                 }
 
-               LogUtil.FatalAndReturnFormatted("{0}.{1}: Failed to complete method {2}. With exception: {3}",
+               Log.Warning("{0}.{1}: Failed to complete method {2}. With exception: {3}",
                    nameof(ServiceHost), nameof(DispatchRequest), methodName, callbackEx.ToString());
             }
         }

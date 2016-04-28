@@ -249,7 +249,7 @@ namespace Bond.Comm.Tcp
                         break;
 
                     default:
-                        var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Unsupported FrameDisposition {2}",
+                        var message = LogUtil.ErrorAndReturnFormatted("{0}.{1}: Unsupported FrameDisposition {2}",
                             this, nameof(ProcessFramesAsync), result.Disposition);
                         throw new NotImplementedException(message);
                 }
