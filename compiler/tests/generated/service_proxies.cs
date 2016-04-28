@@ -25,9 +25,9 @@ namespace tests
             m_connection = connection;
         }
 
-        public void foo11Async(global::Bond.Void param)
+        public void foo11Async()
         {
-            var message = new global::Bond.Comm.Message<global::Bond.Void>(param);
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
             foo11Async(message);
         }
 
@@ -38,9 +38,9 @@ namespace tests
                 param);
         }
 
-        public void foo12Async(global::Bond.Void param)
+        public void foo12Async()
         {
-            var message = new global::Bond.Comm.Message<global::Bond.Void>(param);
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
             foo12Async(message);
         }
 
@@ -77,9 +77,9 @@ namespace tests
                 param);
         }
 
-        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo21Async(global::Bond.Void param)
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo21Async()
         {
-            var message = new global::Bond.Comm.Message<global::Bond.Void>(param);
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
             return foo21Async(message, global::System.Threading.CancellationToken.None);
         }
 
@@ -91,9 +91,9 @@ namespace tests
                 ct);
         }
 
-        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo22Async(global::Bond.Void param)
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo22Async()
         {
-            var message = new global::Bond.Comm.Message<global::Bond.Void>(param);
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
             return foo22Async(message, global::System.Threading.CancellationToken.None);
         }
 
@@ -133,9 +133,9 @@ namespace tests
                 ct);
         }
 
-        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> foo31Async(global::Bond.Void param)
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> foo31Async()
         {
-            var message = new global::Bond.Comm.Message<global::Bond.Void>(param);
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
             return foo31Async(message, global::System.Threading.CancellationToken.None);
         }
 
@@ -147,9 +147,9 @@ namespace tests
                 ct);
         }
 
-        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> foo32Async(global::Bond.Void param)
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> foo32Async()
         {
-            var message = new global::Bond.Comm.Message<global::Bond.Void>(param);
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
             return foo32Async(message, global::System.Threading.CancellationToken.None);
         }
 
@@ -189,9 +189,9 @@ namespace tests
                 ct);
         }
 
-        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<dummy>> foo41Async(global::Bond.Void param)
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<dummy>> foo41Async()
         {
-            var message = new global::Bond.Comm.Message<global::Bond.Void>(param);
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
             return foo41Async(message, global::System.Threading.CancellationToken.None);
         }
 
@@ -203,9 +203,9 @@ namespace tests
                 ct);
         }
 
-        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<dummy>> foo42Async(global::Bond.Void param)
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<dummy>> foo42Async()
         {
-            var message = new global::Bond.Comm.Message<global::Bond.Void>(param);
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
             return foo42Async(message, global::System.Threading.CancellationToken.None);
         }
 

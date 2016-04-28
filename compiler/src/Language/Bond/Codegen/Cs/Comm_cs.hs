@@ -9,6 +9,7 @@ module Language.Bond.Codegen.Cs.Comm_cs (
   comm_service_cs)
 where
 
+import Data.Maybe
 import Data.Monoid
 import Data.List (nub)
 import Prelude
@@ -24,6 +25,14 @@ import qualified Language.Bond.Codegen.Cs.Util as CS
 
 getMessageTypeName :: MappingContext -> Maybe Type -> Builder
 getMessageTypeName ctx t = maybe "global::Bond.Void" (getTypeName ctx) t
+
+getMessageProxyInputParam :: MappingContext -> Maybe Type -> Builder
+getMessageProxyInputParam ctx t = maybe "" constructParam t
+  where
+    constructParam x = getTypeName ctx x `mappend` fromText " param"
+
+paramOrBondVoid :: Maybe Type -> String
+paramOrBondVoid t = if isNothing t then "new global::Bond.Void()" else "param"
 
 -- | Codegen template for generating code containing declarations of
 -- of services including interfaces, proxies and services files.
@@ -94,9 +103,9 @@ namespace #{csNamespace}
         interfaceGenerics = angles $ sepBy "," paramName declParams -- of the form "<T1, T2, T3>"
         proxyGenerics = sepEndBy ", " paramName declParams -- of the form "T1, T2, T3, "
 
-        proxyMethod Function{..} = [lt|public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>> #{methodName}Async(#{getMessageInputTypeName} param)
+        proxyMethod Function{..} = [lt|public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>> #{methodName}Async(#{getMessageProxyInputParam cs methodInput})
         {
-            var message = new global::Bond.Comm.Message<#{getMessageInputTypeName}>(param);
+            var message = new global::Bond.Comm.Message<#{getMessageInputTypeName}>(#{paramOrBondVoid methodInput});
             return #{methodName}Async(message, global::System.Threading.CancellationToken.None);
         }
 
@@ -111,9 +120,9 @@ namespace #{csNamespace}
             getMessageResultTypeName = getMessageTypeName cs methodResult
             getMessageInputTypeName = getMessageTypeName cs methodInput
 
-        proxyMethod Event{..} = [lt|public void #{methodName}Async(#{getMessageInputTypeName} param)
+        proxyMethod Event{..} = [lt|public void #{methodName}Async(#{getMessageProxyInputParam cs methodInput})
         {
-            var message = new global::Bond.Comm.Message<#{getMessageInputTypeName}>(param);
+            var message = new global::Bond.Comm.Message<#{getMessageInputTypeName}>(#{paramOrBondVoid methodInput});
             #{methodName}Async(message);
         }
 

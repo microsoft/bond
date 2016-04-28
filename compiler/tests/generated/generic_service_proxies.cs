@@ -39,9 +39,9 @@ namespace tests
                 ct);
         }
 
-        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<Payload>> foo32Async(global::Bond.Void param)
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<Payload>> foo32Async()
         {
-            var message = new global::Bond.Comm.Message<global::Bond.Void>(param);
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
             return foo32Async(message, global::System.Threading.CancellationToken.None);
         }
 
