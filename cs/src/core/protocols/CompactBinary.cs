@@ -171,7 +171,12 @@ namespace Bond.Protocols
 
         public IProtocolWriter GetFirstPassWriter()
         {
-            return version == 2 ? firstPassWriter : null;
+            if (version == 2)
+            {
+                return firstPassWriter.Value;
+            }
+
+            return null;
         }
 
         /// <summary>
