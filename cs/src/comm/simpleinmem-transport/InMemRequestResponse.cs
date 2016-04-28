@@ -12,13 +12,16 @@ namespace Bond.Comm.SimpleInMem
     {
         private Queue<InMemFrame> m_requests;
         private Queue<InMemFrame> m_responses;
+        private Queue<InMemFrame> m_events;
         private object m_lockreq = new object();
         private object m_lockres = new object();
+        private object m_lockevent = new object();
 
         internal RequestResponseQueue()
         {
             m_requests = new Queue<InMemFrame>();
             m_responses = new Queue<InMemFrame>();
+            m_events = new Queue<InMemFrame>();
         }
 
         internal void Enqueue(InMemFrame frame)
@@ -36,6 +39,13 @@ namespace Bond.Comm.SimpleInMem
                     lock (m_lockres)
                     {
                         m_responses.Enqueue(frame);
+                    }
+                    break;
+
+                case PayloadType.Event:
+                    lock (m_events)
+                    {
+                        m_events.Enqueue(frame);
                     }
                     break;
 
@@ -66,6 +76,13 @@ namespace Bond.Comm.SimpleInMem
                     }
                     break;
 
+                case PayloadType.Event:
+                    lock (m_lockevent)
+                    {
+                        frame = m_events.Dequeue();
+                    }
+                    break;
+
                 default:
                     var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Payload type {2} not supported!",
                         nameof(RequestResponseQueue), nameof(Dequeue), payloadType);
@@ -86,6 +103,10 @@ namespace Bond.Comm.SimpleInMem
 
                 case PayloadType.Response:
                     count = m_responses.Count;
+                    break;
+
+                case PayloadType.Event:
+                    count = m_events.Count;
                     break;
 
                 default:

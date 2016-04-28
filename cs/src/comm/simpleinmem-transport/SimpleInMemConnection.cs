@@ -14,7 +14,7 @@ namespace Bond.Comm.SimpleInMem
         Server
     }
 
-    public class SimpleInMemConnection : Connection, IRequestResponseConnection
+    public class SimpleInMemConnection : Connection, IRequestResponseConnection, IEventConnection
     {
         private readonly int m_connection_delay = 20;
         private Guid m_connectionId;
@@ -66,6 +66,12 @@ namespace Bond.Comm.SimpleInMem
             return response.Convert<TResponse>();
         }
 
+        public Task FireEventAsync<TPayload>(string methodName, IMessage<TPayload> message)
+        {
+            SendEventAsync(methodName, message);
+            return TaskExt.CompletedTask;
+        }
+
         public ConnectionType ConnectionType
         {
             get
@@ -107,6 +113,14 @@ namespace Bond.Comm.SimpleInMem
             queue.Enqueue(payload);
         }
 
+        internal void SendEventAsync(string methodName, IMessage message)
+        {
+            uint requestId = AllocateNextRequestId();
+            var payload = NewPayLoad(requestId, PayloadType.Event, message, null);
+            payload.m_headers.method_name = methodName;
+            m_clientreqresqueue.Enqueue(payload);
+        }
+
         protected UInt32 AllocateNextRequestId()
         {
             var requestIdLong = Interlocked.Add(ref m_requestId, 2);
@@ -145,6 +159,7 @@ namespace Bond.Comm.SimpleInMem
             else if (m_connectionType == ConnectionType.Server)
             {
                 Task.Run(() => ProcessRequestAsync(m_cancelTokenSource.Token));
+                Task.Run(() => ProcessEventAsync(m_cancelTokenSource.Token));
             }
             else
             {
@@ -171,7 +186,7 @@ namespace Bond.Comm.SimpleInMem
         {
             while(!t.IsCancellationRequested)
             {
-                PayloadType payloadType = PayloadType.Response;
+                const PayloadType payloadType = PayloadType.Response;
                 //connection delay
                 await Task.Delay(m_connection_delay);
 
@@ -204,7 +219,7 @@ namespace Bond.Comm.SimpleInMem
         {
             while (!t.IsCancellationRequested)
             {
-                PayloadType payloadType = PayloadType.Request;
+                const PayloadType payloadType = PayloadType.Request;
                 //connection delay
                 await Task.Delay(m_connection_delay);
 
@@ -238,6 +253,44 @@ namespace Bond.Comm.SimpleInMem
             }
         }
 
+        private async Task ProcessEventAsync(CancellationToken t)
+        {
+            while (!t.IsCancellationRequested)
+            {
+                const PayloadType payloadType = PayloadType.Event;
+                //connection delay
+                await Task.Delay(m_connection_delay);
+
+                foreach (Guid key in m_serverqueues.GetKeys())
+                {
+                    RequestResponseQueue queue = m_serverqueues.GetQueue(key);
+
+                    if (queue.Count(payloadType) == 0)
+                    {
+                        continue;
+                    }
+
+                    var payload = queue.Dequeue(payloadType);
+
+                    try
+                    {
+                        Validate(payload);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e, "{0}.{1}: Exception while validating a frame: {2}", this, nameof(ProcessEventAsync),
+                            e);
+                        continue;
+                    }
+
+                    var headers = payload.m_headers;
+                    var message = payload.m_message;
+
+                    await Task.Run(() => DispatchEvent(headers, message, queue));
+                }
+            }
+        }
+
         private InMemFrame Validate(InMemFrame frame)
         {
             if (frame.m_headers == null)
@@ -247,10 +300,6 @@ namespace Bond.Comm.SimpleInMem
             else if (frame.m_message == null)
             {
                 throw new SimpleInMemProtocolErrorException("Missing payload");
-            }
-            else if (PayloadType.Event == frame.m_headers.payload_type)
-            {
-                throw new NotImplementedException(frame.m_headers.payload_type.ToString());
             }
 
             return frame;
@@ -265,6 +314,14 @@ namespace Bond.Comm.SimpleInMem
         private void DispatchResponse(SimpleInMemHeaders headers, IMessage message, TaskCompletionSource<IMessage> responseCompletionSource)
         {
             responseCompletionSource.SetResult(message);
+        }
+
+        private void DispatchEvent(SimpleInMemHeaders headers, IMessage message, RequestResponseQueue queue)
+        {
+            Task.Run(async () =>
+            {
+                await m_serviceHost.DispatchEvent(headers.method_name, new SimpleInMemReceiveContext(this), message);
+            });
         }
     }
 }

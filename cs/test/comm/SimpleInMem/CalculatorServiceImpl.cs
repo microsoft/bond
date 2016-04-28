@@ -13,6 +13,8 @@ namespace UnitTest.SimpleInMem
         public const string ExpectedExceptionMessage = "This method is expected to throw.";
         private const UInt16 DelayMilliseconds = 30;
 
+        public static ManualResetEvent ClearCalledEvent { get; set; } = new ManualResetEvent(false);
+
         public override async Task<IMessage<Output>> AddAsync(IMessage<PairedInput> request, CancellationToken ct)
         {
             PairedInput req = request.Convert<PairedInput>().Payload.Deserialize();
@@ -34,6 +36,11 @@ namespace UnitTest.SimpleInMem
         public override Task<IMessage<Output>> MultiplyAsync(IMessage<PairedInput> request, CancellationToken ct)
         {
             throw new NotImplementedException(ExpectedExceptionMessage);
+        }
+
+        public override void ClearAsync(IMessage<Bond.Void> param)
+        {
+            ClearCalledEvent.Set();
         }
     }
 }

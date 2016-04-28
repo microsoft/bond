@@ -14,6 +14,8 @@ namespace UnitTest.SimpleInMem
         private const string m_address = "SimpleInMemTakesAnyRandomConnectionString";
         private SimpleInMemTransport m_transport;
         private CalculatorService m_service;
+        private SimpleInMemListener m_listener;
+        private SimpleInMemConnection m_connection;
 
         [SetUp]
         public void Init()
@@ -22,26 +24,34 @@ namespace UnitTest.SimpleInMem
             m_service = new CalculatorService();
         }
 
+        public async Task DefaultSetup()
+        {
+            m_listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
+            m_listener.AddService(m_service);
+            await m_listener.StartAsync();
+
+            // Client connection 
+            m_connection = (SimpleInMemConnection)await m_transport.ConnectToAsync(m_address, System.Threading.CancellationToken.None);
+        }
+
+        [Test]
+        public async void SimpleInMemValidSetup()
+        {
+            await DefaultSetup();
+            Assert.AreEqual(m_connection.ConnectionType, ConnectionType.Client);
+        }
+
         [Test]
         public async Task SimpleInMemMethodCall()
         {
+            await DefaultSetup();
+
             const int first = 91;
             const int second = 23;
             int addResult = first + second;
             int subResult = first - second;
 
-            SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
-            listener.AddService(m_service);
-            await listener.StartAsync();
-            
-            // Client connection
-            Connection connection = await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken());
-            Assert.That(connection, Is.InstanceOf<SimpleInMemConnection>());
-            SimpleInMemConnection simpleConnection = (SimpleInMemConnection)connection;
-
-            Assert.True(simpleConnection.ConnectionType == ConnectionType.Client);
-
-            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(simpleConnection);
+            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(m_connection);
 
             PairedInput input = new PairedInput
             {
@@ -55,26 +65,29 @@ namespace UnitTest.SimpleInMem
             Output subOutput = subResponse.Payload.Deserialize();
             Assert.True(addOutput.Result == addResult);
             Assert.True(subOutput.Result == subResult);
-            await simpleConnection.StopAsync();
+        }
+
+        [Test]
+        public async void SimpleInMemEventCall()
+        {
+            await DefaultSetup();
+            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(m_connection);
+
+            calculatorProxy.ClearAsync();
+
+            bool wasSignaled = CalculatorService.ClearCalledEvent.WaitOne(30000);
+            Assert.IsTrue(wasSignaled, "Timed out waiting for event");
         }
 
         [Test]
         public async Task SimpleInMemMethodCall_WithServiceError()
         {
+            await DefaultSetup();
+
             const int first = 91;
             const int second = 23;
 
-            SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
-            listener.AddService(m_service);
-            await listener.StartAsync();
-
-            // Client connection
-            Connection connection = await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken());
-            Assert.That(connection, Is.InstanceOf<SimpleInMemConnection>());
-            SimpleInMemConnection simpleConnection = (SimpleInMemConnection)connection;
-
-            Assert.True(simpleConnection.ConnectionType == ConnectionType.Client);
-            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(simpleConnection);
+            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(m_connection);
 
             PairedInput input = new PairedInput
             {
@@ -87,44 +100,34 @@ namespace UnitTest.SimpleInMem
             InternalServerError error = multiplyResponse.Error.Deserialize<InternalServerError>();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.That(error.message, Is.StringContaining(CalculatorService.ExpectedExceptionMessage));
-
-            await connection.StopAsync();
         }
 
         [Test]
         public async Task SimpleInMemMethodCall_WithMethodNotFound()
         {
+            await DefaultSetup();
+
             const int first = 91;
             const int second = 23;
             const string methodName = "Divide";
-            SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
-            listener.AddService(m_service);
-            await listener.StartAsync();
 
-            // Client connection
-            Connection connection = await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken());
-            Assert.That(connection, Is.InstanceOf<SimpleInMemConnection>());
-            SimpleInMemConnection simpleConnection = (SimpleInMemConnection)connection;
-
-            Assert.True(simpleConnection.ConnectionType == ConnectionType.Client);
             PairedInput input = new PairedInput
             {
                 First = first,
                 Second = second
             };
             Message<PairedInput> request = new Message<PairedInput>(input);
-            IMessage<Output> divideResponse = await simpleConnection.RequestResponseAsync<PairedInput, Output>(methodName, request, new System.Threading.CancellationToken());
+            IMessage<Output> divideResponse = await m_connection.RequestResponseAsync<PairedInput, Output>(methodName, request, new System.Threading.CancellationToken());
             Assert.IsTrue(divideResponse.IsError);
             Error error = divideResponse.Error.Deserialize<Error>();
             Assert.AreEqual((int)ErrorCode.MethodNotFound, error.error_code);
             Assert.That(error.message, Is.StringContaining($"ServiceHost.DispatchRequest: Got request for unknown method {methodName}."));
-
-            await connection.StopAsync();
         }
 
         [TearDown]
-        public void Cleanup()
+        public async void Cleanup()
         {
+            await m_connection.StopAsync();
             m_transport.RemoveListener(m_address);
         }
     }
