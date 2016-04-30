@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Attributes", "src\attributes\Attributes.csproj", "{92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89}"
 EndProject
@@ -203,6 +203,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "service", "src\comm\service\service.csproj", "{79D2423A-87C8-44A2-89C2-2FA94521747E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "notifyevent", "..\examples\cs\comm\notifyevent\notifyevent.csproj", "{12279366-F646-4FEC-8CAA-B62A8EC477BB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042} = {C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}
+		{45EFB397-298A-4A32-A178-A2BDF8ABBBD9} = {45EFB397-298A-4A32-A178-A2BDF8ABBBD9}
+		{43CBBA9B-C4BC-4E64-8733-7B72562D2E91} = {43CBBA9B-C4BC-4E64-8733-7B72562D2E91}
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1} = {21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
