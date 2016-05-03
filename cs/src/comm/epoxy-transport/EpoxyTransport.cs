@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Bond.Comm.Tcp
+namespace Bond.Comm.Epoxy
 {
     using System;
     using System.Net;
@@ -10,11 +10,11 @@ namespace Bond.Comm.Tcp
     using System.Threading.Tasks;
     using Bond.Comm.Service;
 
-    public class TcpTransportBuilder : TransportBuilder<TcpTransport>
+    public class EpoxyTransportBuilder : TransportBuilder<EpoxyTransport>
     {
         private ExceptionHandler m_exceptionHandler;
 
-        public override TransportBuilder<TcpTransport> SetUnhandledExceptionHandler(ExceptionHandler handler)
+        public override TransportBuilder<EpoxyTransport> SetUnhandledExceptionHandler(ExceptionHandler handler)
         {
             if (handler == null)
             {
@@ -25,7 +25,7 @@ namespace Bond.Comm.Tcp
             return this;
         }
 
-        public override TcpTransport Construct()
+        public override EpoxyTransport Construct()
         {
             if (m_exceptionHandler == null)
             {
@@ -37,17 +37,17 @@ namespace Bond.Comm.Tcp
                 }
             }
 
-            return new TcpTransport(m_exceptionHandler);
+            return new EpoxyTransport(m_exceptionHandler);
         }
     }
 
-    public class TcpTransport : Transport
+    public class EpoxyTransport : Transport
     {
         public const int DefaultPort = 25188;
 
         private readonly ExceptionHandler m_exceptionHandler;
 
-        public TcpTransport(ExceptionHandler exceptionHandler)
+        public EpoxyTransport(ExceptionHandler exceptionHandler)
         {
             if (exceptionHandler == null)
             {
@@ -67,24 +67,24 @@ namespace Bond.Comm.Tcp
 
         public override Task<Connection> ConnectToAsync(string address, CancellationToken ct)
         {
-            return ConnectToAsync(ParseStringAddress(address), ct).Upcast<TcpConnection, Connection>();
+            return ConnectToAsync(ParseStringAddress(address), ct).Upcast<EpoxyConnection, Connection>();
         }
 
-        public Task<TcpConnection> ConnectToAsync(IPEndPoint endpoint)
+        public Task<EpoxyConnection> ConnectToAsync(IPEndPoint endpoint)
         {
             return ConnectToAsync(endpoint, CancellationToken.None);
         }
 
-        public async Task<TcpConnection> ConnectToAsync(IPEndPoint endpoint, CancellationToken ct)
+        public async Task<EpoxyConnection> ConnectToAsync(IPEndPoint endpoint, CancellationToken ct)
         {
-            Log.Information("{0}.{1}: Connecting to {2}.", nameof(TcpTransport), nameof(ConnectToAsync), endpoint);
+            Log.Information("{0}.{1}: Connecting to {2}.", nameof(EpoxyTransport), nameof(ConnectToAsync), endpoint);
             var tcpClient = new TcpClient();
             await tcpClient.ConnectAsync(endpoint.Address, endpoint.Port);
 
             // TODO: keep these in some master collection for shutdown
-            var tcpConnection = new TcpConnection(this, tcpClient, ConnectionType.Client);
-            tcpConnection.Start();
-            return tcpConnection;
+            var connection = new EpoxyConnection(this, tcpClient, ConnectionType.Client);
+            connection.Start();
+            return connection;
         }
 
         public override Listener MakeListener(string address)
@@ -92,9 +92,9 @@ namespace Bond.Comm.Tcp
             return MakeListener(ParseStringAddress(address));
         }
 
-        public TcpListener MakeListener(IPEndPoint address)
+        public EpoxyListener MakeListener(IPEndPoint address)
         {
-            return new TcpListener(this, address);
+            return new EpoxyListener(this, address);
         }
 
         public override Task StopAsync()

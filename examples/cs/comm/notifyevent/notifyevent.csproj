@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="..\..\..\..\cs\build\Bond.CSharp.props" />
@@ -60,8 +60,8 @@
     <Reference Include="Bond.Comm.Interfaces">
       <HintPath>$(BOND_BINARY_PATH)\net45\Bond.Comm.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Bond.Comm.Tcp">
-      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.Comm.Tcp.dll</HintPath>
+    <Reference Include="Bond.Comm.Epoxy">
+      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.Comm.Epoxy.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

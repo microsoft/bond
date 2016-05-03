@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace bond.comm.tcp;
+namespace bond.comm.epoxy;
 
 enum PayloadType
 {
@@ -10,7 +10,7 @@ enum PayloadType
     Event = 3;
 }
 
-struct TcpHeaders
+struct EpoxyHeaders
 {
     0: uint32 request_id;
     1: required PayloadType payload_type;
@@ -29,8 +29,8 @@ enum ProtocolErrorCode
     // The endpoint has detected a violation of the protocol and does
     // not have a more specific error to use.
     PROTOCOL_VIOLATED = 3;
-    // Some data that the TCP transport needed to process, like the
-    // TcpHeaders structure, was malformed.
+    // Some data that the Epoxy transport needed to process, like the
+    // EpoxyHeaders structure, was malformed.
     MALFORMED_DATA = 4;
     // Some limit has been exceeded.
     LIMIT_EXCEEDED = 5;

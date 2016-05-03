@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyTitle("Bond.Comm.Tcp")]
+[assembly: AssemblyTitle("Bond.Comm.Epoxy")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Bond")]
 [assembly: AssemblyCopyright("Copyright (C) Microsoft. All rights reserved.")]

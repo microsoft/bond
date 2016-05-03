@@ -6,9 +6,9 @@ using System.IO;
 using Bond.IO.Safe;
 using Bond.Protocols;
 
-namespace Bond.Comm.Tcp
+namespace Bond.Comm.Epoxy
 {
-    internal static class TcpProtocol
+    internal static class EpoxyProtocol
     {
         /// <summary>
         /// Indicates what action should be taken in response to a Frame.
@@ -59,12 +59,12 @@ namespace Bond.Comm.Tcp
             public FrameDisposition Disposition;
 
             /// <summary>
-            /// The <see cref="TcpHeaders"/> from the <see cref="Frame"/> given to
-            /// <see cref="Classify"/>. If <c>Classify</c> was unable to find <c>TcpHeaders</c>, was unable to
-            /// understand the <c>TcpHeaders</c> it found, or returned before it
-            /// reached the <c>TcpHeaders</c>, this will be <c>null</c>.
+            /// The <see cref="EpoxyHeaders"/> from the <see cref="Frame"/> given to
+            /// <see cref="Classify"/>. If <c>Classify</c> was unable to find <c>EpoxyHeaders</c>, was unable to
+            /// understand the <c>EpoxyHeaders</c> it found, or returned before it
+            /// reached the <c>EpoxyHeaders</c>, this will be <c>null</c>.
             /// </summary>
-            public TcpHeaders Headers;
+            public EpoxyHeaders Headers;
 
             /// <summary>
             /// The payload from the <see cref="Frame"/> given to <see cref="Classify"/>. If <c>Classify</c> was unable
@@ -86,7 +86,7 @@ namespace Bond.Comm.Tcp
         }
 
         /// <summary>
-        /// States for the state machine inside <see cref="TcpProtocol.Classify"/>. <c>internal</c> for testing.
+        /// States for the state machine inside <see cref="EpoxyProtocol.Classify"/>. <c>internal</c> for testing.
         /// </summary>
         internal enum ClassifyState
         {
@@ -99,10 +99,10 @@ namespace Bond.Comm.Tcp
             // Does the frame have at least one framelet? Is the first one valid?
             ExpectFirstFramelet,
 
-            // Does the frame begin with a valid TcpHeaders?
-            ExpectTcpHeaders,
+            // Does the frame begin with a valid EpoxyHeaders?
+            ExpectEpoxyHeaders,
 
-            // Does the frame have a Payload immediately after the TcpHeaders?
+            // Does the frame have a Payload immediately after the EpoxyHeaders?
             ExpectPayload,
 
             // The frame has all required framelets. Does it have any trailing ones?
@@ -140,7 +140,7 @@ namespace Bond.Comm.Tcp
         private static readonly uint maximumTransitions = (uint) Enum.GetNames(typeof(ClassifyState)).Length;
 
         // These values are hard-coded because the protocol, as implemented, does not permit any framelet sequences
-        // other than [TcpHeaders, PayloadData] and [ProtocolError]. We will need to get rid of these indices and track
+        // other than [EpoxyHeaders, PayloadData] and [ProtocolError]. We will need to get rid of these indices and track
         // the index of the next unexamined Framelet once we implement Layers.
         private const int PayloadDataIndex = 1;
         private const int ValidFrameSize = 2;
@@ -156,7 +156,7 @@ namespace Bond.Comm.Tcp
             }
 
             var state = ClassifyState.ExpectFrame;
-            TcpHeaders headers = null;
+            EpoxyHeaders headers = null;
             var payload = new ArraySegment<byte>();
             ProtocolError error = null;
             var disposition = FrameDisposition.Indeterminate;
@@ -183,8 +183,8 @@ namespace Bond.Comm.Tcp
                         state = TransitionExpectFirstFramelet(state, frame, ref errorCode);
                         continue;
 
-                    case ClassifyState.ExpectTcpHeaders:
-                        state = TransitionExpectTcpHeaders(state, frame, ref headers, ref errorCode);
+                    case ClassifyState.ExpectEpoxyHeaders:
+                        state = TransitionExpectEpoxyHeaders(state, frame, ref headers, ref errorCode);
                         continue;
 
                     case ClassifyState.ExpectPayload:
@@ -253,7 +253,7 @@ namespace Bond.Comm.Tcp
 
                     default:
                         Log.Error("{0}.{1}: Unhandled state {2}. Dropping frame.",
-                            nameof(TcpProtocol), nameof(Classify), state);
+                            nameof(EpoxyProtocol), nameof(Classify), state);
                         return new ClassifyResult
                         {
                             Disposition = FrameDisposition.Indeterminate
@@ -273,7 +273,7 @@ namespace Bond.Comm.Tcp
             }
 
             Log.Debug("{0}.{1}: Processing {2} framelets.",
-                nameof(TcpProtocol), nameof(TransitionExpectFrame), frame.Count);
+                nameof(EpoxyProtocol), nameof(TransitionExpectFrame), frame.Count);
             state = ClassifyState.ExpectFirstFramelet;
             return state;
         }
@@ -288,32 +288,32 @@ namespace Bond.Comm.Tcp
 
             if (frame.Framelets.Count == 0)
             {
-                Log.Error("{0}.{1}: Frame was empty.", nameof(TcpProtocol), nameof(TransitionExpectFirstFramelet));
+                Log.Error("{0}.{1}: Frame was empty.", nameof(EpoxyProtocol), nameof(TransitionExpectFirstFramelet));
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
             switch (frame.Framelets[0].Type)
             {
-                case FrameletType.TcpHeaders:
-                    return ClassifyState.ExpectTcpHeaders;
+                case FrameletType.EpoxyHeaders:
+                    return ClassifyState.ExpectEpoxyHeaders;
 
                 case FrameletType.ProtocolError:
                     return ClassifyState.ExpectProtocolError;
 
                 default:
                     Log.Error("{0}.{1}: Frame began with invalid FrameletType {2}.",
-                        nameof(TcpProtocol), nameof(TransitionExpectTcpHeaders), frame.Framelets[0].Type);
+                        nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), frame.Framelets[0].Type);
                     errorCode = ProtocolErrorCode.MALFORMED_DATA;
                     return ClassifyState.MalformedFrame;
             }
         }
 
-        internal static ClassifyState TransitionExpectTcpHeaders(
-            ClassifyState state, Frame frame, ref TcpHeaders headers, ref ProtocolErrorCode? errorCode)
+        internal static ClassifyState TransitionExpectEpoxyHeaders(
+            ClassifyState state, Frame frame, ref EpoxyHeaders headers, ref ProtocolErrorCode? errorCode)
         {
-            if (state != ClassifyState.ExpectTcpHeaders || frame == null || frame.Count == 0
-                || frame.Framelets[0].Type != FrameletType.TcpHeaders)
+            if (state != ClassifyState.ExpectEpoxyHeaders || frame == null || frame.Count == 0
+                || frame.Framelets[0].Type != FrameletType.EpoxyHeaders)
             {
                 return ClassifyState.InternalStateError;
             }
@@ -324,23 +324,23 @@ namespace Bond.Comm.Tcp
             var fastBinaryReader = new FastBinaryReader<InputBuffer>(inputBuffer, version: 1);
             try
             {
-                headers = Deserialize<TcpHeaders>.From(fastBinaryReader);
+                headers = Deserialize<EpoxyHeaders>.From(fastBinaryReader);
             }
             catch (Exception ex) when (ex is InvalidDataException || ex is IOException)
             {
-                Log.Error(ex, "{0}.{1}: Failed to parse TcpHeaders: {2}.",
-                    nameof(TcpProtocol), nameof(TransitionExpectTcpHeaders), ex.Message);
+                Log.Error(ex, "{0}.{1}: Failed to parse EpoxyHeaders: {2}.",
+                    nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), ex.Message);
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
-            Log.Debug("{0}.{1}: Extracted TcpHeaders with request ID {2} and payload type {3}.",
-                nameof(TcpProtocol), nameof(TransitionExpectTcpHeaders), headers.request_id, headers.payload_type);
+            Log.Debug("{0}.{1}: Extracted EpoxyHeaders with request ID {2} and payload type {3}.",
+                nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), headers.request_id, headers.payload_type);
             return ClassifyState.ExpectPayload;
         }
 
         internal static ClassifyState TransitionExpectPayload(
-            ClassifyState state, Frame frame, TcpHeaders headers, ref ArraySegment<byte> payload,
+            ClassifyState state, Frame frame, EpoxyHeaders headers, ref ArraySegment<byte> payload,
             ref ProtocolErrorCode? errorCode)
         {
             if (state != ClassifyState.ExpectPayload || frame == null || headers == null)
@@ -351,7 +351,7 @@ namespace Bond.Comm.Tcp
             if (PayloadDataIndex >= frame.Count)
             {
                 Log.Error("{0}.{1}: Frame did not continue with PayloadData.",
-                    nameof(TcpProtocol), nameof(TransitionExpectTcpHeaders));
+                    nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders));
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -360,14 +360,14 @@ namespace Bond.Comm.Tcp
             if (framelet.Type != FrameletType.PayloadData)
             {
                 Log.Error("{0}.{1}: Frame did not continue with PayloadData.",
-                    nameof(TcpProtocol), nameof(TransitionExpectTcpHeaders));
+                    nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders));
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
             payload = framelet.Contents;
             Log.Debug("{0}.{1}: Extracted {2}-byte payload in request ID {3}.",
-                nameof(TcpProtocol), nameof(TransitionExpectPayload), payload.Count, headers.request_id);
+                nameof(EpoxyProtocol), nameof(TransitionExpectPayload), payload.Count, headers.request_id);
             return ClassifyState.ExpectEndOfFrame;
         }
 
@@ -386,14 +386,14 @@ namespace Bond.Comm.Tcp
             else
             {
                 Log.Error("{0}.{1}: Frame had trailing framelets.",
-                    nameof(TcpProtocol), nameof(TransitionExpectEndOfFrame));
+                    nameof(EpoxyProtocol), nameof(TransitionExpectEndOfFrame));
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
         }
 
         internal static ClassifyState TransitionFrameComplete(
-            ClassifyState state, TcpHeaders headers, ref ProtocolErrorCode? errorCode)
+            ClassifyState state, EpoxyHeaders headers, ref ProtocolErrorCode? errorCode)
         {
             if (state != ClassifyState.FrameComplete || headers == null)
             {
@@ -408,14 +408,14 @@ namespace Bond.Comm.Tcp
                     return ClassifyState.ValidFrame;
                 default:
                     Log.Warning("{0}.{1}: Received unrecognized payload type {2}.",
-                        nameof(TcpProtocol), nameof(TransitionFrameComplete), headers.payload_type);
+                        nameof(EpoxyProtocol), nameof(TransitionFrameComplete), headers.payload_type);
                     errorCode = ProtocolErrorCode.NOT_SUPPORTED;
                     return ClassifyState.MalformedFrame;
             }
         }
 
         internal static ClassifyState TransitionValidFrame(
-            ClassifyState state, TcpHeaders headers, ref FrameDisposition disposition)
+            ClassifyState state, EpoxyHeaders headers, ref FrameDisposition disposition)
         {
             if (state != ClassifyState.ValidFrame || headers == null)
             {
@@ -461,12 +461,12 @@ namespace Bond.Comm.Tcp
             catch (Exception ex) when (ex is InvalidDataException || ex is IOException)
             {
                 Log.Error(ex, "{0}.{1}: Failed to parse ProtocolError: {2}.",
-                    nameof(TcpProtocol), nameof(TransitionExpectProtocolError), ex.Message);
+                    nameof(EpoxyProtocol), nameof(TransitionExpectProtocolError), ex.Message);
                 return ClassifyState.ErrorInErrorFrame;
             }
 
             Log.Debug("{0}.{1}: Extracted ProtocolError with code {2}.",
-                nameof(TcpProtocol), nameof(TransitionExpectProtocolError), error.error_code);
+                nameof(EpoxyProtocol), nameof(TransitionExpectProtocolError), error.error_code);
             disposition = FrameDisposition.HangUp;
             return ClassifyState.ClassifiedValidFrame;
         }

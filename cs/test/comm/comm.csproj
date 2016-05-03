@@ -39,11 +39,11 @@
     <BondCodegen Include="SimpleInMem\Calculator.bond">
       <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
     </BondCodegen>
-    <Compile Include="Tcp\FrameTests.cs" />
-    <Compile Include="Tcp\TcpConnectionTests.cs" />
-    <Compile Include="Tcp\TcpListenerTests.cs" />
-    <Compile Include="Tcp\TcpProtocolTests.cs" />
-    <Compile Include="Tcp\TcpTransportTests.cs" />
+    <Compile Include="Epoxy\FrameTests.cs" />
+    <Compile Include="Epoxy\EpoxyConnectionTests.cs" />
+    <Compile Include="Epoxy\EpoxyListenerTests.cs" />
+    <Compile Include="Epoxy\EpoxyProtocolTests.cs" />
+    <Compile Include="Epoxy\EpoxyTransportTests.cs" />
     <!-- TODO: edit the .targets to automatically include the comm files -->
     <Compile Include="$(IntermediateOutputPath)calculator_interfaces.cs" />
     <Compile Include="$(IntermediateOutputPath)calculator_proxies.cs" />
@@ -92,9 +92,9 @@
       <Project>{54a3432b-99e1-4deb-b4eb-2d6e158ecd24}</Project>
       <Name>simpleinmem-transport</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\comm\tcp-transport\tcp-transport.csproj">
+    <ProjectReference Include="..\..\src\comm\epoxy-transport\epoxy-transport.csproj">
       <Project>{c687c52c-0a5b-4f10-8cb3-dbaf9a72d042}</Project>
-      <Name>tcp-transport</Name>
+      <Name>epoxy-transport</Name>
     </ProjectReference>
     <ProjectReference Include="..\core\Core.csproj">
       <Project>{ff056b62-225a-47bc-b177-550fadda4b41}</Project>

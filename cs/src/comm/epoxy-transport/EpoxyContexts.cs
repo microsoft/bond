@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Bond.Comm.Tcp
+namespace Bond.Comm.Epoxy
 {
-    public class TcpReceiveContext : ReceiveContext
+    public class EpoxyReceiveContext : ReceiveContext
     {
-        TcpConnection m_connection;
+        EpoxyConnection m_connection;
 
-        public TcpReceiveContext(TcpConnection connection)
+        public EpoxyReceiveContext(EpoxyConnection connection)
         {
             m_connection = connection;
         }

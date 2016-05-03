@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Bond.Comm.Tcp
+namespace Bond.Comm.Epoxy
 {
     using System;
     using System.Collections.Generic;
@@ -11,25 +11,25 @@ namespace Bond.Comm.Tcp
     using System.Threading.Tasks;
     using Bond.Comm.Service;
 
-    public class TcpListener : Listener
+    public class EpoxyListener : Listener
     {
-        private TcpTransport m_parentTransport;
+        private EpoxyTransport m_parentTransport;
         private System.Net.Sockets.TcpListener m_listener;
         private ServiceHost m_serviceHost;
 
         private object m_connectionsLock = new object();
-        private HashSet<TcpConnection> m_connections;
+        private HashSet<EpoxyConnection> m_connections;
 
         private Task m_acceptTask;
 
         private CancellationTokenSource m_shutdownTokenSource;
 
-        public TcpListener(TcpTransport parentTransport, IPEndPoint listenEndpoint)
+        public EpoxyListener(EpoxyTransport parentTransport, IPEndPoint listenEndpoint)
         {
             m_parentTransport = parentTransport;
             m_listener = new System.Net.Sockets.TcpListener(listenEndpoint);
             m_serviceHost = new ServiceHost(parentTransport);
-            m_connections = new HashSet<TcpConnection>();
+            m_connections = new HashSet<EpoxyConnection>();
             m_shutdownTokenSource = new CancellationTokenSource();
         }
 
@@ -43,7 +43,7 @@ namespace Bond.Comm.Tcp
 
         public override string ToString()
         {
-            return $"TcpListener({ListenEndpoint})";
+            return $"EpoxyListener({ListenEndpoint})";
         }
 
         public override bool IsRegistered(string serviceMethodName)
@@ -85,7 +85,7 @@ namespace Bond.Comm.Tcp
                 try
                 {
                     TcpClient client = await m_listener.AcceptTcpClientAsync();
-                    var connection = new TcpConnection(m_parentTransport, client, m_serviceHost, ConnectionType.Server);
+                    var connection = new EpoxyConnection(m_parentTransport, client, m_serviceHost, ConnectionType.Server);
 
                     lock (m_connectionsLock)
                     {

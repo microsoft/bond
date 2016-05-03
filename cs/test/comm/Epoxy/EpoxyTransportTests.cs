@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace UnitTest.Tcp
+namespace UnitTest.Epoxy
 {
     using System;
     using System.Collections.Generic;
@@ -9,12 +9,12 @@ namespace UnitTest.Tcp
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm;
-    using Bond.Comm.Tcp;
+    using Bond.Comm.Epoxy;
     using NUnit.Framework;
     using UnitTest.Comm;
 
     [TestFixture]
-    public class TcpTransportTests
+    public class EpoxyTransportTests
     {
         private const string AnyIpAddressString = "10.1.2.3";
         private const int AnyPort = 12345;
@@ -24,63 +24,63 @@ namespace UnitTest.Tcp
         [Test]
         public void DefaultPorts_AreExpected()
         {
-            Assert.AreEqual(25188, TcpTransport.DefaultPort);
+            Assert.AreEqual(25188, EpoxyTransport.DefaultPort);
         }
 
         [Test]
         public void ParseStringAddress_NullOrEmpty_Throws()
         {
-            Assert.Throws<ArgumentException>(() => TcpTransport.ParseStringAddress(null));
-            Assert.Throws<ArgumentException>(() => TcpTransport.ParseStringAddress(string.Empty));
+            Assert.Throws<ArgumentException>(() => EpoxyTransport.ParseStringAddress(null));
+            Assert.Throws<ArgumentException>(() => EpoxyTransport.ParseStringAddress(string.Empty));
         }
 
         [Test]
         public void ParseStringAddress_ValidIpNoPort_ReturnsIpEndpoint()
         {
-            var result = TcpTransport.ParseStringAddress(AnyIpAddressString);
-            Assert.AreEqual(new IPEndPoint(AnyIpAddress, TcpTransport.DefaultPort), result);
+            var result = EpoxyTransport.ParseStringAddress(AnyIpAddressString);
+            Assert.AreEqual(new IPEndPoint(AnyIpAddress, EpoxyTransport.DefaultPort), result);
         }
 
         [Test]
         public void ParseStringAddress_ValidIpWithPort_ReturnsIpEndpoint()
         {
-            var result = TcpTransport.ParseStringAddress(AnyIpAddressString + ":" + AnyPort);
+            var result = EpoxyTransport.ParseStringAddress(AnyIpAddressString + ":" + AnyPort);
             Assert.AreEqual(new IPEndPoint(AnyIpAddress, AnyPort), result);
         }
 
         [Test]
         public void ParseStringAddress_InvalidIpAddress_Throws()
         {
-            Assert.Throws<ArgumentException>(() => TcpTransport.ParseStringAddress("not an ip"));
-            Assert.Throws<ArgumentException>(() => TcpTransport.ParseStringAddress("not an ip:12345"));
-            Assert.Throws<ArgumentException>(() => TcpTransport.ParseStringAddress("not an ip:no a port"));
+            Assert.Throws<ArgumentException>(() => EpoxyTransport.ParseStringAddress("not an ip"));
+            Assert.Throws<ArgumentException>(() => EpoxyTransport.ParseStringAddress("not an ip:12345"));
+            Assert.Throws<ArgumentException>(() => EpoxyTransport.ParseStringAddress("not an ip:no a port"));
         }
 
         [Test]
         public void ParseStringAddress_InvalidPortAddress_Throws()
         {
-            Assert.Throws<ArgumentException>(() => TcpTransport.ParseStringAddress("10.1.2.3:"));
-            Assert.Throws<ArgumentException>(() => TcpTransport.ParseStringAddress("10.1.2.3::"));
-            Assert.Throws<ArgumentException>(() => TcpTransport.ParseStringAddress("10.1.2.3:not a port"));
+            Assert.Throws<ArgumentException>(() => EpoxyTransport.ParseStringAddress("10.1.2.3:"));
+            Assert.Throws<ArgumentException>(() => EpoxyTransport.ParseStringAddress("10.1.2.3::"));
+            Assert.Throws<ArgumentException>(() => EpoxyTransport.ParseStringAddress("10.1.2.3:not a port"));
         }
 
         [Test]
         public void Builder_SetUnhandledExceptionHandler_Null_Throws()
         {
-            Assert.Throws<ArgumentNullException>(() => new TcpTransportBuilder().SetUnhandledExceptionHandler(null));
+            Assert.Throws<ArgumentNullException>(() => new EpoxyTransportBuilder().SetUnhandledExceptionHandler(null));
         }
 
         [Test]
         public void Builder_Construct_DidntSetUnhandledExceptionHandler_Throws()
         {
-            var builder = new TcpTransportBuilder();
+            var builder = new EpoxyTransportBuilder();
             Assert.Throws<InvalidOperationException>(() => builder.Construct());
         }
 
         [Test]
         public void Construct_InvalidArgs_Throws()
         {
-            Assert.Throws<ArgumentNullException>(() => new TcpTransport(null));
+            Assert.Throws<ArgumentNullException>(() => new EpoxyTransport(null));
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace UnitTest.Tcp
         public async Task GeneratedService_GeneratedProxy_PayloadResponse()
         {
             TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>();
-            var proxy = new ReqRespProxy<TcpConnection>(testClientServer.ClientConnection);
+            var proxy = new ReqRespProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
             IMessage<Dummy> response = await proxy.MethodAsync(request);
 
@@ -150,7 +150,7 @@ namespace UnitTest.Tcp
         public async Task GeneratedGenericService_GeneratedGenericProxy_PayloadResponse()
         {
             TestClientServer<GenericReqRespService> testClientServer = await SetupTestClientServer<GenericReqRespService>();
-            var proxy = new GenericReqRespProxy<Dummy, TcpConnection>(testClientServer.ClientConnection);
+            var proxy = new GenericReqRespProxy<Dummy, EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
             IMessage<Dummy> response = await proxy.MethodAsync(request);
 
@@ -174,24 +174,24 @@ namespace UnitTest.Tcp
         private class TestClientServer<TService>
         {
             public TService Service;
-            public TcpTransport Transport;
-            public TcpListener Listener;
-            public TcpConnection ClientConnection;
+            public EpoxyTransport Transport;
+            public EpoxyListener Listener;
+            public EpoxyConnection ClientConnection;
         }
 
         private static async Task<TestClientServer<TService>> SetupTestClientServer<TService>() where TService : class, IService, new()
         {
             var testService = new TService();
 
-            TcpTransport transport = new TcpTransportBuilder()
+            EpoxyTransport transport = new EpoxyTransportBuilder()
                 // some tests rely on the use of DebugExceptionHandler to assert things about the error message
                 .SetUnhandledExceptionHandler(Transport.DebugExceptionHandler)
                 .Construct();
-            TcpListener listener = transport.MakeListener(new IPEndPoint(IPAddress.Loopback, 0));
+            EpoxyListener listener = transport.MakeListener(new IPEndPoint(IPAddress.Loopback, 0));
             listener.AddService(testService);
             await listener.StartAsync();
 
-            TcpConnection clientConnection = await transport.ConnectToAsync(listener.ListenEndpoint);
+            EpoxyConnection clientConnection = await transport.ConnectToAsync(listener.ListenEndpoint);
 
             return new TestClientServer<TService>
             {

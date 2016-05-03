@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Bond.Comm.Tcp
+namespace Bond.Comm.Epoxy
 {
     using System;
     using System.Collections.Generic;
@@ -11,8 +11,8 @@ namespace Bond.Comm.Tcp
 
     internal enum FrameletType
     {
-        TcpConfig = 0x4743,
-        TcpHeaders = 0x5248,
+        EpoxyConfig = 0x4743,
+        EpoxyHeaders = 0x5248,
         LayerData = 0x594C,
         PayloadData = 0x5444,
         ProtocolError = 0x5245,
@@ -27,8 +27,8 @@ namespace Bond.Comm.Tcp
         {
             switch (type)
             {
-                case FrameletType.TcpConfig:
-                case FrameletType.TcpHeaders:
+                case FrameletType.EpoxyConfig:
+                case FrameletType.EpoxyHeaders:
                 case FrameletType.LayerData:
                 case FrameletType.PayloadData:
                 case FrameletType.ProtocolError:
@@ -51,8 +51,8 @@ namespace Bond.Comm.Tcp
         {
             return value == (UInt16)FrameletType.LayerData
                 | value == (UInt16)FrameletType.PayloadData
-                | value == (UInt16)FrameletType.TcpHeaders
-                | value == (UInt16)FrameletType.TcpConfig
+                | value == (UInt16)FrameletType.EpoxyHeaders
+                | value == (UInt16)FrameletType.EpoxyConfig
                 | value == (UInt16)FrameletType.ProtocolError;
         }
 
@@ -62,7 +62,7 @@ namespace Bond.Comm.Tcp
 
     internal class Frame
     {
-        // most frames will have at most three framelets: TcpHeaders, LayerData, PayloadData
+        // most frames will have at most three framelets: EpoxyHeaders, LayerData, PayloadData
         private const int DefaultFrameCount = 3;
 
         private readonly List<Framelet> m_framelets;
@@ -137,7 +137,7 @@ namespace Bond.Comm.Tcp
                 var frameletCount = reader.ReadUInt16();
                 if (frameletCount == 0)
                 {
-                    return TaskExt.FromException<Frame>(new TcpProtocolErrorException("Zero framelets"));
+                    return TaskExt.FromException<Frame>(new EpoxyProtocolErrorException("Zero framelets"));
                 }
 
                 var frame = new Frame(frameletCount);
@@ -149,7 +149,7 @@ namespace Bond.Comm.Tcp
                     {
                         return
                             TaskExt.FromException<Frame>(
-                                new TcpProtocolErrorException("Unknown framelet type: " + frameletType));
+                                new EpoxyProtocolErrorException("Unknown framelet type: " + frameletType));
                     }
 
                     var frameletLength = reader.ReadUInt32();
@@ -157,7 +157,7 @@ namespace Bond.Comm.Tcp
                     {
                         return
                             TaskExt.FromException<Frame>(
-                                new TcpProtocolErrorException("Framelet too big: " + frameletLength));
+                                new EpoxyProtocolErrorException("Framelet too big: " + frameletLength));
                     }
 
                     var frameletContents = new byte[frameletLength];
@@ -167,7 +167,7 @@ namespace Bond.Comm.Tcp
                         int dataRead = reader.Read(frameletContents, (int) frameletLength - bytesToRead, bytesToRead);
                         if (dataRead == 0)
                         {
-                            return TaskExt.FromException<Frame>(new TcpProtocolErrorException("EOS while reading contents"));
+                            return TaskExt.FromException<Frame>(new EpoxyProtocolErrorException("EOS while reading contents"));
                         }
 
                         bytesToRead -= dataRead;
@@ -182,7 +182,7 @@ namespace Bond.Comm.Tcp
             }
             catch (IOException ioex)
             {
-                return TaskExt.FromException<Frame>(new TcpProtocolErrorException("IO error", ioex));
+                return TaskExt.FromException<Frame>(new EpoxyProtocolErrorException("IO error", ioex));
             }
         }
     }

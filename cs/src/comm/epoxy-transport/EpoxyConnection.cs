@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Bond.Comm.Tcp
+namespace Bond.Comm.Epoxy
 {
     using System;
     using System.Collections.Generic;
@@ -20,9 +20,9 @@ namespace Bond.Comm.Tcp
         Server
     }
 
-    public class TcpConnection : Connection, IRequestResponseConnection, IEventConnection
+    public class EpoxyConnection : Connection, IRequestResponseConnection, IEventConnection
     {
-        private TcpTransport m_parentTransport;
+        private EpoxyTransport m_parentTransport;
 
         TcpClient m_tcpClient;
         private readonly NetworkStream m_networkStream;
@@ -34,8 +34,8 @@ namespace Bond.Comm.Tcp
 
         long m_requestId;
 
-        internal TcpConnection(
-            TcpTransport parentTransport,
+        internal EpoxyConnection(
+            EpoxyTransport parentTransport,
             TcpClient tcpClient,
             ConnectionType connectionType)
             : this (
@@ -46,8 +46,8 @@ namespace Bond.Comm.Tcp
         {
         }
 
-        internal TcpConnection(
-            TcpTransport parentTransport,
+        internal EpoxyConnection(
+            EpoxyTransport parentTransport,
             TcpClient tcpClient,
             ServiceHost serviceHost,
             ConnectionType connectionType)
@@ -65,7 +65,7 @@ namespace Bond.Comm.Tcp
 
         public override string ToString()
         {
-            return $"{nameof(TcpConnection)}(local: {m_tcpClient.Client.LocalEndPoint}, remote: {m_tcpClient.Client.RemoteEndPoint})";
+            return $"{nameof(EpoxyConnection)}(local: {m_tcpClient.Client.LocalEndPoint}, remote: {m_tcpClient.Client.RemoteEndPoint})";
         }
 
         internal static Frame MessageToFrame(uint requestId, string methodName, PayloadType type, IMessage payload)
@@ -73,7 +73,7 @@ namespace Bond.Comm.Tcp
             var frame = new Frame();
 
             {
-                var tcpHeaders = new TcpHeaders
+                var headers = new EpoxyHeaders
                 {
                     request_id = requestId,
                     payload_type = type,
@@ -82,18 +82,18 @@ namespace Bond.Comm.Tcp
 
                 if (payload.IsError)
                 {
-                    tcpHeaders.error_code = payload.Error.Deserialize<Error>().error_code;
+                    headers.error_code = payload.Error.Deserialize<Error>().error_code;
                 }
                 else
                 {
-                    tcpHeaders.error_code = (int)ErrorCode.OK;
+                    headers.error_code = (int)ErrorCode.OK;
                 }
 
                 var outputBuffer = new OutputBuffer(150);
                 var fastWriter = new FastBinaryWriter<OutputBuffer>(outputBuffer);
-                Serialize.To(fastWriter, tcpHeaders);
+                Serialize.To(fastWriter, headers);
 
-                frame.Add(new Framelet(FrameletType.TcpHeaders, outputBuffer.Data));
+                frame.Add(new Framelet(FrameletType.EpoxyHeaders, outputBuffer.Data));
             }
 
             {
@@ -217,7 +217,7 @@ namespace Bond.Comm.Tcp
             var requestIdLong = Interlocked.Add(ref m_requestId, 2);
             if (requestIdLong > UInt32.MaxValue)
             {
-                throw new TcpProtocolErrorException("Exhausted request IDs");
+                throw new EpoxyProtocolErrorException("Exhausted request IDs");
             }
 
             return unchecked((UInt32)requestIdLong);
@@ -229,22 +229,22 @@ namespace Bond.Comm.Tcp
             while (true)
             {
                 var frame = await Frame.ReadAsync(stream);
-                var result = TcpProtocol.Classify(frame);
+                var result = EpoxyProtocol.Classify(frame);
                 switch (result.Disposition)
                 {
-                    case TcpProtocol.FrameDisposition.DeliverRequestToService:
+                    case EpoxyProtocol.FrameDisposition.DeliverRequestToService:
                         DispatchRequest(result.Headers, result.Payload);
                         break;
 
-                    case TcpProtocol.FrameDisposition.DeliverResponseToProxy:
+                    case EpoxyProtocol.FrameDisposition.DeliverResponseToProxy:
                         DispatchResponse(result.Headers, result.Payload);
                         break;
 
-                    case TcpProtocol.FrameDisposition.DeliverEventToService:
+                    case EpoxyProtocol.FrameDisposition.DeliverEventToService:
                         DispatchEvent(result.Headers, result.Payload);
                         break;
 
-                    case TcpProtocol.FrameDisposition.SendProtocolError:
+                    case EpoxyProtocol.FrameDisposition.SendProtocolError:
                         await SendProtocolErrorAsync(result.ErrorCode ?? ProtocolErrorCode.INTERNAL_ERROR);
                         break;
 
@@ -256,23 +256,23 @@ namespace Bond.Comm.Tcp
             }
         }
 
-        private void DispatchRequest(TcpHeaders headers, ArraySegment<byte> payload)
+        private void DispatchRequest(EpoxyHeaders headers, ArraySegment<byte> payload)
         {
             if (headers.error_code != (int)ErrorCode.OK)
             {
-                throw new TcpProtocolErrorException("Received a request with non-zero error code. Request ID " + headers.request_id);
+                throw new EpoxyProtocolErrorException("Received a request with non-zero error code. Request ID " + headers.request_id);
             }
 
             IMessage request = Message.FromPayload(Unmarshal.From(payload));
 
             Task.Run(async () =>
             {
-                IMessage result = await m_serviceHost.DispatchRequest(headers.method_name, new TcpReceiveContext(this), request);
+                IMessage result = await m_serviceHost.DispatchRequest(headers.method_name, new EpoxyReceiveContext(this), request);
                 await SendReplyAsync(headers.request_id, result);
             });
         }
 
-        private void DispatchResponse(TcpHeaders headers, ArraySegment<byte> payload)
+        private void DispatchResponse(EpoxyHeaders headers, ArraySegment<byte> payload)
         {
             TaskCompletionSource<IMessage> responseCompletionSource;
 
@@ -282,7 +282,7 @@ namespace Bond.Comm.Tcp
                 {
                     Log.Error("{0}.{1}: Response for unmatched request {2}.",
                         this, nameof(DispatchResponse), headers.request_id);
-                    throw new TcpProtocolErrorException($"{this}.{nameof(DispatchResponse)}: Response for unmatched request {headers.request_id}.");
+                    throw new EpoxyProtocolErrorException($"{this}.{nameof(DispatchResponse)}: Response for unmatched request {headers.request_id}.");
                 }
 
                 m_outstandingRequests.Remove(headers.request_id);
@@ -301,18 +301,18 @@ namespace Bond.Comm.Tcp
             responseCompletionSource.SetResult(response);
         }
 
-        private void DispatchEvent(TcpHeaders headers, ArraySegment<byte> payload)
+        private void DispatchEvent(EpoxyHeaders headers, ArraySegment<byte> payload)
         {
             if (headers.error_code != (int)ErrorCode.OK)
             {
-                throw new TcpProtocolErrorException("Received a request with non-zero error code. Request ID " + headers.request_id);
+                throw new EpoxyProtocolErrorException("Received a request with non-zero error code. Request ID " + headers.request_id);
             }
 
             IMessage request = Message.FromPayload(Unmarshal.From(payload));
 
             Task.Run(async () =>
             {
-                await m_serviceHost.DispatchEvent(headers.method_name, new TcpReceiveContext(this), request);
+                await m_serviceHost.DispatchEvent(headers.method_name, new EpoxyReceiveContext(this), request);
             });
         }
 

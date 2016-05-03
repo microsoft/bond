@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace UnitTest.Tcp
+namespace UnitTest.Epoxy
 {
     using System;
     using System.Collections;
@@ -9,7 +9,7 @@ namespace UnitTest.Tcp
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using Bond.Comm.Tcp;
+    using Bond.Comm.Epoxy;
     using Bond.Comm;
     using NUnit.Framework;
 
@@ -25,8 +25,8 @@ namespace UnitTest.Tcp
         {
             var expectedFramelets = new []
             {
-                new { EnumMember = FrameletType.TcpConfig, ExpectedValue = 0x4743 },
-                new { EnumMember = FrameletType.TcpHeaders, ExpectedValue = 0x5248 },
+                new { EnumMember = FrameletType.EpoxyConfig, ExpectedValue = 0x4743 },
+                new { EnumMember = FrameletType.EpoxyHeaders, ExpectedValue = 0x5248 },
                 new { EnumMember = FrameletType.LayerData, ExpectedValue = 0x594C },
                 new { EnumMember = FrameletType.PayloadData, ExpectedValue = 0x5444 },
                 new { EnumMember = FrameletType.ProtocolError, ExpectedValue = 0x5245 },
@@ -100,17 +100,17 @@ namespace UnitTest.Tcp
 
             var expectedFramelets = new[]
             {
-                new Framelet(FrameletType.TcpConfig, AnyContents),
-                new Framelet(FrameletType.TcpConfig, AnyOtherContents),
+                new Framelet(FrameletType.EpoxyConfig, AnyContents),
+                new Framelet(FrameletType.EpoxyConfig, AnyOtherContents),
                 new Framelet(FrameletType.LayerData, AnyContents),
-                new Framelet(FrameletType.TcpConfig, AnyContents),
+                new Framelet(FrameletType.EpoxyConfig, AnyContents),
             };
 
             var frame = new Frame(4);
-            frame.Add(new Framelet(FrameletType.TcpConfig, AnyContents));
-            frame.Add(new Framelet(FrameletType.TcpConfig, AnyOtherContents));
+            frame.Add(new Framelet(FrameletType.EpoxyConfig, AnyContents));
+            frame.Add(new Framelet(FrameletType.EpoxyConfig, AnyOtherContents));
             frame.Add(new Framelet(FrameletType.LayerData, AnyContents));
-            frame.Add(new Framelet(FrameletType.TcpConfig, AnyContents));
+            frame.Add(new Framelet(FrameletType.EpoxyConfig, AnyContents));
 
             Assert.AreEqual(4, frame.Count);
             Assert.AreEqual(frame.Framelets.Count, frame.Count);
@@ -147,7 +147,7 @@ namespace UnitTest.Tcp
         public void Frame_Write_OneFramelet_ContentsExpected()
         {
             var frame = new Frame();
-            frame.Add(new Framelet(FrameletType.TcpConfig, AnyContents));
+            frame.Add(new Framelet(FrameletType.EpoxyConfig, AnyContents));
 
             var memStream = new MemoryStream();
             using (var binWriter = new BinaryWriter(memStream, Encoding.UTF8, leaveOpen: true))
@@ -158,7 +158,7 @@ namespace UnitTest.Tcp
             var expectedBytes = new[]
             {
                 0x01, 0x00, // frame count
-                0x43, 0x47, // TcpConfig framelet type
+                0x43, 0x47, // EpoxyConfig framelet type
                 0x04, 0x00, 0x00, 0x00, // framelet length
                 0x62, 0x6F, 0x6E, 0x64 // AnyContents bytes
             };
@@ -169,14 +169,14 @@ namespace UnitTest.Tcp
         public void Frame_ReadAsync_ZeroFramelets_Throws()
         {
             var zeroFrameletsStream = new FrameBuilder().Count(0).TakeStream();
-            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(zeroFrameletsStream));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(zeroFrameletsStream));
         }
 
         [Test]
         public void Frame_ReadAsync_UnknownFramelet_Throws()
         {
             var unknownFrameletStream = new FrameBuilder().Count(1).Type((FrameletType) UnknownFramelet).TakeStream();
-            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(unknownFrameletStream));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(unknownFrameletStream));
         }
 
         [Test]
@@ -187,35 +187,35 @@ namespace UnitTest.Tcp
                     .Type(FrameletType.PayloadData)
                     .Size((UInt32) Int32.MaxValue + 1)
                     .TakeStream();
-            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(frameletTooLargeStream));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(frameletTooLargeStream));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInCount_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).TakeTooShortStream();
-            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInType_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).TakeTooShortStream();
-            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInSize_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).TakeTooShortStream();
-            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInContent_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).Content(AnyContents).TakeTooShortStream();
-            Assert.Throws<TcpProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
         }
 
         [Test]
@@ -223,9 +223,9 @@ namespace UnitTest.Tcp
         {
             var expectedFramelets = new[]
             {
-                new Framelet(FrameletType.TcpConfig, AnyContents),
+                new Framelet(FrameletType.EpoxyConfig, AnyContents),
                 new Framelet(FrameletType.LayerData, AnyContents),
-                new Framelet(FrameletType.TcpConfig, AnyContents),
+                new Framelet(FrameletType.EpoxyConfig, AnyContents),
             };
 
             var frame = new Frame();

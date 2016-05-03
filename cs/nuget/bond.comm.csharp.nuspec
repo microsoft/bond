@@ -27,8 +27,8 @@
       <file src="net45\Bond.Comm.SimpleInMem.dll" target="lib\net45" />
       <file src="net45\Bond.Comm.SimpleInMem.pdb" target="lib\net45" />
       <file src="net45\Bond.Comm.SimpleInMem.xml" target="lib\net45" />
-      <file src="net45\Bond.Comm.Tcp.dll" target="lib\net45" />
-      <file src="net45\Bond.Comm.Tcp.pdb" target="lib\net45" />
-      <file src="net45\Bond.Comm.Tcp.xml" target="lib\net45" />
+      <file src="net45\Bond.Comm.Epoxy.dll" target="lib\net45" />
+      <file src="net45\Bond.Comm.Epoxy.pdb" target="lib\net45" />
+      <file src="net45\Bond.Comm.Epoxy.xml" target="lib\net45" />
     </files>
 </package>

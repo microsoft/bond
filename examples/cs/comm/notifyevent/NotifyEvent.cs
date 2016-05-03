@@ -9,12 +9,12 @@ namespace Bond.Examples.NotifyEvent
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm;
-    using Bond.Comm.Tcp;
+    using Bond.Comm.Epoxy;
     using Bond.Examples.Logging;
 
     public static class NotifyEvent
     {
-        private static TcpConnection s_connection;
+        private static EpoxyConnection s_connection;
 
         public static void Main()
         {
@@ -30,19 +30,19 @@ namespace Bond.Examples.NotifyEvent
             Console.ReadLine();
         }
 
-        private async static Task<TcpTransport> SetupAsync()
+        private async static Task<EpoxyTransport> SetupAsync()
         {
             var handler = new ConsoleLogger();
             Log.AddHandler(handler);
 
-            var transport = new TcpTransportBuilder()
+            var transport = new EpoxyTransportBuilder()
                 .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
                 .Construct();
 
             var assignAPortEndPoint = new IPEndPoint(IPAddress.Loopback, 0);
 
             var notifyService = new NotifyEventService();
-            TcpListener notifyListener = transport.MakeListener(assignAPortEndPoint);
+            EpoxyListener notifyListener = transport.MakeListener(assignAPortEndPoint);
             notifyListener.AddService(notifyService);
 
             await notifyListener.StartAsync();
@@ -54,7 +54,7 @@ namespace Bond.Examples.NotifyEvent
 
         private static void MakeRequestsAndPrint(int numRequests)
         {
-            var notifyEventProxy = new NotifyEventProxy<TcpConnection>(s_connection);
+            var notifyEventProxy = new NotifyEventProxy<EpoxyConnection>(s_connection);
 
             var rnd = new Random();
 
@@ -65,7 +65,7 @@ namespace Bond.Examples.NotifyEvent
             }
         }
 
-        private static void DoNotify(NotifyEventProxy<TcpConnection> proxy, int requestNum, string payload, UInt16 delay)
+        private static void DoNotify(NotifyEventProxy<EpoxyConnection> proxy, int requestNum, string payload, UInt16 delay)
         {
             var request = new PingRequest { Payload = payload, DelayMilliseconds = delay };
             proxy.NotifyAsync(request);

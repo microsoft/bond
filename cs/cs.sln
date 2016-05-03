@@ -185,7 +185,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{882B4409
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "comm", "test\comm\comm.csproj", "{F13CB9C0-DB52-45DB-9BFD-05CB26512FC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tcp-transport", "src\comm\tcp-transport\tcp-transport.csproj", "{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "epoxy-transport", "src\comm\epoxy-transport\epoxy-transport.csproj", "{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pingpong", "..\examples\cs\comm\pingpong\pingpong.csproj", "{92C5B98B-12A4-4995-90B8-A19E96524464}"
 	ProjectSection(ProjectDependencies) = postProject
