@@ -106,10 +106,8 @@ namespace UnitTest.Epoxy
                 backwardsRequestFrame.Add(framelet);
             }
 
-            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode);
+            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null);
         }
-
-
 
         // For each state that is implemented as a function, test:
         //  * that it works in the happy path

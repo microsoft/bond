@@ -6,6 +6,7 @@ namespace Bond.Comm.Epoxy
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Net;
     using System.Net.Sockets;
     using System.Text;
     using System.Threading;
@@ -22,10 +23,9 @@ namespace Bond.Comm.Epoxy
 
     public class EpoxyConnection : Connection, IRequestResponseConnection, IEventConnection
     {
-        private EpoxyTransport m_parentTransport;
-
-        TcpClient m_tcpClient;
-        private readonly NetworkStream m_networkStream;
+        private readonly EpoxyTransport m_parentTransport;
+        private readonly Socket m_socket;
+        private readonly Stream m_networkStream;
 
         ServiceHost m_serviceHost;
 
@@ -36,11 +36,11 @@ namespace Bond.Comm.Epoxy
 
         internal EpoxyConnection(
             EpoxyTransport parentTransport,
-            TcpClient tcpClient,
+            Socket socket,
             ConnectionType connectionType)
             : this (
                   parentTransport,
-                  tcpClient,
+                  socket,
                   new ServiceHost(parentTransport),
                   connectionType)
         {
@@ -48,13 +48,14 @@ namespace Bond.Comm.Epoxy
 
         internal EpoxyConnection(
             EpoxyTransport parentTransport,
-            TcpClient tcpClient,
+            Socket socket,
             ServiceHost serviceHost,
             ConnectionType connectionType)
         {
             m_parentTransport = parentTransport;
-            m_tcpClient = tcpClient;
-            m_networkStream = tcpClient.GetStream();
+            m_socket = socket;
+            m_networkStream = new NetworkStream(socket, ownsSocket: false);
+
             m_serviceHost = serviceHost;
             m_requestsLock = new object();
             m_outstandingRequests = new Dictionary<uint, TaskCompletionSource<IMessage>>();
@@ -63,9 +64,19 @@ namespace Bond.Comm.Epoxy
             m_requestId = connectionType == ConnectionType.Client ? -1 : 0;
         }
 
+        /// <summary>
+        /// Get this connection's local endpoint.
+        /// </summary>
+        public IPEndPoint LocalEndPoint => (IPEndPoint) m_socket.LocalEndPoint;
+
+        /// <summary>
+        /// Get this connection's remote endpoint.
+        /// </summary>
+        public IPEndPoint RemoteEndPoint => (IPEndPoint) m_socket.RemoteEndPoint;
+
         public override string ToString()
         {
-            return $"{nameof(EpoxyConnection)}(local: {m_tcpClient.Client.LocalEndPoint}, remote: {m_tcpClient.Client.RemoteEndPoint})";
+            return $"{nameof(EpoxyConnection)}(local: {LocalEndPoint}, remote: {RemoteEndPoint})";
         }
 
         internal static Frame MessageToFrame(uint requestId, string methodName, PayloadType type, IMessage payload)
@@ -112,11 +123,12 @@ namespace Bond.Comm.Epoxy
             return frame;
         }
 
-        internal static Frame MakeProtocolErrorFrame(ProtocolErrorCode errorCode)
+        internal static Frame MakeProtocolErrorFrame(ProtocolErrorCode errorCode, Error details)
         {
             var protocolError = new ProtocolError
             {
-                error_code = errorCode
+                error_code = errorCode,
+                details = details == null ? null : new Bonded<Error>(details)
             };
 
             var outputBuffer = new OutputBuffer(16);
@@ -155,11 +167,11 @@ namespace Bond.Comm.Epoxy
             Log.Debug("{0}.{1}: Sent reply for request ID {2}.", this, nameof(SendReplyAsync), requestId);
         }
 
-        internal async Task SendProtocolErrorAsync(ProtocolErrorCode errorCode)
+        internal async Task SendProtocolErrorAsync(ProtocolErrorCode errorCode, Error details = null)
         {
-            var frame = MakeProtocolErrorFrame(errorCode);
-            Log.Debug("{0}.{1}: Sending protocol error with code {2}.", this, nameof(SendProtocolErrorAsync),
-                errorCode);
+            var frame = MakeProtocolErrorFrame(errorCode, details);
+            Log.Debug("{0}.{1}: Sending protocol error with code {2} and details {3}.",
+                this, nameof(SendProtocolErrorAsync), errorCode, details == null ? "<null>" : details.error_code + details.message);
 
             await SendFrameAsync(frame);
             Log.Debug("{0}.{1}: Sent protocol error with code {2}.", this, nameof(SendProtocolErrorAsync), errorCode);
@@ -223,7 +235,7 @@ namespace Bond.Comm.Epoxy
             return unchecked((UInt32)requestIdLong);
         }
 
-        private async Task ProcessFramesAsync(NetworkStream stream)
+        private async Task ProcessFramesAsync(Stream stream)
         {
             // TODO: shutdown
             while (true)
@@ -319,7 +331,8 @@ namespace Bond.Comm.Epoxy
         public override Task StopAsync()
         {
             Log.Debug("{0}.{1}: Shutting down.", this, nameof(StopAsync));
-            m_tcpClient.Close();
+            m_networkStream.Close();
+            m_socket.Close();
             return TaskExt.CompletedTask;
         }
 

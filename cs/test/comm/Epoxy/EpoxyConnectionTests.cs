@@ -4,6 +4,7 @@
 namespace UnitTest.Epoxy
 {
     using Bond;
+    using Bond.Comm;
     using Bond.Comm.Epoxy;
     using Bond.IO.Safe;
     using Bond.Protocols;
@@ -14,10 +15,16 @@ namespace UnitTest.Epoxy
     {
         private const ProtocolErrorCode MeaninglessErrorCode = ProtocolErrorCode.GENERIC_ERROR;
 
-        [Test]
-        public void MakeProtocolErrorFrame_MakesAFrame()
+        private static readonly Error AnyDetails = new Error
         {
-            var frame = EpoxyConnection.MakeProtocolErrorFrame(MeaninglessErrorCode);
+            error_code = (int) ErrorCode.MethodNotFound,
+            message = "This is some error message"
+        };
+
+        [Test]
+        public void MakeProtocolErrorFrame_JustErrorCode_MakesAFrame()
+        {
+            var frame = EpoxyConnection.MakeProtocolErrorFrame(MeaninglessErrorCode, null);
             Assert.NotNull(frame);
             Assert.AreEqual(1, frame.Framelets.Count);
             Assert.AreEqual(FrameletType.ProtocolError, frame.Framelets[0].Type);
@@ -26,6 +33,24 @@ namespace UnitTest.Epoxy
             var fastBinaryReader = new FastBinaryReader<InputBuffer>(inputBuffer, version: 1);
             var error = Deserialize<ProtocolError>.From(fastBinaryReader);
             Assert.AreEqual(MeaninglessErrorCode, error.error_code);
+            Assert.Null(error.details);
+        }
+
+        [Test]
+        public void MakeProtocolErrorFrame_WithDetails_MakesAFrame()
+        {
+            var frame = EpoxyConnection.MakeProtocolErrorFrame(MeaninglessErrorCode, AnyDetails);
+            Assert.NotNull(frame);
+            Assert.AreEqual(1, frame.Framelets.Count);
+            Assert.AreEqual(FrameletType.ProtocolError, frame.Framelets[0].Type);
+
+            var inputBuffer = new Bond.IO.Unsafe.InputBuffer(frame.Framelets[0].Contents);
+            var fastBinaryReader = new FastBinaryReader<InputBuffer>(inputBuffer, version: 1);
+            var error = Deserialize<ProtocolError>.From(fastBinaryReader);
+            Assert.AreEqual(MeaninglessErrorCode, error.error_code);
+            Assert.NotNull(error.details);
+            var details = error.details.Deserialize();
+            Assert.IsTrue(AnyDetails.IsEqual<Error, Error>(details));
         }
     }
 }
