@@ -48,12 +48,22 @@ namespace Bond.Comm.SimpleInMem
             return m_connection.StopAsync();
         }
 
-        internal SimpleInMemConnection Connection
+        internal void AddClient(SimpleInMemConnection client)
         {
-            get
+            var connectedEventArgs = new ConnectedEventArgs(client);
+            Error disconnectError = OnConnected(connectedEventArgs);
+
+            if (disconnectError != null)
             {
-                return m_connection;
+                Log.Information("{0}.{1}: Rejecting connection {2} because {3}:{4}.",
+                    m_logname, nameof(AddClient), client.Id, disconnectError.error_code, disconnectError.message);
+                throw new SimpleInMemProtocolErrorException(
+                    "Connection rejected",
+                    details: disconnectError,
+                    innerException: null);
             }
+
+            m_connection.AddRequestResponseQueue(client.Id, client.RequestResponseQueue);
         }
     }
 }

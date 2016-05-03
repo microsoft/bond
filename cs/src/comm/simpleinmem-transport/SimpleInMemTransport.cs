@@ -80,10 +80,10 @@ namespace Bond.Comm.SimpleInMem
             return await Task.Run<Connection>(() =>
             {
                 var connection = new SimpleInMemConnection(this, ConnectionType.Client);
-                listener.Connection.AddRequestResponseQueue(connection.Id, connection.RequestResponseQueue);
+                listener.AddClient(connection);
                 connection.Start();
                 return connection;
-            });
+            }, ct);
         }
 
         public override Listener MakeListener(string address)

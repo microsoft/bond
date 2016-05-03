@@ -11,8 +11,22 @@ namespace Bond.Comm.SimpleInMem
         {
         }
 
-        public SimpleInMemProtocolErrorException(string message, Exception innerException) : base(message, innerException)
+        public SimpleInMemProtocolErrorException(string message, Exception innerException) : this(
+            message,
+            details: null,
+            innerException: innerException)
         {
         }
+
+        public SimpleInMemProtocolErrorException(
+            string message,
+            Error details,
+            Exception innerException)
+            : base(message, innerException)
+        {
+            Details = details;
+        }
+
+        public Error Details { get; }
     }
 }
