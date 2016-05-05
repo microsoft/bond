@@ -190,6 +190,7 @@
 
             // TODO: for untagged protocol mismatch schema will be detected in schema validation
             test(Util.SerializeCB, Util.DeserializeCB<BondClass<To>>);
+            test(Util.SerializeCB2, Util.DeserializeCB2<BondClass<To>>);
         }
 
         [Test]
@@ -326,6 +327,31 @@
 
             // Don't omit required_optional fields
             TestPayloadSize(Util.SerializeCB, Util.TranscodeCBCB, new RequiredOptional(), 4);
+
+            // Omit optional fields set to default value
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new StructWithDefaults(), 2);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new ContainersOfNullable(), 8);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new NullableVectors(), 2);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new NullableLists(), 2);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new NullableBasicTypes(), 2);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new Lists(), 2);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new Vectors(), 2);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new Sets(), 2);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new Maps(), 2);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new StructWithBlobs(), 2);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new Nothing(), 2);
+
+            // Don't skip empty container for field with default nothing
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new Nothing { b = new ArraySegment<byte>(new byte[0]) }, 5);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new Nothing { l = new LinkedList<string>() }, 5);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new Nothing { s = new HashSet<double>() }, 5);
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new Nothing { m = new Dictionary<string, double>() }, 7);
+
+            // Don't omit required fields
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new BondClass<Int32>(), 4);
+
+            // Don't omit required_optional fields
+            TestPayloadSize(Util.SerializeCB2, Util.TranscodeCB2CB2, new RequiredOptional(), 5);
         }
 
         [Test]

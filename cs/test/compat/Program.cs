@@ -106,6 +106,11 @@
                 var writer = new CompactBinaryWriter<OutputStream>(output);
                 Serialize.To(writer, Deserialize<Compat>.From(reader));
             }
+            else if (toProtocol == "compact2")
+            {
+                var writer = new CompactBinaryWriter<OutputStream>(output, 2);
+                Serialize.To(writer, Deserialize<Compat>.From(reader));
+            }
             else if (toProtocol == "fast")
             {
                 var writer = new FastBinaryWriter<OutputStream>(output);

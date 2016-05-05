@@ -158,12 +158,12 @@
             var equal = comparerEqual.MakeGenericMethod(right.GetType());
             var result = (bool)equal.Invoke(null, new object[] { left, right });
 
-            if (!result)
-            {
-                // Set breakpoint here to debug unequal test failure
-                var strLeft = Util.SerializeXmlString(left);
-                var strRight = Util.SerializeXmlString(right);
-            }
+            // Uncomment this block and set breakpoint here to debug unequal test failure
+            //if (!result)
+            //{
+            //    var strLeft = Util.SerializeXmlString(left);
+            //    var strRight = Util.SerializeXmlString(right);
+            //}
 
             return result;
         }

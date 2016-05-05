@@ -108,47 +108,47 @@ namespace UnitTest
             {
                 return new CustomBondedPoly<T,TActual>(instance);
             }
+        }
 
-            internal class CustomBondedPoly<T, TActual> : CustomBonded<T>, IBonded<T>
+        internal class CustomBondedPoly<T, TActual> : CustomBonded<T>, IBonded<T>
+        {
+            public new static readonly CustomBonded<T> Empty = new CustomBondedPoly<T, TActual>(GenericFactory.Create<TActual>());
+
+            private readonly TActual instance;
+
+            public CustomBondedPoly(TActual instance)
             {
-                public new static readonly CustomBonded<T> Empty = new CustomBondedPoly<T, TActual>(GenericFactory.Create<TActual>());
+                this.instance = instance;
+            }
 
-                private readonly TActual instance;
+            public override T Value
+            {
+                get { return Deserialize(); }
+            }
 
-                public CustomBondedPoly(TActual instance)
-                {
-                    this.instance = instance;
-                }
+            public T Deserialize()
+            {
+                return CustomTransformFactory.Instance.Cloner<TActual, T>().Clone<T>(instance);
+            }
 
-                public override T Value
-                {
-                    get { return Deserialize(); }
-                }
+            public void Serialize<W>(W writer)
+            {
+                CustomTransformFactory.Instance.Serializer<W, TActual>().Serialize(instance, writer);
+            }
 
-                public T Deserialize()
-                {
-                    return CustomTransformFactory.Instance.Cloner<TActual, T>().Clone<T>(instance);
-                }
+            public U Deserialize<U>()
+            {
+                return CustomTransformFactory.Instance.Cloner<TActual, U>().Clone<U>(instance);
+            }
 
-                public void Serialize<W>(W writer)
-                {
-                    CustomTransformFactory.Instance.Serializer<W, TActual>().Serialize(instance, writer);
-                }
+            IBonded<U> IBonded.Convert<U>()
+            {
+                return this as IBonded<U>;
+            }
 
-                public U Deserialize<U>()
-                {
-                    return CustomTransformFactory.Instance.Cloner<TActual, U>().Clone<U>(instance);
-                }
-
-                IBonded<U> IBonded.Convert<U>()
-                {
-                    return this as IBonded<U>;
-                }
-
-                public override CustomBonded<U> Convert<U>()
-                {
-                    return new CustomBondedPoly<U, TActual>(instance);
-                }
+            public override CustomBonded<U> Convert<U>()
+            {
+                return new CustomBondedPoly<U, TActual>(instance);
             }
         }
 

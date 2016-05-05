@@ -10,8 +10,6 @@ module Options
     , processOptions
     , Options(..)
     , ApplyOptions(..)
-    , CompatibilityOptions(..)
-    , filterCompatibilityOptions
     ) where
 
 import Paths_bond (version)
@@ -24,14 +22,6 @@ data ApplyOptions =
     Fast |
     Simple
     deriving (Show, Data, Typeable, Eq)
-
-data CompatibilityOptions =
-    LegacyMetaNamespaces |
-    None
-    deriving (Show, Data, Typeable, Eq)
-
-filterCompatibilityOptions :: [CompatibilityOptions] -> [CompatibilityOptions]
-filterCompatibilityOptions opts = if None `elem` opts then [] else opts
 
 data Options
     = Options
@@ -60,7 +50,6 @@ data Options
         , fields :: Bool
         , jobs :: Maybe Int
         , no_banner :: Bool
-        , compatibility_options :: [CompatibilityOptions]
         }
     | Schema
         { files :: [FilePath]
@@ -94,7 +83,6 @@ cs = Cs
     { collection_interfaces = def &= name "c" &= help "Use interfaces rather than concrete collection types"
     , readonly_properties = def &= name "r" &= help "Generate private property setters"
     , fields = def &= name "f" &= help "Generate public fields rather than properties"
-    , compatibility_options = def &= typ "OPTION" &= help "LegacyMetaNamespaces: Use legacy, language-specific namespaces instead of Bond namespaces on bond_meta fields. None: Disable all compatibility options"
     } &=
     name "c#" &=
     help "Generate C# code"
