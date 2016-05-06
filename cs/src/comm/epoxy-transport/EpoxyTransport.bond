@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+import "Comm.bond"
+
 namespace bond.comm.epoxy;
 
 enum PayloadType
@@ -47,6 +49,9 @@ enum ProtocolErrorCode
     // reading a large framelet)
     TIMEOUT = 10;
 
+    // The connection was explicitly rejected.
+    CONNECTION_REJECTED = 11;
+
     // Indicates that the endpoint received a ProtocolError that was malformed.
     // This should not be sent over the network, and should only be created by
     // a Proxy/Service in place of the malformed ProtocolError it refers to.
@@ -56,4 +61,5 @@ enum ProtocolErrorCode
 struct ProtocolError
 {
     0: ProtocolErrorCode error_code;
+    1: nullable<bonded<bond.comm.Error>> details;
 }

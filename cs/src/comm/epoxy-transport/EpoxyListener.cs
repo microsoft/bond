@@ -82,10 +82,25 @@ namespace Bond.Comm.Epoxy
             Log.Information("{0}.{1}: Accepting connections...", this, nameof(AcceptAsync));
             while (!t.IsCancellationRequested)
             {
+                Socket socket = null;
+
                 try
                 {
-                    TcpClient client = await m_listener.AcceptTcpClientAsync();
-                    var connection = new EpoxyConnection(m_parentTransport, client, m_serviceHost, ConnectionType.Server);
+                    socket = await m_listener.AcceptSocketAsync();
+                    var connection = new EpoxyConnection(m_parentTransport, socket, m_serviceHost, ConnectionType.Server);
+                    socket = null; // connection now owns the socket and will close it
+
+                    var connectedEventArgs = new ConnectedEventArgs(connection);
+                    Error disconnectError = OnConnected(connectedEventArgs);
+
+                    if (disconnectError != null)
+                    {
+                        Log.Information("Rejecting connection {0} because {1}:{2}", connection,
+                            disconnectError.error_code, disconnectError.message);
+                        await connection.SendProtocolErrorAsync(ProtocolErrorCode.CONNECTION_REJECTED, disconnectError);
+                        await connection.StopAsync();
+                        continue;
+                    }
 
                     lock (m_connectionsLock)
                     {
@@ -94,19 +109,40 @@ namespace Bond.Comm.Epoxy
 
                     connection.Start();
                     Log.Debug("{0}.{1}: Accepted connection from {2}.", 
-                        this, nameof(AcceptAsync), client.Client.RemoteEndPoint);
+                        this, nameof(AcceptAsync), connection.RemoteEndPoint);
                 }
                 catch (SocketException ex)
                 {
                     Log.Fatal(ex, "{0}.{1}: Accept failed with error {2}.",
                         this, nameof(AcceptAsync), ex.SocketErrorCode);
+
+                    ShutdownSocketSafe(socket);
                 }
                 catch (ObjectDisposedException)
                 {
-                    // TODO: this is needed during shutdown, but there should be a cleaner way
+                    ShutdownSocketSafe(socket);
+
+                    // TODO: ignoring this exception is needed during shutdown,
+                    //       but there should be a cleaner way. We should
+                    //       switch to having a proper life-cycle for a
+                    //       connection.
                 }
             }
             Log.Information("{0}.{1}: Shutting down.", this, nameof(AcceptAsync));
+        }
+
+        private static void ShutdownSocketSafe(Socket socket)
+        {
+            try
+            {
+                socket?.Shutdown(SocketShutdown.Both);
+                socket?.Close();
+            }
+            catch (SocketException ex)
+            {
+                // We tried to cleanly shutdown the socket, oh well.
+                Log.Debug(ex, "Exception encountered when shutting down a socket.");
+            }
         }
     }
 }

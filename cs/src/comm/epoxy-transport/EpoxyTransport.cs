@@ -78,11 +78,13 @@ namespace Bond.Comm.Epoxy
         public async Task<EpoxyConnection> ConnectToAsync(IPEndPoint endpoint, CancellationToken ct)
         {
             Log.Information("{0}.{1}: Connecting to {2}.", nameof(EpoxyTransport), nameof(ConnectToAsync), endpoint);
-            var tcpClient = new TcpClient();
-            await tcpClient.ConnectAsync(endpoint.Address, endpoint.Port);
+
+            Socket socket = MakeClientSocket();
+
+            await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, endpoint, state: null);
 
             // TODO: keep these in some master collection for shutdown
-            var connection = new EpoxyConnection(this, tcpClient, ConnectionType.Client);
+            var connection = new EpoxyConnection(this, socket, ConnectionType.Client);
             connection.Start();
             return connection;
         }
@@ -143,6 +145,11 @@ namespace Bond.Comm.Epoxy
             }
 
             return new IPEndPoint(ipAddr, port);
+        }
+
+        private Socket MakeClientSocket()
+        {
+            return new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
     }
 }

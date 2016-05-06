@@ -80,19 +80,19 @@ namespace Bond.Comm.SimpleInMem
             }
         }
 
+        public Guid Id
+        {
+            get
+            {
+                return m_connectionId;
+            }
+        }
+
         internal RequestResponseQueue RequestResponseQueue
         {
             get
             {
                 return m_clientreqresqueue;
-            }
-        }
-
-        internal Guid Id
-        {
-            get
-            {
-                return m_connectionId;
             }
         }
 

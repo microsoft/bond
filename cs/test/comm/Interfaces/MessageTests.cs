@@ -16,14 +16,14 @@ namespace UnitTest.Interfaces
             error_code = 1,
         };
 
-        private static readonly SomePayloadType AnyPayload = new SomePayloadType
+        private static readonly SomePayload AnyPayload = new SomePayload
         {
             int_field = 100,
         };
 
-        private static readonly IBonded AnyTypelessIBonded = (IBonded)new Bonded<SomePayloadType>(AnyPayload);
+        private static readonly IBonded AnyTypelessIBonded = (IBonded)new Bonded<SomePayload>(AnyPayload);
 
-        private static readonly SomeDerivedPayloadType AnyDerivedPayload = new SomeDerivedPayloadType
+        private static readonly SomeDerivedPayload AnyDerivedPayload = new SomeDerivedPayload
         {
             int_field = 500,
             bool_field = true,
@@ -35,9 +35,9 @@ namespace UnitTest.Interfaces
             Assert.Throws<ArgumentNullException>(() => new Message((IBonded) null));
             Assert.Throws<ArgumentNullException>(() => new Message((IBonded<Error>)null));
 
-            Assert.Throws<ArgumentNullException>(() => new Message<SomePayloadType>((SomePayloadType)null));
-            Assert.Throws<ArgumentNullException>(() => new Message<SomePayloadType>((IBonded<SomePayloadType>)null));
-            Assert.Throws<ArgumentNullException>(() => new Message<SomePayloadType>((IBonded<Error>)null));
+            Assert.Throws<ArgumentNullException>(() => new Message<SomePayload>((SomePayload)null));
+            Assert.Throws<ArgumentNullException>(() => new Message<SomePayload>((IBonded<SomePayload>)null));
+            Assert.Throws<ArgumentNullException>(() => new Message<SomePayload>((IBonded<Error>)null));
         }
 
         [Test]
@@ -48,20 +48,20 @@ namespace UnitTest.Interfaces
             Assert.IsFalse(msg.IsError);
             Assert.IsNull(msg.Error);
 
-            var deserializedPayload = msg.RawPayload.Deserialize<SomePayloadType>();
-            Assert.IsTrue(AnyPayload.IsEqual<SomePayloadType>(deserializedPayload));
+            var deserializedPayload = msg.RawPayload.Deserialize<SomePayload>();
+            Assert.IsTrue(AnyPayload.IsEqual<SomePayload>(deserializedPayload));
         }
 
         [Test]
         public void ConstructT_WithPayload_IsPayload()
         {
-            var msg = new Message<SomePayloadType>(AnyPayload);
+            var msg = new Message<SomePayload>(AnyPayload);
 
             Assert.IsFalse(msg.IsError);
             Assert.IsNull(msg.Error);
 
             var deserializedPayload = msg.Payload.Deserialize();
-            Assert.IsTrue(AnyPayload.IsEqual<SomePayloadType>(deserializedPayload));
+            Assert.IsTrue(AnyPayload.IsEqual<SomePayload>(deserializedPayload));
         }
 
         [Test]
@@ -72,16 +72,16 @@ namespace UnitTest.Interfaces
             Assert.IsFalse(msg.IsError);
             Assert.IsNull(msg.Error);
 
-            var deserializedPayload = msg.RawPayload.Deserialize<SomePayloadType>();
-            Assert.IsTrue(AnyPayload.IsEqual<SomePayloadType>(deserializedPayload));
+            var deserializedPayload = msg.RawPayload.Deserialize<SomePayload>();
+            Assert.IsTrue(AnyPayload.IsEqual<SomePayload>(deserializedPayload));
         }
 
         [Test]
         public void FromPayload_BondedNull_Throws()
         {
-            Assert.Throws<ArgumentNullException>(() => Message.FromPayload((SomePayloadType) null));
+            Assert.Throws<ArgumentNullException>(() => Message.FromPayload((SomePayload) null));
             Assert.Throws<ArgumentNullException>(() => Message.FromPayload((IBonded) null));
-            Assert.Throws<ArgumentNullException>(() => Message.FromPayload((IBonded<SomePayloadType>)null));
+            Assert.Throws<ArgumentNullException>(() => Message.FromPayload((IBonded<SomePayload>)null));
         }
 
         [Test]
@@ -89,8 +89,8 @@ namespace UnitTest.Interfaces
         {
             Assert.Throws<ArgumentNullException>(() => Message.FromError((Error) null));
             Assert.Throws<ArgumentNullException>(() => Message.FromError((IBonded<Error>)null));
-            Assert.Throws<ArgumentNullException>(() => Message.FromError<SomePayloadType>((Error)null));
-            Assert.Throws<ArgumentNullException>(() => Message.FromError<SomePayloadType>((IBonded<Error>)null));
+            Assert.Throws<ArgumentNullException>(() => Message.FromError<SomePayload>((Error)null));
+            Assert.Throws<ArgumentNullException>(() => Message.FromError<SomePayload>((IBonded<Error>)null));
         }
 
         [Test]
@@ -102,7 +102,7 @@ namespace UnitTest.Interfaces
             Assert.IsNull(msg.Error);
 
             var deserializedPayload = msg.Payload.Deserialize();
-            Assert.IsTrue(AnyPayload.IsEqual<SomePayloadType>(deserializedPayload));
+            Assert.IsTrue(AnyPayload.IsEqual<SomePayload>(deserializedPayload));
         }
 
         [Test]
@@ -113,65 +113,65 @@ namespace UnitTest.Interfaces
             Assert.IsFalse(msg.IsError);
             Assert.IsNull(msg.Error);
 
-            var deserializedPayload = msg.RawPayload.Deserialize<SomePayloadType>();
-            Assert.IsTrue(AnyPayload.IsEqual<SomePayloadType>(deserializedPayload));
+            var deserializedPayload = msg.RawPayload.Deserialize<SomePayload>();
+            Assert.IsTrue(AnyPayload.IsEqual<SomePayload>(deserializedPayload));
         }
 
         [Test]
         public void ConstructT_WithBonded_IsPayload()
         {
-            var bondedPayload = new Bonded<SomePayloadType>(AnyPayload);
-            var msg = new Message<SomePayloadType>(bondedPayload);
+            var bondedPayload = new Bonded<SomePayload>(AnyPayload);
+            var msg = new Message<SomePayload>(bondedPayload);
             Assert.IsFalse(msg.IsError);
             Assert.IsNull(msg.Error);
 
             var deserializedPayload = msg.Payload.Deserialize();
-            Assert.IsTrue(AnyPayload.IsEqual<SomePayloadType>(deserializedPayload));
+            Assert.IsTrue(AnyPayload.IsEqual<SomePayload>(deserializedPayload));
         }
 
         [Test]
         public void Construct_WithDerivedPayload_IsPayload()
         {
-            var msg = new Message(new Bonded<SomeDerivedPayloadType>(AnyDerivedPayload));
+            var msg = new Message(new Bonded<SomeDerivedPayload>(AnyDerivedPayload));
             Assert.IsFalse(msg.IsError);
             Assert.IsNull(msg.Error);
 
-            var deserializedPayload = msg.RawPayload.Deserialize<SomeDerivedPayloadType>();
-            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayloadType>(deserializedPayload));
+            var deserializedPayload = msg.RawPayload.Deserialize<SomeDerivedPayload>();
+            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayload>(deserializedPayload));
         }
 
         [Test]
         public void ConstructT_WithDerivedPayload_IsPayload()
         {
-            var msg = new Message<SomePayloadType>(AnyDerivedPayload);
+            var msg = new Message<SomePayload>(AnyDerivedPayload);
             Assert.IsFalse(msg.IsError);
             Assert.IsNull(msg.Error);
 
-            var deserializedPayload = msg.Payload.Deserialize<SomeDerivedPayloadType>();
-            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayloadType>(deserializedPayload));
+            var deserializedPayload = msg.Payload.Deserialize<SomeDerivedPayload>();
+            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayload>(deserializedPayload));
         }
 
         [Test]
         public void FromPayload_WithDerivedPayload_IsPayload()
         {
-            IBonded typelessBonded = new Bonded<SomeDerivedPayloadType>(AnyDerivedPayload);
+            IBonded typelessBonded = new Bonded<SomeDerivedPayload>(AnyDerivedPayload);
             var msg = Message.FromPayload(typelessBonded);
             Assert.IsFalse(msg.IsError);
             Assert.IsNull(msg.Error);
 
-            var deserializedPayload = msg.RawPayload.Deserialize<SomeDerivedPayloadType>();
-            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayloadType>(deserializedPayload));
+            var deserializedPayload = msg.RawPayload.Deserialize<SomeDerivedPayload>();
+            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayload>(deserializedPayload));
         }
 
         [Test]
         public void FromPayloadT_WithDerivedPayload_IsPayload()
         {
-            var msg = Message.FromPayload<SomePayloadType>(AnyDerivedPayload);
+            var msg = Message.FromPayload<SomePayload>(AnyDerivedPayload);
             Assert.IsFalse(msg.IsError);
             Assert.IsNull(msg.Error);
 
-            var deserializedPayload = msg.Payload.Deserialize<SomeDerivedPayloadType>();
-            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayloadType>(deserializedPayload));
+            var deserializedPayload = msg.Payload.Deserialize<SomeDerivedPayload>();
+            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayload>(deserializedPayload));
         }
 
         [Test]
@@ -219,40 +219,21 @@ namespace UnitTest.Interfaces
         public void FromError_ZeroErrorCode_Throws()
         {
             var zeroErrorCode = new Error {error_code = 0};
-            Assert.Throws<ArgumentException>(() => Message.FromError<SomePayloadType>(zeroErrorCode));
+            Assert.Throws<ArgumentException>(() => Message.FromError<SomePayload>(zeroErrorCode));
             Assert.Throws<ArgumentException>(() => Message.FromError(zeroErrorCode));
         }
 
         [Test]
         public void Message_ConvertToMessageT_Works()
         {
-            IBonded typelessBonded = new Bonded<SomeDerivedPayloadType>(AnyDerivedPayload);
+            IBonded typelessBonded = new Bonded<SomeDerivedPayload>(AnyDerivedPayload);
             var msg = Message.FromPayload(typelessBonded);
 
-            var messageBase = msg.Convert<SomePayloadType>();
+            var messageBase = msg.Convert<SomePayload>();
             Assert.AreEqual(500, messageBase.Payload.Deserialize().int_field);
 
-            var messageDerived = msg.Convert<SomeDerivedPayloadType>();
-            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayloadType>(messageDerived.Payload.Deserialize()));
-        }
-
-        [Schema]
-        private class SomePayloadType
-        {
-            public const int DefaultIntValue = 50;
-
-            [Bond.Id(0)] public int int_field;
-
-            public SomePayloadType()
-            {
-                int_field = DefaultIntValue;
-            }
-        }
-
-        [Schema]
-        private class SomeDerivedPayloadType : SomePayloadType
-        {
-            [Bond.Id(0)] public bool bool_field;
+            var messageDerived = msg.Convert<SomeDerivedPayload>();
+            Assert.IsTrue(AnyDerivedPayload.IsEqual<SomeDerivedPayload>(messageDerived.Payload.Deserialize()));
         }
     }
 }

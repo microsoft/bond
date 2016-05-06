@@ -3,6 +3,8 @@
 
 namespace UnitTest.SimpleInMem
 {
+    using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm;
     using Bond.Comm.SimpleInMem;
@@ -41,10 +43,7 @@ namespace UnitTest.SimpleInMem
         [Test]
         public async Task StartStopInMemTransportListener()
         {
-            var transport = new SimpleInMemTransportBuilder()
-                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
-                .Construct();
-            var listener = transport.MakeListener(m_address);
+            var listener = m_transport.MakeListener(m_address);
             Assert.IsNotNull(listener);
             await listener.StartAsync();
             await listener.StopAsync();
@@ -53,10 +52,7 @@ namespace UnitTest.SimpleInMem
         [Test]
         public void AddRemoveService()
         {
-            var transport = new SimpleInMemTransportBuilder()
-                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
-                .Construct();
-            SimpleInMemListener listener = (SimpleInMemListener)transport.MakeListener(m_address);
+            SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
             listener.AddService<CalculatorService>(m_service);
 
             foreach (var serviceMethod in m_service.Methods)
@@ -72,6 +68,51 @@ namespace UnitTest.SimpleInMem
                 Assert.False(listener.IsRegistered($"{serviceMethod.MethodName}"));
             }
             Assert.False(listener.IsRegistered("Divide"));
+        }
+
+        [Test]
+        public async Task ConnectedEvent_HasRightRemoteEndpointDetails()
+        {
+            SimpleInMemConnection listenerConnection = null;
+            var connectedEventDone = new ManualResetEventSlim(initialState: false);
+
+            SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
+            listener.Connected += (sender, args) =>
+            {
+                Assert.AreSame(listener, sender);
+                listenerConnection = (SimpleInMemConnection)args.Connection;
+                connectedEventDone.Set();
+            };
+
+            await listener.StartAsync();
+            var connection = (SimpleInMemConnection)await m_transport.ConnectToAsync(m_address);
+            bool wasSignaled = connectedEventDone.Wait(TimeSpan.FromSeconds(30));
+            Assert.IsTrue(wasSignaled, "Timed out waiting for Connected event to complete");
+
+            Assert.AreEqual(connection.Id, listenerConnection.Id);
+        }
+
+        [Test]
+        public async Task ConnectedEvent_SetsDisconnectError_ConnectToThrows()
+        {
+            var disconnectError = new Error { error_code = 100, message = "Go away!" };
+
+            SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
+            listener.Connected += (sender, args) =>
+            {
+                args.DisconnectError = disconnectError;
+            };
+
+            await listener.StartAsync();
+            try
+            {
+                await m_transport.ConnectToAsync(m_address);
+                Assert.Fail("Expected an exception to be thrown, but one wasn't.");
+            }
+            catch (SimpleInMemProtocolErrorException ex)
+            {
+                Assert.AreSame(disconnectError, ex.Details);
+            }
         }
     }
 }
