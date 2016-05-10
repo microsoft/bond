@@ -10,7 +10,6 @@ namespace UnitTest.Epoxy
     using Bond.Comm;
     using Bond.Comm.Epoxy;
     using NUnit.Framework;
-    using UnitTest.Interfaces;
 
     [TestFixture]
     public class EpoxyListenerTests
@@ -58,7 +57,7 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
-        [Ignore("Connection shutdown not yet implemented")]
+        [Ignore("Need to implement protocol handshake to be able to test this properly.")]
         public async Task ConnectedEvent_SetDisconnectError_DisconnectsConnection()
         {
             EpoxyTransport transport = MakeTransport();
@@ -71,20 +70,40 @@ namespace UnitTest.Epoxy
                 connectedEventDone.Set();
             };
 
+            var disconnectedEventDone = new ManualResetEventSlim(initialState: false);
+            listener.Disconnected += (sender, args) =>
+            {
+                disconnectedEventDone.Set();
+            };
+
+            await listener.StartAsync();
+            // ConnectToAsync should throw.
+            var connection = await transport.ConnectToAsync(listener.ListenEndpoint);
+        }
+
+        [Test]
+        public async Task DisconnectedEvent_ClientDisconnects_GetsFired()
+        {
+            EpoxyTransport transport = MakeTransport();
+            var listener = transport.MakeListener(localhostEndpoint);
+
+            var disconnectedEventDone = new ManualResetEventSlim(initialState: false);
+            EpoxyConnection disconnectedConnection = null;
+            listener.Disconnected += (sender, args) =>
+            {
+                disconnectedConnection = (EpoxyConnection)args.Connection;
+                disconnectedEventDone.Set();
+            };
+
             await listener.StartAsync();
             var connection = await transport.ConnectToAsync(listener.ListenEndpoint);
-            bool wasSignaled = connectedEventDone.Wait(TimeSpan.FromMinutes(30));
-            Assert.IsTrue(wasSignaled, "Timed out waiting for Connected event to complete");
+            await connection.StopAsync();
 
-            IMessage<SomePayload> response =
-                await connection.RequestResponseAsync<SomePayload, SomePayload>(
-                    "some method",
-                    Message.FromPayload(new SomePayload()),
-                    CancellationToken.None);
+            bool wasSignaled = disconnectedEventDone.Wait(TimeSpan.FromSeconds(30));
+            Assert.IsTrue(wasSignaled, "Timed out waiting for Disconnected event to complete");
 
-            Assert.IsTrue(response.IsError);
-            // TODO: correct error code
-            Assert.AreEqual(0, response.Error.Deserialize().error_code);
+            Assert.IsNotNull(disconnectedConnection);
+            Assert.AreEqual(connection.LocalEndPoint, disconnectedConnection.RemoteEndPoint);
         }
 
         private static EpoxyTransport MakeTransport()

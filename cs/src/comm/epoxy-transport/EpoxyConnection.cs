@@ -5,9 +5,11 @@ namespace Bond.Comm.Epoxy
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Net;
     using System.Net.Sockets;
+    using System.Runtime.CompilerServices;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -15,64 +17,120 @@ namespace Bond.Comm.Epoxy
     using Bond.IO.Safe;
     using Bond.Protocols;
 
-    public enum ConnectionType
-    {
-        Client,
-        Server
-    }
-
     public class EpoxyConnection : Connection, IRequestResponseConnection, IEventConnection
     {
-        private readonly EpoxyTransport m_parentTransport;
-        private readonly Socket m_socket;
-        private readonly Stream m_networkStream;
+        private enum ConnectionType
+        {
+            Client,
+            Server
+        }
 
-        ServiceHost m_serviceHost;
+        [Flags]
+        private enum State
+        {
+            None = 0,
+            Created = 0x01,
+            Connected = 0x02,
+            SendProtocolError = 0x04,
+            Disconnecting = 0x08,
+            Disconnected = 0x10,
+            All = Created | Connected | SendProtocolError | Disconnecting | Disconnected,
+        }
 
-        object m_requestsLock;
-        Dictionary<uint, TaskCompletionSource<IMessage>> m_outstandingRequests;
+        readonly ConnectionType m_connectionType;
+
+        readonly EpoxyTransport m_parentTransport;
+        readonly EpoxyListener m_parentListener;
+        readonly ServiceHost m_serviceHost;
+
+        readonly EpoxySocket netSocket;
+
+        readonly object m_requestsLock;
+        readonly Dictionary<uint, TaskCompletionSource<IMessage>> m_outstandingRequests;
+
+        State m_state;
+        readonly TaskCompletionSource<bool> m_startTask;
+        readonly TaskCompletionSource<bool> m_stopTask;
+        readonly CancellationTokenSource m_shutdownTokenSource;
 
         long m_requestId;
 
-        internal EpoxyConnection(
-            EpoxyTransport parentTransport,
-            Socket socket,
-            ConnectionType connectionType)
-            : this (
-                  parentTransport,
-                  socket,
-                  new ServiceHost(parentTransport),
-                  connectionType)
-        {
-        }
+        ProtocolErrorCode m_protocolError;
+        Error m_errorDetails;
 
-        internal EpoxyConnection(
+        private EpoxyConnection(
+            ConnectionType connectionType,
             EpoxyTransport parentTransport,
-            Socket socket,
+            EpoxyListener parentListener,
             ServiceHost serviceHost,
-            ConnectionType connectionType)
+            Socket socket)
         {
-            m_parentTransport = parentTransport;
-            m_socket = socket;
-            m_networkStream = new NetworkStream(socket, ownsSocket: false);
+            Debug.Assert(parentTransport != null);
+            Debug.Assert(connectionType != ConnectionType.Server || parentListener != null, "Server connections must have a listener");
+            Debug.Assert(serviceHost != null);
+            Debug.Assert(socket != null);
 
+            m_connectionType = connectionType;
+
+            m_parentTransport = parentTransport;
+            m_parentListener = parentListener;
             m_serviceHost = serviceHost;
+
+            netSocket = new EpoxySocket(socket);
+
+            // cache these so we can use them after the socket has been shutdown
+            LocalEndPoint = (IPEndPoint) socket.LocalEndPoint;
+            RemoteEndPoint = (IPEndPoint) socket.RemoteEndPoint;
+
             m_requestsLock = new object();
             m_outstandingRequests = new Dictionary<uint, TaskCompletionSource<IMessage>>();
+
+            m_state = State.Created;
+            m_startTask = new TaskCompletionSource<bool>();
+            m_stopTask = new TaskCompletionSource<bool>();
+            m_shutdownTokenSource = new CancellationTokenSource();
 
             // start at -1 or 0 so the first request ID is 1 or 2.
             m_requestId = connectionType == ConnectionType.Client ? -1 : 0;
         }
 
+        internal static EpoxyConnection MakeClientConnection(
+            EpoxyTransport parentTransport,
+            Socket clientSocket)
+        {
+            const EpoxyListener parentListener = null;
+
+            return new EpoxyConnection(
+                ConnectionType.Client,
+                parentTransport,
+                parentListener,
+                new ServiceHost(parentTransport),
+                clientSocket);
+        }
+
+        internal static EpoxyConnection MakeServerConnection(
+            EpoxyTransport parentTransport,
+            EpoxyListener parentListener,
+            ServiceHost serviceHost,
+            Socket socket)
+        {
+            return new EpoxyConnection(
+                ConnectionType.Server,
+                parentTransport,
+                parentListener,
+                serviceHost,
+                socket);
+        }
+
         /// <summary>
         /// Get this connection's local endpoint.
         /// </summary>
-        public IPEndPoint LocalEndPoint => (IPEndPoint) m_socket.LocalEndPoint;
+        public IPEndPoint LocalEndPoint { get; private set; }
 
         /// <summary>
         /// Get this connection's remote endpoint.
         /// </summary>
-        public IPEndPoint RemoteEndPoint => (IPEndPoint) m_socket.RemoteEndPoint;
+        public IPEndPoint RemoteEndPoint { get; private set; }
 
         public override string ToString()
         {
@@ -141,7 +199,7 @@ namespace Bond.Comm.Epoxy
         }
 
         // TODO: make async for real
-        internal async Task<IMessage> SendRequestAsync<TPayload>(string methodName, IMessage<TPayload> request)
+        private async Task<IMessage> SendRequestAsync<TPayload>(string methodName, IMessage<TPayload> request)
         {
             uint requestId = AllocateNextRequestId();
             var frame = MessageToFrame(requestId, methodName, PayloadType.Request, request);
@@ -158,7 +216,7 @@ namespace Bond.Comm.Epoxy
             return await responseCompletionSource.Task;
         }
 
-        internal async Task SendReplyAsync(uint requestId, IMessage response)
+        private async Task SendReplyAsync(uint requestId, IMessage response)
         {
             var frame = MessageToFrame(requestId, null, PayloadType.Response, response);
             Log.Debug("{0}.{1}: Sending reply for request ID {2}.", this, nameof(SendReplyAsync), requestId);
@@ -167,14 +225,28 @@ namespace Bond.Comm.Epoxy
             Log.Debug("{0}.{1}: Sent reply for request ID {2}.", this, nameof(SendReplyAsync), requestId);
         }
 
-        internal async Task SendProtocolErrorAsync(ProtocolErrorCode errorCode, Error details = null)
+        private async Task SendFrameAsync(Frame frame, TaskCompletionSource<IMessage> responseCompletionSource = null)
         {
-            var frame = MakeProtocolErrorFrame(errorCode, details);
-            Log.Debug("{0}.{1}: Sending protocol error with code {2} and details {3}.",
-                this, nameof(SendProtocolErrorAsync), errorCode, details == null ? "<null>" : details.error_code + details.message);
+            try
+            {
+                Stream networkStream = netSocket.NetworkStream;
+                using (var binWriter = new BinaryWriter(networkStream, encoding: Encoding.UTF8, leaveOpen: true))
+                {
+                    lock (networkStream)
+                    {
+                        frame.Write(binWriter);
+                        binWriter.Flush();
+                    }
+                }
 
-            await SendFrameAsync(frame);
-            Log.Debug("{0}.{1}: Sent protocol error with code {2}.", this, nameof(SendProtocolErrorAsync), errorCode);
+                await networkStream.FlushAsync();
+            }
+            catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException || ex is SocketException)
+            {
+                Log.Error(ex, "{0}.{1}: While writing a Frame to the network: {2}", this, nameof(SendFrameAsync),
+                    ex.Message);
+                responseCompletionSource?.TrySetException(ex);
+            }
         }
 
         internal async Task SendEventAsync(string methodName, IMessage message)
@@ -187,32 +259,20 @@ namespace Bond.Comm.Epoxy
             Log.Debug("{0}.{1}: Sent event {2}/{3}.", this, nameof(SendEventAsync), requestId, methodName);
         }
 
-        internal async Task SendFrameAsync(Frame frame, TaskCompletionSource<IMessage> responseCompletionSource = null)
+        internal Task StartAsync()
         {
-            try
-            {
-                using (var binWriter = new BinaryWriter(m_networkStream, encoding: Encoding.UTF8, leaveOpen: true))
-                {
-                    lock (m_networkStream)
-                    {
-                        frame.Write(binWriter);
-                        binWriter.Flush();
-                    }
-                }
-
-                await m_networkStream.FlushAsync();
-            }
-            catch (IOException ex)
-            {
-                Log.Error(ex, "{0}.{1}: While writing a Frame to the network: {2}", this, nameof(SendFrameAsync),
-                    ex.Message);
-                responseCompletionSource?.TrySetException(ex);
-            }
+            EnsureCorrectState(State.Created);
+            Task.Run((Func<Task>)ConnectionLoop);
+            return m_startTask.Task;
         }
 
-        internal void Start()
+        private void EnsureCorrectState(State allowedStates, [CallerMemberName] string methodName = "<unknown>")
         {
-            Task.Run(() => ProcessFramesAsync(m_networkStream));
+            if ((m_state & allowedStates) == 0)
+            {
+                var message = $"Connection ({this}) is not in the correct state for the requested operation ({methodName}). Current state: {m_state} Allowed states: {allowedStates}";
+                throw new InvalidOperationException(message);
+            }
         }
 
         private UInt32 AllocateNextRequestId()
@@ -226,18 +286,148 @@ namespace Bond.Comm.Epoxy
             return unchecked((UInt32)requestIdLong);
         }
 
-        private async Task ProcessFramesAsync(Stream stream)
+        private async Task ConnectionLoop()
         {
-            // TODO: shutdown
             while (true)
             {
-                var frame = await Frame.ReadAsync(stream);
+                State nextState;
+
+                try
+                {
+                    switch (m_state)
+                    {
+                        case State.Created:
+                            nextState = DoCreated();
+                            break;
+
+                        case State.Connected:
+                            // signal after state change to prevent races with
+                            // EnsureCorrectState
+                            m_startTask.SetResult(true);
+                            nextState = await DoConnectedAsync();
+                            break;
+
+                        case State.SendProtocolError:
+                            nextState = await DoSendProtocolErrorAsync();
+                            break;
+
+                        case State.Disconnecting:
+                            nextState = DoDisconnect();
+                            break;
+
+                        case State.Disconnected:
+                            // signal after state change to prevent races with
+                            // EnsureCorrectState
+                            m_startTask.TrySetResult(true);
+                            m_stopTask.SetResult(true);
+                            return;
+
+                        default:
+                            Log.Error("Unknown connection state: {0}", m_state);
+                            m_protocolError = ProtocolErrorCode.INTERNAL_ERROR;
+                            nextState = State.SendProtocolError;
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "{0}.{1} Unhandled exception. CurrentState: {2}", this, nameof(ConnectionLoop), m_state);
+
+                    if (m_state != State.Disconnecting && m_state != State.Disconnected)
+                    {
+                        // we're in a state where we can attempt to disconnect
+                        nextState = State.Disconnecting;
+                    }
+                    else
+                    {
+                        // some part of disconnecting threw. Just give up and be done.
+                        m_startTask.TrySetResult(true);
+                        m_stopTask.TrySetResult(true);
+                        return;
+                    }
+                }
+
+                m_state = nextState;
+            }
+        }
+
+        private State DoCreated()
+        {
+            State result;
+
+            if (m_connectionType == ConnectionType.Server)
+            {
+                var args = new ConnectedEventArgs(this);
+                Error disconnectError = m_parentListener.InvokeOnConnected(args);
+
+                if (disconnectError == null)
+                {
+                    result = State.Connected;
+                }
+                else
+                {
+                    Log.Information("Rejecting connection {0} because {1}:{2}",
+                        this, disconnectError.error_code, disconnectError.message);
+
+                    m_protocolError = ProtocolErrorCode.CONNECTION_REJECTED;
+                    m_errorDetails = disconnectError;
+                    result = State.SendProtocolError;
+                }
+            }
+            else
+            {
+                result = State.Connected;
+            }
+
+            return result;
+        }
+
+        private async Task<State> DoConnectedAsync()
+        {
+            while (!m_shutdownTokenSource.IsCancellationRequested)
+            {
+                Frame frame;
+
+                try
+                {
+                    Stream networkStream = netSocket.NetworkStream;
+                    frame = await Frame.ReadAsync(networkStream, m_shutdownTokenSource.Token);
+                    if (frame == null)
+                    {
+                        Log.Information("{0}.{1} EOS encountered, so disconnecting.", this,
+                            nameof(DoConnectedAsync));
+                        return State.Disconnected;
+                    }
+                }
+                catch (EpoxyProtocolErrorException pex)
+                {
+                    Log.Error(pex, "{0}.{1} Protocol error encountered.", this,
+                        nameof(DoConnectedAsync));
+                    m_protocolError = ProtocolErrorCode.PROTOCOL_VIOLATED;
+                    return State.SendProtocolError;
+                }
+                catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException || ex is SocketException)
+                {
+                    Log.Error(ex, "{0}.{1} IO error encountered.", this, nameof(DoConnectedAsync));
+                    return State.Disconnecting;
+                }
+
                 var result = EpoxyProtocol.Classify(frame);
                 switch (result.Disposition)
                 {
                     case EpoxyProtocol.FrameDisposition.DeliverRequestToService:
-                        DispatchRequest(result.Headers, result.Payload);
-                        break;
+                    {
+                        State? nextState = DispatchRequest(result.Headers, result.Payload);
+                        if (nextState.HasValue)
+                        {
+                            return nextState.Value;
+                        }
+                        else
+                        {
+                            // continue the read loop
+                            break;
+                        }
+                    }
 
                     case EpoxyProtocol.FrameDisposition.DeliverResponseToProxy:
                         DispatchResponse(result.Headers, result.Payload);
@@ -248,29 +438,61 @@ namespace Bond.Comm.Epoxy
                         break;
 
                     case EpoxyProtocol.FrameDisposition.SendProtocolError:
-                        await SendProtocolErrorAsync(result.ErrorCode ?? ProtocolErrorCode.INTERNAL_ERROR);
-                        break;
+                        m_protocolError = result.ErrorCode ?? ProtocolErrorCode.INTERNAL_ERROR;
+                        return State.SendProtocolError;
+
+                    case EpoxyProtocol.FrameDisposition.HangUp:
+                        return State.Disconnecting;
 
                     default:
-                        Log.Error("{0}.{1}: Unsupported FrameDisposition {2}",
-                            this, nameof(ProcessFramesAsync), result.Disposition);
-                        await SendProtocolErrorAsync(ProtocolErrorCode.INTERNAL_ERROR);
-                        break;
+                        Log.Error("{0}.{1}: Unsupported FrameDisposition {2}", this, nameof(DoConnectedAsync), result.Disposition);
+                        m_protocolError = ProtocolErrorCode.INTERNAL_ERROR;
+                        return State.SendProtocolError;
                 }
             }
+
+            // shutdown requested between reading frames
+            return State.Disconnecting;
         }
 
-        private void DispatchRequest(EpoxyHeaders headers, ArraySegment<byte> payload)
+        private async Task<State> DoSendProtocolErrorAsync()
+        {
+            ProtocolErrorCode errorCode = m_protocolError;
+            Error details = m_errorDetails;
+
+            var frame = MakeProtocolErrorFrame(errorCode, details);
+            Log.Debug("{0}.{1}: Sending protocol error with code {2} and details {3}.",
+                this, nameof(DoSendProtocolErrorAsync), errorCode, details == null ? "<null>" : details.error_code + details.message);
+
+            await SendFrameAsync(frame);
+            Log.Debug("{0}.{1}: Sent protocol error with code {2}.", this, nameof(DoSendProtocolErrorAsync), errorCode);
+
+            return State.Disconnecting;
+        }
+
+        private State DoDisconnect()
+        {
+            Log.Debug("{0}.{1}: Shutting down.", this, nameof(DoDisconnect));
+
+            netSocket.Shutdown();
+
+            if (m_connectionType == ConnectionType.Server)
+            {
+                var args = new DisconnectedEventArgs(this, m_errorDetails);
+                m_parentListener.InvokeOnDisconnected(args);
+            }
+
+            return State.Disconnected;
+        }
+
+        private State? DispatchRequest(EpoxyHeaders headers, ArraySegment<byte> payload)
         {
             if (headers.error_code != (int)ErrorCode.OK)
             {
                 Log.Error("{0}.{1}: Received request ID {2} with a non-zero error code.",
                     this, nameof(DispatchRequest), headers.request_id);
-                Task.Run(async () =>
-                {
-                    await SendProtocolErrorAsync(ProtocolErrorCode.PROTOCOL_VIOLATED);
-                });
-                return;
+                m_protocolError = ProtocolErrorCode.PROTOCOL_VIOLATED;
+                return State.SendProtocolError;
             }
 
             IMessage request = Message.FromPayload(Unmarshal.From(payload));
@@ -280,6 +502,9 @@ namespace Bond.Comm.Epoxy
                 IMessage result = await m_serviceHost.DispatchRequest(headers.method_name, new EpoxyReceiveContext(this), request);
                 await SendReplyAsync(headers.request_id, result);
             });
+
+            // no state change needed
+            return null;
         }
 
         private void DispatchResponse(EpoxyHeaders headers, ArraySegment<byte> payload)
@@ -330,14 +555,16 @@ namespace Bond.Comm.Epoxy
 
         public override Task StopAsync()
         {
-            Log.Debug("{0}.{1}: Shutting down.", this, nameof(StopAsync));
-            m_networkStream.Close();
-            m_socket.Close();
-            return TaskExt.CompletedTask;
+            EnsureCorrectState(State.Connected | State.SendProtocolError | State.Disconnecting | State.Disconnected);
+            m_shutdownTokenSource.Cancel();
+            netSocket.Shutdown();
+            return m_stopTask.Task;
         }
 
         public async Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, IMessage<TRequest> message, CancellationToken ct)
         {
+            EnsureCorrectState(State.Connected);
+
             // TODO: cancellation
             IMessage response = await SendRequestAsync(methodName, message);
             return response.Convert<TResponse>();
@@ -345,7 +572,72 @@ namespace Bond.Comm.Epoxy
 
         public Task FireEventAsync<TPayload>(string methodName, IMessage<TPayload> message)
         {
+            EnsureCorrectState(State.Connected);
             return SendEventAsync(methodName, message);
+        }
+
+        /// <summary>
+        /// Epoxy-private wrapper around <see cref="Socket"/>. Provides idempotent shutdown.
+        /// </summary>
+        private class EpoxySocket
+        {
+            Socket socket;
+            NetworkStream stream;
+            int isShutdown;
+
+            public EpoxySocket(Socket sock)
+            {
+                socket = sock;
+                stream = new NetworkStream(sock, ownsSocket: false);
+                isShutdown = 0;
+            }
+
+            public Stream NetworkStream
+            {
+                get
+                {
+                    if (isShutdown != 0)
+                    {
+                        throw new ObjectDisposedException(nameof(EpoxySocket));
+                    }
+
+                    return stream;
+                }
+            }
+
+            public void Shutdown()
+            {
+                int oldIsShutdown = Interlocked.CompareExchange(ref isShutdown, 1, 0);
+                if (oldIsShutdown == 0)
+                {
+                    // we are responsible for shutdown
+                    try
+                    {
+                        stream.Dispose();
+
+                        try
+                        {
+                            socket.Shutdown(SocketShutdown.Both);
+                        }
+                        catch (ObjectDisposedException)
+                        {
+                            // ignore, as we're shutting down anyway
+                        }
+
+                        // We cannot call socket.Disconnect, as that will block
+                        // for longer than we want. So, we just forcible close
+                        // the socket with Dispose
+                        socket.Dispose();
+                    }
+                    catch (Exception ex) when (ex is IOException || ex is SocketException)
+                    {
+                        Log.Error(ex, "Exception during connection shutdown");
+                    }
+
+                    stream = null;
+                    socket = null;
+                }
+            }
         }
     }
 }

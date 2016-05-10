@@ -3,6 +3,10 @@
 
 namespace UnitTest.Epoxy
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Bond;
     using Bond.Comm;
     using Bond.Comm.Epoxy;
@@ -51,6 +55,35 @@ namespace UnitTest.Epoxy
             Assert.NotNull(error.details);
             var details = error.details.Deserialize();
             Assert.IsTrue(AnyDetails.IsEqual<Error, Error>(details));
+        }
+
+        [Test]
+        public async Task Connection_StartStop()
+        {
+            var testClientServer = await EpoxyTransportTests.SetupTestClientServer<EpoxyTransportTests.TestService>();
+            EpoxyConnection connection = testClientServer.ClientConnection;
+
+            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
+            var completedTask = await Task.WhenAny(connection.StopAsync(), timeoutTask);
+
+            Assert.AreNotSame(timeoutTask, completedTask, "Timed out waiting for connection to be shutdown.");
+        }
+
+        [Test]
+        public async Task Connection_CanBeStoppedMultipleTimes()
+        {
+            var testClientServer = await EpoxyTransportTests.SetupTestClientServer<EpoxyTransportTests.TestService>();
+            EpoxyConnection connection = testClientServer.ClientConnection;
+
+            var stopTasks = new[] {connection.StopAsync(), connection.StopAsync()};
+            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
+            var allTasks = new List<Task>(stopTasks) { timeoutTask };
+
+            var completedTask = await Task.WhenAny(allTasks);
+
+            Assert.AreNotSame(timeoutTask, completedTask, "Timed out waiting for connection to be shutdown.");
+
+            await connection.StopAsync();
         }
     }
 }

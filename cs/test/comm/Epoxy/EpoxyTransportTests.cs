@@ -171,7 +171,7 @@ namespace UnitTest.Epoxy
             Assert.That(exception.Message, Is.StringContaining("registered as invalid type"));
         }
 
-        private class TestClientServer<TService>
+        public class TestClientServer<TService>
         {
             public TService Service;
             public EpoxyTransport Transport;
@@ -179,7 +179,7 @@ namespace UnitTest.Epoxy
             public EpoxyConnection ClientConnection;
         }
 
-        private static async Task<TestClientServer<TService>> SetupTestClientServer<TService>() where TService : class, IService, new()
+        public static async Task<TestClientServer<TService>> SetupTestClientServer<TService>() where TService : class, IService, new()
         {
             var testService = new TService();
 
@@ -202,7 +202,7 @@ namespace UnitTest.Epoxy
             };
         }
 
-        private class TestService : IService
+        public class TestService : IService
         {
             public const string ExpectedExceptionMessage = "This method is expected to throw.";
 

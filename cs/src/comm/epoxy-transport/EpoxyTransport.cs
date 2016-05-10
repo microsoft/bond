@@ -77,12 +77,11 @@ namespace Bond.Comm.Epoxy
             Log.Information("{0}.{1}: Connecting to {2}.", nameof(EpoxyTransport), nameof(ConnectToAsync), endpoint);
 
             Socket socket = MakeClientSocket();
-
             await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, endpoint, state: null);
 
             // TODO: keep these in some master collection for shutdown
-            var connection = new EpoxyConnection(this, socket, ConnectionType.Client);
-            connection.Start();
+            var connection = EpoxyConnection.MakeClientConnection(this, socket);
+            await connection.StartAsync();
             return connection;
         }
 

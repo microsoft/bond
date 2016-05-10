@@ -77,6 +77,16 @@ namespace Bond.Comm.Epoxy
             return m_acceptTask;
         }
 
+        internal Error InvokeOnConnected(ConnectedEventArgs args)
+        {
+            return OnConnected(args);
+        }
+
+        internal void InvokeOnDisconnected(DisconnectedEventArgs args)
+        {
+            OnDisconnected(args);
+        }
+
         private async Task AcceptAsync(CancellationToken t)
         {
             Log.Information("{0}.{1}: Accepting connections...", this, nameof(AcceptAsync));
@@ -87,27 +97,19 @@ namespace Bond.Comm.Epoxy
                 try
                 {
                     socket = await m_listener.AcceptSocketAsync();
-                    var connection = new EpoxyConnection(m_parentTransport, socket, m_serviceHost, ConnectionType.Server);
+                    var connection = EpoxyConnection.MakeServerConnection(
+                        m_parentTransport,
+                        this,
+                        m_serviceHost,
+                        socket);
                     socket = null; // connection now owns the socket and will close it
-
-                    var connectedEventArgs = new ConnectedEventArgs(connection);
-                    Error disconnectError = OnConnected(connectedEventArgs);
-
-                    if (disconnectError != null)
-                    {
-                        Log.Information("Rejecting connection {0} because {1}:{2}", connection,
-                            disconnectError.error_code, disconnectError.message);
-                        await connection.SendProtocolErrorAsync(ProtocolErrorCode.CONNECTION_REJECTED, disconnectError);
-                        await connection.StopAsync();
-                        continue;
-                    }
 
                     lock (m_connectionsLock)
                     {
                         m_connections.Add(connection);
                     }
 
-                    connection.Start();
+                    await connection.StartAsync();
                     Log.Debug("{0}.{1}: Accepted connection from {2}.", 
                         this, nameof(AcceptAsync), connection.RemoteEndPoint);
                 }

@@ -8,9 +8,9 @@ namespace UnitTest.Epoxy
     using System.IO;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm.Epoxy;
-    using Bond.Comm;
     using NUnit.Framework;
 
     [TestFixture]
@@ -169,14 +169,14 @@ namespace UnitTest.Epoxy
         public void Frame_ReadAsync_ZeroFramelets_Throws()
         {
             var zeroFrameletsStream = new FrameBuilder().Count(0).TakeStream();
-            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(zeroFrameletsStream));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(zeroFrameletsStream, CancellationToken.None));
         }
 
         [Test]
         public void Frame_ReadAsync_UnknownFramelet_Throws()
         {
             var unknownFrameletStream = new FrameBuilder().Count(1).Type((FrameletType) UnknownFramelet).TakeStream();
-            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(unknownFrameletStream));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(unknownFrameletStream, CancellationToken.None));
         }
 
         [Test]
@@ -187,35 +187,47 @@ namespace UnitTest.Epoxy
                     .Type(FrameletType.PayloadData)
                     .Size((UInt32) Int32.MaxValue + 1)
                     .TakeStream();
-            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(frameletTooLargeStream));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(frameletTooLargeStream, CancellationToken.None));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInCount_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).TakeTooShortStream();
-            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<EndOfStreamException>(async () => await Frame.ReadAsync(tooShortStream, CancellationToken.None));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInType_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).TakeTooShortStream();
-            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<EndOfStreamException>(async () => await Frame.ReadAsync(tooShortStream, CancellationToken.None));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInSize_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).TakeTooShortStream();
-            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<EndOfStreamException>(async () => await Frame.ReadAsync(tooShortStream, CancellationToken.None));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInContent_Throws()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).Content(AnyContents).TakeTooShortStream();
-            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(tooShortStream));
+            Assert.Throws<EndOfStreamException>(async () => await Frame.ReadAsync(tooShortStream, CancellationToken.None));
+        }
+
+        [Test]
+        public async Task Frame_ReadAsync_CancellationRequested_ReturnsNull()
+        {
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+            var goodStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).Content(AnyContents).TakeStream();
+
+            Frame frame = await Frame.ReadAsync(goodStream, cts.Token);
+
+            Assert.IsNull(frame);
         }
 
         [Test]
@@ -241,7 +253,7 @@ namespace UnitTest.Epoxy
             }
 
             memStream.Seek(0, SeekOrigin.Begin);
-            var resultFrame = await Frame.ReadAsync(memStream);
+            var resultFrame = await Frame.ReadAsync(memStream, CancellationToken.None);
 
             CollectionAssert.AreEqual(expectedFramelets, resultFrame.Framelets, DeepFrameletComparer.Instance);
         }

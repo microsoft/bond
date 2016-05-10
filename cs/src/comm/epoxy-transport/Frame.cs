@@ -6,6 +6,8 @@ namespace Bond.Comm.Epoxy
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Net.Sockets;
+    using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm.Service;
 
@@ -125,10 +127,11 @@ namespace Bond.Comm.Epoxy
             catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException)
             {
                 Log.Error(ex, "{0}.{1}: Only wrote {2} of {3} framelets!", nameof(Frame), nameof(Write), frameletsWritten, numFramelets);
+                throw;
             }
         }
 
-        public static Task<Frame> ReadAsync(Stream stream)
+        public static Task<Frame> ReadAsync(Stream stream, CancellationToken ct)
         {
             var reader = new BinaryReader(stream, encoding: System.Text.Encoding.UTF8, leaveOpen: true);
 
@@ -144,6 +147,11 @@ namespace Bond.Comm.Epoxy
 
                 while (frameletCount > 0)
                 {
+                    if (ct.IsCancellationRequested)
+                    {
+                        return Task.FromResult<Frame>(null);
+                    }
+
                     var frameletType = reader.ReadUInt16();
                     if (!Framelet.IsKnownType(frameletType))
                     {
@@ -164,10 +172,17 @@ namespace Bond.Comm.Epoxy
                     int bytesToRead = (int) frameletLength;
                     while (bytesToRead > 0)
                     {
-                        int dataRead = reader.Read(frameletContents, (int) frameletLength - bytesToRead, bytesToRead);
+                        if (ct.IsCancellationRequested)
+                        {
+                            return Task.FromResult<Frame>(null);
+                        }
+
+                        int dataRead = reader.Read(frameletContents,
+                            (int) frameletLength - bytesToRead, bytesToRead);
                         if (dataRead == 0)
                         {
-                            return TaskExt.FromException<Frame>(new EpoxyProtocolErrorException("EOS while reading contents"));
+                            return
+                                TaskExt.FromException<Frame>(new EndOfStreamException("End of stream encountered while reading framelet contents"));
                         }
 
                         bytesToRead -= dataRead;
@@ -182,7 +197,11 @@ namespace Bond.Comm.Epoxy
             }
             catch (IOException ioex)
             {
-                return TaskExt.FromException<Frame>(new EpoxyProtocolErrorException("IO error", ioex));
+                return TaskExt.FromException<Frame>(ioex);
+            }
+            catch (SocketException ex)
+            {
+                return TaskExt.FromException<Frame>(ex);
             }
         }
     }

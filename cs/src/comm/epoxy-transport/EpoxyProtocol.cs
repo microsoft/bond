@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System;
-using System.IO;
-using Bond.IO.Safe;
-using Bond.Protocols;
-
 namespace Bond.Comm.Epoxy
 {
+    using System;
+    using Bond.IO.Safe;
+    using Bond.Protocols;
+
     internal static class EpoxyProtocol
     {
         /// <summary>
