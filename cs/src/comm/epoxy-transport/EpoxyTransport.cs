@@ -29,12 +29,9 @@ namespace Bond.Comm.Epoxy
         {
             if (m_exceptionHandler == null)
             {
-                if (m_exceptionHandler == null)
-                {
-                    throw new InvalidOperationException(
-                        "Cannot create transport without an unhandled exception handler. "
-                        + nameof(SetUnhandledExceptionHandler) + " must be called before " + nameof(Construct));
-                }
+                throw new InvalidOperationException(
+                    "Cannot create transport without an unhandled exception handler. "
+                    + nameof(SetUnhandledExceptionHandler) + " must be called before " + nameof(Construct));
             }
 
             return new EpoxyTransport(m_exceptionHandler);
