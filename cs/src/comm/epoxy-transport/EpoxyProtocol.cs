@@ -145,6 +145,11 @@ namespace Bond.Comm.Epoxy
         private const int PayloadDataIndex = 1;
         private const int ValidFrameSize = 2;
 
+        private static readonly Deserializer<FastBinaryReader<InputBuffer>> headersDeserializer =
+            new Deserializer<FastBinaryReader<InputBuffer>>(typeof(EpoxyHeaders));
+        private static readonly Deserializer<FastBinaryReader<InputBuffer>> errorDeserializer =
+            new Deserializer<FastBinaryReader<InputBuffer>>(typeof(ProtocolError));
+
         internal static ClassifyResult Classify(Frame frame)
         {
             if (frame == null)
@@ -322,20 +327,21 @@ namespace Bond.Comm.Epoxy
 
             var inputBuffer = new InputBuffer(framelet.Contents);
             var fastBinaryReader = new FastBinaryReader<InputBuffer>(inputBuffer, version: 1);
-            try
+            switch (headersDeserializer.TryDeserialize(fastBinaryReader, out headers))
             {
-                headers = Deserialize<EpoxyHeaders>.From(fastBinaryReader);
-            }
-            catch (Exception ex) when (ex is InvalidDataException || ex is IOException)
-            {
-                Log.Error(ex, "{0}.{1}: Failed to parse EpoxyHeaders: {2}.",
-                    nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), ex.Message);
-                errorCode = ProtocolErrorCode.MALFORMED_DATA;
-                return ClassifyState.MalformedFrame;
+                case Deserialize.Result.Success:
+                    break;
+
+                default:
+                    Log.Error("{0}.{1}: Didn't get a valid {2}.",
+                            nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), nameof(EpoxyHeaders));
+                    errorCode = ProtocolErrorCode.MALFORMED_DATA;
+                    return ClassifyState.MalformedFrame;
             }
 
-            Log.Debug("{0}.{1}: Extracted EpoxyHeaders with request ID {2} and payload type {3}.",
-                nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), headers.request_id, headers.payload_type);
+            Log.Debug("{0}.{1}: Deserialized {2} with request ID {3} and payload type {4}.",
+                nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), nameof(EpoxyHeaders),
+                headers.request_id, headers.payload_type);
             return ClassifyState.ExpectPayload;
         }
 
@@ -454,19 +460,20 @@ namespace Bond.Comm.Epoxy
 
             var inputBuffer = new InputBuffer(framelet.Contents);
             var fastBinaryReader = new FastBinaryReader<InputBuffer>(inputBuffer, version: 1);
-            try
+            switch (errorDeserializer.TryDeserialize(fastBinaryReader, out error))
             {
-                error = Deserialize<ProtocolError>.From(fastBinaryReader);
-            }
-            catch (Exception ex) when (ex is InvalidDataException || ex is IOException)
-            {
-                Log.Error(ex, "{0}.{1}: Failed to parse ProtocolError: {2}.",
-                    nameof(EpoxyProtocol), nameof(TransitionExpectProtocolError), ex.Message);
-                return ClassifyState.ErrorInErrorFrame;
+                case Deserialize.Result.Success:
+                    break;
+
+                default:
+                    Log.Error("{0}.{1}: Didn't get a valid {2}.",
+                            nameof(EpoxyProtocol), nameof(TransitionExpectProtocolError), nameof(ProtocolError));
+                    return ClassifyState.ErrorInErrorFrame;
             }
 
-            Log.Debug("{0}.{1}: Extracted ProtocolError with code {2}.",
-                nameof(EpoxyProtocol), nameof(TransitionExpectProtocolError), error.error_code);
+            Log.Debug("{0}.{1}: Deserialized {2} with code {3}.",
+                nameof(EpoxyProtocol), nameof(TransitionExpectProtocolError), nameof(ProtocolError),
+                error.error_code);
             disposition = FrameDisposition.HangUp;
             return ClassifyState.ClassifiedValidFrame;
         }
