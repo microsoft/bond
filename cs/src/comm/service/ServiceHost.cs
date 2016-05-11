@@ -88,7 +88,7 @@ namespace Bond.Comm.Service
                 foreach (var serviceMethod in service.Methods)
                 {
                     m_dispatchTable.Add(serviceMethod.MethodName, serviceMethod);
-                    methodNames.Add(serviceMethod.MethodName);
+                    methodNames.Add($"[{serviceMethod.MethodName}]");
                 }
             }
 
@@ -111,7 +111,7 @@ namespace Bond.Comm.Service
 
         public async Task<IMessage> DispatchRequest(string methodName, ReceiveContext context, IMessage message)
         {
-            Log.Information("{0}.{1}: Got request {2} from {3}.",
+            Log.Information("{0}.{1}: Got request [{2}] from {3}.",
                 nameof(ServiceHost), nameof(DispatchRequest), methodName, context.Connection);
             ServiceMethodInfo methodInfo;
 
@@ -119,9 +119,9 @@ namespace Bond.Comm.Service
             {
                 if (!m_dispatchTable.TryGetValue(methodName, out methodInfo))
                 {
-                    var errorMessage = LogUtil.ErrorAndReturnFormatted("{0}.{1}: Got request for unknown method {2}.",
-                        nameof(ServiceHost), nameof(DispatchRequest), methodName);
+                    var errorMessage = "Got request for unknown method [" + methodName + "]";
 
+                    Log.Error("{0}.{1}: {2}", nameof(ServiceHost), nameof(DispatchRequest), errorMessage);
                     var error = new Error
                     {
                         message = errorMessage,
@@ -133,9 +133,11 @@ namespace Bond.Comm.Service
 
             if (methodInfo.CallbackType != ServiceCallbackType.RequestResponse)
             {
-                var errorMessage = LogUtil.ErrorAndReturnFormatted("{0}.{1}: Method {2} invoked as if it were {3}, but it was registered as {4}.",
-                    nameof(ServiceHost), nameof(DispatchRequest), methodName, ServiceCallbackType.RequestResponse, methodInfo.CallbackType);
+                var errorMessage = "Method [" + methodName + "] invoked as if it were " +
+                                   ServiceCallbackType.RequestResponse + ", but it was registered as " +
+                                   methodInfo.CallbackType + ".";
 
+                Log.Error("{0}.{1}: {2}", nameof(ServiceHost), nameof(DispatchRequest), errorMessage);
                 var error = new Error
                 {
                     message = errorMessage,
@@ -177,7 +179,7 @@ namespace Bond.Comm.Service
 
         public async Task DispatchEvent(string methodName, ReceiveContext context, IMessage message)
         {
-            Log.Information("{0}.{1}: Got event {2} from {3}.",
+            Log.Information("{0}.{1}: Got event [{2}] from {3}.",
                 nameof(ServiceHost), nameof(DispatchEvent), methodName, context.Connection);
             ServiceMethodInfo methodInfo;
 
@@ -185,16 +187,17 @@ namespace Bond.Comm.Service
             {
                 if (!m_dispatchTable.TryGetValue(methodName, out methodInfo))
                 {
-                    Log.Error("{0}.{1}: Got request for unknown method {2}.",
-                        nameof(ServiceHost), nameof(DispatchRequest), methodName);
+                    Log.Error("{0}.{1}: Got request for unknown method [{2}].",
+                        nameof(ServiceHost), nameof(DispatchEvent), methodName);
                     return;
                 }
             }
 
             if (methodInfo.CallbackType != ServiceCallbackType.Event)
             {
-                Log.Error("{0}.{1}: Method {2} invoked as if it were {3}, but it was registered as {4}.",
-                    nameof(ServiceHost), nameof(DispatchRequest), methodName, ServiceCallbackType.Event, methodInfo.CallbackType);
+                Log.Error("{0}.{1}: Method [{2}] invoked as if it were {3}, but it was registered as {4}.",
+                    nameof(ServiceHost), nameof(DispatchEvent), methodName, ServiceCallbackType.Event,
+                    methodInfo.CallbackType);
                 return;
             }
 
@@ -220,8 +223,8 @@ namespace Bond.Comm.Service
                     Transport.FailFastExceptionHandler(callbackEx);
                 }
 
-               Log.Warning("{0}.{1}: Failed to complete method {2}. With exception: {3}",
-                   nameof(ServiceHost), nameof(DispatchRequest), methodName, callbackEx.ToString());
+                Log.Warning("{0}.{1}: Failed to complete method [{2}]. With exception: {3}",
+                    nameof(ServiceHost), nameof(DispatchRequest), methodName, callbackEx.ToString());
             }
         }
     }

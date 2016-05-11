@@ -121,7 +121,7 @@ namespace UnitTest.SimpleInMem
             Assert.IsTrue(divideResponse.IsError);
             Error error = divideResponse.Error.Deserialize<Error>();
             Assert.AreEqual((int)ErrorCode.MethodNotFound, error.error_code);
-            Assert.That(error.message, Is.StringContaining($"ServiceHost.DispatchRequest: Got request for unknown method {methodName}."));
+            Assert.That(error.message, Is.StringContaining($"Got request for unknown method {methodName}."));
         }
 
         [TearDown]
