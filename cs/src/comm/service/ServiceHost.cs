@@ -119,7 +119,7 @@ namespace Bond.Comm.Service
             {
                 if (!m_dispatchTable.TryGetValue(methodName, out methodInfo))
                 {
-                    var errorMessage = "Got request for unknown method [" + methodName + "]";
+                    var errorMessage = "Got request for unknown method [" + methodName + "].";
 
                     Log.Error("{0}.{1}: {2}", nameof(ServiceHost), nameof(DispatchRequest), errorMessage);
                     var error = new Error
