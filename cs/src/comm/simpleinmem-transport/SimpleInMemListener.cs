@@ -4,6 +4,7 @@
 namespace Bond.Comm.SimpleInMem
 {
     using Bond.Comm.Service;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     public class SimpleInMemListener : Listener
@@ -17,7 +18,7 @@ namespace Bond.Comm.SimpleInMem
         {
             m_address = address;
             m_serviceHost = new ServiceHost(parentTransport);
-            m_connection = new SimpleInMemConnection(m_serviceHost, ConnectionType.Server);
+            m_connection = new SimpleInMemConnection(m_serviceHost, this, ConnectionType.Server);
             m_logname = $"{nameof(SimpleInMemListener)}({m_address})";
         }
 
@@ -63,7 +64,17 @@ namespace Bond.Comm.SimpleInMem
                     innerException: null);
             }
 
-            m_connection.AddRequestResponseQueue(client.Id, client.RequestResponseQueue);
+            m_connection.AddClientConnection(client);
+        }
+
+        internal Error InvokeOnConnected(ConnectedEventArgs args)
+        {
+            return OnConnected(args);
+        }
+
+        internal void InvokeOnDisconnected(DisconnectedEventArgs args)
+        {
+            OnDisconnected(args);
         }
     }
 }

@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Bond.Comm.SimpleInMem
+namespace Bond.Comm.SimpleInMem.Processor
 {
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    internal class RequestResponseQueue
+    internal class InMemFrameQueue
     {
         private Queue<InMemFrame> m_requests;
         private Queue<InMemFrame> m_responses;
@@ -17,15 +17,35 @@ namespace Bond.Comm.SimpleInMem
         private object m_lockres = new object();
         private object m_lockevent = new object();
 
-        internal RequestResponseQueue()
+        internal InMemFrameQueue()
         {
             m_requests = new Queue<InMemFrame>();
             m_responses = new Queue<InMemFrame>();
             m_events = new Queue<InMemFrame>();
         }
 
+        internal void Clear()
+        {
+            lock(m_lockreq)
+            {
+                Clear(m_requests);
+            }
+
+            lock (m_lockres)
+            {
+                Clear(m_responses);
+            }
+
+            lock (m_lockevent)
+            {
+                Clear(m_events);
+            }
+        }
+
         internal void Enqueue(InMemFrame frame)
         {
+            Util.Validate(frame);
+
             switch(frame.m_headers.payload_type)
             {
                 case PayloadType.Request:
@@ -51,7 +71,7 @@ namespace Bond.Comm.SimpleInMem
 
                 default:
                     var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Payload type {2} not supported!",
-                        nameof(RequestResponseQueue), nameof(Enqueue), frame.m_headers.payload_type);
+                        nameof(InMemFrameQueue), nameof(Enqueue), frame.m_headers.payload_type);
                     throw new NotImplementedException(message);
             }
 
@@ -85,7 +105,7 @@ namespace Bond.Comm.SimpleInMem
 
                 default:
                     var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Payload type {2} not supported!",
-                        nameof(RequestResponseQueue), nameof(Dequeue), payloadType);
+                        nameof(InMemFrameQueue), nameof(Dequeue), payloadType);
                     throw new NotImplementedException(message);
             }
 
@@ -111,30 +131,39 @@ namespace Bond.Comm.SimpleInMem
 
                 default:
                     var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Payload type {2} not supported!",
-                        nameof(RequestResponseQueue), nameof(Count), payloadType);
+                        nameof(InMemFrameQueue), nameof(Count), payloadType);
                     throw new NotImplementedException(message);
             }
 
             return count;
         }
+
+        private void Clear(Queue<InMemFrame> queue)
+        {
+            foreach (InMemFrame frame in queue)
+            {
+                frame.m_outstandingRequest.SetCanceled();
+            }
+            queue.Clear();
+        }
     }
 
-    internal class RequestResponseQueueCollection
+    internal class InMemFrameQueueCollection
     {
-        private ConcurrentDictionary<Guid, RequestResponseQueue> m_reqresqueue;
+        private ConcurrentDictionary<Guid, InMemFrameQueue> m_reqresqueue;
 
-        internal RequestResponseQueueCollection()
+        internal InMemFrameQueueCollection()
         {
-            m_reqresqueue = new ConcurrentDictionary<Guid, RequestResponseQueue>();
+            m_reqresqueue = new ConcurrentDictionary<Guid, InMemFrameQueue>();
         }
 
-        internal void AddRequestResponseQueue(Guid id, RequestResponseQueue queue)
+        internal void Add(Guid id, InMemFrameQueue queue)
         {
             if (!m_reqresqueue.TryAdd(id, queue))
             {
                 var message = LogUtil.FatalAndReturnFormatted(
                     "{0}.{1}: Guid collison must never happen for client connection Ids: {2}",
-                    nameof(RequestResponseQueueCollection), nameof(AddRequestResponseQueue), id);
+                    nameof(InMemFrameQueueCollection), nameof(Add), id);
                 throw new InvalidOperationException(message);
             }
         }
@@ -144,11 +173,22 @@ namespace Bond.Comm.SimpleInMem
             return m_reqresqueue.Keys;
         }
 
-        internal RequestResponseQueue GetQueue(Guid id)
+        internal InMemFrameQueue GetQueue(Guid id)
         {
-            RequestResponseQueue queue;
+            InMemFrameQueue queue;
             m_reqresqueue.TryGetValue(id, out queue);
             return queue;
+        }
+
+        internal void ClearAll()
+        {
+            ICollection<Guid> keys = GetKeys();
+
+            foreach (Guid key in keys)
+            {
+                GetQueue(key).Clear();
+            }
+            m_reqresqueue.Clear();
         }
     }
 

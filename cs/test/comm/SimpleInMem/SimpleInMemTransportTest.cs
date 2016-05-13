@@ -26,6 +26,7 @@ namespace UnitTest.SimpleInMem
         [TearDown]
         public void Cleanup()
         {
+            m_transport.StopAsync();
             m_transport = null;
         }
 
@@ -48,11 +49,15 @@ namespace UnitTest.SimpleInMem
             Assert.Throws<ArgumentNullException>(() => new SimpleInMemTransport(null));
         }
 
-
         [Test]
-        public void StopAsync_NotImplemented()
+        public void StopAsync()
         {
-            Assert.Throws<NotImplementedException>(() => m_transport.StopAsync());
+            Listener newListener = m_transport.MakeListener(m_address);
+            Assert.True(newListener == m_transport.GetListener(m_address));
+            m_transport.StopAsync();
+            Assert.False(m_transport.ListenerExists(m_address));
+            m_transport.MakeListener(m_address);
+            Assert.True(m_transport.ListenerExists(m_address));
         }
 
         [Test]

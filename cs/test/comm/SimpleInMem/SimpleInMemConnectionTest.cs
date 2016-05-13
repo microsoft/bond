@@ -3,6 +3,7 @@
 
 namespace UnitTest.SimpleInMem
 {
+    using System;
     using System.Threading.Tasks;
     using Bond.Comm;
     using Bond.Comm.SimpleInMem;
@@ -15,7 +16,7 @@ namespace UnitTest.SimpleInMem
         private SimpleInMemTransport m_transport;
         private CalculatorService m_service;
         private SimpleInMemListener m_listener;
-        private SimpleInMemConnection m_connection;
+        private SimpleInMemConnection[] m_connections;
 
         [SetUp]
         public void Init()
@@ -24,34 +25,68 @@ namespace UnitTest.SimpleInMem
             m_service = new CalculatorService();
         }
 
-        public async Task DefaultSetup()
+        public async Task DefaultSetup(int count)
         {
             m_listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
             m_listener.AddService(m_service);
             await m_listener.StartAsync();
 
-            // Client connection 
-            m_connection = (SimpleInMemConnection)await m_transport.ConnectToAsync(m_address, System.Threading.CancellationToken.None);
+            m_connections = new SimpleInMemConnection[count];
+
+            for (int connectionIndex = 0; connectionIndex < count; connectionIndex++)
+            {
+                m_connections[connectionIndex] = (SimpleInMemConnection)await m_transport.ConnectToAsync(m_address, System.Threading.CancellationToken.None);
+            }
         }
 
         [Test]
-        public async void SimpleInMemValidSetup()
+        public async void ConnectionStateCycle()
         {
-            await DefaultSetup();
-            Assert.AreEqual(m_connection.ConnectionType, ConnectionType.Client);
+            await DefaultSetup(1);
+
+            SimpleInMemConnection localConnection = 
+                (SimpleInMemConnection)await m_transport.ConnectToAsync(m_address, System.Threading.CancellationToken.None);
+            Assert.AreEqual(localConnection.State, CnxState.Connected);
+
+            await localConnection.StopAsync();
+            Assert.AreEqual(localConnection.State, CnxState.Disconnected);
         }
 
         [Test]
-        public async Task SimpleInMemMethodCall()
+        public async void ConnectionStateCycle_CloseAlreadyClosedConnection()
         {
-            await DefaultSetup();
+            await DefaultSetup(1);
+
+            SimpleInMemConnection localConnection =
+                (SimpleInMemConnection)await m_transport.ConnectToAsync(m_address, System.Threading.CancellationToken.None);
+            Assert.AreEqual(localConnection.State, CnxState.Connected);
+
+            // Ensure that closing an already closed connection is no-op
+            for (int index = 0; index < 5; index++)
+            {
+                await localConnection.StopAsync();
+                Assert.AreEqual(localConnection.State, CnxState.Disconnected);
+            }
+        }
+
+        [Test]
+        public async void ValidSetup()
+        {
+            await DefaultSetup(1);
+            Assert.AreEqual(m_connections[0].ConnectionType, ConnectionType.Client);
+        }
+
+        [Test]
+        public async Task MethodCall()
+        {
+            await DefaultSetup(1);
 
             const int first = 91;
             const int second = 23;
             int addResult = first + second;
             int subResult = first - second;
 
-            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(m_connection);
+            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(m_connections[0]);
 
             PairedInput input = new PairedInput
             {
@@ -68,10 +103,10 @@ namespace UnitTest.SimpleInMem
         }
 
         [Test]
-        public async void SimpleInMemEventCall()
+        public async void EventCall()
         {
-            await DefaultSetup();
-            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(m_connection);
+            await DefaultSetup(1);
+            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(m_connections[0]);
 
             calculatorProxy.ClearAsync();
 
@@ -80,14 +115,48 @@ namespace UnitTest.SimpleInMem
         }
 
         [Test]
-        public async Task SimpleInMemMethodCall_WithServiceError()
+        public async Task MultipleClientConnectionsMethodCalls()
         {
-            await DefaultSetup();
+            await DefaultSetup(10);
+
+            const int first = 91;
+            const int second = 23;
+            int addResult = first + second;
+            int subResult = first - second;
+
+            foreach (SimpleInMemConnection conn in m_connections)
+            {
+                for (int i = 0; i < 50; i++)
+                {
+                    var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(conn);
+
+                    PairedInput input = new PairedInput
+                    {
+                        First = first,
+                        Second = second
+                    };
+                    Message<PairedInput> request = new Message<PairedInput>(input);
+                    IMessage<Output> addResponse = await calculatorProxy.AddAsync(request, System.Threading.CancellationToken.None);
+                    IMessage<Output> subResponse = await calculatorProxy.SubtractAsync(request, System.Threading.CancellationToken.None);
+                    Output addOutput = addResponse.Payload.Deserialize();
+                    Output subOutput = subResponse.Payload.Deserialize();
+                    Assert.True(addOutput.Result == addResult);
+                    Assert.True(subOutput.Result == subResult);
+                }
+
+                await conn.StopAsync();
+            }
+        }
+
+        [Test]
+        public async Task MethodCall_WithServiceError()
+        {
+            await DefaultSetup(1);
 
             const int first = 91;
             const int second = 23;
 
-            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(m_connection);
+            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(m_connections[0]);
 
             PairedInput input = new PairedInput
             {
@@ -103,9 +172,9 @@ namespace UnitTest.SimpleInMem
         }
 
         [Test]
-        public async Task SimpleInMemMethodCall_WithMethodNotFound()
+        public async Task MethodCall_WithMethodNotFound()
         {
-            await DefaultSetup();
+            await DefaultSetup(1);
 
             const int first = 91;
             const int second = 23;
@@ -117,7 +186,7 @@ namespace UnitTest.SimpleInMem
                 Second = second
             };
             Message<PairedInput> request = new Message<PairedInput>(input);
-            IMessage<Output> divideResponse = await m_connection.RequestResponseAsync<PairedInput, Output>(methodName, request, new System.Threading.CancellationToken());
+            IMessage<Output> divideResponse = await m_connections[0].RequestResponseAsync<PairedInput, Output>(methodName, request, new System.Threading.CancellationToken());
             Assert.IsTrue(divideResponse.IsError);
             Error error = divideResponse.Error.Deserialize<Error>();
             Assert.AreEqual((int)ErrorCode.MethodNotFound, error.error_code);
@@ -127,7 +196,14 @@ namespace UnitTest.SimpleInMem
         [TearDown]
         public async void Cleanup()
         {
-            await m_connection.StopAsync();
+            if (m_connections != null)
+            {
+                for (int connectionIndex = 0; connectionIndex < m_connections.Length; connectionIndex++)
+                {
+                    await m_connections[connectionIndex].StopAsync();
+                }
+            }
+            m_connections = null;
             m_transport.RemoveListener(m_address);
         }
     }

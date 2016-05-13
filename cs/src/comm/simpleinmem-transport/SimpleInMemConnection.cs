@@ -4,72 +4,85 @@
 namespace Bond.Comm.SimpleInMem
 {
     using System;
+    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm.Service;
-
+    using Processor;
+    using System.Collections.Generic;
     public enum ConnectionType
     {
         Client,
         Server
     }
 
+    [Flags]
+    public enum CnxState
+    {
+        Created = 0x01,
+        Connected = 0x02,
+        SendProtocolError = 0x04,
+        Disconnecting = 0x08,
+        Disconnected = 0x10,
+    }
+
     public class SimpleInMemConnection : Connection, IRequestResponseConnection, IEventConnection
     {
-        private readonly int m_connection_delay = 20;
-        private Guid m_connectionId;
-        private ConnectionType m_connectionType;
-        private ServiceHost m_serviceHost;
-        private RequestResponseQueue m_clientreqresqueue;
-        private RequestResponseQueueCollection m_serverqueues;
-        private object m_requestsLock = new object();
+        private readonly Guid m_connectionId;
+        private readonly ConnectionType m_connectionType;
+        private readonly ServiceHost m_serviceHost;
+        private readonly SimpleInMemListener m_parentListener;
+        private InMemFrameQueue m_communicationQueue;
+        private InMemFrameQueueCollection m_serverqueues;
+        private object m_connectionsLock = new object();
         private long m_requestId;
         private CancellationTokenSource m_cancelTokenSource = new CancellationTokenSource();
+        private CnxState m_state;
+        private object m_stateLock = new object();
+        private HashSet<SimpleInMemConnection> m_clientConnections;
 
-        public SimpleInMemConnection(SimpleInMemTransport parentTransport, ConnectionType connectionType) : this (new ServiceHost(parentTransport), connectionType)
+        public SimpleInMemConnection(SimpleInMemTransport parentTransport, SimpleInMemListener parentListener, ConnectionType connectionType) : 
+            this (new ServiceHost(parentTransport), parentListener, connectionType)
         {
         }
 
-        internal SimpleInMemConnection(ServiceHost serviceHost, ConnectionType connectionType)
+        internal SimpleInMemConnection(ServiceHost serviceHost, SimpleInMemListener parentListener, ConnectionType connectionType)
         {
+            if (serviceHost == null) throw new ArgumentNullException(nameof(serviceHost));
+            if (parentListener == null) throw new ArgumentNullException(nameof(parentListener));
+            
             m_connectionId = Guid.NewGuid();
             m_connectionType = connectionType;
             m_serviceHost = serviceHost;
+            m_parentListener = parentListener;
 
-            if (connectionType == ConnectionType.Client)
+            switch(connectionType)
             {
-                m_clientreqresqueue = new RequestResponseQueue();
-            }
-            else if (connectionType == ConnectionType.Server)
-            {
-                m_serverqueues = new RequestResponseQueueCollection();
+                case ConnectionType.Client:
+                    m_communicationQueue = new InMemFrameQueue();
+                    break;
+
+                case ConnectionType.Server:
+                    m_serverqueues = new InMemFrameQueueCollection();
+                    m_clientConnections = new HashSet<SimpleInMemConnection>();
+                    break;
+
+                default:
+                    throw new NotSupportedException(nameof(connectionType));
             }
 
             // start at -1 or 0 so the first request ID is 1 or 2.
             m_requestId = connectionType == ConnectionType.Client ? -1 : 0;
+
+            m_state = CnxState.Created;
         }
 
-        public override string ToString()
+        public CnxState State
         {
-            return $"{nameof(SimpleInMemConnection)}({m_connectionId})";
-        }
-
-        public override Task StopAsync()
-        {
-            m_cancelTokenSource.Cancel();
-            return TaskExt.CompletedTask;
-        }
-
-        public async Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, IMessage<TRequest> message, CancellationToken ct)
-        {
-            IMessage response = await SendRequestAsync(methodName, message);
-            return response.Convert<TResponse>();
-        }
-
-        public Task FireEventAsync<TPayload>(string methodName, IMessage<TPayload> message)
-        {
-            SendEventAsync(methodName, message);
-            return TaskExt.CompletedTask;
+            get
+            {
+                return m_state;
+            }
         }
 
         public ConnectionType ConnectionType
@@ -88,40 +101,122 @@ namespace Bond.Comm.SimpleInMem
             }
         }
 
-        internal RequestResponseQueue RequestResponseQueue
+        public override string ToString()
+        {
+            return $"{nameof(SimpleInMemConnection)}({m_connectionId})";
+        }
+
+        public override Task StopAsync()
+        {
+            bool connected = false;
+            lock (m_stateLock)
+            {
+                if (connected = ((m_state & CnxState.Connected) != 0))
+                {
+                    m_state = CnxState.Disconnecting;
+                    m_cancelTokenSource.Cancel();
+                }
+            }
+
+            if (connected)
+            {
+                OnDisconnect();
+                lock (m_stateLock)
+                {
+                    m_state = CnxState.Disconnected;
+                }
+            }
+
+            return TaskExt.CompletedTask;
+        }
+
+        public async Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, IMessage<TRequest> message, CancellationToken ct)
+        {
+            EnsureCorrectState(CnxState.Connected);
+            IMessage response = await SendRequestAsync(methodName, message);
+            return response.Convert<TResponse>();
+        }
+
+        public Task FireEventAsync<TPayload>(string methodName, IMessage<TPayload> message)
+        {
+            EnsureCorrectState(CnxState.Connected);
+            SendEventAsync(methodName, message);
+            return TaskExt.CompletedTask;
+        }
+
+        internal InMemFrameQueue CommunicationQueue
         {
             get
             {
-                return m_clientreqresqueue;
+                return m_communicationQueue;
             }
         }
 
-        internal Task<IMessage> SendRequestAsync(string methodName, IMessage request)
+        internal void Start()
+        {
+            lock (m_stateLock)
+            {
+                EnsureCorrectState(CnxState.Created | CnxState.Disconnected);
+
+                if (m_connectionType == ConnectionType.Client)
+                {
+                    var responseProcessor = new ResponseProcessor(this, m_communicationQueue);
+                    Task.Run(() => responseProcessor.ProcessAsync(m_cancelTokenSource.Token));
+                }
+                else if (m_connectionType == ConnectionType.Server)
+                {
+                    var requestProcessor = new RequestProcessor(this, m_serviceHost, m_serverqueues);
+                    var eventProcessor = new EventProcessor(this, m_serviceHost, m_serverqueues);
+                    Task.Run(() => requestProcessor.ProcessAsync(m_cancelTokenSource.Token));
+                    Task.Run(() => eventProcessor.ProcessAsync(m_cancelTokenSource.Token));
+                }
+                else
+                {
+                    var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Connection type {2} not implemented.",
+                        this, nameof(Start), m_connectionType);
+                    throw new NotImplementedException(message);
+                }
+
+                m_state = CnxState.Connected;
+            }
+        }
+
+        internal void AddClientConnection(SimpleInMemConnection connection)
+        {
+            if (m_connectionType == ConnectionType.Client)
+            {
+                var message = LogUtil.FatalAndReturnFormatted(
+                    "{0}.{1}: Client connection does not support adding new request response queue.",
+                    this, nameof(AddClientConnection));
+                throw new NotSupportedException(message);
+            }
+
+            m_serverqueues.Add(connection.Id, connection.CommunicationQueue);
+            lock (m_connectionsLock)
+            {
+                m_clientConnections.Add(connection);
+            }
+        }
+
+        private Task<IMessage> SendRequestAsync(string methodName, IMessage request)
         {
             uint requestId = AllocateNextRequestId();
-            var payload = NewPayLoad(requestId, PayloadType.Request, request, new TaskCompletionSource<IMessage>());
+            var payload = Util.NewPayLoad(requestId, PayloadType.Request, request, new TaskCompletionSource<IMessage>());
             payload.m_headers.method_name = methodName;
-            m_clientreqresqueue.Enqueue(payload);
+            m_communicationQueue.Enqueue(payload);
 
             return payload.m_outstandingRequest.Task;
         }
 
-
-        internal void SendReplyAsync(uint requestId, IMessage response, RequestResponseQueue queue, TaskCompletionSource<IMessage> taskSource)
-        {
-            var payload = NewPayLoad(requestId, PayloadType.Response, response, taskSource);
-            queue.Enqueue(payload);
-        }
-
-        internal void SendEventAsync(string methodName, IMessage message)
+        private void SendEventAsync(string methodName, IMessage message)
         {
             uint requestId = AllocateNextRequestId();
-            var payload = NewPayLoad(requestId, PayloadType.Event, message, null);
+            var payload = Util.NewPayLoad(requestId, PayloadType.Event, message, null);
             payload.m_headers.method_name = methodName;
-            m_clientreqresqueue.Enqueue(payload);
+            m_communicationQueue.Enqueue(payload);
         }
 
-        protected UInt32 AllocateNextRequestId()
+        private UInt32 AllocateNextRequestId()
         {
             var requestIdLong = Interlocked.Add(ref m_requestId, 2);
             if (requestIdLong > UInt32.MaxValue)
@@ -134,194 +229,51 @@ namespace Bond.Comm.SimpleInMem
             return unchecked((UInt32)requestIdLong);
         }
 
-        private InMemFrame NewPayLoad(uint requestId, PayloadType payloadType, IMessage message, TaskCompletionSource<IMessage> taskSource)
+        private void OnDisconnect()
         {
-            var headers = new SimpleInMemHeaders
-            {
-                request_id = requestId,
-                payload_type = payloadType
-            };
+            Log.Debug("{0}.{1}: Shutting down.", this, nameof(OnDisconnect));
 
-            return new InMemFrame
-            {
-                m_headers = headers,
-                m_message = message,
-                m_outstandingRequest = taskSource
-            };
-        }
+            var args = new DisconnectedEventArgs(this, null);
+            m_parentListener.InvokeOnDisconnected(args);
 
-        internal void Start()
-        {
-            if (m_connectionType == ConnectionType.Client)
+            if(m_connectionType == ConnectionType.Client)
             {
-                Task.Run(() => ProcessResponseAsync(m_cancelTokenSource.Token));
-            }
-            else if (m_connectionType == ConnectionType.Server)
-            {
-                Task.Run(() => ProcessRequestAsync(m_cancelTokenSource.Token));
-                Task.Run(() => ProcessEventAsync(m_cancelTokenSource.Token));
+                DisconnectClient();
             }
             else
             {
-                var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Connection type {2} not implemented.",
-                    this, nameof(Start), m_connectionType);
-                throw new NotImplementedException(message);
+                DisconnectServer();
             }
         }
 
-        internal void AddRequestResponseQueue(Guid id, RequestResponseQueue queue)
+        private void DisconnectClient()
         {
-            if (m_connectionType == ConnectionType.Client)
-            {
-                var message = LogUtil.FatalAndReturnFormatted(
-                    "{0}.{1}: Client connection does not support adding new request response queue.",
-                    this, nameof(AddRequestResponseQueue));
-                throw new NotSupportedException(message);
-            }
-
-            m_serverqueues.AddRequestResponseQueue(id, queue);
+            m_communicationQueue.Clear();
         }
 
-        private async Task ProcessResponseAsync(CancellationToken t)
+        private void DisconnectServer()
         {
-            while(!t.IsCancellationRequested)
-            {
-                const PayloadType payloadType = PayloadType.Response;
-                //connection delay
-                await Task.Delay(m_connection_delay);
+            m_serverqueues.ClearAll();
 
-                if (m_clientreqresqueue.Count(payloadType) == 0)
+            lock (m_connectionsLock)
+            {
+                foreach (SimpleInMemConnection connection in m_clientConnections)
                 {
-                    continue;
+                    connection.StopAsync();
                 }
 
-                var frame = m_clientreqresqueue.Dequeue(payloadType);
-
-                try
-                {
-                    Validate(frame);
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e, "{0}.{1}: Exception while validating a frame: {2}", this, nameof(ProcessResponseAsync), e);
-                    continue;
-                }
-
-                var headers = frame.m_headers;
-                var message = frame.m_message;
-                var taskSource = frame.m_outstandingRequest;
-
-                await Task.Run(() => DispatchResponse(headers, message, taskSource));
+                m_clientConnections.Clear();
             }
         }
 
-        private async Task ProcessRequestAsync(CancellationToken t)
+        private void EnsureCorrectState(CnxState allowedStates, [CallerMemberName] string methodName = "<unknown>")
         {
-            while (!t.IsCancellationRequested)
+            
+            if ((m_state & allowedStates) == 0)
             {
-                const PayloadType payloadType = PayloadType.Request;
-                //connection delay
-                await Task.Delay(m_connection_delay);
-
-                foreach (Guid key in m_serverqueues.GetKeys())
-                {
-                    RequestResponseQueue queue = m_serverqueues.GetQueue(key);
-
-                    if (queue.Count(payloadType) == 0)
-                    {
-                        continue;
-                    }
-
-                    var payload = queue.Dequeue(payloadType);
-
-                    try
-                    {
-                        Validate(payload);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e, "{0}.{1}: Exception while validating a frame: {2}", this, nameof(ProcessRequestAsync), e);
-                        continue;
-                    }
-
-                    var headers = payload.m_headers;
-                    var message = payload.m_message;
-                    var taskSource = payload.m_outstandingRequest;
-
-                    await Task.Run(() => DispatchRequest(headers, message, queue, taskSource));
-                }
+                var message = $"Connection (${this}) is not in the correct state for the requested operation (${methodName}). Current state: ${m_state} Allowed states: ${allowedStates}";
+                throw new InvalidOperationException(message);
             }
-        }
-
-        private async Task ProcessEventAsync(CancellationToken t)
-        {
-            while (!t.IsCancellationRequested)
-            {
-                const PayloadType payloadType = PayloadType.Event;
-                //connection delay
-                await Task.Delay(m_connection_delay);
-
-                foreach (Guid key in m_serverqueues.GetKeys())
-                {
-                    RequestResponseQueue queue = m_serverqueues.GetQueue(key);
-
-                    if (queue.Count(payloadType) == 0)
-                    {
-                        continue;
-                    }
-
-                    var payload = queue.Dequeue(payloadType);
-
-                    try
-                    {
-                        Validate(payload);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e, "{0}.{1}: Exception while validating a frame: {2}", this, nameof(ProcessEventAsync),
-                            e);
-                        continue;
-                    }
-
-                    var headers = payload.m_headers;
-                    var message = payload.m_message;
-
-                    await Task.Run(() => DispatchEvent(headers, message, queue));
-                }
-            }
-        }
-
-        private InMemFrame Validate(InMemFrame frame)
-        {
-            if (frame.m_headers == null)
-            {
-                throw new SimpleInMemProtocolErrorException("Missing headers");
-            }
-            else if (frame.m_message == null)
-            {
-                throw new SimpleInMemProtocolErrorException("Missing payload");
-            }
-
-            return frame;
-        }
-
-        private async void DispatchRequest(SimpleInMemHeaders headers, IMessage message, RequestResponseQueue queue, TaskCompletionSource<IMessage> taskSource)
-        {
-            IMessage response = await m_serviceHost.DispatchRequest(headers.method_name, new SimpleInMemReceiveContext(this), message);
-            SendReplyAsync(headers.request_id, response, queue, taskSource);
-        }
-
-        private void DispatchResponse(SimpleInMemHeaders headers, IMessage message, TaskCompletionSource<IMessage> responseCompletionSource)
-        {
-            responseCompletionSource.SetResult(message);
-        }
-
-        private void DispatchEvent(SimpleInMemHeaders headers, IMessage message, RequestResponseQueue queue)
-        {
-            Task.Run(async () =>
-            {
-                await m_serviceHost.DispatchEvent(headers.method_name, new SimpleInMemReceiveContext(this), message);
-            });
         }
     }
 }

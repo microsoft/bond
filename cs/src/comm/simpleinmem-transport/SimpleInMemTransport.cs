@@ -3,6 +3,7 @@
 
 namespace Bond.Comm.SimpleInMem
 {
+    using Service;
     using System;
     using System.Collections.Generic;
     using System.Threading;
@@ -43,7 +44,6 @@ namespace Bond.Comm.SimpleInMem
     {
         private IDictionary<string, SimpleInMemListener> m_listeners = new Dictionary<string, SimpleInMemListener>();
         private object m_lock = new object();
-
         private readonly ExceptionHandler m_exceptionHandler;
 
         public SimpleInMemTransport(ExceptionHandler exceptionHandler)
@@ -69,17 +69,21 @@ namespace Bond.Comm.SimpleInMem
             Log.Information("{0}.{1}: Connecting to {2}.",
                 nameof(SimpleInMemTransport), nameof(ConnectToAsync), address);
             SimpleInMemListener listener;
-            if (!m_listeners.TryGetValue(address, out listener))
+
+            lock (m_lock)
             {
-                var errorFormat = "{0}.{1}: Listener not found for address: {2}";
-                var message = LogUtil.FatalAndReturnFormatted(errorFormat,
-                    nameof(SimpleInMemTransport), nameof(ConnectToAsync), address);
-                throw new ArgumentException(message);
+                if (!m_listeners.TryGetValue(address, out listener))
+                {
+                    var errorFormat = "{0}.{1}: Listener not found for address: {2}";
+                    var message = LogUtil.FatalAndReturnFormatted(errorFormat,
+                        nameof(SimpleInMemTransport), nameof(ConnectToAsync), address);
+                    throw new ArgumentException(message);
+                }
             }
 
             return await Task.Run<Connection>(() =>
             {
-                var connection = new SimpleInMemConnection(this, ConnectionType.Client);
+                var connection = new SimpleInMemConnection(this, (SimpleInMemListener)GetListener(address), ConnectionType.Client);
                 listener.AddClient(connection);
                 connection.Start();
                 return connection;
@@ -114,7 +118,16 @@ namespace Bond.Comm.SimpleInMem
 
         public override Task StopAsync()
         {
-            throw new NotImplementedException();
+            lock (m_lock)
+            {
+                foreach (SimpleInMemListener listener in m_listeners.Values)
+                {
+                    listener.StopAsync();
+                }
+                m_listeners.Clear();
+            }
+
+            return TaskExt.CompletedTask;
         }
 
         public bool ListenerExists(string address)
