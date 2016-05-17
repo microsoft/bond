@@ -261,9 +261,10 @@ namespace Bond.Comm.Epoxy
                         break;
 
                     default:
-                        var message = LogUtil.ErrorAndReturnFormatted("{0}.{1}: Unsupported FrameDisposition {2}",
+                        Log.Error("{0}.{1}: Unsupported FrameDisposition {2}",
                             this, nameof(ProcessFramesAsync), result.Disposition);
-                        throw new NotImplementedException(message);
+                        await SendProtocolErrorAsync(ProtocolErrorCode.INTERNAL_ERROR);
+                        break;
                 }
             }
         }
@@ -272,7 +273,13 @@ namespace Bond.Comm.Epoxy
         {
             if (headers.error_code != (int)ErrorCode.OK)
             {
-                throw new EpoxyProtocolErrorException("Received a request with non-zero error code. Request ID " + headers.request_id);
+                Log.Error("{0}.{1}: Received request ID {2} with a non-zero error code.",
+                    this, nameof(DispatchRequest), headers.request_id);
+                Task.Run(async () =>
+                {
+                    await SendProtocolErrorAsync(ProtocolErrorCode.PROTOCOL_VIOLATED);
+                });
+                return;
             }
 
             IMessage request = Message.FromPayload(Unmarshal.From(payload));
@@ -292,9 +299,9 @@ namespace Bond.Comm.Epoxy
             {
                 if (!m_outstandingRequests.TryGetValue(headers.request_id, out responseCompletionSource))
                 {
-                    Log.Error("{0}.{1}: Response for unmatched request {2}.",
+                    Log.Error("{0}.{1}: Got a response with unexpected ID {2}.",
                         this, nameof(DispatchResponse), headers.request_id);
-                    throw new EpoxyProtocolErrorException($"{this}.{nameof(DispatchResponse)}: Response for unmatched request {headers.request_id}.");
+                    return;
                 }
 
                 m_outstandingRequests.Remove(headers.request_id);
@@ -317,7 +324,9 @@ namespace Bond.Comm.Epoxy
         {
             if (headers.error_code != (int)ErrorCode.OK)
             {
-                throw new EpoxyProtocolErrorException("Received a request with non-zero error code. Request ID " + headers.request_id);
+                Log.Error("{0}.{1}: Received event ID {2} with a non-zero error code.",
+                    this, nameof(DispatchEvent), headers.request_id);
+                return;
             }
 
             IMessage request = Message.FromPayload(Unmarshal.From(payload));

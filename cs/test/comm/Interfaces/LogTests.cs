@@ -123,7 +123,7 @@ namespace UnitTest.Interfaces
         [Test]
         public void NullHandlersAreRejected()
         {
-            Assert.Throws<ArgumentException>(() => Log.AddHandler(null));
+            Assert.Throws<ArgumentNullException>(() => Log.AddHandler(null));
         }
 
         [Test]

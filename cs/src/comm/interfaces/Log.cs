@@ -59,13 +59,14 @@ namespace Bond.Comm
         {
             if (newHandler == null)
             {
-                throw new ArgumentException("Attempted to add a null LogHandler");
+                throw new ArgumentNullException(nameof(newHandler));
             }
-            if (Log.handler != null)
+            if (handler != null)
             {
-                throw new InvalidOperationException("Attempted to add a LogHandler when there already was one");
+                throw new InvalidOperationException(
+                    $"Attempted to add a {nameof(LogHandler)} when there already was one");
             }
-            Log.handler = newHandler;
+            handler = newHandler;
         }
 
         /// <summary>
