@@ -198,7 +198,6 @@ namespace Bond.Comm.Epoxy
             return frame;
         }
 
-        // TODO: make async for real
         private async Task<IMessage> SendRequestAsync<TPayload>(string methodName, IMessage<TPayload> request)
         {
             uint requestId = AllocateNextRequestId();

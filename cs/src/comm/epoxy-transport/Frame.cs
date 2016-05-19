@@ -6,10 +6,9 @@ namespace Bond.Comm.Epoxy
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
-    using Bond.Comm.Service;
+    using System.Diagnostics;
 
     internal enum FrameletType
     {
@@ -131,16 +130,14 @@ namespace Bond.Comm.Epoxy
             }
         }
 
-        public static Task<Frame> ReadAsync(Stream stream, CancellationToken ct)
+        public static async Task<Frame> ReadAsync(Stream stream, CancellationToken ct)
         {
-            var reader = new BinaryReader(stream, encoding: System.Text.Encoding.UTF8, leaveOpen: true);
-
             try
             {
-                var frameletCount = reader.ReadUInt16();
+                var frameletCount = await ReadUInt16Async(stream, ct);
                 if (frameletCount == 0)
                 {
-                    return TaskExt.FromException<Frame>(new EpoxyProtocolErrorException("Zero framelets"));
+                    throw new EpoxyProtocolErrorException("Zero framelets");
                 }
 
                 var frame = new Frame(frameletCount);
@@ -149,60 +146,68 @@ namespace Bond.Comm.Epoxy
                 {
                     if (ct.IsCancellationRequested)
                     {
-                        return Task.FromResult<Frame>(null);
+                        return null;
                     }
 
-                    var frameletType = reader.ReadUInt16();
+                    var frameletType = await ReadUInt16Async(stream, ct);
                     if (!Framelet.IsKnownType(frameletType))
                     {
-                        return
-                            TaskExt.FromException<Frame>(
-                                new EpoxyProtocolErrorException("Unknown framelet type: " + frameletType));
+                        throw new EpoxyProtocolErrorException("Unknown framelet type: " + frameletType);
                     }
 
-                    var frameletLength = reader.ReadUInt32();
+                    var frameletLength = await ReadUInt32Async(stream, ct);
                     if (frameletLength > int.MaxValue)
                     {
-                        return
-                            TaskExt.FromException<Frame>(
-                                new EpoxyProtocolErrorException("Framelet too big: " + frameletLength));
+                        throw new EpoxyProtocolErrorException("Framelet too big: " + frameletLength);
                     }
 
-                    var frameletContents = new byte[frameletLength];
-                    int bytesToRead = (int) frameletLength;
-                    while (bytesToRead > 0)
-                    {
-                        if (ct.IsCancellationRequested)
-                        {
-                            return Task.FromResult<Frame>(null);
-                        }
-
-                        int dataRead = reader.Read(frameletContents,
-                            (int) frameletLength - bytesToRead, bytesToRead);
-                        if (dataRead == 0)
-                        {
-                            return
-                                TaskExt.FromException<Frame>(new EndOfStreamException("End of stream encountered while reading framelet contents"));
-                        }
-
-                        bytesToRead -= dataRead;
-                    }
-
-                    frame.Add(new Framelet((FrameletType) frameletType, new ArraySegment<byte>(frameletContents)));
+                    byte[] frameletContents = await ReadBufferAsync(stream, unchecked((int)frameletLength), ct);
+                    frame.Add(new Framelet((FrameletType)frameletType, new ArraySegment<byte>(frameletContents)));
 
                     --frameletCount;
                 }
 
-                return Task.FromResult(frame);
+                return frame;
             }
-            catch (IOException ioex)
+            catch (OperationCanceledException)
             {
-                return TaskExt.FromException<Frame>(ioex);
+                return null;
             }
-            catch (SocketException ex)
+        }
+
+        static async Task<UInt16> ReadUInt16Async(Stream stream, CancellationToken ct)
+        {
+            var buf = await ReadBufferAsync(stream, sizeof(UInt16), ct);
+            return BitConverter.ToUInt16(buf, 0);
+        }
+
+        static async Task<UInt32> ReadUInt32Async(Stream stream, CancellationToken ct)
+        {
+            var buf = await ReadBufferAsync(stream, sizeof(UInt32), ct);
+            return BitConverter.ToUInt32(buf, 0);
+        }
+
+        static async Task<byte[]> ReadBufferAsync(Stream stream, int length, CancellationToken ct)
+        {
+            Debug.Assert(stream != null);
+            Debug.Assert(length > 0);
+
+            var buf = new byte[length];
+            int bytesToRead = length;
+            while (bytesToRead > 0)
             {
-                return TaskExt.FromException<Frame>(ex);
+                ct.ThrowIfCancellationRequested();
+
+                int dataRead = await stream.ReadAsync(buf, buf.Length - bytesToRead, bytesToRead, ct);
+                if (dataRead == 0)
+                {
+                    throw new EndOfStreamException("End of stream encountered while reading fream");
+                }
+
+                bytesToRead -= dataRead;
             }
+
+            return buf;
         }
     }
 }
