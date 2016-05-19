@@ -7,12 +7,15 @@ namespace Bond.Comm.Epoxy
 
     public class EpoxyProtocolErrorException : TransportException
     {
-        public EpoxyProtocolErrorException(string message) : base(message)
+        public EpoxyProtocolErrorException(
+            string message,
+            Exception innerException = null,
+            IBonded<Error> details = null)
+            : base(message, innerException)
         {
+            Details = details;
         }
 
-        public EpoxyProtocolErrorException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+        public IBonded<Error> Details { get; }
     }
 }

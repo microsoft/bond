@@ -57,16 +57,18 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
-        [Ignore("Need to implement protocol handshake to be able to test this properly.")]
         public async Task ConnectedEvent_SetDisconnectError_DisconnectsConnection()
         {
+            const int DisconnectErrorCode = 100;
+            const string DisconnectMessage = "Go away!";
+
             EpoxyTransport transport = MakeTransport();
             var listener = transport.MakeListener(localhostEndpoint);
 
             var connectedEventDone = new ManualResetEventSlim(initialState: false);
             listener.Connected += (sender, args) =>
             {
-                args.DisconnectError = new Error {error_code = 100, message = "Go away!"};
+                args.DisconnectError = new Error {error_code = DisconnectErrorCode, message = DisconnectMessage };
                 connectedEventDone.Set();
             };
 
@@ -77,8 +79,21 @@ namespace UnitTest.Epoxy
             };
 
             await listener.StartAsync();
-            // ConnectToAsync should throw.
-            var connection = await transport.ConnectToAsync(listener.ListenEndpoint);
+
+            try
+            {
+                await transport.ConnectToAsync(listener.ListenEndpoint);
+                Assert.Fail("Expected exception to be thrown.");
+            }
+            catch (EpoxyProtocolErrorException pex)
+            {
+                Assert.That(pex.Message, Is.StringContaining("rejected"));
+                Assert.IsNotNull(pex.Details);
+
+                var errorDetails = pex.Details.Deserialize();
+                Assert.AreEqual(DisconnectErrorCode, errorDetails.error_code);
+                Assert.AreEqual(DisconnectMessage, errorDetails.message);
+            }
         }
 
         [Test]

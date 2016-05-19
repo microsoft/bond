@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace UnitTest.Epoxy
@@ -15,9 +14,6 @@ namespace UnitTest.Epoxy
     [TestFixture]
     class EpoxyProtocolTests
     {
-        private static readonly IEnumerable<EpoxyProtocol.ClassifyState> allStates =
-                Enum.GetValues(typeof (EpoxyProtocol.ClassifyState)).Cast<EpoxyProtocol.ClassifyState>();
-
         private const uint GoodRequestId = 1;
         private const uint GoodResponseId = 1;
         private const string GoodMethod = "ShaveYaks";
@@ -25,7 +21,7 @@ namespace UnitTest.Epoxy
         private static readonly IMessage<Error> meaninglessMessage = new Message<Error>(goodPayload);
         private static readonly ProtocolErrorCode meaninglessErrorCode = ProtocolErrorCode.GENERIC_ERROR;
         private static readonly ArraySegment<byte> emptyLayerData = new ArraySegment<byte>();
-        private static readonly ArraySegment<byte> nonEmptyLayerData = new ArraySegment<byte>(new byte[1] { 3 });
+        private static readonly ArraySegment<byte> nonEmptyLayerData = new ArraySegment<byte>(new byte[] { 3 });
 
         private static readonly EpoxyHeaders goodRequestHeaders = new EpoxyHeaders
         {
@@ -69,10 +65,12 @@ namespace UnitTest.Epoxy
         private static Frame doubleHeadersRequestFrame; // a request frame with duplicate EpoxyHeaders
         private static Frame doublePayloadRequestFrame; // a request frame with duplicate PayloadData
         private static Frame backwardsRequestFrame;     // a request frame with PayloadData before EpoxyHeaders
+        private static Frame configFrame;               // a frame with a well-formed EpoxyConfig
+        private static Frame configFrameExtra;          // a frame with a well-formed EpoxyConfig and extra stuff
+        private static Frame configFrameBadConfigData;  // a frame that fits that shape of a config frame, but with a payload that can't be deserialized
         private static Frame protocolErrorFrame;        // a frame with a well-formed ProtocolError
         private static Frame doubleProtocolErrorFrame;  // a frame with two ProtocolError frames
         private static readonly Frame emptyFrame = new Frame(0);
-
 
         [TestFixtureSetUp]
         public static void CreateFrames()
@@ -118,6 +116,17 @@ namespace UnitTest.Epoxy
 
             doubleProtocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null);
             doubleProtocolErrorFrame.Add(doubleProtocolErrorFrame.Framelets[0]);
+
+            configFrame = EpoxyConnection.MakeConfigFrame();
+
+            configFrameExtra = EpoxyConnection.MakeConfigFrame();
+            configFrameExtra.Add(goodRequestFrame.Framelets[0]);
+
+            var invalidConfigData = new ArraySegment<byte>(new byte[] { 0x01 });
+            configFrameBadConfigData = new Frame(1);
+            configFrameBadConfigData.Add(new Framelet(FrameletType.EpoxyConfig, invalidConfigData));
+
+            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null);
         }
 
         // For each state that is implemented as a function, test:
@@ -125,8 +134,6 @@ namespace UnitTest.Epoxy
         //  * that it transitions to an internal error if it's coming from any unexpected state
         //  * that it transitions to an internal error if any state left by previous transitions is unacceptable
         //  * that it transitions to an expected error state if the frame is malformed
-
-
 
         [Test]
         public void TransitionExpectFirstFramelet_Valid()
@@ -408,6 +415,71 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
+        public void TransitionValidFrame_InvalidPreconditions()
+        {
+            var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
+
+            var after = EpoxyProtocol.TransitionValidFrame(EpoxyProtocol.ClassifyState.ValidFrame, null, ref disposition);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
+            Assert.AreEqual(EpoxyProtocol.FrameDisposition.Indeterminate, disposition);
+        }
+
+        [Test]
+        public void TransitionExpectConfig_Valid()
+        {
+            ProtocolErrorCode? errorCode = null;
+            var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
+
+            var after = EpoxyProtocol.TransitionExpectConfig(
+                EpoxyProtocol.ClassifyState.ExpectConfig, configFrame, ref errorCode, ref disposition);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.ClassifiedValidFrame, after);
+            Assert.AreEqual(EpoxyProtocol.FrameDisposition.ProcessConfig, disposition);
+            Assert.IsNull(errorCode);
+        }
+
+        [Test]
+        public void TransitionExpectConfig_MalformedFrame()
+        {
+            ProtocolErrorCode? errorCode = null;
+            var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
+
+            var after = EpoxyProtocol.TransitionExpectConfig(
+                EpoxyProtocol.ClassifyState.ExpectConfig, configFrameExtra, ref errorCode, ref disposition);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
+            Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
+            Assert.AreEqual(EpoxyProtocol.FrameDisposition.Indeterminate, disposition);
+        }
+
+        [Test]
+        public void TransitionExpectConfig_MalformedConfigData()
+        {
+            ProtocolErrorCode? errorCode = null;
+            var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
+
+            var after = EpoxyProtocol.TransitionExpectConfig(
+                EpoxyProtocol.ClassifyState.ExpectConfig, configFrameBadConfigData, ref errorCode, ref disposition);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
+            Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
+            Assert.AreEqual(EpoxyProtocol.FrameDisposition.Indeterminate, disposition);
+        }
+
+        [Test]
+        public void TransitionExpectConfig_InvalidPreconditions()
+        {
+            ProtocolErrorCode? errorCode = null;
+            var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
+
+            var after = EpoxyProtocol.TransitionExpectConfig(
+                EpoxyProtocol.ClassifyState.ExpectConfig, emptyFrame, ref errorCode, ref disposition);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
+
+            // not a config frame
+            after = EpoxyProtocol.TransitionExpectConfig(
+                EpoxyProtocol.ClassifyState.ExpectConfig, protocolErrorFrame, ref errorCode, ref disposition);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
+        }
+
+        [Test]
         public void TransitionExpectProtocolError_Valid()
         {
             ProtocolError error = null;
@@ -417,7 +489,7 @@ namespace UnitTest.Epoxy
                 EpoxyProtocol.ClassifyState.ExpectProtocolError, protocolErrorFrame, ref error, ref disposition);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ClassifiedValidFrame, after);
             Assert.AreEqual(meaninglessErrorCode, error.error_code);
-            Assert.AreEqual(EpoxyProtocol.FrameDisposition.HangUp, disposition);
+            Assert.AreEqual(EpoxyProtocol.FrameDisposition.HandleProtocolError, disposition);
         }
 
         [Test]
@@ -467,8 +539,13 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(goodResponseFrame.Framelets[goodResponseFrame.Count - 1].Contents, responseResult.Payload);
             Assert.Null(requestResult.ErrorCode);
 
+            var configResult = EpoxyProtocol.Classify(configFrame);
+            Assert.AreEqual(EpoxyProtocol.FrameDisposition.ProcessConfig, configResult.Disposition);
+            Assert.Null(configResult.Headers);
+            Assert.Null(configResult.ErrorCode);
+
             var protocolErrorResult = EpoxyProtocol.Classify(protocolErrorFrame);
-            Assert.AreEqual(EpoxyProtocol.FrameDisposition.HangUp, protocolErrorResult.Disposition);
+            Assert.AreEqual(EpoxyProtocol.FrameDisposition.HandleProtocolError, protocolErrorResult.Disposition);
             Assert.Null(protocolErrorResult.Headers);
             Assert.Null(protocolErrorResult.Payload.Array);
             Assert.AreEqual(meaninglessErrorCode, protocolErrorResult.Error.error_code);
@@ -530,6 +607,11 @@ namespace UnitTest.Epoxy
             Assert.Null(backwardsResult.Headers);
             Assert.Null(backwardsResult.Payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, backwardsResult.ErrorCode);
+
+            var configExtraResult = EpoxyProtocol.Classify(configFrameExtra);
+            Assert.AreEqual(EpoxyProtocol.FrameDisposition.SendProtocolError, configExtraResult.Disposition);
+            Assert.Null(configExtraResult.Headers);
+            Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, configExtraResult.ErrorCode);
         }
     }
 }

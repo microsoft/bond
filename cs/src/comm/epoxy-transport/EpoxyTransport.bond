@@ -5,6 +5,10 @@ import "Comm.bond"
 
 namespace bond.comm.epoxy;
 
+struct EpoxyConfig
+{
+}
+
 enum PayloadType
 {
     Request = 1;

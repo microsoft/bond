@@ -10,7 +10,6 @@ namespace Bond.Comm.Epoxy
     using System.Net;
     using System.Net.Sockets;
     using System.Runtime.CompilerServices;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm.Service;
@@ -19,6 +18,8 @@ namespace Bond.Comm.Epoxy
 
     public class EpoxyConnection : Connection, IRequestResponseConnection, IEventConnection
     {
+        static readonly EpoxyConfig EmptyConfig = new EpoxyConfig();
+
         private enum ConnectionType
         {
             Client,
@@ -30,11 +31,15 @@ namespace Bond.Comm.Epoxy
         {
             None = 0,
             Created = 0x01,
-            Connected = 0x02,
-            SendProtocolError = 0x04,
-            Disconnecting = 0x08,
-            Disconnected = 0x10,
-            All = Created | Connected | SendProtocolError | Disconnecting | Disconnected,
+            ClientSendConfig = 0x02,
+            ClientExpectConfig = 0x04,
+            ServerExpectConfig = 0x08,
+            ServerSendConfig = 0x10,
+            Connected = 0x20,
+            SendProtocolError = 0x40,
+            Disconnecting = 0x80,
+            Disconnected = 0x100,
+            All = Created | ClientSendConfig | ClientExpectConfig | ServerExpectConfig | ServerSendConfig | Connected | SendProtocolError | Disconnecting | Disconnected,
         }
 
         readonly ConnectionType m_connectionType;
@@ -57,6 +62,9 @@ namespace Bond.Comm.Epoxy
 
         ProtocolErrorCode m_protocolError;
         Error m_errorDetails;
+
+        // this member is used to capture any handshake errors
+        ProtocolError m_handshakeError;
 
         readonly private ConnectionMetrics connectionMetrics = new ConnectionMetrics();
         private Stopwatch duration;
@@ -195,6 +203,17 @@ namespace Bond.Comm.Epoxy
                 frame.Add(new Framelet(FrameletType.PayloadData, outputBuffer.Data));
             }
 
+            return frame;
+        }
+
+        internal static Frame MakeConfigFrame()
+        {
+            var outputBuffer = new OutputBuffer(1);
+            var fastWriter = new FastBinaryWriter<OutputBuffer>(outputBuffer);
+            Serialize.To(fastWriter, EmptyConfig);
+
+            var frame = new Frame(1);
+            frame.Add(new Framelet(FrameletType.EpoxyConfig, outputBuffer.Data));
             return frame;
         }
 
@@ -351,10 +370,25 @@ namespace Bond.Comm.Epoxy
 
                 try
                 {
+                    if (m_state == State.Disconnected)
+                    {
+                        break; // while loop
+                    }
+
                     switch (m_state)
                     {
                         case State.Created:
                             nextState = DoCreated();
+                            break;
+
+                        case State.ClientSendConfig:
+                        case State.ServerSendConfig:
+                            nextState = await DoSendConfigAsync();
+                            break;
+
+                        case State.ClientExpectConfig:
+                        case State.ServerExpectConfig:
+                            nextState = await DoExpectConfigAsync();
                             break;
 
                         case State.Connected:
@@ -372,37 +406,40 @@ namespace Bond.Comm.Epoxy
                             nextState = DoDisconnect();
                             break;
 
-                        case State.Disconnected:
-                            DoDisconnected();
-                            return;
-
+                        case State.Disconnected: // we should never enter this switch in the Disconnected state
                         default:
-                            Log.Error("Unknown connection state: {0}", m_state);
+                            Log.Error("Unexpected connection state: {0}", m_state);
                             m_protocolError = ProtocolErrorCode.INTERNAL_ERROR;
                             nextState = State.SendProtocolError;
                             break;
                     }
                 }
+                catch (Exception ex) when (m_state != State.Disconnecting && m_state != State.Disconnected)
+                {
+                    Log.Error(ex, "{0}.{1} Unhandled exception. Current state: {2}",
+                        this, nameof(ConnectionLoop), m_state);
+
+                    // we're in a state where we can attempt to disconnect
+                    m_protocolError = ProtocolErrorCode.INTERNAL_ERROR;
+                    nextState = State.Disconnecting;
+                }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "{0}.{1} Unhandled exception. CurrentState: {2}", this, nameof(ConnectionLoop), m_state);
-
-                    if (m_state != State.Disconnecting && m_state != State.Disconnected)
-                    {
-                        // we're in a state where we can attempt to disconnect
-                        nextState = State.Disconnecting;
-                    }
-                    else
-                    {
-                        // some part of disconnecting threw. Just give up and be done.
-                        m_startTask.TrySetResult(true);
-                        m_stopTask.TrySetResult(true);
-                        return;
-                    }
+                    Log.Error(ex, "{0}.{1} Unhandled exception during shutdown. Abandoning connection. Current state: {2}",
+                        this, nameof(ConnectionLoop), m_state);
+                    break; // the while loop
                 }
 
                 m_state = nextState;
+            } // while (true)
+
+            if (m_state != State.Disconnected)
+            {
+                Log.Information("{0}.{1} Abandoning connection. Current state: {2}",
+                    this, nameof(ConnectionLoop), m_state);
             }
+
+            DoDisconnected();
         }
 
         private State DoCreated()
@@ -416,7 +453,7 @@ namespace Bond.Comm.Epoxy
 
                 if (disconnectError == null)
                 {
-                    result = State.Connected;
+                    result = State.ServerExpectConfig;
                 }
                 else
                 {
@@ -430,10 +467,51 @@ namespace Bond.Comm.Epoxy
             }
             else
             {
-                result = State.Connected;
+                result = State.ClientSendConfig;
             }
 
             return result;
+        }
+
+        private async Task<State> DoSendConfigAsync()
+        {
+            Frame emptyConfigFrame = MakeConfigFrame();
+            await SendFrameAsync(emptyConfigFrame);
+            return (m_connectionType == ConnectionType.Server ? State.Connected : State.ClientExpectConfig);
+        }
+
+        private async Task<State> DoExpectConfigAsync()
+        {
+            Stream networkStream = netSocket.NetworkStream;
+            Frame frame = await Frame.ReadAsync(networkStream, m_shutdownTokenSource.Token);
+            if (frame == null)
+            {
+                Log.Information("{0}.{1} EOS encountered while waiting for config, so disconnecting.",
+                       this, nameof(DoExpectConfigAsync));
+                return State.Disconnecting;
+            }
+
+            var result = EpoxyProtocol.Classify(frame);
+            switch (result.Disposition)
+            {
+                case EpoxyProtocol.FrameDisposition.ProcessConfig:
+                    // we don't actually use the config yet
+                    return (m_connectionType == ConnectionType.Server ? State.ServerSendConfig : State.Connected);
+
+                case EpoxyProtocol.FrameDisposition.HandleProtocolError:
+                    // we got a protocol error while we expected config
+                    m_handshakeError = result.Error;
+                    return State.Disconnecting;
+
+                case EpoxyProtocol.FrameDisposition.HangUp:
+                    return State.Disconnecting;
+
+                default:
+                    m_protocolError = result.ErrorCode ?? ProtocolErrorCode.PROTOCOL_VIOLATED;
+                    Log.Error("{0}.{1}: Unsupported FrameDisposition {2} when waiting for config. ErrorCode: {3})",
+                        this, nameof(DoExpectConfigAsync), result.Disposition, m_protocolError);
+                    return State.SendProtocolError;
+            }
         }
 
         private async Task<State> DoConnectedAsync()
@@ -466,6 +544,7 @@ namespace Bond.Comm.Epoxy
                     return State.Disconnecting;
                 }
 
+
                 var result = EpoxyProtocol.Classify(frame);
                 switch (result.Disposition)
                 {
@@ -495,6 +574,7 @@ namespace Bond.Comm.Epoxy
                         m_protocolError = result.ErrorCode ?? ProtocolErrorCode.INTERNAL_ERROR;
                         return State.SendProtocolError;
 
+                    case EpoxyProtocol.FrameDisposition.HandleProtocolError:
                     case EpoxyProtocol.FrameDisposition.HangUp:
                         return State.Disconnecting;
 
@@ -541,9 +621,23 @@ namespace Bond.Comm.Epoxy
 
         private void DoDisconnected()
         {
-            // signal after state change to prevent races with
-            // EnsureCorrectState
-            m_startTask.TrySetResult(true);
+            // We signal the start and stop tasks after the state change to
+            // prevent races with EnsureCorrectState
+
+            if (m_handshakeError != null)
+            {
+                var pex = new EpoxyProtocolErrorException(
+                    "Connection was rejected",
+                    innerException: null,
+                    details: m_handshakeError.details);
+                m_startTask.TrySetException(pex);
+            }
+            else
+            {
+                // the connection got started but then got shutdown shortly after
+                m_startTask.TrySetResult(true);
+            }
+
             m_stopTask.SetResult(true);
 
             duration.Stop();
@@ -653,7 +747,7 @@ namespace Bond.Comm.Epoxy
 
         public override Task StopAsync()
         {
-            EnsureCorrectState(State.Connected | State.SendProtocolError | State.Disconnecting | State.Disconnected);
+            EnsureCorrectState(State.All);
             m_shutdownTokenSource.Cancel();
             netSocket.Shutdown();
 
@@ -725,7 +819,8 @@ namespace Bond.Comm.Epoxy
 
                         try
                         {
-                            socket.Shutdown(SocketShutdown.Both);
+                            socket.Shutdown(SocketShutdown.Send);
+                            socket.Close();
                         }
                         catch (ObjectDisposedException)
                         {

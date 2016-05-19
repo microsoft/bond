@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Diagnostics;
-
 namespace Bond.Comm.Epoxy
 {
     using System;
+    using System.Diagnostics;
     using Bond.IO.Safe;
     using Bond.Protocols;
 
@@ -36,6 +35,16 @@ namespace Bond.Comm.Epoxy
             /// The frame was a valid Event.
             /// </summary>
             DeliverEventToService,
+
+            /// <summary>
+            /// The frame is a valid Config frame and needs to be handled.
+            /// </summary>
+            ProcessConfig,
+
+            /// <summary>
+            /// The frame is a valid ProtocolError frame and needs to be handled.
+            /// </summary>
+            HandleProtocolError,
 
             /// <summary>
             /// The frame was not valid, and the caller should send an error to the remote host.
@@ -124,6 +133,10 @@ namespace Bond.Comm.Epoxy
             // There are no problems with this frame. What should we do with it?
             ValidFrame,
 
+            // This state is the happy path from believing the frame represents config to proving the frame is good
+            // and knowing what to do with that config.
+            ExpectConfig,
+
             // This state is the happy path from believing the frame represents an error to proving the frame is good
             // and knowing what to do with that error.
             ExpectProtocolError,
@@ -149,6 +162,8 @@ namespace Bond.Comm.Epoxy
         // This needs to be larger than the longest valid path through the state machine.
         private static readonly uint maximumTransitions = (uint) Enum.GetNames(typeof(ClassifyState)).Length;
 
+        private static readonly Deserializer<FastBinaryReader<InputBuffer>> configDeserializer =
+            new Deserializer<FastBinaryReader<InputBuffer>>(typeof(EpoxyConfig));
         private static readonly Deserializer<FastBinaryReader<InputBuffer>> headersDeserializer =
             new Deserializer<FastBinaryReader<InputBuffer>>(typeof(EpoxyHeaders));
         private static readonly Deserializer<FastBinaryReader<InputBuffer>> errorDeserializer =
@@ -213,6 +228,10 @@ namespace Bond.Comm.Epoxy
 
                     case ClassifyState.ValidFrame:
                         state = TransitionValidFrame(state, headers, ref disposition);
+                        continue;
+
+                    case ClassifyState.ExpectConfig:
+                        state = TransitionExpectConfig(state, frame, ref errorCode, ref disposition);
                         continue;
 
                     case ClassifyState.ExpectProtocolError:
@@ -292,6 +311,9 @@ namespace Bond.Comm.Epoxy
             {
                 case FrameletType.EpoxyHeaders:
                     return ClassifyState.ExpectEpoxyHeaders;
+
+                case FrameletType.EpoxyConfig:
+                    return ClassifyState.ExpectConfig;
 
                 case FrameletType.ProtocolError:
                     return ClassifyState.ExpectProtocolError;
@@ -487,6 +509,48 @@ namespace Bond.Comm.Epoxy
             }
         }
 
+        internal static ClassifyState TransitionExpectConfig(
+            ClassifyState state, Frame frame, ref ProtocolErrorCode? errorCode, ref FrameDisposition disposition)
+        {
+            Debug.Assert(state == ClassifyState.ExpectConfig);
+            Debug.Assert(frame != null);
+
+            if (frame.Count == 0 || frame.Framelets[0].Type != FrameletType.EpoxyConfig)
+            {
+                return ClassifyState.InternalStateError;
+            }
+
+            if (frame.Count != 1)
+            {
+                Log.Error("{0}.{1}: Config frame had trailing framelets.",
+                    nameof(EpoxyProtocol), nameof(TransitionExpectConfig));
+                errorCode = ProtocolErrorCode.MALFORMED_DATA;
+                return ClassifyState.MalformedFrame;
+            }
+
+            var framelet = frame.Framelets[0];
+
+            var inputBuffer = new InputBuffer(framelet.Contents);
+            var fastBinaryReader = new FastBinaryReader<InputBuffer>(inputBuffer, version: 1);
+
+            // We don't currently do anything with the config aside from try to deserialize it.
+            EpoxyConfig config;
+            switch (configDeserializer.TryDeserialize(fastBinaryReader, out config))
+            {
+                case Deserialize.Result.Success:
+                    break;
+
+                default:
+                    Log.Error("{0}.{1}: Didn't get a valid {2}.",
+                            nameof(EpoxyProtocol), nameof(TransitionExpectConfig), nameof(EpoxyConfig));
+                    errorCode = ProtocolErrorCode.MALFORMED_DATA;
+                    return ClassifyState.MalformedFrame;
+            }
+
+            disposition = FrameDisposition.ProcessConfig;
+            return ClassifyState.ClassifiedValidFrame;
+        }
+
         internal static ClassifyState TransitionExpectProtocolError(
             ClassifyState state, Frame frame, ref ProtocolError error, ref FrameDisposition disposition)
         {
@@ -522,7 +586,8 @@ namespace Bond.Comm.Epoxy
                 return ClassifyState.ErrorInErrorFrame;
             }
 
-            disposition = FrameDisposition.HangUp;
+            disposition = FrameDisposition.HandleProtocolError;
+
             return ClassifyState.ClassifiedValidFrame;
         }
     }
