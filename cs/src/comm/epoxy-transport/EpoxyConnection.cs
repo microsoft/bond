@@ -229,13 +229,15 @@ namespace Bond.Comm.Epoxy
             try
             {
                 Stream networkStream = netSocket.NetworkStream;
-                using (var binWriter = new BinaryWriter(networkStream, encoding: Encoding.UTF8, leaveOpen: true))
+
+                await netSocket.WriteLock.WaitAsync();
+                try
                 {
-                    lock (networkStream)
-                    {
-                        frame.Write(binWriter);
-                        binWriter.Flush();
-                    }
+                    await frame.WriteAsync(networkStream);
+                }
+                finally
+                {
+                    netSocket.WriteLock.Release();
                 }
 
                 await networkStream.FlushAsync();
@@ -588,6 +590,7 @@ namespace Bond.Comm.Epoxy
             {
                 socket = sock;
                 stream = new NetworkStream(sock, ownsSocket: false);
+                WriteLock = new SemaphoreSlim(1, 1);
                 isShutdown = 0;
             }
 
@@ -603,6 +606,14 @@ namespace Bond.Comm.Epoxy
                     return stream;
                 }
             }
+
+            // It looks like we don't need to .Dispose this SemaphoreSlim. The
+            // current implementation of SemaphoreSlim only does interesting
+            // stuff during .Dispose if there's an allocated
+            // AvailableWaitHandle. We never call that, so there shouldn't be
+            // anything needing disposal. If we do end up allocating a wait
+            // handle somehow, its finalizer will save us.
+            public SemaphoreSlim WriteLock { get; }
 
             public void Shutdown()
             {

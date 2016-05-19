@@ -7,7 +7,6 @@ namespace UnitTest.Epoxy
     using System.Collections;
     using System.IO;
     using System.Linq;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm.Epoxy;
@@ -118,6 +117,23 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
+        public void Frame_Add_TotalCount_Updated()
+        {
+            var frame = new Frame(2);
+
+            int expectedSize = 2;
+            Assert.AreEqual(expectedSize, frame.TotalSize);
+
+            frame.Add(new Framelet(FrameletType.LayerData, AnyContents));
+            expectedSize += 2 + 4 + AnyContents.Count;
+            Assert.AreEqual(expectedSize, frame.TotalSize);
+
+            frame.Add(new Framelet(FrameletType.ProtocolError, AnyContents));
+            expectedSize += 2 + 4 + AnyContents.Count;
+            Assert.AreEqual(expectedSize, frame.TotalSize);
+        }
+
+        [Test]
         public void Frame_Add_AddMoreThanUInt16Framelets_Throws()
         {
             var frame = new Frame((int)UInt16.MaxValue + 1);
@@ -126,34 +142,43 @@ namespace UnitTest.Epoxy
                 frame.Add(new Framelet(FrameletType.LayerData, AnyContents));
             }
 
-            Assert.Throws<InvalidOperationException>(() => frame.Add(new Framelet(FrameletType.PayloadData, AnyContents)));
+            Assert.That(
+                () => frame.Add(new Framelet(FrameletType.PayloadData, AnyContents)),
+                Throws.InvalidOperationException.With.Message.ContainsSubstring("Exceeded maximum allowed count of framelets"));
         }
 
         [Test]
-        public void Frame_Write_EmptyFrame_Throws()
+        public void Frame_Add_AddMoreThanInt32TotalSize_Throws()
+        {
+            var largeContents = new ArraySegment<byte>(new byte[2 * 65535]);
+            int numFramesToAdd = Int32.MaxValue/largeContents.Count;
+
+            var frame = new Frame(numFramesToAdd);
+            for (int i = 0; i < numFramesToAdd - 1; ++i)
+            {
+                frame.Add(new Framelet(FrameletType.LayerData, largeContents));
+            }
+
+            Assert.That(
+                () => frame.Add(new Framelet(FrameletType.LayerData, largeContents)),
+                Throws.InvalidOperationException.With.Message.ContainsSubstring("Exceeded maximum size of frame"));
+        }
+
+        [Test]
+        public void Frame_WriteAsync_EmptyFrame_Throws()
         {
             var frame = new Frame();
-            Assert.Throws<InvalidOperationException>(() => frame.Write(new BinaryWriter(new MemoryStream())));
+            Assert.Throws<InvalidOperationException>(async () => await frame.WriteAsync(new MemoryStream()));
         }
 
         [Test]
-        public void Frame_Write_NullWriter_Throws()
-        {
-            var frame = new Frame();
-            Assert.Throws<ArgumentNullException>(() => frame.Write(null));
-        }
-
-        [Test]
-        public void Frame_Write_OneFramelet_ContentsExpected()
+        public async Task Frame_WriteAsync_OneFramelet_ContentsExpected()
         {
             var frame = new Frame();
             frame.Add(new Framelet(FrameletType.EpoxyConfig, AnyContents));
 
             var memStream = new MemoryStream();
-            using (var binWriter = new BinaryWriter(memStream, Encoding.UTF8, leaveOpen: true))
-            {
-                frame.Write(binWriter);
-            }
+            await frame.WriteAsync(memStream);
 
             var expectedBytes = new[]
             {
@@ -247,10 +272,7 @@ namespace UnitTest.Epoxy
             }
 
             var memStream = new MemoryStream();
-            using (var binWriter = new BinaryWriter(memStream, Encoding.UTF8, leaveOpen: true))
-            {
-                frame.Write(binWriter);
-            }
+            await frame.WriteAsync(memStream);
 
             memStream.Seek(0, SeekOrigin.Begin);
             var resultFrame = await Frame.ReadAsync(memStream, CancellationToken.None);

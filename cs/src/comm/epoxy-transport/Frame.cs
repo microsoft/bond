@@ -5,10 +5,11 @@ namespace Bond.Comm.Epoxy
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Diagnostics;
 
     internal enum FrameletType
     {
@@ -21,9 +22,6 @@ namespace Bond.Comm.Epoxy
 
     internal struct Framelet
     {
-        private FrameletType m_type;
-        private ArraySegment<byte> m_content;
-
         public Framelet(FrameletType type, ArraySegment<byte> contents)
         {
             switch (type)
@@ -44,8 +42,8 @@ namespace Bond.Comm.Epoxy
                 throw new ArgumentException("Framelet contents cannot be empty", nameof(contents));
             }
 
-            m_type = type;
-            m_content = contents;
+            Type = type;
+            Contents = contents;
         }
 
         public static bool IsKnownType(UInt16 value)
@@ -57,8 +55,8 @@ namespace Bond.Comm.Epoxy
                 | value == (UInt16)FrameletType.ProtocolError;
         }
 
-        public FrameletType Type { get { return m_type; } }
-        public ArraySegment<byte> Contents { get { return m_content; } }
+        public FrameletType Type { get; }
+        public ArraySegment<byte> Contents { get; }
     }
 
     internal class Frame
@@ -66,66 +64,95 @@ namespace Bond.Comm.Epoxy
         // most frames will have at most three framelets: EpoxyHeaders, LayerData, PayloadData
         private const int DefaultFrameCount = 3;
 
-        private readonly List<Framelet> m_framelets;
+        private readonly List<Framelet> framelets;
 
         public Frame() : this(DefaultFrameCount) { }
 
         public Frame(int capacity)
         {
-            m_framelets = new List<Framelet>(capacity);
+            framelets = new List<Framelet>(capacity);
+
+            // start with space for count of framelets
+            TotalSize = sizeof (UInt16);
         }
 
-        public IReadOnlyList<Framelet> Framelets { get { return m_framelets; } }
+        public IReadOnlyList<Framelet> Framelets => framelets;
 
-        public int Count { get { return m_framelets.Count; } }
+        public int Count => framelets.Count;
+
+        public int TotalSize { get; private set; }
 
         public void Add(Framelet framelet)
         {
-            if (m_framelets.Count == UInt16.MaxValue)
+            if (framelets.Count == UInt16.MaxValue)
             {
                 var message = LogUtil.ErrorAndReturnFormatted("{0}.{1}: Exceeded maximum allowed count of framelets.",
                     nameof(Frame), nameof(Add));
                 throw new InvalidOperationException(message);
             }
 
-            m_framelets.Add(framelet);
+            try
+            {
+                // add space for framelet type, length of payload, and actual payload content
+                TotalSize = checked(TotalSize + sizeof(UInt16) + sizeof(UInt32) + framelet.Contents.Count);
+                framelets.Add(framelet);
+            }
+            catch (OverflowException oex)
+            {
+                var message = LogUtil.ErrorAndReturnFormatted("{0}.{1}: Exceeded maximum size of frame.",
+                    nameof(Frame), nameof(Add));
+                throw new InvalidOperationException(message, oex);
+            }
         }
 
-        public void Write(BinaryWriter dest)
+        public async Task WriteAsync(Stream stream)
         {
-            if (dest == null)
-            {
-                throw new ArgumentNullException(nameof(dest));
-            }
+            Debug.Assert(stream != null);
 
-            if (m_framelets.Count == 0)
+            if (framelets.Count == 0)
             {
                 throw new InvalidOperationException("Must have at least one framelet to write a frame.");
             }
 
-            // Add ensures that we never have more than UInt16 framelets
-            var numFramelets = unchecked((UInt16)m_framelets.Count);
-            dest.Write(numFramelets);
+            // No need to .Dispose either of these: their .Dispose and .Flush
+            // methods do nothing.
+            var memStream = new MemoryStream(TotalSize);
+            var binaryWriter = new BinaryWriter(memStream, Encoding.UTF8, leaveOpen: true);
 
-            var frameletsWritten = 0;
+            // Add ensures that we never have more than UInt16 framelets
+            var numFramelets = unchecked((UInt16) framelets.Count);
+            binaryWriter.Write(numFramelets);
+
+            foreach (var framelet in framelets)
+            {
+                // Framelet ctor checks that the type is valid, so we don't
+                // need to worry about overflow.
+                var frameletType = unchecked((UInt16) framelet.Type);
+                // ArraySegment checks that the Count is not negative, so we
+                // don't need to worry about overflow.
+                var frameletLength = unchecked((UInt32) framelet.Contents.Count);
+
+                binaryWriter.Write(frameletType);
+                binaryWriter.Write(frameletLength);
+                binaryWriter.Write(
+                    framelet.Contents.Array,
+                    framelet.Contents.Offset,
+                    framelet.Contents.Count);
+            }
+
+            Debug.Assert(TotalSize == memStream.Position);
+
+            // Since we used the ctor that takes a capacity, we'll be able to
+            // get the buffer, and the offset of the buffer will be 0.
+            byte[] outputBuffer = memStream.GetBuffer();
+
             try
             {
-                foreach (var framelet in m_framelets)
-                {
-                    // Framelet ctor checks that the type is valid, so we don't need to worry about overflow
-                    var frameletType = unchecked((UInt16)framelet.Type);
-                    // ArraySegment checks that the Count is not negative, so we don't need to worry about overflow
-                    var frameletLength = unchecked((UInt32)framelet.Contents.Count);
-
-                    dest.Write(frameletType);
-                    dest.Write(frameletLength);
-                    dest.Write(framelet.Contents.Array, framelet.Contents.Offset, framelet.Contents.Count);
-                    frameletsWritten++;
-                }
+                await stream.WriteAsync(outputBuffer, offset: 0, count: TotalSize);
             }
             catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException)
             {
-                Log.Error(ex, "{0}.{1}: Only wrote {2} of {3} framelets!", nameof(Frame), nameof(Write), frameletsWritten, numFramelets);
+                Log.Error(ex, "{0}.{1}: Failed to write entire frame", nameof(Frame), nameof(WriteAsync));
                 throw;
             }
         }
