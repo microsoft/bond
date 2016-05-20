@@ -177,6 +177,16 @@ namespace Bond.Comm.Epoxy
             Log.Debug("{0}.{1}: Sent protocol error with code {2}.", this, nameof(SendProtocolErrorAsync), errorCode);
         }
 
+        internal async Task SendEventAsync(string methodName, IMessage message)
+        {
+            uint requestId = AllocateNextRequestId();
+            var frame = MessageToFrame(requestId, methodName, PayloadType.Event, message);
+            Log.Debug("{0}.{1}: Sending event {2}/{3}.", this, nameof(SendEventAsync), requestId, methodName);
+
+            await SendFrameAsync(frame);
+            Log.Debug("{0}.{1}: Sent event {2}/{3}.", this, nameof(SendEventAsync), requestId, methodName);
+        }
+
         internal async Task SendFrameAsync(Frame frame, TaskCompletionSource<IMessage> responseCompletionSource = null)
         {
             try
@@ -198,25 +208,6 @@ namespace Bond.Comm.Epoxy
                     ex.Message);
                 responseCompletionSource?.TrySetException(ex);
             }
-        }
-
-        internal async Task SendEventAsync(string methodName, IMessage message)
-        {
-            uint requestId = AllocateNextRequestId();
-            var frame = MessageToFrame(requestId, methodName, PayloadType.Event, message);
-
-            Log.Debug("{0}.{1}: Sending event {2}/{3}.", this, nameof(SendEventAsync), requestId, methodName);
-            using (var binWriter = new BinaryWriter(m_networkStream, encoding: Encoding.UTF8, leaveOpen: true))
-            {
-                lock (m_networkStream)
-                {
-                    frame.Write(binWriter);
-                    binWriter.Flush();
-                }
-            }
-
-            await m_networkStream.FlushAsync();
-            Log.Debug("{0}.{1}: Sent event {2}/{3}.", this, nameof(SendEventAsync), requestId, methodName);
         }
 
         internal void Start()
