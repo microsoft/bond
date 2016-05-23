@@ -3,12 +3,20 @@
 
 namespace bond.comm;
 
+enum MessageType
+{
+    Request = 0;
+    Response = 1;
+    Event = 2;
+}
+
 enum ErrorCode
 {
     OK = 0x0;
     InternalServerError = 0xA0BD0002;
     MethodNotFound = 0xA0BD0003;
     InvalidInvocation = 0xA0BD0004;
+    UnhandledLayerError = 0xA0BD0005;
 }
 
 struct Error

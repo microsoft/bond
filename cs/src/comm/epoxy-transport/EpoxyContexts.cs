@@ -3,21 +3,23 @@
 
 namespace Bond.Comm.Epoxy
 {
+    public class EpoxySendContext : SendContext
+    {
+        public EpoxySendContext(EpoxyConnection connection)
+        {
+            Connection = connection;
+        }
+
+        public override Connection Connection { get; }
+    }
+
     public class EpoxyReceiveContext : ReceiveContext
     {
-        EpoxyConnection m_connection;
-
         public EpoxyReceiveContext(EpoxyConnection connection)
         {
-            m_connection = connection;
+            Connection = connection;
         }
 
-        public override Connection Connection
-        {
-            get
-            {
-                return m_connection;
-            }
-        }
+        public override Connection Connection { get; }
     }
 }

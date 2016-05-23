@@ -8,6 +8,7 @@ namespace UnitTest.SimpleInMem
     using Bond.Comm;
     using Bond.Comm.SimpleInMem;
     using NUnit.Framework;
+    using UnitTest.Comm;
 
     [TestFixture]
     public class SimpleInMemTransportTest
@@ -46,7 +47,10 @@ namespace UnitTest.SimpleInMem
         [Test]
         public void Construct_InvalidArgs_Throws()
         {
-            Assert.Throws<ArgumentNullException>(() => new SimpleInMemTransport(null));
+            Assert.Throws<ArgumentNullException>(() => new SimpleInMemTransport(null, null));
+
+            LayerStack<Dummy> layerStack = new LayerStack<Dummy>(null, new TestLayer_DoesNothing());
+            Assert.Throws<ArgumentNullException>(() => new SimpleInMemTransport(null, layerStack));
         }
 
         [Test]
@@ -89,6 +93,19 @@ namespace UnitTest.SimpleInMem
             Assert.True(simpleConn.ConnectionType == ConnectionType.Client);
             m_transport.RemoveListener(m_address);
             Assert.Null(m_transport.GetListener(m_address));
+        }
+
+        private class TestLayer_DoesNothing : ILayer<Dummy>
+        {
+            public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
+            {
+                return null;
+            }
+
+            public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData)
+            {
+                return null;
+            }
         }
     }
 }

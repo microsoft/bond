@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 namespace Bond.Comm.Epoxy
 {
     using System;
@@ -66,6 +68,12 @@ namespace Bond.Comm.Epoxy
             public EpoxyHeaders Headers;
 
             /// <summary>
+            /// The layer data from the <see cref="Frame"/> given to <see cref="Classify"/>. If <c>Classify</c> was unable
+            /// to find layer data or returned before it reached the layer data, <c>LayerData.Array</c> will be <c>null</c>.
+            /// </summary>
+            public ArraySegment<byte> LayerData;
+
+            /// <summary>
             /// The payload from the <see cref="Frame"/> given to <see cref="Classify"/>. If <c>Classify</c> was unable
             /// to find a payload or returned before it reached the payload, <c>Payload.Array</c> will be <c>null</c>.
             /// </summary>
@@ -101,7 +109,10 @@ namespace Bond.Comm.Epoxy
             // Does the frame begin with a valid EpoxyHeaders?
             ExpectEpoxyHeaders,
 
-            // Does the frame have a Payload immediately after the EpoxyHeaders?
+            // Does the frame have (optional) LayerData after the EpoxyHeaders?
+            ExpectOptionalLayerData,
+
+            // Does the frame have a Payload immediately after the EpoxyHeaders (or LayerData if it was present)?
             ExpectPayload,
 
             // The frame has all required framelets. Does it have any trailing ones?
@@ -138,12 +149,6 @@ namespace Bond.Comm.Epoxy
         // This needs to be larger than the longest valid path through the state machine.
         private static readonly uint maximumTransitions = (uint) Enum.GetNames(typeof(ClassifyState)).Length;
 
-        // These values are hard-coded because the protocol, as implemented, does not permit any framelet sequences
-        // other than [EpoxyHeaders, PayloadData] and [ProtocolError]. We will need to get rid of these indices and track
-        // the index of the next unexamined Framelet once we implement Layers.
-        private const int PayloadDataIndex = 1;
-        private const int ValidFrameSize = 2;
-
         private static readonly Deserializer<FastBinaryReader<InputBuffer>> headersDeserializer =
             new Deserializer<FastBinaryReader<InputBuffer>>(typeof(EpoxyHeaders));
         private static readonly Deserializer<FastBinaryReader<InputBuffer>> errorDeserializer =
@@ -159,8 +164,11 @@ namespace Bond.Comm.Epoxy
                 };
             }
 
-            var state = ClassifyState.ExpectFrame;
+            Log.Debug("{0}.{1}: Processing {2} framelets.", nameof(EpoxyProtocol), nameof(Classify), frame.Count);
+
+            var state = ClassifyState.ExpectFirstFramelet;
             EpoxyHeaders headers = null;
+            var layerData = new ArraySegment<byte>();
             var payload = new ArraySegment<byte>();
             ProtocolError error = null;
             var disposition = FrameDisposition.Indeterminate;
@@ -179,10 +187,6 @@ namespace Bond.Comm.Epoxy
 
                 switch (state)
                 {
-                    case ClassifyState.ExpectFrame:
-                        state = TransitionExpectFrame(state, frame);
-                        continue;
-
                     case ClassifyState.ExpectFirstFramelet:
                         state = TransitionExpectFirstFramelet(state, frame, ref errorCode);
                         continue;
@@ -191,12 +195,16 @@ namespace Bond.Comm.Epoxy
                         state = TransitionExpectEpoxyHeaders(state, frame, ref headers, ref errorCode);
                         continue;
 
+                    case ClassifyState.ExpectOptionalLayerData:
+                        state = TransitionExpectOptionalLayerData(state, frame, headers, ref layerData, ref errorCode);
+                        continue;
+
                     case ClassifyState.ExpectPayload:
-                        state = TransitionExpectPayload(state, frame, headers, ref payload, ref errorCode);
+                        state = TransitionExpectPayload(state, frame, headers, layerData, ref payload, ref errorCode);
                         continue;
 
                     case ClassifyState.ExpectEndOfFrame:
-                        state = TransitionExpectEndOfFrame(state, frame, ref errorCode);
+                        state = TransitionExpectEndOfFrame(state, frame, layerData, ref errorCode);
                         continue;
 
                     case ClassifyState.FrameComplete:
@@ -222,6 +230,7 @@ namespace Bond.Comm.Epoxy
                         {
                             Disposition = disposition,
                             Headers = headers,
+                            LayerData = layerData,
                             Payload = payload,
                             Error = error
                         };
@@ -266,29 +275,11 @@ namespace Bond.Comm.Epoxy
             }
         }
 
-        // Terminal states need to be inlined in Classify() so they can return, but everything else fits nicely in its
-        // own function. These are internal for testing.
-
-        internal static ClassifyState TransitionExpectFrame(ClassifyState state, Frame frame)
-        {
-            if (state != ClassifyState.ExpectFrame || frame == null)
-            {
-                return ClassifyState.InternalStateError;
-            }
-
-            Log.Debug("{0}.{1}: Processing {2} framelets.",
-                nameof(EpoxyProtocol), nameof(TransitionExpectFrame), frame.Count);
-            state = ClassifyState.ExpectFirstFramelet;
-            return state;
-        }
-
         internal static ClassifyState TransitionExpectFirstFramelet(
             ClassifyState state, Frame frame, ref ProtocolErrorCode? errorCode)
         {
-            if (state != ClassifyState.ExpectFirstFramelet || frame == null)
-            {
-                return ClassifyState.InternalStateError;
-            }
+            Debug.Assert(state == ClassifyState.ExpectFirstFramelet);
+            Debug.Assert(frame != null);
 
             if (frame.Framelets.Count == 0)
             {
@@ -316,8 +307,10 @@ namespace Bond.Comm.Epoxy
         internal static ClassifyState TransitionExpectEpoxyHeaders(
             ClassifyState state, Frame frame, ref EpoxyHeaders headers, ref ProtocolErrorCode? errorCode)
         {
-            if (state != ClassifyState.ExpectEpoxyHeaders || frame == null || frame.Count == 0
-                || frame.Framelets[0].Type != FrameletType.EpoxyHeaders)
+            Debug.Assert(state == ClassifyState.ExpectEpoxyHeaders);
+            Debug.Assert(frame != null);
+
+            if (frame.Count == 0 || frame.Framelets[0].Type != FrameletType.EpoxyHeaders)
             {
                 return ClassifyState.InternalStateError;
             }
@@ -341,19 +334,65 @@ namespace Bond.Comm.Epoxy
             Log.Debug("{0}.{1}: Deserialized {2} with request ID {3} and payload type {4}.",
                 nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), nameof(EpoxyHeaders),
                 headers.request_id, headers.payload_type);
-            return ClassifyState.ExpectPayload;
+            return ClassifyState.ExpectOptionalLayerData;
         }
 
-        internal static ClassifyState TransitionExpectPayload(
-            ClassifyState state, Frame frame, EpoxyHeaders headers, ref ArraySegment<byte> payload,
+        internal static ClassifyState TransitionExpectOptionalLayerData(
+            ClassifyState state, Frame frame, EpoxyHeaders headers, ref ArraySegment<byte> layerData,
             ref ProtocolErrorCode? errorCode)
         {
-            if (state != ClassifyState.ExpectPayload || frame == null || headers == null)
+            Debug.Assert(state == ClassifyState.ExpectOptionalLayerData);
+            Debug.Assert(frame != null);
+
+            if (headers == null)
             {
                 return ClassifyState.InternalStateError;
             }
 
-            if (PayloadDataIndex >= frame.Count)
+            if (frame.Count < 2)
+            {
+                Log.Error("{0}.{1}: Frame did not continue with LayerData or PayloadData.",
+                    nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders));
+                errorCode = ProtocolErrorCode.MALFORMED_DATA;
+                return ClassifyState.MalformedFrame;
+            }
+
+            if (frame.Framelets[1].Type == FrameletType.PayloadData)
+            {
+                return ClassifyState.ExpectPayload;
+            }
+
+            var framelet = frame.Framelets[1];
+
+            if (framelet.Type != FrameletType.LayerData)
+            {
+                Log.Error("{0}.{1}: Frame did not continue with LayerData or PayloadData.",
+                    nameof(EpoxyProtocol), nameof(TransitionExpectOptionalLayerData));
+                errorCode = ProtocolErrorCode.MALFORMED_DATA;
+                return ClassifyState.MalformedFrame;
+            }
+
+            layerData = framelet.Contents;
+            Log.Debug("{0}.{1}: Extracted {2}-byte layer data in request ID {3}.",
+                nameof(EpoxyProtocol), nameof(TransitionExpectOptionalLayerData), layerData.Count, headers.request_id);
+            return ClassifyState.ExpectPayload;
+        }
+
+        internal static ClassifyState TransitionExpectPayload(
+            ClassifyState state, Frame frame, EpoxyHeaders headers, ArraySegment<byte> layerData,
+            ref ArraySegment<byte> payload, ref ProtocolErrorCode? errorCode)
+        {
+            Debug.Assert(state == ClassifyState.ExpectPayload);
+            Debug.Assert(frame != null);
+
+            if (headers == null)
+            {
+                return ClassifyState.InternalStateError;
+            }
+
+            int payloadDataIndex = (layerData.Array == null ? 1 : 2);
+
+            if (payloadDataIndex >= frame.Count)
             {
                 Log.Error("{0}.{1}: Frame did not continue with PayloadData.",
                     nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders));
@@ -361,7 +400,7 @@ namespace Bond.Comm.Epoxy
                 return ClassifyState.MalformedFrame;
             }
 
-            var framelet = frame.Framelets[PayloadDataIndex];
+            var framelet = frame.Framelets[payloadDataIndex];
             if (framelet.Type != FrameletType.PayloadData)
             {
                 Log.Error("{0}.{1}: Frame did not continue with PayloadData.",
@@ -377,14 +416,16 @@ namespace Bond.Comm.Epoxy
         }
 
         internal static ClassifyState TransitionExpectEndOfFrame(
-            ClassifyState state, Frame frame, ref ProtocolErrorCode? errorCode)
+            ClassifyState state, Frame frame, ArraySegment<byte> layerData, ref ProtocolErrorCode? errorCode)
         {
             if (state != ClassifyState.ExpectEndOfFrame || frame == null)
             {
                 return ClassifyState.InternalStateError;
             }
 
-            if (frame.Count == ValidFrameSize)
+            int validFrameSize = (layerData.Array == null ? 2 : 3);
+
+            if (frame.Count == validFrameSize)
             {
                 return ClassifyState.FrameComplete;
             }
@@ -473,6 +514,14 @@ namespace Bond.Comm.Epoxy
             Log.Debug("{0}.{1}: Deserialized {2} with code {3}.",
                 nameof(EpoxyProtocol), nameof(TransitionExpectProtocolError), nameof(ProtocolError),
                 error.error_code);
+
+            if (frame.Count > 1)
+            {
+                Log.Error("{0}.{1}: Frame had trailing framelets.",
+                    nameof(EpoxyProtocol), nameof(TransitionExpectProtocolError));
+                return ClassifyState.ErrorInErrorFrame;
+            }
+
             disposition = FrameDisposition.HangUp;
             return ClassifyState.ClassifiedValidFrame;
         }

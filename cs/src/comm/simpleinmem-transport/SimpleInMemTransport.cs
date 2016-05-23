@@ -11,56 +11,51 @@ namespace Bond.Comm.SimpleInMem
 
     public class SimpleInMemTransportBuilder : TransportBuilder<SimpleInMemTransport>
     {
-        private ExceptionHandler m_exceptionHandler;
-
-        public override TransportBuilder<SimpleInMemTransport> SetUnhandledExceptionHandler(ExceptionHandler handler)
-        {
-            if (handler == null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-
-            m_exceptionHandler = handler;
-            return this;
-        }
-
         public override SimpleInMemTransport Construct()
         {
-            if (m_exceptionHandler == null)
+            var exceptionHandler = GetUnhandledExceptionHandler();
+            if (exceptionHandler == null)
             {
-                if (m_exceptionHandler == null)
-                {
-                    throw new InvalidOperationException(
-                        "Cannot create transport without an unhandled exception handler. "
-                        + nameof(SetUnhandledExceptionHandler) + " must be called before " + nameof(Construct));
-                }
+                throw new InvalidOperationException(
+                    "Cannot create transport without an unhandled exception handler. "
+                    + nameof(SetUnhandledExceptionHandler) + " must be called before " + nameof(Construct));
             }
 
-            return new SimpleInMemTransport(m_exceptionHandler);
+            return new SimpleInMemTransport(exceptionHandler, LayerStack);
         }
     }
 
     public class SimpleInMemTransport : Transport
     {
-        private IDictionary<string, SimpleInMemListener> m_listeners = new Dictionary<string, SimpleInMemListener>();
-        private object m_lock = new object();
-        private readonly ExceptionHandler m_exceptionHandler;
+        IDictionary<string, SimpleInMemListener> m_listeners = new Dictionary<string, SimpleInMemListener>();
+        object m_lock = new object();
+        readonly ExceptionHandler exceptionHandler;
+        readonly ILayerStack layerStack;
 
-        public SimpleInMemTransport(ExceptionHandler exceptionHandler)
+        public SimpleInMemTransport(ExceptionHandler exceptionHandler, ILayerStack layerStack)
         {
             if (exceptionHandler == null)
             {
                 throw new ArgumentNullException(nameof(exceptionHandler));
             }
 
-            m_exceptionHandler = exceptionHandler;
+            this.exceptionHandler = exceptionHandler;
+            this.layerStack = layerStack;
         }
 
         public override ExceptionHandler UnhandledExceptionHandler
         {
             get
             {
-                return m_exceptionHandler;
+                return this.exceptionHandler;
+            }
+        }
+
+        public override ILayerStack LayerStack
+        {
+            get
+            {
+                return this.layerStack;
             }
         }
 

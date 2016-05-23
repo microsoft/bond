@@ -80,7 +80,10 @@ namespace UnitTest.Epoxy
         [Test]
         public void Construct_InvalidArgs_Throws()
         {
-            Assert.Throws<ArgumentNullException>(() => new EpoxyTransport(null));
+            Assert.Throws<ArgumentNullException>(() => new EpoxyTransport(null, null));
+
+            LayerStack<Dummy> layerStack = new LayerStack<Dummy>(null, new TestLayer_IntValue(0));
+            Assert.Throws<ArgumentNullException>(() => new EpoxyTransport(null, layerStack));
         }
 
         [Test]
@@ -96,7 +99,8 @@ namespace UnitTest.Epoxy
 
             Assert.AreEqual(1, testClientServer.Service.RespondWithEmpty_CallCount);
 
-            await testClientServer.Transport.StopAsync();
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -111,8 +115,9 @@ namespace UnitTest.Epoxy
 
             var error = response.Error.Deserialize<Error>();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
-
-            await testClientServer.Transport.StopAsync();
+            
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -129,7 +134,8 @@ namespace UnitTest.Epoxy
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.That(error.message, Is.StringContaining(TestService.ExpectedExceptionMessage));
 
-            await testClientServer.Transport.StopAsync();
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -143,8 +149,72 @@ namespace UnitTest.Epoxy
             Assert.IsFalse(response.IsError);
             Assert.AreEqual(101, response.Payload.Deserialize().int_value);
 
-            await testClientServer.Transport.StopAsync();
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
         }
+
+        [Test]
+        public async Task GeneratedService_GeneratedProxy_PayloadResponse_LayerData()
+        {
+            LayerStack<Dummy> layerStack = new LayerStack<Dummy>(null, new TestLayer_IntValue(1234));
+            TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>(layerStack, layerStack);
+            var proxy = new ReqRespProxy<EpoxyConnection>(testClientServer.ClientConnection);
+            var request = new Dummy { int_value = 100 };
+            IMessage<Dummy> response = await proxy.MethodAsync(request);
+
+            Assert.IsFalse(response.IsError);
+            Assert.AreEqual(101, response.Payload.Deserialize().int_value);
+
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
+        }
+
+        [Test]
+        public async Task GeneratedService_GeneratedProxy_PayloadResponse_ClientLayerErrors()
+        {
+            var errorLayer = new TestLayer_ReturnErrors();
+            LayerStack<Dummy> clientLayerStack = new LayerStack<Dummy>(null, errorLayer);
+            TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>(null, clientLayerStack);
+            var proxy = new ReqRespProxy<EpoxyConnection>(testClientServer.ClientConnection);
+            var request = new Dummy { int_value = 100 };
+
+            errorLayer.SetState(MessageType.Request, true, false);
+            IMessage<Dummy> response = await proxy.MethodAsync(request);
+            Assert.IsTrue(response.IsError);
+            Assert.AreEqual(1, response.Error.Deserialize().error_code);
+
+            errorLayer.SetState(MessageType.Response, false, true);
+            response = await proxy.MethodAsync(request);
+            Assert.IsTrue(response.IsError);
+            Assert.AreEqual(2, response.Error.Deserialize().error_code);
+
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
+        }
+
+        [Test]
+        public async Task GeneratedService_GeneratedProxy_PayloadResponse_ServerLayerErrors()
+        {
+            var errorLayer = new TestLayer_ReturnErrors();
+            LayerStack<Dummy> serverLayerStack = new LayerStack<Dummy>(null, errorLayer);
+            TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>(serverLayerStack, null);
+            var proxy = new ReqRespProxy<EpoxyConnection>(testClientServer.ClientConnection);
+            var request = new Dummy { int_value = 100 };
+
+            errorLayer.SetState(MessageType.Request, errorOnSend: false, errorOnReceive: true);
+            IMessage<Dummy> response = await proxy.MethodAsync(request);
+            Assert.IsTrue(response.IsError);
+            Assert.AreEqual(2, response.Error.Deserialize().error_code);
+
+            errorLayer.SetState(MessageType.Response, errorOnSend: true, errorOnReceive: false);
+            response = await proxy.MethodAsync(request);
+            Assert.IsTrue(response.IsError);
+            Assert.AreEqual(1, response.Error.Deserialize().error_code);
+
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
+        }
+
 
         [Test]
         public async Task GeneratedGenericService_GeneratedGenericProxy_PayloadResponse()
@@ -157,7 +227,8 @@ namespace UnitTest.Epoxy
             Assert.IsFalse(response.IsError);
             Assert.AreEqual(101, response.Payload.Deserialize().int_value);
 
-            await testClientServer.Transport.StopAsync();
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -171,34 +242,107 @@ namespace UnitTest.Epoxy
             Assert.That(exception.Message, Is.StringContaining("registered as invalid type"));
         }
 
+        class TestLayer_IntValue : ILayer<Dummy>
+        {
+            readonly int expectedValue;
+
+            public TestLayer_IntValue(int value)
+            {
+                expectedValue = value;
+            }
+
+            public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
+            {
+                layerData.int_value = expectedValue;
+                return null;
+            }
+
+            public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData)
+            {
+                if (layerData.int_value != expectedValue)
+                {
+                    throw new ArgumentException(String.Format("Bad layer data: expected {0}, got {1}",
+                                                              expectedValue, layerData.int_value));
+                }
+                return null;
+            }
+        }
+
+        class TestLayer_ReturnErrors : ILayer<Dummy>
+        {
+            MessageType badMessageType;
+            bool errorOnSend;
+            bool errorOnReceive;
+
+            public void SetState(MessageType badMessageType, bool errorOnSend, bool errorOnReceive)
+            {
+                this.badMessageType = badMessageType;
+                this.errorOnSend = errorOnSend;
+                this.errorOnReceive = errorOnReceive;
+            }
+
+            public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
+            {
+                if (errorOnSend && messageType == badMessageType)
+                {
+                    return new Error { error_code = 1, message = String.Format("Send error {0}", messageType.ToString()) };
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData)
+            {
+                if (errorOnReceive && messageType == badMessageType)
+                {
+                    return new Error { error_code = 2, message = String.Format("Receive error {0}", messageType.ToString()) };
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
         public class TestClientServer<TService>
         {
             public TService Service;
-            public EpoxyTransport Transport;
+            public EpoxyTransport ServiceTransport;
             public EpoxyListener Listener;
             public EpoxyConnection ClientConnection;
+            public EpoxyTransport ClientTransport;
         }
 
-        public static async Task<TestClientServer<TService>> SetupTestClientServer<TService>() where TService : class, IService, new()
+        public static async Task<TestClientServer<TService>> SetupTestClientServer<TService>(ILayerStack serviceLayerStack = null,
+                                                                                              ILayerStack clientLayerStack = null) where TService : class, IService, new()
         {
             var testService = new TService();
 
-            EpoxyTransport transport = new EpoxyTransportBuilder()
+            EpoxyTransport serviceTransport = new EpoxyTransportBuilder()
                 // some tests rely on the use of DebugExceptionHandler to assert things about the error message
                 .SetUnhandledExceptionHandler(Transport.DebugExceptionHandler)
+                .SetLayerStack(serviceLayerStack)
                 .Construct();
-            EpoxyListener listener = transport.MakeListener(new IPEndPoint(IPAddress.Loopback, 0));
+            EpoxyListener listener = serviceTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, 0));
             listener.AddService(testService);
             await listener.StartAsync();
 
-            EpoxyConnection clientConnection = await transport.ConnectToAsync(listener.ListenEndpoint);
+            EpoxyTransport clientTransport = new EpoxyTransportBuilder()
+                // some tests rely on the use of DebugExceptionHandler to assert things about the error message
+                .SetUnhandledExceptionHandler(Transport.DebugExceptionHandler)
+                .SetLayerStack(clientLayerStack)
+                .Construct();
+            EpoxyConnection clientConnection = await clientTransport.ConnectToAsync(listener.ListenEndpoint);
 
             return new TestClientServer<TService>
             {
                 Service = testService,
-                Transport = transport,
+                ServiceTransport = serviceTransport,
                 Listener = listener,
                 ClientConnection = clientConnection,
+                ClientTransport = clientTransport
             };
         }
 

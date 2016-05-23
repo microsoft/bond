@@ -12,29 +12,17 @@ namespace Bond.Comm.Epoxy
 
     public class EpoxyTransportBuilder : TransportBuilder<EpoxyTransport>
     {
-        private ExceptionHandler m_exceptionHandler;
-
-        public override TransportBuilder<EpoxyTransport> SetUnhandledExceptionHandler(ExceptionHandler handler)
-        {
-            if (handler == null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-
-            m_exceptionHandler = handler;
-            return this;
-        }
-
         public override EpoxyTransport Construct()
         {
-            if (m_exceptionHandler == null)
+            var exceptionHandler = GetUnhandledExceptionHandler();
+            if (exceptionHandler == null)
             {
                 throw new InvalidOperationException(
                     "Cannot create transport without an unhandled exception handler. "
                     + nameof(SetUnhandledExceptionHandler) + " must be called before " + nameof(Construct));
             }
 
-            return new EpoxyTransport(m_exceptionHandler);
+            return new EpoxyTransport(exceptionHandler, LayerStack);
         }
     }
 
@@ -42,23 +30,35 @@ namespace Bond.Comm.Epoxy
     {
         public const int DefaultPort = 25188;
 
-        private readonly ExceptionHandler m_exceptionHandler;
+        readonly ExceptionHandler exceptionHandler;
+        readonly ILayerStack layerStack;
 
-        public EpoxyTransport(ExceptionHandler exceptionHandler)
+        public EpoxyTransport(ExceptionHandler exceptionHandler, ILayerStack layerStack)
         {
             if (exceptionHandler == null)
             {
                 throw new ArgumentNullException(nameof(exceptionHandler));
             }
 
-            m_exceptionHandler = exceptionHandler;
+            this.exceptionHandler = exceptionHandler;
+
+            // Layer stack may be null
+            this.layerStack = layerStack;
         }
 
         public override ExceptionHandler UnhandledExceptionHandler
         {
             get
             {
-                return m_exceptionHandler;
+                return exceptionHandler;
+            }
+        }
+
+        public override ILayerStack LayerStack
+        {
+            get
+            {
+                return layerStack;
             }
         }
 

@@ -29,10 +29,19 @@ namespace Bond.Comm
     /// </typeparam>
     public abstract class TransportBuilder<TTransport>
     {
+        ExceptionHandler exceptionHandler;
+
+        protected ExceptionHandler GetUnhandledExceptionHandler()
+        {
+            return exceptionHandler;
+        }
+
+        protected ILayerStack LayerStack { get; private set; }
+
         /// <summary>
         /// Set the unhandled exception handler.
         /// </summary>
-        /// <param name="handler">The exception handler.</param>
+        /// <param name="exceptionHandler">The exception handler.</param>
         /// <returns>The builder.</returns>
         /// <remarks>
         /// The unhandled exception handler is invoked when an exception
@@ -40,7 +49,31 @@ namespace Bond.Comm
         /// handler can be used to convert exceptions into Bond errors, log
         /// exceptions, and so on.
         /// </remarks>
-        public abstract TransportBuilder<TTransport> SetUnhandledExceptionHandler(ExceptionHandler handler);
+        public virtual TransportBuilder<TTransport> SetUnhandledExceptionHandler(ExceptionHandler exceptionHandler)
+        {
+            if (exceptionHandler == null)
+            {
+                throw new ArgumentNullException(nameof(exceptionHandler));
+            }
+
+            this.exceptionHandler = exceptionHandler;
+            return this;
+        }
+
+        /// <summary>
+        /// Set the layer stack.
+        /// </summary>
+        /// <param name="layerStack">The layer stack.</param>
+        /// <returns>The builder.</returns>
+        /// <remarks>
+        /// The layer stack supplies the set of layers to be used
+        /// by the built transport. May be null.
+        /// </remarks>
+        public virtual TransportBuilder<TTransport> SetLayerStack(ILayerStack layerStack)
+        {
+            LayerStack = layerStack;
+            return this;
+        }
 
         /// <summary>
         /// Create the transport.
@@ -60,6 +93,11 @@ namespace Bond.Comm
         /// The unhandled exception handler.
         /// </summary>
         public abstract ExceptionHandler UnhandledExceptionHandler { get; }
+
+        /// <summary>
+        /// The layer stack for this transport. May be null.
+        /// </summary>
+        public abstract ILayerStack LayerStack { get; }
 
         /// <summary>
         /// Starts an asynchronous operation to connect to the specified

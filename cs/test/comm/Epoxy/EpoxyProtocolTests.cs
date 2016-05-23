@@ -10,6 +10,7 @@ namespace UnitTest.Epoxy
     using Bond.Comm;
     using Bond.Comm.Epoxy;
     using NUnit.Framework;
+    using UnitTest.Comm;
 
     [TestFixture]
     class EpoxyProtocolTests
@@ -23,6 +24,8 @@ namespace UnitTest.Epoxy
         private static readonly Error goodPayload = new Error();
         private static readonly IMessage<Error> meaninglessMessage = new Message<Error>(goodPayload);
         private static readonly ProtocolErrorCode meaninglessErrorCode = ProtocolErrorCode.GENERIC_ERROR;
+        private static readonly ArraySegment<byte> emptyLayerData = new ArraySegment<byte>();
+        private static readonly ArraySegment<byte> nonEmptyLayerData = new ArraySegment<byte>(new byte[1] { 3 });
 
         private static readonly EpoxyHeaders goodRequestHeaders = new EpoxyHeaders
         {
@@ -52,8 +55,14 @@ namespace UnitTest.Epoxy
             payload_type = (PayloadType)(-100),
             request_id = GoodRequestId
         };
+        private static readonly Dummy DummyObject = new Dummy
+        {
+            int_value = 0x1234
+        };
+        private static readonly Bond.IBonded GoodLayerData = new Bond.Bonded<Dummy>(DummyObject);
 
         private static Frame goodRequestFrame;
+        private static Frame goodRequestLayerDataFrame;
         private static Frame goodResponseFrame;
         private static Frame goodEventFrame;
         private static Frame shortRequestFrame;         // a request frame with EpoxyHeaders but no PayloadData
@@ -61,23 +70,22 @@ namespace UnitTest.Epoxy
         private static Frame doublePayloadRequestFrame; // a request frame with duplicate PayloadData
         private static Frame backwardsRequestFrame;     // a request frame with PayloadData before EpoxyHeaders
         private static Frame protocolErrorFrame;        // a frame with a well-formed ProtocolError
+        private static Frame doubleProtocolErrorFrame;  // a frame with two ProtocolError frames
         private static readonly Frame emptyFrame = new Frame(0);
 
-
-        private static IEnumerable<EpoxyProtocol.ClassifyState> StatesExcept(params EpoxyProtocol.ClassifyState[] excludedStates)
-        {
-            return allStates.Where(state => !excludedStates.Contains(state));
-        }
 
         [TestFixtureSetUp]
         public static void CreateFrames()
         {
             goodRequestFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, PayloadType.Request, meaninglessMessage);
+                GoodRequestId, GoodMethod, PayloadType.Request, meaninglessMessage, null);
+            goodRequestLayerDataFrame = EpoxyConnection.MessageToFrame(
+                GoodRequestId, GoodMethod, PayloadType.Request, meaninglessMessage, GoodLayerData);
+
             goodResponseFrame = EpoxyConnection.MessageToFrame(
-                GoodResponseId, GoodMethod, PayloadType.Response, meaninglessMessage);
+                GoodResponseId, GoodMethod, PayloadType.Response, meaninglessMessage, null);
             goodEventFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, PayloadType.Event, meaninglessMessage);
+                GoodRequestId, GoodMethod, PayloadType.Event, meaninglessMessage, null);
             var goodFrameletCount = goodRequestFrame.Count;
 
             shortRequestFrame = new Frame(goodFrameletCount - 1);
@@ -107,6 +115,9 @@ namespace UnitTest.Epoxy
             }
 
             protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null);
+
+            doubleProtocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null);
+            doubleProtocolErrorFrame.Add(doubleProtocolErrorFrame.Framelets[0]);
         }
 
         // For each state that is implemented as a function, test:
@@ -115,29 +126,7 @@ namespace UnitTest.Epoxy
         //  * that it transitions to an internal error if any state left by previous transitions is unacceptable
         //  * that it transitions to an expected error state if the frame is malformed
 
-        [Test]
-        public void TransitionExpectFrame_Valid()
-        {
-            var after = EpoxyProtocol.TransitionExpectFrame(EpoxyProtocol.ClassifyState.ExpectFrame, goodRequestFrame);
-            Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectFirstFramelet, after);
-        }
 
-        [Test]
-        public void TransitionExpectFrame_InvalidStates()
-        {
-            foreach (var invalid in StatesExcept(EpoxyProtocol.ClassifyState.ExpectFrame))
-            {
-                var after = EpoxyProtocol.TransitionExpectFrame(invalid, goodRequestFrame);
-                Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-            }
-        }
-
-        [Test]
-        public void TransitionExpectFrame_InvalidPreconditions()
-        {
-            var after = EpoxyProtocol.TransitionExpectFrame(EpoxyProtocol.ClassifyState.ExpectFrame, null);
-            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-        }
 
         [Test]
         public void TransitionExpectFirstFramelet_Valid()
@@ -152,30 +141,6 @@ namespace UnitTest.Epoxy
             after = EpoxyProtocol.TransitionExpectFirstFramelet(
                 EpoxyProtocol.ClassifyState.ExpectFirstFramelet, protocolErrorFrame, ref errorCode);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectProtocolError, after);
-            Assert.Null(errorCode);
-        }
-
-        [Test]
-        public void TransitionExpectFirstFramelet_InvalidStates()
-        {
-            foreach (var invalid in StatesExcept(EpoxyProtocol.ClassifyState.ExpectFirstFramelet))
-            {
-                ProtocolErrorCode? errorCode = null;
-
-                var after = EpoxyProtocol.TransitionExpectFirstFramelet(invalid, goodRequestFrame, ref errorCode);
-                Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-                Assert.Null(errorCode);
-            }
-        }
-
-        [Test]
-        public void TransitionExpectFirstFramelet_InvalidPreconditions()
-        {
-            ProtocolErrorCode? errorCode = null;
-
-            var after = EpoxyProtocol.TransitionExpectFirstFramelet(
-                EpoxyProtocol.ClassifyState.ExpectFirstFramelet, null, ref errorCode);
-            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(errorCode);
         }
 
@@ -205,7 +170,18 @@ namespace UnitTest.Epoxy
 
             var after = EpoxyProtocol.TransitionExpectEpoxyHeaders(
                 EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, goodRequestFrame, ref headers, ref errorCode);
-            Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectPayload, after);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, after);
+            Assert.NotNull(headers);
+            Assert.AreEqual(GoodRequestId, headers.request_id);
+            Assert.AreEqual(0, headers.error_code);
+            Assert.AreEqual(GoodMethod, headers.method_name);
+            Assert.AreEqual(PayloadType.Request, headers.payload_type);
+            Assert.Null(errorCode);
+
+            after = EpoxyProtocol.TransitionExpectEpoxyHeaders(
+                EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, goodRequestLayerDataFrame,
+                ref headers, ref errorCode);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, after);
             Assert.NotNull(headers);
             Assert.AreEqual(GoodRequestId, headers.request_id);
             Assert.AreEqual(0, headers.error_code);
@@ -215,34 +191,12 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
-        public void TransitionExpectEpoxyHeaders_InvalidStates()
-        {
-            foreach (var invalid in StatesExcept(EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders))
-            {
-                EpoxyHeaders headers = null;
-                ProtocolErrorCode? errorCode = null;
-
-                var after = EpoxyProtocol.TransitionExpectEpoxyHeaders(
-                    invalid, goodRequestFrame, ref headers, ref errorCode);
-                Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-                Assert.Null(headers);
-                Assert.Null(errorCode);
-            }
-        }
-
-        [Test]
         public void TransitionExpectEpoxyHeaders_InvalidPreconditions()
         {
             EpoxyHeaders headers = null;
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectEpoxyHeaders(
-                EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, null, ref headers, ref errorCode);
-            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-            Assert.Null(headers);
-            Assert.Null(errorCode);
-
-            after = EpoxyProtocol.TransitionExpectEpoxyHeaders(
                 EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, emptyFrame, ref headers, ref errorCode);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(headers);
@@ -256,33 +210,80 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
+        public void TransitionOptionalExpectLayerData_Valid()
+        {
+            var layerData = new ArraySegment<byte>();
+            ProtocolErrorCode? errorCode = null;
+
+            var after = EpoxyProtocol.TransitionExpectOptionalLayerData(
+                EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, goodRequestFrame, goodRequestHeaders,
+                ref layerData, ref errorCode);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectPayload, after);
+            Assert.Null(layerData.Array);
+            Assert.Null(errorCode);
+
+            after = EpoxyProtocol.TransitionExpectOptionalLayerData(
+                EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, goodRequestLayerDataFrame, goodRequestHeaders,
+                ref layerData, ref errorCode);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectPayload, after);
+            Assert.NotNull(layerData.Array);
+            Assert.Null(errorCode);
+        }
+
+        [Test]
+        public void TransitionOptionalExpectLayerData_InvalidPreconditions()
+        {
+            var layerData = new ArraySegment<byte>();
+            ProtocolErrorCode? errorCode = null;
+
+            var after = EpoxyProtocol.TransitionExpectOptionalLayerData(
+                EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, goodRequestFrame, null,
+                ref layerData, ref errorCode);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
+            Assert.Null(layerData.Array);
+            Assert.Null(errorCode);
+        }
+
+        [Test]
+        public void TransitionOptionalExpectLayerData_MalformedFrame()
+        {
+            var payload = new ArraySegment<byte>();
+            ProtocolErrorCode? errorCode = null;
+
+            var after = EpoxyProtocol.TransitionExpectPayload(
+                EpoxyProtocol.ClassifyState.ExpectPayload, emptyFrame, goodRequestHeaders, emptyLayerData,
+                ref payload, ref errorCode);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
+            Assert.Null(payload.Array);
+            Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
+
+            after = EpoxyProtocol.TransitionExpectPayload(
+                EpoxyProtocol.ClassifyState.ExpectPayload, shortRequestFrame, goodRequestHeaders, emptyLayerData,
+                ref payload, ref errorCode);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
+            Assert.Null(payload.Array);
+            Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
+        }
+
+        [Test]
         public void TransitionExpectPayload_Valid()
         {
             var payload = new ArraySegment<byte>();
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectPayload(
-                EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestFrame, goodRequestHeaders, ref payload,
-                ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestFrame, goodRequestHeaders, emptyLayerData,
+                ref payload, ref errorCode);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectEndOfFrame, after);
             Assert.NotNull(payload.Array);
             Assert.Null(errorCode);
-        }
 
-        [Test]
-        public void TransitionExpectPayload_InvalidStates()
-        {
-            foreach (var invalid in StatesExcept(EpoxyProtocol.ClassifyState.ExpectPayload))
-            {
-                var payload = new ArraySegment<byte>();
-                ProtocolErrorCode? errorCode = null;
-
-                var after = EpoxyProtocol.TransitionExpectPayload(
-                    invalid, goodRequestFrame, goodRequestHeaders, ref payload, ref errorCode);
-                Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-                Assert.Null(payload.Array);
-                Assert.Null(errorCode);
-            }
+            after = EpoxyProtocol.TransitionExpectPayload(
+                EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestLayerDataFrame, goodRequestHeaders, nonEmptyLayerData,
+                ref payload, ref errorCode);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectEndOfFrame, after);
+            Assert.NotNull(payload.Array);
+            Assert.Null(errorCode);
         }
 
         [Test]
@@ -292,13 +293,8 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectPayload(
-                EpoxyProtocol.ClassifyState.ExpectPayload, null, goodRequestHeaders, ref payload, ref errorCode);
-            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-            Assert.Null(payload.Array);
-            Assert.Null(errorCode);
-
-            after = EpoxyProtocol.TransitionExpectPayload(
-                EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestFrame, null, ref payload, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestFrame, null, emptyLayerData,
+                ref payload, ref errorCode);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(payload.Array);
             Assert.Null(errorCode);
@@ -311,14 +307,29 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectPayload(
-                EpoxyProtocol.ClassifyState.ExpectPayload, emptyFrame, goodRequestHeaders, ref payload, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectPayload, emptyFrame, goodRequestHeaders, emptyLayerData,
+                ref payload, ref errorCode);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
 
             after = EpoxyProtocol.TransitionExpectPayload(
-                EpoxyProtocol.ClassifyState.ExpectPayload, shortRequestFrame, goodRequestHeaders, ref payload,
-                ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectPayload, shortRequestFrame, goodRequestHeaders, emptyLayerData,
+                ref payload, ref errorCode);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
+            Assert.Null(payload.Array);
+            Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
+
+            after = EpoxyProtocol.TransitionExpectPayload(
+                EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestLayerDataFrame, goodRequestHeaders, emptyLayerData,
+                ref payload, ref errorCode);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
+            Assert.Null(payload.Array);
+            Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
+
+            after = EpoxyProtocol.TransitionExpectPayload(
+                EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestFrame, goodRequestHeaders, nonEmptyLayerData,
+                ref payload, ref errorCode);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
@@ -330,32 +341,13 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectEndOfFrame(
-                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, goodRequestFrame, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, goodRequestFrame, emptyLayerData, ref errorCode);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.FrameComplete, after);
             Assert.Null(errorCode);
-        }
 
-        [Test]
-        public void TransitionExpectEndOfFrame_InvalidStates()
-        {
-            foreach (var invalid in StatesExcept(EpoxyProtocol.ClassifyState.ExpectEndOfFrame))
-            {
-                ProtocolErrorCode? errorCode = null;
-
-                var after = EpoxyProtocol.TransitionExpectEndOfFrame(invalid, goodRequestFrame, ref errorCode);
-                Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-                Assert.Null(errorCode);
-            }
-        }
-
-        [Test]
-        public void TransitionExpectEndOfFrame_InvalidPrecondition()
-        {
-            ProtocolErrorCode? errorCode = null;
-
-            var after = EpoxyProtocol.TransitionExpectEndOfFrame(
-                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, null, ref errorCode);
-            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
+            after = EpoxyProtocol.TransitionExpectEndOfFrame(
+                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, goodRequestLayerDataFrame, nonEmptyLayerData, ref errorCode);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.FrameComplete, after);
             Assert.Null(errorCode);
         }
 
@@ -365,7 +357,7 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectEndOfFrame(
-                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, doublePayloadRequestFrame, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, doublePayloadRequestFrame, emptyLayerData, ref errorCode);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
         }
@@ -383,30 +375,6 @@ namespace UnitTest.Epoxy
             after = EpoxyProtocol.TransitionFrameComplete(
                 EpoxyProtocol.ClassifyState.FrameComplete, goodResponseHeaders, ref errorCode);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ValidFrame, after);
-            Assert.Null(errorCode);
-        }
-
-        [Test]
-        public void TransitionFrameComplete_InvalidStates()
-        {
-            foreach (var invalid in StatesExcept(EpoxyProtocol.ClassifyState.FrameComplete))
-            {
-                ProtocolErrorCode? errorCode = null;
-
-                var after = EpoxyProtocol.TransitionFrameComplete(invalid, goodRequestHeaders, ref errorCode);
-                Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-                Assert.Null(errorCode);
-            }
-        }
-
-        [Test]
-        public void TransitionFrameComplete_InvalidPreconditions()
-        {
-            ProtocolErrorCode? errorCode = null;
-
-            var after = EpoxyProtocol.TransitionFrameComplete(
-                EpoxyProtocol.ClassifyState.FrameComplete, null, ref errorCode);
-            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(errorCode);
         }
 
@@ -440,29 +408,6 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
-        public void TransitionValidFrame_InvalidStates()
-        {
-            foreach (var invalid in StatesExcept(EpoxyProtocol.ClassifyState.ValidFrame))
-            {
-                var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
-
-                var after = EpoxyProtocol.TransitionValidFrame(invalid, goodRequestHeaders, ref disposition);
-                Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-                Assert.AreEqual(EpoxyProtocol.FrameDisposition.Indeterminate, disposition);
-            }
-        }
-
-        [Test]
-        public void TransitionValidFrame_InvalidPreconditions()
-        {
-            var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
-
-            var after = EpoxyProtocol.TransitionValidFrame(EpoxyProtocol.ClassifyState.ValidFrame, null, ref disposition);
-            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-            Assert.AreEqual(EpoxyProtocol.FrameDisposition.Indeterminate, disposition);
-        }
-
-        [Test]
         public void TransitionExpectProtocolError_Valid()
         {
             ProtocolError error = null;
@@ -476,19 +421,14 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
-        public void TransitionExpectProtocolError_InvalidStates()
+        public void TransitionExpectProtocolError_Error()
         {
-            foreach (var invalid in StatesExcept(EpoxyProtocol.ClassifyState.ExpectProtocolError))
-            {
-                ProtocolError error = null;
-                var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
+            ProtocolError error = null;
+            var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
 
-                var after = EpoxyProtocol.TransitionExpectProtocolError(
-                    invalid, protocolErrorFrame, ref error, ref disposition);
-                Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-                Assert.Null(error);
-                Assert.AreEqual(EpoxyProtocol.FrameDisposition.Indeterminate, disposition);
-            }
+            var after = EpoxyProtocol.TransitionExpectProtocolError(
+                EpoxyProtocol.ClassifyState.ExpectProtocolError, doubleProtocolErrorFrame, ref error, ref disposition);
+            Assert.AreEqual(EpoxyProtocol.ClassifyState.ErrorInErrorFrame, after);
         }
 
         [Test]
@@ -498,12 +438,6 @@ namespace UnitTest.Epoxy
             var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
 
             var after = EpoxyProtocol.TransitionExpectProtocolError(
-                EpoxyProtocol.ClassifyState.ExpectProtocolError, null, ref error, ref disposition);
-            Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
-            Assert.Null(error);
-            Assert.AreEqual(EpoxyProtocol.FrameDisposition.Indeterminate, disposition);
-
-            after = EpoxyProtocol.TransitionExpectProtocolError(
                 EpoxyProtocol.ClassifyState.ExpectProtocolError, backwardsRequestFrame, ref error, ref disposition);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(error);
@@ -538,6 +472,12 @@ namespace UnitTest.Epoxy
             Assert.Null(protocolErrorResult.Headers);
             Assert.Null(protocolErrorResult.Payload.Array);
             Assert.AreEqual(meaninglessErrorCode, protocolErrorResult.Error.error_code);
+
+            var doubleProtocolErrorResult = EpoxyProtocol.Classify(doubleProtocolErrorFrame);
+            Assert.AreEqual(EpoxyProtocol.FrameDisposition.HangUp, doubleProtocolErrorResult.Disposition);
+            Assert.Null(doubleProtocolErrorResult.Headers);
+            Assert.Null(doubleProtocolErrorResult.Payload.Array);
+            Assert.AreEqual(ProtocolErrorCode.ERROR_IN_ERROR, doubleProtocolErrorResult.Error.error_code);
 
             var eventResult = EpoxyProtocol.Classify(goodEventFrame);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.DeliverEventToService, eventResult.Disposition);
