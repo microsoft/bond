@@ -216,31 +216,31 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
-        public void Frame_ReadAsync_EndOfStreamInCount_Throws()
+        public void Frame_ReadAsync_EndOfStreamInCount_ReturnsNull()
         {
             var tooShortStream = new FrameBuilder().Count(1).TakeTooShortStream();
-            Assert.Throws<EndOfStreamException>(async () => await Frame.ReadAsync(tooShortStream, CancellationToken.None));
+            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None).Result);
         }
 
         [Test]
-        public void Frame_ReadAsync_EndOfStreamInType_Throws()
+        public void Frame_ReadAsync_EndOfStreamInType_ReturnsNull()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).TakeTooShortStream();
-            Assert.Throws<EndOfStreamException>(async () => await Frame.ReadAsync(tooShortStream, CancellationToken.None));
+            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None).Result);
         }
 
         [Test]
-        public void Frame_ReadAsync_EndOfStreamInSize_Throws()
+        public void Frame_ReadAsync_EndOfStreamInSize_ReturnsNull()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).TakeTooShortStream();
-            Assert.Throws<EndOfStreamException>(async () => await Frame.ReadAsync(tooShortStream, CancellationToken.None));
+            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None).Result);
         }
 
         [Test]
-        public void Frame_ReadAsync_EndOfStreamInContent_Throws()
+        public void Frame_ReadAsync_EndOfStreamInContent_ReturnsNull()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).Content(AnyContents).TakeTooShortStream();
-            Assert.Throws<EndOfStreamException>(async () => await Frame.ReadAsync(tooShortStream, CancellationToken.None));
+            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None).Result);
         }
 
         [Test]

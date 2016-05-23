@@ -196,7 +196,7 @@ namespace Bond.Comm.Epoxy
 
                 return frame;
             }
-            catch (OperationCanceledException)
+            catch (Exception ex) when (ex is OperationCanceledException || ex is EndOfStreamException || ex is ObjectDisposedException)
             {
                 return null;
             }

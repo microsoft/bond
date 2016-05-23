@@ -445,7 +445,7 @@ namespace Bond.Comm.Epoxy
                     {
                         Log.Information("{0}.{1} EOS encountered, so disconnecting.", this,
                             nameof(DoConnectedAsync));
-                        return State.Disconnected;
+                        return State.Disconnecting;
                     }
                 }
                 catch (EpoxyProtocolErrorException pex)
