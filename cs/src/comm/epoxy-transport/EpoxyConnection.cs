@@ -46,14 +46,14 @@ namespace Bond.Comm.Epoxy
         readonly EpoxySocket netSocket;
 
         readonly object m_requestsLock;
-        readonly Dictionary<uint, TaskCompletionSource<IMessage>> m_outstandingRequests;
+        readonly Dictionary<ulong, TaskCompletionSource<IMessage>> m_outstandingRequests;
 
         State m_state;
         readonly TaskCompletionSource<bool> m_startTask;
         readonly TaskCompletionSource<bool> m_stopTask;
         readonly CancellationTokenSource m_shutdownTokenSource;
 
-        long m_requestId;
+        long prevConversationId;
 
         ProtocolErrorCode m_protocolError;
         Error m_errorDetails;
@@ -83,15 +83,15 @@ namespace Bond.Comm.Epoxy
             RemoteEndPoint = (IPEndPoint) socket.RemoteEndPoint;
 
             m_requestsLock = new object();
-            m_outstandingRequests = new Dictionary<uint, TaskCompletionSource<IMessage>>();
+            m_outstandingRequests = new Dictionary<ulong, TaskCompletionSource<IMessage>>();
 
             m_state = State.Created;
             m_startTask = new TaskCompletionSource<bool>();
             m_stopTask = new TaskCompletionSource<bool>();
             m_shutdownTokenSource = new CancellationTokenSource();
 
-            // start at -1 or 0 so the first request ID is 1 or 2.
-            m_requestId = connectionType == ConnectionType.Client ? -1 : 0;
+            // start at -1 or 0 so the first conversation ID is 1 or 2.
+            prevConversationId = (connectionType == ConnectionType.Client) ? -1 : 0;
         }
 
         internal static EpoxyConnection MakeClientConnection(
@@ -137,14 +137,14 @@ namespace Bond.Comm.Epoxy
             return $"{nameof(EpoxyConnection)}(local: {LocalEndPoint}, remote: {RemoteEndPoint})";
         }
 
-        internal static Frame MessageToFrame(uint requestId, string methodName, PayloadType type, IMessage payload, IBonded layerData)
+        internal static Frame MessageToFrame(ulong conversationId, string methodName, PayloadType type, IMessage payload, IBonded layerData)
         {
             var frame = new Frame();
 
             {
                 var headers = new EpoxyHeaders
                 {
-                    request_id = requestId,
+                    conversation_id = conversationId,
                     payload_type = type,
                     method_name = methodName ?? string.Empty, // method_name is not nullable
                 };
@@ -210,7 +210,7 @@ namespace Bond.Comm.Epoxy
 
         private async Task<IMessage> SendRequestAsync<TPayload>(string methodName, IMessage<TPayload> request)
         {
-            uint requestId = AllocateNextRequestId();
+            var conversationId = AllocateNextConversationId();
 
             var sendContext = new EpoxySendContext(this);
             IBonded layerData;
@@ -219,25 +219,26 @@ namespace Bond.Comm.Epoxy
             if (layerError != null)
             {
                 Log.Debug("{0}.{1}: Sending request {2}/{3} failed due to layer error (Code: {4}, Message: {5}).",
-                            this, nameof(SendRequestAsync), requestId, methodName, layerError.error_code, layerError.message);
+                            this, nameof(SendRequestAsync), conversationId, methodName, layerError.error_code,
+                            layerError.message);
                 return Message.FromError(layerError);
             }
 
-            var frame = MessageToFrame(requestId, methodName, PayloadType.Request, request, layerData);
+            var frame = MessageToFrame(conversationId, methodName, PayloadType.Request, request, layerData);
 
-            Log.Debug("{0}.{1}: Sending request {2}/{3}.", this, nameof(SendRequestAsync), requestId, methodName);
+            Log.Debug("{0}.{1}: Sending request {2}/{3}.", this, nameof(SendRequestAsync), conversationId, methodName);
             var responseCompletionSource = new TaskCompletionSource<IMessage>();
             lock (m_requestsLock)
             {
-                m_outstandingRequests.Add(requestId, responseCompletionSource);
+                m_outstandingRequests.Add(conversationId, responseCompletionSource);
             }
 
             await SendFrameAsync(frame, responseCompletionSource);
-            Log.Debug("{0}.{1}: Sent request {2}/{3}.", this, nameof(SendRequestAsync), requestId, methodName);
+            Log.Debug("{0}.{1}: Sent request {2}/{3}.", this, nameof(SendRequestAsync), conversationId, methodName);
             return await responseCompletionSource.Task;
         }
 
-        private async Task SendReplyAsync(uint requestId, IMessage response)
+        private async Task SendReplyAsync(ulong conversationId, IMessage response)
         {
             var sendContext = new EpoxySendContext(this);
             IBonded layerData;
@@ -247,15 +248,15 @@ namespace Bond.Comm.Epoxy
             if (layerError != null)
             {
                 Log.Debug("{0}.{1}: Sending reply for request ID {2} failed due to layer error (Code: {3}, Message: {4}).",
-                            this, nameof(SendReplyAsync), requestId, layerError.error_code, layerError.message);
+                            this, nameof(SendReplyAsync), conversationId, layerError.error_code, layerError.message);
                 response = Message.FromError(layerError);
             }
 
-            var frame = MessageToFrame(requestId, null, PayloadType.Response, response, layerData);
-            Log.Debug("{0}.{1}: Sending reply for request ID {2}.", this, nameof(SendReplyAsync), requestId);
+            var frame = MessageToFrame(conversationId, null, PayloadType.Response, response, layerData);
+            Log.Debug("{0}.{1}: Sending reply for conversation ID {2}.", this, nameof(SendReplyAsync), conversationId);
 
             await SendFrameAsync(frame);
-            Log.Debug("{0}.{1}: Sent reply for request ID {2}.", this, nameof(SendReplyAsync), requestId);
+            Log.Debug("{0}.{1}: Sent reply for conversation ID {2}.", this, nameof(SendReplyAsync), conversationId);
         }
 
         private async Task SendFrameAsync(Frame frame, TaskCompletionSource<IMessage> responseCompletionSource = null)
@@ -286,7 +287,7 @@ namespace Bond.Comm.Epoxy
 
         internal async Task SendEventAsync(string methodName, IMessage message)
         {
-            uint requestId = AllocateNextRequestId();
+            var conversationId = AllocateNextConversationId();
 
             var sendContext = new EpoxySendContext(this);
             IBonded layerData;
@@ -295,16 +296,16 @@ namespace Bond.Comm.Epoxy
             if (layerError != null)
             {
                 Log.Debug("{0}.{1}: Sending event {2}/{3} failed due to layer error (Code: {4}, Message: {5}).",
-                            this, nameof(SendEventAsync), requestId, methodName, layerError.error_code, layerError.message);
+                            this, nameof(SendEventAsync), conversationId, methodName, layerError.error_code, layerError.message);
                 return;
             }
 
-            var frame = MessageToFrame(requestId, methodName, PayloadType.Event, message, layerData);
+            var frame = MessageToFrame(conversationId, methodName, PayloadType.Event, message, layerData);
 
-            Log.Debug("{0}.{1}: Sending event {2}/{3}.", this, nameof(SendEventAsync), requestId, methodName);
+            Log.Debug("{0}.{1}: Sending event {2}/{3}.", this, nameof(SendEventAsync), conversationId, methodName);
 
             await SendFrameAsync(frame);
-            Log.Debug("{0}.{1}: Sent event {2}/{3}.", this, nameof(SendEventAsync), requestId, methodName);
+            Log.Debug("{0}.{1}: Sent event {2}/{3}.", this, nameof(SendEventAsync), conversationId, methodName);
         }
 
         internal Task StartAsync()
@@ -323,15 +324,15 @@ namespace Bond.Comm.Epoxy
             }
         }
 
-        private UInt32 AllocateNextRequestId()
+        private ulong AllocateNextConversationId()
         {
-            var requestIdLong = Interlocked.Add(ref m_requestId, 2);
-            if (requestIdLong > UInt32.MaxValue)
+            // Interlocked.Add() handles overflow by wrapping, not throwing.
+            var newConversationId = Interlocked.Add(ref prevConversationId, 2);
+            if (newConversationId < 0)
             {
-                throw new EpoxyProtocolErrorException("Exhausted request IDs");
+                throw new EpoxyProtocolErrorException("Exhausted conversation IDs");
             }
-
-            return unchecked((UInt32)requestIdLong);
+            return unchecked((ulong)newConversationId);
         }
 
         private async Task ConnectionLoop()
@@ -537,8 +538,8 @@ namespace Bond.Comm.Epoxy
         {
             if (headers.error_code != (int)ErrorCode.OK)
             {
-                Log.Error("{0}.{1}: Received request ID {2} with a non-zero error code.",
-                    this, nameof(DispatchRequest), headers.request_id);
+                Log.Error("{0}.{1}: Received conversation ID {2} with a non-zero error code.",
+                    this, nameof(DispatchRequest), headers.conversation_id);
                 m_protocolError = ProtocolErrorCode.PROTOCOL_VIOLATED;
                 return State.SendProtocolError;
             }
@@ -562,7 +563,7 @@ namespace Bond.Comm.Epoxy
                     result = Message.FromError(layerError);
                 }
 
-                await SendReplyAsync(headers.request_id, result);
+                await SendReplyAsync(headers.conversation_id, result);
             });
 
             // no state change needed
@@ -575,14 +576,14 @@ namespace Bond.Comm.Epoxy
 
             lock (m_requestsLock)
             {
-                if (!m_outstandingRequests.TryGetValue(headers.request_id, out responseCompletionSource))
+                if (!m_outstandingRequests.TryGetValue(headers.conversation_id, out responseCompletionSource))
                 {
                     Log.Error("{0}.{1}: Got a response with unexpected ID {2}.",
-                        this, nameof(DispatchResponse), headers.request_id);
+                        this, nameof(DispatchResponse), headers.conversation_id);
                     return;
                 }
 
-                m_outstandingRequests.Remove(headers.request_id);
+                m_outstandingRequests.Remove(headers.conversation_id);
             }
 
             IMessage response;
@@ -612,7 +613,7 @@ namespace Bond.Comm.Epoxy
             if (headers.error_code != (int)ErrorCode.OK)
             {
                 Log.Error("{0}.{1}: Received event ID {2} with a non-zero error code.",
-                    this, nameof(DispatchEvent), headers.request_id);
+                    this, nameof(DispatchEvent), headers.conversation_id);
                 return;
             }
 

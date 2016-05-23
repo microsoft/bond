@@ -32,28 +32,28 @@ namespace UnitTest.Epoxy
             error_code = 0,
             method_name = GoodMethod,
             payload_type = PayloadType.Request,
-            request_id = GoodRequestId
+            conversation_id = GoodRequestId
         };
         private static readonly EpoxyHeaders goodResponseHeaders = new EpoxyHeaders
         {
             error_code = 0,
             method_name = GoodMethod,
             payload_type = PayloadType.Response,
-            request_id = GoodResponseId
+            conversation_id = GoodResponseId
         };
         private static readonly EpoxyHeaders goodEventHeaders = new EpoxyHeaders
         {
             error_code = 0,
             method_name = GoodMethod,
             payload_type = PayloadType.Event,
-            request_id = GoodRequestId
+            conversation_id = GoodRequestId
         };
         private static readonly EpoxyHeaders unknownTypeHeaders = new EpoxyHeaders
         {
             error_code = 0,
             method_name = GoodMethod,
             payload_type = (PayloadType)(-100),
-            request_id = GoodRequestId
+            conversation_id = GoodRequestId
         };
         private static readonly Dummy DummyObject = new Dummy
         {
@@ -172,7 +172,7 @@ namespace UnitTest.Epoxy
                 EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, goodRequestFrame, ref headers, ref errorCode);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, after);
             Assert.NotNull(headers);
-            Assert.AreEqual(GoodRequestId, headers.request_id);
+            Assert.AreEqual(GoodRequestId, headers.conversation_id);
             Assert.AreEqual(0, headers.error_code);
             Assert.AreEqual(GoodMethod, headers.method_name);
             Assert.AreEqual(PayloadType.Request, headers.payload_type);
@@ -183,7 +183,7 @@ namespace UnitTest.Epoxy
                 ref headers, ref errorCode);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, after);
             Assert.NotNull(headers);
-            Assert.AreEqual(GoodRequestId, headers.request_id);
+            Assert.AreEqual(GoodRequestId, headers.conversation_id);
             Assert.AreEqual(0, headers.error_code);
             Assert.AreEqual(GoodMethod, headers.method_name);
             Assert.AreEqual(PayloadType.Request, headers.payload_type);
@@ -454,7 +454,7 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(goodRequestHeaders.error_code, requestResult.Headers.error_code);
             Assert.AreEqual(goodRequestHeaders.method_name, requestResult.Headers.method_name);
             Assert.AreEqual(goodRequestHeaders.payload_type, requestResult.Headers.payload_type);
-            Assert.AreEqual(goodRequestHeaders.request_id, requestResult.Headers.request_id);
+            Assert.AreEqual(goodRequestHeaders.conversation_id, requestResult.Headers.conversation_id);
             Assert.AreEqual(goodRequestFrame.Framelets[goodRequestFrame.Count - 1].Contents, requestResult.Payload);
             Assert.Null(requestResult.ErrorCode);
 
@@ -463,7 +463,7 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(goodResponseHeaders.error_code, responseResult.Headers.error_code);
             Assert.AreEqual(goodResponseHeaders.method_name, responseResult.Headers.method_name);
             Assert.AreEqual(goodResponseHeaders.payload_type, responseResult.Headers.payload_type);
-            Assert.AreEqual(goodResponseHeaders.request_id, responseResult.Headers.request_id);
+            Assert.AreEqual(goodResponseHeaders.conversation_id, responseResult.Headers.conversation_id);
             Assert.AreEqual(goodResponseFrame.Framelets[goodResponseFrame.Count - 1].Contents, responseResult.Payload);
             Assert.Null(requestResult.ErrorCode);
 
@@ -484,7 +484,7 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(goodEventHeaders.error_code, eventResult.Headers.error_code);
             Assert.AreEqual(goodEventHeaders.method_name, eventResult.Headers.method_name);
             Assert.AreEqual(goodEventHeaders.payload_type, eventResult.Headers.payload_type);
-            Assert.AreEqual(goodEventHeaders.request_id, eventResult.Headers.request_id);
+            Assert.AreEqual(goodEventHeaders.conversation_id, eventResult.Headers.conversation_id);
             Assert.AreEqual(goodEventFrame.Framelets[goodEventFrame.Count - 1].Contents, eventResult.Payload);
         }
 

@@ -331,9 +331,9 @@ namespace Bond.Comm.Epoxy
                     return ClassifyState.MalformedFrame;
             }
 
-            Log.Debug("{0}.{1}: Deserialized {2} with request ID {3} and payload type {4}.",
+            Log.Debug("{0}.{1}: Deserialized {2} with conversation ID {3} and payload type {4}.",
                 nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), nameof(EpoxyHeaders),
-                headers.request_id, headers.payload_type);
+                headers.conversation_id, headers.payload_type);
             return ClassifyState.ExpectOptionalLayerData;
         }
 
@@ -374,7 +374,7 @@ namespace Bond.Comm.Epoxy
 
             layerData = framelet.Contents;
             Log.Debug("{0}.{1}: Extracted {2}-byte layer data in request ID {3}.",
-                nameof(EpoxyProtocol), nameof(TransitionExpectOptionalLayerData), layerData.Count, headers.request_id);
+                nameof(EpoxyProtocol), nameof(TransitionExpectOptionalLayerData), layerData.Count, headers.conversation_id);
             return ClassifyState.ExpectPayload;
         }
 
@@ -410,8 +410,8 @@ namespace Bond.Comm.Epoxy
             }
 
             payload = framelet.Contents;
-            Log.Debug("{0}.{1}: Extracted {2}-byte payload in request ID {3}.",
-                nameof(EpoxyProtocol), nameof(TransitionExpectPayload), payload.Count, headers.request_id);
+            Log.Debug("{0}.{1}: Extracted {2}-byte payload in conversation ID {3}.",
+                nameof(EpoxyProtocol), nameof(TransitionExpectPayload), payload.Count, headers.conversation_id);
             return ClassifyState.ExpectEndOfFrame;
         }
 
