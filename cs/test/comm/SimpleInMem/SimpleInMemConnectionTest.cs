@@ -121,31 +121,44 @@ namespace UnitTest.SimpleInMem
 
             const int first = 91;
             const int second = 23;
-            int addResult = first + second;
-            int subResult = first - second;
+            int expectedAddResult = first + second;
+            int expectedSubResult = first - second;
+            Task[] connectionTasks = new Task[m_connections.Length];
 
-            foreach (SimpleInMemConnection conn in m_connections)
+            for (int connectionIndex = 0; connectionIndex < m_connections.Length; connectionIndex++)
             {
-                for (int i = 0; i < 50; i++)
+                SimpleInMemConnection conn = m_connections[connectionIndex];
+                connectionTasks[connectionIndex] = Task.Run(() =>
                 {
-                    var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(conn);
+                    int taskCount = 25;
+                    Task[] tasks = new Task[taskCount];
 
-                    PairedInput input = new PairedInput
+                    for (int taskIndex = 0; taskIndex < taskCount; taskIndex++)
                     {
-                        First = first,
-                        Second = second
-                    };
-                    Message<PairedInput> request = new Message<PairedInput>(input);
-                    IMessage<Output> addResponse = await calculatorProxy.AddAsync(request, System.Threading.CancellationToken.None);
-                    IMessage<Output> subResponse = await calculatorProxy.SubtractAsync(request, System.Threading.CancellationToken.None);
-                    Output addOutput = addResponse.Payload.Deserialize();
-                    Output subOutput = subResponse.Payload.Deserialize();
-                    Assert.True(addOutput.Result == addResult);
-                    Assert.True(subOutput.Result == subResult);
-                }
+                        tasks[taskIndex] = Task.Run(async () =>
+                        {
+                            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(conn);
 
-                await conn.StopAsync();
+                            PairedInput input = new PairedInput
+                            {
+                                First = first,
+                                Second = second
+                            };
+                            Message<PairedInput> request = new Message<PairedInput>(input);
+                            IMessage<Output> addResponse = await calculatorProxy.AddAsync(request, System.Threading.CancellationToken.None);
+                            IMessage<Output> subResponse = await calculatorProxy.SubtractAsync(request, System.Threading.CancellationToken.None);
+                            Output addOutput = addResponse.Payload.Deserialize();
+                            Output subOutput = subResponse.Payload.Deserialize();
+                            Assert.AreEqual(expectedAddResult, addOutput.Result);
+                            Assert.AreEqual(expectedSubResult, subOutput.Result);
+                        });
+                    }
+
+                    Task.WaitAll(tasks);
+                });
             }
+
+            Task.WaitAll(connectionTasks);
         }
 
         [Test]
