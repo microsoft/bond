@@ -14,15 +14,7 @@ namespace Bond.Comm.Epoxy
     {
         public override EpoxyTransport Construct()
         {
-            var exceptionHandler = GetUnhandledExceptionHandler();
-            if (exceptionHandler == null)
-            {
-                throw new InvalidOperationException(
-                    "Cannot create transport without an unhandled exception handler. "
-                    + nameof(SetUnhandledExceptionHandler) + " must be called before " + nameof(Construct));
-            }
-
-            return new EpoxyTransport(exceptionHandler, LayerStack);
+            return new EpoxyTransport(LayerStack);
         }
     }
 
@@ -30,28 +22,11 @@ namespace Bond.Comm.Epoxy
     {
         public const int DefaultPort = 25188;
 
-        readonly ExceptionHandler exceptionHandler;
         readonly ILayerStack layerStack;
-
-        public EpoxyTransport(ExceptionHandler exceptionHandler, ILayerStack layerStack)
+        public EpoxyTransport(ILayerStack layerStack)
         {
-            if (exceptionHandler == null)
-            {
-                throw new ArgumentNullException(nameof(exceptionHandler));
-            }
-
-            this.exceptionHandler = exceptionHandler;
-
             // Layer stack may be null
             this.layerStack = layerStack;
-        }
-
-        public override ExceptionHandler UnhandledExceptionHandler
-        {
-            get
-            {
-                return exceptionHandler;
-            }
         }
 
         public override ILayerStack LayerStack

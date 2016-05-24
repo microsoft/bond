@@ -13,15 +13,7 @@ namespace Bond.Comm.SimpleInMem
     {
         public override SimpleInMemTransport Construct()
         {
-            var exceptionHandler = GetUnhandledExceptionHandler();
-            if (exceptionHandler == null)
-            {
-                throw new InvalidOperationException(
-                    "Cannot create transport without an unhandled exception handler. "
-                    + nameof(SetUnhandledExceptionHandler) + " must be called before " + nameof(Construct));
-            }
-
-            return new SimpleInMemTransport(exceptionHandler, LayerStack);
+            return new SimpleInMemTransport(LayerStack);
         }
     }
 
@@ -29,26 +21,11 @@ namespace Bond.Comm.SimpleInMem
     {
         IDictionary<string, SimpleInMemListener> m_listeners = new Dictionary<string, SimpleInMemListener>();
         object m_lock = new object();
-        readonly ExceptionHandler exceptionHandler;
         readonly ILayerStack layerStack;
 
-        public SimpleInMemTransport(ExceptionHandler exceptionHandler, ILayerStack layerStack)
+        public SimpleInMemTransport(ILayerStack layerStack)
         {
-            if (exceptionHandler == null)
-            {
-                throw new ArgumentNullException(nameof(exceptionHandler));
-            }
-
-            this.exceptionHandler = exceptionHandler;
             this.layerStack = layerStack;
-        }
-
-        public override ExceptionHandler UnhandledExceptionHandler
-        {
-            get
-            {
-                return this.exceptionHandler;
-            }
         }
 
         public override ILayerStack LayerStack

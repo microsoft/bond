@@ -65,25 +65,10 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
-        public void Builder_SetUnhandledExceptionHandler_Null_Throws()
-        {
-            Assert.Throws<ArgumentNullException>(() => new EpoxyTransportBuilder().SetUnhandledExceptionHandler(null));
-        }
-
-        [Test]
-        public void Builder_Construct_DidntSetUnhandledExceptionHandler_Throws()
+        public void Builder_Construct_NoArgs_Succeeds()
         {
             var builder = new EpoxyTransportBuilder();
-            Assert.Throws<InvalidOperationException>(() => builder.Construct());
-        }
-
-        [Test]
-        public void Construct_InvalidArgs_Throws()
-        {
-            Assert.Throws<ArgumentNullException>(() => new EpoxyTransport(null, null));
-
-            LayerStack<Dummy> layerStack = new LayerStack<Dummy>(null, new TestLayer_IntValue(0));
-            Assert.Throws<ArgumentNullException>(() => new EpoxyTransport(null, layerStack));
+            Assert.NotNull(builder.Construct());
         }
 
         [Test]
@@ -132,7 +117,7 @@ namespace UnitTest.Epoxy
 
             var error = response.Error.Deserialize<Error>();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
-            Assert.That(error.message, Is.StringContaining(TestService.ExpectedExceptionMessage));
+            Assert.That(error.message, Is.StringContaining(Transport.InternalErrorMessage));
 
             await testClientServer.ServiceTransport.StopAsync();
             await testClientServer.ClientTransport.StopAsync();
@@ -156,7 +141,7 @@ namespace UnitTest.Epoxy
         [Test]
         public async Task GeneratedService_GeneratedProxy_PayloadResponse_LayerData()
         {
-            LayerStack<Dummy> layerStack = new LayerStack<Dummy>(null, new TestLayer_IntValue(1234));
+            LayerStack<Dummy> layerStack = new LayerStack<Dummy>(new TestLayer_IntValue(1234));
             TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>(layerStack, layerStack);
             var proxy = new ReqRespProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
@@ -173,7 +158,7 @@ namespace UnitTest.Epoxy
         public async Task GeneratedService_GeneratedProxy_PayloadResponse_ClientLayerErrors()
         {
             var errorLayer = new TestLayer_ReturnErrors();
-            LayerStack<Dummy> clientLayerStack = new LayerStack<Dummy>(null, errorLayer);
+            LayerStack<Dummy> clientLayerStack = new LayerStack<Dummy>(errorLayer);
             TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>(null, clientLayerStack);
             var proxy = new ReqRespProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
@@ -196,7 +181,7 @@ namespace UnitTest.Epoxy
         public async Task GeneratedService_GeneratedProxy_PayloadResponse_ServerLayerErrors()
         {
             var errorLayer = new TestLayer_ReturnErrors();
-            LayerStack<Dummy> serverLayerStack = new LayerStack<Dummy>(null, errorLayer);
+            LayerStack<Dummy> serverLayerStack = new LayerStack<Dummy>(errorLayer);
             TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>(serverLayerStack, null);
             var proxy = new ReqRespProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
@@ -321,8 +306,6 @@ namespace UnitTest.Epoxy
             var testService = new TService();
 
             EpoxyTransport serviceTransport = new EpoxyTransportBuilder()
-                // some tests rely on the use of DebugExceptionHandler to assert things about the error message
-                .SetUnhandledExceptionHandler(Transport.DebugExceptionHandler)
                 .SetLayerStack(serviceLayerStack)
                 .Construct();
             EpoxyListener listener = serviceTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, 0));
@@ -331,7 +314,6 @@ namespace UnitTest.Epoxy
 
             EpoxyTransport clientTransport = new EpoxyTransportBuilder()
                 // some tests rely on the use of DebugExceptionHandler to assert things about the error message
-                .SetUnhandledExceptionHandler(Transport.DebugExceptionHandler)
                 .SetLayerStack(clientLayerStack)
                 .Construct();
             EpoxyConnection clientConnection = await clientTransport.ConnectToAsync(listener.ListenEndpoint);
@@ -348,8 +330,6 @@ namespace UnitTest.Epoxy
 
         public class TestService : IService
         {
-            public const string ExpectedExceptionMessage = "This method is expected to throw.";
-
             private int m_respondWithEmpty_callCount = 0;
 
             public IEnumerable<ServiceMethodInfo> Methods
@@ -404,7 +384,7 @@ namespace UnitTest.Epoxy
 
             private Task<IMessage> ThrowInsteadOfResponding(IMessage request, ReceiveContext context, CancellationToken ct)
             {
-                throw new InvalidOperationException(ExpectedExceptionMessage);
+                throw new InvalidOperationException();
             }
         }
 

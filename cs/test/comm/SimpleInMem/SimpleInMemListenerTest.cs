@@ -20,11 +20,8 @@ namespace UnitTest.SimpleInMem
         [SetUp]
         public void Init()
         {
-            m_transport =
-                new SimpleInMemTransportBuilder()
-                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
-                .Construct();
-             m_service = new CalculatorService();
+            m_transport = new SimpleInMemTransportBuilder().Construct();
+            m_service = new CalculatorService();
         }
 
         [TearDown]
@@ -32,7 +29,7 @@ namespace UnitTest.SimpleInMem
         {
             m_transport.RemoveListener(m_address);
         }
-        
+
         [Test]
         public void CreateInMemTransportListener()
         {

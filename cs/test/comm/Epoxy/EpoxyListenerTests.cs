@@ -108,9 +108,7 @@ namespace UnitTest.Epoxy
 
         private static EpoxyTransport MakeTransport()
         {
-            var transport = new EpoxyTransportBuilder()
-                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
-                .Construct();
+            var transport = new EpoxyTransportBuilder().Construct();
             return transport;
         }
     }

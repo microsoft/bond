@@ -39,9 +39,7 @@ namespace Bond.Examples.PingPong
             var handler = new ConsoleLogger();
             Log.AddHandler(handler);
 
-            var transport = new EpoxyTransportBuilder()
-                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
-                .Construct();
+            var transport = new EpoxyTransportBuilder().Construct();
 
             var pingEndpoint = new IPEndPoint(IPAddress.Loopback, pingPort);
             var reversePingEndpoint = new IPEndPoint(IPAddress.Loopback, reversePingPort);

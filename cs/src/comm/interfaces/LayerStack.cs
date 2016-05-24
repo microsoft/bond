@@ -51,18 +51,15 @@ namespace Bond.Comm
     public class LayerStack<TLayerData> : ILayerStack where TLayerData : class, new()
     {
         readonly List<ILayer<TLayerData>> layers;
-        readonly ExceptionHandler exceptionHandler;
 
         /// <summary>
         /// Construct an empty layer stack instance.
         /// </summary>
-        /// <param name="exceptionHandler">Exception handler for this instance. May be null.</param>
         /// <param name="layers">Layers for this stack. Must be at least one and all must not be null.</param>
-        public LayerStack(ExceptionHandler exceptionHandler, params ILayer<TLayerData>[] layers)
+        public LayerStack(params ILayer<TLayerData>[] layers)
         {
             if ((layers == null) || (layers.Length == 0)) { throw new ArgumentException("At least one layer must be provided"); }
 
-            this.exceptionHandler = exceptionHandler;
             this.layers = new List<ILayer<TLayerData>>(layers.Length);
             for (int i = 0; i < layers.Length; i++)
             {
@@ -118,19 +115,12 @@ namespace Bond.Comm
                 }
                 catch (Exception ex)
                 {
-                    if (exceptionHandler != null)
+                    error = new Error()
                     {
-                        error = exceptionHandler(ex);
-                    }
-                    else
-                    {
-                        error = new Error()
-                        {
-                            error_code = (int) ErrorCode.UnhandledLayerError,
-                        };
-                        Log.Error(ex, "{0}.{1}: While handling layer {2}: {3}",
+                        error_code = (int)ErrorCode.UnhandledLayerError,
+                    };
+                    Log.Error(ex, "{0}.{1}: While handling layer {2}: {3}",
                                     nameof(LayerStack<TLayerData>), nameof(OnSendImpl), layerIndex, ex.Message);
-                    }
                 }
             }
 
@@ -150,20 +140,13 @@ namespace Bond.Comm
                 }
                 catch (Exception ex)
                 {
-                    if (exceptionHandler != null)
+                    error = new Error
                     {
-                        error = exceptionHandler(ex);
-                    }
-                    else
-                    {
-                        error = new Error
-                        {
-                            error_code = (int)ErrorCode.UnhandledLayerError
-                        };
+                        error_code = (int)ErrorCode.UnhandledLayerError
+                    };
 
-                        Log.Error(ex, "{0}.{1}: While handling layer {2}: {3}",
+                    Log.Error(ex, "{0}.{1}: While handling layer {2}: {3}",
                                     nameof(LayerStack<TLayerData>), nameof(OnReceiveImpl), layerIndex, ex.Message);
-                    }
                 }
             }
 
@@ -185,20 +168,13 @@ namespace Bond.Comm
                 }
                 catch (Exception ex)
                 {
-                    if (exceptionHandler != null)
+                    error = new Error
                     {
-                        error = exceptionHandler(ex);
-                    }
-                    else
-                    {
-                        error = new Error
-                        {
-                            error_code = (int)ErrorCode.UnhandledLayerError
-                        };
+                        error_code = (int)ErrorCode.UnhandledLayerError
+                    };
 
-                        Log.Error(ex, "{0}.{1}: While unmarshaling layer data: {2}",
+                    Log.Error(ex, "{0}.{1}: While unmarshaling layer data: {2}",
                                     nameof(LayerStack<TLayerData>), nameof(DeserializeLayerData), ex.Message);
-                    }
 
                     realLayerData = new TLayerData();
                 }

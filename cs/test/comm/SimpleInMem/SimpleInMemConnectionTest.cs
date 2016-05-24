@@ -22,7 +22,7 @@ namespace UnitTest.SimpleInMem
         [SetUp]
         public void Init()
         {
-            m_transport = new SimpleInMemTransportBuilder().SetUnhandledExceptionHandler(Transport.DebugExceptionHandler).Construct();
+            m_transport = new SimpleInMemTransportBuilder().Construct();
             m_service = new CalculatorService();
         }
 
@@ -186,7 +186,7 @@ namespace UnitTest.SimpleInMem
             Assert.IsTrue(multiplyResponse.IsError);
             InternalServerError error = multiplyResponse.Error.Deserialize<InternalServerError>();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
-            Assert.That(error.message, Is.StringContaining(CalculatorService.ExpectedExceptionMessage));
+            Assert.That(error.message, Is.StringContaining(Transport.InternalErrorMessage));
         }
 
         [Test]

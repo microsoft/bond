@@ -153,25 +153,11 @@ namespace Bond.Comm.Service
                 // Cast to appropriate return type which we validated when registering the service 
                 result = await (Task<IMessage>)methodInfo.Callback(message, context, CancellationToken.None);
             }
-            catch (Exception callbackEx)
+            catch (Exception ex)
             {
-                Error error = null;
-
-                try
-                {
-                    error = m_parentTransport.UnhandledExceptionHandler(callbackEx);
-                }
-                catch (Exception handlerEx)
-                {
-                    Transport.FailFastExceptionHandler(handlerEx);
-                }
-
-                if (error == null)
-                {
-                    Transport.FailFastExceptionHandler(callbackEx);
-                }
-
-                result = Message.FromError(error);
+                Log.Error(ex, "{0}.{1}: Failed to complete method [{2}]. With exception: {3}",
+                    nameof(ServiceHost), nameof(DispatchRequest), methodName, ex.Message);
+                result = Message.FromError(Transport.MakeInternalServerError(ex));
             }
 
             return result;
@@ -205,26 +191,10 @@ namespace Bond.Comm.Service
             {
                 await methodInfo.Callback(message, context, CancellationToken.None);
             }
-            catch (Exception callbackEx)
+            catch (Exception ex)
             {
-                Error error = null;
-
-                try
-                {
-                    error = m_parentTransport.UnhandledExceptionHandler(callbackEx);
-                }
-                catch (Exception handlerEx)
-                {
-                    Transport.FailFastExceptionHandler(handlerEx);
-                }
-
-                if (error == null)
-                {
-                    Transport.FailFastExceptionHandler(callbackEx);
-                }
-
-                Log.Warning("{0}.{1}: Failed to complete method [{2}]. With exception: {3}",
-                    nameof(ServiceHost), nameof(DispatchRequest), methodName, callbackEx.ToString());
+                Log.Error(ex, "{0}.{1}: Failed to complete method [{2}]. With exception: {3}",
+                    nameof(ServiceHost), nameof(DispatchEvent), methodName, ex.Message);
             }
         }
     }

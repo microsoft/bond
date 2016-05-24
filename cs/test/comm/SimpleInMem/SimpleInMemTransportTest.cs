@@ -19,9 +19,7 @@ namespace UnitTest.SimpleInMem
         [SetUp]
         public void Init()
         {
-            m_transport = new SimpleInMemTransportBuilder()
-                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
-                .Construct();
+            m_transport = new SimpleInMemTransportBuilder().Construct();
         }
 
         [TearDown]
@@ -32,25 +30,10 @@ namespace UnitTest.SimpleInMem
         }
 
         [Test]
-        public void Builder_SetUnhandledExceptionHandler_Null_Throws()
-        {
-            Assert.Throws<ArgumentNullException>(() => new SimpleInMemTransportBuilder().SetUnhandledExceptionHandler(null));
-        }
-
-        [Test]
-        public void Builder_Construct_DidntSetUnhandledExceptionHandler_Throws()
+        public void Builder_Construct_NoArgs_Succeeds()
         {
             var builder = new SimpleInMemTransportBuilder();
-            Assert.Throws<InvalidOperationException>(() => builder.Construct());
-        }
-
-        [Test]
-        public void Construct_InvalidArgs_Throws()
-        {
-            Assert.Throws<ArgumentNullException>(() => new SimpleInMemTransport(null, null));
-
-            LayerStack<Dummy> layerStack = new LayerStack<Dummy>(null, new TestLayer_DoesNothing());
-            Assert.Throws<ArgumentNullException>(() => new SimpleInMemTransport(null, layerStack));
+            Assert.NotNull(builder.Construct());
         }
 
         [Test]
@@ -93,19 +76,6 @@ namespace UnitTest.SimpleInMem
             Assert.True(simpleConn.ConnectionType == ConnectionType.Client);
             m_transport.RemoveListener(m_address);
             Assert.Null(m_transport.GetListener(m_address));
-        }
-
-        private class TestLayer_DoesNothing : ILayer<Dummy>
-        {
-            public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
-            {
-                return null;
-            }
-
-            public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData)
-            {
-                return null;
-            }
         }
     }
 }

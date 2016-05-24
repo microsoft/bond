@@ -10,7 +10,6 @@ namespace UnitTest.SimpleInMem
 
     internal class CalculatorService : CalculatorServiceBase
     {
-        public const string ExpectedExceptionMessage = "This method is expected to throw.";
         private const UInt16 DelayMilliseconds = 30;
 
         public static ManualResetEvent ClearCalledEvent { get; set; } = new ManualResetEvent(false);
@@ -35,7 +34,7 @@ namespace UnitTest.SimpleInMem
 
         public override Task<IMessage<Output>> MultiplyAsync(IMessage<PairedInput> request, CancellationToken ct)
         {
-            throw new NotImplementedException(ExpectedExceptionMessage);
+            throw new NotImplementedException();
         }
 
         public override void ClearAsync(IMessage<Bond.Void> param)

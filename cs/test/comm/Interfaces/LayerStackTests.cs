@@ -25,8 +25,8 @@ namespace UnitTest.Interfaces
             var testLayer1 = new TestLayer_AlwaysThrows();
 
             Assert.Throws<ArgumentException>(() => new LayerStack<Dummy>(null));
-            Assert.Throws<ArgumentException>(() => new LayerStack<Dummy>(null, null));
-            Assert.Throws<ArgumentNullException>(() => new LayerStack<Dummy>(null, testLayer1, null));
+            Assert.Throws<ArgumentNullException>(() => new LayerStack<Dummy>(null, null));
+            Assert.Throws<ArgumentNullException>(() => new LayerStack<Dummy>(testLayer1, null));
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace UnitTest.Interfaces
             var testList = new List<string>();
             var testLayer1 = new TestLayer_Append("foo", testList);
             var testLayer2 = new TestLayer_Append("bar", testList);
-            var stack = new LayerStack<Dummy>(null, testLayer1, testLayer2);
+            var stack = new LayerStack<Dummy>(testLayer1, testLayer2);
 
             IBonded layerData;
             Error error = stack.OnSend(MessageType.Request, sendContext, out layerData);
@@ -58,7 +58,7 @@ namespace UnitTest.Interfaces
             var testList = new List<string>();
             var testLayer1 = new TestLayer_Append("foo", testList);
             var testLayer2 = new TestLayer_Append("bar", testList);
-            var stack = new LayerStack<Dummy>(null, testLayer1, testLayer2);
+            var stack = new LayerStack<Dummy>(testLayer1, testLayer2);
 
             Error error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
 
@@ -69,30 +69,9 @@ namespace UnitTest.Interfaces
         }
 
         [Test]
-        public void LayerStack_OnSend_ExceptionHandlerInvokedOnThrow()
+        public void LayerStack_OnSend_ErrorOnThrow()
         {
-            var stack = new LayerStack<Dummy>(SwallowTestExceptions, new TestLayer_AlwaysThrows());
-
-            IBonded layerData;
-            Error error = stack.OnSend(MessageType.Request, sendContext, out layerData);
-
-            Assert.IsNull(error);
-            Assert.IsNotNull(layerData);
-        }
-
-        [Test]
-        public void LayerStack_OnReceive_ExceptionHandlerInvokedOnThrow()
-        {
-            var stack = new LayerStack<Dummy>(SwallowTestExceptions, new TestLayer_AlwaysThrows());
-
-            Error error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
-            Assert.IsNull(error);
-        }
-
-        [Test]
-        public void LayerStack_OnSend_ErrorOnThrowWithoutExceptionHandler()
-        {
-            var stack = new LayerStack<Dummy>(null, new TestLayer_AlwaysThrows());
+            var stack = new LayerStack<Dummy>(new TestLayer_AlwaysThrows());
 
             IBonded layerData;
             Error error = stack.OnSend(MessageType.Request, sendContext, out layerData);
@@ -101,9 +80,9 @@ namespace UnitTest.Interfaces
         }
 
         [Test]
-        public void LayerStack_OnReceive_ErrorOnThrowWithoutExceptionHandler()
+        public void LayerStack_OnReceive_ErrorOnThrow()
         {
-            var stack = new LayerStack<Dummy>(null, new TestLayer_AlwaysThrows());
+            var stack = new LayerStack<Dummy>(new TestLayer_AlwaysThrows());
 
             Error error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
             Assert.IsNotNull(error);
@@ -118,11 +97,6 @@ namespace UnitTest.Interfaces
             var compactWriter = new CompactBinaryWriter<OutputBuffer>(outputBuffer);
             Marshal.To<CompactBinaryWriter<OutputBuffer>, Dummy>(compactWriter, realLayerData);
             return Unmarshal.From(outputBuffer.Data);
-        }
-
-        Error SwallowTestExceptions(Exception ex)
-        {
-            return null;
         }
     }
 

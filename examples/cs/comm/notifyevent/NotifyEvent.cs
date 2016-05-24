@@ -35,9 +35,7 @@ namespace Bond.Examples.NotifyEvent
             var handler = new ConsoleLogger();
             Log.AddHandler(handler);
 
-            var transport = new EpoxyTransportBuilder()
-                .SetUnhandledExceptionHandler(Transport.ToErrorExceptionHandler)
-                .Construct();
+            var transport = new EpoxyTransportBuilder().Construct();
 
             var assignAPortEndPoint = new IPEndPoint(IPAddress.Loopback, 0);
 

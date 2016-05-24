@@ -9,18 +9,6 @@ namespace Bond.Comm
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Represents a method that can be used to handle exceptions and convert
-    /// them into <see cref="Error">Errors</see>.
-    /// </summary>
-    /// <param name="ex">The exception that needs to be handled.</param>
-    /// <returns>
-    /// A representation of the exception as an <see cref="Error"/>. If
-    /// <c>null</c> is returned, this indicates that the exception should be
-    /// ignored.
-    /// </returns>
-    public delegate Error ExceptionHandler(Exception ex);
-
-    /// <summary>
     /// Provides a convenient way to initialize and create
     /// <see cref="Transport">Transports</see>.
     /// </summary>
@@ -29,36 +17,7 @@ namespace Bond.Comm
     /// </typeparam>
     public abstract class TransportBuilder<TTransport>
     {
-        ExceptionHandler exceptionHandler;
-
-        protected ExceptionHandler GetUnhandledExceptionHandler()
-        {
-            return exceptionHandler;
-        }
-
         protected ILayerStack LayerStack { get; private set; }
-
-        /// <summary>
-        /// Set the unhandled exception handler.
-        /// </summary>
-        /// <param name="exceptionHandler">The exception handler.</param>
-        /// <returns>The builder.</returns>
-        /// <remarks>
-        /// The unhandled exception handler is invoked when an exception
-        /// escapes user code back into the Bond Comm framework. The exception
-        /// handler can be used to convert exceptions into Bond errors, log
-        /// exceptions, and so on.
-        /// </remarks>
-        public virtual TransportBuilder<TTransport> SetUnhandledExceptionHandler(ExceptionHandler exceptionHandler)
-        {
-            if (exceptionHandler == null)
-            {
-                throw new ArgumentNullException(nameof(exceptionHandler));
-            }
-
-            this.exceptionHandler = exceptionHandler;
-            return this;
-        }
 
         /// <summary>
         /// Set the layer stack.
@@ -89,10 +48,7 @@ namespace Bond.Comm
     /// </summary>
     public abstract class Transport
     {
-        /// <summary>
-        /// The unhandled exception handler.
-        /// </summary>
-        public abstract ExceptionHandler UnhandledExceptionHandler { get; }
+        internal static readonly string InternalErrorMessage = "The server has encounted an error";
 
         /// <summary>
         /// The layer stack for this transport. May be null.
@@ -158,61 +114,6 @@ namespace Bond.Comm
         public abstract Task StopAsync();
 
         /// <summary>
-        /// An exception handler that calls
-        /// <see cref="Environment.FailFast(string, Exception)"/> to terminate
-        /// the process.
-        /// </summary>
-        /// <param name="ex">The exception.</param>
-        /// <returns>Does not return.</returns>
-        public static Error FailFastExceptionHandler(Exception ex)
-        {
-            // We intentionally don't use Log.Fatal here, as that might cause
-            // the logger to kill the process, and this exception handler
-            // explicitly uses Environment.FailFast.
-            Log.Error(ex, "An unhandled exception was encountered by Bond.Comm. Calling Environment.FailFast");
-            Environment.FailFast("An unhandled exception was encountered by Bond.Comm", ex);
-            return MakeInternalServerError(ex, includeDetails: false);
-        }
-
-        /// <summary>
-        /// An exception handler that converts exceptions into generic
-        /// <see cref="Error">Errors</see>.
-        /// </summary>
-        /// <param name="ex">The exception.</param>
-        /// <returns>
-        /// An Error with a generic message and a GUID for later correlation
-        /// with server logs.
-        /// </returns>
-        /// <remarks>
-        /// This handler does not include any exception information in the
-        /// Error, so clients will not be exposed to potentially sensitive
-        /// server-side implementation details.
-        /// </remarks>
-        public static Error ToErrorExceptionHandler(Exception ex)
-        {
-            Log.Error(ex, "An unhandled exception was encountered by Bond.Comm. It has been converted to an Error.");
-            return MakeInternalServerError(ex, includeDetails: false);
-        }
-
-        /// <summary>
-        /// An exception handler that converts exceptions into detailed
-        /// <see cref="Error">Errors</see>, including server-side stack traces
-        /// and inner exceptions,
-        /// </summary>
-        /// <param name="ex">The exception.</param>
-        /// <returns>An Error with many excetion details.</returns>
-        /// <remarks>
-        /// This handler creates Errors that include potentially sensitive
-        /// server-side implementation details. It should only be used for
-        /// debugging purposes.
-        /// </remarks>
-        public static Error DebugExceptionHandler(Exception ex)
-        {
-            Log.Error(ex, "An unhandled exception was encountered by Bond.Comm. It has been converted to an Error with debug details.");
-            return MakeInternalServerError(ex, includeDetails: true);
-        }
-
-        /// <summary>
         /// Creates an <see cref="Error"/> for an internal server error from an
         /// exception.
         /// </summary>
@@ -222,7 +123,7 @@ namespace Bond.Comm
         /// to omit this potentailly sensitive information
         /// </param>
         /// <returns>An Error representing the exception.</returns>
-        public static InternalServerError MakeInternalServerError(Exception exception, bool includeDetails)
+        public static InternalServerError MakeInternalServerError(Exception exception, bool includeDetails = false)
         {
             var internalServerError = new InternalServerError
             {
@@ -232,7 +133,7 @@ namespace Bond.Comm
 
             if (includeDetails && exception != null)
             {
-                internalServerError.message = "The server has encounted an error: " + exception.Message;
+                internalServerError.message = InternalErrorMessage + ": " + exception.Message;
                 internalServerError.server_stack_trace = exception.StackTrace;
 
                 var aggEx = exception as AggregateException;
@@ -255,7 +156,7 @@ namespace Bond.Comm
             }
             else
             {
-                internalServerError.message = "The server has encounted an error.";
+                internalServerError.message = InternalErrorMessage;
             }
 
             return internalServerError;
