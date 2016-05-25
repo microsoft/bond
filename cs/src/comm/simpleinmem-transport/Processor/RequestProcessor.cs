@@ -61,12 +61,12 @@ namespace Bond.Comm.SimpleInMem.Processor
         private async void DispatchRequest(SimpleInMemHeaders headers, IMessage message, InMemFrameQueue queue, TaskCompletionSource<IMessage> taskSource)
         {
             IMessage response = await m_serviceHost.DispatchRequest(headers.method_name, new SimpleInMemReceiveContext(m_connection), message);
-            SendReply(headers.request_id, response, queue, taskSource);
+            SendReply(headers.conversation_id, response, queue, taskSource);
         }
 
-        internal void SendReply(uint requestId, IMessage response, InMemFrameQueue queue, TaskCompletionSource<IMessage> taskSource)
+        internal void SendReply(ulong conversationId, IMessage response, InMemFrameQueue queue, TaskCompletionSource<IMessage> taskSource)
         {
-            var payload = Util.NewPayLoad(requestId, PayloadType.Response, response, taskSource);
+            var payload = Util.NewPayLoad(conversationId, PayloadType.Response, response, taskSource);
             queue.Enqueue(payload);
         }
     }

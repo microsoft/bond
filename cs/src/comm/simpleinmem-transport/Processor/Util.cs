@@ -7,11 +7,11 @@ namespace Bond.Comm.SimpleInMem.Processor
 
     internal static class Util
     {
-        internal static InMemFrame NewPayLoad(uint requestId, PayloadType payloadType, IMessage message, TaskCompletionSource<IMessage> taskSource)
+        internal static InMemFrame NewPayLoad(ulong conversationId, PayloadType payloadType, IMessage message, TaskCompletionSource<IMessage> taskSource)
         {
             var headers = new SimpleInMemHeaders
             {
-                request_id = requestId,
+                conversation_id = conversationId,
                 payload_type = payloadType
             };
 

@@ -247,7 +247,7 @@ namespace Bond.Comm.Epoxy
             // If there was a layer error, replace the response with the layer error
             if (layerError != null)
             {
-                Log.Debug("{0}.{1}: Sending reply for request ID {2} failed due to layer error (Code: {3}, Message: {4}).",
+                Log.Debug("{0}.{1}: Sending reply for conversation ID {2} failed due to layer error (Code: {3}, Message: {4}).",
                             this, nameof(SendReplyAsync), conversationId, layerError.error_code, layerError.message);
                 response = Message.FromError(layerError);
             }

@@ -373,7 +373,7 @@ namespace Bond.Comm.Epoxy
             }
 
             layerData = framelet.Contents;
-            Log.Debug("{0}.{1}: Extracted {2}-byte layer data in request ID {3}.",
+            Log.Debug("{0}.{1}: Extracted {2}-byte layer data in conversation ID {3}.",
                 nameof(EpoxyProtocol), nameof(TransitionExpectOptionalLayerData), layerData.Count, headers.conversation_id);
             return ClassifyState.ExpectPayload;
         }

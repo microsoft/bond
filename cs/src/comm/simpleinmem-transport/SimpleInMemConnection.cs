@@ -35,7 +35,7 @@ namespace Bond.Comm.SimpleInMem
         private InMemFrameQueue m_communicationQueue;
         private InMemFrameQueueCollection m_serverqueues;
         private object m_connectionsLock = new object();
-        private long m_requestId;
+        private long prevConversationId;
         private CancellationTokenSource m_cancelTokenSource = new CancellationTokenSource();
         private CnxState m_state;
         private object m_stateLock = new object();
@@ -71,8 +71,8 @@ namespace Bond.Comm.SimpleInMem
                     throw new NotSupportedException(nameof(connectionType));
             }
 
-            // start at -1 or 0 so the first request ID is 1 or 2.
-            m_requestId = connectionType == ConnectionType.Client ? -1 : 0;
+            // start at -1 or 0 so the first conversation ID is 1 or 2.
+            prevConversationId = (connectionType == ConnectionType.Client) ? -1 : 0;
 
             m_state = CnxState.Created;
         }
@@ -200,8 +200,8 @@ namespace Bond.Comm.SimpleInMem
 
         private Task<IMessage> SendRequestAsync(string methodName, IMessage request)
         {
-            uint requestId = AllocateNextRequestId();
-            var payload = Util.NewPayLoad(requestId, PayloadType.Request, request, new TaskCompletionSource<IMessage>());
+            var conversationId = AllocateNextConversationId();
+            var payload = Util.NewPayLoad(conversationId, PayloadType.Request, request, new TaskCompletionSource<IMessage>());
             payload.m_headers.method_name = methodName;
             m_communicationQueue.Enqueue(payload);
 
@@ -210,23 +210,21 @@ namespace Bond.Comm.SimpleInMem
 
         private void SendEventAsync(string methodName, IMessage message)
         {
-            uint requestId = AllocateNextRequestId();
-            var payload = Util.NewPayLoad(requestId, PayloadType.Event, message, null);
+            var conversationId = AllocateNextConversationId();
+            var payload = Util.NewPayLoad(conversationId, PayloadType.Event, message, null);
             payload.m_headers.method_name = methodName;
             m_communicationQueue.Enqueue(payload);
         }
 
-        private UInt32 AllocateNextRequestId()
+        private ulong AllocateNextConversationId()
         {
-            var requestIdLong = Interlocked.Add(ref m_requestId, 2);
-            if (requestIdLong > UInt32.MaxValue)
+            // Interlocked.Add() handles overflow by wrapping, not throwing.
+            var newConversationId = Interlocked.Add(ref prevConversationId, 2);
+            if (newConversationId < 0)
             {
-                var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Exhausted request IDs!",
-                    this, nameof(AllocateNextRequestId));
-                throw new SimpleInMemProtocolErrorException("Exhausted request IDs!");
+                throw new SimpleInMemProtocolErrorException("Exhausted conversation IDs");
             }
-
-            return unchecked((UInt32)requestIdLong);
+            return unchecked((ulong)newConversationId);
         }
 
         private void OnDisconnect()
