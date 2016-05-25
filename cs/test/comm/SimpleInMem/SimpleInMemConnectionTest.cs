@@ -162,7 +162,7 @@ namespace UnitTest.SimpleInMem
 
             Task.WaitAll(connectionTasks);
             sw.Stop();
-            Console.WriteLine($"Test time: {sw.Elapsed.TotalSeconds}");
+            Console.WriteLine($"{nameof(MultipleClientConnectionsMethodCalls)} test time: {sw.Elapsed.TotalSeconds}");
         }
 
         [Test]
