@@ -9,6 +9,7 @@ namespace UnitTest.SimpleInMem
     using Bond.Comm.SimpleInMem;
     using NUnit.Framework;
     using System.Diagnostics;
+
     [TestFixture]
     public class SimpleInMemConnectionTest
     {
