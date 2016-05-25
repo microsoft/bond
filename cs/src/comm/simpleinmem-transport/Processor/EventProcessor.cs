@@ -6,12 +6,13 @@ namespace Bond.Comm.SimpleInMem.Processor
     using Service;
     using System;
     using System.Threading.Tasks;
+    using Bond.Comm.Layers;
 
     internal class EventProcessor : QueueProcessor
     {
-        private InMemFrameQueueCollection m_serverqueues;
-        private SimpleInMemConnection m_connection;
-        private ServiceHost m_serviceHost;
+        readonly SimpleInMemConnection m_connection;
+        readonly ServiceHost m_serviceHost;
+        readonly InMemFrameQueueCollection m_serverqueues;
 
         internal EventProcessor(SimpleInMemConnection connection, ServiceHost host, InMemFrameQueueCollection queues)
         {
@@ -50,21 +51,34 @@ namespace Bond.Comm.SimpleInMem.Processor
             {
                 var payload = queue.Dequeue(payloadType);
                 var headers = payload.m_headers;
+                var layerData = payload.m_layerData;
                 var message = payload.m_message;
 
-                DispatchEvent(headers, message);
+                DispatchEvent(headers, layerData, message);
                 queueSize = queue.Count(payloadType);
                 batchIndex++;
             }
         }
 
-        private void DispatchEvent(SimpleInMemHeaders headers, IMessage message)
+        private void DispatchEvent(SimpleInMemHeaders headers, IBonded layerData, IMessage message)
         {
+            var receiveContext = new SimpleInMemReceiveContext(m_connection);
+
+            Error layerError = LayerStackUtils.ProcessOnReceive(m_serviceHost.ParentTransport.LayerStack,
+                                                                MessageType.Event, receiveContext, layerData);
+
+            if (layerError != null)
+            {
+                Log.Error("{0}.{1}: Receiving event {2}/{3} failed due to layer error (Code: {4}, Message: {5}).",
+                            this, nameof(DispatchEvent), headers.conversation_id, headers.method_name,
+                            layerError.error_code, layerError.message);
+                return;
+            }
+
             Task.Run(async () =>
             {
                 await m_serviceHost.DispatchEvent(
-                    headers.method_name, new SimpleInMemReceiveContext(m_connection),  message,
-                    m_connection.ConnectionMetrics);
+                    headers.method_name, receiveContext,  message, m_connection.ConnectionMetrics);
             });
         }
     }

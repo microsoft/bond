@@ -13,14 +13,14 @@ namespace Bond.Comm.Service
 
     public class ServiceHost
     {
-        private readonly Transport m_parentTransport;
         private readonly object m_lock;
         private readonly Dictionary<string, ServiceMethodInfo> m_dispatchTable;
 
+        public readonly Transport ParentTransport;
 
         public ServiceHost(Transport parentTransport)
         {
-            m_parentTransport = parentTransport;
+            ParentTransport = parentTransport;
             m_lock = new object();
             m_dispatchTable = new Dictionary<string, ServiceMethodInfo>();
         }

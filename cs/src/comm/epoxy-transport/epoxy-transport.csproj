@@ -44,6 +44,10 @@
       <Project>{45efb397-298a-4a32-a178-a2bdf8abbbd9}</Project>
       <Name>interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\layers\layers.csproj">
+      <Project>{5f6cbc77-8fb5-4644-bab5-f8e62792266e}</Project>
+      <Name>layers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\service\service.csproj">
       <Project>{79d2423a-87c8-44a2-89c2-2fa94521747e}</Project>
       <Name>service</Name>

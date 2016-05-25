@@ -22,16 +22,17 @@
     <OutputPath>$(OutputPath)\Properties\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\LayerStackTests.cs" />
     <Compile Include="Interfaces\CodegenHelpersTests.cs" />
+    <Compile Include="DummyTestService.cs" />
     <Compile Include="Interfaces\LogTests.cs" />
     <Compile Include="Interfaces\MessageTests.cs" />
     <Compile Include="Interfaces\TestHelpers.cs" />
     <Compile Include="Interfaces\ListenerTests.cs" />
     <Compile Include="Interfaces\TransportTests.cs" />
-    <BondCodegen Include="Interfaces\comm-test.bond">
+    <BondCodegen Include="comm-test.bond">
       <Options>--namespace=unittest.comm=UnitTest.Comm</Options>
     </BondCodegen>
+    <Compile Include="Layers\LayerStackTests.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="SimpleInMem\CalculatorServiceImpl.cs" />
     <Compile Include="SimpleInMem\SimpleInMemConnectionTest.cs" />
@@ -92,6 +93,10 @@
     <ProjectReference Include="..\..\src\comm\interfaces\interfaces.csproj">
       <Project>{45efb397-298a-4a32-a178-a2bdf8abbbd9}</Project>
       <Name>interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\comm\layers\layers.csproj">
+      <Project>{5f6cbc77-8fb5-4644-bab5-f8e62792266e}</Project>
+      <Name>layers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\comm\simpleinmem-transport\simpleinmem-transport.csproj">
       <Project>{54a3432b-99e1-4deb-b4eb-2d6e158ecd24}</Project>

@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace UnitTest.Interfaces
+namespace UnitTest.Layers
 {
     using System;
     using System.Collections.Generic;
     using Bond;
     using Bond.Comm;
+    using Bond.Comm.Layers;
     using Bond.IO.Safe;
     using Bond.Protocols;
     using NUnit.Framework;
@@ -76,7 +77,7 @@ namespace UnitTest.Interfaces
             IBonded layerData;
             Error error = stack.OnSend(MessageType.Request, sendContext, out layerData);
             Assert.IsNotNull(error);
-            Assert.AreEqual((int) ErrorCode.UnhandledLayerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
         }
 
         [Test]
@@ -86,7 +87,7 @@ namespace UnitTest.Interfaces
 
             Error error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
             Assert.IsNotNull(error);
-            Assert.AreEqual((int) ErrorCode.UnhandledLayerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
         }
 
         IBonded CreateBondedTestData(string value)
@@ -122,9 +123,9 @@ namespace UnitTest.Interfaces
         }
     }
 
-    class TestLayer_Append : ILayer<Dummy>
+    public class TestLayer_Append : ILayer<Dummy>
     {
-        internal readonly string value;
+        public readonly string value;
         readonly List<string> list;
 
         public TestLayer_Append(string value, List<string> list)
@@ -151,7 +152,7 @@ namespace UnitTest.Interfaces
         }
     }
 
-    class TestLayer_AlwaysThrows : ILayer<Dummy>
+    public class TestLayer_AlwaysThrows : ILayer<Dummy>
     {
         public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
         {
@@ -166,6 +167,72 @@ namespace UnitTest.Interfaces
         private class LayerStackException : Exception
         {
 
+        }
+    }
+    public class TestLayer_CheckPassedValue : ILayer<Dummy>
+    {
+        readonly int expectedValue;
+
+        public TestLayer_CheckPassedValue(int value)
+        {
+            expectedValue = value;
+        }
+
+        public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
+        {
+            layerData.int_value = expectedValue;
+            return null;
+        }
+
+        public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData)
+        {
+            if (layerData.int_value != expectedValue)
+            {
+                throw new ArgumentException(string.Format("Bad layer data: expected {0}, got {1}",
+                                                          expectedValue, layerData.int_value));
+            }
+            return null;
+        }
+    }
+
+    public class TestLayer_ReturnErrors : ILayer<Dummy>
+    {
+        public const int SendError = 0x0001234;
+        public const int ReceiveError = 0x0005678;
+
+        MessageType badMessageType;
+        bool errorOnSend;
+        bool errorOnReceive;
+
+        public void SetState(MessageType badMessageType, bool errorOnSend, bool errorOnReceive)
+        {
+            this.badMessageType = badMessageType;
+            this.errorOnSend = errorOnSend;
+            this.errorOnReceive = errorOnReceive;
+        }
+
+        public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
+        {
+            if (errorOnSend && messageType == badMessageType)
+            {
+                return new Error { error_code = SendError, message = string.Format("Send error {0}", messageType.ToString()) };
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData)
+        {
+            if (errorOnReceive && messageType == badMessageType)
+            {
+                return new Error { error_code = ReceiveError, message = string.Format("Receive error {0}", messageType.ToString()) };
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

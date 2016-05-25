@@ -10,8 +10,10 @@ namespace UnitTest.Epoxy
     using System.Threading.Tasks;
     using Bond.Comm;
     using Bond.Comm.Epoxy;
+    using Bond.Comm.Layers;
     using NUnit.Framework;
     using UnitTest.Comm;
+    using UnitTest.Layers;
 
     [TestFixture]
     public class EpoxyTransportTests
@@ -126,52 +128,84 @@ namespace UnitTest.Epoxy
         [Test]
         public async Task GeneratedService_GeneratedProxy_PayloadResponse()
         {
-            TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>();
-            var proxy = new ReqRespProxy<EpoxyConnection>(testClientServer.ClientConnection);
+            TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>();
+            var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
-            IMessage<Dummy> response = await proxy.MethodAsync(request);
+            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
 
             Assert.IsFalse(response.IsError);
             Assert.AreEqual(101, response.Payload.Deserialize().int_value);
+
+            Assert.AreEqual(1, testClientServer.Service.RequestCount);
+            Assert.AreEqual(0, testClientServer.Service.EventCount);
+            Assert.AreEqual(request.int_value, testClientServer.Service.LastRequestReceived.int_value);
 
             await testClientServer.ServiceTransport.StopAsync();
             await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
+        public async Task GeneratedService_GeneratedProxy_Event()
+        {
+            TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>();
+            var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
+            var theEvent = new Dummy { int_value = 100 };
+
+            ManualResetEventSlim waitForEvent = testClientServer.Service.CreateResetEvent();
+            proxy.EventMethodAsync(theEvent);
+            bool wasSignaled = waitForEvent.Wait(TimeSpan.FromSeconds(5));
+            Assert.IsTrue(wasSignaled, "Timed out waiting for event to fire");
+
+            Assert.AreEqual(0, testClientServer.Service.RequestCount);
+            Assert.AreEqual(1, testClientServer.Service.EventCount);
+            Assert.AreEqual(theEvent.int_value, testClientServer.Service.LastEventReceived.int_value);
+
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
+         }
+
+        [Test]
         public async Task GeneratedService_GeneratedProxy_PayloadResponse_LayerData()
         {
-            LayerStack<Dummy> layerStack = new LayerStack<Dummy>(new TestLayer_IntValue(1234));
-            TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>(layerStack, layerStack);
-            var proxy = new ReqRespProxy<EpoxyConnection>(testClientServer.ClientConnection);
+            LayerStack<Dummy> layerStack = new LayerStack<Dummy>(new TestLayer_CheckPassedValue(1234));
+            TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>(layerStack, layerStack);
+            var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
-            IMessage<Dummy> response = await proxy.MethodAsync(request);
+            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
 
             Assert.IsFalse(response.IsError);
             Assert.AreEqual(101, response.Payload.Deserialize().int_value);
 
+            Assert.AreEqual(1, testClientServer.Service.RequestCount);
+
             await testClientServer.ServiceTransport.StopAsync();
             await testClientServer.ClientTransport.StopAsync();
-        }
+         }
 
         [Test]
         public async Task GeneratedService_GeneratedProxy_PayloadResponse_ClientLayerErrors()
         {
             var errorLayer = new TestLayer_ReturnErrors();
             LayerStack<Dummy> clientLayerStack = new LayerStack<Dummy>(errorLayer);
-            TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>(null, clientLayerStack);
-            var proxy = new ReqRespProxy<EpoxyConnection>(testClientServer.ClientConnection);
+            TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>(null, clientLayerStack);
+            var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
 
-            errorLayer.SetState(MessageType.Request, true, false);
-            IMessage<Dummy> response = await proxy.MethodAsync(request);
+            errorLayer.SetState(MessageType.Request, errorOnSend: true, errorOnReceive: false);
+            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
-            Assert.AreEqual(1, response.Error.Deserialize().error_code);
+            Assert.AreEqual(TestLayer_ReturnErrors.SendError, response.Error.Deserialize().error_code);
 
-            errorLayer.SetState(MessageType.Response, false, true);
-            response = await proxy.MethodAsync(request);
+            Assert.AreEqual(0, testClientServer.Service.RequestCount);
+            Assert.AreEqual(Dummy.Empty.int_value, testClientServer.Service.LastRequestReceived.int_value);
+
+            errorLayer.SetState(MessageType.Response, errorOnSend: false, errorOnReceive: true);
+            response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
-            Assert.AreEqual(2, response.Error.Deserialize().error_code);
+            Assert.AreEqual(TestLayer_ReturnErrors.ReceiveError, response.Error.Deserialize().error_code);
+
+            Assert.AreEqual(1, testClientServer.Service.RequestCount);
+            Assert.AreEqual(request.int_value, testClientServer.Service.LastRequestReceived.int_value);
 
             await testClientServer.ServiceTransport.StopAsync();
             await testClientServer.ClientTransport.StopAsync();
@@ -182,35 +216,136 @@ namespace UnitTest.Epoxy
         {
             var errorLayer = new TestLayer_ReturnErrors();
             LayerStack<Dummy> serverLayerStack = new LayerStack<Dummy>(errorLayer);
-            TestClientServer<ReqRespService> testClientServer = await SetupTestClientServer<ReqRespService>(serverLayerStack, null);
-            var proxy = new ReqRespProxy<EpoxyConnection>(testClientServer.ClientConnection);
+            TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>(serverLayerStack, null);
+            var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
 
             errorLayer.SetState(MessageType.Request, errorOnSend: false, errorOnReceive: true);
-            IMessage<Dummy> response = await proxy.MethodAsync(request);
+
+            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
-            Assert.AreEqual(2, response.Error.Deserialize().error_code);
+            Assert.AreEqual(TestLayer_ReturnErrors.ReceiveError, response.Error.Deserialize().error_code);
+
+            Assert.AreEqual(0, testClientServer.Service.RequestCount);
+            Assert.AreEqual(Dummy.Empty.int_value, testClientServer.Service.LastRequestReceived.int_value);
 
             errorLayer.SetState(MessageType.Response, errorOnSend: true, errorOnReceive: false);
-            response = await proxy.MethodAsync(request);
+            response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
-            Assert.AreEqual(1, response.Error.Deserialize().error_code);
+            Assert.AreEqual(TestLayer_ReturnErrors.SendError, response.Error.Deserialize().error_code);
+
+            Assert.AreEqual(1, testClientServer.Service.RequestCount);
+            Assert.AreEqual(request.int_value, testClientServer.Service.LastRequestReceived.int_value);
 
             await testClientServer.ServiceTransport.StopAsync();
             await testClientServer.ClientTransport.StopAsync();
         }
 
+        [Test]
+        public async Task GeneratedService_GeneratedProxy_Event_ClientLayerErrors()
+        {
+            var errorLayer = new TestLayer_ReturnErrors();
+            LayerStack<Dummy> clientLayerStack = new LayerStack<Dummy>(errorLayer);
+            TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>(null, clientLayerStack);
+            var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
+            var theEvent = new Dummy { int_value = 100 };
+
+            errorLayer.SetState(MessageType.Event, errorOnSend: true, errorOnReceive: false);
+
+            ManualResetEventSlim waitForEvent = testClientServer.Service.CreateResetEvent();
+            proxy.EventMethodAsync(theEvent);
+            bool wasSignaled = waitForEvent.Wait(TimeSpan.FromSeconds(1));
+            Assert.IsFalse(wasSignaled, "Event should not fire");
+            testClientServer.Service.ClearResetEvent();
+
+            Assert.AreEqual(0, testClientServer.Service.EventCount);
+            Assert.AreEqual(Dummy.Empty.int_value, testClientServer.Service.LastEventReceived.int_value);
+
+            errorLayer.SetState(MessageType.Event, errorOnSend: false, errorOnReceive: true);
+
+            theEvent.int_value = 101;
+
+            waitForEvent = testClientServer.Service.CreateResetEvent();
+            proxy.EventMethodAsync(theEvent);
+            wasSignaled = waitForEvent.Wait(TimeSpan.FromSeconds(1));
+            Assert.IsTrue(wasSignaled, "Timed out waiting for event to fire");
+
+            Assert.AreEqual(1, testClientServer.Service.EventCount);
+            Assert.AreEqual(theEvent.int_value, testClientServer.Service.LastEventReceived.int_value);
+
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
+        }
+
+        [Test]
+        public async Task GeneratedService_GeneratedProxy_Event_ServerLayerErrors()
+        {
+            var errorLayer = new TestLayer_ReturnErrors();
+            LayerStack<Dummy> serverLayerStack = new LayerStack<Dummy>(errorLayer);
+            TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>(serverLayerStack, null);
+            var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
+            var theEvent = new Dummy { int_value = 100 };
+
+            errorLayer.SetState(MessageType.Event, errorOnSend: false, errorOnReceive: true);
+
+            ManualResetEventSlim waitForEvent = testClientServer.Service.CreateResetEvent();
+            proxy.EventMethodAsync(theEvent);
+            bool wasSignaled = waitForEvent.Wait(TimeSpan.FromSeconds(1));
+            Assert.IsFalse(wasSignaled, "Event should not fire");
+            testClientServer.Service.ClearResetEvent();
+
+            Assert.AreEqual(0, testClientServer.Service.EventCount);
+            Assert.AreEqual(Dummy.Empty.int_value, testClientServer.Service.LastEventReceived.int_value);
+
+            errorLayer.SetState(MessageType.Event, errorOnSend: true, errorOnReceive: false);
+            theEvent.int_value = 101;
+
+            waitForEvent = testClientServer.Service.CreateResetEvent();
+            proxy.EventMethodAsync(theEvent);
+            wasSignaled = waitForEvent.Wait(TimeSpan.FromSeconds(1));
+            Assert.IsTrue(wasSignaled, "Timed out waiting for event to fire");
+
+            Assert.AreEqual(1, testClientServer.Service.EventCount);
+            Assert.AreEqual(theEvent.int_value, testClientServer.Service.LastEventReceived.int_value);
+
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
+        }
 
         [Test]
         public async Task GeneratedGenericService_GeneratedGenericProxy_PayloadResponse()
         {
-            TestClientServer<GenericReqRespService> testClientServer = await SetupTestClientServer<GenericReqRespService>();
-            var proxy = new GenericReqRespProxy<Dummy, EpoxyConnection>(testClientServer.ClientConnection);
+            TestClientServer<GenericDummyTestService> testClientServer = await SetupTestClientServer<GenericDummyTestService>();
+            var proxy = new GenericTestProxy<Dummy, EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
-            IMessage<Dummy> response = await proxy.MethodAsync(request);
+            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
 
             Assert.IsFalse(response.IsError);
             Assert.AreEqual(101, response.Payload.Deserialize().int_value);
+
+            await testClientServer.ServiceTransport.StopAsync();
+            await testClientServer.ClientTransport.StopAsync();
+
+            Assert.AreEqual(1, testClientServer.Service.RequestCount);
+            Assert.AreEqual(0, testClientServer.Service.EventCount);
+            Assert.AreEqual(request.int_value, testClientServer.Service.LastRequestReceived.int_value);
+        }
+
+        [Test]
+        public async Task GeneratedGenericService_GeneratedGenericProxy_Event()
+        {
+            TestClientServer<GenericDummyTestService> testClientServer = await SetupTestClientServer<GenericDummyTestService>();
+            var proxy = new GenericTestProxy<Dummy, EpoxyConnection>(testClientServer.ClientConnection);
+            var theEvent = new Dummy { int_value = 100 };
+
+            ManualResetEventSlim waitForEvent = testClientServer.Service.CreateResetEvent();
+            proxy.EventMethodAsync(theEvent);
+            bool wasSignaled = waitForEvent.Wait(TimeSpan.FromSeconds(1));
+            Assert.IsTrue(wasSignaled, "Timed out waiting for event to fire");
+
+            Assert.AreEqual(0, testClientServer.Service.RequestCount);
+            Assert.AreEqual(1, testClientServer.Service.EventCount);
+            Assert.AreEqual(theEvent.int_value, testClientServer.Service.LastEventReceived.int_value);
 
             await testClientServer.ServiceTransport.StopAsync();
             await testClientServer.ClientTransport.StopAsync();
@@ -225,70 +360,6 @@ namespace UnitTest.Epoxy
             Assert.That(exception.Message, Is.StringContaining("registered as RequestResponse but callback not implemented as such"));
             exception = Assert.Throws<ArgumentException>(async () => await SetupTestClientServer<TestServiceUnsupported>());
             Assert.That(exception.Message, Is.StringContaining("registered as invalid type"));
-        }
-
-        class TestLayer_IntValue : ILayer<Dummy>
-        {
-            readonly int expectedValue;
-
-            public TestLayer_IntValue(int value)
-            {
-                expectedValue = value;
-            }
-
-            public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
-            {
-                layerData.int_value = expectedValue;
-                return null;
-            }
-
-            public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData)
-            {
-                if (layerData.int_value != expectedValue)
-                {
-                    throw new ArgumentException(String.Format("Bad layer data: expected {0}, got {1}",
-                                                              expectedValue, layerData.int_value));
-                }
-                return null;
-            }
-        }
-
-        class TestLayer_ReturnErrors : ILayer<Dummy>
-        {
-            MessageType badMessageType;
-            bool errorOnSend;
-            bool errorOnReceive;
-
-            public void SetState(MessageType badMessageType, bool errorOnSend, bool errorOnReceive)
-            {
-                this.badMessageType = badMessageType;
-                this.errorOnSend = errorOnSend;
-                this.errorOnReceive = errorOnReceive;
-            }
-
-            public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
-            {
-                if (errorOnSend && messageType == badMessageType)
-                {
-                    return new Error { error_code = 1, message = String.Format("Send error {0}", messageType.ToString()) };
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData)
-            {
-                if (errorOnReceive && messageType == badMessageType)
-                {
-                    return new Error { error_code = 2, message = String.Format("Receive error {0}", messageType.ToString()) };
-                }
-                else
-                {
-                    return null;
-                }
-            }
         }
 
         public class TestClientServer<TService>
@@ -385,28 +456,6 @@ namespace UnitTest.Epoxy
             private Task<IMessage> ThrowInsteadOfResponding(IMessage request, ReceiveContext context, CancellationToken ct)
             {
                 throw new InvalidOperationException();
-            }
-        }
-
-        private class ReqRespService : ReqRespServiceBase
-        {
-            public override Task<IMessage<Dummy>> MethodAsync(IMessage<Dummy> param, CancellationToken ct)
-            {
-                var request = param.Payload.Deserialize();
-                var result = new Dummy { int_value = request.int_value + 1 };
-
-                return Task.FromResult<IMessage<Dummy>>(Message.FromPayload(result));
-            }
-        }
-
-        private class GenericReqRespService : GenericReqRespServiceBase<Dummy>
-        {
-            public override Task<IMessage<Dummy>> MethodAsync(IMessage<Dummy> param, CancellationToken ct)
-            {
-                var request = param.Payload.Deserialize();
-                var result = new Dummy { int_value = request.int_value + 1 };
-
-                return Task.FromResult<IMessage<Dummy>>(Message.FromPayload(result));
             }
         }
         private class TestServiceEventMismatch : IService

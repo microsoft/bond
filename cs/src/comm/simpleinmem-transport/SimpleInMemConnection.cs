@@ -4,12 +4,14 @@
 namespace Bond.Comm.SimpleInMem
 {
     using System;
+    using System.Collections.Generic;
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
+    using Bond.Comm.Layers;
     using Bond.Comm.Service;
-    using Processor;
-    using System.Collections.Generic;
+    using Bond.Comm.SimpleInMem.Processor;
+
     public enum ConnectionType
     {
         Client,
@@ -163,7 +165,7 @@ namespace Bond.Comm.SimpleInMem
 
                 if (m_connectionType == ConnectionType.Client)
                 {
-                    var responseProcessor = new ResponseProcessor(this, m_communicationQueue);
+                    var responseProcessor = new ResponseProcessor(this, m_serviceHost.ParentTransport, m_communicationQueue);
                     Task.Run(() => responseProcessor.ProcessAsync(m_cancelTokenSource.Token));
                 }
                 else if (m_connectionType == ConnectionType.Server)
@@ -204,7 +206,20 @@ namespace Bond.Comm.SimpleInMem
         private Task<IMessage> SendRequestAsync(string methodName, IMessage request)
         {
             var conversationId = AllocateNextConversationId();
-            var payload = Util.NewPayLoad(conversationId, PayloadType.Request, request, new TaskCompletionSource<IMessage>());
+
+            var sendContext = new SimpleInMemSendContext(this);
+            IBonded layerData;
+            Error layerError = LayerStackUtils.ProcessOnSend(this.m_serviceHost.ParentTransport.LayerStack,
+                                                             MessageType.Request, sendContext, out layerData);
+
+            if (layerError != null)
+            {
+                Log.Error("{0}.{1}: Sending request {2}/{3} failed due to layer error (Code: {4}, Message: {5}).",
+                            this, nameof(SendRequestAsync), conversationId, methodName, layerError.error_code, layerError.message);
+                return Task.FromResult<IMessage>(Message.FromError(layerError));
+            }
+
+            var payload = Util.NewPayLoad(conversationId, PayloadType.Request, layerData, request, new TaskCompletionSource<IMessage>());
             payload.m_headers.method_name = methodName;
             m_communicationQueue.Enqueue(payload);
 
@@ -214,7 +229,20 @@ namespace Bond.Comm.SimpleInMem
         private void SendEventAsync(string methodName, IMessage message)
         {
             var conversationId = AllocateNextConversationId();
-            var payload = Util.NewPayLoad(conversationId, PayloadType.Event, message, null);
+
+            var sendContext = new SimpleInMemSendContext(this);
+            IBonded layerData;
+            Error layerError = LayerStackUtils.ProcessOnSend(this.m_serviceHost.ParentTransport.LayerStack,
+                                                             MessageType.Event, sendContext, out layerData);
+
+            if (layerError != null)
+            {
+                Log.Error("{0}.{1}: Sending event {2}/{3} failed due to layer error (Code: {4}, Message: {5}).",
+                            this, nameof(SendEventAsync), conversationId, methodName, layerError.error_code, layerError.message);
+                return;
+            }
+
+            var payload = Util.NewPayLoad(conversationId, PayloadType.Event, layerData, message, null);
             payload.m_headers.method_name = methodName;
             m_communicationQueue.Enqueue(payload);
         }

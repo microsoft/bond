@@ -17,7 +17,7 @@
     <Compile Include="Contexts.cs" />
     <Compile Include="ILayer.cs" />
     <Compile Include="IService.cs" />
-    <Compile Include="LayerStack.cs" />
+    <Compile Include="ILayerStack.cs" />
     <Compile Include="Listener.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Message.cs" />

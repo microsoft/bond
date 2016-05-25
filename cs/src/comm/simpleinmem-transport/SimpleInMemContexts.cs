@@ -3,21 +3,23 @@
 
 namespace Bond.Comm.SimpleInMem
 {
-    internal class SimpleInMemReceiveContext : ReceiveContext
+    public class SimpleInMemSendContext : SendContext
     {
-        SimpleInMemConnection m_connection;
+        public SimpleInMemSendContext(SimpleInMemConnection connection)
+        {
+            Connection = connection;
+        }
 
+        public override Connection Connection { get; }
+    }
+
+    public class SimpleInMemReceiveContext : ReceiveContext
+    {
         public SimpleInMemReceiveContext(SimpleInMemConnection connection)
         {
-            m_connection = connection;
+            Connection = connection;
         }
 
-        public override Connection Connection
-        {
-            get
-            {
-                return m_connection;
-            }
-        }
+        public override Connection Connection { get; }
     }
 }

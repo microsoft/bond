@@ -211,6 +211,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "notifyevent", "..\examples\
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "metrics", "..\examples\cs\comm\metrics\metrics.csproj", "{72ECA320-121F-4F3A-B455-B9EDE3364D9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "layers", "src\comm\layers\layers.csproj", "{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -825,6 +826,24 @@ Global
 		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Release|Win32.ActiveCfg = Release|Any CPU
 		{72ECA320-121F-4F3A-B455-B9EDE3364D9D}.Release|Win32.Build.0 = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Debug|Win32.Build.0 = Debug|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Fields|Any CPU.ActiveCfg = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Fields|Any CPU.Build.0 = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Fields|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Fields|Mixed Platforms.Build.0 = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Fields|Win32.ActiveCfg = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Fields|Win32.Build.0 = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Release|Win32.ActiveCfg = Release|Any CPU
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}.Release|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -864,5 +883,6 @@ Global
 		{79D2423A-87C8-44A2-89C2-2FA94521747E} = {ED161076-6BB8-4A13-83ED-0E9C01461D5E}
 		{12279366-F646-4FEC-8CAA-B62A8EC477BB} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
 		{72ECA320-121F-4F3A-B455-B9EDE3364D9D} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
+		{5F6CBC77-8FB5-4644-BAB5-F8E62792266E} = {ED161076-6BB8-4A13-83ED-0E9C01461D5E}
 	EndGlobalSection
 EndGlobal

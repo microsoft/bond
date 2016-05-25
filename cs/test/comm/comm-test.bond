@@ -1,0 +1,22 @@
+﻿namespace unittest.comm;
+
+struct Dummy
+{
+    0: int32 int_value;
+    1: string string_value;
+}
+
+service DummyTest
+{
+    Dummy ReqRspMethod(Dummy);
+
+    nothing EventMethod(Dummy);
+}
+
+service GenericTest<T>
+{
+    T ReqRspMethod(T);
+
+    nothing EventMethod(Dummy);
+}
+

@@ -3,15 +3,16 @@
 
 namespace Bond.Comm.SimpleInMem.Processor
 {
-    using Service;
     using System;
     using System.Threading.Tasks;
+    using Bond.Comm.Layers;
+    using Bond.Comm.Service;
 
     internal class RequestProcessor : QueueProcessor
     {
-        private InMemFrameQueueCollection m_serverqueues;
-        private SimpleInMemConnection m_connection;
-        private ServiceHost m_serviceHost;
+        readonly SimpleInMemConnection m_connection;
+        readonly ServiceHost m_serviceHost;
+        readonly InMemFrameQueueCollection m_serverqueues;
 
         internal RequestProcessor(SimpleInMemConnection connection, ServiceHost host, InMemFrameQueueCollection queues)
         {
@@ -49,26 +50,57 @@ namespace Bond.Comm.SimpleInMem.Processor
             {
                 var payload = queue.Dequeue(payloadType);
                 var headers = payload.m_headers;
+                var layerData = payload.m_layerData;
                 var message = payload.m_message;
                 var taskSource = payload.m_outstandingRequest;
 
-                Task.Run(() => DispatchRequest(headers, message, queue, taskSource));
+                Task.Run(() => DispatchRequest(headers, layerData, message, queue, taskSource));
                 queueSize = queue.Count(payloadType);
                 batchIndex++;
             }
         }
 
-        private async void DispatchRequest(SimpleInMemHeaders headers, IMessage message, InMemFrameQueue queue, TaskCompletionSource<IMessage> taskSource)
+        private async void DispatchRequest(SimpleInMemHeaders headers, IBonded layerData, IMessage message, InMemFrameQueue queue,
+                                            TaskCompletionSource<IMessage> taskSource)
         {
-            IMessage response = await m_serviceHost.DispatchRequest(
-                    headers.method_name, new SimpleInMemReceiveContext(m_connection), message,
-                    m_connection.ConnectionMetrics);
+            var receiveContext = new SimpleInMemReceiveContext(m_connection);
+
+            Error layerError = LayerStackUtils.ProcessOnReceive(this.m_serviceHost.ParentTransport.LayerStack,
+                                                                MessageType.Request, receiveContext, layerData);
+
+            IMessage response;
+
+            if (layerError == null)
+            {
+                response = await m_serviceHost.DispatchRequest(headers.method_name, receiveContext, message, m_connection.ConnectionMetrics);
+            }
+            else
+            {
+                Log.Error("{0}.{1}: Receiving request {2}/{3} failed due to layer error (Code: {4}, Message: {5}).",
+                            this, nameof(DispatchRequest), headers.conversation_id, headers.method_name,
+                            layerError.error_code, layerError.message);
+                response = Message.FromError(layerError);
+            }
             SendReply(headers.conversation_id, response, queue, taskSource);
         }
 
-        internal void SendReply(ulong conversationId, IMessage response, InMemFrameQueue queue, TaskCompletionSource<IMessage> taskSource)
+        internal void SendReply(ulong conversationId, IMessage response, InMemFrameQueue queue,
+                                TaskCompletionSource<IMessage> taskSource)
         {
-            var payload = Util.NewPayLoad(conversationId, PayloadType.Response, response, taskSource);
+            var sendContext = new SimpleInMemSendContext(m_connection);
+            IBonded layerData;
+            Error layerError = LayerStackUtils.ProcessOnSend(this.m_serviceHost.ParentTransport.LayerStack,
+                                                             MessageType.Response, sendContext, out layerData);
+
+            // If there was a layer error, replace the response with the layer error
+            if (layerError != null)
+            {
+                Log.Error("{0}.{1}: Sending reply for request ID {2} failed due to layer error (Code: {3}, Message: {4}).",
+                            this, nameof(SendReply), conversationId, layerError.error_code, layerError.message);
+                response = Message.FromError(layerError);
+            }
+
+            var payload = Util.NewPayLoad(conversationId, PayloadType.Response, layerData, response, taskSource);
             queue.Enqueue(payload);
         }
     }
