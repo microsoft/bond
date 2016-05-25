@@ -52,13 +52,13 @@ namespace Bond.Comm.SimpleInMem.Processor
                 var headers = payload.m_headers;
                 var message = payload.m_message;
 
-                DispatchEvent(headers, message, queue);
+                DispatchEvent(headers, message);
                 queueSize = queue.Count(payloadType);
                 batchIndex++;
             }
         }
 
-        private void DispatchEvent(SimpleInMemHeaders headers, IMessage message, InMemFrameQueue queue)
+        private void DispatchEvent(SimpleInMemHeaders headers, IMessage message)
         {
             Task.Run(async () =>
             {
