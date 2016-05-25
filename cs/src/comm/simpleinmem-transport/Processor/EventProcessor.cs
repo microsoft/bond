@@ -31,17 +31,30 @@ namespace Bond.Comm.SimpleInMem.Processor
             foreach (Guid key in m_serverqueues.GetKeys())
             {
                 InMemFrameQueue queue = m_serverqueues.GetQueue(key);
+                Task.Run(() => ProcessQueue(queue, payloadType));
+            }
+        }
 
-                if (queue.Count(payloadType) == 0)
-                {
-                    continue;
-                }
+        private void ProcessQueue(InMemFrameQueue queue, PayloadType payloadType)
+        {
+            int queueSize = queue.Count(payloadType);
 
+            int batchIndex = 0;
+
+            if (queueSize == 0)
+            {
+                return;
+            }
+
+            while (batchIndex < PROCESSING_BATCH_SIZE && queueSize > 0)
+            {
                 var payload = queue.Dequeue(payloadType);
                 var headers = payload.m_headers;
                 var message = payload.m_message;
 
                 DispatchEvent(headers, message, queue);
+                queueSize = queue.Count(payloadType);
+                batchIndex++;
             }
         }
 

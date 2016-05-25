@@ -10,9 +10,11 @@ namespace Bond.Comm.SimpleInMem.Processor
 
     internal abstract class QueueProcessor
     {
+        protected const int PROCESSING_BATCH_SIZE = 1000;
+
         private readonly Random m_randomDelay = new Random(DateTime.UtcNow.Millisecond);
         private readonly object m_processInput = new object();
-
+        
         public void ProcessAsync(CancellationToken t)
         {
             NewLongRunningTask(o => Process(), t).Post(m_processInput);

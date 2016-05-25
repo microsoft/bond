@@ -8,7 +8,7 @@ namespace UnitTest.SimpleInMem
     using Bond.Comm;
     using Bond.Comm.SimpleInMem;
     using NUnit.Framework;
-
+    using System.Diagnostics;
     [TestFixture]
     public class SimpleInMemConnectionTest
     {
@@ -117,6 +117,8 @@ namespace UnitTest.SimpleInMem
         [Test]
         public async Task MultipleClientConnectionsMethodCalls()
         {
+            Stopwatch sw = Stopwatch.StartNew();
+
             await DefaultSetup(10);
 
             const int first = 91;
@@ -138,12 +140,12 @@ namespace UnitTest.SimpleInMem
                         tasks[taskIndex] = Task.Run(async () =>
                         {
                             var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(conn);
-
-                            PairedInput input = new PairedInput
+                            var input = new PairedInput
                             {
                                 First = first,
                                 Second = second
                             };
+
                             Message<PairedInput> request = new Message<PairedInput>(input);
                             IMessage<Output> addResponse = await calculatorProxy.AddAsync(request, System.Threading.CancellationToken.None);
                             IMessage<Output> subResponse = await calculatorProxy.SubtractAsync(request, System.Threading.CancellationToken.None);
@@ -159,6 +161,8 @@ namespace UnitTest.SimpleInMem
             }
 
             Task.WaitAll(connectionTasks);
+            sw.Stop();
+            Console.WriteLine($"Test time: {sw.Elapsed.TotalSeconds}");
         }
 
         [Test]

@@ -23,18 +23,25 @@ namespace Bond.Comm.SimpleInMem.Processor
         override internal void Process()
         {
             const PayloadType payloadType = PayloadType.Response;
-            
-            if (m_clientreqresqueue.Count(payloadType) == 0)
+            int queueSize = m_clientreqresqueue.Count(payloadType);
+            int batchIndex = 0;
+
+            if (queueSize == 0)
             {
                 return;
             }
 
-            var frame = m_clientreqresqueue.Dequeue(payloadType);
-            var headers = frame.m_headers;
-            var message = frame.m_message;
-            var taskSource = frame.m_outstandingRequest;
+            while (batchIndex < PROCESSING_BATCH_SIZE && queueSize > 0)
+            {
+                var frame = m_clientreqresqueue.Dequeue(payloadType);
+                var headers = frame.m_headers;
+                var message = frame.m_message;
+                var taskSource = frame.m_outstandingRequest;
 
-            DispatchResponse(headers, message, taskSource);
+                DispatchResponse(headers, message, taskSource);
+                queueSize = m_clientreqresqueue.Count(payloadType);
+                batchIndex++;
+            }
         }
 
         private void DispatchResponse(SimpleInMemHeaders headers, IMessage message, TaskCompletionSource<IMessage> responseCompletionSource)
