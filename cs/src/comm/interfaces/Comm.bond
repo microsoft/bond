@@ -18,6 +18,7 @@ enum ErrorCode
     InvalidInvocation = 0xA0BD0004;
     UnhandledLayerError = 0xA0BD0005;
     TransportError = 0xA0BD0006;
+    ConnectionShutDown = 0xA0BD0007;
 }
 
 enum ConnectionShutdownReason

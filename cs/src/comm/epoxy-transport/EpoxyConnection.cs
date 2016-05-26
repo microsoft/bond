@@ -4,7 +4,6 @@
 namespace Bond.Comm.Epoxy
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Net;
@@ -50,8 +49,7 @@ namespace Bond.Comm.Epoxy
 
         readonly EpoxySocket netSocket;
 
-        readonly object m_requestsLock;
-        readonly Dictionary<ulong, TaskCompletionSource<IMessage>> m_outstandingRequests;
+        readonly ResponseMap responseMap;
 
         State m_state;
         readonly TaskCompletionSource<bool> m_startTask;
@@ -93,8 +91,7 @@ namespace Bond.Comm.Epoxy
             LocalEndPoint = (IPEndPoint) socket.LocalEndPoint;
             RemoteEndPoint = (IPEndPoint) socket.RemoteEndPoint;
 
-            m_requestsLock = new object();
-            m_outstandingRequests = new Dictionary<ulong, TaskCompletionSource<IMessage>>();
+            responseMap = new ResponseMap();
 
             m_state = State.Created;
             m_startTask = new TaskCompletionSource<bool>();
@@ -253,11 +250,7 @@ namespace Bond.Comm.Epoxy
             var frame = MessageToFrame(conversationId, methodName, PayloadType.Request, request, layerData);
 
             Log.Debug("{0}.{1}: Sending request {2}/{3}.", this, nameof(SendRequestAsync), conversationId, methodName);
-            var responseCompletionSource = new TaskCompletionSource<IMessage>();
-            lock (m_requestsLock)
-            {
-                m_outstandingRequests.Add(conversationId, responseCompletionSource);
-            }
+            var responseTask = responseMap.Add(conversationId);
 
             bool wasSent = await SendFrameAsync(frame);
             Log.Debug(
@@ -266,7 +259,7 @@ namespace Bond.Comm.Epoxy
 
             if (!wasSent)
             {
-                bool wasCompleted = CompleteOutstandingRequest(
+                bool wasCompleted = responseMap.Complete(
                     conversationId,
                     Message.FromError(new Error
                     {
@@ -282,7 +275,7 @@ namespace Bond.Comm.Epoxy
                 }
             }
 
-            return await responseCompletionSource.Task;
+            return await responseTask;
         }
 
         private async Task SendReplyAsync(ulong conversationId, IMessage response)
@@ -386,35 +379,6 @@ namespace Bond.Comm.Epoxy
                 throw new EpoxyProtocolErrorException("Exhausted conversation IDs");
             }
             return unchecked((ulong)newConversationId);
-        }
-
-        private bool CompleteOutstandingRequest(ulong conversationId, IMessage response)
-        {
-            TaskCompletionSource<IMessage> pendingResponse;
-
-            lock (m_requestsLock)
-            {
-                if (!m_outstandingRequests.TryGetValue(conversationId, out pendingResponse))
-                {
-                    return false;
-                }
-
-                m_outstandingRequests.Remove(conversationId);
-            }
-
-            // completing this Task might result in user code running, so we
-            // explicitly use Task.Run to force this onto the thread pool so
-            // that we can resume reading from the socket.
-            //
-            // When we only target .NET 4.6, this can be replaced with creating
-            // the TaskCompletionSource with
-            // TaskCreationOptions.RunContinuationsAsynchronously
-            Task.Run(() =>
-            {
-                pendingResponse.SetResult(response);
-            });
-
-            return true;
         }
 
         private async Task ConnectionLoop()
@@ -673,6 +637,8 @@ namespace Bond.Comm.Epoxy
                 m_parentListener.InvokeOnDisconnected(args);
             }
 
+            responseMap.Shutdown();
+
             return State.Disconnected;
         }
 
@@ -760,7 +726,7 @@ namespace Bond.Comm.Epoxy
                 response = Message.FromError(layerError);
             }
 
-            if (!CompleteOutstandingRequest(headers.conversation_id, response))
+            if (!responseMap.Complete(headers.conversation_id, response))
             {
                 Log.Error("{0}.{1}: Response for unmatched request. Conversation ID: {2}",
                     this, nameof(DispatchResponse), headers.conversation_id);

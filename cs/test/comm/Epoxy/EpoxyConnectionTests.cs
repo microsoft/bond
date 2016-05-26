@@ -6,6 +6,7 @@ namespace UnitTest.Epoxy
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Bond;
     using Bond.Comm;
@@ -13,6 +14,7 @@ namespace UnitTest.Epoxy
     using Bond.IO.Safe;
     using Bond.Protocols;
     using NUnit.Framework;
+    using UnitTest.Interfaces;
 
     [TestFixture]
     public class EpoxyConnectionTests
@@ -84,6 +86,44 @@ namespace UnitTest.Epoxy
             Assert.AreNotSame(timeoutTask, completedTask, "Timed out waiting for connection to be shutdown.");
 
             await connection.StopAsync();
+        }
+
+        [Test]
+        public async Task Connection_OutstandingRequestsThenShutdown_CompletedWithError()
+        {
+            var testClientServer = await EpoxyTransportTests.SetupTestClientServer<TestServiceNeverResponds>();
+            EpoxyConnection connection = testClientServer.ClientConnection;
+
+            IMessage<SomePayload> anyPayload = Message.FromPayload(new SomePayload());
+            Task<IMessage<SomePayload>> responseTask = connection
+                .RequestResponseAsync<SomePayload, SomePayload>(
+                    "TestService.NeverRespond", anyPayload, CancellationToken.None);
+
+            await connection.StopAsync();
+
+            IMessage<SomePayload> response = await responseTask;
+
+            Assert.IsTrue(response.IsError);
+            Error err = response.Error.Deserialize();
+            Assert.AreEqual((int)ErrorCode.ConnectionShutDown, err.error_code);
+        }
+
+        class TestServiceNeverResponds : IService
+        {
+            public IEnumerable<ServiceMethodInfo> Methods => new[]
+            {
+                new ServiceMethodInfo
+                {
+                    MethodName = "TestService.NeverRespond",
+                    Callback = NeverRespond,
+                    CallbackType = ServiceCallbackType.RequestResponse
+                },
+            };
+
+            Task<IMessage> NeverRespond(IMessage request, ReceiveContext context, CancellationToken ct)
+            {
+                return new TaskCompletionSource<IMessage>().Task;
+            }
         }
     }
 }

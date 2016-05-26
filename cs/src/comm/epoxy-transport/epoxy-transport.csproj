@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\Common.Internal.props" />
@@ -24,10 +24,11 @@
     <Compile Include="EpoxyProtocolErrorException.cs" />
     <Compile Include="EpoxyTransport.cs" />
     <BondCodegen Include="EpoxyTransport.bond">
-        <Options>--namespace=bond.comm=Bond.Comm --namespace=bond.comm.epoxy=Bond.Comm.Epoxy</Options>
+      <Options>--namespace=bond.comm=Bond.Comm --namespace=bond.comm.epoxy=Bond.Comm.Epoxy</Options>
     </BondCodegen>
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\EpoxyTransport_types.cs" Condition="False" />
+    <Compile Include="ResponseMap.cs" />
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
