@@ -259,8 +259,29 @@ namespace Bond.Comm.Epoxy
                 m_outstandingRequests.Add(conversationId, responseCompletionSource);
             }
 
-            await SendFrameAsync(frame, responseCompletionSource);
-            Log.Debug("{0}.{1}: Sent request {2}/{3}.", this, nameof(SendRequestAsync), conversationId, methodName);
+            bool wasSent = await SendFrameAsync(frame);
+            Log.Debug(
+                "{0}.{1}: Sending request {2}/{3} {4}.",
+                this, nameof(SendRequestAsync), conversationId, methodName, wasSent ? "succeded" : "failed");
+
+            if (!wasSent)
+            {
+                bool wasCompleted = CompleteOutstandingRequest(
+                    conversationId,
+                    Message.FromError(new Error
+                    {
+                        error_code = (int) ErrorCode.TransportError,
+                        message = "Request could not be sent"
+                    }));
+
+                if (!wasCompleted)
+                {
+                    Log.Information(
+                        "{0}.{1} Unsuccessfully sent request {2}/{3} still received response.",
+                        this, nameof(SendRequestAsync), conversationId, methodName);
+                }
+            }
+
             return await responseCompletionSource.Task;
         }
 
@@ -281,11 +302,13 @@ namespace Bond.Comm.Epoxy
             var frame = MessageToFrame(conversationId, null, PayloadType.Response, response, layerData);
             Log.Debug("{0}.{1}: Sending reply for conversation ID {2}.", this, nameof(SendReplyAsync), conversationId);
 
-            await SendFrameAsync(frame);
-            Log.Debug("{0}.{1}: Sent reply for conversation ID {2}.", this, nameof(SendReplyAsync), conversationId);
+            bool wasSent = await SendFrameAsync(frame);
+            Log.Debug(
+                "{0}.{1}: Sending reply for conversation ID {2} {3}.",
+                this, nameof(SendReplyAsync), conversationId, wasSent ? "succeded" : "failed");
         }
 
-        private async Task SendFrameAsync(Frame frame, TaskCompletionSource<IMessage> responseCompletionSource = null)
+        private async Task<bool> SendFrameAsync(Frame frame)
         {
             try
             {
@@ -302,12 +325,13 @@ namespace Bond.Comm.Epoxy
                 }
 
                 await networkStream.FlushAsync();
+                return true;
             }
             catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException || ex is SocketException)
             {
                 Log.Error(ex, "{0}.{1}: While writing a Frame to the network: {2}", this, nameof(SendFrameAsync),
                     ex.Message);
-                responseCompletionSource?.TrySetException(ex);
+                return false;
             }
         }
 
@@ -330,8 +354,10 @@ namespace Bond.Comm.Epoxy
 
             Log.Debug("{0}.{1}: Sending event {2}/{3}.", this, nameof(SendEventAsync), conversationId, methodName);
 
-            await SendFrameAsync(frame);
-            Log.Debug("{0}.{1}: Sent event {2}/{3}.", this, nameof(SendEventAsync), conversationId, methodName);
+            bool wasSent = await SendFrameAsync(frame);
+            Log.Debug(
+                "{0}.{1}: Sending event {2}/{3} {4}.",
+                this, nameof(SendEventAsync), conversationId, methodName, wasSent ? "succeded" : "failed");
         }
 
         internal Task StartAsync()
@@ -360,6 +386,35 @@ namespace Bond.Comm.Epoxy
                 throw new EpoxyProtocolErrorException("Exhausted conversation IDs");
             }
             return unchecked((ulong)newConversationId);
+        }
+
+        private bool CompleteOutstandingRequest(ulong conversationId, IMessage response)
+        {
+            TaskCompletionSource<IMessage> pendingResponse;
+
+            lock (m_requestsLock)
+            {
+                if (!m_outstandingRequests.TryGetValue(conversationId, out pendingResponse))
+                {
+                    return false;
+                }
+
+                m_outstandingRequests.Remove(conversationId);
+            }
+
+            // completing this Task might result in user code running, so we
+            // explicitly use Task.Run to force this onto the thread pool so
+            // that we can resume reading from the socket.
+            //
+            // When we only target .NET 4.6, this can be replaced with creating
+            // the TaskCompletionSource with
+            // TaskCreationOptions.RunContinuationsAsynchronously
+            Task.Run(() =>
+            {
+                pendingResponse.SetResult(response);
+            });
+
+            return true;
         }
 
         private async Task ConnectionLoop()
@@ -598,8 +653,10 @@ namespace Bond.Comm.Epoxy
             Log.Debug("{0}.{1}: Sending protocol error with code {2} and details {3}.",
                 this, nameof(DoSendProtocolErrorAsync), errorCode, details == null ? "<null>" : details.error_code + details.message);
 
-            await SendFrameAsync(frame);
-            Log.Debug("{0}.{1}: Sent protocol error with code {2}.", this, nameof(DoSendProtocolErrorAsync), errorCode);
+            bool wasSent = await SendFrameAsync(frame);
+            Log.Debug(
+                "{0}.{1}: Sending protocol error with code {2} {3}.",
+                this, nameof(DoSendProtocolErrorAsync), errorCode, wasSent ? "succeded" : "failed");
 
             return State.Disconnecting;
         }
@@ -649,7 +706,7 @@ namespace Bond.Comm.Epoxy
         {
             if (headers.error_code != (int)ErrorCode.OK)
             {
-                Log.Error("{0}.{1}: Received conversation ID {2} with a non-zero error code.",
+                Log.Error("{0}.{1}: Received request with a non-zero error code. Conversation ID: {2}",
                     this, nameof(DispatchRequest), headers.conversation_id);
                 m_protocolError = ProtocolErrorCode.PROTOCOL_VIOLATED;
                 return State.SendProtocolError;
@@ -684,20 +741,6 @@ namespace Bond.Comm.Epoxy
 
         private void DispatchResponse(EpoxyHeaders headers, ArraySegment<byte> payload, ArraySegment<byte> layerData)
         {
-            TaskCompletionSource<IMessage> responseCompletionSource;
-
-            lock (m_requestsLock)
-            {
-                if (!m_outstandingRequests.TryGetValue(headers.conversation_id, out responseCompletionSource))
-                {
-                    Log.Error("{0}.{1}: Got a response with unexpected ID {2}.",
-                        this, nameof(DispatchResponse), headers.conversation_id);
-                    return;
-                }
-
-                m_outstandingRequests.Remove(headers.conversation_id);
-            }
-
             IMessage response;
             if (headers.error_code != (int)ErrorCode.OK)
             {
@@ -717,14 +760,18 @@ namespace Bond.Comm.Epoxy
                 response = Message.FromError(layerError);
             }
 
-            responseCompletionSource.SetResult(response);
+            if (!CompleteOutstandingRequest(headers.conversation_id, response))
+            {
+                Log.Error("{0}.{1}: Response for unmatched request. Conversation ID: {2}",
+                    this, nameof(DispatchResponse), headers.conversation_id);
+            }
         }
 
         private void DispatchEvent(EpoxyHeaders headers, ArraySegment<byte> payload, ArraySegment<byte> layerData)
         {
             if (headers.error_code != (int)ErrorCode.OK)
             {
-                Log.Error("{0}.{1}: Received event ID {2} with a non-zero error code.",
+                Log.Error("{0}.{1}: Received event with a non-zero error code. Conversation ID: {2}",
                     this, nameof(DispatchEvent), headers.conversation_id);
                 return;
             }
