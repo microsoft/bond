@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace UnitTest.SimpleInMem
@@ -13,34 +13,34 @@ namespace UnitTest.SimpleInMem
     [TestFixture]
     public class SimpleInMemListenerTest
     {
-        private readonly string m_address = "SimpleInMemTakesAnyRandomConnectionString";
-        private SimpleInMemTransport m_transport;
-        private CalculatorService m_service;
+        private readonly string address = "SimpleInMemTakesAnyRandomConnectionString";
+        private SimpleInMemTransport transport;
+        private CalculatorService service;
 
         [SetUp]
         public void Init()
         {
-            m_transport = new SimpleInMemTransportBuilder().Construct();
-            m_service = new CalculatorService();
+            transport = new SimpleInMemTransportBuilder().Construct();
+            service = new CalculatorService();
         }
 
         [TearDown]
         public void Cleanup()
         {
-            m_transport.RemoveListener(m_address);
+            transport.RemoveListener(address);
         }
 
         [Test]
         public void CreateInMemTransportListener()
         {
-            var listener = m_transport.MakeListener(m_address);
+            var listener = transport.MakeListener(address);
             Assert.IsNotNull(listener);
         }
 
         [Test]
         public async Task StartStopInMemTransportListener()
         {
-            var listener = m_transport.MakeListener(m_address);
+            var listener = transport.MakeListener(address);
             Assert.IsNotNull(listener);
             await listener.StartAsync();
             await listener.StopAsync();
@@ -49,18 +49,18 @@ namespace UnitTest.SimpleInMem
         [Test]
         public void AddRemoveService()
         {
-            SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
-            listener.AddService<CalculatorService>(m_service);
+            SimpleInMemListener listener = (SimpleInMemListener)transport.MakeListener(address);
+            listener.AddService<CalculatorService>(service);
 
-            foreach (var serviceMethod in m_service.Methods)
+            foreach (var serviceMethod in service.Methods)
             {
                 Assert.True(listener.IsRegistered($"{serviceMethod.MethodName}"));
             }
 
             Assert.False(listener.IsRegistered("Divide"));
-            listener.RemoveService<CalculatorService>(m_service);
+            listener.RemoveService<CalculatorService>(service);
 
-            foreach (var serviceMethod in m_service.Methods)
+            foreach (var serviceMethod in service.Methods)
             {
                 Assert.False(listener.IsRegistered($"{serviceMethod.MethodName}"));
             }
@@ -73,7 +73,7 @@ namespace UnitTest.SimpleInMem
             SimpleInMemConnection listenerConnection = null;
             var connectedEventDone = new ManualResetEventSlim(initialState: false);
 
-            SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
+            SimpleInMemListener listener = (SimpleInMemListener)transport.MakeListener(address);
             listener.Connected += (sender, args) =>
             {
                 Assert.AreSame(listener, sender);
@@ -82,7 +82,7 @@ namespace UnitTest.SimpleInMem
             };
 
             await listener.StartAsync();
-            var connection = (SimpleInMemConnection)await m_transport.ConnectToAsync(m_address);
+            var connection = (SimpleInMemConnection)await transport.ConnectToAsync(address);
             bool wasSignaled = connectedEventDone.Wait(TimeSpan.FromSeconds(30));
             Assert.IsTrue(wasSignaled, "Timed out waiting for Connected event to complete");
 
@@ -94,7 +94,7 @@ namespace UnitTest.SimpleInMem
         {
             var disconnectError = new Error { error_code = 100, message = "Go away!" };
 
-            SimpleInMemListener listener = (SimpleInMemListener)m_transport.MakeListener(m_address);
+            SimpleInMemListener listener = (SimpleInMemListener)transport.MakeListener(address);
             listener.Connected += (sender, args) =>
             {
                 args.DisconnectError = disconnectError;
@@ -103,7 +103,7 @@ namespace UnitTest.SimpleInMem
             await listener.StartAsync();
             try
             {
-                await m_transport.ConnectToAsync(m_address);
+                await transport.ConnectToAsync(address);
                 Assert.Fail("Expected an exception to be thrown, but one wasn't.");
             }
             catch (SimpleInMemProtocolErrorException ex)

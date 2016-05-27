@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.Service
@@ -13,23 +13,23 @@ namespace Bond.Comm.Service
 
     public class ServiceHost
     {
-        private readonly object m_lock;
-        private readonly Dictionary<string, ServiceMethodInfo> m_dispatchTable;
+        private readonly object dispatchTableLock;
+        private readonly Dictionary<string, ServiceMethodInfo> dispatchTable;
 
         public readonly Transport ParentTransport;
 
         public ServiceHost(Transport parentTransport)
         {
             ParentTransport = parentTransport;
-            m_lock = new object();
-            m_dispatchTable = new Dictionary<string, ServiceMethodInfo>();
+            dispatchTableLock = new object();
+            dispatchTable = new Dictionary<string, ServiceMethodInfo>();
         }
 
         public bool IsRegistered(string serviceMethodName)
         {
-            lock (m_lock)
+            lock (dispatchTableLock)
             {
-                return m_dispatchTable.ContainsKey(serviceMethodName);
+                return dispatchTable.ContainsKey(serviceMethodName);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Bond.Comm.Service
 
             ValidateServiceMethods(service.Methods);
 
-            lock (m_lock)
+            lock (dispatchTableLock)
             {
                 // Service methods are registerd as a unit - either register all or none.
                 // This code could have been greedy to do both check and register in a single loop,
@@ -80,7 +80,7 @@ namespace Bond.Comm.Service
                 // for clean up.
                 foreach (var serviceMethod in service.Methods)
                 {
-                    if (m_dispatchTable.ContainsKey(serviceMethod.MethodName))
+                    if (dispatchTable.ContainsKey(serviceMethod.MethodName))
                     {
                         throw new ArgumentException($"{serviceMethod.MethodName} already registered");
                     }
@@ -88,7 +88,7 @@ namespace Bond.Comm.Service
 
                 foreach (var serviceMethod in service.Methods)
                 {
-                    m_dispatchTable.Add(serviceMethod.MethodName, serviceMethod);
+                    dispatchTable.Add(serviceMethod.MethodName, serviceMethod);
                     methodNames.Add($"[{serviceMethod.MethodName}]");
                 }
             }
@@ -99,11 +99,11 @@ namespace Bond.Comm.Service
 
         public void Deregister<T>(T service) where T : IService
         {
-            lock (m_lock)
+            lock (dispatchTableLock)
             {
                 foreach (var serviceMethod in service.Methods)
                 {
-                    m_dispatchTable.Remove(serviceMethod.MethodName);
+                    dispatchTable.Remove(serviceMethod.MethodName);
                 }
             }
             Log.Information("{0}.{1}: Deregistered {2} with methods: {3}",
@@ -121,9 +121,9 @@ namespace Bond.Comm.Service
 
             ServiceMethodInfo methodInfo;
 
-            lock (m_lock)
+            lock (dispatchTableLock)
             {
-                if (!m_dispatchTable.TryGetValue(methodName, out methodInfo))
+                if (!dispatchTable.TryGetValue(methodName, out methodInfo))
                 {
                     var errorMessage = "Got request for unknown method [" + methodName + "].";
 
@@ -184,9 +184,9 @@ namespace Bond.Comm.Service
                 nameof(ServiceHost), nameof(DispatchEvent), methodName, context.Connection);
             ServiceMethodInfo methodInfo;
 
-            lock (m_lock)
+            lock (dispatchTableLock)
             {
-                if (!m_dispatchTable.TryGetValue(methodName, out methodInfo))
+                if (!dispatchTable.TryGetValue(methodName, out methodInfo))
                 {
                     Log.Error("{0}.{1}: Got request for unknown method [{2}].",
                         nameof(ServiceHost), nameof(DispatchEvent), methodName);

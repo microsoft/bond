@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.SimpleInMem.Processor
@@ -10,9 +10,9 @@ namespace Bond.Comm.SimpleInMem.Processor
 
     internal class RequestProcessor : QueueProcessor
     {
-        readonly SimpleInMemConnection m_connection;
-        readonly ServiceHost m_serviceHost;
-        readonly InMemFrameQueueCollection m_serverqueues;
+        readonly SimpleInMemConnection connection;
+        readonly ServiceHost serviceHost;
+        readonly InMemFrameQueueCollection serverqueues;
 
         internal RequestProcessor(SimpleInMemConnection connection, ServiceHost host, InMemFrameQueueCollection queues)
         {
@@ -20,18 +20,18 @@ namespace Bond.Comm.SimpleInMem.Processor
             if (host == null) throw new ArgumentNullException(nameof(host));
             if (queues == null) throw new ArgumentNullException(nameof(queues));
             
-            m_connection = connection;
-            m_serviceHost = host;
-            m_serverqueues = queues;
+            this.connection = connection;
+            serviceHost = host;
+            serverqueues = queues;
         }
 
         override internal void Process()
         {
             const PayloadType payloadType = PayloadType.Request;
 
-            foreach (Guid key in m_serverqueues.GetKeys())
+            foreach (Guid key in serverqueues.GetKeys())
             {
-                InMemFrameQueue queue = m_serverqueues.GetQueue(key);
+                InMemFrameQueue queue = serverqueues.GetQueue(key);
                 Task.Run(() => ProcessQueue(queue, payloadType));
             }
         }
@@ -49,10 +49,10 @@ namespace Bond.Comm.SimpleInMem.Processor
             while (batchIndex < PROCESSING_BATCH_SIZE && queueSize > 0)
             {
                 var payload = queue.Dequeue(payloadType);
-                var headers = payload.m_headers;
-                var layerData = payload.m_layerData;
-                var message = payload.m_message;
-                var taskSource = payload.m_outstandingRequest;
+                var headers = payload.headers;
+                var layerData = payload.layerData;
+                var message = payload.message;
+                var taskSource = payload.outstandingRequest;
 
                 Task.Run(() => DispatchRequest(headers, layerData, message, queue, taskSource));
                 queueSize = queue.Count(payloadType);
@@ -63,16 +63,16 @@ namespace Bond.Comm.SimpleInMem.Processor
         private async void DispatchRequest(SimpleInMemHeaders headers, IBonded layerData, IMessage message, InMemFrameQueue queue,
                                             TaskCompletionSource<IMessage> taskSource)
         {
-            var receiveContext = new SimpleInMemReceiveContext(m_connection);
+            var receiveContext = new SimpleInMemReceiveContext(connection);
 
-            Error layerError = LayerStackUtils.ProcessOnReceive(this.m_serviceHost.ParentTransport.LayerStack,
+            Error layerError = LayerStackUtils.ProcessOnReceive(this.serviceHost.ParentTransport.LayerStack,
                                                                 MessageType.Request, receiveContext, layerData);
 
             IMessage response;
 
             if (layerError == null)
             {
-                response = await m_serviceHost.DispatchRequest(headers.method_name, receiveContext, message, m_connection.ConnectionMetrics);
+                response = await serviceHost.DispatchRequest(headers.method_name, receiveContext, message, connection.ConnectionMetrics);
             }
             else
             {
@@ -87,9 +87,9 @@ namespace Bond.Comm.SimpleInMem.Processor
         internal void SendReply(ulong conversationId, IMessage response, InMemFrameQueue queue,
                                 TaskCompletionSource<IMessage> taskSource)
         {
-            var sendContext = new SimpleInMemSendContext(m_connection);
+            var sendContext = new SimpleInMemSendContext(connection);
             IBonded layerData;
-            Error layerError = LayerStackUtils.ProcessOnSend(this.m_serviceHost.ParentTransport.LayerStack,
+            Error layerError = LayerStackUtils.ProcessOnSend(this.serviceHost.ParentTransport.LayerStack,
                                                              MessageType.Response, sendContext, out layerData);
 
             // If there was a layer error, replace the response with the layer error

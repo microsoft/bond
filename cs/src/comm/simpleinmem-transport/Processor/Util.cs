@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.SimpleInMem.Processor
@@ -18,10 +18,10 @@ namespace Bond.Comm.SimpleInMem.Processor
 
             var payload = new InMemFrame
             {
-                m_headers = headers,
-                m_layerData = layerData,
-                m_message = message,
-                m_outstandingRequest = taskSource
+                headers = headers,
+                layerData = layerData,
+                message = message,
+                outstandingRequest = taskSource
             };
 
             Validate(payload);
@@ -34,13 +34,13 @@ namespace Bond.Comm.SimpleInMem.Processor
             {
                 throw new SimpleInMemProtocolErrorException($"null {nameof(frame)}");
             }
-            else if (frame.m_headers == null)
+            else if (frame.headers == null)
             {
-                throw new SimpleInMemProtocolErrorException($"null {nameof(frame.m_headers)} in frame");
+                throw new SimpleInMemProtocolErrorException($"null {nameof(frame.headers)} in frame");
             }
-            else if (frame.m_message == null)
+            else if (frame.message == null)
             {
-                throw new SimpleInMemProtocolErrorException($"null {nameof(frame.m_message)} in frame");
+                throw new SimpleInMemProtocolErrorException($"null {nameof(frame.message)} in frame");
             }
 
             return frame;

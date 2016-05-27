@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.SimpleInMem.Processor
@@ -10,9 +10,9 @@ namespace Bond.Comm.SimpleInMem.Processor
 
     internal class EventProcessor : QueueProcessor
     {
-        readonly SimpleInMemConnection m_connection;
-        readonly ServiceHost m_serviceHost;
-        readonly InMemFrameQueueCollection m_serverqueues;
+        readonly SimpleInMemConnection connection;
+        readonly ServiceHost serviceHost;
+        readonly InMemFrameQueueCollection serverqueues;
 
         internal EventProcessor(SimpleInMemConnection connection, ServiceHost host, InMemFrameQueueCollection queues)
         {
@@ -20,18 +20,18 @@ namespace Bond.Comm.SimpleInMem.Processor
             if (host == null) throw new ArgumentNullException(nameof(host));
             if (queues == null) throw new ArgumentNullException(nameof(queues));
 
-            m_connection = connection;
-            m_serviceHost = host;
-            m_serverqueues = queues;
+            this.connection = connection;
+            serviceHost = host;
+            serverqueues = queues;
         }
 
         override internal void Process()
         {
             const PayloadType payloadType = PayloadType.Event;
 
-            foreach (Guid key in m_serverqueues.GetKeys())
+            foreach (Guid key in serverqueues.GetKeys())
             {
-                InMemFrameQueue queue = m_serverqueues.GetQueue(key);
+                InMemFrameQueue queue = serverqueues.GetQueue(key);
                 Task.Run(() => ProcessQueue(queue, payloadType));
             }
         }
@@ -50,9 +50,9 @@ namespace Bond.Comm.SimpleInMem.Processor
             while (batchIndex < PROCESSING_BATCH_SIZE && queueSize > 0)
             {
                 var payload = queue.Dequeue(payloadType);
-                var headers = payload.m_headers;
-                var layerData = payload.m_layerData;
-                var message = payload.m_message;
+                var headers = payload.headers;
+                var layerData = payload.layerData;
+                var message = payload.message;
 
                 DispatchEvent(headers, layerData, message);
                 queueSize = queue.Count(payloadType);
@@ -62,9 +62,9 @@ namespace Bond.Comm.SimpleInMem.Processor
 
         private void DispatchEvent(SimpleInMemHeaders headers, IBonded layerData, IMessage message)
         {
-            var receiveContext = new SimpleInMemReceiveContext(m_connection);
+            var receiveContext = new SimpleInMemReceiveContext(connection);
 
-            Error layerError = LayerStackUtils.ProcessOnReceive(m_serviceHost.ParentTransport.LayerStack,
+            Error layerError = LayerStackUtils.ProcessOnReceive(serviceHost.ParentTransport.LayerStack,
                                                                 MessageType.Event, receiveContext, layerData);
 
             if (layerError != null)
@@ -77,8 +77,8 @@ namespace Bond.Comm.SimpleInMem.Processor
 
             Task.Run(async () =>
             {
-                await m_serviceHost.DispatchEvent(
-                    headers.method_name, receiveContext,  message, m_connection.ConnectionMetrics);
+                await serviceHost.DispatchEvent(
+                    headers.method_name, receiveContext,  message, connection.ConnectionMetrics);
             });
         }
     }

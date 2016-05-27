@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.SimpleInMem.Processor
@@ -9,24 +9,24 @@ namespace Bond.Comm.SimpleInMem.Processor
 
     internal class ResponseProcessor : QueueProcessor
     {
-        readonly SimpleInMemConnection m_connection;
-        readonly Transport m_parentTransport;
-        readonly InMemFrameQueue m_clientreqresqueue;
+        readonly SimpleInMemConnection connection;
+        readonly Transport parentTransport;
+        readonly InMemFrameQueue clientreqresqueue;
 
         internal ResponseProcessor(SimpleInMemConnection connection, Transport parentTransport, InMemFrameQueue queue)
         {
             if (queue == null) throw new ArgumentNullException(nameof(queue));
             if (connection == null) throw new ArgumentNullException(nameof(connection));
 
-            m_connection = connection;
-            m_parentTransport = parentTransport;
-            m_clientreqresqueue = queue;
+            this.connection = connection;
+            this.parentTransport = parentTransport;
+            clientreqresqueue = queue;
         }
 
         override internal void Process()
         {
             const PayloadType payloadType = PayloadType.Response;
-            int queueSize = m_clientreqresqueue.Count(payloadType);
+            int queueSize = clientreqresqueue.Count(payloadType);
             int batchIndex = 0;
 
             if (queueSize == 0)
@@ -36,14 +36,14 @@ namespace Bond.Comm.SimpleInMem.Processor
 
             while (batchIndex < PROCESSING_BATCH_SIZE && queueSize > 0)
             {
-                var frame = m_clientreqresqueue.Dequeue(payloadType);
-                var headers = frame.m_headers;
-                var layerData = frame.m_layerData;
-                var message = frame.m_message;
-                var taskSource = frame.m_outstandingRequest;
+                var frame = clientreqresqueue.Dequeue(payloadType);
+                var headers = frame.headers;
+                var layerData = frame.layerData;
+                var message = frame.message;
+                var taskSource = frame.outstandingRequest;
 
                 DispatchResponse(headers, layerData, message, taskSource);
-                queueSize = m_clientreqresqueue.Count(payloadType);
+                queueSize = clientreqresqueue.Count(payloadType);
                 batchIndex++;
             }
         }
@@ -51,9 +51,9 @@ namespace Bond.Comm.SimpleInMem.Processor
         private void DispatchResponse(SimpleInMemHeaders headers, IBonded layerData, IMessage message,
                                         TaskCompletionSource<IMessage> responseCompletionSource)
         {
-            var receiveContext = new SimpleInMemReceiveContext(m_connection);
+            var receiveContext = new SimpleInMemReceiveContext(connection);
 
-            Error layerError = LayerStackUtils.ProcessOnReceive(m_parentTransport.LayerStack,
+            Error layerError = LayerStackUtils.ProcessOnReceive(parentTransport.LayerStack,
                                                                 MessageType.Response, receiveContext, layerData);
 
             if (layerError != null)

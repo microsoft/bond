@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.SimpleInMem
@@ -19,8 +19,8 @@ namespace Bond.Comm.SimpleInMem
 
     public class SimpleInMemTransport : Transport
     {
-        IDictionary<string, SimpleInMemListener> m_listeners = new Dictionary<string, SimpleInMemListener>();
-        object m_lock = new object();
+        object listenersLock = new object();
+        IDictionary<string, SimpleInMemListener> listeners = new Dictionary<string, SimpleInMemListener>();
         readonly ILayerStack layerStack;
 
         public SimpleInMemTransport(ILayerStack layerStack)
@@ -42,9 +42,9 @@ namespace Bond.Comm.SimpleInMem
                 nameof(SimpleInMemTransport), nameof(ConnectToAsync), address);
             SimpleInMemListener listener;
 
-            lock (m_lock)
+            lock (listenersLock)
             {
-                if (!m_listeners.TryGetValue(address, out listener))
+                if (!listeners.TryGetValue(address, out listener))
                 {
                     var errorFormat = "{0}.{1}: Listener not found for address: {2}";
                     var message = LogUtil.FatalAndReturnFormatted(errorFormat,
@@ -66,14 +66,14 @@ namespace Bond.Comm.SimpleInMem
         {
             SimpleInMemListener listener;
 
-            if (!m_listeners.TryGetValue(address, out listener))
+            if (!listeners.TryGetValue(address, out listener))
             {
-                lock (m_lock)
+                lock (listenersLock)
                 {
-                    if (!m_listeners.TryGetValue(address, out listener))
+                    if (!listeners.TryGetValue(address, out listener))
                     {
                         listener = new SimpleInMemListener(this, address);
-                        m_listeners.Add(address, listener);
+                        listeners.Add(address, listener);
                     }
                 }
             }
@@ -84,19 +84,19 @@ namespace Bond.Comm.SimpleInMem
         public Listener GetListener(string address)
         {
             SimpleInMemListener listener;
-            m_listeners.TryGetValue(address, out listener);
+            listeners.TryGetValue(address, out listener);
             return listener;
         }
 
         public override Task StopAsync()
         {
-            lock (m_lock)
+            lock (listenersLock)
             {
-                foreach (SimpleInMemListener listener in m_listeners.Values)
+                foreach (SimpleInMemListener listener in listeners.Values)
                 {
                     listener.StopAsync();
                 }
-                m_listeners.Clear();
+                listeners.Clear();
             }
 
             return TaskExt.CompletedTask;
@@ -104,16 +104,16 @@ namespace Bond.Comm.SimpleInMem
 
         public bool ListenerExists(string address)
         {
-            return m_listeners.ContainsKey(address);
+            return listeners.ContainsKey(address);
         }
 
         public SimpleInMemListener RemoveListener(string address)
         {
             SimpleInMemListener listener;
 
-            if (m_listeners.TryGetValue(address, out listener))
+            if (listeners.TryGetValue(address, out listener))
             {
-                m_listeners.Remove(address);
+                listeners.Remove(address);
             }
 
             return listener;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.Service
@@ -15,13 +15,13 @@ namespace Bond.Comm.Service
             return tcs.Task;
         }
 
-        private static Task s_completedTask = Task.FromResult(default(object));
+        private static Task completedTask = Task.FromResult(default(object));
 
         public static Task CompletedTask
         {
             get
             {
-                return s_completedTask;
+                return completedTask;
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace UnitTest.Epoxy
@@ -401,7 +401,7 @@ namespace UnitTest.Epoxy
 
         public class TestService : IService
         {
-            private int m_respondWithEmpty_callCount = 0;
+            private int respondWithEmpty_callCount = 0;
 
             public IEnumerable<ServiceMethodInfo> Methods
             {
@@ -432,13 +432,13 @@ namespace UnitTest.Epoxy
             {
                 get
                 {
-                    return m_respondWithEmpty_callCount;
+                    return respondWithEmpty_callCount;
                 }
             }
 
             private Task<IMessage> RespondWithEmpty(IMessage request, ReceiveContext context, CancellationToken ct)
             {
-                Interlocked.Increment(ref m_respondWithEmpty_callCount);
+                Interlocked.Increment(ref respondWithEmpty_callCount);
                 var emptyMessage = Message.FromPayload(new Bond.Void());
                 return Task.FromResult<IMessage>(emptyMessage);
             }

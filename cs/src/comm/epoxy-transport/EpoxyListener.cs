@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.Epoxy
@@ -13,31 +13,31 @@ namespace Bond.Comm.Epoxy
 
     public class EpoxyListener : Listener
     {
-        private EpoxyTransport m_parentTransport;
-        private System.Net.Sockets.TcpListener m_listener;
-        private ServiceHost m_serviceHost;
+        private EpoxyTransport parentTransport;
+        private System.Net.Sockets.TcpListener listener;
+        private ServiceHost serviceHost;
 
-        private object m_connectionsLock = new object();
-        private HashSet<EpoxyConnection> m_connections;
+        private object connectionsLock = new object();
+        private HashSet<EpoxyConnection> connections;
 
-        private Task m_acceptTask;
+        private Task acceptTask;
 
-        private CancellationTokenSource m_shutdownTokenSource;
+        private CancellationTokenSource shutdownTokenSource;
 
         public EpoxyListener(EpoxyTransport parentTransport, IPEndPoint listenEndpoint)
         {
-            m_parentTransport = parentTransport;
-            m_listener = new System.Net.Sockets.TcpListener(listenEndpoint);
-            m_serviceHost = new ServiceHost(parentTransport);
-            m_connections = new HashSet<EpoxyConnection>();
-            m_shutdownTokenSource = new CancellationTokenSource();
+            this.parentTransport = parentTransport;
+            listener = new System.Net.Sockets.TcpListener(listenEndpoint);
+            serviceHost = new ServiceHost(parentTransport);
+            connections = new HashSet<EpoxyConnection>();
+            shutdownTokenSource = new CancellationTokenSource();
         }
 
         public IPEndPoint ListenEndpoint
         {
             get
             {
-                return (IPEndPoint)m_listener.LocalEndpoint;
+                return (IPEndPoint)listener.LocalEndpoint;
             }
         }
 
@@ -48,13 +48,13 @@ namespace Bond.Comm.Epoxy
 
         public override bool IsRegistered(string serviceMethodName)
         {
-            return m_serviceHost.IsRegistered(serviceMethodName);
+            return serviceHost.IsRegistered(serviceMethodName);
         }
 
         public override void AddService<T>(T service)
         {
             Log.Information("{0}.{1}: Adding {2}.", this, nameof(AddService), typeof(T).Name);
-            m_serviceHost.Register(service);
+            serviceHost.Register(service);
         }
 
         public override void RemoveService<T>(T service)
@@ -64,17 +64,17 @@ namespace Bond.Comm.Epoxy
 
         public override Task StartAsync()
         {
-            m_listener.Start();
-            m_acceptTask = Task.Run(() => AcceptAsync(m_shutdownTokenSource.Token), m_shutdownTokenSource.Token);
+            listener.Start();
+            acceptTask = Task.Run(() => AcceptAsync(shutdownTokenSource.Token), shutdownTokenSource.Token);
             return TaskExt.CompletedTask;
         }
 
         public override Task StopAsync()
         {
-            m_shutdownTokenSource.Cancel();
-            m_listener.Stop();
+            shutdownTokenSource.Cancel();
+            listener.Stop();
 
-            return m_acceptTask;
+            return acceptTask;
         }
 
         internal Error InvokeOnConnected(ConnectedEventArgs args)
@@ -96,17 +96,17 @@ namespace Bond.Comm.Epoxy
 
                 try
                 {
-                    socket = await m_listener.AcceptSocketAsync();
+                    socket = await listener.AcceptSocketAsync();
                     var connection = EpoxyConnection.MakeServerConnection(
-                        m_parentTransport,
+                        parentTransport,
                         this,
-                        m_serviceHost,
+                        serviceHost,
                         socket);
                     socket = null; // connection now owns the socket and will close it
 
-                    lock (m_connectionsLock)
+                    lock (connectionsLock)
                     {
-                        m_connections.Add(connection);
+                        connections.Add(connection);
                     }
 
                     await connection.StartAsync();

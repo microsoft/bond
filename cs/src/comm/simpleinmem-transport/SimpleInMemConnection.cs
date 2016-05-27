@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.SimpleInMem
@@ -30,18 +30,18 @@ namespace Bond.Comm.SimpleInMem
 
     public class SimpleInMemConnection : Connection, IRequestResponseConnection, IEventConnection
     {
-        private readonly Guid m_connectionId;
-        private readonly ConnectionType m_connectionType;
-        private readonly ServiceHost m_serviceHost;
-        private readonly SimpleInMemListener m_parentListener;
-        private InMemFrameQueue m_communicationQueue;
-        private InMemFrameQueueCollection m_serverqueues;
-        private object m_connectionsLock = new object();
+        private readonly Guid connectionId;
+        private readonly ConnectionType connectionType;
+        private readonly ServiceHost serviceHost;
+        private readonly SimpleInMemListener parentListener;
+        private InMemFrameQueue communicationQueue;
+        private InMemFrameQueueCollection serverqueues;
+        private object connectionsLock = new object();
         private long prevConversationId;
-        private CancellationTokenSource m_cancelTokenSource = new CancellationTokenSource();
-        private CnxState m_state;
-        private object m_stateLock = new object();
-        private HashSet<SimpleInMemConnection> m_clientConnections;
+        private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+        private CnxState state;
+        private object stateLock = new object();
+        private HashSet<SimpleInMemConnection> clientConnections;
         public ConnectionMetrics ConnectionMetrics { get; } = new ConnectionMetrics();
 
         public SimpleInMemConnection(SimpleInMemTransport parentTransport, SimpleInMemListener parentListener, ConnectionType connectionType) :
@@ -54,20 +54,20 @@ namespace Bond.Comm.SimpleInMem
             if (serviceHost == null) throw new ArgumentNullException(nameof(serviceHost));
             if (parentListener == null) throw new ArgumentNullException(nameof(parentListener));
 
-            m_connectionId = Guid.NewGuid();
-            m_connectionType = connectionType;
-            m_serviceHost = serviceHost;
-            m_parentListener = parentListener;
+            connectionId = Guid.NewGuid();
+            this.connectionType = connectionType;
+            this.serviceHost = serviceHost;
+            this.parentListener = parentListener;
 
             switch(connectionType)
             {
                 case ConnectionType.Client:
-                    m_communicationQueue = new InMemFrameQueue();
+                    communicationQueue = new InMemFrameQueue();
                     break;
 
                 case ConnectionType.Server:
-                    m_serverqueues = new InMemFrameQueueCollection();
-                    m_clientConnections = new HashSet<SimpleInMemConnection>();
+                    serverqueues = new InMemFrameQueueCollection();
+                    clientConnections = new HashSet<SimpleInMemConnection>();
                     break;
 
                 default:
@@ -77,16 +77,16 @@ namespace Bond.Comm.SimpleInMem
             // start at -1 or 0 so the first conversation ID is 1 or 2.
             prevConversationId = (connectionType == ConnectionType.Client) ? -1 : 0;
 
-            m_state = CnxState.Created;
+            state = CnxState.Created;
 
-            ConnectionMetrics.connection_id = m_connectionId.ToString();
+            ConnectionMetrics.connection_id = connectionId.ToString();
         }
 
         public CnxState State
         {
             get
             {
-                return m_state;
+                return state;
             }
         }
 
@@ -94,7 +94,7 @@ namespace Bond.Comm.SimpleInMem
         {
             get
             {
-                return m_connectionType;
+                return connectionType;
             }
         }
 
@@ -102,33 +102,33 @@ namespace Bond.Comm.SimpleInMem
         {
             get
             {
-                return m_connectionId;
+                return connectionId;
             }
         }
 
         public override string ToString()
         {
-            return $"{nameof(SimpleInMemConnection)}({m_connectionId})";
+            return $"{nameof(SimpleInMemConnection)}({connectionId})";
         }
 
         public override Task StopAsync()
         {
             bool connected = false;
-            lock (m_stateLock)
+            lock (stateLock)
             {
-                if (connected = ((m_state & CnxState.Connected) != 0))
+                if (connected = ((state & CnxState.Connected) != 0))
                 {
-                    m_state = CnxState.Disconnecting;
-                    m_cancelTokenSource.Cancel();
+                    state = CnxState.Disconnecting;
+                    cancelTokenSource.Cancel();
                 }
             }
 
             if (connected)
             {
                 OnDisconnect();
-                lock (m_stateLock)
+                lock (stateLock)
                 {
-                    m_state = CnxState.Disconnected;
+                    state = CnxState.Disconnected;
                 }
             }
 
@@ -153,42 +153,42 @@ namespace Bond.Comm.SimpleInMem
         {
             get
             {
-                return m_communicationQueue;
+                return communicationQueue;
             }
         }
 
         internal void Start()
         {
-            lock (m_stateLock)
+            lock (stateLock)
             {
                 EnsureCorrectState(CnxState.Created | CnxState.Disconnected);
 
-                if (m_connectionType == ConnectionType.Client)
+                if (connectionType == ConnectionType.Client)
                 {
-                    var responseProcessor = new ResponseProcessor(this, m_serviceHost.ParentTransport, m_communicationQueue);
-                    Task.Run(() => responseProcessor.ProcessAsync(m_cancelTokenSource.Token));
+                    var responseProcessor = new ResponseProcessor(this, serviceHost.ParentTransport, communicationQueue);
+                    Task.Run(() => responseProcessor.ProcessAsync(cancelTokenSource.Token));
                 }
-                else if (m_connectionType == ConnectionType.Server)
+                else if (connectionType == ConnectionType.Server)
                 {
-                    var requestProcessor = new RequestProcessor(this, m_serviceHost, m_serverqueues);
-                    var eventProcessor = new EventProcessor(this, m_serviceHost, m_serverqueues);
-                    Task.Run(() => requestProcessor.ProcessAsync(m_cancelTokenSource.Token));
-                    Task.Run(() => eventProcessor.ProcessAsync(m_cancelTokenSource.Token));
+                    var requestProcessor = new RequestProcessor(this, serviceHost, serverqueues);
+                    var eventProcessor = new EventProcessor(this, serviceHost, serverqueues);
+                    Task.Run(() => requestProcessor.ProcessAsync(cancelTokenSource.Token));
+                    Task.Run(() => eventProcessor.ProcessAsync(cancelTokenSource.Token));
                 }
                 else
                 {
                     var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Connection type {2} not implemented.",
-                        this, nameof(Start), m_connectionType);
+                        this, nameof(Start), connectionType);
                     throw new NotImplementedException(message);
                 }
 
-                m_state = CnxState.Connected;
+                state = CnxState.Connected;
             }
         }
 
         internal void AddClientConnection(SimpleInMemConnection connection)
         {
-            if (m_connectionType == ConnectionType.Client)
+            if (connectionType == ConnectionType.Client)
             {
                 var message = LogUtil.FatalAndReturnFormatted(
                     "{0}.{1}: Client connection does not support adding new request response queue.",
@@ -196,10 +196,10 @@ namespace Bond.Comm.SimpleInMem
                 throw new NotSupportedException(message);
             }
 
-            m_serverqueues.Add(connection.Id, connection.CommunicationQueue);
-            lock (m_connectionsLock)
+            serverqueues.Add(connection.Id, connection.CommunicationQueue);
+            lock (connectionsLock)
             {
-                m_clientConnections.Add(connection);
+                clientConnections.Add(connection);
             }
         }
 
@@ -209,7 +209,7 @@ namespace Bond.Comm.SimpleInMem
 
             var sendContext = new SimpleInMemSendContext(this);
             IBonded layerData;
-            Error layerError = LayerStackUtils.ProcessOnSend(this.m_serviceHost.ParentTransport.LayerStack,
+            Error layerError = LayerStackUtils.ProcessOnSend(this.serviceHost.ParentTransport.LayerStack,
                                                              MessageType.Request, sendContext, out layerData);
 
             if (layerError != null)
@@ -220,10 +220,10 @@ namespace Bond.Comm.SimpleInMem
             }
 
             var payload = Util.NewPayLoad(conversationId, PayloadType.Request, layerData, request, new TaskCompletionSource<IMessage>());
-            payload.m_headers.method_name = methodName;
-            m_communicationQueue.Enqueue(payload);
+            payload.headers.method_name = methodName;
+            communicationQueue.Enqueue(payload);
 
-            return payload.m_outstandingRequest.Task;
+            return payload.outstandingRequest.Task;
         }
 
         private void SendEventAsync(string methodName, IMessage message)
@@ -232,7 +232,7 @@ namespace Bond.Comm.SimpleInMem
 
             var sendContext = new SimpleInMemSendContext(this);
             IBonded layerData;
-            Error layerError = LayerStackUtils.ProcessOnSend(this.m_serviceHost.ParentTransport.LayerStack,
+            Error layerError = LayerStackUtils.ProcessOnSend(this.serviceHost.ParentTransport.LayerStack,
                                                              MessageType.Event, sendContext, out layerData);
 
             if (layerError != null)
@@ -243,8 +243,8 @@ namespace Bond.Comm.SimpleInMem
             }
 
             var payload = Util.NewPayLoad(conversationId, PayloadType.Event, layerData, message, null);
-            payload.m_headers.method_name = methodName;
-            m_communicationQueue.Enqueue(payload);
+            payload.headers.method_name = methodName;
+            communicationQueue.Enqueue(payload);
         }
 
         private ulong AllocateNextConversationId()
@@ -263,9 +263,9 @@ namespace Bond.Comm.SimpleInMem
             Log.Debug("{0}.{1}: Shutting down.", this, nameof(OnDisconnect));
 
             var args = new DisconnectedEventArgs(this, null);
-            m_parentListener.InvokeOnDisconnected(args);
+            parentListener.InvokeOnDisconnected(args);
 
-            if(m_connectionType == ConnectionType.Client)
+            if(connectionType == ConnectionType.Client)
             {
                 DisconnectClient();
             }
@@ -277,30 +277,30 @@ namespace Bond.Comm.SimpleInMem
 
         private void DisconnectClient()
         {
-            m_communicationQueue.Clear();
+            communicationQueue.Clear();
         }
 
         private void DisconnectServer()
         {
-            m_serverqueues.ClearAll();
+            serverqueues.ClearAll();
 
-            lock (m_connectionsLock)
+            lock (connectionsLock)
             {
-                foreach (SimpleInMemConnection connection in m_clientConnections)
+                foreach (SimpleInMemConnection connection in clientConnections)
                 {
                     connection.StopAsync();
                 }
 
-                m_clientConnections.Clear();
+                clientConnections.Clear();
             }
         }
 
         private void EnsureCorrectState(CnxState allowedStates, [CallerMemberName] string methodName = "<unknown>")
         {
 
-            if ((m_state & allowedStates) == 0)
+            if ((state & allowedStates) == 0)
             {
-                var message = $"Connection (${this}) is not in the correct state for the requested operation (${methodName}). Current state: ${m_state} Allowed states: ${allowedStates}";
+                var message = $"Connection (${this}) is not in the correct state for the requested operation (${methodName}). Current state: ${state} Allowed states: ${allowedStates}";
                 throw new InvalidOperationException(message);
             }
         }

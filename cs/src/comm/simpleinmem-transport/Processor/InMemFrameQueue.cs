@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.SimpleInMem.Processor
@@ -10,35 +10,35 @@ namespace Bond.Comm.SimpleInMem.Processor
 
     internal class InMemFrameQueue
     {
-        private Queue<InMemFrame> m_requests;
-        private Queue<InMemFrame> m_responses;
-        private Queue<InMemFrame> m_events;
-        private object m_lockreq = new object();
-        private object m_lockres = new object();
-        private object m_lockevent = new object();
+        private Queue<InMemFrame> requests;
+        private Queue<InMemFrame> responses;
+        private Queue<InMemFrame> events;
+        private object requestsLock = new object();
+        private object responsesLock = new object();
+        private object eventsLock = new object();
 
         internal InMemFrameQueue()
         {
-            m_requests = new Queue<InMemFrame>();
-            m_responses = new Queue<InMemFrame>();
-            m_events = new Queue<InMemFrame>();
+            requests = new Queue<InMemFrame>();
+            responses = new Queue<InMemFrame>();
+            events = new Queue<InMemFrame>();
         }
 
         internal void Clear()
         {
-            lock(m_lockreq)
+            lock (requestsLock)
             {
-                Clear(m_requests);
+                Clear(requests);
             }
 
-            lock (m_lockres)
+            lock (responsesLock)
             {
-                Clear(m_responses);
+                Clear(responses);
             }
 
-            lock (m_lockevent)
+            lock (eventsLock)
             {
-                Clear(m_events);
+                Clear(events);
             }
         }
 
@@ -46,32 +46,32 @@ namespace Bond.Comm.SimpleInMem.Processor
         {
             Util.Validate(frame);
 
-            switch(frame.m_headers.payload_type)
+            switch(frame.headers.payload_type)
             {
                 case PayloadType.Request:
-                    lock(m_lockreq)
+                    lock (requestsLock)
                     {
-                        m_requests.Enqueue(frame);
+                        requests.Enqueue(frame);
                     }
                     break;
 
                 case PayloadType.Response:
-                    lock (m_lockres)
+                    lock (responsesLock)
                     {
-                        m_responses.Enqueue(frame);
+                        responses.Enqueue(frame);
                     }
                     break;
 
                 case PayloadType.Event:
-                    lock (m_events)
+                    lock (events)
                     {
-                        m_events.Enqueue(frame);
+                        events.Enqueue(frame);
                     }
                     break;
 
                 default:
                     var message = LogUtil.FatalAndReturnFormatted("{0}.{1}: Payload type {2} not supported!",
-                        nameof(InMemFrameQueue), nameof(Enqueue), frame.m_headers.payload_type);
+                        nameof(InMemFrameQueue), nameof(Enqueue), frame.headers.payload_type);
                     throw new NotImplementedException(message);
             }
 
@@ -83,23 +83,23 @@ namespace Bond.Comm.SimpleInMem.Processor
             switch (payloadType)
             {
                 case PayloadType.Request:
-                    lock (m_lockreq)
+                    lock (requestsLock)
                     {
-                        frame = m_requests.Dequeue();
+                        frame = requests.Dequeue();
                     }
                     break;
 
                 case PayloadType.Response:
-                    lock (m_lockres)
+                    lock (responsesLock)
                     {
-                        frame = m_responses.Dequeue();
+                        frame = responses.Dequeue();
                     }
                     break;
 
                 case PayloadType.Event:
-                    lock (m_lockevent)
+                    lock (eventsLock)
                     {
-                        frame = m_events.Dequeue();
+                        frame = events.Dequeue();
                     }
                     break;
 
@@ -118,15 +118,15 @@ namespace Bond.Comm.SimpleInMem.Processor
             switch(payloadType)
             {
                 case PayloadType.Request:
-                    count = m_requests.Count;
+                    count = requests.Count;
                     break;
 
                 case PayloadType.Response:
-                    count = m_responses.Count;
+                    count = responses.Count;
                     break;
 
                 case PayloadType.Event:
-                    count = m_events.Count;
+                    count = events.Count;
                     break;
 
                 default:
@@ -142,7 +142,7 @@ namespace Bond.Comm.SimpleInMem.Processor
         {
             foreach (InMemFrame frame in queue)
             {
-                frame.m_outstandingRequest.SetCanceled();
+                frame.outstandingRequest.SetCanceled();
             }
             queue.Clear();
         }
@@ -150,16 +150,16 @@ namespace Bond.Comm.SimpleInMem.Processor
 
     internal class InMemFrameQueueCollection
     {
-        private ConcurrentDictionary<Guid, InMemFrameQueue> m_reqresqueue;
+        private ConcurrentDictionary<Guid, InMemFrameQueue> reqresqueue;
 
         internal InMemFrameQueueCollection()
         {
-            m_reqresqueue = new ConcurrentDictionary<Guid, InMemFrameQueue>();
+            reqresqueue = new ConcurrentDictionary<Guid, InMemFrameQueue>();
         }
 
         internal void Add(Guid id, InMemFrameQueue queue)
         {
-            if (!m_reqresqueue.TryAdd(id, queue))
+            if (!reqresqueue.TryAdd(id, queue))
             {
                 var message = LogUtil.FatalAndReturnFormatted(
                     "{0}.{1}: Guid collison must never happen for client connection Ids: {2}",
@@ -170,13 +170,13 @@ namespace Bond.Comm.SimpleInMem.Processor
 
         internal ICollection<Guid> GetKeys()
         {
-            return m_reqresqueue.Keys;
+            return reqresqueue.Keys;
         }
 
         internal InMemFrameQueue GetQueue(Guid id)
         {
             InMemFrameQueue queue;
-            m_reqresqueue.TryGetValue(id, out queue);
+            reqresqueue.TryGetValue(id, out queue);
             return queue;
         }
 
@@ -188,15 +188,15 @@ namespace Bond.Comm.SimpleInMem.Processor
             {
                 GetQueue(key).Clear();
             }
-            m_reqresqueue.Clear();
+            reqresqueue.Clear();
         }
     }
 
     internal class InMemFrame
     {
-        internal SimpleInMemHeaders m_headers;
-        internal IBonded m_layerData;
-        internal IMessage m_message;
-        internal TaskCompletionSource<IMessage> m_outstandingRequest;
+        internal SimpleInMemHeaders headers;
+        internal IBonded layerData;
+        internal IMessage message;
+        internal TaskCompletionSource<IMessage> outstandingRequest;
     }
 }

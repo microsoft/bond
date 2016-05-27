@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace UnitTest.Epoxy
@@ -282,32 +282,32 @@ namespace UnitTest.Epoxy
 
         private class FrameBuilder
         {
-            private MemoryStream m_stream = new MemoryStream();
+            private MemoryStream stream = new MemoryStream();
 
             public FrameBuilder Count(UInt16 size)
             {
                 byte[] bytes = BitConverter.GetBytes(size);
-                m_stream.Write(bytes, 0, bytes.Length);
+                stream.Write(bytes, 0, bytes.Length);
                 return this;
             }
 
             public FrameBuilder Type(FrameletType type)
             {
                 byte[] bytes = BitConverter.GetBytes(unchecked((UInt16)type));
-                m_stream.Write(bytes, 0, bytes.Length);
+                stream.Write(bytes, 0, bytes.Length);
                 return this;
             }
 
             public FrameBuilder Size(UInt32 size)
             {
                 byte[] bytes = BitConverter.GetBytes(size);
-                m_stream.Write(bytes, 0, bytes.Length);
+                stream.Write(bytes, 0, bytes.Length);
                 return this;
             }
 
             public FrameBuilder Content(ArraySegment<byte> content)
             {
-                m_stream.Write(content.Array, content.Offset, content.Count);
+                stream.Write(content.Array, content.Offset, content.Count);
                 return this;
             }
 
@@ -318,8 +318,8 @@ namespace UnitTest.Epoxy
 
             public MemoryStream TakeStream()
             {
-                var result = m_stream;
-                m_stream = null;
+                var result = stream;
+                stream = null;
 
                 result.Seek(0, SeekOrigin.Begin);
                 return result;
@@ -327,8 +327,8 @@ namespace UnitTest.Epoxy
 
             public MemoryStream TakeTooShortStream()
             {
-                var originalStream = m_stream;
-                m_stream = null;
+                var originalStream = stream;
+                stream = null;
 
                 return new MemoryStream(
                     originalStream.GetBuffer(),

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace UnitTest.SimpleInMem
@@ -13,20 +13,20 @@ namespace UnitTest.SimpleInMem
     [TestFixture]
     public class SimpleInMemTransportTest
     {
-        private readonly string m_address = "SimpleInMemTakesAnyRandomConnectionString";
-        private SimpleInMemTransport m_transport;
+        private readonly string address = "SimpleInMemTakesAnyRandomConnectionString";
+        private SimpleInMemTransport transport;
 
         [SetUp]
         public void Init()
         {
-            m_transport = new SimpleInMemTransportBuilder().Construct();
+            transport = new SimpleInMemTransportBuilder().Construct();
         }
 
         [TearDown]
         public void Cleanup()
         {
-            m_transport.StopAsync();
-            m_transport = null;
+            transport.StopAsync();
+            transport = null;
         }
 
         [Test]
@@ -39,43 +39,43 @@ namespace UnitTest.SimpleInMem
         [Test]
         public void StopAsync()
         {
-            Listener newListener = m_transport.MakeListener(m_address);
-            Assert.True(newListener == m_transport.GetListener(m_address));
-            m_transport.StopAsync();
-            Assert.False(m_transport.ListenerExists(m_address));
-            m_transport.MakeListener(m_address);
-            Assert.True(m_transport.ListenerExists(m_address));
+            Listener newListener = transport.MakeListener(address);
+            Assert.True(newListener == transport.GetListener(address));
+            transport.StopAsync();
+            Assert.False(transport.ListenerExists(address));
+            transport.MakeListener(address);
+            Assert.True(transport.ListenerExists(address));
         }
 
         [Test]
         public void ConnectToAsync_NoListenerRunning()
         {
-            Assert.Throws<ArgumentException>(async () => await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken()));
+            Assert.Throws<ArgumentException>(async () => await transport.ConnectToAsync(address, new System.Threading.CancellationToken()));
         }
 
         [Test]
         public void MakeListener()
         {
-            bool listenerExists = m_transport.ListenerExists(m_address);
+            bool listenerExists = transport.ListenerExists(address);
             Assert.False(listenerExists);
-            var listener = m_transport.MakeListener(m_address);
-            listenerExists = m_transport.ListenerExists(m_address);
+            var listener = transport.MakeListener(address);
+            listenerExists = transport.ListenerExists(address);
             Assert.True(listenerExists);
-            m_transport.RemoveListener(m_address);
-            Assert.Null(m_transport.GetListener(m_address));
+            transport.RemoveListener(address);
+            Assert.Null(transport.GetListener(address));
         }
 
         [Test]
         public async Task ConnectToAsync()
         {
-            Listener l = m_transport.MakeListener(m_address);
-            Connection conn = await m_transport.ConnectToAsync(m_address, new System.Threading.CancellationToken());
+            Listener l = transport.MakeListener(address);
+            Connection conn = await transport.ConnectToAsync(address, new System.Threading.CancellationToken());
             Assert.NotNull(conn);
             Assert.True(conn is SimpleInMemConnection);
             SimpleInMemConnection simpleConn = (SimpleInMemConnection)conn;
             Assert.True(simpleConn.ConnectionType == ConnectionType.Client);
-            m_transport.RemoveListener(m_address);
-            Assert.Null(m_transport.GetListener(m_address));
+            transport.RemoveListener(address);
+            Assert.Null(transport.GetListener(address));
         }
     }
 }

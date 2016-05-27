@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm
@@ -73,8 +73,8 @@ namespace Bond.Comm
     /// </summary>
     public class Message : IMessage
     {
-        private IBonded m_payload;
-        private IBonded<Error> m_error;
+        private IBonded payload;
+        private IBonded<Error> error;
 
         /// <summary>
         /// Initializes a Message with the given payload.
@@ -87,8 +87,8 @@ namespace Bond.Comm
                 throw new ArgumentNullException(nameof(payload));
             }
 
-            m_payload = payload;
-            m_error = null;
+            this.payload = payload;
+            error = null;
         }
 
         // To create an error Message, use Message.FromError<TPayload>() or Message.FromError().
@@ -104,8 +104,8 @@ namespace Bond.Comm
                 throw new ArgumentNullException(nameof(error));
             }
 
-            m_payload = null;
-            m_error = error;
+            payload = null;
+            this.error = error;
         }
 
         /// <summary>
@@ -260,8 +260,8 @@ namespace Bond.Comm
                     throw new InvalidOperationException("The Payload of this message cannot be accessed, as this message contains an Error.");
                 }
 
-                Debug.Assert(m_payload != null);
-                return m_payload;
+                Debug.Assert(payload != null);
+                return payload;
             }
         }
 
@@ -269,8 +269,8 @@ namespace Bond.Comm
         {
             get
             {
-                Debug.Assert((m_payload == null) ^ (m_error == null));
-                return m_error;
+                Debug.Assert((payload == null) ^ (error == null));
+                return error;
             }
         }
 
@@ -278,8 +278,8 @@ namespace Bond.Comm
         {
             get
             {
-                Debug.Assert((m_payload == null) ^ (m_error == null));
-                return m_error != null;
+                Debug.Assert((payload == null) ^ (error == null));
+                return error != null;
             }
         }
 
@@ -287,11 +287,11 @@ namespace Bond.Comm
         {
             if (IsError)
             {
-                return FromError<U>(m_error);
+                return FromError<U>(error);
             }
             else
             {
-                return FromPayload(m_payload.Convert<U>());
+                return FromPayload(payload.Convert<U>());
             }
         }
     }
