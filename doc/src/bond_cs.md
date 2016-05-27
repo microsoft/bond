@@ -16,6 +16,9 @@ serialization protocols, data streams, user defined type aliases and more.
 By design Bond is language and platform independent and is currently supported
 for C++, C#, and Python on Linux, OS X and Windows.
 
+We are also introducing the Bond Communication framework -- known as Bond Comm.
+More information about Bond Comm for C# can be found [below](#bond-comm).
+
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
 Basic example
@@ -1127,6 +1130,81 @@ public constructors:
             // ...
         }
     }
+
+Bond Comm
+=========
+
+The Bond communication framework makes it easy and efficent to construct services
+and hook clients up to those services. Built on top of the Bond serialization framework,
+Bond Comm aims for the same principles of high-performance and extensibility.
+
+Today the framework supports "request-response"
+(roundtrip messages supporting response payloads or error return) and "event"
+(one-way fire-and-forget messages with no response or error return) messaging patterns.
+
+Bond Comm is naturally asyncronous, and the C# implementation takes advantage of the
+idiomatic async/await facilities of .NET.
+
+The initial release of Bond Comm is designed to run on .NET 4.5 and Core CLR. Since
+Core CLR is not 100% stable yet, we will update as needed. Mono support is forthcoming.
+
+### Defining Services ###
+
+The Bond IDL has been extended to support the definition of
+[services](https://Microsoft.github.io/bond/manual/compiler.html#service-definition)
+and [generic services](https://Microsoft.github.io/bond/manual/compiler.html#generic-services).
+These definitions are used by the Bond compiler to generate:
+
+- service stubs that can be used as the basis for implementing service methods
+- proxy stubs that can be used by clients to invoke those methods
+
+The service stub contains a service base class that the developer
+should subclass to provide the business logic of their service.
+
+The proxy stub provides a class with methods that the developer can call to
+exhange messages with the service.
+
+### Transports ###
+
+The Bond service stubs and proxy stubs are not aware of exactly how the client
+and server get connected or how bytes are exchanged between client and server.
+These capabilites are encapsulated in Transports and their related Connection
+classes.
+
+### Epoxy Transport ###
+
+The initial release of Bond Comm provides a TCP-based transport called EpoxyTransport.
+This is the recommended default Transport. The EpoxyTransport is designed to be
+Core CLR compliant which will allow for cross-platform support.
+
+TLS support in EpoxyTransport is forthcoming.
+
+### Logging and Metrics Facades ###
+
+Bond Comm includes facades for logging and metrics. By writing simple handlers
+for logging and metrics, developers can supply their own logging and metrics
+facilities to gather log and metric data from Bond Comm-based services.
+
+### Layers ###
+
+Bond Comm includes extensibility points called "layers" that provides hooks for
+capabilites that are not service specific. An example of this would be tracing
+hooks like those mentioned in the [Dapper paper](http://research.google.com/pubs/pub36356.html).
+
+A set of layers are encapsulated together in a "layer stack", which can be
+provided to the Transport. When the Transport sends out a message, the layer stack
+invokes the layers in forward order. On the receive side, the layer stack
+invokes the layers in reverse order.
+
+The layers in a layer stack are expected to share a single Bond structure for
+passing state from the send side to the receive side. This structure is serialized
+by the Transport and sent alongside the actual message payload.
+
+If any layer returns an error, the layer stack is halted and the error replaces
+the current message; therefore, layers should only return errors for conditions
+that are truly fatal for the current message.
+
+Support for layers that contain per-instance state is forthcoming.
 
 References
 ==========

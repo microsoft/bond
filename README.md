@@ -9,6 +9,15 @@ data. It supports cross-language serialization/deserialization and powerful
 generic mechanisms for efficiently manipulating data. Bond is broadly used at
 Microsoft in high scale services.
 
+We are also introducing the Bond Communication framework -- known as Bond Comm
+-- which allows for remote process communication. Currently, we are making the
+C# version of this framework available; the C++ version will be released in the
+coming weeks. This framework is largely new, but is based upon a working framework
+that is used by several large services inside Microsoft. Bond Comm is
+undergoing active evolution at this time and so we are marking the intial release
+as version 0.5. Consult the [C# manual](https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm)
+for more details on Bond Comm's usage and capabilities.
+
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
 For details, see the User's Manuals for
