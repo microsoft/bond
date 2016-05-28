@@ -211,6 +211,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "notifyevent", "..\examples\
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "metrics", "..\examples\cs\comm\metrics\metrics.csproj", "{72ECA320-121F-4F3A-B455-B9EDE3364D9D}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "layers", "src\comm\layers\layers.csproj", "{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}"
 EndProject
 Global
