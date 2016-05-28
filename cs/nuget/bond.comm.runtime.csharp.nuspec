@@ -20,7 +20,7 @@
         <copyright>Copyright (c) Microsoft</copyright>
         <tags>Bond .NET C# RPC messaging network communication</tags>
         <dependencies>
-            <dependency id="Bond.Core.CSharp" version ="[$version$]"/>
+            <dependency id="Bond.Core.CSharp" version ="[$coreversion$]"/>
         </dependencies>
     </metadata>
     <files>
@@ -30,5 +30,8 @@
       <file src="net45\Bond.Comm.Service.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
       <file src="net45\Bond.Comm.Service.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
       <file src="net45\Bond.Comm.Service.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+      <file src="net45\Bond.Comm.Layers.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+      <file src="net45\Bond.Comm.Layers.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+      <file src="net45\Bond.Comm.Layers.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
     </files>
 </package>

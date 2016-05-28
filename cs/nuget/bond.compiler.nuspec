@@ -1,29 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-        <id>Bond.CSharp</id>
-        <title>Bond C#</title>
+        <id>Bond.Compiler</id>
+        <title>Bond Compiler</title>
         <version>$version$</version>
         <authors>Microsoft</authors>
         <owners>Microsoft</owners>
         <projectUrl>https://github.com/Microsoft/bond/</projectUrl>
         <licenseUrl>https://github.com/Microsoft/bond/blob/master/LICENSE</licenseUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <summary>Bond is an open source, cross-platform, cross-language framework for working with schematized data.</summary>
+        <summary>The Bond project's code generator and MSBuild targets</summary>
         <description>
+            Includes GBC Compiler in charge of code generation from Bond IDL files. MSBuild targets for easy integration into project builds.
+
             Bond is an open source, cross-platform framework for working with schematized data. It supports cross-language serialization/deserialization and powerful generic mechanisms for efficiently manipulating data.
 
             Bond is published on GitHub at https://github.com/Microsoft/bond/
 
-            The C# documentation is available at https://microsoft.github.io/bond/manual/bond_cs.html
+            The Compiler documentation is available at https://microsoft.github.io/bond/manual/compiler.html
         </description>
         <copyright>Copyright (c) Microsoft</copyright>
         <tags>Bond .NET C# serialization</tags>
         <dependencies>
-            <dependency id="Bond.Core.CSharp" version ="[$version$]"/>
-            <dependency id="Bond.Runtime.CSharp" version ="[$version$]"/>
-            <dependency id="Bond.Compiler.CSharp" version ="[$version$]"/>
-        </dependencies>        
+        </dependencies>
     </metadata>
     <files>
         <file src="cs\bin\gbc.exe" target="bin" />
