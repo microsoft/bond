@@ -25,4 +25,7 @@
             <dependency id="Bond.Comm.Epoxy.CSharp" version ="[$version$]"/>
         </dependencies>
     </metadata>
+    <files>
+        <file src="cs\nuget\readme_comm.txt" target="readme.txt" />
+    </files>
 </package>
