@@ -113,4 +113,5 @@ executable gbc
                     directory >= 1.1,
                     filepath >= 1.0,
                     monad-loops >= 0.4,
-                    text >= 0.11
+                    text >= 0.11,
+                    parsec >= 3.1

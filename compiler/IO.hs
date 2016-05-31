@@ -17,8 +17,12 @@ import System.IO
 import Control.Applicative
 import Prelude
 import Data.Aeson (eitherDecode)
+import Data.Text
 import Control.Monad.Loops (firstM)
 import qualified Data.ByteString.Lazy as BL
+import Text.Parsec
+import Text.ParserCombinators.Parsec.Error
+import Text.Printf
 import Language.Bond.Syntax.Types (Bond(..))
 import Language.Bond.Syntax.JSON()
 import Language.Bond.Parser
@@ -39,7 +43,7 @@ parseBondFile importDirs file = do
     result <- parseBond file input (cwd </> file) readImportFile
     case result of
         Left err -> do
-            putStrLn $ "Error parsing " ++ file ++ ": " ++ show err
+            putStrLn $ msbuildErrorMessage err
             exitFailure
         Right bond -> return bond
   where
@@ -77,7 +81,26 @@ parseAliasMappings = mapM $
 
 
 parseNamespaceMappings :: [String] -> IO [NamespaceMapping]
-parseNamespaceMappings = mapM $ 
+parseNamespaceMappings = mapM $
     \ s -> case parseNamespaceMapping s of
         Left err -> fail $ show err
         Right m -> return m
+
+msbuildErrorMessage :: ParseError -> String
+msbuildErrorMessage err = printf "%s(%d,%d) : error B0000: %s" name line col message
+    where
+        message = combinedMessage err
+        pos = errorPos err
+        name = sourceName pos
+        line = sourceLine pos
+        col = sourceColumn pos
+
+combinedMessage :: ParseError -> String
+combinedMessage err = id $ unpack $ intercalate (pack ", ") messages
+    where
+        -- showErrorMessages returns a multi-line String starting with a blank
+        -- line. We need to break it up to make a useful one-line message.
+        messages = splitOn (pack "\n") $ strip $ pack $
+            showErrorMessages "or" "unknown parse error"
+                "expecting" "unexpected" "end of input"
+                (errorMessages err)
