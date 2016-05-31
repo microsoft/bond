@@ -15,7 +15,7 @@
 
 namespace tests
 {
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.4.0.2")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.4.1.0")]
     interface IFoo
     {
         void foo11Async(global::Bond.Comm.IMessage<global::Bond.Void> param);

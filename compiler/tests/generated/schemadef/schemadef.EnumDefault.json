@@ -1,1 +1,72 @@
-{"structs":[{"metadata":{"qualified_name":"tests.EnumDefault","name":"EnumDefault"},"fields":[{"metadata":{"default_value":{"int_value":0},"name":"c0"},"id":0,"type":{"id":16}},{"metadata":{"default_value":{"int_value":1},"name":"c1"},"id":1,"type":{"id":16}},{"metadata":{"default_value":{"int_value":3},"name":"c3"},"id":3,"type":{"id":16}},{"metadata":{"default_value":{"int_value":4},"name":"c4"},"id":4,"type":{"id":16}},{"metadata":{"default_value":{"int_value":6},"name":"c6"},"id":6,"type":{"id":16}}]}]}
+{
+  "structs": [
+    {
+      "fields": [
+        {
+          "id": 0,
+          "metadata": {
+            "default_value": {
+              "int_value": 0
+            },
+            "name": "c0"
+          },
+          "type": {
+            "id": 16
+          }
+        },
+        {
+          "id": 1,
+          "metadata": {
+            "default_value": {
+              "int_value": 1
+            },
+            "name": "c1"
+          },
+          "type": {
+            "id": 16
+          }
+        },
+        {
+          "id": 3,
+          "metadata": {
+            "default_value": {
+              "int_value": 3
+            },
+            "name": "c3"
+          },
+          "type": {
+            "id": 16
+          }
+        },
+        {
+          "id": 4,
+          "metadata": {
+            "default_value": {
+              "int_value": 4
+            },
+            "name": "c4"
+          },
+          "type": {
+            "id": 16
+          }
+        },
+        {
+          "id": 6,
+          "metadata": {
+            "default_value": {
+              "int_value": 6
+            },
+            "name": "c6"
+          },
+          "type": {
+            "id": 16
+          }
+        }
+      ],
+      "metadata": {
+        "name": "EnumDefault",
+        "qualified_name": "tests.EnumDefault"
+      }
+    }
+  ]
+}

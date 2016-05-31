@@ -14,7 +14,8 @@ Portability : portable
 
 module Language.Bond.Syntax.SchemaDef
     ( -- * Runtime schema (aka SchemaDef) support
-       encodeSchemaDef
+       encodeSchemaDef,
+       makeSchemaDef
     ) where
 
 import Data.Word

@@ -1,1 +1,33 @@
-{"structs":[{"metadata":{"qualified_name":"tests.Foo","name":"Foo","attributes":["StructAttribute1","one","StructAttribute2","two"]},"fields":[{"metadata":{"name":"f","attributes":["FieldAttribute1","one","FieldAttribute2","two"]},"id":0,"type":{"id":9}}]}]}
+{
+  "structs": [
+    {
+      "fields": [
+        {
+          "id": 0,
+          "metadata": {
+            "attributes": [
+              "FieldAttribute1",
+              "one",
+              "FieldAttribute2",
+              "two"
+            ],
+            "name": "f"
+          },
+          "type": {
+            "id": 9
+          }
+        }
+      ],
+      "metadata": {
+        "attributes": [
+          "StructAttribute1",
+          "one",
+          "StructAttribute2",
+          "two"
+        ],
+        "name": "Foo",
+        "qualified_name": "tests.Foo"
+      }
+    }
+  ]
+}

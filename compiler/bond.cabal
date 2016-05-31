@@ -2,7 +2,7 @@
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 name:               bond
-version:            0.4.0.2
+version:            0.4.1.0
 cabal-version:      >= 1.8
 tested-with:        GHC>=7.4.1
 synopsis:           Bond schema compiler and code generator
@@ -37,7 +37,7 @@ source-repository head
 
 library
   hs-source-dirs:   src
-  build-depends:    aeson >= 0.7.0.6 && < 0.10.0.0,
+  build-depends:    aeson >= 0.7.0.6 && < 0.12.0.0,
                     base >= 4.5 && < 5,
                     bytestring >= 0.10,
                     filepath >= 1.0,
@@ -80,7 +80,8 @@ test-suite gbc-tests
                     Tests.Syntax
   ghc-options:      -threaded -Wall
   build-depends:    bond,
-                    aeson >= 0.7.0.6 && < 0.10.0.0,
+                    aeson >= 0.7.0.6 && < 0.12.0.0,
+                    aeson-pretty == 0.7.2,
                     base >= 4.5 && < 5,
                     bytestring >= 0.10,
                     cmdargs >= 0.10.10,
@@ -105,12 +106,12 @@ executable gbc
                     Options
   ghc-options:      -threaded -Wall
   build-depends:    bond,
-                    aeson >= 0.7.0.6 && < 0.10.0.0,
+                    aeson >= 0.7.0.6 && < 0.12.0.0,
                     async >= 2.0.1.0,
                     base >= 4.5 && < 5,
                     bytestring >= 0.10,
                     cmdargs >= 0.10.10,
-                    process < 1.4,
+                    process < 1.5,
                     directory >= 1.1,
                     filepath >= 1.0,
                     monad-loops >= 0.4,
