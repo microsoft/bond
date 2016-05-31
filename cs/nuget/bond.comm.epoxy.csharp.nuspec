@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Bond.Comm.Epoxy.CSharp</id>
-        <title>Bond C# communication epoxy transport</title>
+        <title>Bond C# Communications Epoxy transport</title>
         <version>$version$</version>
         <authors>Microsoft</authors>
         <owners>Microsoft</owners>
@@ -20,7 +20,6 @@
         <copyright>Copyright (c) Microsoft</copyright>
         <tags>Bond .NET C# RPC messaging network communication</tags>
         <dependencies>
-            <dependency id="Bond.CSharp" version ="[$coreversion$]"/>
             <dependency id="Bond.Comm.Runtime.CSharp" version ="[$version$]"/>
         </dependencies>
     </metadata>

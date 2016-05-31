@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
     <ProjectGuid>{01302DFD-8DB9-4204-AAA5-1AA0EBC52749}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -40,5 +40,5 @@
       <HintPath>..\..\src\json\$(OutputPath)\Bond.JSON.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>

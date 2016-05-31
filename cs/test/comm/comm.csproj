@@ -4,7 +4,7 @@
     <BuildFramework Condition="'$(Configuration)' == 'Net40'">net40</BuildFramework>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
     <ProjectGuid>{F13CB9C0-DB52-45DB-9BFD-05CB26512FC6}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -98,5 +98,5 @@
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\Common.Internal.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>

@@ -6,7 +6,7 @@
   </ItemGroup>
   <Import Condition="'$(TargetFrameworkProfile)' == 'Profile78'" Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Condition="'$(TargetFrameworkProfile)' != 'Profile78'" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="Bond.CSharp.targets"/>
+  <Import Project="..\nuget\Common.targets"/>
   <PropertyGroup>
     <DocumentationFile>$(OutDir)\$(TargetName).xml</DocumentationFile>
   </PropertyGroup>

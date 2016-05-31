@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(BuildType)' == ''">
+    <BuildType Condition="'$(Configuration)' != 'Release'">debug</BuildType>
+    <BuildType Condition="'$(Configuration)' == 'Release'">retail</BuildType>
+  </PropertyGroup>
+  <PropertyGroup>
+      <!-- Probe for a tools\ directory which will contain gbc. Usually,
+           tools\ is up two directories, but in the Bond.CSharp package it's
+           only up one directory to maintain compatibility with the older
+           package organization. -->
+      <BOND_PATH Condition="('$(BOND_PATH)' == '') And Exists('$(MSBuildThisFileDirectory)..\..\tools')">$(MSBuildThisFileDirectory)..\..\</BOND_PATH>
+      <BOND_PATH Condition="('$(BOND_PATH)' == '') And Exists('$(MSBuildThisFileDirectory)..\tools')">$(MSBuildThisFileDirectory)..\</BOND_PATH>
+      <!-- We still didn't find one, so use the default of two up. This is
+           needed for clean builds, as ..\..\tools\ isn't created until
+           later. -->
+      <BOND_PATH Condition="('$(BOND_PATH)' == '')">$(MSBuildThisFileDirectory)..\..\</BOND_PATH>
+
+      <BOND_COMPILER_PATH Condition="'$(BOND_COMPILER_PATH)' == ''">$(BOND_PATH)\tools</BOND_COMPILER_PATH>
+      <BOND_BINARY_PATH Condition="'$(BOND_BINARY_PATH)' == ''">$(BOND_PATH)\bin\$(BuildType)</BOND_BINARY_PATH>
+      <BOND_INCLUDE_PATH Condition="'$(BOND_INCLUDE_PATH)' == ''">$(BOND_PATH)\tools\inc</BOND_INCLUDE_PATH>
+      <_bond_common_props_imported>true</_bond_common_props_imported>
+  </PropertyGroup>
+</Project>

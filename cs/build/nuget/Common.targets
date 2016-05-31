@@ -54,8 +54,8 @@
           BeforeTargets="CoreCompile"
           Condition="'@(BondCodegen)' != ''">
 
-    <Error Text="Bond.CSharp.props not imported"
-           Condition="'$(_bond_cs_props_imported)' != 'true'" />
+    <Error Text="Neither Bond.CSharp.props nor Bond.Compiler.CSharp.props was imported. Check that your NuGet package references are working properly."
+           Condition="'$(_bond_common_props_imported)' != 'true'" />
 
     <MakeDir Directories="$(BondOutputDirectory)" />
 
@@ -111,4 +111,8 @@
                            @(_BondGeneratedFileNames)" />
     </ItemGroup>
   </Target>
+
+  <PropertyGroup>
+    <_bond_common_targets_imported>true</_bond_common_targets_imported>
+  </PropertyGroup>
 </Project>

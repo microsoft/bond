@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Bond.Comm.CSharp</id>
-        <title>Bond C# communication runtime</title>
+        <title>Bond C# Communications</title>
         <version>$version$</version>
         <authors>Microsoft</authors>
         <owners>Microsoft</owners>

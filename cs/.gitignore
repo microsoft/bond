@@ -2,8 +2,9 @@
 bin/
 obj/
 TestResults/
-Debug
-Release
+tools/
+Debug/
+Release/
 
 # Nuget packages 
 packages/
