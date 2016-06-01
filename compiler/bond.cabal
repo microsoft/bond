@@ -96,7 +96,8 @@ test-suite gbc-tests
                     tasty,
                     tasty-golden,
                     tasty-hunit,
-                    tasty-quickcheck
+                    tasty-quickcheck,
+                    parsec >= 3.1
 
 executable gbc
   main-is:          Main.hs
