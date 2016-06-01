@@ -21,6 +21,10 @@
     <IntermediateOutputPath>$(IntermediateOutputPath)\Properties\</IntermediateOutputPath>
     <OutputPath>$(OutputPath)\Properties\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Fields' ">
+    <IntermediateOutputPath>$(IntermediateOutputPath)\Fields\</IntermediateOutputPath>
+    <OutputPath>$(OutputPath)\Fields\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Interfaces\CodegenHelpersTests.cs" />
     <Compile Include="DummyTestService.cs" />
