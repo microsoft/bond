@@ -41,15 +41,15 @@ namespace Bond.Comm
     }
 
     /// <summary>
-    /// By default, Bond is silent. Implement a <see cref="LogHandler"/> and
-    /// pass it to <see cref="SetHandler"/> to receive log messages.
+    /// Implement a <see cref="LogHandler"/> and pass it to
+    /// <see cref="SetHandler"/> to receive log messages.
     /// </summary>
     public static class Log
     {
         private static LogHandler handler;
 
         /// <summary>
-        /// Adds a <see cref="LogHandler"/> to receive Bond log messages.
+        /// Sets a <see cref="LogHandler"/> to receive Bond log messages.
         /// </summary>
         /// <param name="newHandler">The handler to add.</param>
         /// <exception cref="InvalidOperationException">
@@ -73,7 +73,7 @@ namespace Bond.Comm
         /// Removes the existing <see cref="LogHandler"/>.
         /// </summary>
         /// <remarks>
-        /// May be called even if there is no longer handler.
+        /// May be called even if there is no existing handler.
         /// </remarks>
         public static void RemoveHandler()
         {
