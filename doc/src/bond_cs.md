@@ -16,8 +16,10 @@ serialization protocols, data streams, user defined type aliases and more.
 By design Bond is language and platform independent and is currently supported
 for C++, C#, and Python on Linux, OS X and Windows.
 
-We are also introducing the Bond Communication framework -- known as Bond Comm.
-More information about Bond Comm for C# can be found [below](#bond-comm).
+We are also introducing the
+[Bond Communications framework](https://Microsoft.github.io/bond/manual/bond_comm.html)--known
+as Bond Comm. More information about Bond Comm for C# can be found
+[below](#bond-comm).
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
@@ -1134,26 +1136,29 @@ public constructors:
 Bond Comm
 =========
 
-The [Bond Communication](bond_comm.html) C# framework makes it easy and efficent to
-construct services and hook clients up to those services. Built on top of the Bond
-serialization framework, Bond Comm aims for the same principles of high-performance and
-extensibility.
+The [Bond Communications framework](bond_comm.html) in C# makes it easy and
+efficent to construct services and hook clients up to those services. Built
+on top of the Bond serialization framework, Bond Comm aims for the same
+principles of high-performance and extensibility.
 
 Today the framework supports two messaging patterns:
+
 - request-response: roundtrip messages supporting either payload or error responses
 - event: one-way, fire-and-forget messages with no responses
 
 Bond Comm is naturally asynchronous, and the C# implementation takes advantage of the
 idiomatic Task and async/await facilities of .NET.
 
-The initial release of Bond Comm is designed to run on Windows running .NET 4.5 or Core
-CLR. Since Core CLR is not 100% stable yet, we will update as needed. Mono support is
-forthcoming, as are Linux and Mac OS X.
+The initial release of Bond Comm is designed to run on Windows running
+.NET&nbsp;4.5 or .NET&nbsp;Core. Since .NET&nbsp;Core is still under development, we
+will update as needed. Mono support is forthcoming, as are Linux and
+Mac&nbsp;OS&nbsp;X.
 
 Only Windows 10 and Windows Server 2012 R2 have been tested to date.
 
 See the following examples:
 
+- the [C# calculator sample project](https://github.com/Microsoft/bond-comm-cs-example)
 - `examples/cs/comm/pingpong`
 - `examples/cs/comm/notifyevent`
 
@@ -1170,9 +1175,9 @@ exhange messages with the service.
 ### Epoxy Transport ###
 
 The initial release of Bond Comm provides a binary transport called
-[Epoxy](bond_epoxy.html). This is the recommended default Transport. The
-Epoxy transport is designed to be Core CLR compliant, which will allow for
-cross-platform support.
+[Epoxy](bond_comm_epoxy.html). This is the recommended default Transport.
+The Epoxy transport is designed to be .NET&nbsp;Core compliant, which will
+allow for cross-platform support.
 
 TLS support in Epoxy is forthcoming.
 
@@ -1212,6 +1217,18 @@ Support for layers that contain per-instance state is forthcoming.
 ### Roadmap ###
 
 We have a [roadmap](bond_comm_roadmap.html) for Bond Comm.
+
+### Comm NuGet Packages ###
+
+Bond Comm is split into a number of NuGet packages to allow for granular
+consumption. Some of these packages will have dependencies on core Bond
+packages as well.
+
+| NuGet Package | Version | Description |
+|---------------|---------|-------------|
+| Bond.Comm.CSharp | [![Bond.Comm.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.CSharp/) | Rollup packages |
+| Bond.Comm.Runtime.CSharp | [![Bond.Comm.Runtime.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.Runtime.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.Runtime.CSharp/) | Runtime dependencies |
+| Bond.Comm.Epoxy.CSharp | [![Bond.Comm.Epoxy.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.Epoxy.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.Epoxy.CSharp/) | [Epoxy](bond_comm_epoxy.html) transport |
 
 References
 ==========

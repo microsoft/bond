@@ -2,8 +2,8 @@
 
 # About #
 
-The Bond Communications libraries allows participants to pass Bond messages
-between themselves.
+The Bond Communications framework allows clients and services to exchange
+Bond messages.
 
 # Features #
 
@@ -26,8 +26,8 @@ clients and servers. These capabilities are encapsulated in a transport.
 
 Bond includes the following transports:
 
-* [Epoxy](bond_epoxy.html): asynchronous communication over TCP connections
-  with support for TLS using a binary protocol
+* [Epoxy](bond_comm_epoxy.html): asynchronous communication over TCP
+  connections with support for TLS using a binary protocol
 
 Not all transports support all messaging patterns. Check the documentation
 for the respective transports.
@@ -57,3 +57,8 @@ that are intriguing include--but are not limited to:
   view of that stream
 * aggregations: send requests to multiple receivers and combine their
   responses in various ways
+
+# Implementations #
+
+Bond Communications is available for [C#](bond_cs.html#bond-comm) today. C++
+support is [forthcoming](bond_comm_roadmap.html).

@@ -2,8 +2,8 @@
 
 # Epoxy transport wire format #
 
-This documents the [Bond Epoxy transport](bond_epoxy.html) wire format. For
-API-level documentation, see the respective language guides.
+This documents the [Bond Epoxy transport](bond_comm_epoxy.html) wire format.
+For API-level documentation, see the respective language guides.
 
 The intended audience for this is transport implementers so that compatible
 clients/servers can be produced.
@@ -47,17 +47,18 @@ The following hold in this document, unless otherwise specified.
 
 * _**client**_: an entity that establishes connections to _servers_. In
   Berkeley socket parlance, this entity calls `connect()`
-* _**connection**_: an established Epoxy connection capable of
-  bi-directional communication
+* _**connection**_: a transmision channel capable of bi-directional
+  communication
 * _**conversation**_: one message-based interaction between two _endpoints_.
   This includes things like the request/response and event
-  [messaging patterns](bond_comm.html#messaging-patterns).
+  [messaging patterns](bond_comm.html#messaging-patterns)
 * _**endpoint**_: either the _client_ or the _server_
 * _**frame**_: a collection of related data, all of which are transmitted
   together
 * _**framelet**_: a type, length, data tuple within a _frame_
+* _**headers**_: metadata about a conversation
 * _**initiator**_: the entity that starts a conversation
-* _**layer data**_: opaque blob of data used by Bond Communication's layers
+* _**layer data**_: opaque blob of data used by Bond Communications' layers
   facility
 * _**payload data**_: opaque blob of data that is the contents of the
   message being sent
@@ -176,8 +177,8 @@ the TCP connection, ending the Epoxy connection.
 When a connection is initially established, a two frame handshake occurs.
 
 The client sends a frame consisting of only one `EpoxyConfig` framelet with
-the [various features proposes to use](#epoxy-config-structure). The client
-then waits for a corresponding frame to be sent by the server.
+the [various features it is prepared to use](#epoxy-config-structure). The
+client then waits for a corresponding frame to be sent by the server.
 
 Upon accepting a connection, the server waits for the first frame from the
 client. The server then inspects the `EpoxyConfig` structure and determines
@@ -247,8 +248,7 @@ serialized in Bond Fast Binary v1.
 
 Within the Epoxy transport wire format, the following Bond structures are
 used for schematized data, especially when backward/forward compatibility is
-needed. Since Bond already has a rich system for dealing with such data, the
-fields within these structures are not decomposed into framelets.
+needed, since Bond already has a rich system for dealing with such data.
 
 ## Epoxy Config Structure ##
 
@@ -311,7 +311,8 @@ otherwise.
 Conversation IDs should be assigned in increasing order to aid in debugging,
 but endpoints are free to use whatever scheme they like. Conversation IDs
 should not be reused for a different conversation during the lifetime of a
-connection, as stated above, unexpected conversation IDs may be dropped.
+connection, because, as stated above, unexpected conversation IDs may be
+dropped.
 
 Endpoints must not rely on comparing IDs across conversations for causality.
 That is, there is no guarantee that conversation 8 happened before
@@ -327,7 +328,7 @@ IDs, it must send an [Error frame](#protocol-error) with the error code
 `CONVERSATION_IDS_EXHAUSTED`. This will allow the connection to be
 re-established, resetting the conversation IDs.
 
-**DESIGN NOTE**: Re-establishing the connection is a simple way to handle
+_Design Note_: Re-establishing the connection is a simple way to handle
 conversation ID exhaustion. Rollover schemes are complicated to specify,
 implement, debug, and test. Additionally, a single high-volume endpoint
 sending 1,000,000,000 conversations per second will be able to use the same
@@ -356,7 +357,7 @@ kind of message the `PayloadData` framelet contains.
   `PayloadData` is a Bond structure of the expected request type for the
   method being invoked.
 * `Response`: completes the conversation with a response to a previous
-  request. Based on the [`error_code`](#error-code) field, ``PayloadData` is
+  request. Based on the [`error_code`](#error-code) field, `PayloadData` is
   either a Bond structure of the expected response type for the method
   invoked or error data.
 * `Event`: initiates and completes a one-way, best-effort conversation. No
