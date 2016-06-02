@@ -80,6 +80,9 @@ struct TypeDef
     
     // True if the type is bonded<T>; used only when id == BT_STRUCT
     4: bool bonded_type;
+    
+    // Distinguish between kinds of lists; used only when id == BT_LIST
+    5: ListSubType list_sub_type = NO_SUBTYPE;
 }
 
 // Schema representing a field definition

@@ -63,11 +63,15 @@ data FieldDef =
 
 data TypeDef =
     TypeDef
+          -- Domain of Int is BondDataType
         { id :: Maybe Int
+          -- Index of struct definition in SchemaDef.structs when id == BT_STRUCT
         , struct_def :: Maybe Int
         , element :: Maybe [TypeDef]
         , key :: Maybe [TypeDef]
         , bonded_type :: Maybe Bool
+          -- Domain of Int is ListSubType
+        , list_sub_type :: Maybe Int
         }
 
 data Metadata =
@@ -170,19 +174,19 @@ makeSchemaDef root = SchemaDef $ map structDef structs
     -- TypeDef for specified type
     typeDef typ
         | isScalar typ || isString typ || isMetaName typ
-                             = TypeDef (Just $ typeId typ) Nothing Nothing Nothing Nothing
+                             = TypeDef (Just $ typeId typ) Nothing Nothing Nothing Nothing Nothing
         | otherwise = case typ of
-            BT_Blob         -> listDef BT_Int8
-            (BT_List t)     -> listDef t
-            (BT_Vector t)   -> listDef t
-            (BT_Nullable t) -> listDef t
-            (BT_Set t)      -> TypeDef (Just 12) Nothing (Just [typeDef t]) Nothing Nothing
-            (BT_Map k t)    -> TypeDef (Just 13) Nothing (Just [typeDef t]) (Just [typeDef k]) Nothing
+            BT_Blob         -> listDef BT_Int8 (Just 2)
+            (BT_List t)     -> listDef t Nothing
+            (BT_Vector t)   -> listDef t Nothing
+            (BT_Nullable t) -> listDef t (Just 1)
+            (BT_Set t)      -> TypeDef (Just 12) Nothing (Just [typeDef t]) Nothing Nothing Nothing
+            (BT_Map k t)    -> TypeDef (Just 13) Nothing (Just [typeDef t]) (Just [typeDef k]) Nothing Nothing
             (BT_Bonded t)   -> (typeDef t) {bonded_type = Just True}
             (BT_Maybe t)    -> typeDef t
-            t               -> TypeDef Nothing (Just (structIdx t)) Nothing Nothing Nothing
+            t               -> TypeDef Nothing (Just (structIdx t)) Nothing Nothing Nothing Nothing
       where
-        listDef t = TypeDef (Just 11) Nothing (Just [typeDef t]) Nothing Nothing
+        listDef t list_sub_type = TypeDef (Just 11) Nothing (Just [typeDef t]) Nothing Nothing list_sub_type
     variant = Variant Nothing Nothing Nothing Nothing Nothing Nothing
     attr [] = Nothing
     attr xs = Just $ concatMap (\a -> [qualifiedName $ attrName a, attrValue a]) xs

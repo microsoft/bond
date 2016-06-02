@@ -30,7 +30,8 @@
                 "struct_def": 1
               }
             ],
-            "id": 11
+            "id": 11,
+            "list_sub_type": 1
           }
         },
         {
@@ -44,7 +45,8 @@
                 "struct_def": 1
               }
             ],
-            "id": 11
+            "id": 11,
+            "list_sub_type": 1
           }
         }
       ],

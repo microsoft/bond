@@ -25,6 +25,19 @@ enum BondDataType
     BT_UNAVAILABLE= 127
 }
 
+// Enumerator to distinguish the different subtypes treated as BT_LIST
+enum ListSubType
+{
+    // Used when the type is a list/vector.
+    // Also used when the subtype cannot be determined.
+    NO_SUBTYPE = 0,
+
+    // Used when the type is nullable.
+    NULLABLE_SUBTYPE = 1,
+
+    // Used when the type is a blob.
+    BLOB_SUBTYPE = 2
+}
 
 // Magic numbers of predefined protocols
 enum ProtocolType

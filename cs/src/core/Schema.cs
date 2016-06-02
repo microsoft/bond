@@ -112,7 +112,7 @@ namespace Bond
                 }
                 else
                 {
-                    typeDef = new TypeDef {id = type.GetBondDataType()};
+                    typeDef = new TypeDef {id = type.GetBondDataType(), list_sub_type = type.GetBondListDataType()};
                 }
 
                 if (type.IsBondContainer() || type.IsBondNullable() || type.IsBondBlob())

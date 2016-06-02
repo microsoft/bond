@@ -231,6 +231,28 @@
             TestTypeAliases(from);
         }
 
+        [Test]
+        public void AliasesReflection()
+        {
+            var schemaDef = Schema<ContainerAlias>.RuntimeSchema.SchemaDef;
+
+            foreach (var def in schemaDef.structs[0].fields)
+            {
+                if (def.metadata.name == "syncListFoo")
+                {
+                    Assert.AreEqual(ListSubType.NULLABLE_SUBTYPE, def.type.list_sub_type);
+                }
+                else if (def.metadata.name == "arrayBlob")
+                {
+                    Assert.AreEqual(ListSubType.BLOB_SUBTYPE, def.type.list_sub_type);
+                }
+                else
+                {
+                    Assert.AreEqual(ListSubType.NO_SUBTYPE, def.type.list_sub_type);
+                }
+            }
+        }
+
         static BlobAlias InitBlobAlias()
         {
             return new BlobAlias

@@ -222,6 +222,7 @@ private:
 
         type.id = get_type_id<T>::value;
         type.element.set() = GetTypeDef<typename element_type<T>::type>();
+        type.list_sub_type = get_list_sub_type_id<T>::value;
 
         return type;
     }

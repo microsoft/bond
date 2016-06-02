@@ -43,6 +43,16 @@ is_wstring
     : false_type {};
 
 
+template <typename T> struct
+is_blob
+    : false_type {};
+
+
+template <typename T> struct
+is_nullable
+    : false_type {};
+
+
 template <typename T> struct 
 element_type
 {

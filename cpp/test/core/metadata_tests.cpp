@@ -236,6 +236,49 @@ TEST_CASE_BEGIN(RuntimeMetadataTests)
 }
 TEST_CASE_END
 
+TEST_CASE_BEGIN(DifferentiateBetweenListAndNullable)
+{
+    {
+        bond::SchemaDef schema = bond::GetRuntimeSchema<ListVsNullable>().GetSchema();
+        for (int i = 0; i < schema.structs[0].fields.size(); i++)
+        {
+            bond::FieldDef def = schema.structs[0].fields[i];
+            if (def.id == 0) {
+                UT_AssertAreEqual(bond::ListSubType::NULLABLE_SUBTYPE, def.type.list_sub_type);
+            }
+            else if (def.id == 1)
+            {
+                UT_AssertAreEqual(bond::ListSubType::NO_SUBTYPE, def.type.list_sub_type);
+            }
+            else if (def.id == 2)
+            {
+                UT_AssertAreEqual(bond::ListSubType::NO_SUBTYPE, def.type.list_sub_type);
+            }
+            else if (def.id == 3)
+            {
+                UT_AssertAreEqual(bond::ListSubType::BLOB_SUBTYPE, def.type.list_sub_type);
+            }
+            else
+            {
+                UT_AssertIsTrue(false);
+            }
+        }
+    }
+}
+TEST_CASE_END
+
+TEST_CASE_BEGIN(EnsureUnknownSeqIDLType)
+{
+    {
+        bond::SchemaDef schema = bond::GetRuntimeSchema<StructWithDefaults>().GetSchema();
+        for (int i = 0; i < schema.structs[0].fields.size(); i++)
+        {
+            bond::FieldDef def = schema.structs[0].fields[i];
+            UT_AssertAreEqual(bond::ListSubType::NO_SUBTYPE, def.type.list_sub_type);
+        }
+    }
+}
+TEST_CASE_END
 
 void MetadataTest::Initialize()
 {
@@ -243,6 +286,12 @@ void MetadataTest::Initialize()
 
     AddTestCase<TEST_ID(0x2201), CompileTimeMetadataTests>
         (suite, "Compile-time metadata test");
+
+    AddTestCase<TEST_ID(0x2201), DifferentiateBetweenListAndNullable>
+        (suite, "Differentiate Between List And Nullable");
+
+    AddTestCase<TEST_ID(0x2201), EnsureUnknownSeqIDLType>
+        (suite, "Ensure Unknown SeqIDLType");
 
     TEST_SIMPLE_PROTOCOL(
         AddTestCase<TEST_ID(0x2201), RuntimeMetadataTests>
