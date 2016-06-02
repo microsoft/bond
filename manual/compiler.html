@@ -143,9 +143,11 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#enum-definition">Enum definition</a></li>
 <li><a href="#forward-declaration">Forward declaration</a></li>
 <li><a href="#struct-definition">Struct definition</a></li>
-<li><a href="#generics">Generics</a></li>
+<li><a href="#generic-struct">Generic struct</a></li>
 <li><a href="#type-aliases">Type aliases</a></li>
 <li><a href="#struct-views">Struct views</a></li>
+<li><a href="#service-definition">Service definition</a></li>
+<li><a href="#generic-service">Generic service</a></li>
 <li><a href="#custom-attributes">Custom attributes</a></li>
 <li><a href="#comments">Comments</a></li>
 </ul></li>
@@ -156,6 +158,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#namespace">Namespace</a></li>
 <li><a href="#declaration">Declaration</a><ul>
 <li><a href="#struct">Struct</a></li>
+<li><a href="#service">Service</a></li>
 <li><a href="#enum">Enum</a></li>
 <li><a href="#type-alias">Type alias</a></li>
 <li><a href="#forward-declaration-1">Forward declaration</a></li>
@@ -195,7 +198,10 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li>enum</li>
 <li>forward declaration</li>
 <li>struct</li>
-<li>generics</li>
+<li>generic structs</li>
+<li>type aliases</li>
+<li>services</li>
+<li>generic services</li>
 <li>struct view</li>
 </ul></li>
 <li>Custom attributes</li>
@@ -255,7 +261,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
     <span class="dv">0</span>: bond.GUID id;
     <span class="dv">1</span>: bond.BondDataType type = BT_UNAVAILABLE;
 }</code></pre></div>
-<h2 id="generics">Generics</h2>
+<h2 id="generic-struct">Generic struct</h2>
 <p>Generic structs are parameterized with one or more type parameters which can be used within the struct definition in any place where a concrete type could be used (e.g. base struct, field type, container element type, parameter of a generic struct).</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> Example&lt;T1, T2&gt; : T1
 {
@@ -263,7 +269,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
     <span class="dv">1</span>: list&lt;T2&gt; list;
     <span class="dv">2</span>: Generic&lt;T2&gt; generic;
 }</code></pre></div>
-<p>Usage of a type parameter within a generic struct definition may implicitly constrain what type(s) can be used to instantiate the generic struct:</p>
+<p>The usage of a type parameter within a generic struct definition may implicitly constrain what type(s) can be used to instantiate the generic struct:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> Example&lt;T&gt;
 {
     <span class="co">// The default value of 10 implicitly constrains T to numeric types</span>
@@ -321,20 +327,47 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
     <span class="dv">2</span>: list&lt;<span class="dt">bool</span>&gt; z;
 }</code></pre></div>
 <p>A view of a generic struct is also a generic struct with the same number of type parameters.</p>
-<p>A view of a sealed struct is always sealed. A view of non-sealed struct can be defined to be sealed:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">sealed <span class="kw">struct</span> View view_of Example
-{
-    x,
-    z;
-}</code></pre></div>
 <p>See example: <code>examples/cpp/core/schema_view</code></p>
+<h2 id="service-definition">Service definition</h2>
+<p>A service definition consists of a service name and methods:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">service Calculator
+{
+    Result Calculate(Operation);
+    Stats GetStats();
+}</code></pre></div>
+<p>Methods take one parameter and can return a result. A method can return:</p>
+<ul>
+<li>a <a href="#struct-definition">struct</a></li>
+<li><code>void</code></li>
+<li><code>nothing</code></li>
+</ul>
+<p>A method can take as input up to one struct. <code>void</code> may optionally be used in place of a struct name to indicate that the methods doesn’t take any input.</p>
+<p>Methods with the result of <code>nothing</code> are one-way, fire and forget methods: the service doesn’t send any response regardless of whether the service method execution resulted in success or failure. This is different from methods returning <code>void</code> which send back a response with an empty payload and may indicate failure using errors.</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">service Watchdog
+{
+    nothing Heartbeat(Identifier);
+}</code></pre></div>
+<h2 id="generic-service">Generic service</h2>
+<p>Generic services are parameterized with one or more type parameters which can be used within the service definition in any place where a concrete type could be used.</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">service Gateway&lt;Token&gt;
+{
+    Result Authenticate(Token);
+}</code></pre></div>
+<p>The usage of a type parameter within a generic service definition may implicitly constrain what type(s) can be used to instantiate the generic service. For example in the above definition the <code>Token</code> type parameter must be a <a href="#struct-definition">struct</a>.</p>
 <h2 id="custom-attributes">Custom attributes</h2>
-<p>Struct, enum and field definitions can be annotated with custom attributes which are in effect name, string-values pairs:</p>
+<p>Struct, service, enum as well as struct field and service method definitions can be annotated with custom attributes which are in effect name, string-values pairs:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">[Validate(<span class="st">&quot;True&quot;</span>)]
 <span class="kw">struct</span> Example
 {
     [Max(<span class="st">&quot;100&quot;</span>)]
     <span class="dv">0</span>: uint32 value;
+}
+
+[service_id(<span class="st">&quot;MyExample&quot;</span>)]
+service Example
+{
+    [Tracing(<span class="st">&quot;enabled&quot;</span>)]
+    Result Method(Param);
 }</code></pre></div>
 <p>Attributes are available in code generation templates and thus can be used to drive custom code generation. They are also available to applications via <a href="#compile-time-schema">compile-time</a> and <a href="#runtime-schema">runtime</a> schema, and as <code>Metadata</code> argument in <a href="#transforms">transforms</a> and <a href="#protocols">protocols</a>.</p>
 <p>See example: <code>examples/cpp/core/attributes</code></p>
@@ -451,7 +484,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 }</code></pre></div>
 <p>where:</p>
 <ul>
-<li><code>tag</code> is a string indicating the type of the declaration. It can have one of the following values: <code>&quot;Struct&quot;</code>, <code>&quot;Enum&quot;</code>, <code>&quot;Alias&quot;</code>, <code>&quot;Forward&quot;</code>.</li>
+<li><code>tag</code> is a string indicating the type of the declaration. It can have one of the following values: <code>&quot;Struct&quot;</code>, <code>&quot;Enum&quot;</code>, <code>&quot;Alias&quot;</code>, <code>&quot;Forward&quot;</code>, <code>&quot;Service&quot;</code>, <code>&quot;Function&quot;</code>, <code>&quot;Event&quot;</code>.</li>
 <li><code>declNamespaces</code> is an array of one or more <a href="#namespace">namespaces</a>.</li>
 <li><code>declName</code> is a string.</li>
 <li><code>declParams</code> is an array of zero or more <a href="#type-parameter">type parameters</a>. The property doesn’t apply to <a href="#enum"><code>Enum</code></a> declarations.</li>
@@ -476,6 +509,56 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li><code>structBase</code> is <code>null</code> or a <a href="#type">type</a> representing the struct base. The property is optional and may be omitted.</li>
 <li><code>structFields</code> is an array of zero or more <a href="#struct-field">fields</a>.</li>
+</ul>
+<h3 id="service">Service</h3>
+<p>A JSON object representing a <code>Service</code> declaration has the following properties:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
+  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Service&quot;</span>,
+  <span class="st">&quot;declNamespaces&quot;</span>: [
+  ],
+  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;ServiceName&quot;</span>,
+  <span class="st">&quot;declParams&quot;</span>: [
+  ],
+  <span class="st">&quot;declAttributes&quot;</span>: [
+  ],
+  <span class="st">&quot;serviceMethods&quot;</span>: [
+  ]
+}</code></pre></div>
+<p>where:</p>
+<ul>
+<li><code>serviceMethods</code> is an array of zero or more <a href="#methods">methods</a>.</li>
+</ul>
+<h4 id="methods">Methods</h4>
+<p>A JSON object representing a <code>Function</code> declaration has the following properties:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
+  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Function&quot;</span>,
+  <span class="st">&quot;methodName&quot;</span>: <span class="st">&quot;methodName&quot;</span>,
+  <span class="st">&quot;methodAttributes&quot;</span>: [
+  ],
+  <span class="st">&quot;methodResult&quot;</span>: {
+  },
+  <span class="st">&quot;methodInput&quot;</span>: {
+  }
+}</code></pre></div>
+<p>where:</p>
+<ul>
+<li><code>methodResult</code> is a user defined type struct, alias to struct, parameter or null.</li>
+<li><code>methodInput</code> is a user defined type struct, alias to struct, parameter or null.</li>
+<li><code>methodAttributes</code> is an array of zero or more <a href="#attribute">attributes</a></li>
+</ul>
+<p>A JSON object representing an <code>Event</code> declaration has the following properties:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
+  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Event&quot;</span>,
+  <span class="st">&quot;methodName&quot;</span>: <span class="st">&quot;methodName&quot;</span>,
+  <span class="st">&quot;methodAttributes&quot;</span>: [
+  ],
+  <span class="st">&quot;methodInput&quot;</span>: {
+  }
+}</code></pre></div>
+<p>where:</p>
+<ul>
+<li><code>methodInput</code> is a user defined type struct, alias to struct, parameter or null.</li>
+<li><code>methodAttributes</code> is an array of zero or more <a href="#attribute">attributes</a></li>
 </ul>
 <h3 id="enum">Enum</h3>
 <p>A JSON object representing an <code>Enum</code> declaration has the following properties:</p>

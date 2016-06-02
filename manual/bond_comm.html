@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Bond Communications</title>
+  <style type="text/css">
+  body {
+      line-height: 1.5; 
+      font-family: Helvetica, Arial, sans-serif; 
+      color: #333333;
+      font-size: 1em;
+  }
+  code {
+      font-size: 1em;
+      font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace, serif;
+  }
+  td.lineNumbers { width: 40px; }
+  div#all {
+    max-width: 1120px;
+    background-color: #ffffff;
+    margin: 0 auto;
+    padding: 25px;
+    overflow: auto;
+  }
+  code > span.kw { color: #204a87; font-weight: normal; } /* Keyword */  
+  code > span.co { color: #4E9A06; font-style: normal; }
+  code > span.st { color: #8A0303; font-style: normal; }
+  code > span.cf { color: #204a87; font-weight: normal; } /* ControlFlow */
+  code > span.op { color: #000000; font-weight: normal; } /* Operator */
+  code > span.pp { color: #8f5902; font-style: normal; } /* Preprocessor */
+  code > span.ex { } /* Extension */
+  code > span.at { color: #c4a000; } /* Attribute */
+  code > span.do { color: #8f5902; font-weight: normal; font-style: normal; } /* Documentation */
+  code > span.an { color: #8f5902; font-weight: normal; font-style: normal; } /* Annotation */
+  code > span.cv { color: #8f5902; font-weight: normal; font-style: normal; } /* CommentVar */
+  code > span.in { color: #8f5902; font-weight: normal; font-style: normal; } /* Information */
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    border-bottom: 1px solid black;
+  }
+
+  div.sourceCode {
+    overflow-x: auto;
+    max-height: 620px;
+  }
+
+  table.sourceCode { 
+    line-height: 120%;
+  } 
+
+  #toc {
+    width: 300px; 
+    position:fixed;
+    overflow: auto;
+    height: 95%;
+  }
+
+  #main {
+    margin-left: 320px;  
+    margin-rigth: auto;
+    max-width: 800px;
+  }
+  a {
+    text-decoration: none;
+  }
+  #toc a:visited {
+    color: #99c;
+  }
+  #main a:visited {
+    color: #36c;
+  }
+  a:link {
+    color: #36c;
+  }
+  @media screen and (max-width: 979px){
+  #main {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #toc {
+    left: -300px; 
+  }
+  }
+  </style>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58775439-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
+<body>
+<nav id="TOC"></nav>
+<div id="all">
+<div id="toc">
+<ul>
+<li><a href="#about">About</a></li>
+<li><a href="#features">Features</a><ul>
+<li><a href="#defining-services">Defining Services</a></li>
+<li><a href="#transport-flexibility">Transport Flexibility</a></li>
+<li><a href="#messaging-patterns">Messaging Patterns</a><ul>
+<li><a href="#future-messaging-patterns">Future Messaging Patterns</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div id="main">
+<div id="header">    
+<h1 class="title">Bond Communications</h1>
+</div>
+<h1 id="about">About</h1>
+<p>The Bond Communications libraries allows participants to pass Bond messages between themselves.</p>
+<h1 id="features">Features</h1>
+<h2 id="defining-services">Defining Services</h2>
+<p>The Bond IDL has been extended to support the definition of <a href="compiler.html#service-definition">services</a> and <a href="compiler.html#generic-service">generic services</a>. These definitions are used by the Bond compiler to generate:</p>
+<ul>
+<li>service stubs that can be used as the basis for implementing service methods</li>
+<li>proxy stubs that can be used by clients to invoke those methods</li>
+</ul>
+<h2 id="transport-flexibility">Transport Flexibility</h2>
+<p>The Bond service stubs and proxy stubs are not aware of exactly how the client and server get connected or how messages are exchanged between clients and servers. These capabilities are encapsulated in a transport.</p>
+<p>Bond includes the following transports:</p>
+<ul>
+<li><a href="bond_epoxy.html">Epoxy</a>: asynchronous communication over TCP connections with support for TLS using a binary protocol</li>
+</ul>
+<p>Not all transports support all messaging patterns. Check the documentation for the respective transports.</p>
+<p>See the <a href="bond_comm_roadmap.html">roadmap</a> for plans about future transports.</p>
+<h2 id="messaging-patterns">Messaging Patterns</h2>
+<p>There are a number of conceptual messaging patterns that are supported:</p>
+<ul>
+<li>request/response: a message is sent to the receiver and the receiver sends back a different message (including the ability to send back an error response)</li>
+<li>event: a one-way, best effort, message is sent to a receiver. There’s no way to know whether the message was delivered or processed successfully.</li>
+</ul>
+<h3 id="future-messaging-patterns">Future Messaging Patterns</h3>
+<p>We expect to implement additional messaging patterns in the future. Patterns that are intriguing include–but are not limited to:</p>
+<ul>
+<li>sequences of requests/responses: similar to request/response, but with a sequence of requests/responses of unknown count</li>
+<li>message bus/broadcast patterns: send the same request to a bunch of listeners, with a variety of ways to collect responses–if any</li>
+<li>topics/subscriptions: publish a stream of events and receive a filtered view of that stream</li>
+<li>aggregations: send requests to multiple receivers and combine their responses in various ways</li>
+</ul>
+</div>    
+</div>
+</body>
+</html>

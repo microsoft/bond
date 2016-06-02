@@ -176,10 +176,18 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#serializerattribute">SerializerAttribute</a></li>
 </ul></li>
 </ul></li>
+<li><a href="#bond-comm">Bond Comm</a><ul>
+<li><a href="#defining-services">Defining services</a></li>
+<li><a href="#epoxy-transport">Epoxy Transport</a></li>
+<li><a href="#logging-and-metrics-facades">Logging and Metrics Facades</a></li>
+<li><a href="#layers">Layers</a></li>
+<li><a href="#roadmap">Roadmap</a></li>
+</ul></li>
 <li><a href="#references">References</a><ul>
 <li><a href="#bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></a></li>
 <li><a href="#c-users-manualbond_cpp"><a href="bond_cpp.html">C++ User’s Manual</a></a></li>
 <li><a href="#python-users-manualbond_py"><a href="bond_py.html">Python User’s Manual</a></a></li>
+<li><a href="#bond-comm-overviewbond_comm"><a href="bond_comm.html">Bond Comm overview</a></a></li>
 </ul></li>
 </ul>
 </div>
@@ -191,6 +199,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>Bond is an extensible framework for working with schematized data. It is suitable for scenarios ranging from service communications to Big Data storage and processing.</p>
 <p>Bond defines a rich type system and schema versioning rules which allow forward and backward compatibility. The core Bond features include high performance serialization/deserialization and a very powerful, generic data transform mechanism. The framework is highly extensible via pluggable serialization protocols, data streams, user defined type aliases and more.</p>
 <p>By design Bond is language and platform independent and is currently supported for C++, C#, and Python on Linux, OS X and Windows.</p>
+<p>We are also introducing the Bond Communication framework – known as Bond Comm. More information about Bond Comm for C# can be found <a href="#bond-comm">below</a>.</p>
 <p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
 <h1 id="basic-example">Basic example</h1>
 <p>In Bond data schemas are defined using idl-like <a href="compiler.html#idl-syntax">syntax</a>:</p>
@@ -1177,10 +1186,44 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
         <span class="co">// ...</span>
     }
 }</code></pre></td></tr></table></div>
+<h1 id="bond-comm">Bond Comm</h1>
+<p>The <a href="bond_comm.html">Bond Communication</a> C# framework makes it easy and efficent to construct services and hook clients up to those services. Built on top of the Bond serialization framework, Bond Comm aims for the same principles of high-performance and extensibility.</p>
+<p>Today the framework supports two messaging patterns: - request-response: roundtrip messages supporting either payload or error responses - event: one-way, fire-and-forget messages with no responses</p>
+<p>Bond Comm is naturally asynchronous, and the C# implementation takes advantage of the idiomatic Task and async/await facilities of .NET.</p>
+<p>The initial release of Bond Comm is designed to run on Windows running .NET 4.5 or Core CLR. Since Core CLR is not 100% stable yet, we will update as needed. Mono support is forthcoming, as are Linux and Mac OS X.</p>
+<p>Only Windows 10 and Windows Server 2012 R2 have been tested to date.</p>
+<p>See the following examples:</p>
+<ul>
+<li><code>examples/cs/comm/pingpong</code></li>
+<li><code>examples/cs/comm/notifyevent</code></li>
+</ul>
+<h3 id="defining-services">Defining services</h3>
+<p>Cross-language services are defined in the <a href="bond_comm.html#defining-services">Bond IDL</a>.</p>
+<p>The generated C# service stub contains a service base class that the developer should subclass to provide the business logic of their service.</p>
+<p>The generated proxy stub provides a class with methods that the developer can call to exhange messages with the service.</p>
+<h3 id="epoxy-transport">Epoxy Transport</h3>
+<p>The initial release of Bond Comm provides a binary transport called <a href="bond_epoxy.html">Epoxy</a>. This is the recommended default Transport. The Epoxy transport is designed to be Core CLR compliant, which will allow for cross-platform support.</p>
+<p>TLS support in Epoxy is forthcoming.</p>
+<h3 id="logging-and-metrics-facades">Logging and Metrics Facades</h3>
+<p>Bond Comm includes facades for logging and metrics. By writing simple handlers for logging and metrics, developers can supply their own logging and metrics facilities to gather log and metric data from Bond Comm-based services.</p>
+<p>See the following examples:</p>
+<ul>
+<li><code>examples/cs/comm/logging</code></li>
+<li><code>examples/cs/comm/metrics</code></li>
+</ul>
+<h3 id="layers">Layers</h3>
+<p>Bond Comm includes extensibility points called “layers” that provides hooks for capabilites that are not service- or method-specific. An example of this would be tracing hooks like those mentioned in the <a href="http://research.google.com/pubs/pub36356.html">Dapper paper</a>.</p>
+<p>A set of layers are encapsulated together in a “layer stack”, which can be provided to the Transport. When the Transport sends out a message, the layer stack invokes the layers in forward order. On the receive side, the layer stack invokes the layers in reverse order.</p>
+<p>The layers in a layer stack are expected to share a single Bond structure for passing state from the send side to the receive side. This structure is serialized by the transport and sent alongside the actual message payload.</p>
+<p>If any layer returns an error, the layer stack is halted and the error replaces the current message; therefore, layers should only return errors for conditions that are truly fatal for the current message.</p>
+<p>Support for layers that contain per-instance state is forthcoming.</p>
+<h3 id="roadmap">Roadmap</h3>
+<p>We have a <a href="bond_comm_roadmap.html">roadmap</a> for Bond Comm.</p>
 <h1 id="references">References</h1>
 <h2 id="bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></h2>
 <h2 id="c-users-manualbond_cpp"><a href="bond_cpp.html">C++ User’s Manual</a></h2>
 <h2 id="python-users-manualbond_py"><a href="bond_py.html">Python User’s Manual</a></h2>
+<h2 id="bond-comm-overviewbond_comm"><a href="bond_comm.html">Bond Comm overview</a></h2>
 </div>    
 </div>
 </body>
