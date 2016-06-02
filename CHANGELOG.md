@@ -17,9 +17,6 @@ different versioning scheme, following the Haskell community's
 * C# NuGet version: 4.2.1
 * C# Comm NuGet version: 0.5.0
 
-Initial preview release of the
-[Bond Communications framework](https://microsoft.github.io/bond/manual/bond_comm.html).
-
 ### `gbc` ###
 
 * Support for parsing
