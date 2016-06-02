@@ -11,6 +11,44 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## 4.2.1: 2016-06-01 ##
+
+* `gbc` & compiler library: 0.4.1.0
+* C# NuGet version: 4.2.1
+* C# Comm NuGet version: 0.5.0
+
+Initial preview release of the
+[Bond Communications framework](https://microsoft.github.io/bond/manual/bond_comm.html).
+
+### `gbc` ###
+
+* Support for parsing
+  [service definitions](https://microsoft.github.io/bond/manual/compiler.html#service-definition)
+  and generating C# service bases, interfaces, and proxies.
+  * New types for
+    [services](https://microsoft.github.io/bond/manual/compiler.html#services)
+    and
+    [methods](https://microsoft.github.io/bond/manual/compiler.html#methods)
+    have been added to the compiler AST.
+* MSBuild-compatible error messages.
+  [Issue #136](https://github.com/Microsoft/bond/issues/136)
+
+### C# ###
+
+* Added
+  [`Deserializer.TryDeserialize()`](https://github.com/Microsoft/bond/blob/db315adaf4b812adc5ca484b1bcffafe1df6d351/cs/src/core/Deserializer.cs#L231-239).
+* Added two new NuGet packages to make it easier to consume Bond piecemeal.
+  * Bond.Compiler: contains `gbc`, `bond.bond`, and `bond_const.bond` in a
+    tools-only package
+  * Bond.Compiler.CSharp: contains `gbc` and C# MSBuild targets. No longer
+    do you have to consume Bond.CSharp (which pulls in all of the rest of
+    Bond) just to get codegen.
+  
+### C# Comm ###
+
+* Initial preview release of the
+  [Bond Communications framework](https://microsoft.github.io/bond/manual/bond_comm.html).
+
 ## 4.2.0: 2016-04-28 ##
 
 * `gbc` & compiler library: 0.4.0.2
