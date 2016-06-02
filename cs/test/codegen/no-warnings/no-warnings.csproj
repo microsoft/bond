@@ -4,7 +4,7 @@
     <BuildFramework Condition="'$(Configuration)' == 'Net40'">net40</BuildFramework>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\Common.Internal.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
     <ProjectGuid>{0cec3863-cfb1-44d5-a9da-9d860ef6f113}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -30,5 +30,5 @@
       <HintPath>..\..\..\src\attributes\$(DependentOutputPath)\Bond.Attributes.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\Common.Internal.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\internal\Common.Internal.targets" />
 </Project>

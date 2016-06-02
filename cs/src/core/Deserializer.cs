@@ -5,10 +5,20 @@ namespace Bond
 {
     using System;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using Bond.Expressions;
     using Bond.IO;
+
+    public static class Deserialize
+    {
+        public enum Result
+        {
+            Success,
+            InvalidData
+        }
+    }
 
     /// <summary>
     /// Deserialize objects of type <typeparamref name="T"/>
@@ -216,6 +226,28 @@ namespace Bond
         public object Deserialize(R reader)
         {
             return deserialize[0](reader);
+        }
+
+        /// <summary>
+        /// Deserialize an object of type <typeparamref name="T"/> from a payload
+        /// </summary>
+        /// <typeparam name="T">Type representing a Bond schema</typeparam>
+        /// <param name="reader">Protocol reader representing the payload</param>
+        /// <param name="dest">If a <typeparamref name="T"/> can be successfully deserialized, it will be written to
+        ///     <paramref name="dest"/></param>
+        /// <returns><see cref="Bond.Deserialize.Result"/> indicating if and how deserialization failed.</returns>
+        public Deserialize.Result TryDeserialize<T>(R reader, out T dest)
+        {
+            try
+            {
+                dest = Deserialize<T>(reader);
+                return Bond.Deserialize.Result.Success;
+            }
+            catch (Exception ex) when (ex is InvalidDataException || ex is EndOfStreamException)
+            {
+                dest = default(T);
+                return Bond.Deserialize.Result.InvalidData;
+            }
         }
 
         internal static string GetPrecompiledClassName(Type type, string suffix = null)

@@ -1,0 +1,9 @@
+namespace tests
+
+service Foo<Payload>
+{
+    void foo31(Payload);
+    Payload foo32(void);
+    Payload foo33(Payload);
+}
+

@@ -1,0 +1,35 @@
+import "basic_types.bond"
+
+namespace tests
+
+struct dummy {
+    0: int32 count;
+}
+
+// alias
+using bar = dummy;
+
+// Service definition using simple syntax
+service Foo
+{
+    nothing foo11();
+    nothing foo12(void);
+    nothing foo13(BasicTypes);
+    nothing foo14(bar);
+
+    void foo21();
+    void foo22(void);
+    void foo23(BasicTypes);
+    void foo24(bar);
+
+    BasicTypes foo31();
+    BasicTypes foo32(void);
+    BasicTypes foo33(BasicTypes);
+    BasicTypes foo34(bar);
+
+    bar foo41();
+    bar foo42(void);
+    bar foo43(BasicTypes);
+    bar foo44(bar);
+}
+

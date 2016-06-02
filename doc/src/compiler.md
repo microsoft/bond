@@ -16,7 +16,10 @@ A Bond schema definition file can contain the following elements:
     - enum
     - forward declaration
     - struct
-    - generics
+    - generic structs
+    - type aliases
+    - services
+    - generic services
     - struct view
 - Custom attributes
 - Comments
@@ -127,8 +130,8 @@ the namespace name:
         1: bond.BondDataType type = BT_UNAVAILABLE;
     }
 
-Generics
---------
+Generic struct
+--------------
 
 Generic structs are parameterized with one or more type parameters which can be 
 used within the struct definition in any place where a concrete type could be 
@@ -142,7 +145,7 @@ generic struct).
         2: Generic<T2> generic;
     }
 
-Usage of a type parameter within a generic struct definition may implicitly 
+The usage of a type parameter within a generic struct definition may implicitly 
 constrain what type(s) can be used to instantiate the generic struct:
 
     struct Example<T>
@@ -229,29 +232,75 @@ In the above example, the definition of `View` is equivalent to:
 A view of a generic struct is also a generic struct with the same number of 
 type parameters.
 
-A view of a sealed struct is always sealed. A view of non-sealed struct can be 
-defined to be sealed:
-
-    sealed struct View view_of Example
-    {
-        x,
-        z;
-    }
-
 See example: `examples/cpp/core/schema_view`
 
+Service definition
+------------------
+
+A service definition consists of a service name and methods:
+
+    service Calculator
+    {
+        Result Calculate(Operation);
+        Stats GetStats();
+    }
+
+Methods take one parameter and can return a result. A method can return:
+
+- a [struct](#struct-definition)
+- `void`
+- `nothing`
+
+A method can take as input up to one struct. `void` may optionally be used in 
+place of a struct name to indicate that the methods doesn't take any input.
+
+Methods with the result of `nothing` are one-way, fire and forget methods: 
+the service doesn't send any response regardless of whether the service method
+execution resulted in success or failure. This is different from methods 
+returning `void` which send back a response with an empty payload and may 
+indicate failure using errors.
+
+    service Watchdog
+    {
+        nothing Heartbeat(Identifier);
+    }
+
+Generic service
+---------------
+
+Generic services are parameterized with one or more type parameters which can be 
+used within the service definition in any place where a concrete type could be 
+used.
+
+    service Gateway<Token>
+    {
+        Result Authenticate(Token);
+    }
+
+The usage of a type parameter within a generic service definition may implicitly 
+constrain what type(s) can be used to instantiate the generic service. For
+example in the above definition the `Token` type parameter must be
+a [struct](#struct-definition).
 
 Custom attributes
 -----------------
 
-Struct, enum and field definitions can be annotated with custom attributes 
-which are in effect name, string-values pairs:
+Struct, service, enum as well as struct field and service method definitions
+can be annotated with custom attributes which are in effect name, string-values
+pairs:
 
     [Validate("True")]
     struct Example
     {
         [Max("100")]
         0: uint32 value;
+    }
+
+    [service_id("MyExample")]
+    service Example
+    {
+        [Tracing("enabled")]
+        Result Method(Param);
     }
 
 Attributes are available in code generation templates and thus can be used to 
@@ -420,7 +469,8 @@ A declaration is represented by a JSON object with the following common properti
 where:
 
 - `tag` is a string indicating the type of the declaration. It can have one of
-the following values: `"Struct"`, `"Enum"`, `"Alias"`, `"Forward"`.
+the following values: `"Struct"`, `"Enum"`, `"Alias"`, `"Forward"`, `"Service"`, 
+`"Function"`, `"Event"`.
 - `declNamespaces` is an array of one or more [namespaces](#namespace).
 - `declName` is a string. 
 - `declParams` is an array of zero or more [type parameters](#type-parameter).
@@ -451,6 +501,64 @@ where:
 - `structBase` is `null` or a [type](#type) representing the struct base. The 
 property is optional and may be omitted.
 - `structFields` is an array of zero or more [fields](#struct-field).
+
+### Service
+
+A JSON object representing a `Service` declaration has the following properties:
+
+    {
+      "tag": "Service",
+      "declNamespaces": [
+      ],
+      "declName": "ServiceName",
+      "declParams": [
+      ],
+      "declAttributes": [
+      ],
+      "serviceMethods": [
+      ]
+    }
+
+where:
+
+- `serviceMethods` is an array of zero or more [methods](#methods).
+
+#### Methods
+
+A JSON object representing a `Function` declaration has the following properties:
+
+    {
+      "tag": "Function",
+      "methodName": "methodName",
+      "methodAttributes": [
+      ],
+      "methodResult": {
+      },
+      "methodInput": {
+      }
+    }
+
+where:
+
+- `methodResult` is a user defined type struct, alias to struct, parameter or null.
+- `methodInput` is a user defined type struct, alias to struct, parameter or null.
+- `methodAttributes` is an array of zero or more [attributes](#attribute)
+
+A JSON object representing an `Event` declaration has the following properties:
+
+    {
+      "tag": "Event",
+      "methodName": "methodName",
+      "methodAttributes": [
+      ],
+      "methodInput": {
+      }
+    }
+
+where:
+
+- `methodInput` is a user defined type struct, alias to struct, parameter or null.
+- `methodAttributes` is an array of zero or more [attributes](#attribute)
 
 ### Enum
 

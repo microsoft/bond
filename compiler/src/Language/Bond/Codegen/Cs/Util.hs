@@ -73,6 +73,10 @@ typeAttributes cs s@Struct {..} =
 typeAttributes cs e@Enum {..} =
     optionalTypeAttributes cs e
  <> generatedCodeAttr
+
+-- C# service attributes
+typeAttributes _ Service {..} = generatedCodeAttr
+
 typeAttributes _ _ = error "typeAttributes: impossible happened."
 
 generatedCodeAttr :: Text

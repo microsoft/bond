@@ -23,6 +23,9 @@ tests = testGroup "Compiler tests"
             , testCase "inheritance" $ compareAST "inheritance"
             , testCase "type aliases" $ compareAST "aliases"
             , testCase "documentation example" $ compareAST "example"
+            , testCase "simple service syntax" $ compareAST "service"
+            , testCase "service attributes" $ compareAST "service_attributes"
+            , testCase "generic service" $ compareAST "generic_service"
             ]
         ]
     , testGroup "SchemaDef"
@@ -101,6 +104,16 @@ tests = testGroup "Compiler tests"
                 , "--using=time=System.DateTime"
                 ]
                 "nullable_alias"
+            , testGroup "Comm"
+                [ verifyCsCommCodegen
+                    [ "c#"
+                    ]
+                    "service"
+                , verifyCsCommCodegen
+                    [ "c#"
+                    ]
+                    "generic_service"
+                ]
             ]
         ]
     ]

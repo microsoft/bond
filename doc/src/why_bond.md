@@ -12,12 +12,12 @@ like to include a link to it in this document, please send a pull request.
 Meta schema
 -----------
 
-Bond has a very rich [type system](manual/compiler.html#idl-syntax). It is 
-probably most similar to Thrift in this respect. Some notable additions in Bond 
-are inheritance, [type aliases](manual/bond_cpp.html#type-aliases) and 
-[generics](manual/bond_cpp.html#generics). One type system feature not present 
-in Bond that Avro, and recently Protocol Buffers, have are unions. We use 
-schemas with optional fields to represent unions.
+Bond has a very rich [type system](manual/compiler.html#idl-syntax). It is
+probably most similar to Thrift in this respect. Some notable additions in Bond
+are inheritance, [type aliases](manual/bond_cpp.html#type-aliases) and
+[generics](manual/bond_cpp.html#generic-struct). One type system feature not
+present in Bond that Avro, and recently Protocol Buffers, have are unions. Bond
+uses schemas with optional fields to represent unions.
 
 Programming model
 -----------------

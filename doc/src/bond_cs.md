@@ -16,6 +16,9 @@ serialization protocols, data streams, user defined type aliases and more.
 By design Bond is language and platform independent and is currently supported
 for C++, C#, and Python on Linux, OS X and Windows.
 
+We are also introducing the Bond Communication framework -- known as Bond Comm.
+More information about Bond Comm for C# can be found [below](#bond-comm).
+
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
 Basic example
@@ -1128,6 +1131,88 @@ public constructors:
         }
     }
 
+Bond Comm
+=========
+
+The [Bond Communication](bond_comm.html) C# framework makes it easy and efficent to
+construct services and hook clients up to those services. Built on top of the Bond
+serialization framework, Bond Comm aims for the same principles of high-performance and
+extensibility.
+
+Today the framework supports two messaging patterns:
+- request-response: roundtrip messages supporting either payload or error responses
+- event: one-way, fire-and-forget messages with no responses
+
+Bond Comm is naturally asynchronous, and the C# implementation takes advantage of the
+idiomatic Task and async/await facilities of .NET.
+
+The initial release of Bond Comm is designed to run on Windows running .NET 4.5 or Core
+CLR. Since Core CLR is not 100% stable yet, we will update as needed. Mono support is
+forthcoming, as are Linux and Mac OS X.
+
+Only Windows 10 and Windows Server 2012 R2 have been tested to date.
+
+See the following examples:
+
+- `examples/cs/comm/pingpong`
+- `examples/cs/comm/notifyevent`
+
+### Defining services ###
+
+Cross-language services are defined in the [Bond IDL](bond_comm.html#defining-services).
+
+The generated C# service stub contains a service base class that the developer should subclass to
+provide the business logic of their service.
+
+The generated proxy stub provides a class with methods that the developer can call to
+exhange messages with the service.
+
+### Epoxy Transport ###
+
+The initial release of Bond Comm provides a binary transport called
+[Epoxy](bond_epoxy.html). This is the recommended default Transport. The
+Epoxy transport is designed to be Core CLR compliant, which will allow for
+cross-platform support.
+
+TLS support in Epoxy is forthcoming.
+
+### Logging and Metrics Facades ###
+
+Bond Comm includes facades for logging and metrics. By writing simple handlers
+for logging and metrics, developers can supply their own logging and metrics
+facilities to gather log and metric data from Bond Comm-based services.
+
+See the following examples:
+
+- `examples/cs/comm/logging`
+- `examples/cs/comm/metrics`
+
+### Layers ###
+
+Bond Comm includes extensibility points called "layers" that provides hooks
+for capabilites that are not service- or method-specific. An example of this
+would be tracing hooks like those mentioned in the [Dapper
+paper](http://research.google.com/pubs/pub36356.html).
+
+A set of layers are encapsulated together in a "layer stack", which can be
+provided to the Transport. When the Transport sends out a message, the layer
+stack invokes the layers in forward order. On the receive side, the layer
+stack invokes the layers in reverse order.
+
+The layers in a layer stack are expected to share a single Bond structure
+for passing state from the send side to the receive side. This structure is
+serialized by the transport and sent alongside the actual message payload.
+
+If any layer returns an error, the layer stack is halted and the error
+replaces the current message; therefore, layers should only return errors
+for conditions that are truly fatal for the current message.
+
+Support for layers that contain per-instance state is forthcoming.
+
+### Roadmap ###
+
+We have a [roadmap](bond_comm_roadmap.html) for Bond Comm.
+
 References
 ==========
 
@@ -1140,8 +1225,10 @@ References
 [Python User's Manual][bond_py]
 ----------------------------
 
-[compiler]: compiler.html
+[Bond Comm overview][bond_comm]
+----------------------------
 
-[bond_py]: bond_py.html
-
+[bond_comm]: bond_comm.html
 [bond_cpp]: bond_cpp.html
+[bond_py]: bond_py.html
+[compiler]: compiler.html

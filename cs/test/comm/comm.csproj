@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildFramework Condition="'$(Configuration)' == 'Net40'">net40</BuildFramework>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
+  <PropertyGroup>
+    <ProjectGuid>{F13CB9C0-DB52-45DB-9BFD-05CB26512FC6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UnitTest</RootNamespace>
+    <AssemblyName>Bond.Comm.UnitTest</AssemblyName>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <DependentOutputPath>$(OutputPath)</DependentOutputPath>
+    <DontBuildNet40>true</DontBuildNet40>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IntermediateOutputPath>$(IntermediateOutputPath)\Properties\</IntermediateOutputPath>
+    <OutputPath>$(OutputPath)\Properties\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Fields' ">
+    <IntermediateOutputPath>$(IntermediateOutputPath)\Fields\</IntermediateOutputPath>
+    <OutputPath>$(OutputPath)\Fields\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Interfaces\CodegenHelpersTests.cs" />
+    <Compile Include="DummyTestService.cs" />
+    <Compile Include="Interfaces\LogTests.cs" />
+    <Compile Include="Interfaces\MessageTests.cs" />
+    <Compile Include="Interfaces\TestHelpers.cs" />
+    <Compile Include="Interfaces\ListenerTests.cs" />
+    <Compile Include="Interfaces\TransportTests.cs" />
+    <BondCodegen Include="comm-test.bond">
+      <Options>--namespace=unittest.comm=UnitTest.Comm</Options>
+    </BondCodegen>
+    <Compile Include="Layers\LayerStackTests.cs" />
+    <Compile Include="properties\AssemblyInfo.cs" />
+    <Compile Include="Epoxy\FrameTests.cs" />
+    <Compile Include="Epoxy\EpoxyConnectionTests.cs" />
+    <Compile Include="Epoxy\EpoxyListenerTests.cs" />
+    <Compile Include="Epoxy\EpoxyProtocolTests.cs" />
+    <Compile Include="Epoxy\EpoxyTransportTests.cs" />
+    <Compile Include="Epoxy\ResponseMapTests.cs" />
+    <!-- TODO: edit the .targets to automatically include the comm files -->
+    <Compile Include="$(IntermediateOutputPath)comm-test_interfaces.cs" />
+    <Compile Include="$(IntermediateOutputPath)comm-test_proxies.cs" />
+    <Compile Include="$(IntermediateOutputPath)comm-test_services.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NUnit.VisualStudio.TestAdapter" Condition="'$(OS)' != 'Unix'">
+      <HintPath>..\..\packages\NUnitTestAdapter.2.0.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json" Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\portable-net45+wp80+win8+wpa81+dnxcore50\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json" Condition="'$(TargetFrameworkVersion)' == 'v4.0'">
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Bond.Attributes">
+      <HintPath>..\..\src\attributes\$(DependentOutputPath)\Bond.Attributes.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond">
+      <HintPath>..\..\src\core\$(DependentOutputPath)\Bond.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.IO">
+      <HintPath>..\..\src\io\$(DependentOutputPath)\Bond.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.JSON">
+      <HintPath>..\..\src\json\$(DependentOutputPath)\Bond.JSON.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\comm\interfaces\interfaces.csproj">
+      <Project>{45efb397-298a-4a32-a178-a2bdf8abbbd9}</Project>
+      <Name>interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\comm\layers\layers.csproj">
+      <Project>{5f6cbc77-8fb5-4644-bab5-f8e62792266e}</Project>
+      <Name>layers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\comm\epoxy-transport\epoxy-transport.csproj">
+      <Project>{c687c52c-0a5b-4f10-8cb3-dbaf9a72d042}</Project>
+      <Name>epoxy-transport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\core\Core.csproj">
+      <Project>{ff056b62-225a-47bc-b177-550fadda4b41}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
+</Project>

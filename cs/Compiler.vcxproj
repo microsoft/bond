@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -20,7 +20,7 @@
     <ConfigurationType>Utility</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ItemGroup>
@@ -33,7 +33,7 @@ call cmake $(ProjectDir)\..\compiler -Wno-dev
 if %errorlevel% neq 0 goto :cmEnd
 call cmake --build $(OutDir) --target gbc
 if %errorlevel% neq 0 goto :cmEnd
-copy $(OutDir)\build\gbc\gbc.exe $(ProjectDir)\bin\
+copy $(OutDir)\build\gbc\gbc.exe $(ProjectDir)\tools\
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -43,7 +43,7 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd
           </Command>
       <AdditionalInputs>$(ProjectDir)..\compiler\bond.cabal;$(ProjectDir)..\compiler\Main.hs;$(ProjectDir)..\compiler\IO.hs;$(ProjectDir)..\compiler\Options.hs;$(ProjectDir)..\compiler\src\Language\Bond\Lexer.hs;$(ProjectDir)..\compiler\src\Language\Bond\Parser.hs;$(ProjectDir)..\compiler\src\Language\Bond\Syntax\JSON.hs;$(ProjectDir)..\compiler\src\Language\Bond\Syntax\Types.hs;$(ProjectDir)..\compiler\src\Language\Bond\Syntax\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\CustomMapping.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\TypeMapping.hs;;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Templates.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\ApplyOverloads.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_cpp.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Enum_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Reflection_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_cpp.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_h.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Util.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Types_cs.hs;$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Util.hs;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs>$(ProjectDir)\bin\gbc.exe</Outputs>          
+      <Outputs>$(ProjectDir)\tools\gbc.exe</Outputs>
       </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +71,6 @@ if %errorlevel% neq 0 goto :VCEnd
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Util.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Types_cs.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Util.hs" />
-  </ItemGroup>  
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\internal\Common.Internal.props" />
+  <PropertyGroup>
+    <ProjectGuid>{C687C52C-0A5B-4F10-8CB3-DBAF9A72D042}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Bond.Comm.Epoxy</RootNamespace>
+    <AssemblyName>Bond.Comm.Epoxy</AssemblyName>
+    <BondRedistributable>true</BondRedistributable>
+    <DontBuildNet40>true</DontBuildNet40>
+  </PropertyGroup>
+  <ItemGroup>
+    <BondImportDirectory Include="..\interfaces" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Frame.cs" />
+    <Compile Include="properties\AssemblyInfo.cs" />
+    <Compile Include="EpoxyConnection.cs" />
+    <Compile Include="EpoxyContexts.cs" />
+    <Compile Include="EpoxyListener.cs" />
+    <Compile Include="EpoxyProtocol.cs" />
+    <Compile Include="EpoxyProtocolErrorException.cs" />
+    <Compile Include="EpoxyTransport.cs" />
+    <BondCodegen Include="EpoxyTransport.bond">
+      <Options>--namespace=bond.comm=Bond.Comm --namespace=bond.comm.epoxy=Bond.Comm.Epoxy</Options>
+    </BondCodegen>
+    <!-- Resharper Workaround -->
+    <Compile Include="$(IntermediateOutputPath)\EpoxyTransport_types.cs" Condition="False" />
+    <Compile Include="ResponseMap.cs" />
+    <!-- End Resharper Workaround -->
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\attributes\Attributes.csproj">
+      <Project>{92915bd9-8ab1-4e4d-a2ac-95bbf4f82d89}</Project>
+      <Name>Attributes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\Bond.csproj">
+      <Project>{43cbba9b-c4bc-4e64-8733-7b72562d2e91}</Project>
+      <Name>Bond</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\interfaces\interfaces.csproj">
+      <Project>{45efb397-298a-4a32-a178-a2bdf8abbbd9}</Project>
+      <Name>interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\layers\layers.csproj">
+      <Project>{5f6cbc77-8fb5-4644-bab5-f8e62792266e}</Project>
+      <Name>layers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\service\service.csproj">
+      <Project>{79d2423a-87c8-44a2-89c2-2fa94521747e}</Project>
+      <Name>service</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\internal\Common.Internal.targets" />
+</Project>

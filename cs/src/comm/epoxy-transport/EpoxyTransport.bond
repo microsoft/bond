@@ -1,0 +1,69 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+import "Comm.bond"
+
+namespace bond.comm.epoxy;
+
+struct EpoxyConfig
+{
+}
+
+enum PayloadType
+{
+    Request = 1;
+    Response = 2;
+    Event = 3;
+}
+
+struct EpoxyHeaders
+{
+    0: uint64 conversation_id;
+    1: required PayloadType payload_type;
+    2: string method_name;
+    3: int32 error_code;
+}
+
+enum ProtocolErrorCode
+{
+    // An unknown error has occurred.
+    GENERIC_ERROR = 0;
+    // The endpoint has suffered a catastrophic, unrecoverable error.
+    INTERNAL_ERROR = 1;
+    // The client attempted to communicate in a way the server does not support.
+    NOT_SUPPORTED = 2;
+    // The endpoint has detected a violation of the protocol and does
+    // not have a more specific error to use.
+    PROTOCOL_VIOLATED = 3;
+    // Some data that the Epoxy transport needed to process, like the
+    // EpoxyHeaders structure, was malformed.
+    MALFORMED_DATA = 4;
+    // Some limit has been exceeded.
+    LIMIT_EXCEEDED = 5;
+    // The set of config options given to the server were unacceptable.
+    CLIENT_BAD_HANDSHAKE = 6;
+    // The client detected that the server violated the handshake
+    // protocol (e.g., selected an option outside the client's set.)
+    SERVER_BAD_HANDSHAKE = 7;
+    // An invalid conversation ID was used (e.g., client used even)
+    BAD_CONVERSATION_ID = 8;
+    // The endpoint is out of conversation IDs.
+    CONVERSATION_IDS_EXHAUSTED = 9;
+    // The endpoint gave up waiting for data (e.g., initial handshake,
+    // reading a large framelet)
+    TIMEOUT = 10;
+
+    // The connection was explicitly rejected.
+    CONNECTION_REJECTED = 11;
+
+    // Indicates that the endpoint received a ProtocolError that was malformed.
+    // This should not be sent over the network, and should only be created by
+    // a Proxy/Service in place of the malformed ProtocolError it refers to.
+    ERROR_IN_ERROR = 0xffff;
+}
+
+struct ProtocolError
+{
+    0: ProtocolErrorCode error_code;
+    1: nullable<bonded<bond.comm.Error>> details;
+}

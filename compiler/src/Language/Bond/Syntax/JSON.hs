@@ -267,4 +267,4 @@ $(deriveJSON defaultOptions ''TypeParam)
 $(deriveJSON defaultOptions ''Declaration)
 $(deriveJSON defaultOptions ''Import)
 $(deriveJSON defaultOptions ''Language)
-
+$(deriveJSON defaultOptions ''Method)
