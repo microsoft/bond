@@ -34,7 +34,9 @@ different versioning scheme, following the Haskell community's
 
 * Added
   [`Deserializer.TryDeserialize()`](https://github.com/Microsoft/bond/blob/db315adaf4b812adc5ca484b1bcffafe1df6d351/cs/src/core/Deserializer.cs#L231-239).
-* Added two new NuGet packages to make it easier to consume Bond piecemeal.
+* Added two new
+  [NuGet packages](https://microsoft.github.io/bond/manual/bond_cs.html#nuget-packages)
+  to make it easier to consume Bond piecemeal.
   * Bond.Compiler: contains `gbc`, `bond.bond`, and `bond_const.bond` in a
     tools-only package
   * Bond.Compiler.CSharp: contains `gbc` and C# MSBuild targets. No longer
