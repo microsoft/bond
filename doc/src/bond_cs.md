@@ -1133,6 +1133,53 @@ public constructors:
         }
     }
 
+NuGet packages
+==============
+
+Pre-compiled versions of Bond are distributed via NuGet packages from NuGet.org.
+
+[![Bond.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.CSharp/)
+**Bond.CSharp** - An omnibus package that pulls in everything required to
+use Bond in a C# project. If you're not sure which packages to use, use this
+one. (It will pull in the rest of them.)
+
+[![Bond.Core.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Core.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Core.CSharp/)
+**Bond.Core.CSharp** - The assemblies required to use Bond at runtime.
+Useful if some other assembly already contains the compiled types. If your
+project contains .bond files, you will need to use either Bond.CSharp or
+Bond.Compiler.CSharp to perform code generation at build time.
+
+[![Bond.Runtime.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Runtime.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Runtime.CSharp/)
+**Bond.Runtime.CSharp** - Additional assemblies that may be needed at
+runtime depending on which Bond [protocols](bond_cpp.html#protocols) are
+being used. Needed for Simple JSON.
+
+[![Bond.Compiler.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Compiler.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Compiler.CSharp/)
+**Bond.Compiler.CSharp** - A package with the
+[Bond compiler (gbc)](compiler.html) and MSBuild targets for C# code
+generation. Bond.CSharp includes similar functionality, but pulls in lots of
+dependencies. Bond.Complier.CSharp has no dependencies.
+
+[![Bond.Compiler NuGet package](https://img.shields.io/nuget/v/Bond.Compiler.svg?style=flat)](https://www.nuget.org/packages/Bond.Compiler/)
+**Bond.Compiler** - A tools-only package that contains the
+[Bond compiler (gbc)](compiler.html). This is useful if you want to
+integrate gbc into a build process that isn't using C# or MSBuild.
+
+For example, if you want to use Bond's Compact Binary protocol but want to
+avoid a dependency on Newtonsoft's JSON.NET, you can use the
+Bond.Compiler.CSharp and Bond.Core.CSharp packages together.
+
+## Platform limitations ##
+
+The pre-compiled gbc that is included in these packages is Windows-only. See
+the [README](https://github.com/Microsoft/bond/blob/master/README.md) for
+instructions to build gbc for other platforms.
+
+Bond.IO.dll (which provides the types in the Bond.IO.Unsafe namespace) is
+currently Windows-only, as it relies on some Win32 APIs. To stay
+cross-platform, only use the types from Bond.dll (in the Bond.IO.Safe
+namespace).
+
 Bond Comm
 =========
 
@@ -1224,11 +1271,20 @@ Bond Comm is split into a number of NuGet packages to allow for granular
 consumption. Some of these packages will have dependencies on core Bond
 packages as well.
 
-| NuGet Package | Version | Description |
-|---------------|---------|-------------|
-| Bond.Comm.CSharp | [![Bond.Comm.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.CSharp/) | Rollup packages |
-| Bond.Comm.Runtime.CSharp | [![Bond.Comm.Runtime.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.Runtime.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.Runtime.CSharp/) | Runtime dependencies |
-| Bond.Comm.Epoxy.CSharp | [![Bond.Comm.Epoxy.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.Epoxy.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.Epoxy.CSharp/) | [Epoxy](bond_comm_epoxy.html) transport |
+[![Bond.Comm.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.CSharp/)
+**Bond.Comm.CSharp** - An omnibus package that contains everything needed to
+use Bond Comm. If you're not sure which packages to use, use this one. (It
+will pull in the rest of them.)
+
+[![Bond.Comm.Runtime.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.Runtime.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.Runtime.CSharp/)
+**Bond.Comm.Runtime.CSharp** The assemblies required to use Bond at runtime.
+Useful if some other assembly already contains the compiled types. If your
+project contains .bond files, you will need to use either Bond.Comm.CSharp
+or Bond.Compiler.CSharp to perform code generation at build time.
+
+[![Bond.Comm.Epoxy.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.Epoxy.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.Epoxy.CSharp/)
+**Bond.Comm.Epoxy.CSharp** The [Epoxy](bond_comm_epoxy.html) transport.
+You'll need at least one transport, and Epoxy is a good default choice.
 
 References
 ==========
