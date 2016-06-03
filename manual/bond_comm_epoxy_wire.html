@@ -1,0 +1,527 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Bond Epoxy transport wire format</title>
+  <style type="text/css">
+  body {
+      line-height: 1.5; 
+      font-family: Helvetica, Arial, sans-serif; 
+      color: #333333;
+      font-size: 1em;
+  }
+  code {
+      font-size: 1em;
+      font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace, serif;
+  }
+  td.lineNumbers { width: 40px; }
+  div#all {
+    max-width: 1120px;
+    background-color: #ffffff;
+    margin: 0 auto;
+    padding: 25px;
+    overflow: auto;
+  }
+  code > span.kw { color: #204a87; font-weight: normal; } /* Keyword */  
+  code > span.co { color: #4E9A06; font-style: normal; }
+  code > span.st { color: #8A0303; font-style: normal; }
+  code > span.cf { color: #204a87; font-weight: normal; } /* ControlFlow */
+  code > span.op { color: #000000; font-weight: normal; } /* Operator */
+  code > span.pp { color: #8f5902; font-style: normal; } /* Preprocessor */
+  code > span.ex { } /* Extension */
+  code > span.at { color: #c4a000; } /* Attribute */
+  code > span.do { color: #8f5902; font-weight: normal; font-style: normal; } /* Documentation */
+  code > span.an { color: #8f5902; font-weight: normal; font-style: normal; } /* Annotation */
+  code > span.cv { color: #8f5902; font-weight: normal; font-style: normal; } /* CommentVar */
+  code > span.in { color: #8f5902; font-weight: normal; font-style: normal; } /* Information */
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    border-bottom: 1px solid black;
+  }
+
+  div.sourceCode {
+    overflow-x: auto;
+    max-height: 620px;
+  }
+
+  table.sourceCode { 
+    line-height: 120%;
+  } 
+
+  #toc {
+    width: 300px; 
+    position:fixed;
+    overflow: auto;
+    height: 95%;
+  }
+
+  #main {
+    margin-left: 320px;  
+    margin-rigth: auto;
+    max-width: 800px;
+  }
+  a {
+    text-decoration: none;
+  }
+  #toc a:visited {
+    color: #99c;
+  }
+  #main a:visited {
+    color: #36c;
+  }
+  a:link {
+    color: #36c;
+  }
+  @media screen and (max-width: 979px){
+  #main {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #toc {
+    left: -300px; 
+  }
+  }
+  </style>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58775439-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
+<body>
+<nav id="TOC"></nav>
+<div id="all">
+<div id="toc">
+<ul>
+<li><a href="#epoxy-transport-wire-format">Epoxy transport wire format</a></li>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#conventions">Conventions</a><ul>
+<li><a href="#terminology">Terminology</a></li>
+</ul></li>
+<li><a href="#the-frame">The frame</a><ul>
+<li><a href="#framelets">Framelets</a></li>
+<li><a href="#framelet-types">Framelet types</a><ul>
+<li><a href="#unknown-framelets">Unknown framelets</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#connection-life-cycle">Connection life cycle</a></li>
+<li><a href="#establishing-a-connection">Establishing a connection</a><ul>
+<li><a href="#secure-connections">Secure connections</a></li>
+<li><a href="#recommended-port">Recommended port</a></li>
+</ul></li>
+<li><a href="#exchanging-messages">Exchanging messages</a></li>
+<li><a href="#protocol-error">Protocol Error</a></li>
+<li><a href="#framelet-structures">Framelet structures</a><ul>
+<li><a href="#epoxy-config-structure">Epoxy Config Structure</a></li>
+<li><a href="#epoxy-headers-structure">Epoxy Headers Structure</a><ul>
+<li><a href="#conversation-id">Conversation ID</a></li>
+<li><a href="#method-name">Method name</a></li>
+<li><a href="#payload-type">Payload type</a></li>
+<li><a href="#error-code">Error code</a></li>
+</ul></li>
+<li><a href="#protocolerror-struct"><code>ProtocolError</code> struct</a></li>
+</ul></li>
+<li><a href="#limits">Limits</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#wire-format-evolution">Wire format evolution</a></li>
+<li><a href="#rejected-designs">Rejected designs</a><ul>
+<li><a href="#frameframelet-padding">Frame/framelet padding</a></li>
+<li><a href="#other-framing-schemes">Other framing schemes</a></li>
+<li><a href="#explicit-frame-types">Explicit frame types</a></li>
+<li><a href="#omitting-event-conversation-ids">Omitting event conversation IDs</a></li>
+<li><a href="#conversation-id-framelet">Conversation ID framelet</a></li>
+<li><a href="#ignoring-unknown-framelets">Ignoring unknown framelets</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="main">
+<div id="header">    
+<h1 class="title">Bond Epoxy transport wire format</h1>
+</div>
+<h1 id="epoxy-transport-wire-format">Epoxy transport wire format</h1>
+<p>This documents the <a href="bond_comm_epoxy.html">Bond Epoxy transport</a> wire format. For API-level documentation, see the respective language guides.</p>
+<p>The intended audience for this is transport implementers so that compatible clients/servers can be produced.</p>
+<h1 id="requirements">Requirements</h1>
+<p>Since Bond transports operate on messages, the Epoxy transport needs a way to group sequences of bytes within the stream of bytes provided by a TCP connection into individual messages. It does this by “framing” each message. Thus, this wire format turns a stream of bytes into a sequence of <em>frames</em>.</p>
+<p>These frames are then used to transmit Bond messages between participants. The messages are decomposed into simple tuples. These tuples are used to implement the <a href="bond_comm.html#messaging-patterns">messaging patterns</a> this transport supports.</p>
+<p>The Epoxy transport wire format should be <a href="#example">simple</a>, so that it is easy to implement–at least the basic feature set.</p>
+<p>The Epoxy transport defers to Bond serialization/marshalling when it can. Instead of re-implementing backward/forward compatible serialization schemes, it uses Bond. For any structures that are used as part of the protocol itself, the <a href="bond_cpp.html#fast-binary">Fast Binary</a> protocol version 1 is used to serialize them, as this protocol is simple to implement. Any other structures are marshalled so that applications do not have to convert from their serialization format of choice.</p>
+<p>“Interesting” structures need to be able to be allocated and serialized/deserialized independently. For example, a Bond Epoxy transport proxy that only wants to inspect headers should not be required to deserialize entire payloads.</p>
+<h1 id="conventions">Conventions</h1>
+<p>The following hold in this document, unless otherwise specified.</p>
+<ul>
+<li>All sizes are given in bytes.</li>
+<li>All multi-byte quantities are little-endian.</li>
+</ul>
+<h2 id="terminology">Terminology</h2>
+<ul>
+<li><em><strong>client</strong></em>: an entity that establishes connections to <em>servers</em>. In Berkeley socket parlance, this entity calls <code>connect()</code></li>
+<li><em><strong>connection</strong></em>: a transmision channel capable of bi-directional communication</li>
+<li><em><strong>conversation</strong></em>: one message-based interaction between two <em>endpoints</em>. This includes things like the request/response and event <a href="bond_comm.html#messaging-patterns">messaging patterns</a></li>
+<li><em><strong>endpoint</strong></em>: either the <em>client</em> or the <em>server</em></li>
+<li><em><strong>frame</strong></em>: a collection of related data, all of which are transmitted together</li>
+<li><em><strong>framelet</strong></em>: a type, length, data tuple within a <em>frame</em></li>
+<li><em><strong>headers</strong></em>: metadata about a conversation</li>
+<li><em><strong>initiator</strong></em>: the entity that starts a conversation</li>
+<li><em><strong>layer data</strong></em>: opaque blob of data used by Bond Communications’ layers facility</li>
+<li><em><strong>payload data</strong></em>: opaque blob of data that is the contents of the message being sent</li>
+<li><em><strong>receiver</strong></em>: the endpoint that is reading <em>frames</em>, regardless of the higher-level messaging pattern being employed</li>
+<li><em><strong>sender</strong></em>: the endpoint originating <em>frames</em>, regardless of the higher-level messaging pattern being employed</li>
+<li><em><strong>server</strong></em>: an entity listening for connections from <em>clients</em>, typically on a well-known port. In Berkeley socket parlance, this entity calls <code>bind()</code>, <code>listen()</code>, and <code>accept()</code></li>
+<li><em><strong>service</strong></em>: a Bond entity that exposes invokable methods that may take and return Bond structures</li>
+</ul>
+<h1 id="the-frame">The frame</h1>
+<p>A frame is the indivisible unit of transmission in the Epoxy transport.</p>
+<p>Each frame is an ordered collection of type, length, data tuples. These tuples are called <em>framelets</em>.</p>
+<p>The basic structure of a frame is:</p>
+<ul>
+<li>the count of the framelets in the frame (2 bytes)</li>
+<li>framelet 1</li>
+<li>…</li>
+<li>framelet <em>n</em></li>
+</ul>
+<p>The framelet count must be greater than 0 and less than 65,535.</p>
+<p>The first framelet in the frame determines the type of the frame. It dictates which subsequent framelets (after the first) are allowed and in which order. Thus, the order of the framelets within a frame must be preserved by both the sender and the receiver.</p>
+<p>The possible frame types are:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Frame type</th>
+<th>First framelet</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#establishing-a-connection">Config frame</a></td>
+<td><code>EpoxyConfig</code></td>
+</tr>
+<tr class="even">
+<td><a href="#exchanging-messages">Message frame</a></td>
+<td><code>EpoxyHeaders</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#protocol-error">Error frame</a></td>
+<td><code>ProtocolError</code></td>
+</tr>
+</tbody>
+</table>
+<p>Each frame type is described in more details in its own section.</p>
+<p>See also <a href="#limits">Limits</a> for a discussion about things like maximum frame size.</p>
+<pre><code>+----0---+----1---+================+
+| framelet count  | framelets  ... |
++--------+--------+================+</code></pre>
+<h2 id="framelets">Framelets</h2>
+<p>A framelet is an entity within a frame. It consists of:</p>
+<ul>
+<li>the <a href="#framelet-types">framelet type</a> (2 bytes)</li>
+<li>the framelet content size (4 bytes, but see <a href="#limits">Limits</a>.)</li>
+<li>the content itself</li>
+</ul>
+<p>How the content of a framelet is interpreted depends on the type.</p>
+<pre><code>+----0---+----1---+----2---+----3---+----4---+----5---+============+
+| framelet type   | framelet size                     | content    |
++--------+--------+--------+--------+--------+--------+============+</code></pre>
+<h2 id="framelet-types">Framelet types</h2>
+<p>Each framelet has a unique type ID, regardless of which frame its is permitted to occur in.</p>
+<table style="width:96%;">
+<colgroup>
+<col width="15%"></col>
+<col width="13%"></col>
+<col width="20%"></col>
+<col width="15%"></col>
+<col width="15%"></col>
+<col width="15%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Framelet</th>
+<th>Type ID</th>
+<th>Parent frame</th>
+<th>Required</th>
+<th>Encoding</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>EpoxyConfig</code></td>
+<td>0x47 0x43 (“GC”)</td>
+<td>Config</td>
+<td>Yes</td>
+<td>Fast Binary v1 serialized</td>
+<td><a href="#epoxy-config-structure"><code>EpoxyConfig</code></a> structure</td>
+</tr>
+<tr class="even">
+<td><code>EpoxyHeaders</code></td>
+<td>0x52 0x48 (“RH”)</td>
+<td>Message</td>
+<td>Yes</td>
+<td>Fast Binary v1 serialized</td>
+<td><a href="#epoxy-headers-structure"><code>EpoxyHeaders</code></a> structure</td>
+</tr>
+<tr class="odd">
+<td><code>LayerData</code></td>
+<td>0x59 0x4C (“YL”)</td>
+<td>Message</td>
+<td>No</td>
+<td>Marshalled Bond data</td>
+<td>Auxiliary data used by Bond Communications layers stack</td>
+</tr>
+<tr class="even">
+<td><code>PayloadData</code></td>
+<td>0x54 0x44 (“TD”)</td>
+<td>Message</td>
+<td>Yes</td>
+<td>Marshalled Bond data</td>
+<td>Actual message payload</td>
+</tr>
+<tr class="odd">
+<td><code>ProtocolError</code></td>
+<td>0x52 0x45 (“RE”)</td>
+<td>Error</td>
+<td>Yes</td>
+<td>Fast Binary v1 serialized</td>
+<td><a href="#protocol-error"><code>ProtocolError</code></a> structure</td>
+</tr>
+</tbody>
+</table>
+<p><em>Note</em>: The framelet type IDs were assigned such that they are mnemonic strings for their contents. In this table, they are “reversed” from what might be expected, as they are little-endian encoded. This reversal makes them show up the “right way” when reading a frame in most hex editors.</p>
+<h3 id="unknown-framelets">Unknown framelets</h3>
+<p>If an endpoint encounters an unknown framelet, it must send a <a href="#protocol-error">protocol error</a> with the error code <code>PROTOCOL_VIOLATED</code> and close the connection.</p>
+<p>Encountering an unknown framelet indicates that the handshake <a href="#establishing-a-connection">connection handshake</a> has gone catastrophically wrong, as newer features can only be used after both endpoints have agreed to them.</p>
+<p>This complicates the implementation and deployment of Epoxy transport proxies (not to be confused with the generated client-side proxy objects), but in our experience, transport-specific proxies are extremely rare and are only used in high constrained environments.</p>
+<h1 id="connection-life-cycle">Connection life cycle</h1>
+<p>When a connection is initially established, a <a href="#establishing-a-connection">two frame handshake</a> occurs. Then the endpoints <a href="#exchanging-messages">exchange message</a> with each other.</p>
+<p>At any point, one of the endpoints may send a <a href="#protocol-error">protocol error</a>. It may then either gracefully or forcibly close its TCP connection, ending the Epoxy connection.</p>
+<p>When one endpoint has finished sending all its messages, it gracefully closes its side of the TCP connection. It should then wait a reasonable amount of time for the other side to also gracefully close its its side of the TCP connection, ending the Epoxy connection.</p>
+<h1 id="establishing-a-connection">Establishing a connection</h1>
+<p>When a connection is initially established, a two frame handshake occurs.</p>
+<p>The client sends a frame consisting of only one <code>EpoxyConfig</code> framelet with the <a href="#epoxy-config-structure">various features it is prepared to use</a>. The client then waits for a corresponding frame to be sent by the server.</p>
+<p>Upon accepting a connection, the server waits for the first frame from the client. The server then inspects the <code>EpoxyConfig</code> structure and determines whether and which features to use. The server then sends back the final <code>EpoxyConfig</code> that will be used for this connection. If the server is presented with a config it cannot or will not use, it must respond with a frame containing only a <code>ProtocolError</code>framelet with error code <code>CLIENT_BAD_HANDSHAKE</code> and close the connection.</p>
+<p>Application should be given a chance to accept/reject a connection when it is being established. If the connection is rejected, a <code>ProtocolError</code> with error code <code>CONNECTION_REJECTED</code> must be sent. Then, the connection must be closed.</p>
+<p>If the client does not agree with the choices that the server made or if the server committed a protocol violation (e.g., selecting an option not proposed by the client), it may send a frame containing only a <code>ProtocolError</code>framelet. Then it must close the connection. There is no way to re-handshake.</p>
+<h2 id="secure-connections">Secure connections</h2>
+<p>The Bond Epoxy wire format has no provisions for communications security.</p>
+<p>Implementations of the Epoxy transport are encouraged to offer both plain TCP and TLS connections. Configuration of the TLS parameters should be deferred to the application.</p>
+<p>When applications are given a chance to accept/reject a connection, certificate details should be made available to them.</p>
+<p>Authorization is an application-level problem, and applications will need to incorporate their authorization requirements into their service definitions. Layer data is a good place to store information that is used across all services and methods on the same connection.</p>
+<h2 id="recommended-port">Recommended port</h2>
+<p>The recommended port for the Bond Epoxy transport is 25188 (ASCII “bd”).</p>
+<p>If TLS connections are being used, the recommended port is 25156 (ASCII “bD”).</p>
+<h1 id="exchanging-messages">Exchanging messages</h1>
+<p>A Message frame is used to send a message between endpoints. It starts with an <code>EpoxyHeaders</code> framelet. The required order of the framelets is:</p>
+<ol style="list-style-type: decimal">
+<li><code>EpoxyHeaders</code></li>
+<li>optional <code>LayerData</code></li>
+<li><code>PayloadData</code></li>
+</ol>
+<p>This order allows for clients and servers to start processing the frame as it arrives.</p>
+<h1 id="protocol-error">Protocol Error</h1>
+<p>An Error frame consisting of just a <code>ProtocolError</code> framelet is used to signal critical transport errors from which the transport cannot recover. Upon receipt of a <code>ProtocolError</code> framelet, the connection transitions to an error state and must be closed. All subsequent frames may be discarded.</p>
+<p>The contents of a <code>ProtocolError</code> framelet is a <code>ProtocolError</code> struct, serialized in Bond Fast Binary v1.</p>
+<h1 id="framelet-structures">Framelet structures</h1>
+<p>Within the Epoxy transport wire format, the following Bond structures are used for schematized data, especially when backward/forward compatibility is needed, since Bond already has a rich system for dealing with such data.</p>
+<h2 id="epoxy-config-structure">Epoxy Config Structure</h2>
+<p>The <code>EpoxyConfig</code> structure is used to configure the Epoxy protocol during the <a href="#establishing-a-connection">initial handshake</a>.</p>
+<p>It is currently empty, but as new features are added, fields to enable/disable their use will be added to this structure.</p>
+<pre><code>namespace bond.comm.epoxy;
+
+struct EpoxyConfig
+{
+}</code></pre>
+<h2 id="epoxy-headers-structure">Epoxy Headers Structure</h2>
+<p>The <code>EpoxyHeaders</code> structure is used for metadata needed to implement the various messaging patterns.</p>
+<pre><code>namespace bond.comm.epoxy;
+
+enum PayloadType
+{
+    Request = 1;
+    Response = 2;
+    Event = 3;
+}
+
+struct EpoxyHeaders
+{
+    0: uint64 conversation_id;
+    1: required PayloadType payload_type;
+    2: string method_name;
+    3: int32 error_code;
+}</code></pre>
+<h3 id="conversation-id">Conversation ID</h3>
+<p>Conversation IDs are used to identify <em>conversations</em>. Messaging patterns like request/response use conversation IDs to associate the request with the response, as many requests and responses are simultaneously in flight over the same connection. Other patterns, like event, just use the conversation ID for diagnostic purposes (e.g., to correlate client- and server-side logs.)</p>
+<p>When a sender initiates a new conversation, it must generate a new conversation ID unique to the connection. If the receiver needs to refer to the same conversation, it must use the same conversation ID the sender assigned.</p>
+<p>Frames with unexpected conversation IDs may be dropped. (E.g., if a client initiated a request/response but gave up before the server sent the response, the client is permitted to ignore the response.)</p>
+<p>A client may only use odd-numbered conversation IDs; a server may only use even-numbered conversation IDs. There are no reserved conversation IDs otherwise.</p>
+<p>Conversation IDs should be assigned in increasing order to aid in debugging, but endpoints are free to use whatever scheme they like. Conversation IDs should not be reused for a different conversation during the lifetime of a connection, because, as stated above, unexpected conversation IDs may be dropped.</p>
+<p>Endpoints must not rely on comparing IDs across conversations for causality. That is, there is no guarantee that conversation 8 happened before conversation 10. For some messaging patterns, there is causality within the same conversation. For example, endpoints <em>can</em> assume, that the response for conversation 7 happened after the request for conversation 7 was sent, received, and processed.</p>
+<h4 id="conversation-id-exhaustion">Conversation ID exhaustion</h4>
+<p>When either the client or the server has exhausted all of its conversation IDs, it must send an <a href="#protocol-error">Error frame</a> with the error code <code>CONVERSATION_IDS_EXHAUSTED</code>. This will allow the connection to be re-established, resetting the conversation IDs.</p>
+<p><em>Design Note</em>: Re-establishing the connection is a simple way to handle conversation ID exhaustion. Rollover schemes are complicated to specify, implement, debug, and test. Additionally, a single high-volume endpoint sending 1,000,000,000 conversations per second will be able to use the same connection for over 580 years before exhausting its conversation IDs. In practice, the <code>CONVERSATION_IDS_EXHAUSTED</code> error should never be encountered.</p>
+<h3 id="method-name">Method name</h3>
+<p>The <code>method_name</code> field is the name of the service and it’s method being invoked.</p>
+<p>The <code>method_name</code> field must be set to a UTF-8 encoded string (without a BOM) that is the concatenation of the fully-qualified service name with the method name. Namespace elements are separated by the period character (‘.’, ASCII 0x2E), as is the service name from the method name.</p>
+<p>Example: <code>root_namespace.child_namespace.some_service.some_method</code></p>
+<h3 id="payload-type">Payload type</h3>
+<p>The payload type along with the <a href="#error-code">error code</a> indicates what kind of message the <code>PayloadData</code> framelet contains.</p>
+<ul>
+<li><code>Request</code>: initiates a conversation that expects a response. The <code>PayloadData</code> is a Bond structure of the expected request type for the method being invoked.</li>
+<li><code>Response</code>: completes the conversation with a response to a previous request. Based on the <a href="#error-code"><code>error_code</code></a> field, <code>PayloadData</code> is either a Bond structure of the expected response type for the method invoked or error data.</li>
+<li><code>Event</code>: initiates and completes a one-way, best-effort conversation. No response is allowed, not even an error response.</li>
+</ul>
+<h3 id="error-code">Error code</h3>
+<p>The <code>error_code</code> field must be set to 0 for all payload types other than <code>Response</code>. For responses, the error code indicates the error/non-error status of a response.</p>
+<p>If the error code is 0, the <code>PayloadData</code> framelet contains a Bond structure of the expected response type for the method that was invoked.</p>
+<p>If the error code is non-zero, the <code>PayloadData</code> framelet contains a Bond structure derived from <code>Error</code>.</p>
+<h2 id="protocolerror-struct"><code>ProtocolError</code> struct</h2>
+<pre><code>struct ProtocolError
+{
+    0: ProtocolErrorCode error_code;
+    1: nullable&lt;bonded&lt;bond.comm.Error&gt;&gt; details;
+}</code></pre>
+<p>The <code>error_code</code> field indicates the reason for the protocol error.</p>
+<p>Here is the current list of protocol errors.</p>
+<pre><code>enum ProtocolErrorCode
+{
+    // An unknown error has occurred.
+    GENERIC_ERROR = 0;
+    // The endpoint has suffered a catastrophic, unrecoverable error.
+    INTERNAL_ERROR = 1;
+    // The client attempted to communicate in a way the server does not support.
+    NOT_SUPPORTED = 2;
+    // The endpoint has detected a violation of the protocol and does
+    // not have a more specific error to use.
+    PROTOCOL_VIOLATED = 3;
+    // Some data that the Epoxy transport needed to process, like the
+    // EpoxyHeaders structure, was malformed.
+    MALFORMED_DATA = 4;
+    // Some limit has been exceeded.
+    LIMIT_EXCEEDED = 5;
+    // The set of config options given to the server were unacceptable.
+    CLIENT_BAD_HANDSHAKE = 6;
+    // The client detected that the server violated the handshake
+    // protocol (e.g., selected an option outside the client's set.)
+    SERVER_BAD_HANDSHAKE = 7;
+    // An invalid conversation ID was used (e.g., client used even)
+    BAD_CONVERSATION_ID = 8;
+    // The endpoint is out of conversation IDs.
+    CONVERSATION_IDS_EXHAUSTED = 9;
+    // The endpoint gave up waiting for data (e.g., initial handshake,
+    // reading a large framelet)
+    TIMEOUT = 10;
+
+    // The connection was explicitly rejected.
+    CONNECTION_REJECTED = 11;
+
+    // Indicates that the endpoint received a ProtocolError that was malformed.
+    // This should not be sent over the network, and should only be created by
+    // a Proxy/Service in place of the malformed ProtocolError it refers to.
+    ERROR_IN_ERROR = 0xffff;
+}</code></pre>
+<h1 id="limits">Limits</h1>
+<p>In order to protect resources, implementations may impose reasonable limits on:</p>
+<ul>
+<li>the number of framelets in a frame (must support at least 4 and should support up to 16)</li>
+<li>the size of an individual framelet (must support at least 512 bytes and should support up to 32 MiB)</li>
+<li>the total size of a frame (must support at least 2 KiB and should support up to 32 MiB)</li>
+</ul>
+<p>The <code>LIMIT_EXCEEDED</code> protocol error should be used when a limit has been exceeded.</p>
+<p>Endpoints must accept the full range of <a href="#conversation-id">conversation IDs</a>, but may use a limited range themselves.</p>
+<h1 id="example">Example</h1>
+<p>A simple service that can perform basic arithmetic is used in this example.</p>
+<pre><code>namespace examples.calc
+
+enum Operation
+{
+    Add,
+    Div,
+    Sub,
+    Mul,
+};
+
+struct Params
+{
+    1: int32   x;
+    2: int32   y;
+    3: Operation operation = Add;
+};
+
+struct Result
+{
+    1: int32 z;
+};
+
+service Calc
+{
+    Result Calculate(Params);
+};</code></pre>
+<p>Say we have a client that just connected to a server hosting this service and it would like to multiply the numbers 67 and 87:</p>
+<pre><code>let doSomeMathRequest = make examples.calc.Params x:67 operation:Mul y:87.</code></pre>
+<p>The <code>EpoxyHeaders</code> for this request would be</p>
+<pre><code>let doSomeMathHeaders = make
+    EpoxyHeaders
+    conversation_id:3
+    payload_type:Request
+    service_name:&quot;examples.calc.Calc&quot;
+    method_name:&quot;Calculate&quot;.</code></pre>
+<p>These two structures would then be marshalled and serialized, respectively, and put into <code>PayloadData</code> and <code>EpoxyHeaders</code> frames.</p>
+<p>The request frame is:</p>
+<pre><code>TODO: add hex dump after stabilizing representation</code></pre>
+<p>The frame is presented in hex encoding here. Offsets within the frame are in the left-most column, and the ASCII representation of each byte is in the right-most column. <!-- This is the output of hexl-mode for you Emacs users. --></p>
+<p>Let’s break down the distinct entities in this frame.</p>
+<ol style="list-style-type: decimal">
+<li>… TODO …</li>
+</ol>
+<p>The response is similar.</p>
+<pre><code>let doSomeMathResponse = make examples.calc.Params z: 5829.
+let doSomeMathResponseHeaders = make
+    EpoxyHeaders
+    conversation_id:3
+    payload_type:Response
+    error_code:0.</code></pre>
+<p>The response frame is:</p>
+<pre><code>TODO: add hex dump after stabilizing representation</code></pre>
+<p>It has a similar break down.</p>
+<ol style="list-style-type: decimal">
+<li>… TODO …</li>
+</ol>
+<h1 id="wire-format-evolution">Wire format evolution</h1>
+<p><em>This section may need be expanded and clarified after we actually add a new feature for the first time.</em></p>
+<p>The wire format will need to be changed over time. Here’s a sketch for how that will be done:</p>
+<ul>
+<li>Add a capability to the <code>EpoxyConfig</code> structure and use it as part of negotiation.</li>
+<li>If the feature is negotiated successfully, then subsequent frames can use that capability. This might mean that new framelet types are going to be sent or that the client/server expects that a given field in a Bond struct will be processed instead of ignored.</li>
+</ul>
+<h1 id="rejected-designs">Rejected designs</h1>
+<p>The following designs were rejected.</p>
+<h2 id="frameframelet-padding">Frame/framelet padding</h2>
+<p>We don’t expect to see any performance benefit from padding frames or framelets to the next machine word boundary. (Also, which machine and which word boundary?)</p>
+<p>If performance testing reveals otherwise, we can adding a padding framelet easily.</p>
+<h2 id="other-framing-schemes">Other framing schemes</h2>
+<p>These framing schemes were rejected:</p>
+<ul>
+<li><code>(count) length length payload payload</code> - sender cannot stream framelets as it produces them</li>
+<li><code>(count) payload delimiter payload delimiter</code> - don’t want to deal with escaping of payloads</li>
+<li>omitting the size for fixed-width framelet types - there aren’t any fixed-width framelet types, so this optimization adds complexity with little expected payoff</li>
+</ul>
+<h2 id="explicit-frame-types">Explicit frame types</h2>
+<p>Instead of tagging each frame with an explicit type, we use the first framelet within each frame determine the type of the frame. Duplication among frame types is handled by using the same structures in framelet contents.</p>
+<h2 id="omitting-event-conversation-ids">Omitting event conversation IDs</h2>
+<p>Having a conversation ID for events is useful for debugging, and conversation IDs are cheap to create and send. This also removes some special casing to, say, always assign events ID 0/1.</p>
+<h2 id="conversation-id-framelet">Conversation ID framelet</h2>
+<p>Conversation IDs are not in their own framelet. If they were, more errors, like <code>LIMIT_EXCEEDED</code> and <code>MALFORMED_DATA</code>, could be turned into a normal Bond Communication errors (<code>status_code</code> non-zero) and the connection could remain open.</p>
+<p>However, promoting conversation IDs to a framelet adds stuff at the lower framing layer that the framing layer doesn’t need to know about most of the time. Protocol errors are expected to be rare, and closing the connection simplifies implementation significantly.</p>
+<h2 id="ignoring-unknown-framelets">Ignoring unknown framelets</h2>
+<p>Ignoring unknown framelets makes backward/forward compatibility simple. There would also be no need to upgrade things like proxies when a new framelet type is added. However, if the unknown framelet changes the semantic value of a the frame or of a known framelet, the endpoint may not do the right thing.</p>
+<p>We also expect to be able to add most features to the protocol by using Bond backward/forward compatibility on the structures embedded within the framelets.</p>
+</div>    
+</div>
+</body>
+</html>

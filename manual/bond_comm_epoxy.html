@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title>Bond Communications</title>
+  <title>Bond Epoxy transport</title>
   <style type="text/css">
   body {
       line-height: 1.5; 
@@ -102,53 +102,22 @@
 <div id="toc">
 <ul>
 <li><a href="#about">About</a></li>
-<li><a href="#features">Features</a><ul>
-<li><a href="#defining-services">Defining Services</a></li>
-<li><a href="#transport-flexibility">Transport Flexibility</a></li>
-<li><a href="#messaging-patterns">Messaging Patterns</a><ul>
-<li><a href="#future-messaging-patterns">Future Messaging Patterns</a></li>
-</ul></li>
-</ul></li>
 <li><a href="#implementations">Implementations</a></li>
 </ul>
 </div>
 <div id="main">
 <div id="header">    
-<h1 class="title">Bond Communications</h1>
+<h1 class="title">Bond Epoxy transport</h1>
 </div>
 <h1 id="about">About</h1>
-<p>The Bond Communications framework allows clients and services to exchange Bond messages.</p>
-<h1 id="features">Features</h1>
-<h2 id="defining-services">Defining Services</h2>
-<p>The Bond IDL has been extended to support the definition of <a href="compiler.html#service-definition">services</a> and <a href="compiler.html#generic-service">generic services</a>. These definitions are used by the Bond compiler to generate:</p>
+<p>The Bond Epoxy transport is a Bond <a href="bond_comm.html#transport-flexibility">communications transport</a> that uses a <a href="bond_comm_epoxy_wire.html">custom binary protocol over TCP</a>, and optionally TLS (in a forthcoming release), to pass messages.</p>
+<p>It supports the following messaging patterns:</p>
 <ul>
-<li>service stubs that can be used as the basis for implementing service methods</li>
-<li>proxy stubs that can be used by clients to invoke those methods</li>
-</ul>
-<h2 id="transport-flexibility">Transport Flexibility</h2>
-<p>The Bond service stubs and proxy stubs are not aware of exactly how the client and server get connected or how messages are exchanged between clients and servers. These capabilities are encapsulated in a transport.</p>
-<p>Bond includes the following transports:</p>
-<ul>
-<li><a href="bond_comm_epoxy.html">Epoxy</a>: asynchronous communication over TCP connections with support for TLS using a binary protocol</li>
-</ul>
-<p>Not all transports support all messaging patterns. Check the documentation for the respective transports.</p>
-<p>See the <a href="bond_comm_roadmap.html">roadmap</a> for plans about future transports.</p>
-<h2 id="messaging-patterns">Messaging Patterns</h2>
-<p>There are a number of conceptual messaging patterns that are supported:</p>
-<ul>
-<li>request/response: a message is sent to the receiver and the receiver sends back a different message (including the ability to send back an error response)</li>
-<li>event: a one-way, best effort, message is sent to a receiver. There’s no way to know whether the message was delivered or processed successfully.</li>
-</ul>
-<h3 id="future-messaging-patterns">Future Messaging Patterns</h3>
-<p>We expect to implement additional messaging patterns in the future. Patterns that are intriguing include–but are not limited to:</p>
-<ul>
-<li>sequences of requests/responses: similar to request/response, but with a sequence of requests/responses of unknown count</li>
-<li>message bus/broadcast patterns: send the same request to a bunch of listeners, with a variety of ways to collect responses–if any</li>
-<li>topics/subscriptions: publish a stream of events and receive a filtered view of that stream</li>
-<li>aggregations: send requests to multiple receivers and combine their responses in various ways</li>
+<li>request/response</li>
+<li>event</li>
 </ul>
 <h1 id="implementations">Implementations</h1>
-<p>Bond Communications is available for <a href="bond_cs.html#bond-comm">C#</a> today. C++ support is <a href="bond_comm_roadmap.html">forthcoming</a>.</p>
+<p>Epoxy is available for <a href="bond_cs.html#epoxy-transport">C#</a> today.</p>
 </div>    
 </div>
 </body>
