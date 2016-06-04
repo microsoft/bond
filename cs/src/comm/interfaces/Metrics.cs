@@ -6,7 +6,7 @@ namespace Bond.Comm
     /// Once passed to <see cref="Metrics.SetHandler"/>, will receive callbacks
     /// when new metrics are emitted by Bond.
     /// </summary>
-    public interface MetricsHandler
+    public interface IMetricsHandler
     {
         /// <summary>
         /// Will be called once at the end of each connection.
@@ -20,38 +20,38 @@ namespace Bond.Comm
     }
 
     /// <summary>
-    /// Implement a <see cref="MetricsHandler"/> and pass it to
+    /// Implement a <see cref="IMetricsHandler"/> and pass it to
     /// <see cref="Metrics.SetHandler"/> to receive metrics objects showing
     /// what Bond is doing and where it's spending time.
     /// </summary>
     public static class Metrics
     {
-        private static MetricsHandler handler;
+        private static IMetricsHandler handler;
 
         /// <summary>
-        /// Sets a <see cref="MetricsHandler"/> to receive Bond metrics.
+        /// Sets a <see cref="IMetricsHandler"/> to receive Bond metrics.
         /// </summary>
         /// <param name="newHandler">The handler to add.</param>
         /// <exception cref="InvalidOperationException">
         /// Thrown when there is another handler registered.
         /// </exception>
-        public static void SetHandler(MetricsHandler newHandler)
+        public static void SetHandler(IMetricsHandler newHandler)
         {
             if (newHandler == null)
             {
-                throw new ArgumentException($"Attempted to set a null {nameof(MetricsHandler)}");
+                throw new ArgumentException($"Attempted to set a null {nameof(IMetricsHandler)}");
             }
 
             if (handler != null)
             {
-                throw new InvalidOperationException($"Attempted to set a {nameof(MetricsHandler)} when there already was one");
+                throw new InvalidOperationException($"Attempted to set a {nameof(IMetricsHandler)} when there already was one");
             }
 
             handler = newHandler;
         }
 
         /// <summary>
-        /// Removes the existing <see cref="MetricsHandler"/>.
+        /// Removes the existing <see cref="IMetricsHandler"/>.
         /// </summary>
         /// <remarks>
         /// May be called even if there is no existing handler.

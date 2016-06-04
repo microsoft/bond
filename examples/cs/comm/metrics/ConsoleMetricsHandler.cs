@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Bond.Examples.Metrics
 {
     using Bond.Comm;
 
-    public class ConsoleMetricsHandler : MetricsHandler
+    public class ConsoleMetricsHandler : IMetricsHandler
     {
         public void Handle(ConnectionMetrics metrics)
         {

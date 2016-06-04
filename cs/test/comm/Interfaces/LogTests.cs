@@ -5,6 +5,7 @@ namespace UnitTest.Interfaces
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using Bond.Comm;
     using NUnit.Framework;
@@ -12,17 +13,17 @@ namespace UnitTest.Interfaces
     [TestFixture]
     public class LogTests
     {
-        private class TestLogHandler : LogHandler
+        private class TestLogHandler : ILogHandler
         {
             public LogSeverity? LastMessageSeverity;
             public string LastMessage;
             public Exception LastException;
             public int MessagesHandled;
 
-            public void Handle(LogSeverity severity, Exception exception, string format, params object[] args)
+            public void Handle(string message, LogSeverity severity, Exception exception)
             {
                 LastMessageSeverity = severity;
-                LastMessage = string.Format(format, args);
+                LastMessage = message;
                 LastException = exception;
                 MessagesHandled++;
             }
@@ -49,26 +50,26 @@ namespace UnitTest.Interfaces
             }
         }
 
-        private readonly List<LogSeverity> allSeverities = Enum.GetValues(typeof(LogSeverity)).Cast<LogSeverity>().ToList();
+        private readonly List<LogSeverity> allSeverities = Enum.GetValues(typeof(LogSeverity)).Cast<LogSeverity>().OrderBy(x => x).ToList();
 
         private readonly Dictionary<LogSeverity, Action<string, object[]>> levelLoggers =
             new Dictionary<LogSeverity, Action<string, object[]>>
             {
-                { LogSeverity.Debug, Log.Debug },
-                { LogSeverity.Information, Log.Information },
-                { LogSeverity.Warning, Log.Warning },
-                { LogSeverity.Error, Log.Error },
-                { LogSeverity.Fatal, Log.Fatal },
+                { LogSeverity.Debug, (message, args) => Log.Site().Debug(message, args) },
+                { LogSeverity.Information, (message, args) => Log.Site().Information(message, args) },
+                { LogSeverity.Warning, (message, args) => Log.Site().Warning(message, args) },
+                { LogSeverity.Error, (message, args) => Log.Site().Error(message, args) },
+                { LogSeverity.Fatal, (message, args) => Log.Site().Fatal(message, args) },
         };
 
         private readonly Dictionary<LogSeverity, Action<Exception, string, object[]>> exceptionLevelLoggers =
             new Dictionary<LogSeverity, Action<Exception, string, object[]>>
             {
-                { LogSeverity.Debug, Log.Debug },
-                { LogSeverity.Information, Log.Information },
-                { LogSeverity.Warning, Log.Warning },
-                { LogSeverity.Error, Log.Error },
-                { LogSeverity.Fatal, Log.Fatal },
+                { LogSeverity.Debug, (ex, message, args) => Log.Site().Debug(ex, message, args) },
+                { LogSeverity.Information, (ex, message, args) => Log.Site().Information(ex, message, args) },
+                { LogSeverity.Warning, (ex, message, args) => Log.Site().Warning(ex, message, args) },
+                { LogSeverity.Error, (ex, message, args) => Log.Site().Error(ex, message, args) },
+                { LogSeverity.Fatal, (ex, message, args) => Log.Site().Fatal(ex, message, args) },
         };
 
         private static Tuple<string, object[]> MakeMessage(LogSeverity severity, bool withException)
@@ -80,6 +81,8 @@ namespace UnitTest.Interfaces
         [SetUp]
         public void SetUp()
         {
+            // Tests that exercise filtering enable it themselves.
+            Log.DropBelow = LogSeverity.Debug;
             handler = new TestLogHandler();
             Log.SetHandler(handler);
         }
@@ -93,20 +96,10 @@ namespace UnitTest.Interfaces
         [Test]
         public void SeveritiesAreSorted()
         {
-            var severitiesAscending = new List<LogSeverity>(new[]
-            {
-                LogSeverity.Debug,
-                LogSeverity.Information,
-                LogSeverity.Warning,
-                LogSeverity.Error,
-                LogSeverity.Fatal
-            });
-            var numSeverities = severitiesAscending.Count;
-            // Make sure this list is complete.
-            CollectionAssert.AreEquivalent(allSeverities, severitiesAscending);
-
-            var lower = severitiesAscending.GetRange(0, numSeverities - 1);
-            var higher = severitiesAscending.GetRange(1, numSeverities - 1);
+            // Assumes allSeverities is sorted.
+            var numSeverities = allSeverities.Count;
+            var lower = allSeverities.GetRange(0, numSeverities - 1);
+            var higher = allSeverities.GetRange(1, numSeverities - 1);
             var pairs = lower.Zip(higher, (l, h) => new Tuple<LogSeverity, LogSeverity>(l, h));
             foreach (var pair in pairs)
             {
@@ -131,7 +124,7 @@ namespace UnitTest.Interfaces
         {
             // Clear the handler registered by SetUp().
             Log.RemoveHandler();
-            Log.Information("no-op");
+            Log.Site().Information("no-op");
         }
 
         [Test]
@@ -152,10 +145,10 @@ namespace UnitTest.Interfaces
                 var formatArgs = MakeMessage(severity, withException: false);
                 var format = formatArgs.Item1;
                 var args = formatArgs.Item2;
-                var formatted = string.Format(format, args);
+                var message = string.Format(format, args);
                 logger(format, args);
                 Assert.AreEqual(severity, handler.LastMessageSeverity);
-                Assert.AreEqual(formatted, handler.LastMessage);
+                StringAssert.Contains(message, handler.LastMessage);
                 Assert.IsNull(handler.LastException);
                 Assert.AreEqual(messagesLogged + 1, handler.MessagesHandled);
                 messagesLogged++;
@@ -164,16 +157,53 @@ namespace UnitTest.Interfaces
                 formatArgs = MakeMessage(severity, withException: true);
                 format = formatArgs.Item1;
                 args = formatArgs.Item2;
-                formatted = string.Format(format, args);
+                message = string.Format(format, args);
                 exceptionLogger(exception, format, args);
                 Assert.AreEqual(severity, handler.LastMessageSeverity);
-                Assert.AreEqual(formatted, handler.LastMessage);
+                StringAssert.Contains(message, handler.LastMessage);
                 Assert.NotNull(handler.LastException);
                 Assert.AreEqual(severity, ((TestException) handler.LastException).Severity);
                 Assert.AreEqual(messagesLogged + 1, handler.MessagesHandled);
                 messagesLogged++;
                 handler.Clear();
             }
+        }
+
+        [Test]
+        public void DropBelow()
+        {
+            const LogSeverity dropBelow = LogSeverity.Warning;
+            Log.DropBelow = dropBelow;
+
+            var messagesHandled = handler.MessagesHandled;
+            // Assumes allSeverities is sorted.
+            foreach (var severity in allSeverities)
+            {
+                var message = "level " + severity;
+                levelLoggers[severity](message, new object[0]);
+                if (severity < dropBelow)
+                {
+                    Assert.Null(handler.LastMessage);
+                    Assert.Null(handler.LastMessageSeverity);
+                    Assert.AreEqual(messagesHandled, handler.MessagesHandled);
+                }
+                else
+                {
+                    StringAssert.Contains(message, handler.LastMessage);
+                    Assert.AreEqual(severity, handler.LastMessageSeverity);
+                    Assert.AreEqual(messagesHandled + 1, handler.MessagesHandled);
+                    messagesHandled = handler.MessagesHandled;
+                }
+            }
+        }
+
+        [Test]
+        public void LogContext()
+        {
+            // There are two statements on this line so that expectedLineNumber will be correct for the Warning().
+            Log.Site().Warning("context"); var expectedLineNumber = new StackFrame(0, true).GetFileLineNumber();
+            StringAssert.Contains(nameof(LogTests) + ".cs:" + expectedLineNumber, handler.LastMessage);
+            StringAssert.Contains(nameof(LogContext), handler.LastMessage);
         }
 
         [Test]
@@ -186,10 +216,10 @@ namespace UnitTest.Interfaces
             var format = formatArgs.Item1;
             var args = formatArgs.Item2;
             var formatted = string.Format(format, args);
-            var messageReturned = LogUtil.FatalAndReturnFormatted(format, args);
+            var messageReturned = Log.Site().FatalAndReturnFormatted(format, args);
             Assert.AreEqual(LogSeverity.Fatal, handler.LastMessageSeverity);
-            Assert.AreEqual(formatted, handler.LastMessage);
-            Assert.AreEqual(messageReturned, handler.LastMessage);
+            StringAssert.Contains(formatted, handler.LastMessage);
+            StringAssert.Contains(messageReturned, handler.LastMessage);
             Assert.IsNull(handler.LastException);
             Assert.AreEqual(messagesLogged + 1, handler.MessagesHandled);
             messagesLogged++;
@@ -199,13 +229,46 @@ namespace UnitTest.Interfaces
             format = formatArgs.Item1;
             args = formatArgs.Item2;
             formatted = string.Format(format, args);
-            messageReturned = LogUtil.FatalAndReturnFormatted(exception, format, args);
+            messageReturned = Log.Site().FatalAndReturnFormatted(exception, format, args);
             Assert.AreEqual(LogSeverity.Fatal, handler.LastMessageSeverity);
-            Assert.AreEqual(formatted, handler.LastMessage);
-            Assert.AreEqual(messageReturned, handler.LastMessage);
+            StringAssert.Contains(formatted, handler.LastMessage);
+            StringAssert.Contains(messageReturned, handler.LastMessage);
             Assert.NotNull(handler.LastException);
             Assert.AreEqual(LogSeverity.Fatal, ((TestException)handler.LastException).Severity);
             Assert.AreEqual(messagesLogged + 1, handler.MessagesHandled);
+        }
+
+        [Test]
+        public void FormatExceptionIsSuppressedAndLogged()
+        {
+            const string format = "{0}, but there's nothing to put here: {1}";
+            const string somestr = "any string goes here";
+
+            // Messages below Error should be raised to Error.
+            Log.Site().Debug(format, somestr);
+
+            Assert.AreEqual(LogSeverity.Error, handler.LastMessageSeverity);
+            Assert.Null(handler.LastException);
+            StringAssert.Contains(format, handler.LastMessage);
+            StringAssert.Contains(somestr, handler.LastMessage);
+            StringAssert.Contains("Log call threw", handler.LastMessage);
+
+            // Messages above Error should be left at their original severity.
+            Log.Site().Fatal(format, somestr);
+
+            Assert.AreEqual(LogSeverity.Fatal, handler.LastMessageSeverity);
+            Assert.Null(handler.LastException);
+            StringAssert.Contains(format, handler.LastMessage);
+            StringAssert.Contains(somestr, handler.LastMessage);
+            StringAssert.Contains("Log call threw", handler.LastMessage);
+        }
+
+        [Test]
+        public void LogInstanceReuseThrows()
+        {
+            var logInstance = Log.Site();
+            logInstance.Warning("This should be fine.");
+            Assert.Throws<InvalidOperationException>(() => logInstance.Warning("This should throw."));
         }
     }
 }

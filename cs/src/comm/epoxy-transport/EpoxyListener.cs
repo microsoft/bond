@@ -53,7 +53,7 @@ namespace Bond.Comm.Epoxy
 
         public override void AddService<T>(T service)
         {
-            Log.Information("{0}.{1}: Adding {2}.", this, nameof(AddService), typeof(T).Name);
+            Log.Site().Information("Listener on {0} adding {1}.", ListenEndpoint, typeof(T).Name);
             serviceHost.Register(service);
         }
 
@@ -89,7 +89,7 @@ namespace Bond.Comm.Epoxy
 
         private async Task AcceptAsync(CancellationToken t)
         {
-            Log.Information("{0}.{1}: Accepting connections...", this, nameof(AcceptAsync));
+            Log.Site().Information("Accepting connections on {0}", ListenEndpoint);
             while (!t.IsCancellationRequested)
             {
                 Socket socket = null;
@@ -110,13 +110,11 @@ namespace Bond.Comm.Epoxy
                     }
 
                     await connection.StartAsync();
-                    Log.Debug("{0}.{1}: Accepted connection from {2}.", 
-                        this, nameof(AcceptAsync), connection.RemoteEndPoint);
+                    Log.Site().Debug("Accepted connection from {0}.", connection.RemoteEndPoint);
                 }
                 catch (SocketException ex)
                 {
-                    Log.Fatal(ex, "{0}.{1}: Accept failed with error {2}.",
-                        this, nameof(AcceptAsync), ex.SocketErrorCode);
+                    Log.Site().Fatal(ex, "Accept failed with error {0}.", ex.SocketErrorCode);
 
                     ShutdownSocketSafe(socket);
                 }
@@ -130,7 +128,7 @@ namespace Bond.Comm.Epoxy
                     //       connection.
                 }
             }
-            Log.Information("{0}.{1}: Shutting down.", this, nameof(AcceptAsync));
+            Log.Site().Information("Shutting down connection on {0}", ListenEndpoint);
         }
 
         private static void ShutdownSocketSafe(Socket socket)
@@ -143,7 +141,7 @@ namespace Bond.Comm.Epoxy
             catch (SocketException ex)
             {
                 // We tried to cleanly shutdown the socket, oh well.
-                Log.Debug(ex, "Exception encountered when shutting down a socket.");
+                Log.Site().Debug(ex, "Exception encountered when shutting down a socket.");
             }
         }
     }

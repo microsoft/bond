@@ -189,8 +189,7 @@ namespace Bond.Comm
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex, "{0}.{1}: Exception in handler for connection {2}: {3}",
-                            nameof(Listener), nameof(OnDisconnected), args.Connection, ex.Message);
+                        Log.Site().Error(ex, "Exception in handler for connection {0}: {1}", args.Connection, ex.Message);
                         args.DisconnectError = Transport.MakeInternalServerError(ex);
                     }
 
@@ -221,8 +220,7 @@ namespace Bond.Comm
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "{0}.{1}: Exception in handler for connection {2}: {3}",
-                    nameof(Listener), nameof(OnDisconnected), args.Connection, ex.Message);
+                Log.Site().Error(ex, "Exception in handler for connection {0}: {1}", args.Connection, ex.Message);
             }
         }
     }

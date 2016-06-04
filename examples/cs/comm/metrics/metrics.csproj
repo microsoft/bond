@@ -7,7 +7,7 @@
     <ProjectGuid>{72ECA320-121F-4F3A-B455-B9EDE3364D9D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>metrics</RootNamespace>
+    <RootNamespace>Bond.Examples.Metrics</RootNamespace>
     <AssemblyName>metrics</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -87,8 +87,7 @@ namespace Bond.Comm.Layers
                     {
                         error_code = (int)ErrorCode.UnhandledLayerError,
                     };
-                    Log.Error(ex, "{0}.{1}: While handling layer {2}: {3}",
-                                    nameof(LayerStack<TLayerData>), nameof(OnSendImpl), layerIndex, ex.Message);
+                    Log.Site().Error(ex, "While handling layer {0}: {1}", layerIndex, ex.Message);
                 }
             }
 
@@ -113,8 +112,7 @@ namespace Bond.Comm.Layers
                         error_code = (int)ErrorCode.UnhandledLayerError
                     };
 
-                    Log.Error(ex, "{0}.{1}: While handling layer {2}: {3}",
-                                    nameof(LayerStack<TLayerData>), nameof(OnReceiveImpl), layerIndex, ex.Message);
+                    Log.Site().Error(ex, "While handling layer {0}: {1}", layerIndex, ex.Message);
                 }
             }
 
@@ -141,8 +139,7 @@ namespace Bond.Comm.Layers
                         error_code = (int)ErrorCode.UnhandledLayerError
                     };
 
-                    Log.Error(ex, "{0}.{1}: While unmarshaling layer data: {2}",
-                                    nameof(LayerStack<TLayerData>), nameof(DeserializeLayerData), ex.Message);
+                    Log.Site().Error(ex, "While unmarshaling layer data: {0}", ex.Message);
 
                     realLayerData = new TLayerData();
                 }

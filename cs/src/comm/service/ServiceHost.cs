@@ -64,7 +64,7 @@ namespace Bond.Comm.Service
             }
         }
 
-        public void Register(IService service)
+        public void Register<T>(T service) where T : IService
         {
             var methodNames = new SortedSet<string>();
 
@@ -93,8 +93,7 @@ namespace Bond.Comm.Service
                 }
             }
 
-            Log.Information("{0}.{1}: Registered {2} with methods: {3}",
-                nameof(ServiceHost), nameof(Register), nameof(service), string.Join(", ", methodNames));
+            Log.Site().Information("Registered {0} with methods: {1}", typeof(T).Name, string.Join(", ", methodNames));
         }
 
         public void Deregister<T>(T service) where T : IService
@@ -106,8 +105,7 @@ namespace Bond.Comm.Service
                     dispatchTable.Remove(serviceMethod.MethodName);
                 }
             }
-            Log.Information("{0}.{1}: Deregistered {2} with methods: {3}",
-                nameof(ServiceHost), nameof(Deregister), typeof (T).Name);
+            Log.Site().Information("Deregistered {0}.", typeof(T).Name);
         }
 
         public async Task<IMessage> DispatchRequest(
@@ -116,8 +114,7 @@ namespace Bond.Comm.Service
             var totalTime = Stopwatch.StartNew();
             Stopwatch serviceTime = null;
             var requestMetrics = StartRequestMetrics(methodName, connectionMetrics);
-            Log.Information("{0}.{1}: Got request [{2}] from {3}.",
-                nameof(ServiceHost), nameof(DispatchRequest), methodName, context.Connection);
+            Log.Site().Information("Got request [{0}] from {1}.", methodName, context.Connection);
 
             ServiceMethodInfo methodInfo;
 
@@ -127,7 +124,7 @@ namespace Bond.Comm.Service
                 {
                     var errorMessage = "Got request for unknown method [" + methodName + "].";
 
-                    Log.Error("{0}.{1}: {2}", nameof(ServiceHost), nameof(DispatchRequest), errorMessage);
+                    Log.Site().Error(errorMessage);
                     var error = new Error
                     {
                         message = errorMessage,
@@ -143,7 +140,7 @@ namespace Bond.Comm.Service
                                    ServiceCallbackType.RequestResponse + ", but it was registered as " +
                                    methodInfo.CallbackType + ".";
 
-                Log.Error("{0}.{1}: {2}", nameof(ServiceHost), nameof(DispatchRequest), errorMessage);
+                Log.Site().Error(errorMessage);
                 var error = new Error
                 {
                     message = errorMessage,
@@ -152,7 +149,7 @@ namespace Bond.Comm.Service
                 return Message.FromError(error);
             }
 
-            IMessage result = null;
+            IMessage result;
 
             try
             {
@@ -163,8 +160,7 @@ namespace Bond.Comm.Service
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "{0}.{1}: Failed to complete method [{2}]. With exception: {3}",
-                    nameof(ServiceHost), nameof(DispatchRequest), methodName, ex.Message);
+                Log.Site().Error(ex, "Failed to complete method [{0}]. With exception: {1}", methodName, ex.Message);
                 result = Message.FromError(Transport.MakeInternalServerError(ex));
             }
 
@@ -180,25 +176,22 @@ namespace Bond.Comm.Service
             var totalTime = Stopwatch.StartNew();
             Stopwatch serviceTime = null;
             var requestMetrics = StartRequestMetrics(methodName, connectionMetrics);
-            Log.Information("{0}.{1}: Got event [{2}] from {3}.",
-                nameof(ServiceHost), nameof(DispatchEvent), methodName, context.Connection);
+            Log.Site().Information("Got event [{0}] from {1}.", methodName, context.Connection);
             ServiceMethodInfo methodInfo;
 
             lock (dispatchTableLock)
             {
                 if (!dispatchTable.TryGetValue(methodName, out methodInfo))
                 {
-                    Log.Error("{0}.{1}: Got request for unknown method [{2}].",
-                        nameof(ServiceHost), nameof(DispatchEvent), methodName);
+                    Log.Site().Error("Got request for unknown method [{0}].", methodName);
                     return;
                 }
             }
 
             if (methodInfo.CallbackType != ServiceCallbackType.Event)
             {
-                Log.Error("{0}.{1}: Method [{2}] invoked as if it were {3}, but it was registered as {4}.",
-                    nameof(ServiceHost), nameof(DispatchEvent), methodName, ServiceCallbackType.Event,
-                    methodInfo.CallbackType);
+                Log.Site().Error("Method [{0}] invoked as if it were {1}, but it was registered as {2}.",
+                    methodName, ServiceCallbackType.Event, methodInfo.CallbackType);
                 return;
             }
 
@@ -209,8 +202,7 @@ namespace Bond.Comm.Service
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "{0}.{1}: Failed to complete method [{2}]. With exception: {3}",
-                    nameof(ServiceHost), nameof(DispatchEvent), methodName, ex.Message);
+                Log.Site().Error(ex, "Failed to complete method [{0}]. With exception: {1}", methodName, ex.Message);
             }
 
             FinishRequestMetrics(requestMetrics, totalTime, serviceTime);

@@ -179,7 +179,7 @@ namespace Bond.Comm.Epoxy
                 };
             }
 
-            Log.Debug("{0}.{1}: Processing {2} framelets.", nameof(EpoxyProtocol), nameof(Classify), frame.Count);
+            Log.Site().Debug("Processing {0} framelets.", frame.Count);
 
             var state = ClassifyState.ExpectFirstFramelet;
             EpoxyHeaders headers = null;
@@ -284,8 +284,7 @@ namespace Bond.Comm.Epoxy
                         };
 
                     default:
-                        Log.Error("{0}.{1}: Unhandled state {2}. Dropping frame.",
-                            nameof(EpoxyProtocol), nameof(Classify), state);
+                        Log.Site().Error("Unhandled state {0}. Dropping frame.", state);
                         return new ClassifyResult
                         {
                             Disposition = FrameDisposition.Indeterminate
@@ -302,7 +301,7 @@ namespace Bond.Comm.Epoxy
 
             if (frame.Framelets.Count == 0)
             {
-                Log.Error("{0}.{1}: Frame was empty.", nameof(EpoxyProtocol), nameof(TransitionExpectFirstFramelet));
+                Log.Site().Error("Frame was empty.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -319,8 +318,7 @@ namespace Bond.Comm.Epoxy
                     return ClassifyState.ExpectProtocolError;
 
                 default:
-                    Log.Error("{0}.{1}: Frame began with invalid FrameletType {2}.",
-                        nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), frame.Framelets[0].Type);
+                    Log.Site().Error("Frame began with invalid FrameletType {0}.", frame.Framelets[0].Type);
                     errorCode = ProtocolErrorCode.MALFORMED_DATA;
                     return ClassifyState.MalformedFrame;
             }
@@ -347,15 +345,13 @@ namespace Bond.Comm.Epoxy
                     break;
 
                 default:
-                    Log.Error("{0}.{1}: Didn't get a valid {2}.",
-                            nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), nameof(EpoxyHeaders));
+                    Log.Site().Error("Didn't get a valid {0}.", nameof(EpoxyHeaders));
                     errorCode = ProtocolErrorCode.MALFORMED_DATA;
                     return ClassifyState.MalformedFrame;
             }
 
-            Log.Debug("{0}.{1}: Deserialized {2} with conversation ID {3} and payload type {4}.",
-                nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders), nameof(EpoxyHeaders),
-                headers.conversation_id, headers.payload_type);
+            Log.Site().Debug("Deserialized {0} with conversation ID {1} and payload type {2}.",
+                nameof(EpoxyHeaders), headers.conversation_id, headers.payload_type);
             return ClassifyState.ExpectOptionalLayerData;
         }
 
@@ -373,8 +369,7 @@ namespace Bond.Comm.Epoxy
 
             if (frame.Count < 2)
             {
-                Log.Error("{0}.{1}: Frame did not continue with LayerData or PayloadData.",
-                    nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders));
+                Log.Site().Error("Frame did not continue with LayerData or PayloadData.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -388,15 +383,14 @@ namespace Bond.Comm.Epoxy
 
             if (framelet.Type != FrameletType.LayerData)
             {
-                Log.Error("{0}.{1}: Frame did not continue with LayerData or PayloadData.",
-                    nameof(EpoxyProtocol), nameof(TransitionExpectOptionalLayerData));
+                Log.Site().Error("Frame did not continue with LayerData or PayloadData.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
             layerData = framelet.Contents;
-            Log.Debug("{0}.{1}: Extracted {2}-byte layer data in conversation ID {3}.",
-                nameof(EpoxyProtocol), nameof(TransitionExpectOptionalLayerData), layerData.Count, headers.conversation_id);
+            Log.Site().Debug("Extracted {0}-byte layer data in conversation ID {1}.",
+                layerData.Count, headers.conversation_id);
             return ClassifyState.ExpectPayload;
         }
 
@@ -416,8 +410,7 @@ namespace Bond.Comm.Epoxy
 
             if (payloadDataIndex >= frame.Count)
             {
-                Log.Error("{0}.{1}: Frame did not continue with PayloadData.",
-                    nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders));
+                Log.Site().Error("Frame did not continue with PayloadData.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -425,15 +418,14 @@ namespace Bond.Comm.Epoxy
             var framelet = frame.Framelets[payloadDataIndex];
             if (framelet.Type != FrameletType.PayloadData)
             {
-                Log.Error("{0}.{1}: Frame did not continue with PayloadData.",
-                    nameof(EpoxyProtocol), nameof(TransitionExpectEpoxyHeaders));
+                Log.Site().Error("Frame did not continue with PayloadData.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
             payload = framelet.Contents;
-            Log.Debug("{0}.{1}: Extracted {2}-byte payload in conversation ID {3}.",
-                nameof(EpoxyProtocol), nameof(TransitionExpectPayload), payload.Count, headers.conversation_id);
+            Log.Site().Debug("Extracted {0}-byte payload in conversation ID {1}.",
+                payload.Count, headers.conversation_id);
             return ClassifyState.ExpectEndOfFrame;
         }
 
@@ -453,8 +445,7 @@ namespace Bond.Comm.Epoxy
             }
             else
             {
-                Log.Error("{0}.{1}: Frame had trailing framelets.",
-                    nameof(EpoxyProtocol), nameof(TransitionExpectEndOfFrame));
+                Log.Site().Error("Frame had trailing framelets.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -475,8 +466,7 @@ namespace Bond.Comm.Epoxy
                 case PayloadType.Event:
                     return ClassifyState.ValidFrame;
                 default:
-                    Log.Warning("{0}.{1}: Received unrecognized payload type {2}.",
-                        nameof(EpoxyProtocol), nameof(TransitionFrameComplete), headers.payload_type);
+                    Log.Site().Warning("Received unrecognized payload type {0}.", headers.payload_type);
                     errorCode = ProtocolErrorCode.NOT_SUPPORTED;
                     return ClassifyState.MalformedFrame;
             }
@@ -522,8 +512,7 @@ namespace Bond.Comm.Epoxy
 
             if (frame.Count != 1)
             {
-                Log.Error("{0}.{1}: Config frame had trailing framelets.",
-                    nameof(EpoxyProtocol), nameof(TransitionExpectConfig));
+                Log.Site().Error("Config frame had trailing framelets.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -541,8 +530,7 @@ namespace Bond.Comm.Epoxy
                     break;
 
                 default:
-                    Log.Error("{0}.{1}: Didn't get a valid {2}.",
-                            nameof(EpoxyProtocol), nameof(TransitionExpectConfig), nameof(EpoxyConfig));
+                    Log.Site().Error("Didn't get a valid {0}.", nameof(EpoxyConfig));
                     errorCode = ProtocolErrorCode.MALFORMED_DATA;
                     return ClassifyState.MalformedFrame;
             }
@@ -570,19 +558,15 @@ namespace Bond.Comm.Epoxy
                     break;
 
                 default:
-                    Log.Error("{0}.{1}: Didn't get a valid {2}.",
-                            nameof(EpoxyProtocol), nameof(TransitionExpectProtocolError), nameof(ProtocolError));
+                    Log.Site().Error("Didn't get a valid {0}.", nameof(ProtocolError));
                     return ClassifyState.ErrorInErrorFrame;
             }
 
-            Log.Debug("{0}.{1}: Deserialized {2} with code {3}.",
-                nameof(EpoxyProtocol), nameof(TransitionExpectProtocolError), nameof(ProtocolError),
-                error.error_code);
+            Log.Site().Debug("Deserialized {0} with code {1}.", nameof(ProtocolError), error.error_code);
 
             if (frame.Count > 1)
             {
-                Log.Error("{0}.{1}: Frame had trailing framelets.",
-                    nameof(EpoxyProtocol), nameof(TransitionExpectProtocolError));
+                Log.Site().Error("Frame had trailing framelets.");
                 return ClassifyState.ErrorInErrorFrame;
             }
 

@@ -16,8 +16,8 @@ namespace Bond.Comm.Layers
                 error = layerStack.OnSend(messageType, sendContext, out layerData);
                 if (error != null)
                 {
-                    Log.Warning("{0}.{1}: Layer error occurred sending message of type {2} (Code: {3} Message: {4}).",
-                                    nameof(LayerStackUtils), nameof(ProcessOnSend), messageType, error.error_code, error.message);
+                    Log.Site().Warning("Layer error occurred sending message of type {0} (Code: {1} Message: {2}).",
+                        messageType, error.error_code, error.message);
                 }
             }
 
@@ -32,15 +32,15 @@ namespace Bond.Comm.Layers
             {
                 if (layerData == null)
                 {
-                    Log.Warning("{0}.{1}: Layer stack present but no layer data received.", nameof(LayerStackUtils), nameof(ProcessOnReceive));
+                    Log.Site().Warning("Layer stack present but no layer data received.");
                 }
 
                 error = layerStack.OnReceive(messageType, receiveContext, layerData);
 
                 if (error != null)
                 {
-                    Log.Warning("{0}.{1}: Layer error occurred receiving message of type {2} (Code: {3} Message: {4}).",
-                                    nameof(LayerStackUtils), nameof(ProcessOnReceive), messageType, error.error_code, error.message);
+                    Log.Site().Warning("Layer error occurred receiving message of type {0} (Code: {1} Message: {2}).",
+                        messageType, error.error_code, error.message);
                 }
             }
             return error;

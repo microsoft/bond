@@ -49,7 +49,7 @@ namespace Bond.Comm.Epoxy
 
         public async Task<EpoxyConnection> ConnectToAsync(IPEndPoint endpoint, CancellationToken ct)
         {
-            Log.Information("{0}.{1}: Connecting to {2}.", nameof(EpoxyTransport), nameof(ConnectToAsync), endpoint);
+            Log.Site().Information("Connecting to {0}.", endpoint);
 
             Socket socket = MakeClientSocket();
             await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, endpoint, state: null);
