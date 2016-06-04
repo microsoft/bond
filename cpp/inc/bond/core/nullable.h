@@ -494,18 +494,14 @@ private:
         delete _value;
     }
 
-    template<typename AllocatorT, typename Arg1>
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
+    template<typename AllocatorT, typename Arg1>
     pointer new_value(AllocatorT& alloc, Arg1&& arg1)
-#else
-    pointer new_value(AllocatorT& alloc, const Arg1& arg1)
-#endif
     {
         T* p = alloc.allocate(1);
         try
         {
-            void* p1 = p;
-            return ::new(p1) T(arg1);
+            return ::new(static_cast<void*>(p)) T(std::forward<Arg1>(arg1));
         }
         catch (...)
         {
@@ -514,20 +510,38 @@ private:
         }
     }
 
+    template<typename Arg1>
+    pointer new_value(detail::no_allocator&, Arg1&& arg1)
+    {
+        return new T(std::forward<Arg1>(arg1));
+    }
+#else
+    template<typename AllocatorT, typename Arg1>
+    pointer new_value(AllocatorT& alloc, const Arg1& arg1)
+    {
+        T* p = alloc.allocate(1);
+        try
+        {
+            return ::new(static_cast<void*>(p)) T(arg1);
+        }
+        catch (...)
+        {
+            alloc.deallocate(p, 1);
+            throw;
+        }
+    }
+
+    template<typename Arg1>
+    pointer new_value(detail::no_allocator&, const Arg1& arg1)
+    {
+        return new T(arg1);
+    }
+#endif
+
     template<typename AllocatorT>
     pointer new_value(AllocatorT& alloc)
     {
         return new_value(alloc, alloc);
-    }
-
-    template<typename Arg1>
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
-    pointer new_value(detail::no_allocator&, Arg1&& arg1)
-#else
-    pointer new_value(detail::no_allocator&, const Arg1& arg1)
-#endif
-    {
-        return new T(arg1);
     }
 
     pointer new_value(detail::no_allocator&)
