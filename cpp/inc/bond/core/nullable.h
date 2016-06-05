@@ -485,7 +485,11 @@ private:
     template<typename AllocatorT>
     void destroy(AllocatorT& alloc)
     {
-        alloc.destroy(_value);
+#ifndef BOND_NO_CXX11_ALLOCATOR
+        std::allocator_traits<AllocatorT>::destroy(alloc, _value);
+#else
+        _value->~T();
+#endif
         alloc.deallocate(_value, 1);
     }
 
@@ -501,7 +505,14 @@ private:
         T* p = alloc.allocate(1);
         try
         {
-            return ::new(static_cast<void*>(p)) T(std::forward<Arg1>(arg1));
+#ifndef BOND_NO_CXX11_ALLOCATOR
+            std::allocator_traits<AllocatorT>::construct(alloc,
+                p,
+                std::forward<Arg1>(arg1));
+#else
+            ::new(static_cast<void*>(p)) T(std::forward<Arg1>(arg1));
+#endif
+            return p;
         }
         catch (...)
         {
@@ -522,7 +533,12 @@ private:
         T* p = alloc.allocate(1);
         try
         {
-            return ::new(static_cast<void*>(p)) T(arg1);
+#ifndef BOND_NO_CXX11_ALLOCATOR
+            std::allocator_traits<AllocatorT>::construct(alloc, p, arg1);
+#else
+            ::new(static_cast<void*>(p)) T(arg1);
+#endif
+            return p;
         }
         catch (...)
         {
