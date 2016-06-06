@@ -496,7 +496,7 @@ namespace UnitTest.SimpleInMem
                 }
             }
             connections = null;
-            transport.RemoveListener(address);
+            await transport.StopAsync();
         }
     }
 }

@@ -25,11 +25,20 @@ namespace Bond.Comm.SimpleInMem.Processor
             this.serviceHost = serviceHost;
         }
 
+        /// <summary>
+        /// Asynchronously calls <see cref="Process()"/> method
+        /// until <see cref="CancellationTokenSource.Cancel()"/> is called.
+        /// </summary>
         public void ProcessAsync(CancellationToken t)
         {
             Util.CreateLongRunningTask(o => Process(), t, MIN_DELAY_MILLISEC, MAX_DELAY_MILLISEC).Post(processInput);
         }
 
+        /// <summary>
+        /// Process instances of <see cref="InMemFrame"/> that are enqueued on
+        /// <see cref="SimpleInMemConnection.ReadQueue"/>. Response generated during
+        /// processing is written onto <see cref="SimpleInMemConnection.WriteQueue"/>.
+        /// </summary>
         internal abstract void Process();
     }
 }

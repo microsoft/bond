@@ -9,13 +9,18 @@ namespace Bond.Comm.SimpleInMem.Processor
 
     internal class BatchProcessor : QueueProcessor
     {
-        private const int PROCESSING_BATCH_SIZE = 1000;
+        private const int MAXIMUM_BATCH_SIZE = 1000;
         
         internal BatchProcessor(SimpleInMemConnection connection, ServiceHost serviceHost) 
             : base(connection, serviceHost)
         {
         }
 
+        /// <summary>
+        /// A batch of <see cref="InMemFrame"/> instances are processed in each execution. They are dequeued from
+        /// <see cref="SimpleInMemConnection.ReadQueue"/>. Single batch size is minimum of
+        /// <see cref="MAXIMUM_BATCH_SIZE"/> and size of <see cref="SimpleInMemConnection.ReadQueue"/>.
+        /// </summary>
         override internal void Process()
         {
             int batchIndex = 0;
@@ -27,7 +32,7 @@ namespace Bond.Comm.SimpleInMem.Processor
                 return;
             }
 
-            while (batchIndex < PROCESSING_BATCH_SIZE && readQueue.Count > 0)
+            while (batchIndex < MAXIMUM_BATCH_SIZE && readQueue.Count > 0)
             {
                 var payload = readQueue.Dequeue();
 

@@ -21,8 +21,16 @@ namespace Bond.Comm.SimpleInMem
         private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
         private bool isStarted = false;
 
+        /// <summary>
+        /// Creates a new listener using parentTransport and address.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">parentTransport is null</exception>
+        /// <exception cref="ArgumentException">address is null or empty</exception>
         public SimpleInMemListener(SimpleInMemTransport parentTransport, string address)
         {
+            if (parentTransport == null) throw new ArgumentNullException(nameof(parentTransport));
+            if (string.IsNullOrEmpty(address)) throw new ArgumentException(nameof(address));
+
             this.address = address;
             serviceHost = new ServiceHost(parentTransport);
             connectionPairs = new Dictionary<Guid, ConnectionPair>();

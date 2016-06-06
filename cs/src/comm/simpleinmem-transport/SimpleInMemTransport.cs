@@ -36,6 +36,11 @@ namespace Bond.Comm.SimpleInMem
             }
         }
 
+        /// <summary>
+        /// Connects to the <see cref="SimpleInMemListener"/> at given address.
+        /// </summary>
+        /// <returns>a <see cref="SimpleInMemConnection"/> that may be used to perform request operations.</returns>
+        /// <exception cref="ArgumentException">the listener for given address does not exist.</exception>
         public async override Task<Connection> ConnectToAsync(string address, CancellationToken ct)
         {
             Log.Information("{0}.{1}: Connecting to {2}.",
@@ -59,6 +64,12 @@ namespace Bond.Comm.SimpleInMem
             }, ct);
         }
 
+        /// <summary>
+        /// Makes a new instance of <see cref="SimpleInMemListener"/> and returns it
+        /// if one does not exist already for provided address. Returns an existing one
+        /// otherwise.
+        /// </summary>
+        /// <returns><see cref="SimpleInMemListener"/> instance represented by address</returns>
         public override Listener MakeListener(string address)
         {
             SimpleInMemListener listener;
@@ -78,6 +89,11 @@ namespace Bond.Comm.SimpleInMem
             return listener;
         }
 
+        /// <summary>
+        /// Gets the <see cref="SimpleInMemListener"/> instance represented by address.
+        /// </summary>
+        /// <returns><see cref="SimpleInMemListener"/> instance represented by address
+        /// if it exists. Otherwise null is returned.</returns>
         public Listener GetListener(string address)
         {
             SimpleInMemListener listener;
@@ -85,6 +101,10 @@ namespace Bond.Comm.SimpleInMem
             return listener;
         }
 
+        /// <summary>
+        /// Stops the underlying <see cref="SimpleInMemListener"/> instances and
+        /// clears them from this transport's registry.
+        /// </summary>
         public override Task StopAsync()
         {
             lock (listenersLock)
@@ -102,18 +122,6 @@ namespace Bond.Comm.SimpleInMem
         public bool ListenerExists(string address)
         {
             return listeners.ContainsKey(address);
-        }
-
-        public SimpleInMemListener RemoveListener(string address)
-        {
-            SimpleInMemListener listener;
-
-            if (listeners.TryGetValue(address, out listener))
-            {
-                listeners.Remove(address);
-            }
-
-            return listener;
         }
     }
 }

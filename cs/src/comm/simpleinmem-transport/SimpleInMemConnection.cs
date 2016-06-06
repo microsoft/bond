@@ -267,6 +267,10 @@ namespace Bond.Comm.SimpleInMem
         }
     }
 
+    /// <summary>
+    /// Maintains a pair of Client-Server Connection instances.
+    /// <see cref="Id">Id</see> uniquely identifies a connected pair.
+    /// </summary>
     internal class ConnectionPair
     {
         private readonly Guid id = Guid.NewGuid();

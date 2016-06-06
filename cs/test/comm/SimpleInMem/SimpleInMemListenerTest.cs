@@ -27,7 +27,15 @@ namespace UnitTest.SimpleInMem
         [TearDown]
         public void Cleanup()
         {
-            transport.RemoveListener(address);
+            transport.StopAsync();
+        }
+
+        [Test]
+        public void CreateInvalidListener()
+        {
+            Assert.Throws<ArgumentNullException>(() => new SimpleInMemListener(null, null));
+            Assert.Throws<ArgumentNullException>(() => new SimpleInMemListener(null, "SomeString"));
+            Assert.Throws<ArgumentException>(() => new SimpleInMemListener(new SimpleInMemTransportBuilder().Construct(), null));
         }
 
         [Test]
