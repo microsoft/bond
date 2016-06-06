@@ -9,6 +9,7 @@
 #include <boost/assert.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/utility/addressof.hpp>
 #include <boost/utility/enable_if.hpp>
 
 namespace bond
@@ -44,19 +45,10 @@ template<typename T> struct
 has_allocator<T, typename boost::enable_if<is_class<typename T::allocator_type> >::type>
     : true_type {};
 
-struct no_allocator
-{
-    template<typename T>
-    struct rebind
-    {
-        typedef no_allocator other;
-    };
-};
-
 template<typename T, typename E = void> struct
 allocator_type
 {
-    typedef no_allocator type;
+    typedef std::allocator<T> type;
 };
 
 template<typename T> struct
@@ -311,7 +303,7 @@ public:
 
     bool hasvalue() const
     {
-        return _value != 0;
+        return !!_value;
     }
 
     /// @brief Checks if the object is null
@@ -328,14 +320,14 @@ public:
 
     /// @brief Default constructor
     nullable()
-        : _value(0)
+        : _value()
     {}
 
     /// @brief Construct nullable using specified allocator instance
     explicit
     nullable(const allocator_type& alloc)
         : _alloc(alloc),
-          _value(0)
+          _value()
     {}
 
     /// @brief Construct from an instance T
@@ -349,7 +341,7 @@ public:
     /// @brief Copy constructor
     nullable(const nullable& src)
         : _alloc(src._alloc),
-          _value(src.hasvalue() ? new_value(_alloc, src.value()) : 0)
+          _value(src.hasvalue() ? new_value(_alloc, src.value()) : real_pointer())
     {}
 
     ~nullable()
@@ -417,7 +409,7 @@ public:
     reference set()
     {
         if (empty())
-            _value = new_value(_alloc);
+            _value = set_value(detail::has_allocator<T>());
         return *_value;
     }
 
@@ -435,8 +427,8 @@ public:
     {
         if (_value)
         {
-            destroy(_alloc);
-            _value = 0;
+            delete_value();
+            _value = real_pointer();
         }
     }
 
@@ -463,7 +455,7 @@ public:
         : _alloc(std::move(src._alloc)),
           _value(std::move(src._value))
     {
-        src._value = 0;
+        src._value = real_pointer();
     }
 
     nullable& operator=(nullable&& src)
@@ -482,32 +474,38 @@ public:
 #endif
 
 private:
-    template<typename AllocatorT>
-    void destroy(AllocatorT& alloc)
+#ifndef BOND_NO_CXX11_ALLOCATOR
+    typedef typename std::allocator_traits<allocator_type>::
+        template rebind_alloc<value_type> rebind_alloc;
+
+    typedef typename std::allocator_traits<rebind_alloc>::pointer real_pointer;
+#else
+    typedef typename allocator_type::template rebind<value_type>::other rebind_alloc;
+
+    typedef pointer real_pointer;
+#endif
+
+    void delete_value()
     {
 #ifndef BOND_NO_CXX11_ALLOCATOR
-        std::allocator_traits<AllocatorT>::destroy(alloc, _value);
+        std::allocator_traits<rebind_alloc>::destroy(_alloc,
+            boost::addressof(*_value));
 #else
         _value->~T();
 #endif
-        alloc.deallocate(_value, 1);
-    }
-
-    void destroy(detail::no_allocator&)
-    {
-        delete _value;
+        _alloc.deallocate(_value, 1);
     }
 
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     template<typename AllocatorT, typename Arg1>
-    pointer new_value(AllocatorT& alloc, Arg1&& arg1)
+    real_pointer new_value(AllocatorT& alloc, Arg1&& arg1)
     {
-        T* p = alloc.allocate(1);
+        real_pointer p(alloc.allocate(1));
         try
         {
 #ifndef BOND_NO_CXX11_ALLOCATOR
             std::allocator_traits<AllocatorT>::construct(alloc,
-                p,
+                boost::addressof(*p),
                 std::forward<Arg1>(arg1));
 #else
             ::new(static_cast<void*>(p)) T(std::forward<Arg1>(arg1));
@@ -520,21 +518,17 @@ private:
             throw;
         }
     }
-
-    template<typename Arg1>
-    pointer new_value(detail::no_allocator&, Arg1&& arg1)
-    {
-        return new T(std::forward<Arg1>(arg1));
-    }
 #else
     template<typename AllocatorT, typename Arg1>
-    pointer new_value(AllocatorT& alloc, const Arg1& arg1)
+    real_pointer new_value(AllocatorT& alloc, const Arg1& arg1)
     {
-        T* p = alloc.allocate(1);
+        real_pointer p(alloc.allocate(1));
         try
         {
 #ifndef BOND_NO_CXX11_ALLOCATOR
-            std::allocator_traits<AllocatorT>::construct(alloc, p, arg1);
+            std::allocator_traits<AllocatorT>::construct(alloc,
+                boost::addressof(*p),
+                arg1);
 #else
             ::new(static_cast<void*>(p)) T(arg1);
 #endif
@@ -546,28 +540,42 @@ private:
             throw;
         }
     }
-
-    template<typename Arg1>
-    pointer new_value(detail::no_allocator&, const Arg1& arg1)
-    {
-        return new T(arg1);
-    }
 #endif
 
     template<typename AllocatorT>
-    pointer new_value(AllocatorT& alloc)
+    real_pointer new_value(AllocatorT& alloc)
     {
-        return new_value(alloc, alloc);
+        real_pointer p(alloc.allocate(1));
+        try
+        {
+#ifndef BOND_NO_CXX11_ALLOCATOR
+            std::allocator_traits<AllocatorT>::construct(alloc,
+                boost::addressof(*p));
+#else
+            ::new(static_cast<void*>(p)) T();
+#endif
+            return p;
+        }
+        catch (...)
+        {
+            alloc.deallocate(p, 1);
+            throw;
+        }
     }
 
-    pointer new_value(detail::no_allocator&)
+    real_pointer set_value(true_type)
     {
-        return new T();
+        return new_value(_alloc, _alloc);
+    }
+
+    real_pointer set_value(false_type)
+    {
+        return new_value(_alloc);
     }
 
 private:
-    typename allocator_type::template rebind<value_type>::other _alloc;
-    pointer _value;
+    rebind_alloc _alloc;
+    real_pointer _value;
 };
 
 
