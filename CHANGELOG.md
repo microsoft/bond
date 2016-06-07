@@ -11,6 +11,18 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased ##
+
+* `gbc` & compiler library: TBD
+* C# NuGet version: TBD
+* C# Comm NuGet version: TBD
+
+### Compiler library ###
+
+* User-defined `TypeMapping`s can now be created. This makes is easier to
+  implement code generation for new languages. [Pull request
+  #172](https://github.com/Microsoft/bond/pull/172)
+
 ## 4.2.1: 2016-06-02 ##
 
 * `gbc` & compiler library: 0.4.1.0

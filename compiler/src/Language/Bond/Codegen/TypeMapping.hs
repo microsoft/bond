@@ -17,7 +17,8 @@ type system of a target programming language.
 module Language.Bond.Codegen.TypeMapping
     ( -- * Mapping context
       MappingContext(..)
-    , TypeMapping
+    , TypeMapping(..)
+    , TypeNameBuilder
       -- * Type mappings
     , idlTypeMapping
     , cppTypeMapping
@@ -48,6 +49,11 @@ module Language.Bond.Codegen.TypeMapping
     , getNamespace
     , getDeclNamespace
     , customAliasMapping
+      -- * TypeMapping helper functions
+    , elementTypeName
+    , aliasTypeName
+    , declTypeName
+    , declQualifiedTypeName
     ) where
 
 import Data.List
@@ -74,7 +80,7 @@ data MappingContext = MappingContext
     , namespaces :: [Namespace]
     }
 
--- | An opaque type representing a type mapping.
+-- | A type representing a type mapping.
 data TypeMapping = TypeMapping
     { language :: Maybe Language
     , global :: Builder
@@ -237,6 +243,8 @@ typeName t = do
 localWith :: (TypeMapping -> TypeMapping) -> TypeNameBuilder -> TypeNameBuilder
 localWith f = local $ \c -> c { typeMapping = f $ typeMapping c }
 
+-- | Builder for nested element types (e.g. list elements) in context of 'TypeNameBuilder' monad. 
+-- Used to implement 'mapType' function of 'TypeMapping'.
 elementTypeName :: Type -> TypeNameBuilder
 elementTypeName = localWith elementMapping . typeName
 
@@ -260,11 +268,15 @@ resolveNamespace MappingContext {..} ns =
 declQualifiedName :: MappingContext -> Declaration -> QualifiedName
 declQualifiedName c decl = getDeclNamespace c decl ++ [declName decl]
 
+-- | Builder for the qualified name for a 'Declaration' in context of 'TypeNameBuilder' monad.
+-- Used to implement 'mapType' function of 'TypeMapping'.
 declQualifiedTypeName :: Declaration -> TypeNameBuilder
 declQualifiedTypeName decl = do
     ctx <- ask
     return $ getDeclTypeName ctx decl
 
+-- | Builder for the name for a 'Declaration' in context of 'TypeNameBuilder' monad.
+-- Used to implement 'mapType' function of 'TypeMapping'.
 declTypeName :: Declaration -> TypeNameBuilder
 declTypeName decl = do
     ctx <- ask
@@ -279,6 +291,8 @@ findAliasMapping ctx a = find isSameAlias $ aliasMapping ctx
     isSameNs = namespaces ctx == declNamespaces a
     isSameAlias m = aliasDeclName == aliasName m || isSameNs && [declName a] == aliasName m
 
+-- | Builder for the type alias name in context of 'TypeNameBuilder' monad.
+-- Used to implement 'mapType' function of 'TypeMapping'.
 aliasTypeName :: Declaration -> [Type] -> TypeNameBuilder
 aliasTypeName a args = do
     ctx <- ask
