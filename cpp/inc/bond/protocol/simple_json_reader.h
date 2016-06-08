@@ -6,7 +6,7 @@
 #include "encoding.h"
 #include "detail/rapidjson_helper.h"
 #include <boost/call_traits.hpp>
-
+#include <boost/make_shared.hpp>
 
 namespace bond
 {
@@ -32,7 +32,7 @@ public:
     SimpleJsonReader(typename boost::call_traits<Buffer>::param_type input)
         : _input(input),
           _stream(_input),
-          _document(new rapidjson::Document),
+          _document(boost::make_shared<rapidjson::Document>()),
           _value(NULL)
     {}
 

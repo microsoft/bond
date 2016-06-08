@@ -57,7 +57,7 @@
 #define BOND_NO_CX11_HDR_MUTEX
 #endif
 
-#if defined(BOOST_NO_CXX11_ALLOCATOR)
+#if defined(BOOST_NO_CXX11_ALLOCATOR) || defined(_LIBCPP_HAS_NO_TEMPLATE_ALIASES)
 #define BOND_NO_CXX11_ALLOCATOR
 #endif
 

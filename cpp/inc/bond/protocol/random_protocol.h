@@ -168,7 +168,7 @@ public:
     // Read for blob
     void Read(blob& value, uint32_t size)
     {
-        boost::shared_array<char> buffer(new char[size]);
+        boost::shared_ptr<char[]> buffer(boost::make_shared_noinit<char[]>(size));
         
         for (unsigned i = 0; i < size; ++i)
             Read(buffer[i]);
