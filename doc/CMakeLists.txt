@@ -99,7 +99,7 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
 
     add_pandoc_markdown (src/bond_cs.md
         CODE "cs,numberLines"
-        OPTIONS --self-contained --table-of-contents
+        OPTIONS --table-of-contents
         OUTPUT_DIR manual)
 
     add_pandoc_markdown (src/reference_index.md
