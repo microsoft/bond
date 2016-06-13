@@ -915,7 +915,7 @@ Apply(bond::Merger&lt;T, Writer&gt;(obj, output), payload);</code></pre></td></t
 <p><strong>required &lt;—-&gt; required_optional &lt;—-&gt; optional</strong></p>
 <p>Changes involving <code>required</code> fields take two steps. First the schema is updated to use a <code>required_optional</code> field (i.e. a new <code>required_optional</code> field is added or an existing <code>required</code> or <code>optional</code> field is converted to <code>required_optional</code>). These changes are non-breaking and can be deployed in any order. Once all programs using the updated schema are deployed, in the second step the <code>required_optional</code> field can be removed or converted to <code>required</code> or <code>optional</code> as desired. Again these changes are non-breaking.</p>
 <h1 id="tuples">Tuples</h1>
-<p>Bond can de/serialize instances of std::tuple<T...> as if they were regular Bond-defined structs. For example the following tuple instance:</p>
+<p>Bond can de/serialize instances of std::tuple&lt;T…&gt; as if they were regular Bond-defined structs. For example the following tuple instance:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">std::tuple&lt;std::string, <span class="dt">double</span>, std::vector&lt;<span class="dt">uint32_t</span>&gt;&gt;</code></pre></td></tr></table></div>
 <p>is equivalent to this Bond schema:</p>
