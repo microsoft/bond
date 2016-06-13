@@ -171,7 +171,8 @@ namespace Bond.Comm.Epoxy
                     headers.error_code = (int)ErrorCode.OK;
                 }
 
-                var outputBuffer = new OutputBuffer(150);
+                const int initialHeaderBufferSize = 150;
+                var outputBuffer = new OutputBuffer(initialHeaderBufferSize);
                 var fastWriter = new FastBinaryWriter<OutputBuffer>(outputBuffer);
                 Serialize.To(fastWriter, headers);
 
@@ -180,7 +181,8 @@ namespace Bond.Comm.Epoxy
 
             if (layerData != null)
             {
-                var outputBuffer = new OutputBuffer(150);
+                const int initialLayerDataBufferSize = 150;
+                var outputBuffer = new OutputBuffer(initialLayerDataBufferSize);
                 var compactWriter = new CompactBinaryWriter<OutputBuffer>(outputBuffer);
                 // TODO: See TODO below about issues with IBonded Marshal.TO(...)
                 compactWriter.WriteVersion();
@@ -191,7 +193,9 @@ namespace Bond.Comm.Epoxy
             {
                 var userData = payload.IsError ? (IBonded)payload.Error : (IBonded)payload.RawPayload;
 
-                var outputBuffer = new OutputBuffer(1024);
+
+                const int initialPayloadBufferSize = 1024;
+                var outputBuffer = new OutputBuffer(initialPayloadBufferSize);
                 var compactWriter = new CompactBinaryWriter<OutputBuffer>(outputBuffer);
                 // TODO: marshal dies on IBonded Marshal.To(compactWriter, request)
                 // understand more deeply why and consider fixing
