@@ -92,7 +92,7 @@ int main(int argc, char** argv)
     
         if (!options.no_generics)
         {
-            if (options.test == schema)
+            if (options.test == Test::schema)
             {
                 Verify(options, bond::GetRuntimeSchema<Compat>().GetSchema(), schema2);
             }
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
         }
         else
         {
-            if (options.test == schema)
+            if (options.test == Test::schema)
             {
                 Verify(options, bond::GetRuntimeSchema<CompatNoGenerics>().GetSchema(), schema2);
             }

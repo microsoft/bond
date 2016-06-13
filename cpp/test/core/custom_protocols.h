@@ -34,7 +34,7 @@ namespace unit_test
         template <typename T>
         void Skip(const bond::bonded<T, TestReader&>&)
         {
-            Skip(bond::BT_STRUCT);
+            Skip(bond::BondDataType::BT_STRUCT);
         }
     };
 
