@@ -196,7 +196,7 @@ private:
 void Init(Test test, Compat& obj)
 {
     // Random values
-    bond::RandomProtocolReader random(50, 50, test == json);
+    bond::RandomProtocolReader random(50, 50, test == Test::json);
 
     // The struct Compat contains a field m_defaults of type nullable<Compat>.
     // If we initialized through RandomProtocolReader directly the result would
@@ -232,10 +232,10 @@ void Init(Test test, Compat& obj)
     assert(!obj.m_defaults);
 
     // For tests other than 'simple' initialize m_defaults to an empty instance.
-    // For 'simple' we leave m_defaults as null becase an empty instance will
+    // For 'simple' we leave m_defaults as null because an empty instance will
     // contain fields set to 'nothing' which can't be serialized using Simple
     // Protocol.
-    if (test != simple && test != simple2)
+    if (test != Test::simple && test != Test::simple2)
     {
         bond::OutputBuffer buffer;
         bond::CompactBinaryWriter<bond::OutputBuffer> writer(buffer);
@@ -255,7 +255,7 @@ void Init(Test test, Compat& obj)
     Init(obj.m_containers.l_uint16);
     Init(obj.m_containers.l_uint32);
 
-    if (test != json)
+    if (test != Test::json)
     {
         // NewtonsoftJson used by C# implementation doesn't support
         // numbers larger that max int64.
@@ -311,25 +311,25 @@ bond::blob Serialize(Test test, const Compat& obj)
 {
     switch (test)
     {
-        case compact:
+        case Test::compact:
             return Serialize<bond::CompactBinaryWriter<bond::OutputBuffer> >(obj);
 
-        case compact2:
+        case Test::compact2:
             return Serialize<bond::CompactBinaryWriter<bond::OutputBuffer> >(obj, bond::v2);
 
-        case fast:
+        case Test::fast:
             return Serialize<bond::FastBinaryWriter<bond::OutputBuffer> >(obj);
 
-        case json:
+        case Test::json:
             return Serialize<bond::SimpleJsonWriter<bond::OutputBuffer> >(obj);
 
-        case simple:
+        case Test::simple:
             return Serialize<bond::SimpleBinaryWriter<bond::OutputBuffer> >(obj);
 
-        case simple2:
+        case Test::simple2:
             return Serialize<bond::SimpleBinaryWriter<bond::OutputBuffer> >(obj, bond::v2);
 
-        case schema:
+        case Test::schema:
             return Marshal<bond::CompactBinaryWriter<bond::OutputBuffer> >(bond::GetRuntimeSchema<Compat>());
 
         default:
@@ -376,25 +376,25 @@ void Deserialize(Test test, const bond::blob& buffer, Compat& obj, bond::SchemaD
 {
     switch (test)
     {
-        case compact:
+        case Test::compact:
             return Deserialize<bond::CompactBinaryReader<bond::InputBuffer> >(buffer, obj);
 
-        case compact2:
+        case Test::compact2:
             return Deserialize<bond::CompactBinaryReader<bond::InputBuffer> >(buffer, obj, bond::v2);
 
-        case fast:
+        case Test::fast:
             return Deserialize<bond::FastBinaryReader<bond::InputBuffer> >(buffer, obj);
 
-        case json:
+        case Test::json:
             return Deserialize<bond::SimpleJsonReader<bond::InputBuffer> >(buffer, obj);
 
-        case simple:
+        case Test::simple:
             return Deserialize<bond::SimpleBinaryReader<bond::InputBuffer> >(buffer, obj);
 
-        case simple2:
+        case Test::simple2:
             return Deserialize<bond::SimpleBinaryReader<bond::InputBuffer> >(buffer, obj, bond::v2);
 
-        case schema:
+        case Test::schema:
             return Deserialize(buffer, schema_def);
 
         default:
