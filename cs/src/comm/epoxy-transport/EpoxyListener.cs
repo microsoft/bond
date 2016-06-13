@@ -114,7 +114,7 @@ namespace Bond.Comm.Epoxy
                 }
                 catch (SocketException ex)
                 {
-                    Log.Site().Fatal(ex, "Accept failed with error {0}.", ex.SocketErrorCode);
+                    Log.Site().Error(ex, "Accept failed with error {0}.", ex.SocketErrorCode);
 
                     ShutdownSocketSafe(socket);
                 }
