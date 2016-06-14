@@ -775,8 +775,19 @@ get_type_id
                                       get_type_id<typename aliased_type<T>::type>::value;
 };
 
-template <typename T> 
+template <typename T>
 const BondDataType get_type_id<T>::value;
+
+template <typename T> struct
+get_list_sub_type_id
+{
+    typedef typename remove_const<T>::type U;
+
+    static const ListSubType value =
+        is_nullable<U>::value       ? NULLABLE_SUBTYPE :
+        is_blob<U>::value           ? BLOB_SUBTYPE     :
+                                      NO_SUBTYPE;
+};
 
 class PrimitiveTypes
 {

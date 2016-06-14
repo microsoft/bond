@@ -141,6 +141,7 @@ namespace Bond
 
         /// <summary>
         /// Get a value indicating whether the Type is a Bond list
+        /// or a Bond vector
         /// </summary>
         public static bool IsBondList(this Type type)
         {
@@ -263,6 +264,32 @@ namespace Bond
                 }
 
                 return BondDataType.BT_UNAVAILABLE;
+            }
+        }
+
+        /// <summary>
+        /// Get the ListSubType value for the Type
+        /// </summary>
+        public static ListSubType GetBondListDataType(this Type type)
+        {
+            while (true)
+            {
+                if (type.IsBondNullable())
+                    return ListSubType.NULLABLE_SUBTYPE;
+
+                if (type.IsBondBlob())
+                    return ListSubType.BLOB_SUBTYPE;
+
+                if (type.IsBondList())
+                    return ListSubType.NO_SUBTYPE;
+
+                if (type.IsGenericType() && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    type = type.GetValueType();
+                    continue;
+                }
+
+                return ListSubType.NO_SUBTYPE;
             }
         }
 

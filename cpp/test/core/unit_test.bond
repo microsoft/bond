@@ -694,3 +694,11 @@ struct NameConflicts : SimpleBase
     14: EnumType1 e1 = EnumValue5;
     15: set<EnumType1> e2;
 }
+
+struct ListVsNullable
+{
+    0: nullable<int64> nullableInt;
+    1: vector<int64> vectorInt;
+    2: list<int64> listInt;
+    3: blob blobData;
+}

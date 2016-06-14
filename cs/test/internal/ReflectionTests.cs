@@ -53,6 +53,47 @@
                      .With.Message.Contains("FindMethod found more than one matching method"));
         }
 
+        [Test]
+        public void DifferentiateBetweenListAndNullable()
+        {
+            var schemaDef = Schema<ListVsNullable>.RuntimeSchema.SchemaDef;
+
+            foreach (var def in schemaDef.structs[0].fields)
+            {
+                if (def.metadata.name == "nullableInt")
+                {
+                    Assert.AreEqual(ListSubType.NULLABLE_SUBTYPE, def.type.list_sub_type);
+                }
+                else if (def.metadata.name == "vectorInt")
+                {
+                    Assert.AreEqual(ListSubType.NO_SUBTYPE, def.type.list_sub_type);
+                }
+                else if (def.metadata.name == "listInt")
+                {
+                    Assert.AreEqual(ListSubType.NO_SUBTYPE, def.type.list_sub_type);
+                }
+                else if (def.metadata.name == "blobData")
+                {
+                    Assert.AreEqual(ListSubType.BLOB_SUBTYPE, def.type.list_sub_type);
+                }
+                else
+                {
+                    Assert.Fail();
+                }
+            }
+        }
+
+        [Test]
+        public void EnsureUnknownSeqIDLType()
+        {
+            var schemaDef = Schema<BasicTypes>.RuntimeSchema.SchemaDef;
+
+            foreach (var def in schemaDef.structs[0].fields)
+            {
+                Assert.AreEqual(ListSubType.NO_SUBTYPE, def.type.list_sub_type);
+            }
+        }
+
         static Type GetFieldSchemaTypeClass<T>(string name)
         {
             return typeof(Class<T>).GetSchemaFields().Single(
