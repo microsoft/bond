@@ -1228,6 +1228,14 @@ allow for cross-platform support.
 
 TLS support in Epoxy is forthcoming.
 
+
+### SimpleInMem Transport ###
+
+Bond Comm provides an in-memory, single process, binary transport called
+[SimpleInMem](bond_comm_simpleinmem.html). This is not a shared memory transport.
+
+This is an example Transport recommended only for test automation.
+
 ### Logging and Metrics Facades ###
 
 Bond Comm includes facades for logging and metrics. By writing simple handlers
@@ -1285,6 +1293,10 @@ or Bond.Compiler.CSharp to perform code generation at build time.
 [![Bond.Comm.Epoxy.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.Epoxy.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.Epoxy.CSharp/)
 **Bond.Comm.Epoxy.CSharp** The [Epoxy](bond_comm_epoxy.html) transport.
 You'll need at least one transport, and Epoxy is a good default choice.
+
+[![Bond.Comm.SimpleInMem.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.SimpleInMem.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.SimpleInMem.CSharp/)
+**Bond.Comm.SimpleInMem.CSharp** The [SimpleInMem](bond_comm_simpleinmem.html) transport.
+SimpleInMem is a good transport for unit tests, as it is lightweight and doesn't require or support cross-process communication.
 
 References
 ==========
