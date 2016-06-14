@@ -13,15 +13,43 @@ different versioning scheme, following the Haskell community's
 
 ## Unreleased ##
 
-* `gbc` & compiler library: TBD
-* C# NuGet version: TBD
-* C# Comm NuGet version: TBD
+* `gbc` & compiler library: TBD (major bump needed)
+* C# NuGet version: TBD (minor bump needed)
+* C# Comm NuGet version: TBD (minor bump needed due to dependencies)
 
 ### Compiler library ###
 
 * User-defined `TypeMapping`s can now be created. This makes is easier to
   implement code generation for new languages. [Pull request
   #172](https://github.com/Microsoft/bond/pull/172)
+* Runtime SchemaDef now includes information about whether BT_LIST fields
+  are nullable or blobs.
+  [Issue #161](https://github.com/Microsoft/bond/issues/161)
+
+### C++ ###
+
+* Improvements in the `nullable` implementation. [Pull request #174](https://github.com/Microsoft/bond/pull/174)
+  * Correctly use allocator model.
+  * Reduce size of `nullable` in the normal case.
+  * And others
+* Runtime SchemaDef now includes information about whether BT_LIST fields
+  are nullable or blobs.
+  [Issue #161](https://github.com/Microsoft/bond/issues/161)
+
+### C# ###
+
+* Runtime SchemaDef now includes information about whether BT_LIST fields
+  are nullable or blobs.
+  [Issue #161](https://github.com/Microsoft/bond/issues/161)
+
+### C# Comm ###
+
+* Logging interface revamped to eliminate boilerplate code and to handle
+  logging-related exceptions gracefully.
+  * `LogHandler` renamed to `ILogHandler`.
+  * `Log.DropBelow` added to automatically ignore some levels of logging.
+  * The `ILogHandle.Handle` method is now provided a pre-formatted string
+    instead of a format string and its arguments.
 
 ## 4.2.1: 2016-06-02 ##
 
