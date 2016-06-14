@@ -14,7 +14,7 @@ namespace Bond.Comm.Epoxy
     {
         public override EpoxyTransport Construct()
         {
-            return new EpoxyTransport(LayerStack);
+            return new EpoxyTransport(LayerStackProvider);
         }
     }
 
@@ -22,18 +22,24 @@ namespace Bond.Comm.Epoxy
     {
         public const int DefaultPort = 25188;
 
-        readonly ILayerStack layerStack;
-        public EpoxyTransport(ILayerStack layerStack)
+        readonly ILayerStackProvider layerStackProvider;
+
+        public EpoxyTransport(ILayerStackProvider layerStackProvider)
         {
-            // Layer stack may be null
-            this.layerStack = layerStack;
+            // Layer stack provider may be null
+            this.layerStackProvider = layerStackProvider;
         }
 
-        public override ILayerStack LayerStack
+        public override Error GetLayerStack(out ILayerStack stack)
         {
-            get
+            if (layerStackProvider != null)
             {
-                return layerStack;
+                return layerStackProvider.GetLayerStack(out stack);
+            }
+            else
+            {
+                stack = null;
+                return null;
             }
         }
 

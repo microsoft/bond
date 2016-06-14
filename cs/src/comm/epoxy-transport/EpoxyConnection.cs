@@ -241,8 +241,15 @@ namespace Bond.Comm.Epoxy
             var conversationId = AllocateNextConversationId();
 
             var sendContext = new EpoxySendContext(this);
-            IBonded layerData;
-            Error layerError = LayerStackUtils.ProcessOnSend(parentTransport.LayerStack, MessageType.Request, sendContext, out layerData);
+
+            IBonded layerData = null;
+            ILayerStack layerStack;
+            Error layerError = parentTransport.GetLayerStack(out layerStack);
+
+            if (layerError == null)
+            {
+                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Request, sendContext, out layerData);
+            }
 
             if (layerError != null)
             {
@@ -254,7 +261,7 @@ namespace Bond.Comm.Epoxy
             var frame = MessageToFrame(conversationId, methodName, PayloadType.Request, request, layerData);
 
             Log.Site().Debug("{0} Sending request {1}/{2}.", this, conversationId, methodName);
-            var responseTask = responseMap.Add(conversationId);
+            var responseTask = responseMap.Add(conversationId, layerStack);
 
             bool wasSent = await SendFrameAsync(frame);
             Log.Site().Debug("{0} Sending request {1}/{2} {3}.",
@@ -280,11 +287,11 @@ namespace Bond.Comm.Epoxy
             return await responseTask;
         }
 
-        private async Task SendReplyAsync(ulong conversationId, IMessage response)
+        private async Task SendReplyAsync(ulong conversationId, IMessage response, ILayerStack layerStack)
         {
             var sendContext = new EpoxySendContext(this);
             IBonded layerData;
-            Error layerError = LayerStackUtils.ProcessOnSend(parentTransport.LayerStack, MessageType.Response, sendContext, out layerData);
+            Error layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Response, sendContext, out layerData);
 
             // If there was a layer error, replace the response with the layer error
             if (layerError != null)
@@ -333,8 +340,14 @@ namespace Bond.Comm.Epoxy
             var conversationId = AllocateNextConversationId();
 
             var sendContext = new EpoxySendContext(this);
-            IBonded layerData;
-            Error layerError = LayerStackUtils.ProcessOnSend(parentTransport.LayerStack, MessageType.Event, sendContext, out layerData);
+            IBonded layerData =  null;
+            ILayerStack layerStack;
+            Error layerError = parentTransport.GetLayerStack(out layerStack);
+
+            if (layerError == null)
+            {
+                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Event, sendContext, out layerData);
+            }
 
             if (layerError != null)
             {
@@ -672,16 +685,22 @@ namespace Bond.Comm.Epoxy
                 return State.SendProtocolError;
             }
 
-            IMessage request = Message.FromPayload(Unmarshal.From(payload));
-
-            var receiveContext = new EpoxyReceiveContext(this);
-
-            IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
-
-            Error layerError = LayerStackUtils.ProcessOnReceive(parentTransport.LayerStack, MessageType.Request, receiveContext, bondedLayerData);
-
             Task.Run(async () =>
             {
+                IMessage request = Message.FromPayload(Unmarshal.From(payload));
+
+                var receiveContext = new EpoxyReceiveContext(this);
+
+                IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
+
+                ILayerStack layerStack;
+                Error layerError = parentTransport.GetLayerStack(out layerStack);
+
+                if (layerError == null)
+                {
+                    layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Request, receiveContext, bondedLayerData);
+                }
+
                 IMessage result;
 
                 if (layerError == null)
@@ -697,7 +716,7 @@ namespace Bond.Comm.Epoxy
                     result = Message.FromError(layerError);
                 }
 
-                await SendReplyAsync(headers.conversation_id, result);
+                await SendReplyAsync(headers.conversation_id, result, layerStack);
             });
 
             // no state change needed
@@ -716,25 +735,35 @@ namespace Bond.Comm.Epoxy
                 response = Message.FromPayload(Unmarshal.From(payload));
             }
 
-            var receiveContext = new EpoxyReceiveContext(this);
+            TaskCompletionSource<IMessage> tcs = responseMap.TakeTaskCompletionSource(headers.conversation_id);
 
-            IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
-
-            Error layerError = LayerStackUtils.ProcessOnReceive(parentTransport.LayerStack, MessageType.Response, receiveContext, bondedLayerData);
-
-            if (layerError != null)
-            {
-                Log.Site().Error("{0} Receiving response {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
-                            this, headers.conversation_id, headers.method_name,
-                            layerError.error_code, layerError.message);
-                response = Message.FromError(layerError);
-            }
-
-            if (!responseMap.Complete(headers.conversation_id, response))
+            if (tcs == null)
             {
                 Log.Site().Error("{0} Response for unmatched request. Conversation ID: {1}",
-                    this, headers.conversation_id);
+                                 this, headers.conversation_id);
+                return;
             }
+
+            Task.Run(() =>
+            {
+                var receiveContext = new EpoxyReceiveContext(this);
+
+                IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
+
+                ILayerStack layerStack = tcs.Task.AsyncState as ILayerStack;
+
+                Error layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Response, receiveContext, bondedLayerData);
+
+                if (layerError != null)
+                {
+                    Log.Site().Error("{0} Receiving response {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
+                                     this, headers.conversation_id, headers.method_name,
+                                     layerError.error_code, layerError.message);
+                    response = Message.FromError(layerError);
+                }
+
+                tcs.SetResult(response);
+            });
         }
 
         private void DispatchEvent(EpoxyHeaders headers, ArraySegment<byte> payload, ArraySegment<byte> layerData)
@@ -746,24 +775,29 @@ namespace Bond.Comm.Epoxy
                 return;
             }
 
-            IMessage request = Message.FromPayload(Unmarshal.From(payload));
-
-            var receiveContext = new EpoxyReceiveContext(this);
-
-            IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
-
-            Error layerError = LayerStackUtils.ProcessOnReceive(parentTransport.LayerStack, MessageType.Event, receiveContext, bondedLayerData);
-
-            if (layerError != null)
-            {
-                Log.Site().Error("{0}: Receiving event {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
-                            this, headers.conversation_id, headers.method_name,
-                            layerError.error_code, layerError.message);
-                return;
-            }
-
             Task.Run(async () =>
             {
+                IMessage request = Message.FromPayload(Unmarshal.From(payload));
+
+                var receiveContext = new EpoxyReceiveContext(this);
+
+                IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
+                ILayerStack layerStack;
+                Error layerError = parentTransport.GetLayerStack(out layerStack);
+
+                if (layerError == null)
+                {
+                    layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Event, receiveContext, bondedLayerData);
+                }
+
+                if (layerError != null)
+                {
+                    Log.Site().Error("{0}: Receiving event {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
+                                this, headers.conversation_id, headers.method_name,
+                                layerError.error_code, layerError.message);
+                    return;
+                }
+
                 await serviceHost.DispatchEvent(headers.method_name, receiveContext, request, connectionMetrics);
             });
         }

@@ -346,7 +346,7 @@ namespace UnitTest.SimpleInMem
             var layer1 = new TestLayer_Append("foo", testList);
             var layer2 = new TestLayer_Append("bar", testList);
 
-            transportBuilder.SetLayerStack(new LayerStack<Dummy>(layer1, layer2));
+            transportBuilder.SetLayerStackProvider(new LayerStackProvider<Dummy>(layer1, layer2));
             await DefaultSetup(new CalculatorService(), 1);
 
             const int first = 91;
@@ -377,10 +377,39 @@ namespace UnitTest.SimpleInMem
         }
 
         [Test]
+        public async Task MethodCall_ReqRsp_WithStatefulLayers()
+        {
+            var layerProvider = new TestLayerProvider_StatefulAppend("Layer");
+            var layerStackProvider = new LayerStackProvider<Dummy>(layerProvider);
+            transportBuilder.SetLayerStackProvider(layerStackProvider);
+            await DefaultSetup(new CalculatorService(), 1);
+
+            layerProvider.Layers.Clear();
+
+            var calculatorProxy = new CalculatorProxy<SimpleInMemConnection>(connections[0]);
+
+            var request = new Message<PairedInput>(new PairedInput { First = 1, Second = 2 });
+            IMessage<Output> response = await calculatorProxy.AddAsync(request, CancellationToken.None);
+            Assert.IsFalse(response.IsError);
+
+            Assert.AreEqual(2, layerProvider.Layers.Count);
+            Assert.AreEqual("Layer0SendLayer0Receive", layerProvider.Layers[0].State);
+            Assert.AreEqual("Layer1ReceiveLayer1Send", layerProvider.Layers[1].State);
+
+            request = new Message<PairedInput>(new PairedInput { First = 1, Second = 2 });
+            response = await calculatorProxy.AddAsync(request, CancellationToken.None);
+            Assert.IsFalse(response.IsError);
+
+            Assert.AreEqual(4, layerProvider.Layers.Count);
+            Assert.AreEqual("Layer2SendLayer2Receive", layerProvider.Layers[2].State);
+            Assert.AreEqual("Layer3ReceiveLayer3Send", layerProvider.Layers[3].State);
+        }
+
+        [Test]
         public async Task MethodCall_ReqRsp_WithLayerStackErrors()
         {
             var errorLayer = new TestLayer_ReturnErrors();
-            transportBuilder.SetLayerStack(new LayerStack<Dummy>(errorLayer));
+            transportBuilder.SetLayerStackProvider(new LayerStackProvider<Dummy>(errorLayer));
             var testService = new DummyTestService();
             await DefaultSetup(testService, 1);
 
@@ -438,10 +467,82 @@ namespace UnitTest.SimpleInMem
         }
 
         [Test]
+        public async Task MethodCall_ReqRsp_FailingLayerStackProvider_ClientSendReq()
+        {
+            // Fail after 2 successful GetLayerStack calls (1 on client, 1 on server)
+            transportBuilder.SetLayerStackProvider(new TestLayerStackProvider_Fails(2));
+            var testService = new DummyTestService();
+            await DefaultSetup(testService, 1);
+
+            var proxy = new DummyTestProxy<SimpleInMemConnection>(connections[0]);
+            var request = new Dummy { int_value = 100 };
+            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
+            Assert.IsFalse(response.IsError);
+            Assert.AreEqual(101, response.Payload.Deserialize().int_value);
+
+            request.int_value = 101;
+            response = await proxy.ReqRspMethodAsync(request);
+            Assert.IsTrue(response.IsError);
+            Error error = response.Error.Deserialize();
+            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
+            Assert.AreEqual(TestLayerStackProvider_Fails.InternalDetails, error.message);
+        }
+
+        [Test]
+        public async Task MethodCall_ReqRsp_FailingLayerStackProvider_ServerReceiveReq()
+        {
+            // Fail after 3 successful GetLayerStack calls (2 on client, 1 on server)
+            transportBuilder.SetLayerStackProvider(new TestLayerStackProvider_Fails(3));
+            var testService = new DummyTestService();
+            await DefaultSetup(testService, 1);
+
+            var proxy = new DummyTestProxy<SimpleInMemConnection>(connections[0]);
+            var request = new Dummy { int_value = 100 };
+            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
+            Assert.IsFalse(response.IsError);
+            Assert.AreEqual(101, response.Payload.Deserialize().int_value);
+
+            request.int_value = 101;
+            response = await proxy.ReqRspMethodAsync(request);
+            Assert.IsTrue(response.IsError);
+            Error error = response.Error.Deserialize();
+            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
+            Assert.AreEqual(TestLayerStackProvider_Fails.InternalDetails, error.message);
+        }
+
+        [Test]
+        public async Task MethodCall_Event_With_StatefulLayers()
+        {
+            var layerProvider = new TestLayerProvider_StatefulAppend("Layer");
+            var layerStackProvider = new LayerStackProvider<Dummy>(layerProvider);
+            transportBuilder.SetLayerStackProvider(layerStackProvider);
+            var testService = new DummyTestService();
+            await DefaultSetup(testService, 1);
+
+            var proxy = new DummyTestProxy<SimpleInMemConnection>(connections[0]);
+            var theEvent = new Dummy { int_value = 100 };
+
+            layerProvider.Layers.Clear();
+
+            ManualResetEventSlim waitForEvent = testService.CreateResetEvent();
+            proxy.EventMethodAsync(theEvent);
+            bool wasSignaled = waitForEvent.Wait(TimeSpan.FromSeconds(1));
+            Assert.IsTrue(wasSignaled, "Timed out waiting for event to fire");
+            testService.ClearResetEvent();
+
+            Assert.AreEqual(1, testService.EventCount);
+            Assert.AreEqual(theEvent.int_value, testService.LastEventReceived.int_value);
+
+            Assert.AreEqual(2, layerProvider.Layers.Count);
+            Assert.AreEqual("Layer0Send", layerProvider.Layers[0].State);
+            Assert.AreEqual("Layer1Receive", layerProvider.Layers[1].State);
+        }
+
+        [Test]
         public async Task MethodCall_Event_WithLayerStackErrors()
         {
             var errorLayer = new TestLayer_ReturnErrors();
-            transportBuilder.SetLayerStack(new LayerStack<Dummy>(errorLayer));
+            transportBuilder.SetLayerStackProvider(new LayerStackProvider<Dummy>(errorLayer));
             var testService = new DummyTestService();
             await DefaultSetup(testService, 1);
 
@@ -481,6 +582,60 @@ namespace UnitTest.SimpleInMem
 
             Assert.AreEqual(1, testService.EventCount);
             Assert.AreEqual(theEvent.int_value, testService.LastEventReceived.int_value);
+        }
+
+        [Test]
+        public async Task MethodCall_Event_FailingLayerStackProvider_ClientSendEvent()
+        {
+            // Fail after 2 successful GetLayerStack calls (1 on client, 1 on server)
+            transportBuilder.SetLayerStackProvider(new TestLayerStackProvider_Fails(2));
+            var testService = new DummyTestService();
+            await DefaultSetup(testService, 1);
+
+            var proxy = new DummyTestProxy<SimpleInMemConnection>(connections[0]);
+            var theEvent = new Dummy { int_value = 100 };
+
+            ManualResetEventSlim waitForEvent = testService.CreateResetEvent();
+            proxy.EventMethodAsync(theEvent);
+            bool wasSignaled = waitForEvent.Wait(TimeSpan.FromSeconds(1));
+            Assert.IsTrue(wasSignaled, "Timed out waiting for event to fire");
+
+            Assert.AreEqual(1, testService.EventCount);
+            Assert.AreEqual(theEvent.int_value, testService.LastEventReceived.int_value);
+
+            waitForEvent = testService.CreateResetEvent();
+            proxy.EventMethodAsync(theEvent);
+            wasSignaled = waitForEvent.Wait(TimeSpan.FromSeconds(1));
+            Assert.IsFalse(wasSignaled, "Event should not fire 2");
+
+            Assert.AreEqual(1, testService.EventCount);
+        }
+
+        [Test]
+        public async Task MethodCall_Event_FailingLayerStackProvider_ServerReceiveEvent()
+        {
+            // Fail after 3 successful GetLayerStack calls (2 on client, 1 on server)
+            transportBuilder.SetLayerStackProvider(new TestLayerStackProvider_Fails(3));
+            var testService = new DummyTestService();
+            await DefaultSetup(testService, 1);
+
+            var proxy = new DummyTestProxy<SimpleInMemConnection>(connections[0]);
+            var theEvent = new Dummy { int_value = 100 };
+
+            ManualResetEventSlim waitForEvent = testService.CreateResetEvent();
+            proxy.EventMethodAsync(theEvent);
+            bool wasSignaled = waitForEvent.Wait(TimeSpan.FromSeconds(1));
+            Assert.IsTrue(wasSignaled, "Timed out waiting for event to fire");
+
+            Assert.AreEqual(1, testService.EventCount);
+            Assert.AreEqual(theEvent.int_value, testService.LastEventReceived.int_value);
+
+            waitForEvent = testService.CreateResetEvent();
+            proxy.EventMethodAsync(theEvent);
+            wasSignaled = waitForEvent.Wait(TimeSpan.FromSeconds(1));
+            Assert.IsFalse(wasSignaled, "Event should not fire 2");
+
+            Assert.AreEqual(1, testService.EventCount);
         }
 
         [TearDown]

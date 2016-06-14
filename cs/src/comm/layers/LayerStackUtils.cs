@@ -4,6 +4,9 @@
 namespace Bond.Comm.Layers
 {
 
+    /// <summary>
+    /// Provides common methods related to layer stack processing useful for Transport implementations.
+    /// </summary>
     public class LayerStackUtils
     {
         public static Error ProcessOnSend(ILayerStack layerStack, MessageType messageType, SendContext sendContext, out IBonded layerData)

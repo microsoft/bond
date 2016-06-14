@@ -46,6 +46,7 @@ namespace Bond.Comm.Epoxy
         /// <paramref name="conversationId">conversationId</paramref>.
         /// </remarks>
         /// <param name="conversationId">The conversation to register.</param>
+        /// <param name="state">State to store in task. Defaults to null.</param>
         /// <returns>
         /// A <see cref="Task{T}">Task&lt;IMessage&gt;</see> that will be
         /// completed when a corresponding call to <see cref="Complete"/> is
@@ -55,12 +56,12 @@ namespace Bond.Comm.Epoxy
         /// When the same <paramref name="conversationId"/> had already been
         /// registered.
         /// </exception>
-        public Task<IMessage> Add(ulong conversationId)
+        public Task<IMessage> Add(ulong conversationId, object state = null)
         {
             // Speculative creation to reduce duration of lock. In the event
             // that the connection is already shutdown, this will have been a
             // waste, but shutdown is not the common case.
-            var tcs = new TaskCompletionSource<IMessage>();
+            var tcs = new TaskCompletionSource<IMessage>(state);
 
             lock (this)
             {
@@ -93,19 +94,30 @@ namespace Bond.Comm.Epoxy
         /// </remarks>
         public bool Complete(ulong conversationId, IMessage response)
         {
+            TaskCompletionSource<IMessage> tcs = TakeTaskCompletionSource(conversationId);
+            if (tcs == null)
+            {
+                return false;
+            }
+
+            CompleteOnThreadPool(tcs, response);
+            return true;
+        }
+
+        public TaskCompletionSource<IMessage> TakeTaskCompletionSource(ulong conversationId)
+        {
             TaskCompletionSource<IMessage> tcs;
             lock (this)
             {
                 if (!outstandingConvos.TryGetValue(conversationId, out tcs))
                 {
-                    return false;
+                    return null;
                 }
 
                 outstandingConvos.Remove(conversationId);
             }
 
-            CompleteOnThreadPool(tcs, response);
-            return true;
+            return tcs;
         }
 
         /// <summary>

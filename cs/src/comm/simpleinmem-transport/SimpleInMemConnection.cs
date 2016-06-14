@@ -197,9 +197,15 @@ namespace Bond.Comm.SimpleInMem
             var conversationId = AllocateNextConversationId();
 
             var sendContext = new SimpleInMemSendContext(this);
-            IBonded layerData;
-            Error layerError = LayerStackUtils.ProcessOnSend(parentListener.ServiceHost.ParentTransport.LayerStack,
-                                                             MessageType.Request, sendContext, out layerData);
+
+            IBonded layerData = null;
+            ILayerStack layerStack;
+            Error layerError = this.serviceHost.ParentTransport.GetLayerStack(out layerStack);
+
+            if (layerError == null)
+            {
+                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Request, sendContext, out layerData);
+            }
 
             if (layerError != null)
             {
@@ -208,7 +214,9 @@ namespace Bond.Comm.SimpleInMem
                 return Task.FromResult<IMessage>(Message.FromError(layerError));
             }
 
-            var payload = Util.NewPayLoad(conversationId, PayloadType.Request, layerData, request, new TaskCompletionSource<IMessage>());
+            // Pass the layer stack instance as state in response task completion source.
+            var responseCompletionSource = new TaskCompletionSource<IMessage>(layerStack);
+            var payload = Util.NewPayLoad(conversationId, PayloadType.Request, layerData, request, responseCompletionSource);
             payload.headers.method_name = methodName;
             writeQueue.Enqueue(payload);
 
@@ -220,9 +228,14 @@ namespace Bond.Comm.SimpleInMem
             var conversationId = AllocateNextConversationId();
 
             var sendContext = new SimpleInMemSendContext(this);
-            IBonded layerData;
-            Error layerError = LayerStackUtils.ProcessOnSend(parentListener.ServiceHost.ParentTransport.LayerStack,
-                                                             MessageType.Event, sendContext, out layerData);
+            IBonded layerData = null;
+            ILayerStack layerStack;
+            Error layerError = this.serviceHost.ParentTransport.GetLayerStack(out layerStack);
+
+            if (layerError == null)
+            {
+                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Event, sendContext, out layerData);
+            }
 
             if (layerError != null)
             {

@@ -17,20 +17,20 @@ namespace Bond.Comm
     /// </typeparam>
     public abstract class TransportBuilder<TTransport>
     {
-        protected ILayerStack LayerStack { get; private set; }
+        protected ILayerStackProvider LayerStackProvider { get; private set; }
 
         /// <summary>
         /// Set the layer stack.
         /// </summary>
-        /// <param name="layerStack">The layer stack.</param>
+        /// <param name="layerStackProvider">The layer stack provider. May be null</param>
         /// <returns>The builder.</returns>
         /// <remarks>
-        /// The layer stack supplies the set of layers to be used
+        /// The layer stack provider supplies the set of layers to be used
         /// by the built transport. May be null.
         /// </remarks>
-        public virtual TransportBuilder<TTransport> SetLayerStack(ILayerStack layerStack)
+        public virtual TransportBuilder<TTransport> SetLayerStackProvider(ILayerStackProvider layerStackProvider)
         {
-            LayerStack = layerStack;
+            this.LayerStackProvider = layerStackProvider;
             return this;
         }
 
@@ -51,9 +51,11 @@ namespace Bond.Comm
         internal static readonly string InternalErrorMessage = "The server has encounted an error";
 
         /// <summary>
-        /// The layer stack for this transport. May be null.
+        /// Get a layer stack instance for this transport.
         /// </summary>
-        public abstract ILayerStack LayerStack { get; }
+        /// <param name="stack">The layer stack instance. Will be null if an error is returned.</param>
+        /// <returns>An error if one occurred, null otherwise.</returns>
+        public abstract Error GetLayerStack(out ILayerStack stack);
 
         /// <summary>
         /// Starts an asynchronous operation to connect to the specified

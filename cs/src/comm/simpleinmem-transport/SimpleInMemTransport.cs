@@ -13,7 +13,7 @@ namespace Bond.Comm.SimpleInMem
     {
         public override SimpleInMemTransport Construct()
         {
-            return new SimpleInMemTransport(LayerStack);
+            return new SimpleInMemTransport(LayerStackProvider);
         }
     }
 
@@ -21,18 +21,23 @@ namespace Bond.Comm.SimpleInMem
     {
         object listenersLock = new object();
         IDictionary<string, SimpleInMemListener> listeners = new Dictionary<string, SimpleInMemListener>();
-        readonly ILayerStack layerStack;
+        readonly ILayerStackProvider layerStackProvider;
 
-        public SimpleInMemTransport(ILayerStack layerStack)
+        public SimpleInMemTransport(ILayerStackProvider layerStackProvider)
         {
-            this.layerStack = layerStack;
+            this.layerStackProvider = layerStackProvider;
         }
 
-        public override ILayerStack LayerStack
+        public override Error GetLayerStack(out ILayerStack stack)
         {
-            get
+            if (layerStackProvider != null)
             {
-                return this.layerStack;
+                return layerStackProvider.GetLayerStack(out stack);
+            }
+            else
+            {
+                stack = null;
+                return null;
             }
         }
 

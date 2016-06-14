@@ -75,8 +75,13 @@ namespace Bond.Comm.SimpleInMem.Processor
             var message = payload.message;
             var taskSource = payload.outstandingRequest;
 
-            Error layerError = LayerStackUtils.ProcessOnReceive(this.serviceHost.ParentTransport.LayerStack,
-                                                                MessageType.Request, receiveContext, layerData);
+            ILayerStack layerStack;
+            Error layerError = this.serviceHost.ParentTransport.GetLayerStack(out layerStack);
+
+            if (layerError == null)
+            {
+                layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Request, receiveContext, layerData);
+            }
 
             IMessage response;
 
@@ -90,18 +95,19 @@ namespace Bond.Comm.SimpleInMem.Processor
                                  headers.conversation_id, headers.method_name, layerError.error_code, layerError.message);
                 response = Message.FromError(layerError);
             }
-            SendReply(headers.conversation_id, response, taskSource, queue);
+            SendReply(headers.conversation_id, response, taskSource, layerStack, queue);
         }
 
-        internal void SendReply(ulong conversationId, 
-                                IMessage response, 
-                                TaskCompletionSource<IMessage> taskSource, 
+        internal void SendReply(ulong conversationId,
+                                IMessage response,
+                                TaskCompletionSource<IMessage> taskSource,
+                                ILayerStack layerStack,
                                 InMemFrameQueue queue)
         {
             var sendContext = new SimpleInMemSendContext(connection);
-            IBonded layerData;
-            var layerError = LayerStackUtils.ProcessOnSend(this.serviceHost.ParentTransport.LayerStack,
-                                                             MessageType.Response, sendContext, out layerData);
+            IBonded layerData = null;
+
+            Error layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Response, sendContext, out layerData);
 
             // If there was a layer error, replace the response with the layer error
             if (layerError != null)
@@ -122,8 +128,10 @@ namespace Bond.Comm.SimpleInMem.Processor
             var layerData = payload.layerData;
             var message = payload.message;
             var taskSource = payload.outstandingRequest;
-            var layerError = LayerStackUtils.ProcessOnReceive(serviceHost.ParentTransport.LayerStack,
-                                                                MessageType.Response, receiveContext, layerData);
+
+            ILayerStack layerStack = taskSource.Task.AsyncState as ILayerStack;
+
+            Error layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Response, receiveContext, layerData);
 
             if (layerError != null)
             {
@@ -143,8 +151,13 @@ namespace Bond.Comm.SimpleInMem.Processor
             var message = payload.message;
             var taskSource = payload.outstandingRequest;
 
-            Error layerError = LayerStackUtils.ProcessOnReceive(serviceHost.ParentTransport.LayerStack,
-                                                                MessageType.Event, receiveContext, layerData);
+            ILayerStack layerStack;
+            Error layerError = serviceHost.ParentTransport.GetLayerStack(out layerStack);
+
+            if (layerError == null)
+            {
+                layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Event, receiveContext, layerData);
+            }
 
             if (layerError != null)
             {
