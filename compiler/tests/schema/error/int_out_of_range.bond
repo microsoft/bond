@@ -1,0 +1,10 @@
+
+//this bond file is invalid; do not use as example
+
+
+namespace tests
+
+struct Test
+{
+     0: int16 i = 32768;
+}

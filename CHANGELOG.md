@@ -25,6 +25,16 @@ different versioning scheme, following the Haskell community's
 * Runtime SchemaDef now includes information about whether BT_LIST fields
   are nullable or blobs.
   [Issue #161](https://github.com/Microsoft/bond/issues/161)
+* Validate default value type mistmatches.
+  [Issue #72](https://github.com/Microsoft/bond/issues/72)
+  [Issue #128](https://github.com/Microsoft/bond/issues/128)
+* Validate default value out-of-range values.
+  [Issue #73](https://github.com/Microsoft/bond/issues/73)
+* Fail when struct field has default value of `nothing`.
+  [Issue #164](https://github.com/Microsoft/bond/issues/164)
+* Fail when enum field doesn't have default value.
+  [Issue #177](https://github.com/Microsoft/bond/issues/177)
+* Validate default value of type aliases
 
 ### C++ ###
 

@@ -45,6 +45,12 @@ tests = testGroup "Compiler tests"
     , testGroup "Types"
         [ testCase "type alias resolution" aliasResolution
         ]
+    , testGroup "Codegen Failures (Expect to see errors below check for OK or FAIL)"
+        [ testCase "Struct default value nothing" $ failBadSyntax "Should fail when default value of a struct field is 'nothing'" "struct_nothing"
+        , testCase "Enum no default value" $ failBadSyntax "Should fail when an enum field has no default value" "enum_no_default"
+        , testCase "Alias default value" $ failBadSyntax "Should fail when underlying default value is of the wrong type" "aliases_default"
+        , testCase "Out of range" $ failBadSyntax "Should fail, out of range for int16" "int_out_of_range"
+        ]
     , testGroup "Codegen"
         [ testGroup "C++"
             [ verifyCppCodegen "attributes"

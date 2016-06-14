@@ -1,0 +1,12 @@
+
+//this bond file is invalid; do not use as example
+
+
+namespace tests
+
+using String = string;
+
+struct Test
+{
+     0: String s = 6;
+}

@@ -26,6 +26,7 @@ module Language.Bond.Syntax.Util
     , isAssociative
     , isNullable
     , isStruct
+    , isEnum
     , isMetaName
       -- * Type mapping
     , fmapType
@@ -126,6 +127,12 @@ isStruct (BT_UserDefined Struct {} _) = True
 isStruct (BT_UserDefined Forward {} _) = True
 isStruct (BT_UserDefined a@Alias {} args) = isStruct $ resolveAlias a args
 isStruct _ = False
+
+-- | Returns 'True' if the type represents an enum
+isEnum :: Type -> Bool
+isEnum (BT_UserDefined Enum {} _) = True
+isEnum (BT_UserDefined a@Alias {} args) = isEnum $ resolveAlias a args
+isEnum _ = False
 
 -- | Returns 'True' if the type represents a nullable type.
 isNullable :: Type -> Bool

@@ -1,0 +1,17 @@
+
+//this bond file is invalid; do not use as example
+
+
+namespace tests
+
+enum Priority
+{
+     Low;
+     Normal;
+     High;
+}
+
+struct Test
+{
+     0: Priority p;
+}

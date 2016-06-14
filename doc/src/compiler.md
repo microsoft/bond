@@ -115,7 +115,8 @@ An optional default value can be specified for fields of basic types. For
 integers the default can be specified as either a decimal number or a 
 hexadecimal number prefixed with `0x`. The only explicit default value allowed 
 for containers is [`nothing`](#default-value-of-nothing). Enum fields must have 
-an explicit default value which must be one of the enum named constants.
+an explicit default value which must be one of the enum named constants or 
+[`nothing`](#default-value-of-nothing).
 
 Names of structs and enums defined in another namespace must be qualified with 
 the namespace name:

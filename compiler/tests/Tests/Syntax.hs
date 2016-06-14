@@ -1,16 +1,18 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-{-# LANGUAGE OverloadedStrings, RecordWildCards, TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings, RecordWildCards, TemplateHaskell, ScopedTypeVariables #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Tests.Syntax
     ( roundtripAST
     , compareAST
+    , failBadSyntax
     , aliasResolution
     , verifySchemaDef
     ) where
 
+import Control.Exception
 import Data.Maybe
 import Data.List
 import Data.Aeson (encode, decode)
@@ -45,6 +47,16 @@ derive makeArbitrary ''Method
 
 roundtripAST :: Bond -> Bool
 roundtripAST x = (decode . encode) x == Just x
+
+assertException :: String -> IO a -> Assertion
+assertException errMsg action = do
+    e <- try action
+    case e of
+        Left (_ :: SomeException) -> return ()
+        Right _ -> assertFailure errMsg
+
+failBadSyntax :: String -> FilePath -> Assertion
+failBadSyntax errMsg file = assertException errMsg (parseBondFile [] $ "tests" </> "schema" </> "error" </> file <.> "bond")
 
 compareAST :: FilePath -> Assertion
 compareAST file = do

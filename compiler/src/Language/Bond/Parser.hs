@@ -1,7 +1,7 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards, ScopedTypeVariables #-}
 
 {-|
 Copyright   : (c) Microsoft
@@ -24,6 +24,7 @@ module Language.Bond.Parser
 import Data.Ord
 import Data.List
 import Data.Function
+import Data.Int
 import Data.Word
 import Control.Applicative
 import Control.Monad.Reader
@@ -247,13 +248,17 @@ manySortedBy = manyAccum . insertBy
 
 -- field definition parser
 field :: Parser Field
-field = makeField <$> attributes <*> ordinal <*> modifier <*> ftype <*> identifier <*> optional default_
+field = do
+    mf <- makeField <$> attributes <*> ordinal <*> modifier <*> ftype <*> identifier <*> optional default_
+    case mf of
+      Left e -> fail e
+      Right f -> return f
   where
     ordinal = word16 <* colon <?> "field ordinal"
       where
         word16 = do
             i <- integer
-            if i <= toInteger (maxBound :: Word16) && i >= toInteger (minBound :: Word16)
+            if isInBounds i (0::Word16)
                 then return (fromInteger i)
                 else fail "Field ordinal must be within the range 0-65535"
     modifier = option Optional
@@ -268,8 +273,44 @@ field = makeField <$> attributes <*> ordinal <*> modifier <*> ftype <*> identifi
                  <|> DefaultEnum <$> identifier
                  <|> DefaultFloat <$> try float
                  <|> DefaultInteger <$> fromIntegral <$> integer)
-    makeField a o m t n d@(Just DefaultNothing) = Field a o m (BT_Maybe t) n d
-    makeField a o m t n d = Field a o m t n d
+    makeField a o m t n d@(Just DefaultNothing)
+        | isStruct t = Left "Struct field can't have default value of 'nothing'"
+        | otherwise  = Right $ Field a o m (BT_Maybe t) n d
+    makeField a o m t n d
+        | d == Nothing && isEnum t = Left "Enum field must have a default value"
+        | otherwise                = if validDefaultType t d
+                                        then Right $ Field a o m t n d
+                                        else Left "Invalid default value for field"
+
+-- default type validator (type checking, out-of-range, enforce default type)
+validDefaultType :: Type -> Maybe Default -> Bool
+validDefaultType (BT_UserDefined a@Alias {} args) d = validDefaultType (resolveAlias a args) d
+validDefaultType _ Nothing = True
+validDefaultType bondType (Just defaultValue) = validDefaultType' bondType defaultValue
+  where validDefaultType' :: Type -> Default -> Bool
+        validDefaultType' BT_Int8    (DefaultInteger i) = isInBounds i (0::Int8)
+        validDefaultType' BT_Int16   (DefaultInteger i) = isInBounds i (0::Int16)
+        validDefaultType' BT_Int32   (DefaultInteger i) = isInBounds i (0::Int32)
+        validDefaultType' BT_Int64   (DefaultInteger i) = isInBounds i (0::Int64)
+        validDefaultType' BT_UInt8   (DefaultInteger i) = isInBounds i (0::Word8)
+        validDefaultType' BT_UInt16  (DefaultInteger i) = isInBounds i (0::Word16)
+        validDefaultType' BT_UInt32  (DefaultInteger i) = isInBounds i (0::Word32)
+        validDefaultType' BT_UInt64  (DefaultInteger i) = isInBounds i (0::Word64)
+        validDefaultType' BT_Float   (DefaultFloat _)   = True
+        validDefaultType' BT_Float   (DefaultInteger _) = True
+        validDefaultType' BT_Double  (DefaultFloat _)   = True
+        validDefaultType' BT_Double  (DefaultInteger _) = True
+        validDefaultType' BT_Bool    (DefaultBool _)    = True
+        validDefaultType' BT_String  (DefaultString _)  = True
+        validDefaultType' BT_WString (DefaultString _)  = True
+        validDefaultType' (BT_UserDefined Enum {} _) (DefaultEnum _) = True
+        validDefaultType' (BT_TypeParam {}) _           = True
+        validDefaultType' _ _                           = False
+
+-- checks whether an Integer is within the bounds of some other Integral and Bounded type.
+-- The value of the second paramater is never used: only its type is used.
+isInBounds :: forall a. (Integral a, Bounded a) => Integer -> a -> Bool
+isInBounds value _ = value >= (toInteger (minBound :: a)) && value <= (toInteger (maxBound :: a))
 
 -- enum definition parser
 enum :: Parser Declaration

@@ -1,0 +1,15 @@
+
+//this bond file is invalid; do not use as example
+
+
+namespace tests
+
+struct BasicTypes
+{
+     0: bool _bool;
+}
+
+struct Test
+{
+     0: BasicTypes bt = nothing;
+}
