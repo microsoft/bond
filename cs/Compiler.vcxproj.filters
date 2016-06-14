@@ -14,7 +14,13 @@
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Parser.hs">
       <Filter>Bond</Filter>
     </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Syntax\Internal.hs">
+      <Filter>Bond\Syntax</Filter>
+    </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Syntax\JSON.hs">
+      <Filter>Bond\Syntax</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Syntax\SchemaDef.hs">
       <Filter>Bond\Syntax</Filter>
     </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Syntax\Types.hs">
@@ -61,6 +67,9 @@
     </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Util.hs">
       <Filter>Bond\Codegen\Cpp</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Comm_cs.hs">
+      <Filter>Bond\Codegen\Cs</Filter>
     </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Types_cs.hs">
       <Filter>Bond\Codegen\Cs</Filter>
