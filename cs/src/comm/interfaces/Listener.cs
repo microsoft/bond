@@ -190,7 +190,7 @@ namespace Bond.Comm
                     catch (Exception ex)
                     {
                         Log.Site().Error(ex, "Exception in handler for connection {0}: {1}", args.Connection, ex.Message);
-                        args.DisconnectError = Transport.MakeInternalServerError(ex);
+                        args.DisconnectError = Errors.MakeInternalServerError(ex, includeDetails: false);
                     }
 
                     if (args.DisconnectError != null)

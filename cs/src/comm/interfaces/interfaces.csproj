@@ -15,6 +15,7 @@
     <Compile Include="CodegenHelpers.cs" />
     <Compile Include="Connections.cs" />
     <Compile Include="Contexts.cs" />
+    <Compile Include="Errors.cs" />
     <Compile Include="ILayer.cs" />
     <Compile Include="IService.cs" />
     <Compile Include="ILayerStack.cs" />

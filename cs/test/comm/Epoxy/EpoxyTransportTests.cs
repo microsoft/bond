@@ -119,7 +119,7 @@ namespace UnitTest.Epoxy
 
             var error = response.Error.Deserialize<Error>();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
-            Assert.That(error.message, Is.StringContaining(Transport.InternalErrorMessage));
+            Assert.That(error.message, Is.StringContaining(Errors.InternalErrorMessage));
 
             await testClientServer.ServiceTransport.StopAsync();
             await testClientServer.ClientTransport.StopAsync();
@@ -262,7 +262,8 @@ namespace UnitTest.Epoxy
 
             IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
-            Assert.AreEqual(TestLayer_ReturnErrors.ReceiveError, response.Error.Deserialize().error_code);
+            Error error = response.Error.Deserialize();
+            Assert.AreEqual(TestLayer_ReturnErrors.ReceiveError, error.error_code);
 
             Assert.AreEqual(0, testClientServer.Service.RequestCount);
             Assert.AreEqual(Dummy.Empty.int_value, testClientServer.Service.LastRequestReceived.int_value);
@@ -270,7 +271,8 @@ namespace UnitTest.Epoxy
             errorLayer.SetState(MessageType.Response, errorOnSend: true, errorOnReceive: false);
             response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
-            Assert.AreEqual(TestLayer_ReturnErrors.SendError, response.Error.Deserialize().error_code);
+            error = response.Error.Deserialize();
+            Assert.AreEqual(TestLayer_ReturnErrors.SendError, error.error_code);
 
             Assert.AreEqual(1, testClientServer.Service.RequestCount);
             Assert.AreEqual(request.int_value, testClientServer.Service.LastRequestReceived.int_value);
@@ -415,7 +417,7 @@ namespace UnitTest.Epoxy
             response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Error error = response.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.AreEqual(TestLayerStackProvider_Fails.InternalDetails, error.message);
 
             await testClientServer.ServiceTransport.StopAsync();
@@ -440,8 +442,8 @@ namespace UnitTest.Epoxy
             response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Error error = response.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
-            Assert.AreEqual(TestLayerStackProvider_Fails.InternalDetails, error.message);
+            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual(Errors.InternalErrorMessage, error.message);
 
             await testClientServer.ServiceTransport.StopAsync();
             await testClientServer.ClientTransport.StopAsync();

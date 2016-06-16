@@ -93,7 +93,10 @@ namespace Bond.Comm.SimpleInMem.Processor
             {
                 Log.Site().Error("Receiving request {0}/{1} failed due to layer error (Code: {2}, Message: {3}).",
                                  headers.conversation_id, headers.method_name, layerError.error_code, layerError.message);
-                response = Message.FromError(layerError);
+
+                // Set layer error as result of this Bond method call and do not dispatch to method.
+                // Since this error will be returned to client, cleanse out internal server error details, if any.
+                response = Message.FromError(Errors.CleanseInternalServerError(layerError));
             }
             SendReply(headers.conversation_id, response, taskSource, layerStack, queue);
         }
@@ -114,7 +117,10 @@ namespace Bond.Comm.SimpleInMem.Processor
             {
                 Log.Site().Error("Sending reply for conversation {0} failed due to layer error (Code: {1}, Message: {2}).",
                                  conversationId, layerError.error_code, layerError.message);
-                response = Message.FromError(layerError);
+
+                // Set layer error as result of this Bond method call, replacing original response.
+                // Since this error will be returned to client, cleanse out internal server error details, if any.
+                response = Message.FromError(Errors.CleanseInternalServerError(layerError));
             }
 
             var payload = Util.NewPayLoad(conversationId, PayloadType.Response, layerData, response, taskSource);

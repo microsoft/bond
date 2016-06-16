@@ -161,7 +161,7 @@ namespace Bond.Comm.Service
             catch (Exception ex)
             {
                 Log.Site().Error(ex, "Failed to complete method [{0}]. With exception: {1}", methodName, ex.Message);
-                result = Message.FromError(Transport.MakeInternalServerError(ex));
+                result = Message.FromError(Errors.MakeInternalServerError(ex, includeDetails: false));
             }
 
             FinishRequestMetrics(requestMetrics, totalTime, serviceTime);

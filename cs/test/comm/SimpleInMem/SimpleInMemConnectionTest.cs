@@ -314,7 +314,7 @@ namespace UnitTest.SimpleInMem
             Assert.IsTrue(multiplyResponse.IsError);
             InternalServerError error = multiplyResponse.Error.Deserialize<InternalServerError>();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
-            Assert.That(error.message, Is.StringContaining(Transport.InternalErrorMessage));
+            Assert.That(error.message, Is.StringContaining(Errors.InternalErrorMessage));
         }
 
         [Test]
@@ -420,7 +420,8 @@ namespace UnitTest.SimpleInMem
             IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
 
             Assert.IsTrue(response.IsError);
-            Assert.AreEqual(TestLayer_ReturnErrors.ReceiveError, response.Error.Deserialize().error_code, "Bad error 1");
+            Error error = response.Error.Deserialize();
+            Assert.AreEqual(TestLayer_ReturnErrors.ReceiveError, error.error_code, "Error 1 does not match");
 
             Assert.AreEqual(0, testService.RequestCount);
             Assert.AreEqual(Dummy.Empty.int_value, testService.LastRequestReceived.int_value);
@@ -430,7 +431,8 @@ namespace UnitTest.SimpleInMem
             response = await proxy.ReqRspMethodAsync(request);
 
             Assert.IsTrue(response.IsError);
-            Assert.AreEqual(TestLayer_ReturnErrors.SendError, response.Error.Deserialize().error_code);
+            error = response.Error.Deserialize();
+            Assert.AreEqual(TestLayer_ReturnErrors.SendError, error.error_code, "Error 2 does not match");
 
             Assert.AreEqual(0, testService.RequestCount);
             Assert.AreEqual(Dummy.Empty.int_value, testService.LastRequestReceived.int_value);
@@ -440,7 +442,8 @@ namespace UnitTest.SimpleInMem
             response = await proxy.ReqRspMethodAsync(request);
 
             Assert.IsTrue(response.IsError);
-            Assert.AreEqual(TestLayer_ReturnErrors.SendError, response.Error.Deserialize().error_code);
+            error = response.Error.Deserialize();
+            Assert.AreEqual(TestLayer_ReturnErrors.SendError, error.error_code, "Error 3 does not match");
 
             Assert.AreEqual(1, testService.RequestCount);
             Assert.AreEqual(request.int_value, testService.LastRequestReceived.int_value);
@@ -450,7 +453,8 @@ namespace UnitTest.SimpleInMem
             response = await proxy.ReqRspMethodAsync(request);
 
             Assert.IsTrue(response.IsError);
-            Assert.AreEqual(TestLayer_ReturnErrors.ReceiveError, response.Error.Deserialize().error_code);
+            error = response.Error.Deserialize();
+            Assert.AreEqual(TestLayer_ReturnErrors.ReceiveError, error.error_code, "Error 4 does not match");
 
             Assert.AreEqual(2, testService.RequestCount);
             Assert.AreEqual(request.int_value, testService.LastRequestReceived.int_value);
@@ -484,7 +488,7 @@ namespace UnitTest.SimpleInMem
             response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Error error = response.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.AreEqual(TestLayerStackProvider_Fails.InternalDetails, error.message);
         }
 
@@ -506,8 +510,8 @@ namespace UnitTest.SimpleInMem
             response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Error error = response.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
-            Assert.AreEqual(TestLayerStackProvider_Fails.InternalDetails, error.message);
+            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual(Errors.InternalErrorMessage, error.message);
         }
 
         [Test]

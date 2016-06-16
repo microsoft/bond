@@ -48,8 +48,6 @@ namespace Bond.Comm
     /// </summary>
     public abstract class Transport
     {
-        internal static readonly string InternalErrorMessage = "The server has encounted an error";
-
         /// <summary>
         /// Get a layer stack instance for this transport.
         /// </summary>
@@ -114,54 +112,5 @@ namespace Bond.Comm
         /// requests expecting responses will be completed with failures.
         /// </remarks>
         public abstract Task StopAsync();
-
-        /// <summary>
-        /// Creates an <see cref="Error"/> for an internal server error from an
-        /// exception.
-        /// </summary>
-        /// <param name="exception">The exception.</param>
-        /// <param name="includeDetails">
-        /// <c>true</c> if debugging details should be included; <c>false</c>
-        /// to omit this potentailly sensitive information
-        /// </param>
-        /// <returns>An Error representing the exception.</returns>
-        public static InternalServerError MakeInternalServerError(Exception exception, bool includeDetails = false)
-        {
-            var internalServerError = new InternalServerError
-            {
-                error_code = (int) ErrorCode.InternalServerError,
-                unique_id = Guid.NewGuid().ToString("D")
-            };
-
-            if (includeDetails && exception != null)
-            {
-                internalServerError.message = InternalErrorMessage + ": " + exception.Message;
-                internalServerError.server_stack_trace = exception.StackTrace;
-
-                var aggEx = exception as AggregateException;
-                if (aggEx != null)
-                {
-                    internalServerError.inner_errors = new List<IBonded<Error>>(aggEx.InnerExceptions.Count);
-
-                    foreach (var innerException in aggEx.InnerExceptions)
-                    {
-                        var innerError = MakeInternalServerError(innerException, includeDetails);
-                        internalServerError.inner_errors.Add(new Bonded<InternalServerError>(innerError));
-                    }
-                }
-                else if (exception.InnerException != null)
-                {
-                    internalServerError.inner_errors = new List<IBonded<Error>>(1);
-                    var innerError = MakeInternalServerError(exception.InnerException, includeDetails);
-                    internalServerError.inner_errors.Add(new Bonded<InternalServerError>(innerError));
-                }
-            }
-            else
-            {
-                internalServerError.message = InternalErrorMessage;
-            }
-
-            return internalServerError;
-        }
     }
 }

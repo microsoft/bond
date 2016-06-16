@@ -298,7 +298,10 @@ namespace Bond.Comm.Epoxy
             {
                 Log.Site().Error("{0} Sending reply for conversation ID {1} failed due to layer error (Code: {2}, Message: {3}).",
                             this, conversationId, layerError.error_code, layerError.message);
-                response = Message.FromError(layerError);
+
+                // Set layer error as result of this Bond method call, replacing original response.
+                // Since this error will be returned to client, cleanse out internal server error details, if any.
+                response = Message.FromError(Errors.CleanseInternalServerError(layerError));
             }
 
             var frame = MessageToFrame(conversationId, null, PayloadType.Response, response, layerData);
@@ -713,7 +716,10 @@ namespace Bond.Comm.Epoxy
                     Log.Site().Error("{0} Receiving request {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
                         this, headers.conversation_id, headers.method_name,
                         layerError.error_code, layerError.message);
-                    result = Message.FromError(layerError);
+
+                    // Set layer error as result of this Bond method call and do not dispatch to method.
+                    // Since this error will be returned to client, cleanse out internal server error details, if any.
+                    result = Message.FromError(Errors.CleanseInternalServerError(layerError));
                 }
 
                 await SendReplyAsync(headers.conversation_id, result, layerStack);

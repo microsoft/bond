@@ -13,12 +13,11 @@ enum MessageType
 enum ErrorCode
 {
     OK = 0x0;
-    InternalServerError = 0xA0BD0002;
-    MethodNotFound = 0xA0BD0003;
-    InvalidInvocation = 0xA0BD0004;
-    UnhandledLayerError = 0xA0BD0005;
-    TransportError = 0xA0BD0006;
-    ConnectionShutDown = 0xA0BD0007;
+    InternalServerError = 0xA0BD0000;
+    MethodNotFound = 0xA0BD0001;
+    InvalidInvocation = 0xA0BD0002;
+    TransportError = 0xA0BD0003;
+    ConnectionShutDown = 0xA0BD0004;
 }
 
 enum ConnectionShutdownReason

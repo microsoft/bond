@@ -83,10 +83,7 @@ namespace Bond.Comm.Layers
                 catch (Exception ex)
                 {
                     Log.Site().Error(ex, "While handling layer {0}", layerIndex);
-                    error = new Error()
-                    {
-                        error_code = (int)ErrorCode.UnhandledLayerError,
-                    };
+                    error = Errors.MakeInternalServerError(ex, includeDetails: true);
                 }
             }
 
@@ -106,12 +103,8 @@ namespace Bond.Comm.Layers
                 }
                 catch (Exception ex)
                 {
-                    error = new Error
-                    {
-                        error_code = (int)ErrorCode.UnhandledLayerError
-                    };
-
                     Log.Site().Error(ex, "While handling layer {0}", layerIndex);
+                    error = Errors.MakeInternalServerError(ex, includeDetails: true);
                 }
             }
 
@@ -133,13 +126,8 @@ namespace Bond.Comm.Layers
                 }
                 catch (Exception ex)
                 {
-                    error = new Error
-                    {
-                        error_code = (int)ErrorCode.UnhandledLayerError
-                    };
-
-                    Log.Site().Error(ex, "While unmarshaling layer data: {0}", ex.Message);
-
+                    Log.Site().Error(ex, "Unmarshaling layer data threw exception");
+                    error = Errors.MakeInternalServerError(ex, includeDetails: true);
                     realLayerData = new TLayerData();
                 }
             }
@@ -235,24 +223,16 @@ namespace Bond.Comm.Layers
                     layers[i] = layerProviders[i].GetLayer();
                     if (layers[i] == null)
                     {
-                        Log.Site().Error("Layer provider {2} returned null.", i);
-                        result = new Error
-                        {
-                            error_code = (int)ErrorCode.UnhandledLayerError,
-                            message = $"Layer provider {i} produced null layer"
-                        };
+                        result = Errors.MakeInternalServerError($"Layer provider {i} produced null layer");
+                        Log.Site().Error(result.message);
                         layers = null;
                         break;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Site().Error(ex, "Layer provider {2} threw an exception.", i);
-                    result = new Error
-                    {
-                        error_code = (int)ErrorCode.UnhandledLayerError,
-                        message = $"Layer provider {i} threw an exception"
-                    };
+                    Log.Site().Error(ex, "Layer provider {0} threw exception", i);
+                    result = Errors.MakeInternalServerError(ex, includeDetails: true);
                     layers = null;
                     break;
                 }

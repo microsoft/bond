@@ -84,7 +84,7 @@ namespace UnitTest.Layers
             IBonded layerData;
             Error error = stack.OnSend(MessageType.Request, sendContext, out layerData);
             Assert.IsNotNull(error);
-            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
         }
 
         [Test]
@@ -94,7 +94,7 @@ namespace UnitTest.Layers
 
             Error error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
             Assert.IsNotNull(error);
-            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
         }
 
         public void LayerStackProvider_BadCtorArguments_Throw()
@@ -366,7 +366,7 @@ namespace UnitTest.Layers
             if (failAfterGets == 0)
             {
                 layerStack = null;
-                return new Error { error_code = (int)ErrorCode.UnhandledLayerError, message = InternalDetails };
+                return Errors.MakeInternalServerError(InternalDetails);
             }
             else
             {

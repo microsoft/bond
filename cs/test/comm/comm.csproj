@@ -28,11 +28,11 @@
   <ItemGroup>
     <Compile Include="Interfaces\CodegenHelpersTests.cs" />
     <Compile Include="DummyTestService.cs" />
+    <Compile Include="Interfaces\ErrorsTests.cs" />
     <Compile Include="Interfaces\LogTests.cs" />
     <Compile Include="Interfaces\MessageTests.cs" />
     <Compile Include="Interfaces\TestHelpers.cs" />
     <Compile Include="Interfaces\ListenerTests.cs" />
-    <Compile Include="Interfaces\TransportTests.cs" />
     <BondCodegen Include="comm-test.bond">
       <Options>--namespace=unittest.comm=UnitTest.Comm</Options>
     </BondCodegen>
