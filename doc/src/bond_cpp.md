@@ -1133,21 +1133,24 @@ See example: `examples/cpp/core/protocol_versions`.
 Simple JSON
 -----------
 
-Simple JSON encoding implemented as a DOM protocol. The output is a
-standard JSON and is a very good choice for interoperating with other systems
-or generating human readable payload. Because payload doesn't include field
-ordinals, there are two caveats when used as a Bond serialization protocol:
+The Simple JSON protocol is a simple JSON encoding implemented as a DOM
+protocol. The output is standard JSON and is a very good choice for
+interoperating with other systems or generating human readable payload.
 
-- Transcoding from Simple JSON to binary Bond protocols is not supported 
-  (transcoding from a binary protocol to Simple JSON is supported).
+Because the payload doesn't include field ordinals, there are two caveats
+when used as a Bond serialization protocol:
+
+- Transcoding from Simple JSON to binary Bond protocols is not supported
+  (transcoding from a binary protocol to Simple JSON is supported if you
+  have the schema).
 - Field matching is done by field name rather than ordinal. The implication
-  is that renaming a field (which is considered a bad practice anyways) is
-  a breaking schema change for Simple JSON.
+  is that renaming a field (which is considered a bad practice anyways) is a
+  breaking schema change for Simple JSON.
 
-Simple JSON flattens inheritance hierarchy which may lead to name conflicts 
-between fields of base and derived Bond struct. It is possible to resolve such 
-conflicts w/o the need to actually rename the fields by annotating fields with 
-JsonName attribute, e.g.:
+Simple JSON also flattens the inheritance hierarchy which may lead to name
+conflicts between fields of base and derived Bond structs. It is possible to
+resolve such conflicts without the need to actually rename the fields by
+annotating fields with `JsonName` attribute, e.g.:
 
     struct Base
     {
@@ -1159,6 +1162,16 @@ JsonName attribute, e.g.:
         [JsonName("DerivedFoo")]
         0: string foo;
     }
+
+Note that Simple JSON is not designed to be able to read arbitrary JSON
+objects. Simple JSON has its own way of encoding Bond objects in JSON that
+differs from how other libraries would encode the same object. When
+interoperating with other JSON libraries, be aware of these differences:
+
+- maps are encoded as arrays of key/value pairs not as sub-objects
+- the inheritance hierarchy is flattened
+- nulls are expressed as empty arrays
+- enums are encoded via their numeric value, not their symbolic names
 
 Implemented in [`SimpleJsonReader`][simple_json_reader_reference] and
 [`SimpleJsonWriter`][simple_json_writer_reference] classes.
