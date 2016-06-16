@@ -49,7 +49,7 @@ struct ConnectionMetrics
     0: string connection_id;
     1: string local_endpoint;
     2: string remote_endpoint;
-    3: ConnectionShutdownReason shutdown_reason;
+    3: ConnectionShutdownReason shutdown_reason = Unknown;
     4: double duration_millis;
 }
 
