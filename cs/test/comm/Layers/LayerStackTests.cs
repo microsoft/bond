@@ -12,6 +12,7 @@ namespace UnitTest.Layers
     using Bond.Protocols;
     using NUnit.Framework;
     using UnitTest.Comm;
+    using UnitTest.Interfaces;
 
     [TestFixture]
     public class LayerStackTests
@@ -25,10 +26,10 @@ namespace UnitTest.Layers
         {
             var testLayer1 = new TestLayer_AlwaysThrows();
 
-            Assert.Throws<ArgumentException>(() => new LayerStack<Dummy>(null));
-            Assert.Throws<ArgumentException>(() => new LayerStack<Dummy>(new ILayer<Dummy>[0]));
-            Assert.Throws<ArgumentNullException>(() => new LayerStack<Dummy>(null, null));
-            Assert.Throws<ArgumentNullException>(() => new LayerStack<Dummy>(testLayer1, null));
+            Assert.Throws<ArgumentException>(() => new LayerStack<Dummy>(LoggerTests.BlackHole, null));
+            Assert.Throws<ArgumentException>(() => new LayerStack<Dummy>(LoggerTests.BlackHole, new ILayer<Dummy>[0]));
+            Assert.Throws<ArgumentNullException>(() => new LayerStack<Dummy>(LoggerTests.BlackHole, null, null));
+            Assert.Throws<ArgumentNullException>(() => new LayerStack<Dummy>(LoggerTests.BlackHole, testLayer1, null));
         }
 
         [Test]
@@ -37,7 +38,7 @@ namespace UnitTest.Layers
             var testList = new List<string>();
             var testLayer1 = new TestLayer_Append("foo", testList);
             var testLayer2 = new TestLayer_Append("bar", testList);
-            var stackProvider = new LayerStackProvider<Dummy>(testLayer1, testLayer2);
+            var stackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, testLayer1, testLayer2);
             ILayerStack stack;
             Error error = stackProvider.GetLayerStack(out stack);
             Assert.IsNull(error);
@@ -63,7 +64,7 @@ namespace UnitTest.Layers
             var testList = new List<string>();
             var testLayer1 = new TestLayer_Append("foo", testList);
             var testLayer2 = new TestLayer_Append("bar", testList);
-            var stackProvider = new LayerStackProvider<Dummy>(testLayer1, testLayer2);
+            var stackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, testLayer1, testLayer2);
             ILayerStack stack;
             Error error = stackProvider.GetLayerStack(out stack);
             Assert.IsNull(error);
@@ -79,7 +80,7 @@ namespace UnitTest.Layers
         [Test]
         public void LayerStack_OnSend_ErrorOnThrow()
         {
-            var stack = new LayerStack<Dummy>(new TestLayer_AlwaysThrows());
+            var stack = new LayerStack<Dummy>(LoggerTests.BlackHole, new TestLayer_AlwaysThrows());
 
             IBonded layerData;
             Error error = stack.OnSend(MessageType.Request, sendContext, out layerData);
@@ -90,7 +91,7 @@ namespace UnitTest.Layers
         [Test]
         public void LayerStack_OnReceive_ErrorOnThrow()
         {
-            var stack = new LayerStack<Dummy>(new TestLayer_AlwaysThrows());
+            var stack = new LayerStack<Dummy>(LoggerTests.BlackHole, new TestLayer_AlwaysThrows());
 
             Error error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
             Assert.IsNotNull(error);
@@ -102,16 +103,16 @@ namespace UnitTest.Layers
             var testLayer1 = new TestLayer_AlwaysThrows();
 
             Assert.Throws<ArgumentException>(() => new LayerStackProvider<Dummy>(null));
-            Assert.Throws<ArgumentException>(() => new LayerStackProvider<Dummy>(new ILayerProvider<Dummy>[0]));
+            Assert.Throws<ArgumentException>(() => new LayerStackProvider<Dummy>(LoggerTests.BlackHole, new ILayerProvider<Dummy>[0]));
             Assert.Throws<ArgumentNullException>(() => new LayerStackProvider<Dummy>(null, null));
-            Assert.Throws<ArgumentNullException>(() => new LayerStackProvider<Dummy>(testLayer1, null));
+            Assert.Throws<ArgumentNullException>(() => new LayerStackProvider<Dummy>(LoggerTests.BlackHole, testLayer1, null));
         }
 
 
         [Test]
         public void LayerStackProvider_StatelessLayerStackDoesNotReallocate()
         {
-            var provider = new LayerStackProvider<Dummy>(new TestLayer_AlwaysThrows(), new TestLayer_AlwaysThrows());
+            var provider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, new TestLayer_AlwaysThrows(), new TestLayer_AlwaysThrows());
             ILayerStack stack;
             Error error = provider.GetLayerStack(out stack);
             Assert.IsNull(error);
@@ -124,7 +125,8 @@ namespace UnitTest.Layers
         [Test]
         public void LayerStackProvider_StatefulLayerStackDoesReallocate()
         {
-            var provider = new LayerStackProvider<Dummy>(new TestLayer_AlwaysThrows(),
+            var provider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole,
+                                                         new TestLayer_AlwaysThrows(),
                                                          new TestLayerProvider_StatefulAppend("foo"),
                                                          new TestLayer_AlwaysThrows());
             ILayerStack stack;
@@ -371,7 +373,7 @@ namespace UnitTest.Layers
             else
             {
                 failAfterGets--;
-                layerStack = new LayerStack<Dummy>(new TestLayer_StatefulAppend("foo"));
+                layerStack = new LayerStack<Dummy>(LoggerTests.BlackHole, new TestLayer_StatefulAppend("foo"));
                 return null;
             }
         }

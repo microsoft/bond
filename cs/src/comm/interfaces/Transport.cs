@@ -19,6 +19,10 @@ namespace Bond.Comm
     {
         protected ILayerStackProvider LayerStackProvider { get; private set; }
 
+        protected ILogSink LogSink { get; private set; }
+
+        protected bool EnableDebugLogs { get; private set; } = false;
+
         /// <summary>
         /// Set the layer stack.
         /// </summary>
@@ -31,6 +35,18 @@ namespace Bond.Comm
         public virtual TransportBuilder<TTransport> SetLayerStackProvider(ILayerStackProvider layerStackProvider)
         {
             this.LayerStackProvider = layerStackProvider;
+            return this;
+        }
+
+        public virtual TransportBuilder<TTransport> SetLogSink(ILogSink logSink)
+        {
+            LogSink = logSink;
+            return this;
+        }
+
+        public virtual TransportBuilder<TTransport> EnableDebugLogging(bool enable)
+        {
+            EnableDebugLogs = enable;
             return this;
         }
 

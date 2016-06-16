@@ -32,10 +32,9 @@ namespace Bond.Examples.NotifyEvent
 
         private async static Task<EpoxyTransport> SetupAsync()
         {
-            var handler = new ConsoleLogger();
-            Log.SetHandler(handler);
-
-            var transport = new EpoxyTransportBuilder().Construct();
+            var transport = new EpoxyTransportBuilder()
+                .SetLogSink(new ConsoleLogger())
+                .Construct();
 
             var assignAPortEndPoint = new IPEndPoint(IPAddress.Loopback, 0);
 

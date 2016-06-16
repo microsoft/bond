@@ -29,8 +29,9 @@
     <Compile Include="Interfaces\CodegenHelpersTests.cs" />
     <Compile Include="DummyTestService.cs" />
     <Compile Include="Interfaces\ErrorsTests.cs" />
-    <Compile Include="Interfaces\LogTests.cs" />
+    <Compile Include="Interfaces\LoggerTests.cs" />
     <Compile Include="Interfaces\MessageTests.cs" />
+    <Compile Include="Interfaces\ServiceIsolationTests.cs" />
     <Compile Include="Interfaces\TestHelpers.cs" />
     <Compile Include="Interfaces\ListenerTests.cs" />
     <BondCodegen Include="comm-test.bond">
@@ -109,6 +110,10 @@
     <ProjectReference Include="..\..\src\comm\epoxy-transport\epoxy-transport.csproj">
       <Project>{c687c52c-0a5b-4f10-8cb3-dbaf9a72d042}</Project>
       <Name>epoxy-transport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\comm\service\service.csproj">
+      <Project>{79D2423A-87C8-44A2-89C2-2FA94521747E}</Project>
+      <Name>service</Name>
     </ProjectReference>
     <ProjectReference Include="..\core\Core.csproj">
       <Project>{ff056b62-225a-47bc-b177-550fadda4b41}</Project>

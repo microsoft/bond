@@ -66,14 +66,18 @@ namespace Bond.Comm.Epoxy
 
         private readonly List<Framelet> framelets;
 
-        public Frame() : this(DefaultFrameCount) { }
+        private readonly Logger logger;
 
-        public Frame(int capacity)
+        public Frame(Logger logger) : this(DefaultFrameCount, logger) { }
+
+        public Frame(int capacity, Logger logger)
         {
             framelets = new List<Framelet>(capacity);
 
             // start with space for count of framelets
             TotalSize = sizeof (UInt16);
+
+            this.logger = logger;
         }
 
         public IReadOnlyList<Framelet> Framelets => framelets;
@@ -86,7 +90,7 @@ namespace Bond.Comm.Epoxy
         {
             if (framelets.Count == UInt16.MaxValue)
             {
-                var message = Log.Site().ErrorAndReturnFormatted("Exceeded maximum allowed count of framelets.");
+                var message = logger.Site().ErrorAndReturnFormatted("Exceeded maximum allowed count of framelets.");
                 throw new InvalidOperationException(message);
             }
 
@@ -98,7 +102,7 @@ namespace Bond.Comm.Epoxy
             }
             catch (OverflowException oex)
             {
-                var message = Log.Site().ErrorAndReturnFormatted("Exceeded maximum size of frame.");
+                var message = logger.Site().ErrorAndReturnFormatted("Exceeded maximum size of frame.");
                 throw new InvalidOperationException(message, oex);
             }
         }
@@ -150,12 +154,12 @@ namespace Bond.Comm.Epoxy
             }
             catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException)
             {
-                Log.Site().Error(ex, "Failed to write entire frame.");
+                logger.Site().Error(ex, "Failed to write entire frame.");
                 throw;
             }
         }
 
-        public static async Task<Frame> ReadAsync(Stream stream, CancellationToken ct)
+        public static async Task<Frame> ReadAsync(Stream stream, CancellationToken ct, Logger logger)
         {
             try
             {
@@ -165,7 +169,7 @@ namespace Bond.Comm.Epoxy
                     throw new EpoxyProtocolErrorException("Zero framelets");
                 }
 
-                var frame = new Frame(frameletCount);
+                var frame = new Frame(frameletCount, logger);
 
                 while (frameletCount > 0)
                 {

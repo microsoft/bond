@@ -13,7 +13,7 @@ namespace Bond.Comm.SimpleInMem
     {
         public override SimpleInMemTransport Construct()
         {
-            return new SimpleInMemTransport(LayerStackProvider);
+            return new SimpleInMemTransport(LayerStackProvider, new Logger(LogSink, EnableDebugLogs));
         }
     }
 
@@ -22,10 +22,12 @@ namespace Bond.Comm.SimpleInMem
         object listenersLock = new object();
         IDictionary<string, SimpleInMemListener> listeners = new Dictionary<string, SimpleInMemListener>();
         readonly ILayerStackProvider layerStackProvider;
+        readonly Logger logger;
 
-        public SimpleInMemTransport(ILayerStackProvider layerStackProvider)
+        public SimpleInMemTransport(ILayerStackProvider layerStackProvider, Logger logger)
         {
             this.layerStackProvider = layerStackProvider;
+            this.logger = logger;
         }
 
         public override Error GetLayerStack(out ILayerStack stack)
@@ -48,14 +50,14 @@ namespace Bond.Comm.SimpleInMem
         /// <exception cref="ArgumentException">the listener for given address does not exist.</exception>
         public async override Task<Connection> ConnectToAsync(string address, CancellationToken ct)
         {
-            Log.Site().Information("Connecting to {0}.", address);
+            logger.Site().Information("Connecting to {0}.", address);
             SimpleInMemListener listener;
 
             lock (listenersLock)
             {
                 if (!listeners.TryGetValue(address, out listener))
                 {
-                    var message = Log.Site().FatalAndReturnFormatted("Listener not found for address: {0}", address);
+                    var message = logger.Site().FatalAndReturnFormatted("Listener not found for address: {0}", address);
                     throw new ArgumentException(message);
                 }
             }
@@ -82,7 +84,7 @@ namespace Bond.Comm.SimpleInMem
                 {
                     if (!listeners.TryGetValue(address, out listener))
                     {
-                        listener = new SimpleInMemListener(this, address);
+                        listener = new SimpleInMemListener(this, address, logger);
                         listeners.Add(address, listener);
                     }
                 }

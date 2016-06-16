@@ -65,15 +65,18 @@ namespace Bond.Comm.Epoxy
         // this member is used to capture any handshake errors
         ProtocolError handshakeError;
 
-        readonly private ConnectionMetrics connectionMetrics = new ConnectionMetrics();
-        private Stopwatch duration;
+        readonly ConnectionMetrics connectionMetrics = new ConnectionMetrics();
+        Stopwatch duration;
+
+        readonly Logger logger;
 
         private EpoxyConnection(
             ConnectionType connectionType,
             EpoxyTransport parentTransport,
             EpoxyListener parentListener,
             ServiceHost serviceHost,
-            Socket socket)
+            Socket socket,
+            Logger logger)
         {
             Debug.Assert(parentTransport != null);
             Debug.Assert(connectionType != ConnectionType.Server || parentListener != null, "Server connections must have a listener");
@@ -86,7 +89,7 @@ namespace Bond.Comm.Epoxy
             this.parentListener = parentListener;
             this.serviceHost = serviceHost;
 
-            netSocket = new EpoxySocket(socket);
+            netSocket = new EpoxySocket(socket, logger);
 
             // cache these so we can use them after the socket has been shutdown
             LocalEndPoint = (IPEndPoint) socket.LocalEndPoint;
@@ -105,11 +108,14 @@ namespace Bond.Comm.Epoxy
             connectionMetrics.connection_id = Guid.NewGuid().ToString();
             connectionMetrics.local_endpoint = LocalEndPoint.ToString();
             connectionMetrics.remote_endpoint = RemoteEndPoint.ToString();
+
+            this.logger = logger;
         }
 
         internal static EpoxyConnection MakeClientConnection(
             EpoxyTransport parentTransport,
-            Socket clientSocket)
+            Socket clientSocket,
+            Logger logger)
         {
             const EpoxyListener parentListener = null;
 
@@ -117,22 +123,25 @@ namespace Bond.Comm.Epoxy
                 ConnectionType.Client,
                 parentTransport,
                 parentListener,
-                new ServiceHost(parentTransport),
-                clientSocket);
+                new ServiceHost(parentTransport, logger),
+                clientSocket,
+                logger);
         }
 
         internal static EpoxyConnection MakeServerConnection(
             EpoxyTransport parentTransport,
             EpoxyListener parentListener,
             ServiceHost serviceHost,
-            Socket socket)
+            Socket socket,
+            Logger logger)
         {
             return new EpoxyConnection(
                 ConnectionType.Server,
                 parentTransport,
                 parentListener,
                 serviceHost,
-                socket);
+                socket,
+                logger);
         }
 
         /// <summary>
@@ -150,9 +159,9 @@ namespace Bond.Comm.Epoxy
             return $"{nameof(EpoxyConnection)}(local: {LocalEndPoint}, remote: {RemoteEndPoint})";
         }
 
-        internal static Frame MessageToFrame(ulong conversationId, string methodName, PayloadType type, IMessage payload, IBonded layerData)
+        internal static Frame MessageToFrame(ulong conversationId, string methodName, PayloadType type, IMessage payload, IBonded layerData, Logger logger)
         {
-            var frame = new Frame();
+            var frame = new Frame(logger);
 
             {
                 var headers = new EpoxyHeaders
@@ -208,18 +217,18 @@ namespace Bond.Comm.Epoxy
             return frame;
         }
 
-        internal static Frame MakeConfigFrame()
+        internal static Frame MakeConfigFrame(Logger logger)
         {
             var outputBuffer = new OutputBuffer(1);
             var fastWriter = new FastBinaryWriter<OutputBuffer>(outputBuffer);
             Serialize.To(fastWriter, EmptyConfig);
 
-            var frame = new Frame(1);
+            var frame = new Frame(1, logger);
             frame.Add(new Framelet(FrameletType.EpoxyConfig, outputBuffer.Data));
             return frame;
         }
 
-        internal static Frame MakeProtocolErrorFrame(ProtocolErrorCode errorCode, Error details)
+        internal static Frame MakeProtocolErrorFrame(ProtocolErrorCode errorCode, Error details, Logger logger)
         {
             var protocolError = new ProtocolError
             {
@@ -231,7 +240,7 @@ namespace Bond.Comm.Epoxy
             var fastWriter = new FastBinaryWriter<OutputBuffer>(outputBuffer);
             Serialize.To(fastWriter, protocolError);
 
-            var frame = new Frame(1);
+            var frame = new Frame(1, logger);
             frame.Add(new Framelet(FrameletType.ProtocolError, outputBuffer.Data));
             return frame;
         }
@@ -248,23 +257,24 @@ namespace Bond.Comm.Epoxy
 
             if (layerError == null)
             {
-                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Request, sendContext, out layerData);
+                layerError = LayerStackUtils.ProcessOnSend(
+                        layerStack, MessageType.Request, sendContext, out layerData, logger);
             }
 
             if (layerError != null)
             {
-                Log.Site().Error("{0} Sending request {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
+                logger.Site().Error("{0} Sending request {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
                             this, conversationId, methodName, layerError.error_code, layerError.message);
                 return Message.FromError(layerError);
             }
 
-            var frame = MessageToFrame(conversationId, methodName, PayloadType.Request, request, layerData);
+            var frame = MessageToFrame(conversationId, methodName, PayloadType.Request, request, layerData, logger);
 
-            Log.Site().Debug("{0} Sending request {1}/{2}.", this, conversationId, methodName);
+            logger.Site().Debug("{0} Sending request {1}/{2}.", this, conversationId, methodName);
             var responseTask = responseMap.Add(conversationId, layerStack);
 
             bool wasSent = await SendFrameAsync(frame);
-            Log.Site().Debug("{0} Sending request {1}/{2} {3}.",
+            logger.Site().Debug("{0} Sending request {1}/{2} {3}.",
                 this, conversationId, methodName, wasSent ? "succeeded" : "failed");
 
             if (!wasSent)
@@ -279,7 +289,7 @@ namespace Bond.Comm.Epoxy
 
                 if (!wasCompleted)
                 {
-                    Log.Site().Information("{0} Unsuccessfully sent request {1}/{2} still received response.",
+                    logger.Site().Information("{0} Unsuccessfully sent request {1}/{2} still received response.",
                         this, conversationId, methodName);
                 }
             }
@@ -291,12 +301,13 @@ namespace Bond.Comm.Epoxy
         {
             var sendContext = new EpoxySendContext(this);
             IBonded layerData;
-            Error layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Response, sendContext, out layerData);
+            Error layerError = LayerStackUtils.ProcessOnSend(
+                    layerStack, MessageType.Response, sendContext, out layerData, logger);
 
             // If there was a layer error, replace the response with the layer error
             if (layerError != null)
             {
-                Log.Site().Error("{0} Sending reply for conversation ID {1} failed due to layer error (Code: {2}, Message: {3}).",
+                logger.Site().Error("{0} Sending reply for conversation ID {1} failed due to layer error (Code: {2}, Message: {3}).",
                             this, conversationId, layerError.error_code, layerError.message);
 
                 // Set layer error as result of this Bond method call, replacing original response.
@@ -304,11 +315,11 @@ namespace Bond.Comm.Epoxy
                 response = Message.FromError(Errors.CleanseInternalServerError(layerError));
             }
 
-            var frame = MessageToFrame(conversationId, null, PayloadType.Response, response, layerData);
-            Log.Site().Debug("{0} Sending reply for conversation ID {1}.", this, conversationId);
+            var frame = MessageToFrame(conversationId, null, PayloadType.Response, response, layerData, logger);
+            logger.Site().Debug("{0} Sending reply for conversation ID {1}.", this, conversationId);
 
             bool wasSent = await SendFrameAsync(frame);
-            Log.Site().Debug("{0} Sending reply for conversation ID {1} {2}.",
+            logger.Site().Debug("{0} Sending reply for conversation ID {1} {2}.",
                 this, conversationId, wasSent ? "succeedeed" : "failed");
         }
 
@@ -333,7 +344,7 @@ namespace Bond.Comm.Epoxy
             }
             catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException || ex is SocketException)
             {
-                Log.Site().Error(ex, "{0} While writing a Frame to the network: {1}", this, ex.Message);
+                logger.Site().Error(ex, "{0} While writing a Frame to the network: {1}", this, ex.Message);
                 return false;
             }
         }
@@ -349,22 +360,23 @@ namespace Bond.Comm.Epoxy
 
             if (layerError == null)
             {
-                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Event, sendContext, out layerData);
+                layerError = LayerStackUtils.ProcessOnSend(
+                        layerStack, MessageType.Event, sendContext, out layerData, logger);
             }
 
             if (layerError != null)
             {
-                Log.Site().Error("{0} Sending event {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
+                logger.Site().Error("{0} Sending event {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
                     this, conversationId, methodName, layerError.error_code, layerError.message);
                 return;
             }
 
-            var frame = MessageToFrame(conversationId, methodName, PayloadType.Event, message, layerData);
+            var frame = MessageToFrame(conversationId, methodName, PayloadType.Event, message, layerData, logger);
 
-            Log.Site().Debug("{0} Sending event {1}/{2}.", this, conversationId, methodName);
+            logger.Site().Debug("{0} Sending event {1}/{2}.", this, conversationId, methodName);
 
             bool wasSent = await SendFrameAsync(frame);
-            Log.Site().Debug("{0} Sending event {1}/{2} {3}.",
+            logger.Site().Debug("{0} Sending event {1}/{2} {3}.",
                 this, conversationId, methodName, wasSent ? "succeeded" : "failed");
         }
 
@@ -442,7 +454,7 @@ namespace Bond.Comm.Epoxy
 
                         case State.Disconnected: // we should never enter this switch in the Disconnected state
                         default:
-                            Log.Site().Error("{0} Unexpected connection state: {1}", this, state);
+                            logger.Site().Error("{0} Unexpected connection state: {1}", this, state);
                             protocolError = ProtocolErrorCode.INTERNAL_ERROR;
                             nextState = State.SendProtocolError;
                             break;
@@ -450,7 +462,7 @@ namespace Bond.Comm.Epoxy
                 }
                 catch (Exception ex) when (state != State.Disconnecting && state != State.Disconnected)
                 {
-                    Log.Site().Error(ex, "{0} Unhandled exception. Current state: {1}", this, state);
+                    logger.Site().Error(ex, "{0} Unhandled exception. Current state: {1}", this, state);
 
                     // we're in a state where we can attempt to disconnect
                     protocolError = ProtocolErrorCode.INTERNAL_ERROR;
@@ -458,7 +470,7 @@ namespace Bond.Comm.Epoxy
                 }
                 catch (Exception ex)
                 {
-                    Log.Site().Error(ex, "{0} Unhandled exception during shutdown. Abandoning connection. Current state: {1}",
+                    logger.Site().Error(ex, "{0} Unhandled exception during shutdown. Abandoning connection. Current state: {1}",
                         this, state);
                     break; // the while loop
                 }
@@ -468,7 +480,7 @@ namespace Bond.Comm.Epoxy
 
             if (state != State.Disconnected)
             {
-                Log.Site().Information("{0} Abandoning connection. Current state: {1}", this, state);
+                logger.Site().Information("{0} Abandoning connection. Current state: {1}", this, state);
             }
 
             DoDisconnected();
@@ -489,7 +501,7 @@ namespace Bond.Comm.Epoxy
                 }
                 else
                 {
-                    Log.Site().Information("{0} Rejecting connection because {1}:{2}",
+                    logger.Site().Information("{0} Rejecting connection because {1}:{2}",
                         this, disconnectError.error_code, disconnectError.message);
 
                     protocolError = ProtocolErrorCode.CONNECTION_REJECTED;
@@ -507,7 +519,7 @@ namespace Bond.Comm.Epoxy
 
         private async Task<State> DoSendConfigAsync()
         {
-            Frame emptyConfigFrame = MakeConfigFrame();
+            Frame emptyConfigFrame = MakeConfigFrame(logger);
             await SendFrameAsync(emptyConfigFrame);
             return (connectionType == ConnectionType.Server ? State.Connected : State.ClientExpectConfig);
         }
@@ -515,14 +527,14 @@ namespace Bond.Comm.Epoxy
         private async Task<State> DoExpectConfigAsync()
         {
             Stream networkStream = netSocket.NetworkStream;
-            Frame frame = await Frame.ReadAsync(networkStream, shutdownTokenSource.Token);
+            Frame frame = await Frame.ReadAsync(networkStream, shutdownTokenSource.Token, logger);
             if (frame == null)
             {
-                Log.Site().Information("{0} EOS encountered while waiting for config, so disconnecting.", this);
+                logger.Site().Information("{0} EOS encountered while waiting for config, so disconnecting.", this);
                 return State.Disconnecting;
             }
 
-            var result = EpoxyProtocol.Classify(frame);
+            var result = EpoxyProtocol.Classify(frame, logger);
             switch (result.Disposition)
             {
                 case EpoxyProtocol.FrameDisposition.ProcessConfig:
@@ -539,7 +551,7 @@ namespace Bond.Comm.Epoxy
 
                 default:
                     protocolError = result.ErrorCode ?? ProtocolErrorCode.PROTOCOL_VIOLATED;
-                    Log.Site().Error("{0} Unsupported FrameDisposition {1} when waiting for config. ErrorCode: {2})",
+                    logger.Site().Error("{0} Unsupported FrameDisposition {1} when waiting for config. ErrorCode: {2})",
                         this, result.Disposition, protocolError);
                     return State.SendProtocolError;
             }
@@ -554,27 +566,27 @@ namespace Bond.Comm.Epoxy
                 try
                 {
                     Stream networkStream = netSocket.NetworkStream;
-                    frame = await Frame.ReadAsync(networkStream, shutdownTokenSource.Token);
+                    frame = await Frame.ReadAsync(networkStream, shutdownTokenSource.Token, logger);
                     if (frame == null)
                     {
-                        Log.Site().Information("{0} EOS encountered, so disconnecting.", this);
+                        logger.Site().Information("{0} EOS encountered, so disconnecting.", this);
                         return State.Disconnecting;
                     }
                 }
                 catch (EpoxyProtocolErrorException pex)
                 {
-                    Log.Site().Error(pex, "{0} Protocol error encountered.", this);
+                    logger.Site().Error(pex, "{0} Protocol error encountered.", this);
                     protocolError = ProtocolErrorCode.PROTOCOL_VIOLATED;
                     return State.SendProtocolError;
                 }
                 catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException || ex is SocketException)
                 {
-                    Log.Site().Error(ex, "{0} IO error encountered.", this);
+                    logger.Site().Error(ex, "{0} IO error encountered.", this);
                     return State.Disconnecting;
                 }
 
 
-                var result = EpoxyProtocol.Classify(frame);
+                var result = EpoxyProtocol.Classify(frame, logger);
                 switch (result.Disposition)
                 {
                     case EpoxyProtocol.FrameDisposition.DeliverRequestToService:
@@ -608,7 +620,7 @@ namespace Bond.Comm.Epoxy
                         return State.Disconnecting;
 
                     default:
-                        Log.Site().Error("{0} Unsupported FrameDisposition {1}", this, result.Disposition);
+                        logger.Site().Error("{0} Unsupported FrameDisposition {1}", this, result.Disposition);
                         protocolError = ProtocolErrorCode.INTERNAL_ERROR;
                         return State.SendProtocolError;
                 }
@@ -623,12 +635,12 @@ namespace Bond.Comm.Epoxy
             ProtocolErrorCode errorCode = protocolError;
             Error details = errorDetails;
 
-            var frame = MakeProtocolErrorFrame(errorCode, details);
-            Log.Site().Debug("{0} Sending protocol error with code {1} and details {2}.",
+            var frame = MakeProtocolErrorFrame(errorCode, details, logger);
+            logger.Site().Debug("{0} Sending protocol error with code {1} and details {2}.",
                 this, errorCode, details == null ? "<null>" : details.error_code + details.message);
 
             bool wasSent = await SendFrameAsync(frame);
-            Log.Site().Debug(
+            logger.Site().Debug(
                 "{0} Sending protocol error with code {1} {2}.",
                 this, errorCode, wasSent ? "succeeded" : "failed");
 
@@ -637,7 +649,7 @@ namespace Bond.Comm.Epoxy
 
         private State DoDisconnect()
         {
-            Log.Site().Debug("{0} Shutting down.", this);
+            logger.Site().Debug("{0} Shutting down.", this);
 
             netSocket.Shutdown();
 
@@ -682,7 +694,7 @@ namespace Bond.Comm.Epoxy
         {
             if (headers.error_code != (int)ErrorCode.OK)
             {
-                Log.Site().Error("{0} Received request with a non-zero error code. Conversation ID: {1}",
+                logger.Site().Error("{0} Received request with a non-zero error code. Conversation ID: {1}",
                     this, headers.conversation_id);
                 protocolError = ProtocolErrorCode.PROTOCOL_VIOLATED;
                 return State.SendProtocolError;
@@ -701,7 +713,8 @@ namespace Bond.Comm.Epoxy
 
                 if (layerError == null)
                 {
-                    layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Request, receiveContext, bondedLayerData);
+                    layerError = LayerStackUtils.ProcessOnReceive(
+                            layerStack, MessageType.Request, receiveContext, bondedLayerData, logger);
                 }
 
                 IMessage result;
@@ -713,7 +726,7 @@ namespace Bond.Comm.Epoxy
                 }
                 else
                 {
-                    Log.Site().Error("{0} Receiving request {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
+                    logger.Site().Error("{0} Receiving request {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
                         this, headers.conversation_id, headers.method_name,
                         layerError.error_code, layerError.message);
 
@@ -742,10 +755,9 @@ namespace Bond.Comm.Epoxy
             }
 
             TaskCompletionSource<IMessage> tcs = responseMap.TakeTaskCompletionSource(headers.conversation_id);
-
             if (tcs == null)
             {
-                Log.Site().Error("{0} Response for unmatched request. Conversation ID: {1}",
+                logger.Site().Error("{0} Response for unmatched request. Conversation ID: {1}",
                                  this, headers.conversation_id);
                 return;
             }
@@ -758,11 +770,11 @@ namespace Bond.Comm.Epoxy
 
                 ILayerStack layerStack = tcs.Task.AsyncState as ILayerStack;
 
-                Error layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Response, receiveContext, bondedLayerData);
+                Error layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Response, receiveContext, bondedLayerData, logger);
 
                 if (layerError != null)
                 {
-                    Log.Site().Error("{0} Receiving response {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
+                    logger.Site().Error("{0} Receiving response {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
                                      this, headers.conversation_id, headers.method_name,
                                      layerError.error_code, layerError.message);
                     response = Message.FromError(layerError);
@@ -776,7 +788,7 @@ namespace Bond.Comm.Epoxy
         {
             if (headers.error_code != (int)ErrorCode.OK)
             {
-                Log.Site().Error("{0} Received event with a non-zero error code. Conversation ID: {1}",
+                logger.Site().Error("{0} Received event with a non-zero error code. Conversation ID: {1}",
                     this, headers.conversation_id);
                 return;
             }
@@ -793,12 +805,13 @@ namespace Bond.Comm.Epoxy
 
                 if (layerError == null)
                 {
-                    layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Event, receiveContext, bondedLayerData);
+                    layerError = LayerStackUtils.ProcessOnReceive(
+                            layerStack, MessageType.Event, receiveContext, bondedLayerData, logger);
                 }
 
                 if (layerError != null)
                 {
-                    Log.Site().Error("{0}: Receiving event {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
+                    logger.Site().Error("{0}: Receiving event {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
                                 this, headers.conversation_id, headers.method_name,
                                 layerError.error_code, layerError.message);
                     return;
@@ -840,13 +853,15 @@ namespace Bond.Comm.Epoxy
             Socket socket;
             NetworkStream stream;
             int isShutdown;
+            Logger logger;
 
-            public EpoxySocket(Socket sock)
+            public EpoxySocket(Socket sock, Logger logger)
             {
                 socket = sock;
                 stream = new NetworkStream(sock, ownsSocket: false);
                 WriteLock = new SemaphoreSlim(1, 1);
                 isShutdown = 0;
+                this.logger = logger;
             }
 
             public Stream NetworkStream
@@ -897,7 +912,7 @@ namespace Bond.Comm.Epoxy
                     }
                     catch (Exception ex) when (ex is IOException || ex is SocketException)
                     {
-                        Log.Site().Error(ex, "Exception during connection shutdown");
+                        logger.Site().Error(ex, "Exception during connection shutdown");
                     }
 
                     stream = null;

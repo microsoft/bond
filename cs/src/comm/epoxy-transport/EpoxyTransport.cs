@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+﻿// Copyright (c) Microsoft. All rights reserved.w
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.Epoxy
@@ -14,7 +14,7 @@ namespace Bond.Comm.Epoxy
     {
         public override EpoxyTransport Construct()
         {
-            return new EpoxyTransport(LayerStackProvider);
+            return new EpoxyTransport(LayerStackProvider, LogSink, EnableDebugLogs);
         }
     }
 
@@ -23,11 +23,14 @@ namespace Bond.Comm.Epoxy
         public const int DefaultPort = 25188;
 
         readonly ILayerStackProvider layerStackProvider;
+        readonly Logger logger;
 
-        public EpoxyTransport(ILayerStackProvider layerStackProvider)
+        public EpoxyTransport(ILayerStackProvider layerStackProvider, ILogSink logSink, bool enableDebugLogs)
         {
             // Layer stack provider may be null
             this.layerStackProvider = layerStackProvider;
+            // Log Sink may be null
+            logger = new Logger(logSink, enableDebugLogs);
         }
 
         public override Error GetLayerStack(out ILayerStack stack)
@@ -55,13 +58,13 @@ namespace Bond.Comm.Epoxy
 
         public async Task<EpoxyConnection> ConnectToAsync(IPEndPoint endpoint, CancellationToken ct)
         {
-            Log.Site().Information("Connecting to {0}.", endpoint);
+            logger.Site().Information("Connecting to {0}.", endpoint);
 
             Socket socket = MakeClientSocket();
             await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, endpoint, state: null);
 
             // TODO: keep these in some master collection for shutdown
-            var connection = EpoxyConnection.MakeClientConnection(this, socket);
+            var connection = EpoxyConnection.MakeClientConnection(this, socket, logger);
             await connection.StartAsync();
             return connection;
         }
@@ -73,7 +76,7 @@ namespace Bond.Comm.Epoxy
 
         public EpoxyListener MakeListener(IPEndPoint address)
         {
-            return new EpoxyListener(this, address);
+            return new EpoxyListener(this, address, logger);
         }
 
         public override Task StopAsync()

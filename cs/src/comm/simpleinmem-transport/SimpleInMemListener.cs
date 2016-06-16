@@ -26,13 +26,13 @@ namespace Bond.Comm.SimpleInMem
         /// </summary>
         /// <exception cref="ArgumentNullException">parentTransport is null</exception>
         /// <exception cref="ArgumentException">address is null or empty</exception>
-        public SimpleInMemListener(SimpleInMemTransport parentTransport, string address)
+        public SimpleInMemListener(SimpleInMemTransport parentTransport, string address, Logger logger) : base(logger)
         {
             if (parentTransport == null) throw new ArgumentNullException(nameof(parentTransport));
             if (string.IsNullOrEmpty(address)) throw new ArgumentException(nameof(address));
 
             this.address = address;
-            serviceHost = new ServiceHost(parentTransport);
+            serviceHost = new ServiceHost(parentTransport, logger);
             connectionPairs = new Dictionary<Guid, ConnectionPair>();
             logname = $"{nameof(SimpleInMemListener)}({address})";
         }
@@ -60,7 +60,7 @@ namespace Bond.Comm.SimpleInMem
 
         public override void AddService<T>(T service)
         {
-            Log.Site().Information("{0}: Adding {1}.", logname, typeof(T).Name);
+            logger.Site().Information("{0}: Adding {1}.", logname, typeof(T).Name);
             serviceHost.Register(service);
         }
 
@@ -103,7 +103,7 @@ namespace Bond.Comm.SimpleInMem
                             }
                             catch (Exception e)
                             {
-                                Log.Site().Error(e, "{0}: Error stopping connection", logname);
+                                logger.Site().Error(e, "{0}: Error stopping connection", logname);
                             }
                         }
                         connectionPairs.Clear();
@@ -151,8 +151,9 @@ namespace Bond.Comm.SimpleInMem
 
         internal ConnectionPair CreateConnectionPair()
         {
-            var clientConnection = new SimpleInMemConnection(this, ConnectionType.Client, new ServiceHost(serviceHost.ParentTransport));
-            var serverConnection = new SimpleInMemConnection(this, ConnectionType.Server, serviceHost);
+            var clientConnection = new SimpleInMemConnection(
+                this, ConnectionType.Client, new ServiceHost(serviceHost.ParentTransport, logger), logger);
+            var serverConnection = new SimpleInMemConnection(this, ConnectionType.Server, serviceHost, logger);
             var connectionPair = SimpleInMemConnection.Pair(clientConnection, serverConnection);
 
             Add(connectionPair);
@@ -167,7 +168,7 @@ namespace Bond.Comm.SimpleInMem
 
             if (error != null)
             {
-                Log.Site().Information("{0}: Rejecting connection {1} because {2}:{3}.",
+                logger.Site().Information("{0}: Rejecting connection {1} because {2}:{3}.",
                                        logname, client.Id, error.error_code, error.message);
                 throw new SimpleInMemProtocolErrorException(
                     "Connection rejected",

@@ -19,12 +19,14 @@ namespace Bond.Comm.Layers
     public class LayerStack<TLayerData> : ILayerStack where TLayerData : class, new()
     {
         readonly ILayer<TLayerData>[] layers;
+        readonly Logger logger;
 
         /// <summary>
         /// Construct a layer stack instance from a set of layers.
         /// </summary>
+        /// <param name="logger"></param>
         /// <param name="layers">Layers for this stack. Must be at least one and all must not be null.</param>
-        public LayerStack(params ILayer<TLayerData>[] layers)
+        public LayerStack(Logger logger, params ILayer<TLayerData>[] layers)
         {
             if ((layers == null) || (layers.Length == 0)) { throw new ArgumentException("At least one layer must be provided"); }
 
@@ -37,6 +39,7 @@ namespace Bond.Comm.Layers
             }
 
             this.layers = layers;
+            this.logger = logger;
         }
 
         public Error OnSend(MessageType messageType, SendContext context, out IBonded layerData)
@@ -82,7 +85,7 @@ namespace Bond.Comm.Layers
                 }
                 catch (Exception ex)
                 {
-                    Log.Site().Error(ex, "While handling layer {0}", layerIndex);
+                    logger.Site().Error(ex, "While handling layer {0}", layerIndex);
                     error = Errors.MakeInternalServerError(ex, includeDetails: true);
                 }
             }
@@ -103,7 +106,7 @@ namespace Bond.Comm.Layers
                 }
                 catch (Exception ex)
                 {
-                    Log.Site().Error(ex, "While handling layer {0}", layerIndex);
+                    logger.Site().Error(ex, "While handling layer {0}", layerIndex);
                     error = Errors.MakeInternalServerError(ex, includeDetails: true);
                 }
             }
@@ -126,7 +129,7 @@ namespace Bond.Comm.Layers
                 }
                 catch (Exception ex)
                 {
-                    Log.Site().Error(ex, "Unmarshaling layer data threw exception");
+                    logger.Site().Error(ex, "Unmarshaling layer data threw exception");
                     error = Errors.MakeInternalServerError(ex, includeDetails: true);
                     realLayerData = new TLayerData();
                 }
@@ -147,12 +150,14 @@ namespace Bond.Comm.Layers
     {
         readonly ILayerProvider<TLayerData>[] layerProviders;
         readonly LayerStack<TLayerData> cachedLayerStack;
+        readonly Logger logger;
 
         /// <summary>
         /// Construct a layer stack provider from a set of layer providers.
         /// </summary>
+        /// <param name="logger"></param>
         /// <param name="layerProviders">Layer providers for this stack provider. Must be at least one and all must not be null.</param>
-        public LayerStackProvider(params ILayerProvider<TLayerData>[] layerProviders)
+        public LayerStackProvider(Logger logger, params ILayerProvider<TLayerData>[] layerProviders)
         {
             if ((layerProviders == null) || (layerProviders.Length == 0))
             {
@@ -178,13 +183,15 @@ namespace Bond.Comm.Layers
 
                 if (stateless)
                 {
-                    cachedLayerStack = new LayerStack<TLayerData>(layers);
+                    cachedLayerStack = new LayerStack<TLayerData>(logger, layers);
                 }
             }
             else
             {
                 throw new InvalidOperationException(error.message);
             }
+
+            this.logger = logger;
         }
 
         public Error GetLayerStack(out ILayerStack stack)
@@ -201,7 +208,7 @@ namespace Bond.Comm.Layers
                 error = GetNewLayers(out layers);
                 if (error == null)
                 {
-                    stack = new LayerStack<TLayerData>(layers);
+                    stack = new LayerStack<TLayerData>(logger, layers);
                 }
                 else
                 {
@@ -224,14 +231,14 @@ namespace Bond.Comm.Layers
                     if (layers[i] == null)
                     {
                         result = Errors.MakeInternalServerError($"Layer provider {i} produced null layer");
-                        Log.Site().Error(result.message);
+                        logger.Site().Error(result.message);
                         layers = null;
                         break;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Site().Error(ex, "Layer provider {0} threw exception", i);
+                    logger.Site().Error(ex, "Layer provider {0} threw exception", i);
                     result = Errors.MakeInternalServerError(ex, includeDetails: true);
                     layers = null;
                     break;

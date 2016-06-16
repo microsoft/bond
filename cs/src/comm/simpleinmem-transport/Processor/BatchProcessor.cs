@@ -11,8 +11,8 @@ namespace Bond.Comm.SimpleInMem.Processor
     {
         private const int MAXIMUM_BATCH_SIZE = 1000;
         
-        internal BatchProcessor(SimpleInMemConnection connection, ServiceHost serviceHost) 
-            : base(connection, serviceHost)
+        internal BatchProcessor(SimpleInMemConnection connection, ServiceHost serviceHost, Logger logger) 
+            : base(connection, serviceHost, logger)
         {
         }
 
@@ -56,7 +56,7 @@ namespace Bond.Comm.SimpleInMem.Processor
                         break;
 
                     default:
-                        Log.Site().Error("Unsupported Payload type: [{0}], for conversation id: {1}.",
+                        logger.Site().Error("Unsupported Payload type: [{0}], for conversation id: {1}.",
                                          payload.headers.payload_type, payload.headers.conversation_id);
                         break;
                 }
@@ -80,7 +80,7 @@ namespace Bond.Comm.SimpleInMem.Processor
 
             if (layerError == null)
             {
-                layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Request, receiveContext, layerData);
+                layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Request, receiveContext, layerData, logger);
             }
 
             IMessage response;
@@ -91,7 +91,7 @@ namespace Bond.Comm.SimpleInMem.Processor
             }
             else
             {
-                Log.Site().Error("Receiving request {0}/{1} failed due to layer error (Code: {2}, Message: {3}).",
+                logger.Site().Error("Receiving request {0}/{1} failed due to layer error (Code: {2}, Message: {3}).",
                                  headers.conversation_id, headers.method_name, layerError.error_code, layerError.message);
 
                 // Set layer error as result of this Bond method call and do not dispatch to method.
@@ -110,12 +110,12 @@ namespace Bond.Comm.SimpleInMem.Processor
             var sendContext = new SimpleInMemSendContext(connection);
             IBonded layerData = null;
 
-            Error layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Response, sendContext, out layerData);
+            Error layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Response, sendContext, out layerData, logger);
 
             // If there was a layer error, replace the response with the layer error
             if (layerError != null)
             {
-                Log.Site().Error("Sending reply for conversation {0} failed due to layer error (Code: {1}, Message: {2}).",
+                logger.Site().Error("Sending reply for conversation {0} failed due to layer error (Code: {1}, Message: {2}).",
                                  conversationId, layerError.error_code, layerError.message);
 
                 // Set layer error as result of this Bond method call, replacing original response.
@@ -137,11 +137,11 @@ namespace Bond.Comm.SimpleInMem.Processor
 
             ILayerStack layerStack = taskSource.Task.AsyncState as ILayerStack;
 
-            Error layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Response, receiveContext, layerData);
+            Error layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Response, receiveContext, layerData, logger);
 
             if (layerError != null)
             {
-                Log.Site().Error("Receiving response {0}/{1} failed due to layer error (Code: {2}, Message: {3}).",
+                logger.Site().Error("Receiving response {0}/{1} failed due to layer error (Code: {2}, Message: {3}).",
                                  headers.conversation_id, headers.method_name, layerError.error_code, layerError.message);
                 message = Message.FromError(layerError);
             }
@@ -162,12 +162,12 @@ namespace Bond.Comm.SimpleInMem.Processor
 
             if (layerError == null)
             {
-                layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Event, receiveContext, layerData);
+                layerError = LayerStackUtils.ProcessOnReceive(layerStack, MessageType.Event, receiveContext, layerData, logger);
             }
 
             if (layerError != null)
             {
-                Log.Site().Error("Receiving event {0}/{1} failed due to layer error (Code: {2}, Message: {3}).",
+                logger.Site().Error("Receiving event {0}/{1} failed due to layer error (Code: {2}, Message: {3}).",
                                  headers.conversation_id, headers.method_name, layerError.error_code, layerError.message);
                 return;
             }

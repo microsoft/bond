@@ -15,14 +15,16 @@ namespace Bond.Comm.SimpleInMem.Processor
         private readonly object processInput = new object();
         protected readonly SimpleInMemConnection connection;
         protected readonly ServiceHost serviceHost;
+        protected readonly Logger logger;
 
-        internal QueueProcessor(SimpleInMemConnection connection, ServiceHost serviceHost)
+        internal QueueProcessor(SimpleInMemConnection connection, ServiceHost serviceHost, Logger logger)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (serviceHost == null) throw new ArgumentNullException(nameof(serviceHost));
 
             this.connection = connection;
             this.serviceHost = serviceHost;
+            this.logger = logger;
         }
 
         /// <summary>

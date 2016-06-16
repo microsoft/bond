@@ -169,7 +169,7 @@ namespace Bond.Comm.Epoxy
         private static readonly Deserializer<FastBinaryReader<InputBuffer>> errorDeserializer =
             new Deserializer<FastBinaryReader<InputBuffer>>(typeof(ProtocolError));
 
-        internal static ClassifyResult Classify(Frame frame)
+        internal static ClassifyResult Classify(Frame frame, Logger logger)
         {
             if (frame == null)
             {
@@ -179,7 +179,7 @@ namespace Bond.Comm.Epoxy
                 };
             }
 
-            Log.Site().Debug("Processing {0} framelets.", frame.Count);
+            logger.Site().Debug("Processing {0} framelets.", frame.Count);
 
             var state = ClassifyState.ExpectFirstFramelet;
             EpoxyHeaders headers = null;
@@ -203,27 +203,27 @@ namespace Bond.Comm.Epoxy
                 switch (state)
                 {
                     case ClassifyState.ExpectFirstFramelet:
-                        state = TransitionExpectFirstFramelet(state, frame, ref errorCode);
+                        state = TransitionExpectFirstFramelet(state, frame, ref errorCode, logger);
                         continue;
 
                     case ClassifyState.ExpectEpoxyHeaders:
-                        state = TransitionExpectEpoxyHeaders(state, frame, ref headers, ref errorCode);
+                        state = TransitionExpectEpoxyHeaders(state, frame, ref headers, ref errorCode, logger);
                         continue;
 
                     case ClassifyState.ExpectOptionalLayerData:
-                        state = TransitionExpectOptionalLayerData(state, frame, headers, ref layerData, ref errorCode);
+                        state = TransitionExpectOptionalLayerData(state, frame, headers, ref layerData, ref errorCode, logger);
                         continue;
 
                     case ClassifyState.ExpectPayload:
-                        state = TransitionExpectPayload(state, frame, headers, layerData, ref payload, ref errorCode);
+                        state = TransitionExpectPayload(state, frame, headers, layerData, ref payload, ref errorCode, logger);
                         continue;
 
                     case ClassifyState.ExpectEndOfFrame:
-                        state = TransitionExpectEndOfFrame(state, frame, layerData, ref errorCode);
+                        state = TransitionExpectEndOfFrame(state, frame, layerData, ref errorCode, logger);
                         continue;
 
                     case ClassifyState.FrameComplete:
-                        state = TransitionFrameComplete(state, headers, ref errorCode);
+                        state = TransitionFrameComplete(state, headers, ref errorCode, logger);
                         continue;
 
                     case ClassifyState.ValidFrame:
@@ -231,11 +231,11 @@ namespace Bond.Comm.Epoxy
                         continue;
 
                     case ClassifyState.ExpectConfig:
-                        state = TransitionExpectConfig(state, frame, ref errorCode, ref disposition);
+                        state = TransitionExpectConfig(state, frame, ref errorCode, ref disposition, logger);
                         continue;
 
                     case ClassifyState.ExpectProtocolError:
-                        state = TransitionExpectProtocolError(state, frame, ref error, ref disposition);
+                        state = TransitionExpectProtocolError(state, frame, ref error, ref disposition, logger);
                         continue;
 
                     case ClassifyState.ClassifiedValidFrame:
@@ -284,7 +284,7 @@ namespace Bond.Comm.Epoxy
                         };
 
                     default:
-                        Log.Site().Error("Unhandled state {0}. Dropping frame.", state);
+                        logger.Site().Error("Unhandled state {0}. Dropping frame.", state);
                         return new ClassifyResult
                         {
                             Disposition = FrameDisposition.Indeterminate
@@ -294,14 +294,14 @@ namespace Bond.Comm.Epoxy
         }
 
         internal static ClassifyState TransitionExpectFirstFramelet(
-            ClassifyState state, Frame frame, ref ProtocolErrorCode? errorCode)
+            ClassifyState state, Frame frame, ref ProtocolErrorCode? errorCode, Logger logger)
         {
             Debug.Assert(state == ClassifyState.ExpectFirstFramelet);
             Debug.Assert(frame != null);
 
             if (frame.Framelets.Count == 0)
             {
-                Log.Site().Error("Frame was empty.");
+                logger.Site().Error("Frame was empty.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -318,14 +318,14 @@ namespace Bond.Comm.Epoxy
                     return ClassifyState.ExpectProtocolError;
 
                 default:
-                    Log.Site().Error("Frame began with invalid FrameletType {0}.", frame.Framelets[0].Type);
+                    logger.Site().Error("Frame began with invalid FrameletType {0}.", frame.Framelets[0].Type);
                     errorCode = ProtocolErrorCode.MALFORMED_DATA;
                     return ClassifyState.MalformedFrame;
             }
         }
 
         internal static ClassifyState TransitionExpectEpoxyHeaders(
-            ClassifyState state, Frame frame, ref EpoxyHeaders headers, ref ProtocolErrorCode? errorCode)
+            ClassifyState state, Frame frame, ref EpoxyHeaders headers, ref ProtocolErrorCode? errorCode, Logger logger)
         {
             Debug.Assert(state == ClassifyState.ExpectEpoxyHeaders);
             Debug.Assert(frame != null);
@@ -345,19 +345,19 @@ namespace Bond.Comm.Epoxy
                     break;
 
                 default:
-                    Log.Site().Error("Didn't get a valid {0}.", nameof(EpoxyHeaders));
+                    logger.Site().Error("Didn't get a valid {0}.", nameof(EpoxyHeaders));
                     errorCode = ProtocolErrorCode.MALFORMED_DATA;
                     return ClassifyState.MalformedFrame;
             }
 
-            Log.Site().Debug("Deserialized {0} with conversation ID {1} and payload type {2}.",
+            logger.Site().Debug("Deserialized {0} with conversation ID {1} and payload type {2}.",
                 nameof(EpoxyHeaders), headers.conversation_id, headers.payload_type);
             return ClassifyState.ExpectOptionalLayerData;
         }
 
         internal static ClassifyState TransitionExpectOptionalLayerData(
             ClassifyState state, Frame frame, EpoxyHeaders headers, ref ArraySegment<byte> layerData,
-            ref ProtocolErrorCode? errorCode)
+            ref ProtocolErrorCode? errorCode, Logger logger)
         {
             Debug.Assert(state == ClassifyState.ExpectOptionalLayerData);
             Debug.Assert(frame != null);
@@ -369,7 +369,7 @@ namespace Bond.Comm.Epoxy
 
             if (frame.Count < 2)
             {
-                Log.Site().Error("Frame did not continue with LayerData or PayloadData.");
+                logger.Site().Error("Frame did not continue with LayerData or PayloadData.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -383,20 +383,20 @@ namespace Bond.Comm.Epoxy
 
             if (framelet.Type != FrameletType.LayerData)
             {
-                Log.Site().Error("Frame did not continue with LayerData or PayloadData.");
+                logger.Site().Error("Frame did not continue with LayerData or PayloadData.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
             layerData = framelet.Contents;
-            Log.Site().Debug("Extracted {0}-byte layer data in conversation ID {1}.",
+            logger.Site().Debug("Extracted {0}-byte layer data in conversation ID {1}.",
                 layerData.Count, headers.conversation_id);
             return ClassifyState.ExpectPayload;
         }
 
         internal static ClassifyState TransitionExpectPayload(
             ClassifyState state, Frame frame, EpoxyHeaders headers, ArraySegment<byte> layerData,
-            ref ArraySegment<byte> payload, ref ProtocolErrorCode? errorCode)
+            ref ArraySegment<byte> payload, ref ProtocolErrorCode? errorCode, Logger logger)
         {
             Debug.Assert(state == ClassifyState.ExpectPayload);
             Debug.Assert(frame != null);
@@ -410,7 +410,7 @@ namespace Bond.Comm.Epoxy
 
             if (payloadDataIndex >= frame.Count)
             {
-                Log.Site().Error("Frame did not continue with PayloadData.");
+                logger.Site().Error("Frame did not continue with PayloadData.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -418,19 +418,20 @@ namespace Bond.Comm.Epoxy
             var framelet = frame.Framelets[payloadDataIndex];
             if (framelet.Type != FrameletType.PayloadData)
             {
-                Log.Site().Error("Frame did not continue with PayloadData.");
+                logger.Site().Error("Frame did not continue with PayloadData.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
             payload = framelet.Contents;
-            Log.Site().Debug("Extracted {0}-byte payload in conversation ID {1}.",
+            logger.Site().Debug("Extracted {0}-byte payload in conversation ID {1}.",
                 payload.Count, headers.conversation_id);
             return ClassifyState.ExpectEndOfFrame;
         }
 
         internal static ClassifyState TransitionExpectEndOfFrame(
-            ClassifyState state, Frame frame, ArraySegment<byte> layerData, ref ProtocolErrorCode? errorCode)
+            ClassifyState state, Frame frame, ArraySegment<byte> layerData, ref ProtocolErrorCode? errorCode,
+            Logger logger)
         {
             if (state != ClassifyState.ExpectEndOfFrame || frame == null)
             {
@@ -445,14 +446,14 @@ namespace Bond.Comm.Epoxy
             }
             else
             {
-                Log.Site().Error("Frame had trailing framelets.");
+                logger.Site().Error("Frame had trailing framelets.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
         }
 
         internal static ClassifyState TransitionFrameComplete(
-            ClassifyState state, EpoxyHeaders headers, ref ProtocolErrorCode? errorCode)
+            ClassifyState state, EpoxyHeaders headers, ref ProtocolErrorCode? errorCode, Logger logger)
         {
             if (state != ClassifyState.FrameComplete || headers == null)
             {
@@ -466,7 +467,7 @@ namespace Bond.Comm.Epoxy
                 case PayloadType.Event:
                     return ClassifyState.ValidFrame;
                 default:
-                    Log.Site().Warning("Received unrecognized payload type {0}.", headers.payload_type);
+                    logger.Site().Warning("Received unrecognized payload type {0}.", headers.payload_type);
                     errorCode = ProtocolErrorCode.NOT_SUPPORTED;
                     return ClassifyState.MalformedFrame;
             }
@@ -500,7 +501,8 @@ namespace Bond.Comm.Epoxy
         }
 
         internal static ClassifyState TransitionExpectConfig(
-            ClassifyState state, Frame frame, ref ProtocolErrorCode? errorCode, ref FrameDisposition disposition)
+            ClassifyState state, Frame frame, ref ProtocolErrorCode? errorCode, ref FrameDisposition disposition,
+            Logger logger)
         {
             Debug.Assert(state == ClassifyState.ExpectConfig);
             Debug.Assert(frame != null);
@@ -512,7 +514,7 @@ namespace Bond.Comm.Epoxy
 
             if (frame.Count != 1)
             {
-                Log.Site().Error("Config frame had trailing framelets.");
+                logger.Site().Error("Config frame had trailing framelets.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -530,7 +532,7 @@ namespace Bond.Comm.Epoxy
                     break;
 
                 default:
-                    Log.Site().Error("Didn't get a valid {0}.", nameof(EpoxyConfig));
+                    logger.Site().Error("Didn't get a valid {0}.", nameof(EpoxyConfig));
                     errorCode = ProtocolErrorCode.MALFORMED_DATA;
                     return ClassifyState.MalformedFrame;
             }
@@ -540,7 +542,7 @@ namespace Bond.Comm.Epoxy
         }
 
         internal static ClassifyState TransitionExpectProtocolError(
-            ClassifyState state, Frame frame, ref ProtocolError error, ref FrameDisposition disposition)
+            ClassifyState state, Frame frame, ref ProtocolError error, ref FrameDisposition disposition, Logger logger)
         {
             if (state != ClassifyState.ExpectProtocolError || frame == null || frame.Count == 0
                 || frame.Framelets[0].Type != FrameletType.ProtocolError)
@@ -558,15 +560,15 @@ namespace Bond.Comm.Epoxy
                     break;
 
                 default:
-                    Log.Site().Error("Didn't get a valid {0}.", nameof(ProtocolError));
+                    logger.Site().Error("Didn't get a valid {0}.", nameof(ProtocolError));
                     return ClassifyState.ErrorInErrorFrame;
             }
 
-            Log.Site().Debug("Deserialized {0} with code {1}.", nameof(ProtocolError), error.error_code);
+            logger.Site().Debug("Deserialized {0} with code {1}.", nameof(ProtocolError), error.error_code);
 
             if (frame.Count > 1)
             {
-                Log.Site().Error("Frame had trailing framelets.");
+                logger.Site().Error("Frame had trailing framelets.");
                 return ClassifyState.ErrorInErrorFrame;
             }
 

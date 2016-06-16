@@ -13,6 +13,7 @@ namespace UnitTest.SimpleInMem
     using Bond.Comm.SimpleInMem;
     using NUnit.Framework;
     using UnitTest.Comm;
+    using UnitTest.Interfaces;
     using UnitTest.Layers;
 
     [TestFixture]
@@ -346,7 +347,7 @@ namespace UnitTest.SimpleInMem
             var layer1 = new TestLayer_Append("foo", testList);
             var layer2 = new TestLayer_Append("bar", testList);
 
-            transportBuilder.SetLayerStackProvider(new LayerStackProvider<Dummy>(layer1, layer2));
+            transportBuilder.SetLayerStackProvider(new LayerStackProvider<Dummy>(LoggerTests.BlackHole, layer1, layer2));
             await DefaultSetup(new CalculatorService(), 1);
 
             const int first = 91;
@@ -380,7 +381,7 @@ namespace UnitTest.SimpleInMem
         public async Task MethodCall_ReqRsp_WithStatefulLayers()
         {
             var layerProvider = new TestLayerProvider_StatefulAppend("Layer");
-            var layerStackProvider = new LayerStackProvider<Dummy>(layerProvider);
+            var layerStackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, layerProvider);
             transportBuilder.SetLayerStackProvider(layerStackProvider);
             await DefaultSetup(new CalculatorService(), 1);
 
@@ -409,7 +410,7 @@ namespace UnitTest.SimpleInMem
         public async Task MethodCall_ReqRsp_WithLayerStackErrors()
         {
             var errorLayer = new TestLayer_ReturnErrors();
-            transportBuilder.SetLayerStackProvider(new LayerStackProvider<Dummy>(errorLayer));
+            transportBuilder.SetLayerStackProvider(new LayerStackProvider<Dummy>(LoggerTests.BlackHole, errorLayer));
             var testService = new DummyTestService();
             await DefaultSetup(testService, 1);
 
@@ -518,7 +519,7 @@ namespace UnitTest.SimpleInMem
         public async Task MethodCall_Event_With_StatefulLayers()
         {
             var layerProvider = new TestLayerProvider_StatefulAppend("Layer");
-            var layerStackProvider = new LayerStackProvider<Dummy>(layerProvider);
+            var layerStackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, layerProvider);
             transportBuilder.SetLayerStackProvider(layerStackProvider);
             var testService = new DummyTestService();
             await DefaultSetup(testService, 1);
@@ -546,7 +547,7 @@ namespace UnitTest.SimpleInMem
         public async Task MethodCall_Event_WithLayerStackErrors()
         {
             var errorLayer = new TestLayer_ReturnErrors();
-            transportBuilder.SetLayerStackProvider(new LayerStackProvider<Dummy>(errorLayer));
+            transportBuilder.SetLayerStackProvider(new LayerStackProvider<Dummy>(LoggerTests.BlackHole, errorLayer));
             var testService = new DummyTestService();
             await DefaultSetup(testService, 1);
 

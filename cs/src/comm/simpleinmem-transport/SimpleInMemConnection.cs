@@ -39,11 +39,12 @@ namespace Bond.Comm.SimpleInMem
         private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
         private CnxState state;
         private object stateLock = new object();
+        private readonly Logger logger;
 
         public ConnectionMetrics ConnectionMetrics { get; } = new ConnectionMetrics();
 
         internal SimpleInMemConnection(SimpleInMemListener parentListener,
-                                       ConnectionType connectionType, ServiceHost serviceHost)
+                                       ConnectionType connectionType, ServiceHost serviceHost, Logger logger)
         {
             if (parentListener == null) throw new ArgumentNullException(nameof(parentListener));
             if (serviceHost == null) throw new ArgumentNullException(nameof(serviceHost));
@@ -58,6 +59,8 @@ namespace Bond.Comm.SimpleInMem
             prevConversationId = (connectionType == ConnectionType.Client) ? -1 : 0;
             state = CnxState.Created;
             ConnectionMetrics.connection_id = connectionId.ToString();
+
+            this.logger = logger;
         }
 
         public CnxState State
@@ -186,7 +189,7 @@ namespace Bond.Comm.SimpleInMem
             lock (stateLock)
             {
                 EnsureCorrectState(CnxState.Created);
-                var batchProcessor = new BatchProcessor(this, serviceHost);
+                var batchProcessor = new BatchProcessor(this, serviceHost, logger);
                 Task.Run(() => batchProcessor.ProcessAsync(cancelTokenSource.Token));
                 state = CnxState.Connected;
             }
@@ -204,12 +207,12 @@ namespace Bond.Comm.SimpleInMem
 
             if (layerError == null)
             {
-                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Request, sendContext, out layerData);
+                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Request, sendContext, out layerData, logger);
             }
 
             if (layerError != null)
             {
-                Log.Site().Error("{0}: Sending request {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
+                logger.Site().Error("{0}: Sending request {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
                                  this, conversationId, methodName, layerError.error_code, layerError.message);
                 return Task.FromResult<IMessage>(Message.FromError(layerError));
             }
@@ -234,12 +237,12 @@ namespace Bond.Comm.SimpleInMem
 
             if (layerError == null)
             {
-                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Event, sendContext, out layerData);
+                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Event, sendContext, out layerData, logger);
             }
 
             if (layerError != null)
             {
-                Log.Site().Error("{0}: Sending event {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
+                logger.Site().Error("{0}: Sending event {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
                                  this, conversationId, methodName, layerError.error_code, layerError.message);
                 return;
             }
@@ -262,7 +265,7 @@ namespace Bond.Comm.SimpleInMem
 
         private void OnDisconnect()
         {
-            Log.Site().Debug("{0}: Disconnecting.", this);
+            logger.Site().Debug("{0}: Disconnecting.", this);
             var args = new DisconnectedEventArgs(this, null);
             if (connectionType == ConnectionType.Client)
             {

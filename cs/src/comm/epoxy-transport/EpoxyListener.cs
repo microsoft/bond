@@ -24,11 +24,11 @@ namespace Bond.Comm.Epoxy
 
         private CancellationTokenSource shutdownTokenSource;
 
-        public EpoxyListener(EpoxyTransport parentTransport, IPEndPoint listenEndpoint)
+        public EpoxyListener(EpoxyTransport parentTransport, IPEndPoint listenEndpoint, Logger logger) : base(logger)
         {
             this.parentTransport = parentTransport;
             listener = new System.Net.Sockets.TcpListener(listenEndpoint);
-            serviceHost = new ServiceHost(parentTransport);
+            serviceHost = new ServiceHost(parentTransport, logger);
             connections = new HashSet<EpoxyConnection>();
             shutdownTokenSource = new CancellationTokenSource();
         }
@@ -53,7 +53,7 @@ namespace Bond.Comm.Epoxy
 
         public override void AddService<T>(T service)
         {
-            Log.Site().Information("Listener on {0} adding {1}.", ListenEndpoint, typeof(T).Name);
+            logger.Site().Information("Listener on {0} adding {1}.", ListenEndpoint, typeof(T).Name);
             serviceHost.Register(service);
         }
 
@@ -89,7 +89,7 @@ namespace Bond.Comm.Epoxy
 
         private async Task AcceptAsync(CancellationToken t)
         {
-            Log.Site().Information("Accepting connections on {0}", ListenEndpoint);
+            logger.Site().Information("Accepting connections on {0}", ListenEndpoint);
             while (!t.IsCancellationRequested)
             {
                 Socket socket = null;
@@ -101,7 +101,8 @@ namespace Bond.Comm.Epoxy
                         parentTransport,
                         this,
                         serviceHost,
-                        socket);
+                        socket,
+                        logger);
                     socket = null; // connection now owns the socket and will close it
 
                     lock (connectionsLock)
@@ -110,17 +111,17 @@ namespace Bond.Comm.Epoxy
                     }
 
                     await connection.StartAsync();
-                    Log.Site().Debug("Accepted connection from {0}.", connection.RemoteEndPoint);
+                    logger.Site().Debug("Accepted connection from {0}.", connection.RemoteEndPoint);
                 }
                 catch (SocketException ex)
                 {
-                    Log.Site().Error(ex, "Accept failed with error {0}.", ex.SocketErrorCode);
+                    logger.Site().Error(ex, "Accept failed with error {0}.", ex.SocketErrorCode);
 
-                    ShutdownSocketSafe(socket);
+                    ShutdownSocketSafe(socket, logger);
                 }
                 catch (ObjectDisposedException)
                 {
-                    ShutdownSocketSafe(socket);
+                    ShutdownSocketSafe(socket, logger);
 
                     // TODO: ignoring this exception is needed during shutdown,
                     //       but there should be a cleaner way. We should
@@ -128,10 +129,10 @@ namespace Bond.Comm.Epoxy
                     //       connection.
                 }
             }
-            Log.Site().Information("Shutting down connection on {0}", ListenEndpoint);
+            logger.Site().Information("Shutting down connection on {0}", ListenEndpoint);
         }
 
-        private static void ShutdownSocketSafe(Socket socket)
+        private static void ShutdownSocketSafe(Socket socket, Logger logger)
         {
             try
             {
@@ -141,7 +142,7 @@ namespace Bond.Comm.Epoxy
             catch (SocketException ex)
             {
                 // We tried to cleanly shutdown the socket, oh well.
-                Log.Site().Debug(ex, "Exception encountered when shutting down a socket.");
+                logger.Site().Debug(ex, "Exception encountered when shutting down a socket.");
             }
         }
     }

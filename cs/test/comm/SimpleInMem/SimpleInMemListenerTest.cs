@@ -9,6 +9,7 @@ namespace UnitTest.SimpleInMem
     using Bond.Comm;
     using Bond.Comm.SimpleInMem;
     using NUnit.Framework;
+    using UnitTest.Interfaces;
 
     [TestFixture]
     public class SimpleInMemListenerTest
@@ -33,9 +34,9 @@ namespace UnitTest.SimpleInMem
         [Test]
         public void CreateInvalidListener()
         {
-            Assert.Throws<ArgumentNullException>(() => new SimpleInMemListener(null, null));
-            Assert.Throws<ArgumentNullException>(() => new SimpleInMemListener(null, "SomeString"));
-            Assert.Throws<ArgumentException>(() => new SimpleInMemListener(new SimpleInMemTransportBuilder().Construct(), null));
+            Assert.Throws<ArgumentNullException>(() => new SimpleInMemListener(null, null, LoggerTests.BlackHole));
+            Assert.Throws<ArgumentNullException>(() => new SimpleInMemListener(null, "SomeString", LoggerTests.BlackHole));
+            Assert.Throws<ArgumentException>(() => new SimpleInMemListener(new SimpleInMemTransportBuilder().Construct(), null, LoggerTests.BlackHole));
         }
 
         [Test]

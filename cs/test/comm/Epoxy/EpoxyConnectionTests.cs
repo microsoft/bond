@@ -30,7 +30,7 @@ namespace UnitTest.Epoxy
         [Test]
         public void MakeProtocolErrorFrame_JustErrorCode_MakesAFrame()
         {
-            var frame = EpoxyConnection.MakeProtocolErrorFrame(MeaninglessErrorCode, null);
+            var frame = EpoxyConnection.MakeProtocolErrorFrame(MeaninglessErrorCode, null, LoggerTests.BlackHole);
             Assert.NotNull(frame);
             Assert.AreEqual(1, frame.Framelets.Count);
             Assert.AreEqual(FrameletType.ProtocolError, frame.Framelets[0].Type);
@@ -45,7 +45,7 @@ namespace UnitTest.Epoxy
         [Test]
         public void MakeProtocolErrorFrame_WithDetails_MakesAFrame()
         {
-            var frame = EpoxyConnection.MakeProtocolErrorFrame(MeaninglessErrorCode, AnyDetails);
+            var frame = EpoxyConnection.MakeProtocolErrorFrame(MeaninglessErrorCode, AnyDetails, LoggerTests.BlackHole);
             Assert.NotNull(frame);
             Assert.AreEqual(1, frame.Framelets.Count);
             Assert.AreEqual(FrameletType.ProtocolError, frame.Framelets[0].Type);
