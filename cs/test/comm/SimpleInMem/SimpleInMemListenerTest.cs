@@ -34,9 +34,9 @@ namespace UnitTest.SimpleInMem
         [Test]
         public void CreateInvalidListener()
         {
-            Assert.Throws<ArgumentNullException>(() => new SimpleInMemListener(null, null, LoggerTests.BlackHole));
-            Assert.Throws<ArgumentNullException>(() => new SimpleInMemListener(null, "SomeString", LoggerTests.BlackHole));
-            Assert.Throws<ArgumentException>(() => new SimpleInMemListener(new SimpleInMemTransportBuilder().Construct(), null, LoggerTests.BlackHole));
+            Assert.Throws<ArgumentNullException>(() => new SimpleInMemListener(null, null, LoggerTests.BlackHole, MetricsTests.BlackHole));
+            Assert.Throws<ArgumentNullException>(() => new SimpleInMemListener(null, "SomeString", LoggerTests.BlackHole, MetricsTests.BlackHole));
+            Assert.Throws<ArgumentException>(() => new SimpleInMemListener(new SimpleInMemTransportBuilder().Construct(), null, LoggerTests.BlackHole, MetricsTests.BlackHole));
         }
 
         [Test]

@@ -80,6 +80,7 @@ namespace Bond.Comm
     public abstract class Listener
     {
         protected readonly Logger logger;
+        protected readonly Metrics metrics;
 
         /// <summary>
         /// Occurs when a new connection has being established.
@@ -165,9 +166,10 @@ namespace Bond.Comm
         /// </returns>
         public abstract Task StopAsync();
 
-        public Listener(Logger logger)
+        public Listener(Logger logger, Metrics metrics)
         {
             this.logger = logger;
+            this.metrics = metrics;
         }
 
         protected virtual Error OnConnected(ConnectedEventArgs args)

@@ -5,9 +5,9 @@ namespace Bond.Examples.Metrics
 {
     using Bond.Comm;
 
-    public class ConsoleMetricsHandler : IMetricsHandler
+    public class ConsoleMetricsSink : IMetricsSink
     {
-        public void Handle(ConnectionMetrics metrics)
+        public void Emit(ConnectionMetrics metrics)
         {
             var sb = new StringBuilder(nameof(ConnectionMetrics) + " {\n");
             sb.Append($"\tconnection ID: {metrics.connection_id}\n");
@@ -18,7 +18,7 @@ namespace Bond.Examples.Metrics
             Console.Write(sb);
         }
 
-        public void Handle(RequestMetrics metrics)
+        public void Emit(RequestMetrics metrics)
         {
             var sb = new StringBuilder(nameof(RequestMetrics) + " {\n");
             sb.Append($"\trequest ID: {metrics.request_id}\n");

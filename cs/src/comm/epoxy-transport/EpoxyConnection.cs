@@ -69,6 +69,7 @@ namespace Bond.Comm.Epoxy
         Stopwatch duration;
 
         readonly Logger logger;
+        readonly Metrics metrics;
 
         private EpoxyConnection(
             ConnectionType connectionType,
@@ -76,7 +77,8 @@ namespace Bond.Comm.Epoxy
             EpoxyListener parentListener,
             ServiceHost serviceHost,
             Socket socket,
-            Logger logger)
+            Logger logger,
+            Metrics metrics)
         {
             Debug.Assert(parentTransport != null);
             Debug.Assert(connectionType != ConnectionType.Server || parentListener != null, "Server connections must have a listener");
@@ -110,12 +112,14 @@ namespace Bond.Comm.Epoxy
             connectionMetrics.remote_endpoint = RemoteEndPoint.ToString();
 
             this.logger = logger;
+            this.metrics = metrics;
         }
 
         internal static EpoxyConnection MakeClientConnection(
             EpoxyTransport parentTransport,
             Socket clientSocket,
-            Logger logger)
+            Logger logger,
+            Metrics metrics)
         {
             const EpoxyListener parentListener = null;
 
@@ -123,9 +127,10 @@ namespace Bond.Comm.Epoxy
                 ConnectionType.Client,
                 parentTransport,
                 parentListener,
-                new ServiceHost(parentTransport, logger),
+                new ServiceHost(parentTransport, logger, metrics),
                 clientSocket,
-                logger);
+                logger,
+                metrics);
         }
 
         internal static EpoxyConnection MakeServerConnection(
@@ -133,7 +138,8 @@ namespace Bond.Comm.Epoxy
             EpoxyListener parentListener,
             ServiceHost serviceHost,
             Socket socket,
-            Logger logger)
+            Logger logger,
+            Metrics metrics)
         {
             return new EpoxyConnection(
                 ConnectionType.Server,
@@ -141,7 +147,8 @@ namespace Bond.Comm.Epoxy
                 parentListener,
                 serviceHost,
                 socket,
-                logger);
+                logger,
+                metrics);
         }
 
         /// <summary>
@@ -687,7 +694,7 @@ namespace Bond.Comm.Epoxy
 
             duration.Stop();
             connectionMetrics.duration_millis = (float) duration.Elapsed.TotalMilliseconds;
-            Metrics.Emit(connectionMetrics);
+            metrics.Emit(connectionMetrics);
         }
 
         private State? DispatchRequest(EpoxyHeaders headers, ArraySegment<byte> payload, ArraySegment<byte> layerData)

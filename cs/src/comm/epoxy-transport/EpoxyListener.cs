@@ -24,11 +24,13 @@ namespace Bond.Comm.Epoxy
 
         private CancellationTokenSource shutdownTokenSource;
 
-        public EpoxyListener(EpoxyTransport parentTransport, IPEndPoint listenEndpoint, Logger logger) : base(logger)
+        public EpoxyListener(
+            EpoxyTransport parentTransport, IPEndPoint listenEndpoint,
+            Logger logger, Metrics metrics) : base(logger, metrics)
         {
             this.parentTransport = parentTransport;
             listener = new System.Net.Sockets.TcpListener(listenEndpoint);
-            serviceHost = new ServiceHost(parentTransport, logger);
+            serviceHost = new ServiceHost(parentTransport, logger, metrics);
             connections = new HashSet<EpoxyConnection>();
             shutdownTokenSource = new CancellationTokenSource();
         }
@@ -102,7 +104,8 @@ namespace Bond.Comm.Epoxy
                         this,
                         serviceHost,
                         socket,
-                        logger);
+                        logger,
+                        metrics);
                     socket = null; // connection now owns the socket and will close it
 
                     lock (connectionsLock)

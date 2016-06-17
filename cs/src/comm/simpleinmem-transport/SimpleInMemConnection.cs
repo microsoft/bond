@@ -40,11 +40,13 @@ namespace Bond.Comm.SimpleInMem
         private CnxState state;
         private object stateLock = new object();
         private readonly Logger logger;
+        private readonly Metrics metrics;
 
         public ConnectionMetrics ConnectionMetrics { get; } = new ConnectionMetrics();
 
         internal SimpleInMemConnection(SimpleInMemListener parentListener,
-                                       ConnectionType connectionType, ServiceHost serviceHost, Logger logger)
+                                       ConnectionType connectionType, ServiceHost serviceHost,
+                                       Logger logger, Metrics metrics)
         {
             if (parentListener == null) throw new ArgumentNullException(nameof(parentListener));
             if (serviceHost == null) throw new ArgumentNullException(nameof(serviceHost));
@@ -61,6 +63,7 @@ namespace Bond.Comm.SimpleInMem
             ConnectionMetrics.connection_id = connectionId.ToString();
 
             this.logger = logger;
+            this.metrics = metrics;
         }
 
         public CnxState State
@@ -271,6 +274,8 @@ namespace Bond.Comm.SimpleInMem
             {
                 parentListener.InvokeOnDisconnected(args);
             }
+
+            metrics.Emit(ConnectionMetrics);
         }
 
         private void EnsureCorrectState(CnxState allowedStates, [CallerMemberName] string methodName = "<unknown>")

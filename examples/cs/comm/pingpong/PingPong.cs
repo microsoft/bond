@@ -37,11 +37,9 @@ namespace Bond.Examples.PingPong
 
         private async static Task<EpoxyTransport> SetupAsync()
         {
-            var metricsHandler = new ConsoleMetricsHandler();
-            Metrics.SetHandler(metricsHandler);
-
             var transport = new EpoxyTransportBuilder()
                 .SetLogSink(new ConsoleLogger())
+                .SetMetricsSink(new ConsoleMetricsSink())
                 .Construct();
 
             var pingEndpoint = new IPEndPoint(IPAddress.Loopback, pingPort);

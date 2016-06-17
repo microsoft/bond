@@ -14,7 +14,7 @@ namespace Bond.Comm.Epoxy
     {
         public override EpoxyTransport Construct()
         {
-            return new EpoxyTransport(LayerStackProvider, LogSink, EnableDebugLogs);
+            return new EpoxyTransport(LayerStackProvider, LogSink, EnableDebugLogs, MetricsSink);
         }
     }
 
@@ -24,13 +24,19 @@ namespace Bond.Comm.Epoxy
 
         readonly ILayerStackProvider layerStackProvider;
         readonly Logger logger;
+        readonly Metrics metrics;
 
-        public EpoxyTransport(ILayerStackProvider layerStackProvider, ILogSink logSink, bool enableDebugLogs)
+        public EpoxyTransport(
+            ILayerStackProvider layerStackProvider,
+            ILogSink logSink, bool enableDebugLogs,
+            IMetricsSink metricsSink)
         {
             // Layer stack provider may be null
             this.layerStackProvider = layerStackProvider;
-            // Log Sink may be null
+            // Log sink may be null
             logger = new Logger(logSink, enableDebugLogs);
+            // Metrics sink may be null
+            metrics = new Metrics(metricsSink);
         }
 
         public override Error GetLayerStack(out ILayerStack stack)
@@ -64,7 +70,7 @@ namespace Bond.Comm.Epoxy
             await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, endpoint, state: null);
 
             // TODO: keep these in some master collection for shutdown
-            var connection = EpoxyConnection.MakeClientConnection(this, socket, logger);
+            var connection = EpoxyConnection.MakeClientConnection(this, socket, logger, metrics);
             await connection.StartAsync();
             return connection;
         }
@@ -76,7 +82,7 @@ namespace Bond.Comm.Epoxy
 
         public EpoxyListener MakeListener(IPEndPoint address)
         {
-            return new EpoxyListener(this, address, logger);
+            return new EpoxyListener(this, address, logger, metrics);
         }
 
         public override Task StopAsync()

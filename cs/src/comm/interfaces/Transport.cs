@@ -3,8 +3,6 @@
 
 namespace Bond.Comm
 {
-    using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -22,6 +20,8 @@ namespace Bond.Comm
         protected ILogSink LogSink { get; private set; }
 
         protected bool EnableDebugLogs { get; private set; } = false;
+
+        protected IMetricsSink MetricsSink { get; private set; }
 
         /// <summary>
         /// Set the layer stack.
@@ -47,6 +47,12 @@ namespace Bond.Comm
         public virtual TransportBuilder<TTransport> EnableDebugLogging(bool enable)
         {
             EnableDebugLogs = enable;
+            return this;
+        }
+
+        public virtual TransportBuilder<TTransport> SetMetricsSink(IMetricsSink metricsSink)
+        {
+            MetricsSink = metricsSink;
             return this;
         }
 

@@ -1,74 +1,43 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm
 {
     /// <summary>
-    /// Once passed to <see cref="Metrics.SetHandler"/>, will receive callbacks
-    /// when new metrics are emitted by Bond.
+    /// Receives metrics emitted by Transports. Supply an instance of <c>IMetricsSink</c> to a
+    /// <see cref="TransportBuilder{TTransport}.SetMetricsSink"/> to register it with the <see cref="Transport"/>
+    /// returned by <see cref="TransportBuilder{TTransport}.Construct"/>.
     /// </summary>
-    public interface IMetricsHandler
+    public interface IMetricsSink
     {
         /// <summary>
         /// Will be called once at the end of each connection.
         /// </summary>
-        void Handle(ConnectionMetrics metrics);
+        void Emit(ConnectionMetrics metrics);
 
         /// <summary>
         /// Will be called once at the end of each request or event.
         /// </summary>
-        void Handle(RequestMetrics metrics);
+        void Emit(RequestMetrics metrics);
     }
 
-    /// <summary>
-    /// Implement a <see cref="IMetricsHandler"/> and pass it to
-    /// <see cref="Metrics.SetHandler"/> to receive metrics objects showing
-    /// what Bond is doing and where it's spending time.
-    /// </summary>
-    public static class Metrics
+    public class Metrics
     {
-        private static IMetricsHandler handler;
+        internal readonly IMetricsSink Sink;
 
-        /// <summary>
-        /// Sets a <see cref="IMetricsHandler"/> to receive Bond metrics.
-        /// </summary>
-        /// <param name="newHandler">The handler to add.</param>
-        /// <exception cref="InvalidOperationException">
-        /// Thrown when there is another handler registered.
-        /// </exception>
-        public static void SetHandler(IMetricsHandler newHandler)
+        public Metrics(IMetricsSink metricsSink)
         {
-            if (newHandler == null)
-            {
-                throw new ArgumentException($"Attempted to set a null {nameof(IMetricsHandler)}");
-            }
-
-            if (handler != null)
-            {
-                throw new InvalidOperationException($"Attempted to set a {nameof(IMetricsHandler)} when there already was one");
-            }
-
-            handler = newHandler;
+            Sink = metricsSink;
         }
 
-        /// <summary>
-        /// Removes the existing <see cref="IMetricsHandler"/>.
-        /// </summary>
-        /// <remarks>
-        /// May be called even if there is no existing handler.
-        /// </remarks>
-        public static void RemoveHandler()
+        public void Emit(ConnectionMetrics metrics)
         {
-            handler = null;
+            Sink?.Emit(metrics);
         }
 
-        public static void Emit(ConnectionMetrics metrics)
+        public void Emit(RequestMetrics metrics)
         {
-            handler?.Handle(metrics);
-        }
-
-        public static void Emit(RequestMetrics metrics)
-        {
-            handler?.Handle(metrics);
+            Sink?.Emit(metrics);
         }
     }
 }

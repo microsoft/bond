@@ -16,15 +16,17 @@ namespace Bond.Comm.Service
         private readonly object dispatchTableLock;
         private readonly Dictionary<string, ServiceMethodInfo> dispatchTable;
         private readonly Logger logger;
+        private readonly Metrics metrics;
 
         public readonly Transport ParentTransport;
 
-        public ServiceHost(Transport parentTransport, Logger logger)
+        public ServiceHost(Transport parentTransport, Logger logger, Metrics metrics)
         {
             ParentTransport = parentTransport;
             dispatchTableLock = new object();
             dispatchTable = new Dictionary<string, ServiceMethodInfo>();
             this.logger = logger;
+            this.metrics = metrics;
         }
 
         public bool IsRegistered(string serviceMethodName)
@@ -167,7 +169,7 @@ namespace Bond.Comm.Service
             }
 
             FinishRequestMetrics(requestMetrics, totalTime, serviceTime);
-            Metrics.Emit(requestMetrics);
+            metrics.Emit(requestMetrics);
 
             return result;
         }
@@ -208,7 +210,7 @@ namespace Bond.Comm.Service
             }
 
             FinishRequestMetrics(requestMetrics, totalTime, serviceTime);
-            Metrics.Emit(requestMetrics);
+            metrics.Emit(requestMetrics);
         }
 
         private static RequestMetrics StartRequestMetrics(string methodName, ConnectionMetrics connectionMetrics)

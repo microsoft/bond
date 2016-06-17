@@ -6,10 +6,11 @@ namespace UnitTest.Interfaces
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
     using Bond.Comm;
+    using Bond.Comm.Epoxy;
     using Bond.Comm.Service;
-    using Bond.Comm.SimpleInMem;
     using NUnit.Framework;
     using UnitTest.Comm;
 
@@ -26,54 +27,108 @@ namespace UnitTest.Interfaces
             }
         }
 
-        private static async Task<SimpleInMemTransport> SetupTransport(ILogSink logSink, string address)
+        private class InMemMetricsSink : IMetricsSink
         {
-            var transport = new SimpleInMemTransportBuilder()
+            public readonly List<ConnectionMetrics> ConnectionMetricses = new List<ConnectionMetrics>();
+            public readonly List<RequestMetrics> RequestMetricses = new List<RequestMetrics>();
+
+
+            public void Emit(ConnectionMetrics metrics)
+            {
+                ConnectionMetricses.Add(metrics);
+            }
+
+            public void Emit(RequestMetrics metrics)
+            {
+                RequestMetricses.Add(metrics);
+            }
+        }
+
+        private static async Task<EpoxyTransport> Server(
+            ILogSink logSink, IMetricsSink metricsSink,
+            IPEndPoint endPoint)
+        {
+            var transport = new EpoxyTransportBuilder()
                 .SetLogSink(logSink)
+                .SetMetricsSink(metricsSink)
                 .Construct();
 
             var service = new DummyTestService();
-            var listener = transport.MakeListener(address);
+            var listener = transport.MakeListener(endPoint);
             listener.AddService(service);
             await listener.StartAsync();
 
             return transport;
         }
 
-        [Test]
-        public async void IsolatedLogging()
+        private static async Task<EpoxyConnection> ClientConn(IPEndPoint endPoint)
         {
-            // Create two services on separate transports with separate ILogSinks. Make one request to each.
-            //
-            // Each sink should see exactly one message from a particular point in the code that processes requests,
-            // and the messages seen by each sink should be different (because the Connections are different).
+            var transport = new EpoxyTransportBuilder()
+                .Construct();
 
-            // This can be any method that will be called once per request and zero times outside the request path.
+            return await transport.ConnectToAsync(endPoint);
+
+        }
+
+        [Test]
+        public async void IsolatedLoggingAndMetrics()
+        {
+            // Create two services on their own transports with separate ILogSinks and IMetricsSinks.
+            // Create one client for each service on separate transports so they don't log or emit metrics.
+            // Make one request for each client-server pair.
+            //
+            // Each logging sink should see exactly one message from a particular point in the code that processes
+            // requests, and the messages seen by each sink should be different (because the Connections are
+            // different). Each metrics sink should see exactly one ConnectionMetrics and one RequestMetrics, and their
+            // identifying GUIDs should be different.
+
+            // This can be any method that isn't in a transport implementation, will be called once per request, and
+            // will be called zero times outside the request path.
             const string chosenMethodName = nameof(ServiceHost.DispatchRequest);
 
-            var firstSink = new InMemLogSink();
-            var secondSink = new InMemLogSink();
-            const string firstAddress = "first";
-            const string secondAddress = "second";
+            var firstLogSink = new InMemLogSink();
+            var firstMetricsSink = new InMemMetricsSink();
+            var secondLogSink = new InMemLogSink();
+            var secondMetricsSink = new InMemMetricsSink();
 
-            var firstTransport = await SetupTransport(firstSink, firstAddress);
-            var secondTransport = await SetupTransport(secondSink, secondAddress);
-            var firstProxy = new DummyTestProxy<SimpleInMemConnection>(
-                (SimpleInMemConnection) await firstTransport.ConnectToAsync(firstAddress));
-            var secondProxy = new DummyTestProxy<SimpleInMemConnection>(
-                (SimpleInMemConnection) await secondTransport.ConnectToAsync(secondAddress));
+            var firstEndPoint = new IPEndPoint(IPAddress.Loopback, 10001);
+            var secondEndPoint = new IPEndPoint(IPAddress.Loopback, 10002);
+
+            var firstServer = await Server(firstLogSink, firstMetricsSink, firstEndPoint);
+            var firstClientConn = await ClientConn(firstEndPoint);
+            var firstProxy = new DummyTestProxy<EpoxyConnection>(firstClientConn);
+            var secondServer = await Server(secondLogSink, secondMetricsSink, secondEndPoint);
+            var secondClientConn = await ClientConn(secondEndPoint);
+            var secondProxy = new DummyTestProxy<EpoxyConnection>(secondClientConn);
+
             await firstProxy.ReqRspMethodAsync(new Dummy());
             await secondProxy.ReqRspMethodAsync(new Dummy());
 
+            await firstClientConn.StopAsync();
+            await secondClientConn.StopAsync();
+            await firstServer.StopAsync();
+            await secondServer.StopAsync();
+
             // We're targeting a log line that looks something like this:
             // C:\...\bond\cs\src\comm\service\ServiceHost.cs:119 - DispatchRequest - Got request [unittest.comm.DummyTest.ReqRspMethod] from EpoxyConnection(local: 127.0.0.1:20000, remote: 127.0.0.1:26056).
-            var firstSinkTargetMessages = firstSink.Messages.Where(l => l.Contains(chosenMethodName)).ToList();
-            var secondSinkTargetMessages = secondSink.Messages.Where(l => l.Contains(chosenMethodName)).ToList();
+            var firstSinkTargetMessages = firstLogSink.Messages.Where(l => l.Contains(chosenMethodName)).ToList();
+            var secondSinkTargetMessages = secondLogSink.Messages.Where(l => l.Contains(chosenMethodName)).ToList();
 
             Assert.AreEqual(1, firstSinkTargetMessages.Count);
             Assert.AreEqual(1, secondSinkTargetMessages.Count);
 
             Assert.AreNotEqual(firstSinkTargetMessages.First(), secondSinkTargetMessages.First());
+
+            // Each metrics sink should have seen one set of connection metrics and one set of request metrics.
+            Assert.AreEqual(1, firstMetricsSink.ConnectionMetricses.Count);
+            Assert.AreEqual(1, firstMetricsSink.RequestMetricses.Count);
+            Assert.AreEqual(1, secondMetricsSink.ConnectionMetricses.Count);
+            Assert.AreEqual(1, secondMetricsSink.RequestMetricses.Count);
+
+            Assert.AreNotEqual(firstMetricsSink.ConnectionMetricses.First().connection_id,
+                               secondMetricsSink.ConnectionMetricses.First().connection_id);
+            Assert.AreNotEqual(firstMetricsSink.RequestMetricses.First().request_id,
+                               secondMetricsSink.RequestMetricses.First().request_id);
         }
     }
 }

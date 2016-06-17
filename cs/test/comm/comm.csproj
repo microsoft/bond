@@ -31,6 +31,7 @@
     <Compile Include="Interfaces\ErrorsTests.cs" />
     <Compile Include="Interfaces\LoggerTests.cs" />
     <Compile Include="Interfaces\MessageTests.cs" />
+    <Compile Include="Interfaces\MetricsTests.cs" />
     <Compile Include="Interfaces\ServiceIsolationTests.cs" />
     <Compile Include="Interfaces\TestHelpers.cs" />
     <Compile Include="Interfaces\ListenerTests.cs" />

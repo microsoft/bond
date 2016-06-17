@@ -13,7 +13,7 @@ namespace Bond.Comm.SimpleInMem
     {
         public override SimpleInMemTransport Construct()
         {
-            return new SimpleInMemTransport(LayerStackProvider, new Logger(LogSink, EnableDebugLogs));
+            return new SimpleInMemTransport(LayerStackProvider, new Logger(LogSink, EnableDebugLogs), new Metrics(MetricsSink));
         }
     }
 
@@ -23,11 +23,13 @@ namespace Bond.Comm.SimpleInMem
         IDictionary<string, SimpleInMemListener> listeners = new Dictionary<string, SimpleInMemListener>();
         readonly ILayerStackProvider layerStackProvider;
         readonly Logger logger;
+        readonly Metrics metrics;
 
-        public SimpleInMemTransport(ILayerStackProvider layerStackProvider, Logger logger)
+        public SimpleInMemTransport(ILayerStackProvider layerStackProvider, Logger logger, Metrics metrics)
         {
             this.layerStackProvider = layerStackProvider;
             this.logger = logger;
+            this.metrics = metrics;
         }
 
         public override Error GetLayerStack(out ILayerStack stack)
@@ -84,7 +86,7 @@ namespace Bond.Comm.SimpleInMem
                 {
                     if (!listeners.TryGetValue(address, out listener))
                     {
-                        listener = new SimpleInMemListener(this, address, logger);
+                        listener = new SimpleInMemListener(this, address, logger, metrics);
                         listeners.Add(address, listener);
                     }
                 }

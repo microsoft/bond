@@ -26,13 +26,15 @@ namespace Bond.Comm.SimpleInMem
         /// </summary>
         /// <exception cref="ArgumentNullException">parentTransport is null</exception>
         /// <exception cref="ArgumentException">address is null or empty</exception>
-        public SimpleInMemListener(SimpleInMemTransport parentTransport, string address, Logger logger) : base(logger)
+        public SimpleInMemListener(
+            SimpleInMemTransport parentTransport, string address,
+            Logger logger, Metrics metrics) : base(logger, metrics)
         {
             if (parentTransport == null) throw new ArgumentNullException(nameof(parentTransport));
             if (string.IsNullOrEmpty(address)) throw new ArgumentException(nameof(address));
 
             this.address = address;
-            serviceHost = new ServiceHost(parentTransport, logger);
+            serviceHost = new ServiceHost(parentTransport, logger, metrics);
             connectionPairs = new Dictionary<Guid, ConnectionPair>();
             logname = $"{nameof(SimpleInMemListener)}({this.address})";
         }
@@ -152,8 +154,9 @@ namespace Bond.Comm.SimpleInMem
         internal ConnectionPair CreateConnectionPair()
         {
             var clientConnection = new SimpleInMemConnection(
-                this, ConnectionType.Client, new ServiceHost(serviceHost.ParentTransport, logger), logger);
-            var serverConnection = new SimpleInMemConnection(this, ConnectionType.Server, serviceHost, logger);
+                this, ConnectionType.Client, new ServiceHost(serviceHost.ParentTransport, logger, metrics),
+                logger, metrics);
+            var serverConnection = new SimpleInMemConnection(this, ConnectionType.Server, serviceHost, logger, metrics);
             var connectionPair = SimpleInMemConnection.Pair(clientConnection, serverConnection);
 
             Add(connectionPair);

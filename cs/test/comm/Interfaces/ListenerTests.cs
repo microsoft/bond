@@ -94,7 +94,7 @@ namespace UnitTest.Interfaces
 
         private class TestListener : Listener
         {
-            public TestListener(Logger logger) : base(logger) {}
+            public TestListener(Logger logger) : base(logger, MetricsTests.BlackHole) {}
 
             public override void AddService<T>(T service) { throw new NotImplementedException(); }
             public override void RemoveService<T>(T service) { throw new NotImplementedException(); }
