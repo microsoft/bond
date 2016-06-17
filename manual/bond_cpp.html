@@ -1151,12 +1151,13 @@ Field(<span class="dt">uint16_t</span>, <span class="dt">const</span> bond::Meta
 <p>Version 2 of Simple Protocol uses variable integer encoding for string and container lengths, resulting in more compact payload without measurable performance impact.</p>
 <p>See example: <code>examples/cpp/core/protocol_versions</code>.</p>
 <h2 id="simple-json">Simple JSON</h2>
-<p>Simple JSON encoding implemented as a DOM protocol. The output is a standard JSON and is a very good choice for interoperating with other systems or generating human readable payload. Because payload doesn’t include field ordinals, there are two caveats when used as a Bond serialization protocol:</p>
+<p>The Simple JSON protocol is a simple JSON encoding implemented as a DOM protocol. The output is standard JSON and is a very good choice for interoperating with other systems or generating human readable payload.</p>
+<p>Because the payload doesn’t include field ordinals, there are two caveats when used as a Bond serialization protocol:</p>
 <ul>
-<li>Transcoding from Simple JSON to binary Bond protocols is not supported (transcoding from a binary protocol to Simple JSON is supported).</li>
+<li>Transcoding from Simple JSON to binary Bond protocols is not supported (transcoding from a binary protocol to Simple JSON is supported if you have the schema).</li>
 <li>Field matching is done by field name rather than ordinal. The implication is that renaming a field (which is considered a bad practice anyways) is a breaking schema change for Simple JSON.</li>
 </ul>
-<p>Simple JSON flattens inheritance hierarchy which may lead to name conflicts between fields of base and derived Bond struct. It is possible to resolve such conflicts w/o the need to actually rename the fields by annotating fields with JsonName attribute, e.g.:</p>
+<p>Simple JSON also flattens the inheritance hierarchy which may lead to name conflicts between fields of base and derived Bond structs. It is possible to resolve such conflicts without the need to actually rename the fields by annotating fields with <code>JsonName</code> attribute, e.g.:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
@@ -1177,6 +1178,13 @@ Field(<span class="dt">uint16_t</span>, <span class="dt">const</span> bond::Meta
     [JsonName(<span class="st">&quot;DerivedFoo&quot;</span>)]
     <span class="dv">0</span>: string foo;
 }</code></pre></td></tr></table></div>
+<p>Note that Simple JSON is not designed to be able to read arbitrary JSON objects. Simple JSON has its own way of encoding Bond objects in JSON that differs from how other libraries would encode the same object. When interoperating with other JSON libraries, be aware of these differences:</p>
+<ul>
+<li>maps are encoded as arrays of key/value pairs not as sub-objects</li>
+<li>the inheritance hierarchy is flattened</li>
+<li>nulls are expressed as empty arrays</li>
+<li>enums are encoded via their numeric value, not their symbolic names</li>
+</ul>
 <p>Implemented in <a href="../reference/cpp/classbond_1_1_simple_json_reader.html"><code>SimpleJsonReader</code></a> and <a href="../reference/cpp/classbond_1_1_simple_json_writer.html"><code>SimpleJsonWriter</code></a> classes.</p>
 <p>See examples:</p>
 <ul>
