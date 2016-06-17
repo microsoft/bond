@@ -21,7 +21,9 @@
     <Compile Include="EpoxyContexts.cs" />
     <Compile Include="EpoxyExceptions.cs" />
     <Compile Include="EpoxyListener.cs" />
+    <Compile Include="EpoxyNetworkStream.cs" />
     <Compile Include="EpoxyProtocol.cs" />
+    <Compile Include="EpoxyTlsConfig.cs" />
     <Compile Include="EpoxyTransport.cs" />
     <BondCodegen Include="$(MSBuildThisFileDirectory)\..\..\..\..\idl\bond\comm\epoxy_transport.bond">
       <Options>--namespace=bond.comm=Bond.Comm --namespace=bond.comm.epoxy=Bond.Comm.Epoxy</Options>

@@ -1,0 +1,14 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+namespace Bond.Examples.Tls;
+
+struct SimpleResult
+{
+    0: int32 int_value;
+}
+
+service Simple
+{
+    SimpleResult SimpleMethod();
+}

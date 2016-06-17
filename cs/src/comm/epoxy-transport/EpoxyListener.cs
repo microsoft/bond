@@ -5,30 +5,42 @@ namespace Bond.Comm.Epoxy
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Net;
     using System.Net.Sockets;
+    using System.Security.Authentication;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm.Service;
 
     public class EpoxyListener : Listener
     {
-        private EpoxyTransport parentTransport;
-        private System.Net.Sockets.TcpListener listener;
-        private ServiceHost serviceHost;
+        EpoxyTransport parentTransport;
+        EpoxyServerTlsConfig tlsConfig;
+        System.Net.Sockets.TcpListener listener;
+        ServiceHost serviceHost;
 
-        private object connectionsLock = new object();
-        private HashSet<EpoxyConnection> connections;
+        object connectionsLock = new object();
+        HashSet<EpoxyConnection> connections;
 
-        private Task acceptTask;
+        Task acceptTask;
 
-        private CancellationTokenSource shutdownTokenSource;
+        CancellationTokenSource shutdownTokenSource;
 
-        public EpoxyListener(
-            EpoxyTransport parentTransport, IPEndPoint listenEndpoint,
+        internal EpoxyListener(
+            EpoxyTransport parentTransport,
+            IPEndPoint listenEndpoint,
+            EpoxyServerTlsConfig tlsConfig,
             Logger logger, Metrics metrics) : base(logger, metrics)
         {
+            Debug.Assert(parentTransport != null);
+            Debug.Assert(listenEndpoint != null);
+
             this.parentTransport = parentTransport;
+
+            // will be null if not using TLS
+            this.tlsConfig = tlsConfig;
+
             listener = new TcpListener(listenEndpoint);
             serviceHost = new ServiceHost(logger);
             connections = new HashSet<EpoxyConnection>();
@@ -95,18 +107,26 @@ namespace Bond.Comm.Epoxy
             while (!t.IsCancellationRequested)
             {
                 Socket socket = null;
+                EpoxyNetworkStream epoxyStream = null;
 
                 try
                 {
                     socket = await listener.AcceptSocketAsync();
+                    logger.Site().Debug("Accepted connection from {0}.", socket.RemoteEndPoint);
+
+                    epoxyStream = await EpoxyNetworkStream.MakeServerStreamAsync(socket, tlsConfig, logger);
+                    socket = null; // epoxyStream now owns the socket
+
                     var connection = EpoxyConnection.MakeServerConnection(
                         parentTransport,
                         this,
                         serviceHost,
-                        socket,
+                        epoxyStream,
                         logger,
                         metrics);
-                    socket = null; // connection now owns the socket and will close it
+
+                    // connection now owns the EpoxyNetworkStream
+                    epoxyStream = null;
 
                     lock (connectionsLock)
                     {
@@ -114,17 +134,21 @@ namespace Bond.Comm.Epoxy
                     }
 
                     await connection.StartAsync();
-                    logger.Site().Debug("Accepted connection from {0}.", connection.RemoteEndPoint);
+                    logger.Site().Debug("Started server-side connection for {0}", connection.RemoteEndPoint);
+                }
+                catch (AuthenticationException ex)
+                {
+                    logger.Site().Error(ex, "Failed to authenticate remote connection from {0}", socket?.RemoteEndPoint);
+                    ShutdownSocketSafe(socket, epoxyStream);
                 }
                 catch (SocketException ex)
                 {
                     logger.Site().Error(ex, "Accept failed with error {0}.", ex.SocketErrorCode);
-
-                    ShutdownSocketSafe(socket, logger);
+                    ShutdownSocketSafe(socket, epoxyStream);
                 }
                 catch (ObjectDisposedException)
                 {
-                    ShutdownSocketSafe(socket, logger);
+                    ShutdownSocketSafe(socket, epoxyStream);
 
                     // TODO: ignoring this exception is needed during shutdown,
                     //       but there should be a cleaner way. We should
@@ -132,11 +156,19 @@ namespace Bond.Comm.Epoxy
                     //       connection.
                 }
             }
+
             logger.Site().Information("Shutting down connection on {0}", ListenEndpoint);
         }
 
-        private static void ShutdownSocketSafe(Socket socket, Logger logger)
+        private void ShutdownSocketSafe(Socket socket, EpoxyNetworkStream epoxyStream)
         {
+            if (epoxyStream != null)
+            {
+                epoxyStream.Shutdown();
+                // epoxyStream owns the socket, so we shouldn't try to shutdown
+                socket = null;
+            }
+
             try
             {
                 socket?.Shutdown(SocketShutdown.Both);

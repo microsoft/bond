@@ -48,7 +48,7 @@ namespace Bond.Comm.Epoxy
         readonly EpoxyListener parentListener;
         readonly ServiceHost serviceHost;
 
-        readonly EpoxySocket netSocket;
+        readonly EpoxyNetworkStream networkStream;
 
         readonly ResponseMap responseMap;
 
@@ -75,14 +75,14 @@ namespace Bond.Comm.Epoxy
             EpoxyTransport parentTransport,
             EpoxyListener parentListener,
             ServiceHost serviceHost,
-            Socket socket,
+            EpoxyNetworkStream networkStream,
             Logger logger,
             Metrics metrics)
         {
             Debug.Assert(parentTransport != null);
             Debug.Assert(connectionType != ConnectionType.Server || parentListener != null, "Server connections must have a listener");
             Debug.Assert(serviceHost != null);
-            Debug.Assert(socket != null);
+            Debug.Assert(networkStream != null);
 
             this.connectionType = connectionType;
 
@@ -90,11 +90,7 @@ namespace Bond.Comm.Epoxy
             this.parentListener = parentListener;
             this.serviceHost = serviceHost;
 
-            netSocket = new EpoxySocket(socket, logger);
-
-            // cache these so we can use them after the socket has been shutdown
-            LocalEndPoint = (IPEndPoint) socket.LocalEndPoint;
-            RemoteEndPoint = (IPEndPoint) socket.RemoteEndPoint;
+            this.networkStream = networkStream;
 
             responseMap = new ResponseMap();
 
@@ -115,7 +111,7 @@ namespace Bond.Comm.Epoxy
 
         internal static EpoxyConnection MakeClientConnection(
             EpoxyTransport parentTransport,
-            Socket clientSocket,
+            EpoxyNetworkStream networkStream,
             Logger logger,
             Metrics metrics)
         {
@@ -126,7 +122,7 @@ namespace Bond.Comm.Epoxy
                 parentTransport,
                 parentListener,
                 new ServiceHost(logger),
-                clientSocket,
+                networkStream,
                 logger,
                 metrics);
         }
@@ -135,7 +131,7 @@ namespace Bond.Comm.Epoxy
             EpoxyTransport parentTransport,
             EpoxyListener parentListener,
             ServiceHost serviceHost,
-            Socket socket,
+            EpoxyNetworkStream networkStream,
             Logger logger,
             Metrics metrics)
         {
@@ -144,7 +140,7 @@ namespace Bond.Comm.Epoxy
                 parentTransport,
                 parentListener,
                 serviceHost,
-                socket,
+                networkStream,
                 logger,
                 metrics);
         }
@@ -152,12 +148,12 @@ namespace Bond.Comm.Epoxy
         /// <summary>
         /// Get this connection's local endpoint.
         /// </summary>
-        public IPEndPoint LocalEndPoint { get; private set; }
+        public IPEndPoint LocalEndPoint => networkStream.LocalEndpoint;
 
         /// <summary>
         /// Get this connection's remote endpoint.
         /// </summary>
-        public IPEndPoint RemoteEndPoint { get; private set; }
+        public IPEndPoint RemoteEndPoint => networkStream.RemoteEndpoint;
 
         public override string ToString()
         {
@@ -374,19 +370,19 @@ namespace Bond.Comm.Epoxy
         {
             try
             {
-                Stream networkStream = netSocket.NetworkStream;
+                Stream stream = this.networkStream.Stream;
 
-                await netSocket.WriteLock.WaitAsync();
+                await networkStream.WriteLock.WaitAsync();
                 try
                 {
-                    await frame.WriteAsync(networkStream);
+                    await frame.WriteAsync(stream);
                 }
                 finally
                 {
-                    netSocket.WriteLock.Release();
+                    networkStream.WriteLock.Release();
                 }
 
-                await networkStream.FlushAsync();
+                await stream.FlushAsync();
                 return true;
             }
             catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException || ex is SocketException)
@@ -542,8 +538,8 @@ namespace Bond.Comm.Epoxy
 
         private async Task<State> DoExpectConfigAsync()
         {
-            Stream networkStream = netSocket.NetworkStream;
-            Frame frame = await Frame.ReadAsync(networkStream, shutdownTokenSource.Token, logger);
+            Stream stream = networkStream.Stream;
+            Frame frame = await Frame.ReadAsync(stream, shutdownTokenSource.Token, logger);
             if (frame == null)
             {
                 logger.Site().Information("{0} EOS encountered while waiting for config, so disconnecting.", this);
@@ -581,8 +577,8 @@ namespace Bond.Comm.Epoxy
 
                 try
                 {
-                    Stream networkStream = netSocket.NetworkStream;
-                    frame = await Frame.ReadAsync(networkStream, shutdownTokenSource.Token, logger);
+                    Stream stream = networkStream.Stream;
+                    frame = await Frame.ReadAsync(stream, shutdownTokenSource.Token, logger);
                     if (frame == null)
                     {
                         logger.Site().Information("{0} EOS encountered, so disconnecting.", this);
@@ -667,7 +663,7 @@ namespace Bond.Comm.Epoxy
         {
             logger.Site().Debug("{0} Shutting down.", this);
 
-            netSocket.Shutdown();
+            networkStream.Shutdown();
 
             if (connectionType == ConnectionType.Server)
             {
@@ -850,7 +846,7 @@ namespace Bond.Comm.Epoxy
         {
             EnsureCorrectState(State.All);
             shutdownTokenSource.Cancel();
-            netSocket.Shutdown();
+            networkStream.Shutdown();
 
             return stopTask.Task;
         }
@@ -868,82 +864,6 @@ namespace Bond.Comm.Epoxy
         {
             EnsureCorrectState(State.Connected);
             return SendEventAsync(methodName, message);
-        }
-
-        /// <summary>
-        /// Epoxy-private wrapper around <see cref="Socket"/>. Provides idempotent shutdown.
-        /// </summary>
-        private class EpoxySocket
-        {
-            Socket socket;
-            NetworkStream stream;
-            int isShutdown;
-            Logger logger;
-
-            public EpoxySocket(Socket sock, Logger logger)
-            {
-                socket = sock;
-                stream = new NetworkStream(sock, ownsSocket: false);
-                WriteLock = new SemaphoreSlim(1, 1);
-                isShutdown = 0;
-                this.logger = logger;
-            }
-
-            public Stream NetworkStream
-            {
-                get
-                {
-                    if (isShutdown != 0)
-                    {
-                        throw new ObjectDisposedException(nameof(EpoxySocket));
-                    }
-
-                    return stream;
-                }
-            }
-
-            // It looks like we don't need to .Dispose this SemaphoreSlim. The
-            // current implementation of SemaphoreSlim only does interesting
-            // stuff during .Dispose if there's an allocated
-            // AvailableWaitHandle. We never call that, so there shouldn't be
-            // anything needing disposal. If we do end up allocating a wait
-            // handle somehow, its finalizer will save us.
-            public SemaphoreSlim WriteLock { get; }
-
-            public void Shutdown()
-            {
-                int oldIsShutdown = Interlocked.CompareExchange(ref isShutdown, 1, 0);
-                if (oldIsShutdown == 0)
-                {
-                    // we are responsible for shutdown
-                    try
-                    {
-                        stream.Dispose();
-
-                        try
-                        {
-                            socket.Shutdown(SocketShutdown.Send);
-                            socket.Close();
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                            // ignore, as we're shutting down anyway
-                        }
-
-                        // We cannot call socket.Disconnect, as that will block
-                        // for longer than we want. So, we just forcible close
-                        // the socket with Dispose
-                        socket.Dispose();
-                    }
-                    catch (Exception ex) when (ex is IOException || ex is SocketException)
-                    {
-                        logger.Site().Error(ex, "Exception during connection shutdown");
-                    }
-
-                    stream = null;
-                    socket = null;
-                }
-            }
         }
     }
 }
