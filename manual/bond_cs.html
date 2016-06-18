@@ -182,6 +182,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#bond-comm">Bond Comm</a><ul>
 <li><a href="#defining-services">Defining services</a></li>
 <li><a href="#epoxy-transport">Epoxy Transport</a></li>
+<li><a href="#simpleinmem-transport">SimpleInMem Transport</a></li>
 <li><a href="#logging-and-metrics-facades">Logging and Metrics Facades</a></li>
 <li><a href="#layers">Layers</a></li>
 <li><a href="#roadmap">Roadmap</a></li>
@@ -1224,6 +1225,9 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <h3 id="epoxy-transport">Epoxy Transport</h3>
 <p>The initial release of Bond Comm provides a binary transport called <a href="bond_comm_epoxy.html">Epoxy</a>. This is the recommended default Transport. The Epoxy transport is designed to be .NET Core compliant, which will allow for cross-platform support.</p>
 <p>TLS support in Epoxy is forthcoming.</p>
+<h3 id="simpleinmem-transport">SimpleInMem Transport</h3>
+<p>Bond Comm provides an in-memory, single process, binary transport called <a href="bond_comm_simpleinmem.html">SimpleInMem</a>. This is not a shared memory transport.</p>
+<p>This is an example Transport recommended only for test automation.</p>
 <h3 id="logging-and-metrics-facades">Logging and Metrics Facades</h3>
 <p>Bond Comm includes facades for logging and metrics. By writing simple handlers for logging and metrics, developers can supply their own logging and metrics facilities to gather log and metric data from Bond Comm-based services.</p>
 <p>See the following examples:</p>
@@ -1244,6 +1248,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <p><a href="https://www.nuget.org/packages/Bond.Comm.CSharp/"><img src="https://img.shields.io/nuget/v/Bond.Comm.CSharp.svg?style=flat" alt="Bond.Comm.CSharp NuGet package" /></a> <strong>Bond.Comm.CSharp</strong> - An omnibus package that contains everything needed to use Bond Comm. If you’re not sure which packages to use, use this one. (It will pull in the rest of them.)</p>
 <p><a href="https://www.nuget.org/packages/Bond.Comm.Runtime.CSharp/"><img src="https://img.shields.io/nuget/v/Bond.Comm.Runtime.CSharp.svg?style=flat" alt="Bond.Comm.Runtime.CSharp NuGet package" /></a> <strong>Bond.Comm.Runtime.CSharp</strong> The assemblies required to use Bond at runtime. Useful if some other assembly already contains the compiled types. If your project contains .bond files, you will need to use either Bond.Comm.CSharp or Bond.Compiler.CSharp to perform code generation at build time.</p>
 <p><a href="https://www.nuget.org/packages/Bond.Comm.Epoxy.CSharp/"><img src="https://img.shields.io/nuget/v/Bond.Comm.Epoxy.CSharp.svg?style=flat" alt="Bond.Comm.Epoxy.CSharp NuGet package" /></a> <strong>Bond.Comm.Epoxy.CSharp</strong> The <a href="bond_comm_epoxy.html">Epoxy</a> transport. You’ll need at least one transport, and Epoxy is a good default choice.</p>
+<p><a href="https://www.nuget.org/packages/Bond.Comm.SimpleInMem.CSharp/"><img src="https://img.shields.io/nuget/v/Bond.Comm.SimpleInMem.CSharp.svg?style=flat" alt="Bond.Comm.SimpleInMem.CSharp NuGet package" /></a> <strong>Bond.Comm.SimpleInMem.CSharp</strong> The <a href="bond_comm_simpleinmem.html">SimpleInMem</a> transport. SimpleInMem is a good transport for unit tests, as it is lightweight and doesn’t require or support cross-process communication.</p>
 <h1 id="references">References</h1>
 <h2 id="bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></h2>
 <h2 id="c-users-manualbond_cpp"><a href="bond_cpp.html">C++ User’s Manual</a></h2>
