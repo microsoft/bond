@@ -20,15 +20,13 @@ namespace Bond.Comm
     }
 
     /// <summary>
-    /// Once passed to <see cref="Log.SetHandler"/>, will receive callbacks for
-    /// messages logged by Bond.
+    /// Pass an instance of <c>ILogSink</c> to <see cref="TransportBuilder{TTransport}.SetLogSink"/> to receive Bond's
+    /// log messages.
     /// </summary>
-    public interface ILogHandler
+    public interface ILogSink
     {
         /// <summary>
-        /// Invoked for each log message that Bond generates. Messages below
-        /// Bond's <see cref="Log.DropBelow"/> will not result in calls to this
-        /// function.
+        /// Invoked for each log message that Bond generates.
         /// </summary>
         /// <param name="message">Bond's log message, including the location in
         /// the code that generated it.</param>
@@ -37,53 +35,58 @@ namespace Bond.Comm
         /// The exception that is associated with the log message. May be
         /// <c>null</c>.
         /// </param>
-        void Handle(string message, LogSeverity severity, Exception exception);
+        void Log(string message, LogSeverity severity, Exception exception);
+    }
+
+    public class Logger
+    {
+        internal readonly ILogSink Sink;
+        internal readonly bool IncludeDebug;
+
+
+        public Logger(ILogSink sink, bool includeDebug)
+        {
+            Sink = sink;
+            IncludeDebug = includeDebug;
+        }
+
+        /// <summary>
+        /// The only correct way to log is to call someLogger.Site().{Debug, Information, ...}. Site() returns an
+        /// object that captures your callsite and exposes the different log levels. Do not use the object returned by
+        /// Site() to log twice. (We detect this and throw an exception.) Do not call Site() anywhere but the line you
+        /// want to log from. (We cannot detect this, so you will just get incorrect callsite information.)
+        /// </summary>
+        /// <returns>A LogSite instance that will let you log exactly one message.</returns>
+        public LogSite Site(
+            [CallerFilePath] string filePath = LogSite.Unknown,
+            [CallerLineNumber] int lineNumber = 0,
+            [CallerMemberName] string memberName = LogSite.Unknown)
+        {
+            return new LogSite
+            {
+                Logger = this,
+                FilePath = filePath,
+                LineNumber = lineNumber,
+                MemberName = memberName
+            };
+        }
     }
 
     /// <summary>
-    /// Implement a <see cref="ILogHandler"/> and pass it to
-    /// <see cref="SetHandler"/> to receive log messages.
+    /// Represents a physical location in source. The log level methods of this class will incorporate it in the
+    /// messages they produce.
+    ///
+    /// Each LogSite will permit exactly one call to one of its log level methods. Calling another will throw an
+    /// exception.
     /// </summary>
-    public class Log
+    public class LogSite
     {
-        /// <summary>
-        /// Messages below DropBelow will not be passed to the <see cref="ILogHandler"/>.
-        /// </summary>
-        public static LogSeverity DropBelow { get; set; } = LogSeverity.Information;
-
-        private static ILogHandler handler;
-
-        /// <summary>
-        /// Sets a <see cref="ILogHandler"/> to receive Bond log messages.
-        /// </summary>
-        /// <param name="newHandler">The handler to add.</param>
-        /// <exception cref="InvalidOperationException">
-        /// Thrown when there is another handler registered.
-        /// </exception>
-        public static void SetHandler(ILogHandler newHandler)
-        {
-            if (newHandler == null)
-            {
-                throw new ArgumentNullException(nameof(newHandler));
-            }
-            if (handler != null)
-            {
-                throw new InvalidOperationException(
-                    $"Attempted to add a {nameof(ILogHandler)} when there already was one");
-            }
-            handler = newHandler;
-        }
-
-        /// <summary>
-        /// Removes the existing <see cref="ILogHandler"/>.
-        /// </summary>
-        /// <remarks>
-        /// May be called even if there is no existing handler.
-        /// </remarks>
-        public static void RemoveHandler()
-        {
-            handler = null;
-        }
+        internal Logger Logger;
+        internal const string Unknown = "<unknown>";
+        internal string FilePath;
+        internal int LineNumber;
+        internal string MemberName;
+        internal bool Used;
 
         internal static string Format(
             string fileName, int lineNumber, string methodName,
@@ -95,38 +98,12 @@ namespace Bond.Comm
 
         }
 
-        const string Unknown = "<unknown>";
-        string filePath;
-        int lineNumber;
-        string memberName;
-        bool used;
-
-        /// <summary>
-        /// The only correct way to log is to call Log.Site().{Debug, Information, ...}. Site() returns an object that
-        /// captures your callsite and exposes the different log levels. Do not use the object returned by Site() to log
-        /// twice. (We detect this and throw an exception.) Do not call Site() anywhere but the line you want to log from.
-        /// (We cannot detect this, so you will just get incorrect callsite information.)
-        /// </summary>
-        /// <returns>A Log instance that will let you log exactly one message.</returns>
-        public static Log Site(
-            [CallerFilePath] string filePath = Unknown,
-            [CallerLineNumber] int lineNumber = 0,
-            [CallerMemberName] string memberName = Unknown)
-        {
-            return new Log
-            {
-                filePath = filePath,
-                lineNumber = lineNumber,
-                memberName = memberName
-            };
-        }
-
         private void LogMessage(
             LogSeverity severity, Exception exception,
             string format, object[] args)
         {
             CheckReuse();
-            if (severity < DropBelow) { return; }
+            if (!Logger.IncludeDebug && severity == LogSeverity.Debug) { return; }
 
             // It's relatively easy to make mistakes in the variadic logging functions that will throw a FormatException
             // inside Format(). This is not a good reason to interrupt normal control flow or kill a service.
@@ -135,7 +112,7 @@ namespace Bond.Comm
             string message;
             try
             {
-                message = Format(filePath, lineNumber, memberName, format, args);
+                message = Format(FilePath, LineNumber, MemberName, format, args);
             }
             catch (FormatException fe)
             {
@@ -143,22 +120,22 @@ namespace Bond.Comm
                 // nulls in args will be logged as empty strings.
                 var argsStr = "[" + string.Join(", ", args) + "]";
                 const string formatExceptionFormat = "Log call threw {0}({1}) with format \"{2}\" and args {3}";
-                message = Format(filePath, lineNumber, memberName, formatExceptionFormat,
+                message = Format(FilePath, LineNumber, MemberName, formatExceptionFormat,
                     new object[] {nameof(FormatException), fe.Message, format, argsStr});
             }
-            handler?.Handle(message, severity, exception);
+            Logger.Sink?.Log(message, severity, exception);
         }
 
         private void CheckReuse()
         {
-            if (!used)
+            if (!Used)
             {
-                used = true;
+                Used = true;
             }
             else
             {
                 var message =
-                    $"An instance of {nameof(Log)} was used twice. First use: {filePath}:{lineNumber} - {memberName}";
+                    $"An instance of {nameof(Comm.Logger)} was used twice. First use: {FilePath}:{LineNumber} - {MemberName}";
                 throw new InvalidOperationException(message);
             }
         }

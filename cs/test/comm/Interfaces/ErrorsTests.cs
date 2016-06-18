@@ -8,14 +8,14 @@ namespace UnitTest.Interfaces
     using NUnit.Framework;
 
     [TestFixture]
-    class TransportTests
+    class ErrorsTests
     {
         [Test]
         public void MakeInternalServerError_DontIncludeDetails_GenericErrorReturned()
         {
             var ex = new InvalidOperationException("You can't do that.");
 
-            InternalServerError error = Transport.MakeInternalServerError(ex, includeDetails: false);
+            InternalServerError error = Errors.MakeInternalServerError(ex, includeDetails: false);
 
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.IsNotEmpty(error.unique_id);
@@ -27,7 +27,7 @@ namespace UnitTest.Interfaces
         [Test]
         public void MakeInternalServerError_NullExIncludeDetails_GenericErrorReturned()
         {
-            InternalServerError error = Transport.MakeInternalServerError(exception: null, includeDetails: true);
+            InternalServerError error = Errors.MakeInternalServerError(exception: null, includeDetails: true);
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.IsNotEmpty(error.unique_id);
             Assert.IsNotEmpty(error.message);
@@ -36,10 +36,41 @@ namespace UnitTest.Interfaces
         }
 
         [Test]
+        public void CleanseInternalServerError_WithInternalServerError()
+        {
+            InternalServerError originalInternalError =
+                Errors.MakeInternalServerError(GenerateException<InvalidOperationException>(), includeDetails: true);
+
+            string savedID = originalInternalError.unique_id;
+
+            Error cleansedError = Errors.CleanseInternalServerError(originalInternalError);
+            Assert.NotNull(cleansedError);
+            InternalServerError cleansedInternalError = cleansedError as InternalServerError;
+            Assert.NotNull(cleansedInternalError);
+
+            Assert.AreEqual((int)ErrorCode.InternalServerError, cleansedInternalError.error_code);
+            Assert.AreEqual(Errors.InternalErrorMessage, cleansedInternalError.message);
+            Assert.IsEmpty(cleansedInternalError.inner_errors);
+            Assert.AreEqual(savedID, cleansedInternalError.unique_id);
+            Assert.IsEmpty(cleansedInternalError.server_stack_trace);
+        }
+
+        [Test]
+        public void CleanseInternalServerError_WithOtherError()
+        {
+            Error error = new Error { error_code = (int)ErrorCode.TransportError, message = "message" };
+
+            Error cleansedError = Errors.CleanseInternalServerError(error);
+            Assert.NotNull(cleansedError);
+            Assert.AreEqual((int)ErrorCode.TransportError, cleansedError.error_code);
+            Assert.AreEqual("message", cleansedError.message);
+        }
+
+        [Test]
         public void MakeInternalServerError_ExIncludeDetails_HasStackAndInnerExceptions()
         {
             var ex = GenerateException(new Exception("this is some message", GenerateException<InvalidOperationException>()));
-            InternalServerError error = Transport.MakeInternalServerError(ex, includeDetails: true);
+            InternalServerError error = Errors.MakeInternalServerError(ex, includeDetails: true);
 
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.IsNotEmpty(error.unique_id);
@@ -53,7 +84,7 @@ namespace UnitTest.Interfaces
         {
             var innerExceptions = new[] { GenerateException<ArgumentException>(), GenerateException<InvalidOperationException>() };
             var aggEx = GenerateException(new AggregateException("this is some message", innerExceptions));
-            InternalServerError error = Transport.MakeInternalServerError(aggEx, includeDetails: true);
+            InternalServerError error = Errors.MakeInternalServerError(aggEx, includeDetails: true);
 
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.IsNotEmpty(error.unique_id);

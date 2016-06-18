@@ -17,20 +17,36 @@ namespace Bond.Comm
     /// </typeparam>
     public abstract class TransportBuilder<TTransport>
     {
-        protected ILayerStack LayerStack { get; private set; }
+        protected ILayerStackProvider LayerStackProvider { get; private set; }
+
+        protected ILogSink LogSink { get; private set; }
+
+        protected bool EnableDebugLogs { get; private set; } = false;
 
         /// <summary>
         /// Set the layer stack.
         /// </summary>
-        /// <param name="layerStack">The layer stack.</param>
+        /// <param name="layerStackProvider">The layer stack provider. May be null</param>
         /// <returns>The builder.</returns>
         /// <remarks>
-        /// The layer stack supplies the set of layers to be used
+        /// The layer stack provider supplies the set of layers to be used
         /// by the built transport. May be null.
         /// </remarks>
-        public virtual TransportBuilder<TTransport> SetLayerStack(ILayerStack layerStack)
+        public virtual TransportBuilder<TTransport> SetLayerStackProvider(ILayerStackProvider layerStackProvider)
         {
-            LayerStack = layerStack;
+            this.LayerStackProvider = layerStackProvider;
+            return this;
+        }
+
+        public virtual TransportBuilder<TTransport> SetLogSink(ILogSink logSink)
+        {
+            LogSink = logSink;
+            return this;
+        }
+
+        public virtual TransportBuilder<TTransport> EnableDebugLogging(bool enable)
+        {
+            EnableDebugLogs = enable;
             return this;
         }
 
@@ -48,12 +64,12 @@ namespace Bond.Comm
     /// </summary>
     public abstract class Transport
     {
-        internal static readonly string InternalErrorMessage = "The server has encounted an error";
-
         /// <summary>
-        /// The layer stack for this transport. May be null.
+        /// Get a layer stack instance for this transport.
         /// </summary>
-        public abstract ILayerStack LayerStack { get; }
+        /// <param name="stack">The layer stack instance. Will be null if an error is returned.</param>
+        /// <returns>An error if one occurred, null otherwise.</returns>
+        public abstract Error GetLayerStack(out ILayerStack stack);
 
         /// <summary>
         /// Starts an asynchronous operation to connect to the specified
@@ -112,54 +128,5 @@ namespace Bond.Comm
         /// requests expecting responses will be completed with failures.
         /// </remarks>
         public abstract Task StopAsync();
-
-        /// <summary>
-        /// Creates an <see cref="Error"/> for an internal server error from an
-        /// exception.
-        /// </summary>
-        /// <param name="exception">The exception.</param>
-        /// <param name="includeDetails">
-        /// <c>true</c> if debugging details should be included; <c>false</c>
-        /// to omit this potentailly sensitive information
-        /// </param>
-        /// <returns>An Error representing the exception.</returns>
-        public static InternalServerError MakeInternalServerError(Exception exception, bool includeDetails = false)
-        {
-            var internalServerError = new InternalServerError
-            {
-                error_code = (int) ErrorCode.InternalServerError,
-                unique_id = Guid.NewGuid().ToString("D")
-            };
-
-            if (includeDetails && exception != null)
-            {
-                internalServerError.message = InternalErrorMessage + ": " + exception.Message;
-                internalServerError.server_stack_trace = exception.StackTrace;
-
-                var aggEx = exception as AggregateException;
-                if (aggEx != null)
-                {
-                    internalServerError.inner_errors = new List<IBonded<Error>>(aggEx.InnerExceptions.Count);
-
-                    foreach (var innerException in aggEx.InnerExceptions)
-                    {
-                        var innerError = MakeInternalServerError(innerException, includeDetails);
-                        internalServerError.inner_errors.Add(new Bonded<InternalServerError>(innerError));
-                    }
-                }
-                else if (exception.InnerException != null)
-                {
-                    internalServerError.inner_errors = new List<IBonded<Error>>(1);
-                    var innerError = MakeInternalServerError(exception.InnerException, includeDetails);
-                    internalServerError.inner_errors.Add(new Bonded<InternalServerError>(innerError));
-                }
-            }
-            else
-            {
-                internalServerError.message = InternalErrorMessage;
-            }
-
-            return internalServerError;
-        }
     }
 }

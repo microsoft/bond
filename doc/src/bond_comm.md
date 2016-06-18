@@ -28,6 +28,8 @@ Bond includes the following transports:
 
 * [Epoxy](bond_comm_epoxy.html): asynchronous communication over TCP
   connections with support for TLS using a binary protocol
+* [SimpleInMem](bond_comm_simpleinmem.html): asynchronous communication over in-memory
+  connections using a binary protocol
 
 Not all transports support all messaging patterns. Check the documentation
 for the respective transports.

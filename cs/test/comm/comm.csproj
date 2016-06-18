@@ -28,16 +28,27 @@
   <ItemGroup>
     <Compile Include="Interfaces\CodegenHelpersTests.cs" />
     <Compile Include="DummyTestService.cs" />
-    <Compile Include="Interfaces\LogTests.cs" />
+    <Compile Include="Interfaces\ErrorsTests.cs" />
+    <Compile Include="Interfaces\LoggerTests.cs" />
     <Compile Include="Interfaces\MessageTests.cs" />
+    <Compile Include="Interfaces\ServiceIsolationTests.cs" />
     <Compile Include="Interfaces\TestHelpers.cs" />
     <Compile Include="Interfaces\ListenerTests.cs" />
-    <Compile Include="Interfaces\TransportTests.cs" />
     <BondCodegen Include="comm-test.bond">
       <Options>--namespace=unittest.comm=UnitTest.Comm</Options>
     </BondCodegen>
     <Compile Include="Layers\LayerStackTests.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleInMem\CalculatorService.cs" />
+    <Compile Include="SimpleInMem\SimpleInMemConnectionTest.cs" />
+    <Compile Include="SimpleInMem\SimpleInMemListenerTest.cs" />
+    <Compile Include="SimpleInMem\SimpleInMemTransportTest.cs" />
+    <BondCodegen Include="SimpleInMem\SimpleStruct.bond">
+      <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
+    </BondCodegen>
+    <BondCodegen Include="SimpleInMem\Calculator.bond">
+      <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
+    </BondCodegen>
     <Compile Include="Epoxy\FrameTests.cs" />
     <Compile Include="Epoxy\EpoxyConnectionTests.cs" />
     <Compile Include="Epoxy\EpoxyListenerTests.cs" />
@@ -45,6 +56,9 @@
     <Compile Include="Epoxy\EpoxyTransportTests.cs" />
     <Compile Include="Epoxy\ResponseMapTests.cs" />
     <!-- TODO: edit the .targets to automatically include the comm files -->
+    <Compile Include="$(IntermediateOutputPath)calculator_interfaces.cs" />
+    <Compile Include="$(IntermediateOutputPath)calculator_proxies.cs" />
+    <Compile Include="$(IntermediateOutputPath)calculator_services.cs" />
     <Compile Include="$(IntermediateOutputPath)comm-test_interfaces.cs" />
     <Compile Include="$(IntermediateOutputPath)comm-test_proxies.cs" />
     <Compile Include="$(IntermediateOutputPath)comm-test_services.cs" />
@@ -89,9 +103,17 @@
       <Project>{5f6cbc77-8fb5-4644-bab5-f8e62792266e}</Project>
       <Name>layers</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\comm\simpleinmem-transport\simpleinmem-transport.csproj">
+      <Project>{54a3432b-99e1-4deb-b4eb-2d6e158ecd24}</Project>
+      <Name>simpleinmem-transport</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\comm\epoxy-transport\epoxy-transport.csproj">
       <Project>{c687c52c-0a5b-4f10-8cb3-dbaf9a72d042}</Project>
       <Name>epoxy-transport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\comm\service\service.csproj">
+      <Project>{79D2423A-87C8-44A2-89C2-2FA94521747E}</Project>
+      <Name>service</Name>
     </ProjectReference>
     <ProjectReference Include="..\core\Core.csproj">
       <Project>{ff056b62-225a-47bc-b177-550fadda4b41}</Project>

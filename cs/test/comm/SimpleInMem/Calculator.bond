@@ -1,0 +1,18 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+import "SimpleStruct.bond"
+
+namespace unittest.simpleinmem
+
+//
+// Method declarations for Calculator Service
+//
+service Calculator
+{
+    Output Add(PairedInput);
+    Output Subtract(PairedInput);
+    Output Multiply(PairedInput);
+    nothing Clear();
+    nothing IncrementCount();
+};

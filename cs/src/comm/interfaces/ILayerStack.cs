@@ -33,4 +33,20 @@ namespace Bond.Comm
         /// </remarks>
         Error OnReceive(MessageType messageType, ReceiveContext context, IBonded layerData);
     }
+
+    /// <summary>
+    /// Interface for layer stack provider. The layer stack provider contains a set of layer stack
+    /// providers. The layer stack provider is expected to return a new layer stack instance each
+    /// time <c>GetLayerStack</c> is invoked unless all the layers are stateless, in which case it
+    /// may provide a cached layer stack instance.
+    /// </summary>
+    public interface ILayerStackProvider
+    {
+        /// <summary>
+        /// Provide a layer stack instance.
+        /// </summary>
+        /// <param name="stack">The layer stack instance. May be null if an error occurred.</param>
+        /// <returns>An error, or null if there is no error.</returns>
+        Error GetLayerStack(out ILayerStack stack);
+    }
 }

@@ -10,6 +10,7 @@ namespace UnitTest.Epoxy
     using Bond.Comm.Epoxy;
     using NUnit.Framework;
     using UnitTest.Comm;
+    using UnitTest.Interfaces;
 
     [TestFixture]
     class EpoxyProtocolTests
@@ -70,63 +71,63 @@ namespace UnitTest.Epoxy
         private static Frame configFrameBadConfigData;  // a frame that fits that shape of a config frame, but with a payload that can't be deserialized
         private static Frame protocolErrorFrame;        // a frame with a well-formed ProtocolError
         private static Frame doubleProtocolErrorFrame;  // a frame with two ProtocolError frames
-        private static readonly Frame emptyFrame = new Frame(0);
+        private static readonly Frame emptyFrame = new Frame(0, LoggerTests.BlackHole);
 
         [TestFixtureSetUp]
         public static void CreateFrames()
         {
             goodRequestFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, PayloadType.Request, meaninglessMessage, null);
+                GoodRequestId, GoodMethod, PayloadType.Request, meaninglessMessage, null, LoggerTests.BlackHole);
             goodRequestLayerDataFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, PayloadType.Request, meaninglessMessage, GoodLayerData);
+                GoodRequestId, GoodMethod, PayloadType.Request, meaninglessMessage, GoodLayerData, LoggerTests.BlackHole);
 
             goodResponseFrame = EpoxyConnection.MessageToFrame(
-                GoodResponseId, GoodMethod, PayloadType.Response, meaninglessMessage, null);
+                GoodResponseId, GoodMethod, PayloadType.Response, meaninglessMessage, null, LoggerTests.BlackHole);
             goodEventFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, PayloadType.Event, meaninglessMessage, null);
+                GoodRequestId, GoodMethod, PayloadType.Event, meaninglessMessage, null, LoggerTests.BlackHole);
             var goodFrameletCount = goodRequestFrame.Count;
 
-            shortRequestFrame = new Frame(goodFrameletCount - 1);
+            shortRequestFrame = new Frame(goodFrameletCount - 1, LoggerTests.BlackHole);
             for (var i = 0; i < goodFrameletCount - 1; i++)
             {
                 shortRequestFrame.Add(goodRequestFrame.Framelets[i]);
             }
 
-            doubleHeadersRequestFrame = new Frame(goodFrameletCount + 1);
+            doubleHeadersRequestFrame = new Frame(goodFrameletCount + 1, LoggerTests.BlackHole);
             doubleHeadersRequestFrame.Add(goodRequestFrame.Framelets[0]);
             for (var i = 0; i < goodFrameletCount; i++)
             {
                 doubleHeadersRequestFrame.Add(goodRequestFrame.Framelets[i]);
             }
 
-            doublePayloadRequestFrame = new Frame(goodFrameletCount + 1);
+            doublePayloadRequestFrame = new Frame(goodFrameletCount + 1, LoggerTests.BlackHole);
             for (var i = 0; i < goodFrameletCount; i++)
             {
                 doublePayloadRequestFrame.Add(goodRequestFrame.Framelets[i]);
             }
             doublePayloadRequestFrame.Add(goodRequestFrame.Framelets[goodFrameletCount - 1]);
 
-            backwardsRequestFrame = new Frame(goodFrameletCount);
+            backwardsRequestFrame = new Frame(goodFrameletCount, LoggerTests.BlackHole);
             foreach (var framelet in goodRequestFrame.Framelets.Reverse())
             {
                 backwardsRequestFrame.Add(framelet);
             }
 
-            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null);
+            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null, LoggerTests.BlackHole);
 
-            doubleProtocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null);
+            doubleProtocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null, LoggerTests.BlackHole);
             doubleProtocolErrorFrame.Add(doubleProtocolErrorFrame.Framelets[0]);
 
-            configFrame = EpoxyConnection.MakeConfigFrame();
+            configFrame = EpoxyConnection.MakeConfigFrame(LoggerTests.BlackHole);
 
-            configFrameExtra = EpoxyConnection.MakeConfigFrame();
+            configFrameExtra = EpoxyConnection.MakeConfigFrame(LoggerTests.BlackHole);
             configFrameExtra.Add(goodRequestFrame.Framelets[0]);
 
             var invalidConfigData = new ArraySegment<byte>(new byte[] { 0x01 });
-            configFrameBadConfigData = new Frame(1);
+            configFrameBadConfigData = new Frame(1, LoggerTests.BlackHole);
             configFrameBadConfigData.Add(new Framelet(FrameletType.EpoxyConfig, invalidConfigData));
 
-            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null);
+            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null, LoggerTests.BlackHole);
         }
 
         // For each state that is implemented as a function, test:
@@ -141,12 +142,12 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectFirstFramelet(
-                EpoxyProtocol.ClassifyState.ExpectFirstFramelet, goodRequestFrame, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectFirstFramelet, goodRequestFrame, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, after);
             Assert.Null(errorCode);
 
             after = EpoxyProtocol.TransitionExpectFirstFramelet(
-                EpoxyProtocol.ClassifyState.ExpectFirstFramelet, protocolErrorFrame, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectFirstFramelet, protocolErrorFrame, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectProtocolError, after);
             Assert.Null(errorCode);
         }
@@ -157,14 +158,14 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectFirstFramelet(
-                EpoxyProtocol.ClassifyState.ExpectFirstFramelet, emptyFrame, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectFirstFramelet, emptyFrame, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
 
             errorCode = null;
 
             after = EpoxyProtocol.TransitionExpectFirstFramelet(
-                EpoxyProtocol.ClassifyState.ExpectFirstFramelet, backwardsRequestFrame, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectFirstFramelet, backwardsRequestFrame, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
         }
@@ -176,7 +177,7 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectEpoxyHeaders(
-                EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, goodRequestFrame, ref headers, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, goodRequestFrame, ref headers, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, after);
             Assert.NotNull(headers);
             Assert.AreEqual(GoodRequestId, headers.conversation_id);
@@ -187,7 +188,7 @@ namespace UnitTest.Epoxy
 
             after = EpoxyProtocol.TransitionExpectEpoxyHeaders(
                 EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, goodRequestLayerDataFrame,
-                ref headers, ref errorCode);
+                ref headers, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, after);
             Assert.NotNull(headers);
             Assert.AreEqual(GoodRequestId, headers.conversation_id);
@@ -204,13 +205,13 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectEpoxyHeaders(
-                EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, emptyFrame, ref headers, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, emptyFrame, ref headers, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(headers);
             Assert.Null(errorCode);
 
             after = EpoxyProtocol.TransitionExpectEpoxyHeaders(
-                EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, backwardsRequestFrame, ref headers, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectEpoxyHeaders, backwardsRequestFrame, ref headers, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(headers);
             Assert.Null(errorCode);
@@ -224,14 +225,14 @@ namespace UnitTest.Epoxy
 
             var after = EpoxyProtocol.TransitionExpectOptionalLayerData(
                 EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, goodRequestFrame, goodRequestHeaders,
-                ref layerData, ref errorCode);
+                ref layerData, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectPayload, after);
             Assert.Null(layerData.Array);
             Assert.Null(errorCode);
 
             after = EpoxyProtocol.TransitionExpectOptionalLayerData(
                 EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, goodRequestLayerDataFrame, goodRequestHeaders,
-                ref layerData, ref errorCode);
+                ref layerData, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectPayload, after);
             Assert.NotNull(layerData.Array);
             Assert.Null(errorCode);
@@ -245,7 +246,7 @@ namespace UnitTest.Epoxy
 
             var after = EpoxyProtocol.TransitionExpectOptionalLayerData(
                 EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, goodRequestFrame, null,
-                ref layerData, ref errorCode);
+                ref layerData, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(layerData.Array);
             Assert.Null(errorCode);
@@ -259,14 +260,14 @@ namespace UnitTest.Epoxy
 
             var after = EpoxyProtocol.TransitionExpectPayload(
                 EpoxyProtocol.ClassifyState.ExpectPayload, emptyFrame, goodRequestHeaders, emptyLayerData,
-                ref payload, ref errorCode);
+                ref payload, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
 
             after = EpoxyProtocol.TransitionExpectPayload(
                 EpoxyProtocol.ClassifyState.ExpectPayload, shortRequestFrame, goodRequestHeaders, emptyLayerData,
-                ref payload, ref errorCode);
+                ref payload, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
@@ -280,14 +281,14 @@ namespace UnitTest.Epoxy
 
             var after = EpoxyProtocol.TransitionExpectPayload(
                 EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestFrame, goodRequestHeaders, emptyLayerData,
-                ref payload, ref errorCode);
+                ref payload, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectEndOfFrame, after);
             Assert.NotNull(payload.Array);
             Assert.Null(errorCode);
 
             after = EpoxyProtocol.TransitionExpectPayload(
                 EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestLayerDataFrame, goodRequestHeaders, nonEmptyLayerData,
-                ref payload, ref errorCode);
+                ref payload, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectEndOfFrame, after);
             Assert.NotNull(payload.Array);
             Assert.Null(errorCode);
@@ -301,7 +302,7 @@ namespace UnitTest.Epoxy
 
             var after = EpoxyProtocol.TransitionExpectPayload(
                 EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestFrame, null, emptyLayerData,
-                ref payload, ref errorCode);
+                ref payload, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(payload.Array);
             Assert.Null(errorCode);
@@ -315,28 +316,28 @@ namespace UnitTest.Epoxy
 
             var after = EpoxyProtocol.TransitionExpectPayload(
                 EpoxyProtocol.ClassifyState.ExpectPayload, emptyFrame, goodRequestHeaders, emptyLayerData,
-                ref payload, ref errorCode);
+                ref payload, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
 
             after = EpoxyProtocol.TransitionExpectPayload(
                 EpoxyProtocol.ClassifyState.ExpectPayload, shortRequestFrame, goodRequestHeaders, emptyLayerData,
-                ref payload, ref errorCode);
+                ref payload, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
 
             after = EpoxyProtocol.TransitionExpectPayload(
                 EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestLayerDataFrame, goodRequestHeaders, emptyLayerData,
-                ref payload, ref errorCode);
+                ref payload, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
 
             after = EpoxyProtocol.TransitionExpectPayload(
                 EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestFrame, goodRequestHeaders, nonEmptyLayerData,
-                ref payload, ref errorCode);
+                ref payload, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
@@ -348,12 +349,12 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectEndOfFrame(
-                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, goodRequestFrame, emptyLayerData, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, goodRequestFrame, emptyLayerData, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.FrameComplete, after);
             Assert.Null(errorCode);
 
             after = EpoxyProtocol.TransitionExpectEndOfFrame(
-                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, goodRequestLayerDataFrame, nonEmptyLayerData, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, goodRequestLayerDataFrame, nonEmptyLayerData, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.FrameComplete, after);
             Assert.Null(errorCode);
         }
@@ -364,7 +365,7 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionExpectEndOfFrame(
-                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, doublePayloadRequestFrame, emptyLayerData, ref errorCode);
+                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, doublePayloadRequestFrame, emptyLayerData, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
         }
@@ -375,12 +376,12 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionFrameComplete(
-                EpoxyProtocol.ClassifyState.FrameComplete, goodRequestHeaders, ref errorCode);
+                EpoxyProtocol.ClassifyState.FrameComplete, goodRequestHeaders, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ValidFrame, after);
             Assert.Null(errorCode);
 
             after = EpoxyProtocol.TransitionFrameComplete(
-                EpoxyProtocol.ClassifyState.FrameComplete, goodResponseHeaders, ref errorCode);
+                EpoxyProtocol.ClassifyState.FrameComplete, goodResponseHeaders, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ValidFrame, after);
             Assert.Null(errorCode);
         }
@@ -391,7 +392,7 @@ namespace UnitTest.Epoxy
             ProtocolErrorCode? errorCode = null;
 
             var after = EpoxyProtocol.TransitionFrameComplete(
-                EpoxyProtocol.ClassifyState.FrameComplete, unknownTypeHeaders, ref errorCode);
+                EpoxyProtocol.ClassifyState.FrameComplete, unknownTypeHeaders, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.AreEqual(ProtocolErrorCode.NOT_SUPPORTED, errorCode);
         }
@@ -431,7 +432,7 @@ namespace UnitTest.Epoxy
             var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
 
             var after = EpoxyProtocol.TransitionExpectConfig(
-                EpoxyProtocol.ClassifyState.ExpectConfig, configFrame, ref errorCode, ref disposition);
+                EpoxyProtocol.ClassifyState.ExpectConfig, configFrame, ref errorCode, ref disposition, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ClassifiedValidFrame, after);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.ProcessConfig, disposition);
             Assert.IsNull(errorCode);
@@ -444,7 +445,7 @@ namespace UnitTest.Epoxy
             var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
 
             var after = EpoxyProtocol.TransitionExpectConfig(
-                EpoxyProtocol.ClassifyState.ExpectConfig, configFrameExtra, ref errorCode, ref disposition);
+                EpoxyProtocol.ClassifyState.ExpectConfig, configFrameExtra, ref errorCode, ref disposition, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.Indeterminate, disposition);
@@ -457,7 +458,7 @@ namespace UnitTest.Epoxy
             var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
 
             var after = EpoxyProtocol.TransitionExpectConfig(
-                EpoxyProtocol.ClassifyState.ExpectConfig, configFrameBadConfigData, ref errorCode, ref disposition);
+                EpoxyProtocol.ClassifyState.ExpectConfig, configFrameBadConfigData, ref errorCode, ref disposition, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.Indeterminate, disposition);
@@ -470,12 +471,12 @@ namespace UnitTest.Epoxy
             var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
 
             var after = EpoxyProtocol.TransitionExpectConfig(
-                EpoxyProtocol.ClassifyState.ExpectConfig, emptyFrame, ref errorCode, ref disposition);
+                EpoxyProtocol.ClassifyState.ExpectConfig, emptyFrame, ref errorCode, ref disposition, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
 
             // not a config frame
             after = EpoxyProtocol.TransitionExpectConfig(
-                EpoxyProtocol.ClassifyState.ExpectConfig, protocolErrorFrame, ref errorCode, ref disposition);
+                EpoxyProtocol.ClassifyState.ExpectConfig, protocolErrorFrame, ref errorCode, ref disposition, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
         }
 
@@ -486,7 +487,7 @@ namespace UnitTest.Epoxy
             var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
 
             var after = EpoxyProtocol.TransitionExpectProtocolError(
-                EpoxyProtocol.ClassifyState.ExpectProtocolError, protocolErrorFrame, ref error, ref disposition);
+                EpoxyProtocol.ClassifyState.ExpectProtocolError, protocolErrorFrame, ref error, ref disposition, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ClassifiedValidFrame, after);
             Assert.AreEqual(meaninglessErrorCode, error.error_code);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.HandleProtocolError, disposition);
@@ -499,7 +500,7 @@ namespace UnitTest.Epoxy
             var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
 
             var after = EpoxyProtocol.TransitionExpectProtocolError(
-                EpoxyProtocol.ClassifyState.ExpectProtocolError, doubleProtocolErrorFrame, ref error, ref disposition);
+                EpoxyProtocol.ClassifyState.ExpectProtocolError, doubleProtocolErrorFrame, ref error, ref disposition, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ErrorInErrorFrame, after);
         }
 
@@ -510,7 +511,7 @@ namespace UnitTest.Epoxy
             var disposition = EpoxyProtocol.FrameDisposition.Indeterminate;
 
             var after = EpoxyProtocol.TransitionExpectProtocolError(
-                EpoxyProtocol.ClassifyState.ExpectProtocolError, backwardsRequestFrame, ref error, ref disposition);
+                EpoxyProtocol.ClassifyState.ExpectProtocolError, backwardsRequestFrame, ref error, ref disposition, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.InternalStateError, after);
             Assert.Null(error);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.Indeterminate, disposition);
@@ -521,7 +522,7 @@ namespace UnitTest.Epoxy
         [Test]
         public void Classify_Valid()
         {
-            var requestResult = EpoxyProtocol.Classify(goodRequestFrame);
+            var requestResult = EpoxyProtocol.Classify(goodRequestFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.DeliverRequestToService, requestResult.Disposition);
             Assert.AreEqual(goodRequestHeaders.error_code, requestResult.Headers.error_code);
             Assert.AreEqual(goodRequestHeaders.method_name, requestResult.Headers.method_name);
@@ -530,7 +531,7 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(goodRequestFrame.Framelets[goodRequestFrame.Count - 1].Contents, requestResult.Payload);
             Assert.Null(requestResult.ErrorCode);
 
-            var responseResult = EpoxyProtocol.Classify(goodResponseFrame);
+            var responseResult = EpoxyProtocol.Classify(goodResponseFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.DeliverResponseToProxy, responseResult.Disposition);
             Assert.AreEqual(goodResponseHeaders.error_code, responseResult.Headers.error_code);
             Assert.AreEqual(goodResponseHeaders.method_name, responseResult.Headers.method_name);
@@ -539,24 +540,24 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(goodResponseFrame.Framelets[goodResponseFrame.Count - 1].Contents, responseResult.Payload);
             Assert.Null(requestResult.ErrorCode);
 
-            var configResult = EpoxyProtocol.Classify(configFrame);
+            var configResult = EpoxyProtocol.Classify(configFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.ProcessConfig, configResult.Disposition);
             Assert.Null(configResult.Headers);
             Assert.Null(configResult.ErrorCode);
 
-            var protocolErrorResult = EpoxyProtocol.Classify(protocolErrorFrame);
+            var protocolErrorResult = EpoxyProtocol.Classify(protocolErrorFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.HandleProtocolError, protocolErrorResult.Disposition);
             Assert.Null(protocolErrorResult.Headers);
             Assert.Null(protocolErrorResult.Payload.Array);
             Assert.AreEqual(meaninglessErrorCode, protocolErrorResult.Error.error_code);
 
-            var doubleProtocolErrorResult = EpoxyProtocol.Classify(doubleProtocolErrorFrame);
+            var doubleProtocolErrorResult = EpoxyProtocol.Classify(doubleProtocolErrorFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.HangUp, doubleProtocolErrorResult.Disposition);
             Assert.Null(doubleProtocolErrorResult.Headers);
             Assert.Null(doubleProtocolErrorResult.Payload.Array);
             Assert.AreEqual(ProtocolErrorCode.ERROR_IN_ERROR, doubleProtocolErrorResult.Error.error_code);
 
-            var eventResult = EpoxyProtocol.Classify(goodEventFrame);
+            var eventResult = EpoxyProtocol.Classify(goodEventFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.DeliverEventToService, eventResult.Disposition);
             Assert.AreEqual(goodEventHeaders.error_code, eventResult.Headers.error_code);
             Assert.AreEqual(goodEventHeaders.method_name, eventResult.Headers.method_name);
@@ -568,7 +569,7 @@ namespace UnitTest.Epoxy
         [Test]
         public void Classify_InvalidPreconditions()
         {
-            var nullResult = EpoxyProtocol.Classify(null);
+            var nullResult = EpoxyProtocol.Classify(null, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.Indeterminate, nullResult.Disposition);
             Assert.Null(nullResult.Headers);
             Assert.Null(nullResult.Payload.Array);
@@ -578,37 +579,37 @@ namespace UnitTest.Epoxy
         [Test]
         public void Classify_MalformedFrame()
         {
-            var emptyResult = EpoxyProtocol.Classify(emptyFrame);
+            var emptyResult = EpoxyProtocol.Classify(emptyFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.SendProtocolError, emptyResult.Disposition);
             Assert.Null(emptyResult.Headers);
             Assert.Null(emptyResult.Payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, emptyResult.ErrorCode);
 
-            var shortResult = EpoxyProtocol.Classify(shortRequestFrame);
+            var shortResult = EpoxyProtocol.Classify(shortRequestFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.SendProtocolError, shortResult.Disposition);
             Assert.Null(shortResult.Headers);
             Assert.Null(shortResult.Payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, shortResult.ErrorCode);
 
-            var doubleHeadersResult = EpoxyProtocol.Classify(doubleHeadersRequestFrame);
+            var doubleHeadersResult = EpoxyProtocol.Classify(doubleHeadersRequestFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.SendProtocolError, doubleHeadersResult.Disposition);
             Assert.Null(doubleHeadersResult.Headers);
             Assert.Null(doubleHeadersResult.Payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, doubleHeadersResult.ErrorCode);
 
-            var doublePayloadResult = EpoxyProtocol.Classify(doublePayloadRequestFrame);
+            var doublePayloadResult = EpoxyProtocol.Classify(doublePayloadRequestFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.SendProtocolError, doublePayloadResult.Disposition);
             Assert.Null(doublePayloadResult.Headers);
             Assert.Null(doublePayloadResult.Payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, doublePayloadResult.ErrorCode);
 
-            var backwardsResult = EpoxyProtocol.Classify(backwardsRequestFrame);
+            var backwardsResult = EpoxyProtocol.Classify(backwardsRequestFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.SendProtocolError, backwardsResult.Disposition);
             Assert.Null(backwardsResult.Headers);
             Assert.Null(backwardsResult.Payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, backwardsResult.ErrorCode);
 
-            var configExtraResult = EpoxyProtocol.Classify(configFrameExtra);
+            var configExtraResult = EpoxyProtocol.Classify(configFrameExtra, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.SendProtocolError, configExtraResult.Disposition);
             Assert.Null(configExtraResult.Headers);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, configExtraResult.ErrorCode);

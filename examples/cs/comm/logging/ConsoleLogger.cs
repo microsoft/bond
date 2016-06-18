@@ -7,9 +7,9 @@ namespace Bond.Examples.Logging
 
     using Bond.Comm;
 
-    public class ConsoleLogger : ILogHandler
+    public class ConsoleLogger : ILogSink
     {
-        public void Handle(string message, LogSeverity severity, Exception exception)
+        public void Log(string message, LogSeverity severity, Exception exception)
         {
             Console.WriteLine($"[bond] {severity.ToString().ToUpper()}: {message}");
             if (exception != null)

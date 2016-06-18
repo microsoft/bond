@@ -79,6 +79,8 @@ namespace Bond.Comm
     /// </summary>
     public abstract class Listener
     {
+        protected readonly Logger logger;
+
         /// <summary>
         /// Occurs when a new connection has being established.
         /// </summary>
@@ -163,6 +165,11 @@ namespace Bond.Comm
         /// </returns>
         public abstract Task StopAsync();
 
+        public Listener(Logger logger)
+        {
+            this.logger = logger;
+        }
+
         protected virtual Error OnConnected(ConnectedEventArgs args)
         {
             if (args == null)
@@ -189,8 +196,8 @@ namespace Bond.Comm
                     }
                     catch (Exception ex)
                     {
-                        Log.Site().Error(ex, "Exception in handler for connection {0}: {1}", args.Connection, ex.Message);
-                        args.DisconnectError = Transport.MakeInternalServerError(ex);
+                        logger.Site().Error(ex, "Exception in handler for connection {0}: {1}", args.Connection, ex.Message);
+                        args.DisconnectError = Errors.MakeInternalServerError(ex, includeDetails: false);
                     }
 
                     if (args.DisconnectError != null)
@@ -220,7 +227,7 @@ namespace Bond.Comm
             }
             catch (Exception ex)
             {
-                Log.Site().Error(ex, "Exception in handler for connection {0}: {1}", args.Connection, ex.Message);
+                logger.Site().Error(ex, "Exception in handler for connection {0}: {1}", args.Connection, ex.Message);
             }
         }
     }

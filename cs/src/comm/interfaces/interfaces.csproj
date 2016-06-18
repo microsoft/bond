@@ -15,11 +15,12 @@
     <Compile Include="CodegenHelpers.cs" />
     <Compile Include="Connections.cs" />
     <Compile Include="Contexts.cs" />
+    <Compile Include="Errors.cs" />
     <Compile Include="ILayer.cs" />
     <Compile Include="IService.cs" />
     <Compile Include="ILayerStack.cs" />
     <Compile Include="Listener.cs" />
-    <Compile Include="Log.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Metrics.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />

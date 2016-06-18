@@ -37,13 +37,12 @@ namespace Bond.Examples.PingPong
 
         private async static Task<EpoxyTransport> SetupAsync()
         {
-            var logHandler = new ConsoleLogger();
-            Log.SetHandler(logHandler);
-
             var metricsHandler = new ConsoleMetricsHandler();
             Metrics.SetHandler(metricsHandler);
 
-            var transport = new EpoxyTransportBuilder().Construct();
+            var transport = new EpoxyTransportBuilder()
+                .SetLogSink(new ConsoleLogger())
+                .Construct();
 
             var pingEndpoint = new IPEndPoint(IPAddress.Loopback, pingPort);
             var reversePingEndpoint = new IPEndPoint(IPAddress.Loopback, reversePingPort);

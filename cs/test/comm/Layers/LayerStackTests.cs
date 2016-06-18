@@ -12,6 +12,7 @@ namespace UnitTest.Layers
     using Bond.Protocols;
     using NUnit.Framework;
     using UnitTest.Comm;
+    using UnitTest.Interfaces;
 
     [TestFixture]
     public class LayerStackTests
@@ -25,9 +26,10 @@ namespace UnitTest.Layers
         {
             var testLayer1 = new TestLayer_AlwaysThrows();
 
-            Assert.Throws<ArgumentException>(() => new LayerStack<Dummy>(null));
-            Assert.Throws<ArgumentNullException>(() => new LayerStack<Dummy>(null, null));
-            Assert.Throws<ArgumentNullException>(() => new LayerStack<Dummy>(testLayer1, null));
+            Assert.Throws<ArgumentException>(() => new LayerStack<Dummy>(LoggerTests.BlackHole, null));
+            Assert.Throws<ArgumentException>(() => new LayerStack<Dummy>(LoggerTests.BlackHole, new ILayer<Dummy>[0]));
+            Assert.Throws<ArgumentNullException>(() => new LayerStack<Dummy>(LoggerTests.BlackHole, null, null));
+            Assert.Throws<ArgumentNullException>(() => new LayerStack<Dummy>(LoggerTests.BlackHole, testLayer1, null));
         }
 
         [Test]
@@ -36,10 +38,13 @@ namespace UnitTest.Layers
             var testList = new List<string>();
             var testLayer1 = new TestLayer_Append("foo", testList);
             var testLayer2 = new TestLayer_Append("bar", testList);
-            var stack = new LayerStack<Dummy>(testLayer1, testLayer2);
+            var stackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, testLayer1, testLayer2);
+            ILayerStack stack;
+            Error error = stackProvider.GetLayerStack(out stack);
+            Assert.IsNull(error);
 
             IBonded layerData;
-            Error error = stack.OnSend(MessageType.Request, sendContext, out layerData);
+            error = stack.OnSend(MessageType.Request, sendContext, out layerData);
 
             Assert.IsNull(error);
             Assert.IsNotNull(layerData);
@@ -59,9 +64,12 @@ namespace UnitTest.Layers
             var testList = new List<string>();
             var testLayer1 = new TestLayer_Append("foo", testList);
             var testLayer2 = new TestLayer_Append("bar", testList);
-            var stack = new LayerStack<Dummy>(testLayer1, testLayer2);
+            var stackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, testLayer1, testLayer2);
+            ILayerStack stack;
+            Error error = stackProvider.GetLayerStack(out stack);
+            Assert.IsNull(error);
 
-            Error error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
+            error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
 
             Assert.IsNull(error);
             Assert.AreEqual(2, testList.Count);
@@ -72,22 +80,62 @@ namespace UnitTest.Layers
         [Test]
         public void LayerStack_OnSend_ErrorOnThrow()
         {
-            var stack = new LayerStack<Dummy>(new TestLayer_AlwaysThrows());
+            var stack = new LayerStack<Dummy>(LoggerTests.BlackHole, new TestLayer_AlwaysThrows());
 
             IBonded layerData;
             Error error = stack.OnSend(MessageType.Request, sendContext, out layerData);
             Assert.IsNotNull(error);
-            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
         }
 
         [Test]
         public void LayerStack_OnReceive_ErrorOnThrow()
         {
-            var stack = new LayerStack<Dummy>(new TestLayer_AlwaysThrows());
+            var stack = new LayerStack<Dummy>(LoggerTests.BlackHole, new TestLayer_AlwaysThrows());
 
             Error error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
             Assert.IsNotNull(error);
-            Assert.AreEqual((int)ErrorCode.UnhandledLayerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+        }
+
+        public void LayerStackProvider_BadCtorArguments_Throw()
+        {
+            var testLayer1 = new TestLayer_AlwaysThrows();
+
+            Assert.Throws<ArgumentException>(() => new LayerStackProvider<Dummy>(null));
+            Assert.Throws<ArgumentException>(() => new LayerStackProvider<Dummy>(LoggerTests.BlackHole, new ILayerProvider<Dummy>[0]));
+            Assert.Throws<ArgumentNullException>(() => new LayerStackProvider<Dummy>(null, null));
+            Assert.Throws<ArgumentNullException>(() => new LayerStackProvider<Dummy>(LoggerTests.BlackHole, testLayer1, null));
+        }
+
+
+        [Test]
+        public void LayerStackProvider_StatelessLayerStackDoesNotReallocate()
+        {
+            var provider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, new TestLayer_AlwaysThrows(), new TestLayer_AlwaysThrows());
+            ILayerStack stack;
+            Error error = provider.GetLayerStack(out stack);
+            Assert.IsNull(error);
+            ILayerStack stack2;
+            error = provider.GetLayerStack(out stack2);
+            Assert.IsNull(error);
+            Assert.AreSame(stack, stack2);
+        }
+
+        [Test]
+        public void LayerStackProvider_StatefulLayerStackDoesReallocate()
+        {
+            var provider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole,
+                                                         new TestLayer_AlwaysThrows(),
+                                                         new TestLayerProvider_StatefulAppend("foo"),
+                                                         new TestLayer_AlwaysThrows());
+            ILayerStack stack;
+            Error error = provider.GetLayerStack(out stack);
+            Assert.IsNull(error);
+            ILayerStack stack2;
+            error = provider.GetLayerStack(out stack2);
+            Assert.IsNull(error);
+            Assert.AreNotSame(stack, stack2);
         }
 
         IBonded CreateBondedTestData(string value)
@@ -123,7 +171,8 @@ namespace UnitTest.Layers
         }
     }
 
-    public class TestLayer_Append : ILayer<Dummy>
+    // Not technically stateless but marked as such for testing purposes.
+    public class TestLayer_Append : IStatelessLayer<Dummy>, ILayerProvider<Dummy>
     {
         public readonly string value;
         readonly List<string> list;
@@ -135,6 +184,11 @@ namespace UnitTest.Layers
 
             this.value = value;
             this.list = list;
+        }
+
+        public ILayer<Dummy> GetLayer()
+        {
+            return this;
         }
 
         public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
@@ -152,8 +206,13 @@ namespace UnitTest.Layers
         }
     }
 
-    public class TestLayer_AlwaysThrows : ILayer<Dummy>
+    public class TestLayer_AlwaysThrows : IStatelessLayer<Dummy>, ILayerProvider<Dummy>
     {
+        public ILayer<Dummy> GetLayer()
+        {
+            return this;
+        }
+
         public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
         {
             throw new LayerStackException();
@@ -169,13 +228,20 @@ namespace UnitTest.Layers
 
         }
     }
-    public class TestLayer_CheckPassedValue : ILayer<Dummy>
+
+    // Not technically stateless but marked as such for testing purposes.
+    public class TestLayer_CheckPassedValue : IStatelessLayer<Dummy>, ILayerProvider<Dummy>
     {
         readonly int expectedValue;
 
         public TestLayer_CheckPassedValue(int value)
         {
             expectedValue = value;
+        }
+
+        public ILayer<Dummy> GetLayer()
+        {
+            return this;
         }
 
         public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
@@ -195,7 +261,8 @@ namespace UnitTest.Layers
         }
     }
 
-    public class TestLayer_ReturnErrors : ILayer<Dummy>
+    // Not technically stateless but marked as such for testing purposes.
+    public class TestLayer_ReturnErrors : IStatelessLayer<Dummy>, ILayerProvider<Dummy>
     {
         public const int SendError = 0x0001234;
         public const int ReceiveError = 0x0005678;
@@ -203,6 +270,11 @@ namespace UnitTest.Layers
         MessageType badMessageType;
         bool errorOnSend;
         bool errorOnReceive;
+
+        public ILayer<Dummy> GetLayer()
+        {
+            return this;
+        }
 
         public void SetState(MessageType badMessageType, bool errorOnSend, bool errorOnReceive)
         {
@@ -231,6 +303,77 @@ namespace UnitTest.Layers
             }
             else
             {
+                return null;
+            }
+        }
+    }
+
+    public class TestLayerProvider_StatefulAppend : ILayerProvider<Dummy>
+    {
+        public readonly string Prefix;
+
+        public readonly List<TestLayer_StatefulAppend> Layers;
+
+        public TestLayerProvider_StatefulAppend(string prefix)
+        {
+            Prefix = prefix;
+            Layers = new List<TestLayer_StatefulAppend>();
+        }
+
+        public ILayer<Dummy> GetLayer()
+        {
+            var result = new TestLayer_StatefulAppend(Prefix + Layers.Count);
+            Layers.Add(result);
+            return result;
+        }
+    }
+
+    public class TestLayer_StatefulAppend : ILayer<Dummy>
+    {
+        const string SendMessage = "Send";
+        const string ReceiveMessage = "Receive";
+        readonly string prefix;
+        public string State { get; private set; }
+
+        public TestLayer_StatefulAppend(string prefix)
+        {
+            this.prefix = prefix;
+        }
+
+        public Error OnSend(MessageType messageType, SendContext context, Dummy layerData)
+        {
+            State += prefix + SendMessage;
+            return null;
+        }
+
+        public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData)
+        {
+            State += prefix + ReceiveMessage;
+            return null;
+        }
+    }
+
+    public class TestLayerStackProvider_Fails : ILayerStackProvider
+    {
+        public static string InternalDetails = "Internal details";
+        uint failAfterGets;
+
+        public TestLayerStackProvider_Fails(uint failAfterGets)
+        {
+            this.failAfterGets = failAfterGets;
+        }
+
+        public Error GetLayerStack(out ILayerStack layerStack)
+        {
+            if (failAfterGets == 0)
+            {
+                layerStack = null;
+                return Errors.MakeInternalServerError(InternalDetails);
+            }
+            else
+            {
+                failAfterGets--;
+                layerStack = new LayerStack<Dummy>(LoggerTests.BlackHole, new TestLayer_StatefulAppend("foo"));
                 return null;
             }
         }

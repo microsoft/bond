@@ -9,8 +9,10 @@ namespace UnitTest.Epoxy
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Bond.Comm;
     using Bond.Comm.Epoxy;
     using NUnit.Framework;
+    using UnitTest.Interfaces;
 
     [TestFixture]
     public class FrameTests
@@ -80,13 +82,13 @@ namespace UnitTest.Epoxy
         [Test]
         public void Frame_ctor_NegativeCapacity_Throws()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new Frame(-1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new Frame(-1, LoggerTests.BlackHole));
         }
 
         [Test]
         public void Frame_default_ctor_DoesntThrow()
         {
-            var frame = new Frame();
+            var frame = new Frame(LoggerTests.BlackHole);
 
             Assert.AreEqual(0, frame.Count);
             CollectionAssert.IsEmpty(frame.Framelets);
@@ -105,7 +107,7 @@ namespace UnitTest.Epoxy
                 new Framelet(FrameletType.EpoxyConfig, AnyContents),
             };
 
-            var frame = new Frame(4);
+            var frame = new Frame(4, LoggerTests.BlackHole);
             frame.Add(new Framelet(FrameletType.EpoxyConfig, AnyContents));
             frame.Add(new Framelet(FrameletType.EpoxyConfig, AnyOtherContents));
             frame.Add(new Framelet(FrameletType.LayerData, AnyContents));
@@ -119,7 +121,7 @@ namespace UnitTest.Epoxy
         [Test]
         public void Frame_Add_TotalCount_Updated()
         {
-            var frame = new Frame(2);
+            var frame = new Frame(2, LoggerTests.BlackHole);
 
             int expectedSize = 2;
             Assert.AreEqual(expectedSize, frame.TotalSize);
@@ -136,7 +138,7 @@ namespace UnitTest.Epoxy
         [Test]
         public void Frame_Add_AddMoreThanUInt16Framelets_Throws()
         {
-            var frame = new Frame((int)UInt16.MaxValue + 1);
+            var frame = new Frame((int)UInt16.MaxValue + 1, LoggerTests.BlackHole);
             for (int i = 0; i < UInt16.MaxValue; ++i)
             {
                 frame.Add(new Framelet(FrameletType.LayerData, AnyContents));
@@ -153,7 +155,7 @@ namespace UnitTest.Epoxy
             var largeContents = new ArraySegment<byte>(new byte[2 * 65535]);
             int numFramesToAdd = Int32.MaxValue/largeContents.Count;
 
-            var frame = new Frame(numFramesToAdd);
+            var frame = new Frame(numFramesToAdd, LoggerTests.BlackHole);
             for (int i = 0; i < numFramesToAdd - 1; ++i)
             {
                 frame.Add(new Framelet(FrameletType.LayerData, largeContents));
@@ -167,14 +169,14 @@ namespace UnitTest.Epoxy
         [Test]
         public void Frame_WriteAsync_EmptyFrame_Throws()
         {
-            var frame = new Frame();
+            var frame = new Frame(LoggerTests.BlackHole);
             Assert.Throws<InvalidOperationException>(async () => await frame.WriteAsync(new MemoryStream()));
         }
 
         [Test]
         public async Task Frame_WriteAsync_OneFramelet_ContentsExpected()
         {
-            var frame = new Frame();
+            var frame = new Frame(LoggerTests.BlackHole);
             frame.Add(new Framelet(FrameletType.EpoxyConfig, AnyContents));
 
             var memStream = new MemoryStream();
@@ -194,14 +196,14 @@ namespace UnitTest.Epoxy
         public void Frame_ReadAsync_ZeroFramelets_Throws()
         {
             var zeroFrameletsStream = new FrameBuilder().Count(0).TakeStream();
-            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(zeroFrameletsStream, CancellationToken.None));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(zeroFrameletsStream, CancellationToken.None, LoggerTests.BlackHole));
         }
 
         [Test]
         public void Frame_ReadAsync_UnknownFramelet_Throws()
         {
             var unknownFrameletStream = new FrameBuilder().Count(1).Type((FrameletType) UnknownFramelet).TakeStream();
-            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(unknownFrameletStream, CancellationToken.None));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(unknownFrameletStream, CancellationToken.None, LoggerTests.BlackHole));
         }
 
         [Test]
@@ -212,35 +214,35 @@ namespace UnitTest.Epoxy
                     .Type(FrameletType.PayloadData)
                     .Size((UInt32) Int32.MaxValue + 1)
                     .TakeStream();
-            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(frameletTooLargeStream, CancellationToken.None));
+            Assert.Throws<EpoxyProtocolErrorException>(async () => await Frame.ReadAsync(frameletTooLargeStream, CancellationToken.None, LoggerTests.BlackHole));
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInCount_ReturnsNull()
         {
             var tooShortStream = new FrameBuilder().Count(1).TakeTooShortStream();
-            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None).Result);
+            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None, LoggerTests.BlackHole).Result);
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInType_ReturnsNull()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).TakeTooShortStream();
-            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None).Result);
+            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None, LoggerTests.BlackHole).Result);
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInSize_ReturnsNull()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).TakeTooShortStream();
-            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None).Result);
+            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None, LoggerTests.BlackHole).Result);
         }
 
         [Test]
         public void Frame_ReadAsync_EndOfStreamInContent_ReturnsNull()
         {
             var tooShortStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).Content(AnyContents).TakeTooShortStream();
-            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None).Result);
+            Assert.Null(Frame.ReadAsync(tooShortStream, CancellationToken.None, LoggerTests.BlackHole).Result);
         }
 
         [Test]
@@ -250,7 +252,7 @@ namespace UnitTest.Epoxy
             cts.Cancel();
             var goodStream = new FrameBuilder().Count(1).Type(FrameletType.ProtocolError).Size(4).Content(AnyContents).TakeStream();
 
-            Frame frame = await Frame.ReadAsync(goodStream, cts.Token);
+            Frame frame = await Frame.ReadAsync(goodStream, cts.Token, LoggerTests.BlackHole);
 
             Assert.IsNull(frame);
         }
@@ -265,7 +267,7 @@ namespace UnitTest.Epoxy
                 new Framelet(FrameletType.EpoxyConfig, AnyContents),
             };
 
-            var frame = new Frame();
+            var frame = new Frame(LoggerTests.BlackHole);
             foreach (var framelet in expectedFramelets)
             {
                 frame.Add(framelet);
@@ -275,7 +277,7 @@ namespace UnitTest.Epoxy
             await frame.WriteAsync(memStream);
 
             memStream.Seek(0, SeekOrigin.Begin);
-            var resultFrame = await Frame.ReadAsync(memStream, CancellationToken.None);
+            var resultFrame = await Frame.ReadAsync(memStream, CancellationToken.None, LoggerTests.BlackHole);
 
             CollectionAssert.AreEqual(expectedFramelets, resultFrame.Framelets, DeepFrameletComparer.Instance);
         }

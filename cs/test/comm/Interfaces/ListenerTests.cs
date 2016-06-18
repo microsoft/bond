@@ -14,7 +14,7 @@ namespace UnitTest.Interfaces
         [Test]
         public void Connected_NoSubscribedEvents_Works()
         {
-            new TestListener().Test_OnConnected(new ConnectedEventArgs(null));
+            new TestListener(LoggerTests.BlackHole).Test_OnConnected(new ConnectedEventArgs(null));
         }
 
         [Test]
@@ -26,7 +26,7 @@ namespace UnitTest.Interfaces
             bool event3Called = false;
             var event3Error = new Error();
 
-            var listener = new TestListener();
+            var listener = new TestListener(LoggerTests.BlackHole);
             listener.Connected += (sender, args) =>
             {
                 Assert.IsFalse(event1Called);
@@ -63,7 +63,7 @@ namespace UnitTest.Interfaces
         [Test]
         public void Disconnected_NoSubscribedEvents_Works()
         {
-            new TestListener().Test_OnDisconnected(new DisconnectedEventArgs(null, null));
+            new TestListener(LoggerTests.BlackHole).Test_OnDisconnected(new DisconnectedEventArgs(null, null));
         }
 
         [Test]
@@ -72,7 +72,7 @@ namespace UnitTest.Interfaces
             bool event1Called = false;
             bool event2Called = false;
 
-            var listener = new TestListener();
+            var listener = new TestListener(LoggerTests.BlackHole);
             listener.Disconnected += (sender, eventArgs) =>
             {
                 Assert.IsFalse(event1Called);
@@ -94,6 +94,8 @@ namespace UnitTest.Interfaces
 
         private class TestListener : Listener
         {
+            public TestListener(Logger logger) : base(logger) {}
+
             public override void AddService<T>(T service) { throw new NotImplementedException(); }
             public override void RemoveService<T>(T service) { throw new NotImplementedException(); }
             public override bool IsRegistered(string serviceMethodName) { throw new NotImplementedException(); }
