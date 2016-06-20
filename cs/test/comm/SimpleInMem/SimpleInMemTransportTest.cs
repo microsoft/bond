@@ -58,7 +58,7 @@ namespace UnitTest.SimpleInMem
         {
             bool listenerExists = transport.ListenerExists(address);
             Assert.False(listenerExists);
-            var listener = transport.MakeListener(address);
+            transport.MakeListener(address);
             listenerExists = transport.ListenerExists(address);
             Assert.True(listenerExists);
             transport.StopAsync();
@@ -68,7 +68,7 @@ namespace UnitTest.SimpleInMem
         [Test]
         public async void ConnectToAsync()
         {
-            Listener l = transport.MakeListener(address);
+            transport.MakeListener(address);
             Connection conn = await transport.ConnectToAsync(address, new System.Threading.CancellationToken());
             Assert.NotNull(conn);
             Assert.True(conn is SimpleInMemConnection);

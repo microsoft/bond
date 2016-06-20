@@ -34,7 +34,7 @@ namespace Bond.Comm.SimpleInMem
             this.address = address;
             serviceHost = new ServiceHost(parentTransport, logger);
             connectionPairs = new Dictionary<Guid, ConnectionPair>();
-            logname = $"{nameof(SimpleInMemListener)}({address})";
+            logname = $"{nameof(SimpleInMemListener)}({this.address})";
         }
 
         public bool IsStarted
