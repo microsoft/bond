@@ -56,9 +56,9 @@
     <Compile Include="Epoxy\EpoxyTransportTests.cs" />
     <Compile Include="Epoxy\ResponseMapTests.cs" />
     <!-- TODO: edit the .targets to automatically include the comm files -->
-    <Compile Include="$(IntermediateOutputPath)calculator_interfaces.cs" />
-    <Compile Include="$(IntermediateOutputPath)calculator_proxies.cs" />
-    <Compile Include="$(IntermediateOutputPath)calculator_services.cs" />
+    <Compile Include="$(IntermediateOutputPath)Calculator_interfaces.cs" />
+    <Compile Include="$(IntermediateOutputPath)Calculator_proxies.cs" />
+    <Compile Include="$(IntermediateOutputPath)Calculator_services.cs" />
     <Compile Include="$(IntermediateOutputPath)comm-test_interfaces.cs" />
     <Compile Include="$(IntermediateOutputPath)comm-test_proxies.cs" />
     <Compile Include="$(IntermediateOutputPath)comm-test_services.cs" />
