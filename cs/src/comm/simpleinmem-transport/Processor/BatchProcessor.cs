@@ -155,7 +155,6 @@ namespace Bond.Comm.SimpleInMem.Processor
             var headers = payload.headers;
             var layerData = payload.layerData;
             var message = payload.message;
-            var taskSource = payload.outstandingRequest;
 
             ILayerStack layerStack;
             Error layerError = serviceHost.ParentTransport.GetLayerStack(out layerStack);
