@@ -30,10 +30,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PingPong.cs" />
@@ -54,9 +50,6 @@
     </Reference>
     <Reference Include="Bond">
       <HintPath>$(BOND_BINARY_PATH)\net45\Bond.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.IO">
-      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.IO.dll</HintPath>
     </Reference>
     <Reference Include="Bond.Comm.Interfaces">
       <HintPath>$(BOND_BINARY_PATH)\net45\Bond.Comm.Interfaces.dll</HintPath>
