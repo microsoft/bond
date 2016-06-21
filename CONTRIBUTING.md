@@ -91,3 +91,12 @@ comment letting us know that there's new stuff to review.
 
 If the pull request review goes well, a project maintainer will merge your
 changes. Thank you for helping improve Bond!
+
+# Code of Conduct
+
+This project has adopted the
+[Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the
+[Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
+or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any
+additional questions or comments.

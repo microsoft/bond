@@ -1,8 +1,7 @@
 [![Build Status](https://travis-ci.org/Microsoft/bond.svg?branch=master)](https://travis-ci.org/Microsoft/bond)
 [![Bond.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat)](https://Microsoft.github.io/bond/manual/bond_cs.html#nuget-packages)
 
-Bond
-====
+# Bond
 
 Bond is an open source, cross-platform framework for working with schematized
 data. It supports cross-language serialization/deserialization and powerful
@@ -32,8 +31,7 @@ documentation of the compiler
 
 For a discussion how Bond compares to similar frameworks see [Why Bond](https://Microsoft.github.io/bond/why_bond.html).
 
-Dependencies
-------------
+## Dependencies
 
 The Bond repository uses Git submodules and should be cloned with the
 `--recursive` flag:
@@ -212,3 +210,9 @@ with 32-bit tools.) This variable works for Visual Studio 2013 or 2015. For
 Visual Studio 2012 set the following environment variable instead:
 
     set _IsNativeEnvironment=true
+
+## Contributing
+
+Interested in contributing to Bond? Take a look at our
+[contribution guidelines](https://github.com/Microsoft/bond/blob/master/CONTRIBUTING.md)
+to get started.
