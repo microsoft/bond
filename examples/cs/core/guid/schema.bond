@@ -1,8 +1,13 @@
 ﻿namespace Examples
 
+// Two flavors of storing guid are demonstrated here:
+// the first using string, and the second using binary blob.
+
 using guid = string;
+using guid_bin = blob;
 
 struct Example
 {
     0: guid id;
+    1: guid_bin id_bin;
 }
