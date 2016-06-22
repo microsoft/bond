@@ -250,7 +250,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><p>Container: <code>blob</code>, <code>list&lt;T&gt;</code>, <code>vector&lt;T&gt;</code>, <code>set&lt;T&gt;</code>, <code>map&lt;K, T&gt;</code>, <code>nullable&lt;T&gt;</code>.</p></li>
 <li><p>User-defined type: enum, struct or <code>bonded&lt;T&gt;</code> where T is a struct.</p></li>
 </ul>
-<p>An optional default value can be specified for fields of basic types. For integers the default can be specified as either a decimal number or a hexadecimal number prefixed with <code>0x</code>. The only explicit default value allowed for containers is <a href="#default-value-of-nothing"><code>nothing</code></a>. Enum fields must have an explicit default value which must be one of the enum named constants.</p>
+<p>An optional default value can be specified for fields of basic types. For integers the default can be specified as either a decimal number or a hexadecimal number prefixed with <code>0x</code>. The only explicit default value allowed for containers is <a href="#default-value-of-nothing"><code>nothing</code></a>. Enum fields must have an explicit default value which must be one of the enum named constants or <a href="#default-value-of-nothing"><code>nothing</code></a>.</p>
 <p>Names of structs and enums defined in another namespace must be qualified with the namespace name:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">import <span class="st">&quot;bond/core/bond.bond&quot;</span>
 
