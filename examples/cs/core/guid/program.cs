@@ -2,6 +2,7 @@
 {
     using System;
     using System.Diagnostics;
+    using System.IO;
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -26,14 +27,36 @@
 
         public static Guid Convert(ArraySegment<byte> value, Guid unused)
         {
-            var bits = new byte[16];
-            Buffer.BlockCopy(value.Array, value.Offset, bits, 0, 16);
-            return new Guid(bits);
+            if (value.Count != 16)
+            {
+                throw new InvalidDataException("value must be of length 16");
+            }
+
+            byte[] array = value.Array;
+            int offset = value.Offset;
+
+            int a =
+                  ((int)array[offset + 3] << 24)
+                | ((int)array[offset + 2] << 16)
+                | ((int)array[offset + 1] << 8)
+                | array[offset];
+            short b = (short)(((int)array[offset + 5] << 8) | array[offset + 4]);
+            short c = (short)(((int)array[offset + 7] << 8) | array[offset + 6]);
+
+            return new Guid(a, b, c,
+                array[offset+ 8],
+                array[offset+ 9],
+                array[offset+ 10],
+                array[offset+ 11],
+                array[offset+ 12],
+                array[offset+ 13],
+                array[offset+ 14],
+                array[offset+ 15]);
         }
 
         public static ArraySegment<byte> Convert(Guid value, ArraySegment<byte> unused)
         {
-            return new ArraySegment<byte>(value.ToByteArray(), 0, 16);
+            return new ArraySegment<byte>(value.ToByteArray());
         }
 
         #endregion
