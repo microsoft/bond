@@ -13,6 +13,6 @@ enum PayloadType
 struct SimpleInMemHeaders
 {
     0: uint64 conversation_id;
-    1: required PayloadType payload_type;
+    1: required PayloadType payload_type = Request;
     2: string method_name;
 }
