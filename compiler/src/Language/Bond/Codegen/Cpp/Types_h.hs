@@ -25,7 +25,7 @@ import Language.Bond.Codegen.Util
 import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- | Codegen template for generating /base_name/_type.h containing definitions
--- of C++ types representing the schema. 
+-- of C++ types representing the schema.
 types_h :: [String]     -- ^ list of optional header files to be @#include@'ed by the generated code
         -> Bool         -- ^ 'True' to generate enum definitions into a separate file /base_name/_enum.h
         -> Maybe String -- ^ optional custom allocator to be used in the generated code
@@ -59,7 +59,7 @@ types_h userHeaders enumHeader allocator cpp file imports declarations = ("_type
     hexVersion (Version xs _) = foldr showHex "" xs
     cppType = getTypeName cpp
 
-    idl = MappingContext idlTypeMapping [] [] []  
+    idl = MappingContext idlTypeMapping [] [] []
 
     cppDefaultValue = CPP.defaultValue cpp
 
@@ -265,9 +265,24 @@ namespace std
                 getAllocator _ = mempty
 
         -- move constructor
-        moveCtor = CPP.ifndef CPP.rvalueReferences [lt|
-        #{declName}(#{declName}&&#{param})#{initList}#{ctorBody}|]
+        moveCtor = if hasMetaFields then guardedDefine else implicitlyDeclared
           where
+            guardedDefine = CPP.ifndef CPP.rvalueReferences define
+
+            -- default OK when there are no meta fields, but fall back to
+            -- generated one for compilers that don't support = default for
+            -- move constructors
+            implicitlyDeclared = [lt|
+#if !defined(#{CPP.defaultedMoveCtors})
+        #{declName}(#{declName}&& other) = default;
+#elif !defined(#{CPP.rvalueReferences})
+        #{define}
+#endif|]
+
+            -- define ctor to perform member-by-member move and--if
+            -- needed--initialize meta fields
+            define = [lt|
+        #{declName}(#{declName}&&#{param})#{initList}#{ctorBody}|]
             initList = initializeList
                 (optional baseMove structBase)
                 (commaLineSep 3 fieldMove structFields)

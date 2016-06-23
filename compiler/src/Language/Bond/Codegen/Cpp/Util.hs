@@ -16,6 +16,7 @@ module Language.Bond.Codegen.Cpp.Util
     , schemaMetadata
     , ifndef
     , defaultedFunctions
+    , defaultedMoveCtors
     , rvalueReferences
     , enumDefinition
     ) where
@@ -123,8 +124,9 @@ schemaMetadata cpp s@Struct {..} = [lt|
         staticCast d = [lt|static_cast<#{getTypeName cpp fieldType}>(#{defaultValue cpp fieldType d})|]
 schemaMetadata _ _ = error "schemaMetadata: impossible happened."
 
-defaultedFunctions, rvalueReferences :: Text
+defaultedFunctions, defaultedMoveCtors, rvalueReferences :: Text
 defaultedFunctions = [lt|BOND_NO_CXX11_DEFAULTED_FUNCTIONS|]
+defaultedMoveCtors = [lt|BOND_NO_CXX11_DEFAULTED_MOVE_CTOR|]
 rvalueReferences = [lt|BOND_NO_CXX11_RVALUE_REFERENCES|]
 
 ifndef :: ToText a => a -> Text -> Text

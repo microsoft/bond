@@ -31,7 +31,7 @@ public:
     }
 
     /// @brief Construct from a raw pointer to memory buffer
-    /// 
+    ///
     /// Not recommended because of buffer lifetime management.
     blob(const void* content, uint32_t length)
         : _buffer(),
@@ -96,7 +96,8 @@ public:
 
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     /// @brief Move constructor
-    blob(blob&& that)
+    blob(blob&& that) BOND_NOEXCEPT_IF(
+        bond::is_nothrow_move_constructible<boost::shared_ptr<const char[]> >::value)
         : _buffer(std::move(that._buffer)),
           _content(std::move(that._content)),
           _length(std::move(that._length))
@@ -173,7 +174,7 @@ public:
         _buffer.swap(src._buffer);
     }
 
-    /// @brief Clear reference to the underlying memory buffer and reset the 
+    /// @brief Clear reference to the underlying memory buffer and reset the
     /// blob to empty
     void clear()
     {
@@ -382,9 +383,8 @@ inline T blob_cast(const blob& from)
 }
 
 
-template <> struct 
-is_blob<blob> 
+template <> struct
+is_blob<blob>
     : true_type {};
 
 } // namespace bond
-

@@ -36,7 +36,10 @@ namespace tests
         Foo(const Foo& other) = default;
 #endif
         
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
+#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
+        Foo(Foo&& other) = default;
+#elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
+        
         Foo(Foo&&)
         {
         }
@@ -104,7 +107,10 @@ namespace tests
         ComplexTypes(const ComplexTypes& other) = default;
 #endif
         
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
+#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
+        ComplexTypes(ComplexTypes&& other) = default;
+#elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
+        
         ComplexTypes(ComplexTypes&& other)
           : li8(std::move(other.li8)),
             sb(std::move(other.sb)),

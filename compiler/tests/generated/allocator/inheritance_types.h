@@ -36,7 +36,10 @@ namespace tests
         Base(const Base& other) = default;
 #endif
         
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
+#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
+        Base(Base&& other) = default;
+#elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
+        
         Base(Base&& other)
           : x(std::move(other.x))
         {
@@ -102,7 +105,10 @@ namespace tests
         Foo(const Foo& other) = default;
 #endif
         
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
+#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
+        Foo(Foo&& other) = default;
+#elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
+        
         Foo(Foo&& other)
           : ::tests::Base(std::move(other)),
             x(std::move(other.x))

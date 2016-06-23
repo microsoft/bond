@@ -162,7 +162,10 @@ namespace tests
         Foo(const Foo& other) = default;
 #endif
         
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
+#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
+        Foo(Foo&& other) = default;
+#elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
+        
         Foo(Foo&& other)
           : m_bool_1(std::move(other.m_bool_1)),
             m_bool_2(std::move(other.m_bool_2)),

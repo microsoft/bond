@@ -25,6 +25,7 @@ using BOND_TYPE_TRAITS_NAMESPACE::is_class;
 using BOND_TYPE_TRAITS_NAMESPACE::is_enum;
 using BOND_TYPE_TRAITS_NAMESPACE::is_floating_point;
 using BOND_TYPE_TRAITS_NAMESPACE::is_integral;
+using BOND_TYPE_TRAITS_NAMESPACE::is_nothrow_move_constructible;
 using BOND_TYPE_TRAITS_NAMESPACE::is_object;
 using BOND_TYPE_TRAITS_NAMESPACE::is_pod;
 using BOND_TYPE_TRAITS_NAMESPACE::is_reference;
