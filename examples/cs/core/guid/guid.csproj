@@ -8,7 +8,7 @@
     <RootNamespace>guid</RootNamespace>
     <AssemblyName>guid</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <BondOptions>--using="guid=System.Guid"</BondOptions>
+    <BondOptions>--using="guid_str=System.Guid" --using="guid_bin=System.Guid"</BondOptions>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,10 +31,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="program.cs" />
