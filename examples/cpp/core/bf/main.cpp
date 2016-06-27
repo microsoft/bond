@@ -152,7 +152,7 @@ bool TranscodeFrom(Reader reader, const Options& options)
 
     switch (options.to)
     {
-	case Protocol::compact:
+        case Protocol::compact:
         {
             bond::CompactBinaryWriter<bond::StdioOutputStream> writer(out);
             TranscodeFromTo(reader, writer, options);
