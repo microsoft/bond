@@ -98,7 +98,7 @@ namespace Bond.Comm
         /// </summary>
         /// <param name="address">The address to connect to.</param>
         /// <param name="ct">The cancellation token.</param>
-        /// <returns>A task of the <see cref="Connection"/>.</returns>
+        /// <returns>A task of the <see cref="Connection"/>. The returned connection may be null.</returns>
         /// <remarks>
         /// Each transport uses its own format for addresses. Consult the
         /// concrete implementation that is being used for details.

@@ -12,28 +12,27 @@ namespace UnitTest.Epoxy
     using NUnit.Framework;
 
     [TestFixture]
-    public class EpoxyListenerTests
+    public class EpoxyListenerTests : EpoxyTestBase
     {
-        private static readonly IPEndPoint localhostEndpoint = new IPEndPoint(IPAddress.Loopback, 0);
+        private static readonly IPEndPoint localhostEndpoint = new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultPort);
+        private static readonly string localhostAddress = "epoxy://127.0.0.1";
 
         [Test]
         public async Task ListenOnPortZero_ActuallyListensOnSomeOtherPort()
         {
             EpoxyTransport transport = MakeTransport();
-            var listener = transport.MakeListener(localhostEndpoint);
+            listener = transport.MakeListener(localhostEndpoint);
 
             await listener.StartAsync();
 
             Assert.AreNotEqual(0, listener.ListenEndpoint.Port);
-
-            await listener.StopAsync();
         }
 
         [Test]
         public async Task ConnectedEvent_HasRightRemoteEndpointDetails()
         {
             EpoxyTransport transport = MakeTransport();
-            var listener = transport.MakeListener(localhostEndpoint);
+            listener = transport.MakeListener(localhostEndpoint);
 
             EpoxyConnection remoteConnection = null;
             var connectedEventDone = new ManualResetEventSlim(initialState: false);
@@ -46,7 +45,7 @@ namespace UnitTest.Epoxy
             };
 
             await listener.StartAsync();
-            var connection = await transport.ConnectToAsync(listener.ListenEndpoint);
+            var connection = await transport.ConnectToAsync(localhostAddress);
             bool wasSignaled = connectedEventDone.Wait(TimeSpan.FromSeconds(30));
             Assert.IsTrue(wasSignaled, "Timed out waiting for Connected event to complete");
 
@@ -63,7 +62,7 @@ namespace UnitTest.Epoxy
             const string DisconnectMessage = "Go away!";
 
             EpoxyTransport transport = MakeTransport();
-            var listener = transport.MakeListener(localhostEndpoint);
+            listener = transport.MakeListener(localhostEndpoint);
 
             var connectedEventDone = new ManualResetEventSlim(initialState: false);
             listener.Connected += (sender, args) =>
@@ -82,7 +81,7 @@ namespace UnitTest.Epoxy
 
             try
             {
-                await transport.ConnectToAsync(listener.ListenEndpoint);
+                await transport.ConnectToAsync(localhostAddress);
                 Assert.Fail("Expected exception to be thrown.");
             }
             catch (EpoxyProtocolErrorException pex)
@@ -100,7 +99,7 @@ namespace UnitTest.Epoxy
         public async Task DisconnectedEvent_ClientDisconnects_GetsFired()
         {
             EpoxyTransport transport = MakeTransport();
-            var listener = transport.MakeListener(localhostEndpoint);
+            listener = transport.MakeListener(localhostEndpoint);
 
             var disconnectedEventDone = new ManualResetEventSlim(initialState: false);
             EpoxyConnection disconnectedConnection = null;
@@ -111,7 +110,7 @@ namespace UnitTest.Epoxy
             };
 
             await listener.StartAsync();
-            var connection = await transport.ConnectToAsync(listener.ListenEndpoint);
+            var connection = await transport.ConnectToAsync(localhostAddress);
             await connection.StopAsync();
 
             bool wasSignaled = disconnectedEventDone.Wait(TimeSpan.FromSeconds(30));

@@ -17,6 +17,9 @@ namespace UnitTest.Interfaces
     [TestFixture]
     class ServiceIsolationTests
     {
+        // For cleanup in a [TearDown].
+        private List<EpoxyListener> listeners = new List<EpoxyListener>();
+
         private class InMemLogSink : ILogSink
         {
             public readonly List<string> Messages = new List<string>();
@@ -44,7 +47,7 @@ namespace UnitTest.Interfaces
             }
         }
 
-        private static async Task<EpoxyTransport> Server(
+        private async Task<EpoxyTransport> Server(
             ILogSink logSink, IMetricsSink metricsSink,
             IPEndPoint endPoint)
         {
@@ -55,19 +58,30 @@ namespace UnitTest.Interfaces
 
             var service = new DummyTestService();
             var listener = transport.MakeListener(endPoint);
+            listeners.Add(listener);
             listener.AddService(service);
             await listener.StartAsync();
 
             return transport;
         }
 
-        private static async Task<EpoxyConnection> ClientConn(IPEndPoint endPoint)
+        private static async Task<EpoxyConnection> ClientConn(string address)
         {
             var transport = new EpoxyTransportBuilder()
                 .Construct();
 
-            return await transport.ConnectToAsync(endPoint);
+            return await transport.ConnectToAsync(address);
 
+        }
+
+        [TearDown]
+        public async void TearDown()
+        {
+            foreach (var listener in listeners)
+            {
+                await listener.StopAsync();
+            }
+            listeners.Clear();
         }
 
         [Test]
@@ -92,13 +106,15 @@ namespace UnitTest.Interfaces
             var secondMetricsSink = new InMemMetricsSink();
 
             var firstEndPoint = new IPEndPoint(IPAddress.Loopback, 10001);
+            var firstAddress = "epoxy://127.0.0.1:10001";
             var secondEndPoint = new IPEndPoint(IPAddress.Loopback, 10002);
+            var secondAddress = "epoxy://127.0.0.1:10002";
 
             var firstServer = await Server(firstLogSink, firstMetricsSink, firstEndPoint);
-            var firstClientConn = await ClientConn(firstEndPoint);
+            var firstClientConn = await ClientConn(firstAddress);
             var firstProxy = new DummyTestProxy<EpoxyConnection>(firstClientConn);
             var secondServer = await Server(secondLogSink, secondMetricsSink, secondEndPoint);
-            var secondClientConn = await ClientConn(secondEndPoint);
+            var secondClientConn = await ClientConn(secondAddress);
             var secondProxy = new DummyTestProxy<EpoxyConnection>(secondClientConn);
 
             await firstProxy.ReqRspMethodAsync(new Dummy());

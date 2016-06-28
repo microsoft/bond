@@ -17,7 +17,7 @@ namespace UnitTest.Epoxy
     using UnitTest.Interfaces;
 
     [TestFixture]
-    public class EpoxyConnectionTests
+    public class EpoxyConnectionTests : EpoxyTestBase
     {
         private const ProtocolErrorCode MeaninglessErrorCode = ProtocolErrorCode.GENERIC_ERROR;
 
@@ -62,7 +62,7 @@ namespace UnitTest.Epoxy
         [Test]
         public async Task Connection_StartStop()
         {
-            var testClientServer = await EpoxyTransportTests.SetupTestClientServer<EpoxyTransportTests.TestService>();
+            var testClientServer = await SetupTestClientServer<TestService>();
             EpoxyConnection connection = testClientServer.ClientConnection;
 
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
@@ -74,7 +74,7 @@ namespace UnitTest.Epoxy
         [Test]
         public async Task Connection_CanBeStoppedMultipleTimes()
         {
-            var testClientServer = await EpoxyTransportTests.SetupTestClientServer<EpoxyTransportTests.TestService>();
+            var testClientServer = await SetupTestClientServer<TestService>();
             EpoxyConnection connection = testClientServer.ClientConnection;
 
             var stopTasks = new[] {connection.StopAsync(), connection.StopAsync()};
@@ -91,7 +91,7 @@ namespace UnitTest.Epoxy
         [Test]
         public async Task Connection_OutstandingRequestsThenShutdown_CompletedWithError()
         {
-            var testClientServer = await EpoxyTransportTests.SetupTestClientServer<TestServiceNeverResponds>();
+            var testClientServer = await SetupTestClientServer<TestServiceNeverResponds>();
             EpoxyConnection connection = testClientServer.ClientConnection;
 
             IMessage<SomePayload> anyPayload = Message.FromPayload(new SomePayload());

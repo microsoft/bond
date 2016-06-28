@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.w
+﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace Bond.Comm.Epoxy
@@ -26,6 +26,25 @@ namespace Bond.Comm.Epoxy
         readonly Logger logger;
         readonly Metrics metrics;
 
+        public struct Endpoint
+        {
+            public readonly string Host;
+            public readonly int Port;
+
+            public Endpoint(string host, int port)
+            {
+                Host = host;
+                Port = port;
+            }
+
+            public Endpoint(IPEndPoint ipEndPoint) : this(ipEndPoint.Address.ToString(), ipEndPoint.Port) { }
+
+            public override string ToString()
+            {
+                return new UriBuilder("epoxy", Host, Port).Uri.ToString();
+            }
+        }
+
         public EpoxyTransport(
             ILayerStackProvider layerStackProvider,
             ILogSink logSink, bool enableDebugLogs,
@@ -52,27 +71,66 @@ namespace Bond.Comm.Epoxy
             }
         }
 
-        public override Task<EpoxyConnection> ConnectToAsync(string address, CancellationToken ct)
+        public static Endpoint? Parse(string address, Logger logger)
         {
-            return ConnectToAsync(ParseStringAddress(address), ct);
+            Uri uri;
+            try
+            {
+                uri = new Uri(address);
+            }
+            catch (Exception ex) when (ex is UriFormatException || ex is ArgumentNullException)
+            {
+                logger.Site().Error(ex, "given {0}, but URI parsing threw {1}", address, ex.Message);
+                return null;
+            }
+
+            switch (uri.Scheme)
+            {
+                case "epoxy":
+                    break;
+                default:
+                    logger.Site().Error("given {0}, but URI scheme must be epoxy://", address);
+                    return null;
+            }
+
+            var port = uri.Port != -1 ? uri.Port : DefaultPort;
+
+            if (uri.PathAndQuery != "/")
+            {
+                logger.Site().Error("given {0}, but Epoxy does not accept a path/resource", address);
+                return null;
+            }
+
+            return new Endpoint(uri.Host, port);
         }
 
-        public Task<EpoxyConnection> ConnectToAsync(IPEndPoint endpoint)
+        public override async Task<EpoxyConnection> ConnectToAsync(string address, CancellationToken ct)
         {
-            return ConnectToAsync(endpoint, CancellationToken.None);
+            var endpoint = Parse(address, logger);
+            if (endpoint == null)
+            {
+                throw new ArgumentException(address + " was not a valid Epoxy URI", nameof(address));
+            }
+
+            return await ConnectToAsync(endpoint.Value, ct);
         }
 
-        public async Task<EpoxyConnection> ConnectToAsync(IPEndPoint endpoint, CancellationToken ct)
+        public async Task<EpoxyConnection> ConnectToAsync(Endpoint endpoint, CancellationToken ct)
         {
             logger.Site().Information("Connecting to {0}.", endpoint);
-
-            Socket socket = MakeClientSocket();
-            await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, endpoint, state: null);
+            var socket = MakeClientSocket();
+            await Task.Factory.FromAsync(
+                socket.BeginConnect, socket.EndConnect, endpoint.Host, endpoint.Port, state: null);
 
             // TODO: keep these in some master collection for shutdown
             var connection = EpoxyConnection.MakeClientConnection(this, socket, logger, metrics);
             await connection.StartAsync();
             return connection;
+        }
+
+        public async Task<EpoxyConnection> ConnectToAsync(Endpoint endpoint)
+        {
+            return await ConnectToAsync(endpoint, CancellationToken.None);
         }
 
         public override EpoxyListener MakeListener(string address)

@@ -36,7 +36,7 @@ namespace Bond.Examples.NotifyEvent
                 .SetLogSink(new ConsoleLogger())
                 .Construct();
 
-            var assignAPortEndPoint = new IPEndPoint(IPAddress.Loopback, 0);
+            var assignAPortEndPoint = new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultPort);
 
             var notifyService = new NotifyEventService();
             EpoxyListener notifyListener = transport.MakeListener(assignAPortEndPoint);
@@ -44,7 +44,7 @@ namespace Bond.Examples.NotifyEvent
 
             await notifyListener.StartAsync();
 
-            s_connection = await transport.ConnectToAsync(notifyListener.ListenEndpoint, CancellationToken.None);
+            s_connection = await transport.ConnectToAsync("epoxy://127.0.0.1", CancellationToken.None);
 
             return transport;
         }

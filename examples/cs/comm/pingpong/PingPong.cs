@@ -15,11 +15,11 @@ namespace Bond.Examples.PingPong
 
     public static class PingPong
     {
-        private const ushort pingPort = EpoxyTransport.DefaultPort;
-        private const ushort reversePingPort = EpoxyTransport.DefaultPort + 1;
+        private const string PingEndpoint = "epoxy://127.0.0.1";
+        private static readonly string reversePingEndpoint = $"epoxy://127.0.0.1:{EpoxyTransport.DefaultPort + 1}";
 
-        private static EpoxyConnection s_pingConnection;
-        private static EpoxyConnection s_reverseConnection;
+        private static EpoxyConnection pingConnection;
+        private static EpoxyConnection reverseConnection;
 
         public static void Main()
         {
@@ -42,36 +42,33 @@ namespace Bond.Examples.PingPong
                 .SetMetricsSink(new ConsoleMetricsSink())
                 .Construct();
 
-            var pingEndpoint = new IPEndPoint(IPAddress.Loopback, pingPort);
-            var reversePingEndpoint = new IPEndPoint(IPAddress.Loopback, reversePingPort);
-
             var pingPongService = new PingPongService();
-            EpoxyListener pingPongListener = transport.MakeListener(pingEndpoint);
+            EpoxyListener pingPongListener = (EpoxyListener) transport.MakeListener(PingEndpoint);
             pingPongListener.AddService(pingPongService);
 
             var reversePingPongService = new ReversePingPongService();
-            EpoxyListener reversePingPongListener = transport.MakeListener(reversePingEndpoint);
+            EpoxyListener reversePingPongListener = (EpoxyListener) transport.MakeListener(reversePingEndpoint);
             reversePingPongListener.AddService(reversePingPongService);
 
             await Task.WhenAll(
                 pingPongListener.StartAsync(),
                 reversePingPongListener.StartAsync());
 
-            s_pingConnection = await transport.ConnectToAsync(pingPongListener.ListenEndpoint, CancellationToken.None);
-            s_reverseConnection = await transport.ConnectToAsync(reversePingPongListener.ListenEndpoint, CancellationToken.None);
+            pingConnection = (EpoxyConnection) await transport.ConnectToAsync(PingEndpoint);
+            reverseConnection = (EpoxyConnection) await transport.ConnectToAsync(reversePingEndpoint);
 
             return transport;
         }
 
         private static void Shutdown(EpoxyTransport transport)
         {
-            Task.WaitAll(transport.StopAsync(), s_pingConnection.StopAsync(), s_reverseConnection.StopAsync());
+            Task.WaitAll(transport.StopAsync(), pingConnection.StopAsync(), reverseConnection.StopAsync());
         }
 
         private static Task[] MakeRequestsAndPrintAsync(int numRequests)
         {
-            var pingPongProxy = new PingPongProxy<EpoxyConnection>(s_pingConnection);
-            var reversePingPongProxy = new PingPongProxy<EpoxyConnection>(s_reverseConnection);
+            var pingPongProxy = new PingPongProxy<EpoxyConnection>(pingConnection);
+            var reversePingPongProxy = new PingPongProxy<EpoxyConnection>(reverseConnection);
 
             var tasks = new Task[2 * numRequests];
 

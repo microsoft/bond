@@ -4,7 +4,6 @@
 namespace UnitTest.Epoxy
 {
     using System;
-    using System.Collections.Generic;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
@@ -17,7 +16,7 @@ namespace UnitTest.Epoxy
     using UnitTest.Layers;
 
     [TestFixture]
-    public class EpoxyTransportTests
+    public class EpoxyTransportTests : EpoxyTestBase
     {
         private const string AnyIpAddressString = "10.1.2.3";
         private const int AnyPort = 12345;
@@ -28,6 +27,22 @@ namespace UnitTest.Epoxy
         public void DefaultPorts_AreExpected()
         {
             Assert.AreEqual(25188, EpoxyTransport.DefaultPort);
+        }
+
+        [Test]
+        public void Endpoint_Ctors()
+        {
+            var ipEndPoint = new IPEndPoint(IPAddress.Parse(AnyIpAddressString), AnyPort);
+
+            var endpointFromPieces = new EpoxyTransport.Endpoint(AnyIpAddressString, AnyPort);
+            Assert.AreEqual(AnyIpAddressString, endpointFromPieces.Host);
+            Assert.AreEqual(AnyPort, endpointFromPieces.Port);
+
+            var endpointFromIpEndPoint = new EpoxyTransport.Endpoint(ipEndPoint);
+            Assert.AreEqual(AnyIpAddressString, endpointFromIpEndPoint.Host);
+            Assert.AreEqual(AnyPort, endpointFromIpEndPoint.Port);
+
+            Assert.AreEqual(endpointFromPieces, endpointFromIpEndPoint);
         }
 
         [Test]
@@ -68,6 +83,74 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
+        public void Parse_InvalidUris()
+        {
+            Assert.Null(EpoxyTransport.Parse(null, LoggerTests.BlackHole));
+            Assert.Null(EpoxyTransport.Parse("", LoggerTests.BlackHole));
+            Assert.Null(EpoxyTransport.Parse("127.0.0.1", LoggerTests.BlackHole));
+            Assert.Null(EpoxyTransport.Parse("cows", LoggerTests.BlackHole));
+            Assert.Null(EpoxyTransport.Parse(":12", LoggerTests.BlackHole));
+            Assert.Null(EpoxyTransport.Parse("epoxy://127.0.0.1:1000:1000", LoggerTests.BlackHole));
+        }
+
+        [Test]
+        public void Parse_SchemeMustBeEpoxy()
+        {
+            Assert.Null(EpoxyTransport.Parse("http://127.0.0.1", LoggerTests.BlackHole));
+        }
+
+        [Test]
+        public void Parse_NoResourceBesidesRootOrParamsAllowed()
+        {
+            Assert.Null(EpoxyTransport.Parse("epoxy://127.0.0.1/cows", LoggerTests.BlackHole));
+            Assert.Null(EpoxyTransport.Parse("epoxy://127.0.0.1?cows=cows", LoggerTests.BlackHole));
+        }
+
+        [Test]
+        public void Parse_AcceptableUris()
+        {
+            var endpoint = EpoxyTransport.Parse("epoxy://127.0.0.1", LoggerTests.BlackHole);
+            Assert.NotNull(endpoint);
+            Assert.AreEqual("127.0.0.1", endpoint.Value.Host);
+            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+
+            endpoint = EpoxyTransport.Parse("epoxy://127.0.0.1/", LoggerTests.BlackHole);
+            Assert.NotNull(endpoint);
+            Assert.AreEqual("127.0.0.1", endpoint.Value.Host);
+            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+
+            endpoint = EpoxyTransport.Parse("epoxy://127.0.0.1:10000", LoggerTests.BlackHole);
+            Assert.NotNull(endpoint);
+            Assert.AreEqual("127.0.0.1", endpoint.Value.Host);
+            Assert.AreEqual(10000, endpoint.Value.Port);
+
+            endpoint = EpoxyTransport.Parse("epoxy://127.0.0.1:10000/", LoggerTests.BlackHole);
+            Assert.NotNull(endpoint);
+            Assert.AreEqual("127.0.0.1", endpoint.Value.Host);
+            Assert.AreEqual(10000, endpoint.Value.Port);
+
+            endpoint = EpoxyTransport.Parse("epoxy://localhost", LoggerTests.BlackHole);
+            Assert.NotNull(endpoint);
+            Assert.AreEqual("localhost", endpoint.Value.Host);
+            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+
+            endpoint = EpoxyTransport.Parse("epoxy://localhost/", LoggerTests.BlackHole);
+            Assert.NotNull(endpoint);
+            Assert.AreEqual("localhost", endpoint.Value.Host);
+            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+
+            endpoint = EpoxyTransport.Parse("epoxy://localhost:10000", LoggerTests.BlackHole);
+            Assert.NotNull(endpoint);
+            Assert.AreEqual("localhost", endpoint.Value.Host);
+            Assert.AreEqual(10000, endpoint.Value.Port);
+
+            endpoint = EpoxyTransport.Parse("epoxy://localhost:10000/", LoggerTests.BlackHole);
+            Assert.NotNull(endpoint);
+            Assert.AreEqual("localhost", endpoint.Value.Host);
+            Assert.AreEqual(10000, endpoint.Value.Port);
+        }
+
+        [Test]
         public void Builder_Construct_NoArgs_Succeeds()
         {
             var builder = new EpoxyTransportBuilder();
@@ -103,7 +186,7 @@ namespace UnitTest.Epoxy
 
             var error = response.Error.Deserialize<Error>();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
-            
+
             await testClientServer.ServiceTransport.StopAsync();
             await testClientServer.ClientTransport.StopAsync();
         }
@@ -500,172 +583,5 @@ namespace UnitTest.Epoxy
             Assert.That(exception.Message, Is.StringContaining("registered as invalid type"));
         }
 
-        public class TestClientServer<TService>
-        {
-            public TService Service;
-            public EpoxyTransport ServiceTransport;
-            public EpoxyListener Listener;
-            public EpoxyConnection ClientConnection;
-            public EpoxyTransport ClientTransport;
-        }
-
-        public static async Task<TestClientServer<TService>> SetupTestClientServer<TService>(ILayerStackProvider serviceLayerStackProvider = null,
-                                                                                              ILayerStackProvider clientLayerStackProvider = null) where TService : class, IService, new()
-        {
-            var testService = new TService();
-
-            EpoxyTransport serviceTransport = new EpoxyTransportBuilder()
-                .SetLayerStackProvider(serviceLayerStackProvider)
-                .Construct();
-            EpoxyListener listener = serviceTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, 0));
-            listener.AddService(testService);
-            await listener.StartAsync();
-
-            EpoxyTransport clientTransport = new EpoxyTransportBuilder()
-                // some tests rely on the use of DebugExceptionHandler to assert things about the error message
-                .SetLayerStackProvider(clientLayerStackProvider)
-                .Construct();
-            EpoxyConnection clientConnection = await clientTransport.ConnectToAsync(listener.ListenEndpoint);
-
-            return new TestClientServer<TService>
-            {
-                Service = testService,
-                ServiceTransport = serviceTransport,
-                Listener = listener,
-                ClientConnection = clientConnection,
-                ClientTransport = clientTransport
-            };
-        }
-
-        public class TestService : IService
-        {
-            private int respondWithEmpty_callCount = 0;
-
-            public IEnumerable<ServiceMethodInfo> Methods
-            {
-                get
-                {
-                    return new[]
-                    {
-                        new ServiceMethodInfo
-                        {
-                            MethodName = "TestService.RespondWithEmpty",
-                            Callback = RespondWithEmpty
-                        },
-                        new ServiceMethodInfo
-                        {
-                            MethodName = "TestService.RespondWithError",
-                            Callback = RespondWithError,
-                        },
-                        new ServiceMethodInfo
-                        {
-                            MethodName = "TestService.ThrowInsteadOfResponding",
-                            Callback = ThrowInsteadOfResponding,
-                        },
-                    };
-                }
-            }
-
-            public int RespondWithEmpty_CallCount
-            {
-                get
-                {
-                    return respondWithEmpty_callCount;
-                }
-            }
-
-            private Task<IMessage> RespondWithEmpty(IMessage request, ReceiveContext context, CancellationToken ct)
-            {
-                Interlocked.Increment(ref respondWithEmpty_callCount);
-                var emptyMessage = Message.FromPayload(new Bond.Void());
-                return Task.FromResult<IMessage>(emptyMessage);
-            }
-
-            private Task<IMessage> RespondWithError(IMessage request, ReceiveContext context, CancellationToken ct)
-            {
-                var error = new Error
-                {
-                    error_code = (int) ErrorCode.InternalServerError,
-                };
-
-                return Task.FromResult<IMessage>(Message.FromError(error));
-            }
-
-            private Task<IMessage> ThrowInsteadOfResponding(IMessage request, ReceiveContext context, CancellationToken ct)
-            {
-                throw new InvalidOperationException();
-            }
-        }
-        private class TestServiceEventMismatch : IService
-        {
-            public IEnumerable<ServiceMethodInfo> Methods
-            {
-                get
-                {
-                    return new[]
-                    {
-                        new ServiceMethodInfo
-                        {
-                            MethodName = "TestService.RespondWithEmpty",
-                            Callback = RespondWithEmpty,
-                            CallbackType = ServiceCallbackType.Event
-                        },
-                    };
-                }
-            }
-
-            private Task<IMessage> RespondWithEmpty(IMessage request, ReceiveContext context, CancellationToken ct)
-            {
-                var emptyMessage = Message.FromPayload(new Bond.Void());
-                return Task.FromResult<IMessage>(emptyMessage);
-            }
-        }
-
-        private class TestServiceReqResMismatch : IService
-        {
-            public IEnumerable<ServiceMethodInfo> Methods
-            {
-                get
-                {
-                    return new[]
-                    {
-                        new ServiceMethodInfo
-                        {
-                            MethodName = "TestService.DoBeep",
-                            Callback = DoBeep,
-                            CallbackType = ServiceCallbackType.RequestResponse
-                        },
-                    };
-                }
-            }
-
-            private Task DoBeep(IMessage request, ReceiveContext context, CancellationToken ct)
-            {
-                return CodegenHelpers.CompletedTask;
-            }
-        }
-        private class TestServiceUnsupported : IService
-        {
-            public IEnumerable<ServiceMethodInfo> Methods
-            {
-                get
-                {
-                    return new[]
-                    {
-                        new ServiceMethodInfo
-                        {
-                            MethodName = "TestService.DoBeep",
-                            Callback = DoBeep,
-                            CallbackType = (ServiceCallbackType)(-100)
-                        },
-                    };
-                }
-            }
-
-            private Task DoBeep(IMessage request, ReceiveContext context, CancellationToken ct)
-            {
-                return CodegenHelpers.CompletedTask;
-            }
-        }
     }
 }

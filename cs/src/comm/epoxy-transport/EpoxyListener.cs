@@ -29,7 +29,7 @@ namespace Bond.Comm.Epoxy
             Logger logger, Metrics metrics) : base(logger, metrics)
         {
             this.parentTransport = parentTransport;
-            listener = new System.Net.Sockets.TcpListener(listenEndpoint);
+            listener = new TcpListener(listenEndpoint);
             serviceHost = new ServiceHost(logger, metrics);
             connections = new HashSet<EpoxyConnection>();
             shutdownTokenSource = new CancellationTokenSource();

@@ -50,11 +50,12 @@
     <BondCodegen Include="SimpleInMem\Calculator.bond">
       <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
     </BondCodegen>
-    <Compile Include="Epoxy\FrameTests.cs" />
     <Compile Include="Epoxy\EpoxyConnectionTests.cs" />
     <Compile Include="Epoxy\EpoxyListenerTests.cs" />
     <Compile Include="Epoxy\EpoxyProtocolTests.cs" />
+    <Compile Include="Epoxy\EpoxyTestBase.cs" />
     <Compile Include="Epoxy\EpoxyTransportTests.cs" />
+    <Compile Include="Epoxy\FrameTests.cs" />
     <Compile Include="Epoxy\ResponseMapTests.cs" />
     <!-- TODO: edit the .targets to automatically include the comm files -->
     <Compile Include="$(IntermediateOutputPath)Calculator_interfaces.cs" />
