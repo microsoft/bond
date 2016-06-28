@@ -240,7 +240,7 @@ TEST_CASE_BEGIN(DifferentiateBetweenListAndNullable)
 {
     {
         bond::SchemaDef schema = bond::GetRuntimeSchema<ListVsNullable>().GetSchema();
-        for (int i = 0; i < schema.structs[0].fields.size(); i++)
+        for (std::size_t i = 0; i < schema.structs[0].fields.size(); i++)
         {
             bond::FieldDef def = schema.structs[0].fields[i];
             if (def.id == 0) {
@@ -271,7 +271,7 @@ TEST_CASE_BEGIN(EnsureUnknownSeqIDLType)
 {
     {
         bond::SchemaDef schema = bond::GetRuntimeSchema<StructWithDefaults>().GetSchema();
-        for (int i = 0; i < schema.structs[0].fields.size(); i++)
+        for (std::size_t i = 0; i < schema.structs[0].fields.size(); i++)
         {
             bond::FieldDef def = schema.structs[0].fields[i];
             UT_AssertAreEqual(bond::ListSubType::NO_SUBTYPE, def.type.list_sub_type);
