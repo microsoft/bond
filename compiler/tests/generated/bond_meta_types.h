@@ -40,7 +40,7 @@ namespace bondmeta
             InitMetadata("HasMetaFields", "deprecated.bondmeta.HasMetaFields");
         }
         
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
+#if !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
         HasMetaFields(HasMetaFields&& other)
           : full_name(std::move(other.full_name)),
             name(std::move(other.name))

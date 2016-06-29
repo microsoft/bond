@@ -43,7 +43,6 @@ namespace tests
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
         Foo(Foo&& other) = default;
 #elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
-        
         Foo(Foo&& other)
           : o(std::move(other.o)),
             r(std::move(other.r)),

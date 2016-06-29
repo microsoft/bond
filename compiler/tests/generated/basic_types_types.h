@@ -62,7 +62,6 @@ namespace tests
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
         BasicTypes(BasicTypes&& other) = default;
 #elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
-        
         BasicTypes(BasicTypes&& other)
           : _bool(std::move(other._bool)),
             _str(std::move(other._str)),

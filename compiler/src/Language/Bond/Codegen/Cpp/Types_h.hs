@@ -265,24 +265,25 @@ namespace std
                 getAllocator _ = mempty
 
         -- move constructor
-        moveCtor = if hasMetaFields then guardedDefine else implicitlyDeclared
-          where
-            guardedDefine = CPP.ifndef CPP.rvalueReferences define
-
-            -- default OK when there are no meta fields, but fall back to
-            -- generated one for compilers that don't support = default for
-            -- move constructors
-            implicitlyDeclared = [lt|
-#if !defined(#{CPP.defaultedMoveCtors})
-        #{declName}(#{declName}&& other) = default;
-#elif !defined(#{CPP.rvalueReferences})
-        #{define}
+        moveCtor = if hasMetaFields then [lt|
+#if !defined(#{CPP.rvalueReferences})
+        #{explicit}
 #endif|]
+            -- even if implicit would be okay, fall back to explicit for
+            -- compilers that don't support = default for move constructors
+                                    else [lt|
+#if !defined(#{CPP.defaultedMoveCtors})
+        #{implicit}
+#elif !defined(#{CPP.rvalueReferences})
+        #{explicit}
+#endif|]
+          where
+            -- default OK when there are no meta fields
+            implicit = [lt|#{declName}(#{declName}&& other) = default;|]
 
             -- define ctor to perform member-by-member move and--if
             -- needed--initialize meta fields
-            define = [lt|
-        #{declName}(#{declName}&&#{param})#{initList}#{ctorBody}|]
+            explicit = [lt|#{declName}(#{declName}&&#{param})#{initList}#{ctorBody}|]
             initList = initializeList
                 (optional baseMove structBase)
                 (commaLineSep 3 fieldMove structFields)
