@@ -18,11 +18,8 @@ namespace Bond.Comm.Service
         private readonly Logger logger;
         private readonly Metrics metrics;
 
-        public readonly Transport ParentTransport;
-
-        public ServiceHost(Transport parentTransport, Logger logger, Metrics metrics)
+        public ServiceHost(Logger logger, Metrics metrics)
         {
-            ParentTransport = parentTransport;
             dispatchTableLock = new object();
             dispatchTable = new Dictionary<string, ServiceMethodInfo>();
             this.logger = logger;

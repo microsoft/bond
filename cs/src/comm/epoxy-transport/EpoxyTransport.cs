@@ -18,7 +18,7 @@ namespace Bond.Comm.Epoxy
         }
     }
 
-    public class EpoxyTransport : Transport
+    public class EpoxyTransport : Transport<EpoxyConnection, EpoxyListener>
     {
         public const int DefaultPort = 25188;
 
@@ -52,9 +52,9 @@ namespace Bond.Comm.Epoxy
             }
         }
 
-        public override Task<Connection> ConnectToAsync(string address, CancellationToken ct)
+        public override Task<EpoxyConnection> ConnectToAsync(string address, CancellationToken ct)
         {
-            return ConnectToAsync(ParseStringAddress(address), ct).Upcast<EpoxyConnection, Connection>();
+            return ConnectToAsync(ParseStringAddress(address), ct);
         }
 
         public Task<EpoxyConnection> ConnectToAsync(IPEndPoint endpoint)
@@ -75,7 +75,7 @@ namespace Bond.Comm.Epoxy
             return connection;
         }
 
-        public override Listener MakeListener(string address)
+        public override EpoxyListener MakeListener(string address)
         {
             return MakeListener(ParseStringAddress(address));
         }

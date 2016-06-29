@@ -60,6 +60,9 @@ different versioning scheme, following the Haskell community's
   * `Log.DropBelow` added to automatically ignore some levels of logging.
   * The `ILogHandle.Handle` method is now provided a pre-formatted string
     instead of a format string and its arguments.
+* Transport is now parameterized with Connection and Listener implementations.
+  This eliminates the need to cast the results of transport.ConnectToAsync() and
+  transport.MakeListener() to transport-specific subtypes.
 
 ## 4.2.1: 2016-06-02 ##
 

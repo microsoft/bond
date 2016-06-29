@@ -17,7 +17,7 @@ namespace Bond.Comm.SimpleInMem
         }
     }
 
-    public class SimpleInMemTransport : Transport
+    public class SimpleInMemTransport : Transport<SimpleInMemConnection, SimpleInMemListener>
     {
         object listenersLock = new object();
         IDictionary<string, SimpleInMemListener> listeners = new Dictionary<string, SimpleInMemListener>();
@@ -50,7 +50,7 @@ namespace Bond.Comm.SimpleInMem
         /// </summary>
         /// <returns>a <see cref="SimpleInMemConnection"/> that may be used to perform request operations.</returns>
         /// <exception cref="ArgumentException">the listener for given address does not exist.</exception>
-        public async override Task<Connection> ConnectToAsync(string address, CancellationToken ct)
+        public async override Task<SimpleInMemConnection> ConnectToAsync(string address, CancellationToken ct)
         {
             logger.Site().Information("Connecting to {0}.", address);
             SimpleInMemListener listener;
@@ -64,10 +64,7 @@ namespace Bond.Comm.SimpleInMem
                 }
             }
 
-            return await Task.Run<Connection>(() =>
-            {
-                return listener.CreateConnectionPair().Client;
-            }, ct);
+            return await Task.Run(() => listener.CreateConnectionPair().Client, ct);
         }
 
         /// <summary>
@@ -76,7 +73,7 @@ namespace Bond.Comm.SimpleInMem
         /// otherwise.
         /// </summary>
         /// <returns><see cref="SimpleInMemListener"/> instance represented by address</returns>
-        public override Listener MakeListener(string address)
+        public override SimpleInMemListener MakeListener(string address)
         {
             SimpleInMemListener listener;
 

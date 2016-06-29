@@ -33,6 +33,7 @@ namespace Bond.Comm.SimpleInMem
         private readonly ConnectionType connectionType;
         private readonly SimpleInMemListener parentListener;
         private readonly ServiceHost serviceHost;
+        private readonly SimpleInMemTransport transport;
         private InMemFrameQueue pairedReadQueue = null;
         private readonly InMemFrameQueue writeQueue;
         private long prevConversationId;
@@ -44,16 +45,19 @@ namespace Bond.Comm.SimpleInMem
 
         public ConnectionMetrics ConnectionMetrics { get; } = new ConnectionMetrics();
 
-        internal SimpleInMemConnection(SimpleInMemListener parentListener,
-                                       ConnectionType connectionType, ServiceHost serviceHost,
-                                       Logger logger, Metrics metrics)
+        internal SimpleInMemConnection(
+            SimpleInMemListener parentListener, ConnectionType connectionType,
+            ServiceHost serviceHost, SimpleInMemTransport transport,
+            Logger logger, Metrics metrics)
         {
             if (parentListener == null) throw new ArgumentNullException(nameof(parentListener));
             if (serviceHost == null) throw new ArgumentNullException(nameof(serviceHost));
+            if (transport == null) throw new ArgumentNullException(nameof(transport));
 
-            this.connectionType = connectionType;
             this.parentListener = parentListener;
+            this.connectionType = connectionType;
             this.serviceHost = serviceHost;
+            this.transport = transport;
             writeQueue = new InMemFrameQueue();
             connectionId = Guid.NewGuid();
 
@@ -192,7 +196,7 @@ namespace Bond.Comm.SimpleInMem
             lock (stateLock)
             {
                 EnsureCorrectState(CnxState.Created);
-                var batchProcessor = new BatchProcessor(this, serviceHost, logger);
+                var batchProcessor = new BatchProcessor(this, serviceHost, transport, logger);
                 Task.Run(() => batchProcessor.ProcessAsync(cancelTokenSource.Token));
                 state = CnxState.Connected;
             }
@@ -206,7 +210,7 @@ namespace Bond.Comm.SimpleInMem
 
             IBonded layerData = null;
             ILayerStack layerStack;
-            Error layerError = this.serviceHost.ParentTransport.GetLayerStack(out layerStack);
+            Error layerError = transport.GetLayerStack(out layerStack);
 
             if (layerError == null)
             {
@@ -236,7 +240,7 @@ namespace Bond.Comm.SimpleInMem
             var sendContext = new SimpleInMemSendContext(this);
             IBonded layerData = null;
             ILayerStack layerStack;
-            Error layerError = this.serviceHost.ParentTransport.GetLayerStack(out layerStack);
+            Error layerError = transport.GetLayerStack(out layerStack);
 
             if (layerError == null)
             {

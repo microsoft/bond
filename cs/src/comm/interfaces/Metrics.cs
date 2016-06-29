@@ -5,8 +5,8 @@ namespace Bond.Comm
 {
     /// <summary>
     /// Receives metrics emitted by Transports. Supply an instance of <c>IMetricsSink</c> to a
-    /// <see cref="TransportBuilder{TTransport}.SetMetricsSink"/> to register it with the <see cref="Transport"/>
-    /// returned by <see cref="TransportBuilder{TTransport}.Construct"/>.
+    /// <see cref="TransportBuilder{TTransport}.SetMetricsSink"/> to register it with the
+    /// <see cref="Transport{TConnection,TListener}"/> returned by <see cref="TransportBuilder{TTransport}.Construct"/>.
     /// </summary>
     public interface IMetricsSink
     {

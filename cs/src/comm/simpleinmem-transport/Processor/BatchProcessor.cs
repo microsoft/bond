@@ -10,9 +10,9 @@ namespace Bond.Comm.SimpleInMem.Processor
     internal class BatchProcessor : QueueProcessor
     {
         private const int MAXIMUM_BATCH_SIZE = 1000;
-        
-        internal BatchProcessor(SimpleInMemConnection connection, ServiceHost serviceHost, Logger logger) 
-            : base(connection, serviceHost, logger)
+
+        internal BatchProcessor(SimpleInMemConnection connection, ServiceHost serviceHost, SimpleInMemTransport transport, Logger logger)
+            : base(connection, serviceHost, transport, logger)
         {
         }
 
@@ -76,7 +76,7 @@ namespace Bond.Comm.SimpleInMem.Processor
             var taskSource = payload.outstandingRequest;
 
             ILayerStack layerStack;
-            Error layerError = this.serviceHost.ParentTransport.GetLayerStack(out layerStack);
+            Error layerError = transport.GetLayerStack(out layerStack);
 
             if (layerError == null)
             {
@@ -157,7 +157,7 @@ namespace Bond.Comm.SimpleInMem.Processor
             var message = payload.message;
 
             ILayerStack layerStack;
-            Error layerError = serviceHost.ParentTransport.GetLayerStack(out layerStack);
+            Error layerError = transport.GetLayerStack(out layerStack);
 
             if (layerError == null)
             {

@@ -14,6 +14,7 @@ namespace Bond.Comm.SimpleInMem
     public class SimpleInMemListener : Listener
     {
         private ServiceHost serviceHost;
+        private SimpleInMemTransport transport;
         private string address;
         private readonly string logname;
         private Dictionary<Guid, ConnectionPair> connectionPairs;
@@ -27,14 +28,15 @@ namespace Bond.Comm.SimpleInMem
         /// <exception cref="ArgumentNullException">parentTransport is null</exception>
         /// <exception cref="ArgumentException">address is null or empty</exception>
         public SimpleInMemListener(
-            SimpleInMemTransport parentTransport, string address,
+            SimpleInMemTransport transport, string address,
             Logger logger, Metrics metrics) : base(logger, metrics)
         {
-            if (parentTransport == null) throw new ArgumentNullException(nameof(parentTransport));
+            if (transport == null) throw new ArgumentNullException(nameof(transport));
             if (string.IsNullOrEmpty(address)) throw new ArgumentException(nameof(address));
 
             this.address = address;
-            serviceHost = new ServiceHost(parentTransport, logger, metrics);
+            serviceHost = new ServiceHost(logger, metrics);
+            this.transport = transport;
             connectionPairs = new Dictionary<Guid, ConnectionPair>();
             logname = $"{nameof(SimpleInMemListener)}({this.address})";
         }
@@ -153,10 +155,9 @@ namespace Bond.Comm.SimpleInMem
 
         internal ConnectionPair CreateConnectionPair()
         {
-            var clientConnection = new SimpleInMemConnection(
-                this, ConnectionType.Client, new ServiceHost(serviceHost.ParentTransport, logger, metrics),
-                logger, metrics);
-            var serverConnection = new SimpleInMemConnection(this, ConnectionType.Server, serviceHost, logger, metrics);
+            var clientConnection = new SimpleInMemConnection(this, ConnectionType.Client, new ServiceHost(logger, metrics),
+                transport, logger, metrics);
+            var serverConnection = new SimpleInMemConnection(this, ConnectionType.Server, serviceHost, transport, logger, metrics);
             var connectionPair = SimpleInMemConnection.Pair(clientConnection, serverConnection);
 
             Add(connectionPair);

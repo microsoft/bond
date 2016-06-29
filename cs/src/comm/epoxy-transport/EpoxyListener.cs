@@ -30,7 +30,7 @@ namespace Bond.Comm.Epoxy
         {
             this.parentTransport = parentTransport;
             listener = new System.Net.Sockets.TcpListener(listenEndpoint);
-            serviceHost = new ServiceHost(parentTransport, logger, metrics);
+            serviceHost = new ServiceHost(logger, metrics);
             connections = new HashSet<EpoxyConnection>();
             shutdownTokenSource = new CancellationTokenSource();
         }

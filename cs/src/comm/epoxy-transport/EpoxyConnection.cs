@@ -127,7 +127,7 @@ namespace Bond.Comm.Epoxy
                 ConnectionType.Client,
                 parentTransport,
                 parentListener,
-                new ServiceHost(parentTransport, logger, metrics),
+                new ServiceHost(logger, metrics),
                 clientSocket,
                 logger,
                 metrics);

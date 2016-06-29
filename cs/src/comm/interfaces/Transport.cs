@@ -8,7 +8,7 @@ namespace Bond.Comm
 
     /// <summary>
     /// Provides a convenient way to initialize and create
-    /// <see cref="Transport">Transports</see>.
+    /// <see cref="Transport{TConnection,TListener}">Transports</see>.
     /// </summary>
     /// <typeparam name="TTransport">
     /// The type of transport this builder can build.
@@ -68,7 +68,7 @@ namespace Bond.Comm
     /// <summary>
     /// Defines the basic requirements of a Transport.
     /// </summary>
-    public abstract class Transport
+    public abstract class Transport<TConnection, TListener> where TConnection : Connection where TListener : Listener
     {
         /// <summary>
         /// Get a layer stack instance for this transport.
@@ -87,7 +87,7 @@ namespace Bond.Comm
         /// Each transport uses its own format for addresses. Consult the
         /// concrete implementation that is being used for details.
         /// </remarks>
-        public virtual Task<Connection> ConnectToAsync(string address)
+        public virtual Task<TConnection> ConnectToAsync(string address)
         {
             return ConnectToAsync(address, CancellationToken.None);
         }
@@ -103,7 +103,7 @@ namespace Bond.Comm
         /// Each transport uses its own format for addresses. Consult the
         /// concrete implementation that is being used for details.
         /// </remarks>
-        public abstract Task<Connection> ConnectToAsync(string address, CancellationToken ct);
+        public abstract Task<TConnection> ConnectToAsync(string address, CancellationToken ct);
 
         /// <summary>
         /// Creates a <see cref="Listener"/> that can be used to accept
@@ -118,7 +118,7 @@ namespace Bond.Comm
         /// Each transport uses its own format for addresses. Consult the
         /// concrete implementation that is being used for details.
         /// </remarks>
-        public abstract Listener MakeListener(string address);
+        public abstract TListener MakeListener(string address);
 
         /// <summary>
         /// Starts an asynchronous operation to close all connections and stop

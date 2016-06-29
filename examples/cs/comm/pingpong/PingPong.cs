@@ -63,7 +63,7 @@ namespace Bond.Examples.PingPong
             return transport;
         }
 
-        private static void Shutdown(Transport transport)
+        private static void Shutdown(EpoxyTransport transport)
         {
             Task.WaitAll(transport.StopAsync(), s_pingConnection.StopAsync(), s_reverseConnection.StopAsync());
         }
