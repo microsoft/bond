@@ -1,7 +1,7 @@
 var classbond_1_1maybe =
 [
     [ "maybe", "classbond_1_1maybe.html#a0876e81eb275f4ec4eb0888306701d82", null ],
-    [ "maybe", "classbond_1_1maybe.html#a5ef3b8787337be2a1effa31d96cb639c", null ],
+    [ "maybe", "classbond_1_1maybe.html#a507338934faefd25e3cbf1de5686186c", null ],
     [ "maybe", "classbond_1_1maybe.html#a997816fad60ca2b9d55250d05aa06303", null ],
     [ "is_nothing", "classbond_1_1maybe.html#ad5c5ce74b5d0a0ab0b3538d872133d04", null ],
     [ "operator const T &", "classbond_1_1maybe.html#a00cda8293050ff529ad3718cdb36417c", null ],
