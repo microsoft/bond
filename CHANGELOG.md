@@ -14,6 +14,7 @@ different versioning scheme, following the Haskell community's
 ## Unreleased ##
 
 * `gbc` & compiler library: TBD (major bump needed)
+* C++ version: TBD (minor bump needed)
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed due to dependencies)
 
