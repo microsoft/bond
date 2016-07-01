@@ -14,10 +14,11 @@ different versioning scheme, following the Haskell community's
 ## Unreleased ##
 
 * `gbc` & compiler library: TBD (major bump needed)
+* C++ version: TBD (minor bump needed)
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed due to dependencies)
 
-### Compiler library ###
+### `gbc` and Bond compiler library ###
 
 * User-defined `TypeMapping`s can now be created. This makes is easier to
   implement code generation for new languages. [Pull request
@@ -35,6 +36,8 @@ different versioning scheme, following the Haskell community's
 * Fail when enum field doesn't have default value.
   [Issue #177](https://github.com/Microsoft/bond/issues/177)
 * Validate default value of type aliases
+* Generated types will used `= default` move constructors if possible. This
+  results in many generated types having `noexcept` move constructors.
 
 ### C++ ###
 
@@ -45,6 +48,9 @@ different versioning scheme, following the Haskell community's
 * Runtime SchemaDef now includes information about whether BT_LIST fields
   are nullable or blobs.
   [Issue #161](https://github.com/Microsoft/bond/issues/161)
+* The following Bond types have (possibly conditional) `noexcept` move
+  constructors: `blob`, `bonded`, `maybe`, `nullable`, `RuntimeSchema`,
+  `value`.
 
 ### C# ###
 

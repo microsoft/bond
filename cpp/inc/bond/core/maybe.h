@@ -27,7 +27,7 @@ public:
 
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     /// @brief Move constructor
-    maybe(maybe&& that)
+    maybe(maybe&& that) BOND_NOEXCEPT_IF(bond::is_nothrow_move_constructible<T>::value)
         : _value(std::move(that._value)),
           _nothing(std::move(that._nothing))
     {
@@ -47,7 +47,7 @@ public:
           _nothing(false)
     {
     }
-    
+
     template <typename Allocator>
     explicit maybe(Allocator& alloc)
         : _value(alloc),
@@ -57,18 +57,18 @@ public:
     template <typename Compare, typename Allocator>
     explicit maybe(const Compare& comp, Allocator& alloc)
         : _value(comp, alloc),
-          _nothing(true)    
+          _nothing(true)
     {}
 
     /// @brief Swap this object with that object
     void swap(maybe& that)
     {
         using std::swap;
-        
+
         swap(_nothing, that._nothing);
         swap(_value, that._value);
     }
-    
+
     /// @brief Check if this object contains nothing
     bool is_nothing() const
     {
@@ -81,7 +81,7 @@ public:
         _nothing = false;
         return _value;
     }
-    
+
     /// @brief Set to nothing
     void set_nothing()
     {
@@ -93,7 +93,7 @@ public:
     T& value()
     {
         if (_nothing)
-            NothingException();   
+            NothingException();
 
         return _value;
     }
@@ -103,7 +103,7 @@ public:
     const T& value() const
     {
         if (_nothing)
-            NothingException();   
+            NothingException();
 
         return _value;
     }
@@ -128,7 +128,7 @@ public:
         return *this;
     }
 
-    
+
     /// @brief Convert to constant reference to value
     /// @throw NothingException if the object contains nothing
     operator const T&() const

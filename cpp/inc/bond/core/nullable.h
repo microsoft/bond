@@ -220,13 +220,17 @@ public:
 
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     explicit
-    nullable(value_type&& value)
+        nullable(value_type&& value) BOND_NOEXCEPT_IF(
+            bond::is_nothrow_move_constructible<Allocator>::value
+            && bond::is_nothrow_move_constructible<value_type>::value)
         : Allocator(detail::get_allocator(value)),
           _value(std::move(value)),
           _hasvalue(true)
     {}
 
-    nullable(nullable&& src)
+    nullable(nullable&& src) BOND_NOEXCEPT_IF(
+            bond::is_nothrow_move_constructible<Allocator>::value
+            && bond::is_nothrow_move_constructible<value_type>::value)
         : Allocator(std::move(src.base())),
           _value(std::move(src._value)),
           _hasvalue(std::move(src._hasvalue))
@@ -234,7 +238,9 @@ public:
         src._hasvalue = false;
     }
 
-    nullable& operator=(nullable&& src)
+    nullable& operator=(nullable&& src) BOND_NOEXCEPT_IF(
+        bond::is_nothrow_move_constructible<Allocator>::value
+        && bond::is_nothrow_move_constructible<value_type>::value)
     {
         if (this != &src)
         {
@@ -246,7 +252,8 @@ public:
         return *this;
     }
 
-    void set(value_type&& value)
+    void set(value_type&& value) BOND_NOEXCEPT_IF(
+        bond::is_nothrow_move_constructible<value_type>::value)
     {
         _value = std::move(value);
         _hasvalue = true;
@@ -312,6 +319,19 @@ public:
     typedef const T&    const_reference;
     typedef Allocator   allocator_type;
 
+private:
+    #ifndef BOND_NO_CXX11_ALLOCATOR
+    typedef typename std::allocator_traits<allocator_type>::
+        template rebind_alloc<value_type> rebind_alloc;
+
+    typedef typename std::allocator_traits<rebind_alloc>::pointer real_pointer;
+#else
+    typedef typename allocator_type::template rebind<value_type>::other rebind_alloc;
+
+    typedef pointer real_pointer;
+#endif
+
+public:
     bool hasvalue() const
     {
         return !!_value;
@@ -457,12 +477,16 @@ public:
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     explicit
     nullable(value_type&& value,
-             const allocator_type& alloc = allocator_type())
+             const allocator_type& alloc = allocator_type()) BOND_NOEXCEPT_IF(
+                 bond::is_nothrow_move_constructible<Allocator>::value
+                 && bond::is_nothrow_move_constructible<real_pointer>::value)
         : Allocator(alloc),
           _value(new_value(std::move(value)))
     {}
 
-    nullable(nullable&& src)
+    nullable(nullable&& src) BOND_NOEXCEPT_IF(
+        bond::is_nothrow_move_constructible<Allocator>::value
+        && bond::is_nothrow_move_constructible<real_pointer>::value)
         : Allocator(std::move(src.base())),
           _value(std::move(src._value))
     {
@@ -475,7 +499,8 @@ public:
         return *this;
     }
 
-    void set(value_type&& value)
+    void set(value_type&& value) BOND_NOEXCEPT_IF(
+        bond::is_nothrow_move_constructible<real_pointer>::value)
     {
         if (empty())
             _value = new_value(std::move(value));
@@ -494,17 +519,6 @@ private:
     {
         return static_cast<const allocator_type&>(*this);
     }
-
-#ifndef BOND_NO_CXX11_ALLOCATOR
-    typedef typename std::allocator_traits<allocator_type>::
-        template rebind_alloc<value_type> rebind_alloc;
-
-    typedef typename std::allocator_traits<rebind_alloc>::pointer real_pointer;
-#else
-    typedef typename allocator_type::template rebind<value_type>::other rebind_alloc;
-
-    typedef pointer real_pointer;
-#endif
 
     void delete_value()
     {
@@ -714,8 +728,8 @@ is_list_container<nullable<T, Allocator, useValue> >
     : true_type {};
 
 
-template <typename T, typename Allocator> struct 
-is_nullable<nullable<T, Allocator> > 
+template <typename T, typename Allocator> struct
+is_nullable<nullable<T, Allocator> >
     : true_type {};
 
 } // namespace bond

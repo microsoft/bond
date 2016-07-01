@@ -14,13 +14,13 @@ namespace bond
 {
 
 
-template <typename T> struct 
-is_bonded 
+template <typename T> struct
+is_bonded
     : false_type {};
 
 
-template <typename T, typename Reader> struct 
-is_bonded<bonded<T, Reader> > 
+template <typename T, typename Reader> struct
+is_bonded<bonded<T, Reader> >
     : true_type {};
 
 
@@ -34,7 +34,7 @@ is_marshaled_bonded
 
 template <typename T, typename Buffer, typename Transform>
 inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
-    Buffer& input, 
+    Buffer& input,
     const Transform& transform);
 
 
@@ -61,7 +61,9 @@ public:
 
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     /// @brief Move constructor
-    bonded(bonded&& bonded)
+    bonded(bonded&& bonded) BOND_NOEXCEPT_IF(
+        bond::is_nothrow_move_constructible<Reader>::value
+        && bond::is_nothrow_move_constructible<RuntimeSchema>::value)
         : _data(std::move(bonded._data)),
           _schema(std::move(bonded._schema)),
           _skip(std::move(bonded._skip)),
@@ -107,17 +109,17 @@ public:
 
 
     /// @brief Initialize from serialized data
-    explicit 
+    explicit
     bonded(Reader data, bool base = false)
         : _data(data),
           _skip(true),
           _base(base)
     {}
 
-    
+
     /// @brief Explicit cast from `bonded<void>`
     template <typename ReaderT>
-    explicit 
+    explicit
     bonded(const bonded<void, ReaderT>& bonded)
         : _data(bonded._data),
           _schema(bonded._schema),
@@ -196,7 +198,7 @@ public:
         var._data = _data;
     }
 
-    
+
     /// @brief Update bonded<T> payload by merging it with an object of type X
     template <typename X>
     void Merge(const X& var)
@@ -214,7 +216,7 @@ public:
 
 
     /// @brief Compare for equality
-    /// 
+    ///
     /// Returns true if both `bonded` point to the same instance of `T` or the same input stream.
     /// It does not compare values of objects `T` or contents of input streams.
     bool operator==(const bonded& rhs) const
@@ -242,12 +244,12 @@ private:
     {
         return _SelectProtocolAndApply(transform);
     }
-            
-    
+
+
     template <typename Transform>
     typename boost::disable_if<is_marshaled_bonded<T, Reader, Transform>, bool>::type
     _Apply(const Transform& transform) const
-    {        
+    {
         _skip = false;
         return detail::Parse<T>(transform, _data, typename schema_for_passthrough<T>::type(), _schema.get(), _base);
     }

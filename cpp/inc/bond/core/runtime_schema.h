@@ -28,7 +28,8 @@ public:
     {}
 
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
-    RuntimeSchema(RuntimeSchema&& rhs)
+    RuntimeSchema(RuntimeSchema&& rhs) BOND_NOEXCEPT_IF(
+        bond::is_nothrow_move_constructible<boost::shared_ptr<SchemaDef> >::value)
         : schema(rhs.schema),
           type(rhs.type),
           instance(std::move(rhs.instance))
@@ -41,8 +42,8 @@ public:
 
     /// @brief Construct from a share_ptr to a SchemaDef object
     RuntimeSchema(const boost::shared_ptr<SchemaDef>& schema);
-    
-    /// @brief Construct from a reference to a SchemaDef object 
+
+    /// @brief Construct from a reference to a SchemaDef object
     ///
     /// This ctor should be used only when it can be guaranteed that liftime of
     /// the SchemaDef object referenced by the schema argument is longer than
@@ -64,7 +65,7 @@ public:
     {
         return *schema;
     }
-    
+
     const TypeDef& GetType() const
     {
         return *type;

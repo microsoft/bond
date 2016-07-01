@@ -1,0 +1,7 @@
+namespace deprecated.bondmeta;
+
+struct HasMetaFields
+{
+    0: bond_meta::full_name full_name;
+    1: bond_meta::name      name;
+}
