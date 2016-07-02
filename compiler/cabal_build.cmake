@@ -42,8 +42,17 @@ if (error)
     message (FATAL_ERROR)
 endif()
 
+set (buildGhcOptions "-O2")
+
+if ($ENV{TRAVIS})
+    # We've been seeing timeouts building gbc on the Travis infrastructure.
+    # Building without optimizations reduces the build time significantly
+    # and shouldn't affect build or test results.
+    set (buildGhcOptions "-O0")
+endif()
+
 execute_process (
-    COMMAND ${Haskell_CABAL_EXECUTABLE} build ${target} --with-ghc=${Haskell_GHC_EXECUTABLE} --ghc-option=-O2 --jobs --builddir=${build_dir}
+    COMMAND ${Haskell_CABAL_EXECUTABLE} build ${target} --with-ghc=${Haskell_GHC_EXECUTABLE} --ghc-option=${buildGhcOptions} --jobs --builddir=${build_dir}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 
