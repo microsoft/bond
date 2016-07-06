@@ -15,7 +15,7 @@
 
 namespace tests
 {
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.4.1.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.5.0.0")]
     interface IFoo<Payload>
     {
         global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo31Async(global::Bond.Comm.IMessage<Payload> param, global::System.Threading.CancellationToken ct);

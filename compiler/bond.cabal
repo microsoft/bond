@@ -2,7 +2,7 @@
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 name:               bond
-version:            0.4.1.0
+version:            0.5.0.0
 cabal-version:      >= 1.8
 tested-with:        GHC>=7.4.1
 synopsis:           Bond schema compiler and code generator
