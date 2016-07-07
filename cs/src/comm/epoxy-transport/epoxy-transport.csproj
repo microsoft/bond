@@ -19,9 +19,9 @@
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="EpoxyConnection.cs" />
     <Compile Include="EpoxyContexts.cs" />
+    <Compile Include="EpoxyExceptions.cs" />
     <Compile Include="EpoxyListener.cs" />
     <Compile Include="EpoxyProtocol.cs" />
-    <Compile Include="EpoxyProtocolErrorException.cs" />
     <Compile Include="EpoxyTransport.cs" />
     <BondCodegen Include="EpoxyTransport.bond">
       <Options>--namespace=bond.comm=Bond.Comm --namespace=bond.comm.epoxy=Bond.Comm.Epoxy</Options>

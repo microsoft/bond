@@ -4,6 +4,7 @@
 namespace Bond.Comm.Epoxy
 {
     using System;
+    using System.Linq;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
@@ -12,9 +13,22 @@ namespace Bond.Comm.Epoxy
 
     public class EpoxyTransportBuilder : TransportBuilder<EpoxyTransport>
     {
+        Func<string, Task<IPAddress>> resolver;
+
+        public EpoxyTransportBuilder SetResolver(Func<string, Task<IPAddress>> resolver)
+        {
+            this.resolver = resolver;
+            return this;
+        }
+
         public override EpoxyTransport Construct()
         {
-            return new EpoxyTransport(LayerStackProvider, LogSink, EnableDebugLogs, MetricsSink);
+            return new EpoxyTransport(
+                LayerStackProvider,
+                resolver,
+                LogSink,
+                EnableDebugLogs,
+                MetricsSink);
         }
     }
 
@@ -23,6 +37,7 @@ namespace Bond.Comm.Epoxy
         public const int DefaultPort = 25188;
 
         readonly ILayerStackProvider layerStackProvider;
+        readonly Func<string, Task<IPAddress>> resolver;
         readonly Logger logger;
         readonly Metrics metrics;
 
@@ -47,11 +62,15 @@ namespace Bond.Comm.Epoxy
 
         public EpoxyTransport(
             ILayerStackProvider layerStackProvider,
+            Func<string, Task<IPAddress>> resolver,
             ILogSink logSink, bool enableDebugLogs,
             IMetricsSink metricsSink)
         {
             // Layer stack provider may be null
             this.layerStackProvider = layerStackProvider;
+
+            this.resolver = resolver ?? ResolveViaDnsAsync;
+
             // Log sink may be null
             logger = new Logger(logSink, enableDebugLogs);
             // Metrics sink may be null
@@ -118,14 +137,26 @@ namespace Bond.Comm.Epoxy
         public async Task<EpoxyConnection> ConnectToAsync(Endpoint endpoint, CancellationToken ct)
         {
             logger.Site().Information("Connecting to {0}.", endpoint);
-            var socket = MakeClientSocket();
-            await Task.Factory.FromAsync(
-                socket.BeginConnect, socket.EndConnect, endpoint.Host, endpoint.Port, state: null);
 
-            // TODO: keep these in some master collection for shutdown
-            var connection = EpoxyConnection.MakeClientConnection(this, socket, logger, metrics);
-            await connection.StartAsync();
-            return connection;
+            try
+            {
+                IPAddress ipAddress = await resolver(endpoint.Host);
+
+                var socket = MakeClientSocket();
+                await Task.Factory.FromAsync(
+                    socket.BeginConnect, socket.EndConnect, ipAddress, endpoint.Port,
+                    state: null);
+
+                // TODO: keep these in some master collection for shutdown
+                var connection = EpoxyConnection.MakeClientConnection(this, socket, logger, metrics);
+                await connection.StartAsync();
+                return connection;
+            }
+            catch (EpoxyFailedToResolveException ex)
+            {
+                logger.Site().Error(ex, "Failed to resolve {0}: {1}", endpoint, ex.Message);
+                throw;
+            }
         }
 
         public async Task<EpoxyConnection> ConnectToAsync(Endpoint endpoint)
@@ -189,6 +220,34 @@ namespace Bond.Comm.Epoxy
             }
 
             return new IPEndPoint(ipAddr, port);
+        }
+
+        private static async Task<IPAddress> ResolveViaDnsAsync(string host)
+        {
+            IPAddress[] ipAddresses;
+
+            try
+            {
+                 ipAddresses = await Dns.GetHostAddressesAsync(host);
+            }
+            catch (SocketException ex)
+            {
+                throw new EpoxyFailedToResolveException($"Failed to resolve [{host}] due to DNS error", ex);
+            }
+            catch (Exception ex) when(ex is ArgumentOutOfRangeException || ex is ArgumentException)
+            {
+                throw new EpoxyFailedToResolveException($"Could not parse [{host}]", ex);
+            }
+
+            // TODO: IPv6 support
+            IPAddress ipAddr = ipAddresses.FirstOrDefault(addr => addr.AddressFamily == AddressFamily.InterNetwork);
+
+            if (ipAddr == null)
+            {
+                throw new EpoxyFailedToResolveException($"Could not resolve [{host}] to a supported IP address.");
+            }
+
+            return ipAddr;
         }
 
         private Socket MakeClientSocket()
