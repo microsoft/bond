@@ -28,7 +28,7 @@ Instead of re-implementing backward/forward compatible serialization
 schemes, it uses Bond. For any structures that are used as part of the
 protocol itself, the [Fast Binary](bond_cpp.html#fast-binary) protocol
 version 1 is used to serialize them, as this protocol is simple to
-implement. Payloads are marshalled Compact Binary v1, as this protocol
+implement. Payloads are marshalled as Compact Binary v1, as this protocol
 provides a good trade-off between payload size and
 serialization/deserialization time.
 
