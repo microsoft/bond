@@ -246,10 +246,6 @@ namespace Bond.Comm.Epoxy
             {
                 throw new EpoxyFailedToResolveException($"Failed to resolve [{host}] due to DNS error", ex);
             }
-            catch (Exception ex) when(ex is ArgumentOutOfRangeException || ex is ArgumentException)
-            {
-                throw new EpoxyFailedToResolveException($"Could not parse [{host}]", ex);
-            }
 
             // TODO: IPv6 support
             IPAddress ipAddr = ipAddresses.FirstOrDefault(addr => addr.AddressFamily == AddressFamily.InterNetwork);
