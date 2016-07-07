@@ -15,6 +15,18 @@ namespace Bond.Comm.Epoxy
     {
         Func<string, Task<IPAddress>> resolver;
 
+        /// <summary>
+        /// Sets a customer host resolver.
+        /// </summary>
+        /// <param name="resolver">
+        /// The host resolver to use. May be <c>null</c>, in which case DNS
+        /// resolution will be used.
+        /// </param>
+        /// <returns>The builder.</returns>
+        /// <remarks>
+        /// A resolver takes a string host name and turns it into one
+        /// <see cref="IPAddress"/> however it sees fit.
+        /// </remarks>
         public EpoxyTransportBuilder SetResolver(Func<string, Task<IPAddress>> resolver)
         {
             this.resolver = resolver;
