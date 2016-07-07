@@ -28,8 +28,9 @@ Instead of re-implementing backward/forward compatible serialization
 schemes, it uses Bond. For any structures that are used as part of the
 protocol itself, the [Fast Binary](bond_cpp.html#fast-binary) protocol
 version 1 is used to serialize them, as this protocol is simple to
-implement. Any other structures are marshalled so that applications do not
-have to convert from their serialization format of choice.
+implement. Payloads are marshalled Compact Binary v1, as this protocol
+provides a good trade-off between payload size and
+serialization/deserialization time.
 
 "Interesting" structures need to be able to be allocated and
 serialized/deserialized independently. For example, a Bond Epoxy transport
@@ -132,8 +133,8 @@ Each framelet has a unique type ID, regardless of which frame its is permitted t
 |----------|---------|--------------|----------|----------|----------|
 | `EpoxyConfig` | 0x47 0x43 ("GC") | Config | Yes | Fast Binary v1 serialized | [`EpoxyConfig`](#epoxy-config-structure) structure |
 | `EpoxyHeaders` | 0x52 0x48 ("RH") | Message | Yes | Fast Binary v1 serialized | [`EpoxyHeaders`](#epoxy-headers-structure) structure |
-| `LayerData` | 0x59 0x4C ("YL") | Message | No | Marshalled Bond data | Auxiliary data used by Bond Communications layers stack |
-| `PayloadData` | 0x54 0x44 ("TD") | Message | Yes | Marshalled Bond data | Actual message payload |
+| `LayerData` | 0x59 0x4C ("YL") | Message | No | Compact Binary v1 marshalled | Auxiliary data used by Bond Communications layers stack |
+| `PayloadData` | 0x54 0x44 ("TD") | Message | Yes | Compact Binary v1 marshalled | Actual message payload |
 | `ProtocolError` | 0x52 0x45 ("RE") | Error | Yes | Fast Binary v1 serialized | [`ProtocolError`](#protocol-error) structure |
 
 _Note_: The framelet type IDs were assigned such that they are mnemonic
