@@ -153,7 +153,7 @@
 <p>Since Bond transports operate on messages, the Epoxy transport needs a way to group sequences of bytes within the stream of bytes provided by a TCP connection into individual messages. It does this by “framing” each message. Thus, this wire format turns a stream of bytes into a sequence of <em>frames</em>.</p>
 <p>These frames are then used to transmit Bond messages between participants. The messages are decomposed into simple tuples. These tuples are used to implement the <a href="bond_comm.html#messaging-patterns">messaging patterns</a> this transport supports.</p>
 <p>The Epoxy transport wire format should be <a href="#example">simple</a>, so that it is easy to implement–at least the basic feature set.</p>
-<p>The Epoxy transport defers to Bond serialization/marshalling when it can. Instead of re-implementing backward/forward compatible serialization schemes, it uses Bond. For any structures that are used as part of the protocol itself, the <a href="bond_cpp.html#fast-binary">Fast Binary</a> protocol version 1 is used to serialize them, as this protocol is simple to implement. Any other structures are marshalled so that applications do not have to convert from their serialization format of choice.</p>
+<p>The Epoxy transport defers to Bond serialization/marshalling when it can. Instead of re-implementing backward/forward compatible serialization schemes, it uses Bond. For any structures that are used as part of the protocol itself, the <a href="bond_cpp.html#fast-binary">Fast Binary</a> protocol version 1 is used to serialize them, as this protocol is simple to implement. Payloads are marshalled as Compact Binary v1, as this protocol provides a good trade-off between payload size and serialization/deserialization time.</p>
 <p>“Interesting” structures need to be able to be allocated and serialized/deserialized independently. For example, a Bond Epoxy transport proxy that only wants to inspect headers should not be required to deserialize entire payloads.</p>
 <h1 id="conventions">Conventions</h1>
 <p>The following hold in this document, unless otherwise specified.</p>
@@ -272,7 +272,7 @@
 <td>0x59 0x4C (“YL”)</td>
 <td>Message</td>
 <td>No</td>
-<td>Marshalled Bond data</td>
+<td>Compact Binary v1 marshalled</td>
 <td>Auxiliary data used by Bond Communications layers stack</td>
 </tr>
 <tr class="even">
@@ -280,7 +280,7 @@
 <td>0x54 0x44 (“TD”)</td>
 <td>Message</td>
 <td>Yes</td>
-<td>Marshalled Bond data</td>
+<td>Compact Binary v1 marshalled</td>
 <td>Actual message payload</td>
 </tr>
 <tr class="odd">
