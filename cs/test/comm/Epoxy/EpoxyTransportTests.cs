@@ -210,6 +210,26 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
+        public async Task TransportWithCustomResolver_UsesResolver()
+        {
+            await SetupTestClientServer<DummyTestService>();
+
+            Func<string, Task<IPAddress>> customResolver = host => Task.FromResult(IPAddress.Loopback);
+            var clientTransport = new EpoxyTransportBuilder().SetResolver(customResolver).Construct();
+            EpoxyConnection clientConnection = await clientTransport.ConnectToAsync("epoxy://resolve-this-to-localhost/");
+            var proxy = new DummyTestProxy<EpoxyConnection>(clientConnection);
+
+            var request = new Dummy {int_value = 100};
+            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
+
+            Assert.IsFalse(response.IsError);
+            var result = response.Payload.Deserialize();
+            Assert.AreEqual(101, result.int_value);
+
+            await clientTransport.StopAsync();
+        }
+
+        [Test]
         public async Task GeneratedService_GeneratedProxy_PayloadResponse()
         {
             TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>();
