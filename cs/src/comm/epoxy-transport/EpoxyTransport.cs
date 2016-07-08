@@ -150,25 +150,27 @@ namespace Bond.Comm.Epoxy
         {
             logger.Site().Information("Connecting to {0}.", endpoint);
 
+            IPAddress ipAddress;
+
             try
             {
-                IPAddress ipAddress = await resolver(endpoint.Host);
-
-                var socket = MakeClientSocket();
-                await Task.Factory.FromAsync(
-                    socket.BeginConnect, socket.EndConnect, ipAddress, endpoint.Port,
-                    state: null);
-
-                // TODO: keep these in some master collection for shutdown
-                var connection = EpoxyConnection.MakeClientConnection(this, socket, logger, metrics);
-                await connection.StartAsync();
-                return connection;
+                ipAddress = await resolver(endpoint.Host);
             }
             catch (EpoxyFailedToResolveException ex)
             {
                 logger.Site().Error(ex, "Failed to resolve {0}: {1}", endpoint, ex.Message);
                 throw;
             }
+
+            var socket = MakeClientSocket();
+            await Task.Factory.FromAsync(
+                socket.BeginConnect, socket.EndConnect, ipAddress, endpoint.Port,
+                state: null);
+
+            // TODO: keep these in some master collection for shutdown
+            var connection = EpoxyConnection.MakeClientConnection(this, socket, logger, metrics);
+            await connection.StartAsync();
+            return connection;
         }
 
         public async Task<EpoxyConnection> ConnectToAsync(Endpoint endpoint)
