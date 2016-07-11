@@ -5,6 +5,14 @@ namespace Bond.Comm.Epoxy
 {
     using System;
 
+    public class EpoxyFailedToResolveException : TransportException
+    {
+        public EpoxyFailedToResolveException(string message, Exception innerException = null)
+            : base(message, innerException)
+        {
+        }
+    }
+
     public class EpoxyProtocolErrorException : TransportException
     {
         public EpoxyProtocolErrorException(
