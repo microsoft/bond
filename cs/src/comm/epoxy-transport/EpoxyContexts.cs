@@ -5,7 +5,8 @@ namespace Bond.Comm.Epoxy
 {
     public class EpoxySendContext : SendContext
     {
-        public EpoxySendContext(EpoxyConnection connection)
+        public EpoxySendContext(EpoxyConnection connection, ConnectionMetrics connectionMetrics, RequestMetrics requestMetrics)
+            : base(connectionMetrics, requestMetrics)
         {
             Connection = connection;
         }
@@ -15,7 +16,8 @@ namespace Bond.Comm.Epoxy
 
     public class EpoxyReceiveContext : ReceiveContext
     {
-        public EpoxyReceiveContext(EpoxyConnection connection)
+        public EpoxyReceiveContext(EpoxyConnection connection, ConnectionMetrics connectionMetrics, RequestMetrics requestMetrics)
+            : base(connectionMetrics, requestMetrics)
         {
             Connection = connection;
         }

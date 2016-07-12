@@ -11,7 +11,12 @@ namespace Bond.Comm
         /// <summary>
         /// (Opaque) error message returned to client for server-side issues.
         /// </summary>
-        public static readonly string InternalErrorMessage = "The server has encounted an error";
+        public const string InternalErrorMessage = "The server has encounted an error";
+
+        /// <summary>
+        /// A unique ID for calls of MakeInternalServerError that are passed a null ID.
+        /// </summary>
+        private const string UniqueIdForNullId = "[4e2bec1b-42ca-482b-8895-b8586bc8f491]";
 
         /// <summary>
         /// Checks if an <see cref="Error" /> is an <see cref="InternalServerError"/>.
@@ -37,16 +42,17 @@ namespace Bond.Comm
         /// Creates an <see cref="InternalServerError"/> with the given message.
         /// </summary>
         /// <param name="message">An error message.</param>
+        /// <param name="uniqueId">The ID of the request that caused this error.</param>
         /// <returns>An InternalServerError representing the exception.</returns>
-        public static InternalServerError MakeInternalServerError(string message)
+        public static InternalServerError MakeInternalServerError(string message, string uniqueId)
         {
             var internalServerError = new InternalServerError
             {
-                error_code = (int)ErrorCode.InternalServerError,
-                unique_id = Guid.NewGuid().ToString("D")
+                error_code = (int) ErrorCode.InternalServerError,
+                unique_id = uniqueId ?? UniqueIdForNullId,
+                message = message ?? InternalErrorMessage
             };
-            
-            internalServerError.message = message ?? InternalErrorMessage;
+
 
             return internalServerError;
         }
@@ -55,17 +61,18 @@ namespace Bond.Comm
         /// Creates an <see cref="InternalServerError"/> from an exception.
         /// </summary>
         /// <param name="exception">An exception.</param>
+        /// <param name="uniqueId">The ID of the request that caused this error.</param>
         /// <param name="includeDetails">
         /// <c>true</c> if debugging details should be included; <c>false</c>
         /// to omit this potentailly sensitive information
         /// </param>
         /// <returns>An InternalServerError representing the exception.</returns>
-        public static InternalServerError MakeInternalServerError(Exception exception, bool includeDetails)
+        public static InternalServerError MakeInternalServerError(Exception exception, string uniqueId, bool includeDetails)
         {
             var internalServerError = new InternalServerError
             {
                 error_code = (int)ErrorCode.InternalServerError,
-                unique_id = Guid.NewGuid().ToString("D")
+                unique_id = uniqueId ?? UniqueIdForNullId
             };
 
             if (includeDetails && exception != null)
@@ -80,14 +87,14 @@ namespace Bond.Comm
 
                     foreach (var innerException in aggEx.InnerExceptions)
                     {
-                        var innerError = MakeInternalServerError(innerException, includeDetails);
+                        var innerError = MakeInternalServerError(innerException, uniqueId, includeDetails);
                         internalServerError.inner_errors.Add(new Bonded<InternalServerError>(innerError));
                     }
                 }
                 else if (exception.InnerException != null)
                 {
                     internalServerError.inner_errors = new List<IBonded<Error>>(1);
-                    var innerError = MakeInternalServerError(exception.InnerException, includeDetails);
+                    var innerError = MakeInternalServerError(exception.InnerException, uniqueId, includeDetails);
                     internalServerError.inner_errors.Add(new Bonded<InternalServerError>(innerError));
                 }
             }

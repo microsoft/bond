@@ -127,7 +127,7 @@ namespace Bond.Comm.Epoxy
                 ConnectionType.Client,
                 parentTransport,
                 parentListener,
-                new ServiceHost(logger, metrics),
+                new ServiceHost(logger),
                 clientSocket,
                 logger,
                 metrics);
@@ -255,8 +255,9 @@ namespace Bond.Comm.Epoxy
         private async Task<IMessage> SendRequestAsync<TPayload>(string methodName, IMessage<TPayload> request)
         {
             var conversationId = AllocateNextConversationId();
-
-            var sendContext = new EpoxySendContext(this);
+            var totalTime = Stopwatch.StartNew();
+            var requestMetrics = Metrics.StartRequestMetrics(connectionMetrics);
+            var sendContext = new EpoxySendContext(this, connectionMetrics, requestMetrics);
 
             IBonded layerData = null;
             ILayerStack layerStack;
@@ -300,13 +301,18 @@ namespace Bond.Comm.Epoxy
                         this, conversationId, methodName);
                 }
             }
+            var message = await responseTask;
 
-            return await responseTask;
+            Metrics.FinishRequestMetrics(requestMetrics, totalTime);
+            metrics.Emit(requestMetrics);
+            return message;
         }
 
-        private async Task SendReplyAsync(ulong conversationId, IMessage response, ILayerStack layerStack)
+        private async Task SendReplyAsync(
+            ulong conversationId, IMessage response, ILayerStack layerStack, RequestMetrics requestMetrics)
         {
-            var sendContext = new EpoxySendContext(this);
+            var sendContext = new EpoxySendContext(this, connectionMetrics, requestMetrics);
+
             IBonded layerData;
             Error layerError = LayerStackUtils.ProcessOnSend(
                     layerStack, MessageType.Response, sendContext, out layerData, logger);
@@ -328,6 +334,42 @@ namespace Bond.Comm.Epoxy
             bool wasSent = await SendFrameAsync(frame);
             logger.Site().Debug("{0} Sending reply for conversation ID {1} {2}.",
                 this, conversationId, wasSent ? "succeedeed" : "failed");
+        }
+
+        internal async Task SendEventAsync(string methodName, IMessage message)
+        {
+            var conversationId = AllocateNextConversationId();
+            var totalTime = Stopwatch.StartNew();
+            var requestMetrics = Metrics.StartRequestMetrics(connectionMetrics);
+            var sendContext = new EpoxySendContext(this, connectionMetrics, requestMetrics);
+
+            IBonded layerData =  null;
+            ILayerStack layerStack;
+            Error layerError = parentTransport.GetLayerStack(out layerStack);
+
+            if (layerError == null)
+            {
+                layerError = LayerStackUtils.ProcessOnSend(
+                        layerStack, MessageType.Event, sendContext, out layerData, logger);
+            }
+
+            if (layerError != null)
+            {
+                logger.Site().Error("{0} Sending event {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
+                    this, conversationId, methodName, layerError.error_code, layerError.message);
+                return;
+            }
+
+            var frame = MessageToFrame(conversationId, methodName, PayloadType.Event, message, layerData, logger);
+
+            logger.Site().Debug("{0} Sending event {1}/{2}.", this, conversationId, methodName);
+
+            bool wasSent = await SendFrameAsync(frame);
+            logger.Site().Debug("{0} Sending event {1}/{2} {3}.",
+                this, conversationId, methodName, wasSent ? "succeeded" : "failed");
+
+            Metrics.FinishRequestMetrics(requestMetrics, totalTime);
+            metrics.Emit(requestMetrics);
         }
 
         private async Task<bool> SendFrameAsync(Frame frame)
@@ -354,37 +396,6 @@ namespace Bond.Comm.Epoxy
                 logger.Site().Error(ex, "{0} While writing a Frame to the network: {1}", this, ex.Message);
                 return false;
             }
-        }
-
-        internal async Task SendEventAsync(string methodName, IMessage message)
-        {
-            var conversationId = AllocateNextConversationId();
-
-            var sendContext = new EpoxySendContext(this);
-            IBonded layerData =  null;
-            ILayerStack layerStack;
-            Error layerError = parentTransport.GetLayerStack(out layerStack);
-
-            if (layerError == null)
-            {
-                layerError = LayerStackUtils.ProcessOnSend(
-                        layerStack, MessageType.Event, sendContext, out layerData, logger);
-            }
-
-            if (layerError != null)
-            {
-                logger.Site().Error("{0} Sending event {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
-                    this, conversationId, methodName, layerError.error_code, layerError.message);
-                return;
-            }
-
-            var frame = MessageToFrame(conversationId, methodName, PayloadType.Event, message, layerData, logger);
-
-            logger.Site().Debug("{0} Sending event {1}/{2}.", this, conversationId, methodName);
-
-            bool wasSent = await SendFrameAsync(frame);
-            logger.Site().Debug("{0} Sending event {1}/{2} {3}.",
-                this, conversationId, methodName, wasSent ? "succeeded" : "failed");
         }
 
         internal Task StartAsync()
@@ -499,7 +510,7 @@ namespace Bond.Comm.Epoxy
 
             if (connectionType == ConnectionType.Server)
             {
-                var args = new ConnectedEventArgs(this);
+                var args = new ConnectedEventArgs(this, connectionMetrics.connection_id);
                 Error disconnectError = parentListener.InvokeOnConnected(args);
 
                 if (disconnectError == null)
@@ -709,10 +720,11 @@ namespace Bond.Comm.Epoxy
 
             Task.Run(async () =>
             {
+                var totalTime = Stopwatch.StartNew();
+                var requestMetrics = Metrics.StartRequestMetrics(connectionMetrics);
+                var receiveContext = new EpoxyReceiveContext(this, connectionMetrics, requestMetrics);
+
                 IMessage request = Message.FromPayload(Unmarshal.From(payload));
-
-                var receiveContext = new EpoxyReceiveContext(this);
-
                 IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
 
                 ILayerStack layerStack;
@@ -728,8 +740,7 @@ namespace Bond.Comm.Epoxy
 
                 if (layerError == null)
                 {
-                    result = await serviceHost.DispatchRequest(headers.method_name, receiveContext, request,
-                            connectionMetrics);
+                    result = await serviceHost.DispatchRequest(headers.method_name, receiveContext, request);
                 }
                 else
                 {
@@ -742,7 +753,9 @@ namespace Bond.Comm.Epoxy
                     result = Message.FromError(Errors.CleanseInternalServerError(layerError));
                 }
 
-                await SendReplyAsync(headers.conversation_id, result, layerStack);
+                await SendReplyAsync(headers.conversation_id, result, layerStack, requestMetrics);
+                Metrics.FinishRequestMetrics(requestMetrics, totalTime);
+                metrics.Emit(requestMetrics);
             });
 
             // no state change needed
@@ -771,7 +784,9 @@ namespace Bond.Comm.Epoxy
 
             Task.Run(() =>
             {
-                var receiveContext = new EpoxyReceiveContext(this);
+                var totalTime = Stopwatch.StartNew();
+                var requestMetrics = Metrics.StartRequestMetrics(connectionMetrics);
+                var receiveContext = new EpoxyReceiveContext(this, connectionMetrics, requestMetrics);
 
                 IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
 
@@ -788,6 +803,8 @@ namespace Bond.Comm.Epoxy
                 }
 
                 tcs.SetResult(response);
+                Metrics.FinishRequestMetrics(requestMetrics, totalTime);
+                metrics.Emit(requestMetrics);
             });
         }
 
@@ -803,8 +820,9 @@ namespace Bond.Comm.Epoxy
             Task.Run(async () =>
             {
                 IMessage request = Message.FromPayload(Unmarshal.From(payload));
-
-                var receiveContext = new EpoxyReceiveContext(this);
+                var totalTime = Stopwatch.StartNew();
+                var requestMetrics = Metrics.StartRequestMetrics(connectionMetrics);
+                var receiveContext = new EpoxyReceiveContext(this, connectionMetrics, requestMetrics);
 
                 IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
                 ILayerStack layerStack;
@@ -824,7 +842,9 @@ namespace Bond.Comm.Epoxy
                     return;
                 }
 
-                await serviceHost.DispatchEvent(headers.method_name, receiveContext, request, connectionMetrics);
+                await serviceHost.DispatchEvent(headers.method_name, receiveContext, request);
+                Metrics.FinishRequestMetrics(requestMetrics, totalTime);
+                metrics.Emit(requestMetrics);
             });
         }
 

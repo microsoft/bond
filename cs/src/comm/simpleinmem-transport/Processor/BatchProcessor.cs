@@ -69,7 +69,8 @@ namespace Bond.Comm.SimpleInMem.Processor
         private async void DispatchRequest(InMemFrame payload,
                                            InMemFrameQueue queue)
         {
-            var receiveContext = new SimpleInMemReceiveContext(connection);
+            var requestMetrics = Metrics.StartRequestMetrics(connection.ConnectionMetrics);
+            var receiveContext = new SimpleInMemReceiveContext(connection, connection.ConnectionMetrics, requestMetrics);
             var headers = payload.headers;
             var layerData = payload.layerData;
             var message = payload.message;
@@ -87,7 +88,7 @@ namespace Bond.Comm.SimpleInMem.Processor
 
             if (layerError == null)
             {
-                response = await serviceHost.DispatchRequest(headers.method_name, receiveContext, message, connection.ConnectionMetrics);
+                response = await serviceHost.DispatchRequest(headers.method_name, receiveContext, message);
             }
             else
             {
@@ -107,7 +108,8 @@ namespace Bond.Comm.SimpleInMem.Processor
                                 ILayerStack layerStack,
                                 InMemFrameQueue queue)
         {
-            var sendContext = new SimpleInMemSendContext(connection);
+            var requestMetrics = Metrics.StartRequestMetrics(connection.ConnectionMetrics);
+            var sendContext = new SimpleInMemSendContext(connection, connection.ConnectionMetrics, requestMetrics);
             IBonded layerData = null;
 
             Error layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Response, sendContext, out layerData, logger);
@@ -129,7 +131,8 @@ namespace Bond.Comm.SimpleInMem.Processor
 
         private void DispatchResponse(InMemFrame payload)
         {
-            var receiveContext = new SimpleInMemReceiveContext(connection);
+            var requestMetrics = Metrics.StartRequestMetrics(connection.ConnectionMetrics);
+            var receiveContext = new SimpleInMemReceiveContext(connection, connection.ConnectionMetrics, requestMetrics);
             var headers = payload.headers;
             var layerData = payload.layerData;
             var message = payload.message;
@@ -151,7 +154,8 @@ namespace Bond.Comm.SimpleInMem.Processor
 
         private async void DispatchEvent(InMemFrame payload)
         {
-            var receiveContext = new SimpleInMemReceiveContext(connection);
+            var requestMetrics = Metrics.StartRequestMetrics(connection.ConnectionMetrics);
+            var receiveContext = new SimpleInMemReceiveContext(connection, connection.ConnectionMetrics, requestMetrics);
             var headers = payload.headers;
             var layerData = payload.layerData;
             var message = payload.message;
@@ -171,8 +175,7 @@ namespace Bond.Comm.SimpleInMem.Processor
                 return;
             }
 
-            await serviceHost.DispatchEvent(
-                    headers.method_name, receiveContext, message, connection.ConnectionMetrics);
+            await serviceHost.DispatchEvent(headers.method_name, receiveContext, message);
         }
     }
 }

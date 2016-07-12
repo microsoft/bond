@@ -20,14 +20,14 @@ namespace UnitTest.Interfaces
             public LogSeverity? LastMessageSeverity;
             public string LastMessage;
             public Exception LastException;
-            public int MessagesHandled;
+            public int MessagesReceived;
 
             public void Log(string message, LogSeverity severity, Exception exception)
             {
                 LastMessageSeverity = severity;
                 LastMessage = message;
                 LastException = exception;
-                MessagesHandled++;
+                MessagesReceived++;
             }
 
             public void Clear()
@@ -140,7 +140,7 @@ namespace UnitTest.Interfaces
                 Assert.AreEqual(severity, sink.LastMessageSeverity);
                 StringAssert.Contains(message, sink.LastMessage);
                 Assert.IsNull(sink.LastException);
-                Assert.AreEqual(messagesLogged + 1, sink.MessagesHandled);
+                Assert.AreEqual(messagesLogged + 1, sink.MessagesReceived);
                 messagesLogged++;
                 sink.Clear();
 
@@ -153,7 +153,7 @@ namespace UnitTest.Interfaces
                 StringAssert.Contains(message, sink.LastMessage);
                 Assert.NotNull(sink.LastException);
                 Assert.AreEqual(severity, ((TestException)sink.LastException).Severity);
-                Assert.AreEqual(messagesLogged + 1, sink.MessagesHandled);
+                Assert.AreEqual(messagesLogged + 1, sink.MessagesReceived);
                 messagesLogged++;
                 sink.Clear();
             }
@@ -164,7 +164,7 @@ namespace UnitTest.Interfaces
         {
             logger = new Logger(sink, includeDebug: false);
 
-            var messagesHandled = sink.MessagesHandled;
+            var messagesHandled = sink.MessagesReceived;
             // Assumes allSeverities is sorted.
             foreach (var severity in allSeverities)
             {
@@ -174,14 +174,14 @@ namespace UnitTest.Interfaces
                 {
                     Assert.Null(sink.LastMessage);
                     Assert.Null(sink.LastMessageSeverity);
-                    Assert.AreEqual(messagesHandled, sink.MessagesHandled);
+                    Assert.AreEqual(messagesHandled, sink.MessagesReceived);
                 }
                 else
                 {
                     StringAssert.Contains(message, sink.LastMessage);
                     Assert.AreEqual(severity, sink.LastMessageSeverity);
-                    Assert.AreEqual(messagesHandled + 1, sink.MessagesHandled);
-                    messagesHandled = sink.MessagesHandled;
+                    Assert.AreEqual(messagesHandled + 1, sink.MessagesReceived);
+                    messagesHandled = sink.MessagesReceived;
                 }
             }
         }
@@ -210,7 +210,7 @@ namespace UnitTest.Interfaces
             StringAssert.Contains(formatted, sink.LastMessage);
             StringAssert.Contains(messageReturned, sink.LastMessage);
             Assert.IsNull(sink.LastException);
-            Assert.AreEqual(messagesLogged + 1, sink.MessagesHandled);
+            Assert.AreEqual(messagesLogged + 1, sink.MessagesReceived);
             messagesLogged++;
             sink.Clear();
 
@@ -224,7 +224,7 @@ namespace UnitTest.Interfaces
             StringAssert.Contains(messageReturned, sink.LastMessage);
             Assert.NotNull(sink.LastException);
             Assert.AreEqual(LogSeverity.Fatal, ((TestException)sink.LastException).Severity);
-            Assert.AreEqual(messagesLogged + 1, sink.MessagesHandled);
+            Assert.AreEqual(messagesLogged + 1, sink.MessagesReceived);
         }
 
         [Test]

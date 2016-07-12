@@ -3,6 +3,9 @@
 
 namespace Bond.Comm
 {
+    using System;
+    using System.Diagnostics;
+
     /// <summary>
     /// Receives metrics emitted by Transports. Supply an instance of <c>IMetricsSink</c> to a
     /// <see cref="TransportBuilder{TTransport}.SetMetricsSink"/> to register it with the
@@ -38,6 +41,30 @@ namespace Bond.Comm
         public void Emit(RequestMetrics metrics)
         {
             Sink?.Emit(metrics);
+        }
+
+        public static string NewId()
+        {
+            return Guid.NewGuid().ToString();
+        }
+
+
+        public static RequestMetrics StartRequestMetrics(ConnectionMetrics connectionMetrics)
+        {
+            var requestMetrics = new RequestMetrics
+            {
+                request_id = NewId(),
+                connection_id = connectionMetrics.connection_id,
+                local_endpoint = connectionMetrics.local_endpoint,
+                remote_endpoint = connectionMetrics.remote_endpoint,
+                error = null
+            };
+            return requestMetrics;
+        }
+
+        public static void FinishRequestMetrics(RequestMetrics requestMetrics, Stopwatch totalTime)
+        {
+            requestMetrics.total_time_millis = (float) totalTime.Elapsed.TotalMilliseconds;
         }
     }
 }

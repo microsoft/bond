@@ -14,7 +14,7 @@ namespace UnitTest.Interfaces
         [Test]
         public void Connected_NoSubscribedEvents_Works()
         {
-            new TestListener(LoggerTests.BlackHole).Test_OnConnected(new ConnectedEventArgs(null));
+            new TestListener(LoggerTests.BlackHole).Test_OnConnected(new ConnectedEventArgs(null, null));
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace UnitTest.Interfaces
                 args.DisconnectError = event3Error;
             };
 
-            var cea = new ConnectedEventArgs(null);
+            var cea = new ConnectedEventArgs(null, null);
             listener.Test_OnConnected(cea);
 
             Assert.IsTrue(event1Called);

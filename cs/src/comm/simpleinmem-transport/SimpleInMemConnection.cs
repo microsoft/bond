@@ -204,9 +204,10 @@ namespace Bond.Comm.SimpleInMem
 
         private Task<IMessage> SendRequestAsync(string methodName, IMessage request)
         {
+            var requestMetrics = Metrics.StartRequestMetrics(ConnectionMetrics);
             var conversationId = AllocateNextConversationId();
 
-            var sendContext = new SimpleInMemSendContext(this);
+            var sendContext = new SimpleInMemSendContext(this, ConnectionMetrics, requestMetrics);
 
             IBonded layerData = null;
             ILayerStack layerStack;
@@ -235,9 +236,10 @@ namespace Bond.Comm.SimpleInMem
 
         private void SendEventAsync(string methodName, IMessage message)
         {
+            var requestMetrics = Metrics.StartRequestMetrics(ConnectionMetrics);
             var conversationId = AllocateNextConversationId();
 
-            var sendContext = new SimpleInMemSendContext(this);
+            var sendContext = new SimpleInMemSendContext(this, ConnectionMetrics, requestMetrics);
             IBonded layerData = null;
             ILayerStack layerStack;
             Error layerError = transport.GetLayerStack(out layerStack);

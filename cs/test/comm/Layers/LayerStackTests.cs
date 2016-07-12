@@ -151,6 +151,8 @@ namespace UnitTest.Layers
 
     class TestSendContext : SendContext
     {
+        public TestSendContext() : base(new ConnectionMetrics(), new RequestMetrics()) { }
+
         public override Connection Connection
         {
             get
@@ -162,6 +164,8 @@ namespace UnitTest.Layers
 
     class TestReceiveContext : ReceiveContext
     {
+        public TestReceiveContext() : base(new ConnectionMetrics(), new RequestMetrics()) { }
+
         public override Connection Connection
         {
             get
@@ -356,6 +360,7 @@ namespace UnitTest.Layers
     public class TestLayerStackProvider_Fails : ILayerStackProvider
     {
         public static string InternalDetails = "Internal details";
+        public static string UniqueId = "Unique ID";
         uint failAfterGets;
 
         public TestLayerStackProvider_Fails(uint failAfterGets)
@@ -368,7 +373,7 @@ namespace UnitTest.Layers
             if (failAfterGets == 0)
             {
                 layerStack = null;
-                return Errors.MakeInternalServerError(InternalDetails);
+                return Errors.MakeInternalServerError(InternalDetails, UniqueId);
             }
             else
             {

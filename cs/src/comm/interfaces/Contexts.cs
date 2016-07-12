@@ -8,6 +8,9 @@ namespace Bond.Comm
     /// </summary>
     public abstract class Context
     {
+        public readonly ConnectionMetrics ConnectionMetrics;
+        public readonly RequestMetrics RequestMetrics;
+
         /// <summary>
         /// The connection being used.
         /// </summary>
@@ -27,6 +30,12 @@ namespace Bond.Comm
         /// </para>
         /// </remarks>
         public abstract Connection Connection { get; }
+
+        protected Context(ConnectionMetrics connectionMetrics, RequestMetrics requestMetrics)
+        {
+            ConnectionMetrics = connectionMetrics;
+            RequestMetrics = requestMetrics;
+        }
     }
 
     /// <summary>
@@ -34,6 +43,9 @@ namespace Bond.Comm
     /// </summary>
     public abstract class SendContext : Context
     {
+
+        protected SendContext(ConnectionMetrics connectionMetrics, RequestMetrics requestMetrics)
+            : base(connectionMetrics, requestMetrics) {}
     }
 
     /// <summary>
@@ -41,5 +53,7 @@ namespace Bond.Comm
     /// </summary>
     public abstract class ReceiveContext : Context
     {
+        protected ReceiveContext(ConnectionMetrics connectionMetrics, RequestMetrics requestMetrics)
+            : base(connectionMetrics, requestMetrics) {}
     }
 }

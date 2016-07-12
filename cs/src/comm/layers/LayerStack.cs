@@ -61,7 +61,7 @@ namespace Bond.Comm.Layers
             if (context == null) { throw new ArgumentNullException(nameof(context)); }
 
             TLayerData realLayerData;
-            Error error = DeserializeLayerData(layerData, out realLayerData);
+            Error error = DeserializeLayerData(layerData, context.RequestMetrics.request_id, out realLayerData);
 
             if (error == null)
             {
@@ -86,7 +86,7 @@ namespace Bond.Comm.Layers
                 catch (Exception ex)
                 {
                     logger.Site().Error(ex, "While handling layer {0}", layerIndex);
-                    error = Errors.MakeInternalServerError(ex, includeDetails: true);
+                    error = Errors.MakeInternalServerError(ex, context.RequestMetrics.request_id, includeDetails: true);
                 }
             }
 
@@ -107,14 +107,14 @@ namespace Bond.Comm.Layers
                 catch (Exception ex)
                 {
                     logger.Site().Error(ex, "While handling layer {0}", layerIndex);
-                    error = Errors.MakeInternalServerError(ex, includeDetails: true);
+                    error = Errors.MakeInternalServerError(ex, context.RequestMetrics.request_id, includeDetails: true);
                 }
             }
 
             return error;
         }
 
-        private Error DeserializeLayerData(IBonded layerData, out TLayerData realLayerData)
+        private Error DeserializeLayerData(IBonded layerData, string uniqueId, out TLayerData realLayerData)
         {
             Error error = null;
             if (layerData == null)
@@ -130,7 +130,7 @@ namespace Bond.Comm.Layers
                 catch (Exception ex)
                 {
                     logger.Site().Error(ex, "Unmarshaling layer data threw exception");
-                    error = Errors.MakeInternalServerError(ex, includeDetails: true);
+                    error = Errors.MakeInternalServerError(ex, uniqueId, includeDetails: true);
                     realLayerData = new TLayerData();
                 }
             }
@@ -230,7 +230,7 @@ namespace Bond.Comm.Layers
                     layers[i] = layerProviders[i].GetLayer();
                     if (layers[i] == null)
                     {
-                        result = Errors.MakeInternalServerError($"Layer provider {i} produced null layer");
+                        result = Errors.MakeInternalServerError($"Layer provider {i} produced null layer", null);
                         logger.Site().Error(result.message);
                         layers = null;
                         break;
@@ -239,7 +239,7 @@ namespace Bond.Comm.Layers
                 catch (Exception ex)
                 {
                     logger.Site().Error(ex, "Layer provider {0} threw exception", i);
-                    result = Errors.MakeInternalServerError(ex, includeDetails: true);
+                    result = Errors.MakeInternalServerError(ex, null, includeDetails: true);
                     layers = null;
                     break;
                 }
