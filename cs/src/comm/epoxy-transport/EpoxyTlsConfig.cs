@@ -75,7 +75,9 @@ namespace Bond.Comm.Epoxy
         /// </param>
         /// <param name="remoteCertificateValidationCallback">
         /// Optional delegate responsible for validating remote certificates.
-        /// May be <c>null</c> to use the default validation.
+        /// May be <c>null</c> to use the default validation. This delegate is
+        /// passed to <see cref="SslStream"/>; consult the SslStream
+        /// documentation for it use.
         /// </param>
         /// <param name="enabledProtocols">
         /// The enabled protocols. Defaults to
@@ -137,7 +139,9 @@ namespace Bond.Comm.Epoxy
         /// </param>
         /// <param name="remoteCertificateValidationCallback">
         /// Optional delegate responsible for validating remote certificates.
-        /// May be <c>null</c> to use the default validation.
+        /// May be <c>null</c> to use the default validation. This delegate is
+        /// passed to <see cref="SslStream"/>; consult the SslStream
+        /// documentation for it use.
         /// </param>
         /// <param name="enabledProtocols">
         /// The enabled protocols. Defaults to
