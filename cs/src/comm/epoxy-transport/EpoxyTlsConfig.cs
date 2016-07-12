@@ -9,7 +9,7 @@ namespace Bond.Comm.Epoxy
     using System.Security.Cryptography.X509Certificates;
 
     /// <summary>
-    /// Represents join client- and server-side TLS options.
+    /// Represents TLS options common to client and server configurations.
     /// </summary>
     public abstract class EpoxyTlsConfig
     {
@@ -18,11 +18,9 @@ namespace Bond.Comm.Epoxy
         /// </summary>
         /// <param name="remoteCertificateValidationCallback">
         /// Optional delegate responsible for validating remote certificates.
-        /// May be <c>null</c> to use the default validation.
-        /// </param>
-        /// <param name="encryptionPolicy">
-        /// The encryption policy to use. Defaults to
-        /// <see cref="System.Net.Security.EncryptionPolicy.RequireEncryption">EncryptionPolicy.RequireEncryption</see>
+        /// May be <c>null</c> to use the default validation. This delegate is
+        /// passed to <see cref="SslStream"/>; consult the SslStream
+        /// documentation for it use.
         /// </param>
         /// <param name="enabledProtocols">
         /// The enabled protocols. Defaults to
@@ -33,12 +31,10 @@ namespace Bond.Comm.Epoxy
         /// </param>
         protected EpoxyTlsConfig(
             RemoteCertificateValidationCallback remoteCertificateValidationCallback = null,
-            EncryptionPolicy encryptionPolicy = EncryptionPolicy.RequireEncryption,
             SslProtocols enabledProtocols = SslProtocols.Tls12,
             bool checkCertificateRevocation = true)
         {
             RemoteCertificateValidationCallback = remoteCertificateValidationCallback;
-            EncryptionPolicy = encryptionPolicy;
             EnabledProtocols = enabledProtocols;
             CheckCertificateRevocation = checkCertificateRevocation;
         }
@@ -48,11 +44,6 @@ namespace Bond.Comm.Epoxy
         /// certificates.
         /// </summary>
         public RemoteCertificateValidationCallback RemoteCertificateValidationCallback { get; }
-
-        /// <summary>
-        /// Gets the encryption policy to use.
-        /// </summary>
-        public EncryptionPolicy EncryptionPolicy { get; }
 
         /// <summary>
         /// Gets the enabled protocols.
@@ -86,10 +77,6 @@ namespace Bond.Comm.Epoxy
         /// Optional delegate responsible for validating remote certificates.
         /// May be <c>null</c> to use the default validation.
         /// </param>
-        /// <param name="encryptionPolicy">
-        /// The encryption policy to use. Defaults to
-        /// <see cref="System.Net.Security.EncryptionPolicy.RequireEncryption">EncryptionPolicy.RequireEncryption</see>
-        /// </param>
         /// <param name="enabledProtocols">
         /// The enabled protocols. Defaults to
         /// <see cref="SslProtocols.Tls12"/>.
@@ -101,12 +88,10 @@ namespace Bond.Comm.Epoxy
             X509Certificate certificate,
             bool clientCertificateRequired = false,
             RemoteCertificateValidationCallback remoteCertificateValidationCallback = null,
-            EncryptionPolicy encryptionPolicy = EncryptionPolicy.RequireEncryption,
             SslProtocols enabledProtocols = SslProtocols.Tls12,
             bool checkCertificateRevocation = true)
             : base(
                 remoteCertificateValidationCallback: remoteCertificateValidationCallback,
-                encryptionPolicy: encryptionPolicy,
                 enabledProtocols: enabledProtocols,
                 checkCertificateRevocation: checkCertificateRevocation)
         {
@@ -154,10 +139,6 @@ namespace Bond.Comm.Epoxy
         /// Optional delegate responsible for validating remote certificates.
         /// May be <c>null</c> to use the default validation.
         /// </param>
-        /// <param name="encryptionPolicy">
-        /// The encryption policy to use. Defaults to
-        /// <see cref="System.Net.Security.EncryptionPolicy.RequireEncryption">EncryptionPolicy.RequireEncryption</see>
-        /// </param>
         /// <param name="enabledProtocols">
         /// The enabled protocols. Defaults to
         /// <see cref="SslProtocols.Tls12"/>.
@@ -167,12 +148,10 @@ namespace Bond.Comm.Epoxy
         /// </param>
         public EpoxyClientTlsConfig(X509Certificate certificate = null,
             RemoteCertificateValidationCallback remoteCertificateValidationCallback = null,
-            EncryptionPolicy encryptionPolicy = EncryptionPolicy.RequireEncryption,
             SslProtocols enabledProtocols = SslProtocols.Tls12,
             bool checkCertificateRevocation = true)
             : base(
                 remoteCertificateValidationCallback: remoteCertificateValidationCallback,
-                encryptionPolicy: encryptionPolicy,
                 enabledProtocols: enabledProtocols,
                 checkCertificateRevocation: checkCertificateRevocation)
         {

@@ -75,9 +75,7 @@ namespace Bond.Comm.Epoxy
                 var sslStream = new SslStream(
                     networkStream,
                     leaveInnerStreamOpen,
-                    tlsConfig.RemoteCertificateValidationCallback,
-                    userCertificateSelectionCallback: null,
-                    encryptionPolicy: tlsConfig.EncryptionPolicy);
+                    tlsConfig.RemoteCertificateValidationCallback);
 
                 var clientCertificates = new X509CertificateCollection();
                 if (tlsConfig.Certificate != null)
@@ -118,22 +116,13 @@ namespace Bond.Comm.Epoxy
                 var sslStream = new SslStream(
                     networkStream,
                     leaveInnerStreamOpen,
-                    tlsConfig.RemoteCertificateValidationCallback,
-                    userCertificateSelectionCallback: null,
-                    encryptionPolicy: tlsConfig.EncryptionPolicy);
-                try
-                {
-                    await sslStream.AuthenticateAsServerAsync(
-                        tlsConfig.Certificate,
-                        tlsConfig.ClientCertificateRequired,
-                        tlsConfig.EnabledProtocols,
-                        tlsConfig.CheckCertificateRevocation);
-                }
-                catch (Exception ex)
-                {
-                    logger.Site().Error(ex, "Failed to authenticate.");
-                    throw;
-                }
+                    tlsConfig.RemoteCertificateValidationCallback);
+
+                await sslStream.AuthenticateAsServerAsync(
+                    tlsConfig.Certificate,
+                    tlsConfig.ClientCertificateRequired,
+                    tlsConfig.EnabledProtocols,
+                    tlsConfig.CheckCertificateRevocation);
 
                 logger.Site().Debug("Authenticated connection from {0}", socket.RemoteEndPoint);
 

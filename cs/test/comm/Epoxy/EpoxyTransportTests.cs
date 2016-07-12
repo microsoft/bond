@@ -43,7 +43,7 @@ namespace UnitTest.Epoxy
         [Test]
         public void DefaultPorts_AreExpected()
         {
-            Assert.AreEqual(25188, EpoxyTransport.DefaultPort);
+            Assert.AreEqual(25188, EpoxyTransport.DefaultInsecurePort);
             Assert.AreEqual(25156, EpoxyTransport.DefaultSecurePort);
     }
 
@@ -52,15 +52,15 @@ namespace UnitTest.Epoxy
         {
             var ipEndPoint = new IPEndPoint(IPAddress.Parse(AnyIpAddressString), AnyPort);
 
-            var endpointFromPieces = new EpoxyTransport.Endpoint(AnyIpAddressString, AnyPort);
+            var endpointFromPieces = new EpoxyTransport.Endpoint(AnyIpAddressString, AnyPort, useTls: true);
             Assert.AreEqual(AnyIpAddressString, endpointFromPieces.Host);
             Assert.AreEqual(AnyPort, endpointFromPieces.Port);
-            Assert.False(endpointFromPieces.UseTls);
+            Assert.True(endpointFromPieces.UseTls);
 
-            var endpointFromIpEndPoint = new EpoxyTransport.Endpoint(ipEndPoint);
+            var endpointFromIpEndPoint = new EpoxyTransport.Endpoint(ipEndPoint, useTls: true);
             Assert.AreEqual(AnyIpAddressString, endpointFromIpEndPoint.Host);
             Assert.AreEqual(AnyPort, endpointFromIpEndPoint.Port);
-            Assert.False(endpointFromIpEndPoint.UseTls);
+            Assert.True(endpointFromIpEndPoint.UseTls);
 
             Assert.AreEqual(endpointFromPieces, endpointFromIpEndPoint);
         }
@@ -76,7 +76,7 @@ namespace UnitTest.Epoxy
         public void ParseStringAddress_ValidIpNoPort_ReturnsIpEndpoint()
         {
             var result = EpoxyTransport.ParseStringAddress(AnyIpAddressString);
-            Assert.AreEqual(new IPEndPoint(AnyIpAddress, EpoxyTransport.DefaultPort), result);
+            Assert.AreEqual(new IPEndPoint(AnyIpAddress, EpoxyTransport.DefaultInsecurePort), result);
         }
 
         [Test]
@@ -132,13 +132,13 @@ namespace UnitTest.Epoxy
             var endpoint = EpoxyTransport.Parse("epoxy://127.0.0.1", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("127.0.0.1", endpoint.Value.Host);
-            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+            Assert.AreEqual(EpoxyTransport.DefaultInsecurePort, endpoint.Value.Port);
             Assert.False(endpoint.Value.UseTls);
 
             endpoint = EpoxyTransport.Parse("epoxy://127.0.0.1/", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("127.0.0.1", endpoint.Value.Host);
-            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+            Assert.AreEqual(EpoxyTransport.DefaultInsecurePort, endpoint.Value.Port);
             Assert.False(endpoint.Value.UseTls);
 
             endpoint = EpoxyTransport.Parse("epoxy://127.0.0.1:10000", LoggerTests.BlackHole);
@@ -156,13 +156,13 @@ namespace UnitTest.Epoxy
             endpoint = EpoxyTransport.Parse("epoxy://localhost", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("localhost", endpoint.Value.Host);
-            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+            Assert.AreEqual(EpoxyTransport.DefaultInsecurePort, endpoint.Value.Port);
             Assert.False(endpoint.Value.UseTls);
 
             endpoint = EpoxyTransport.Parse("epoxy://localhost/", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("localhost", endpoint.Value.Host);
-            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+            Assert.AreEqual(EpoxyTransport.DefaultInsecurePort, endpoint.Value.Port);
             Assert.False(endpoint.Value.UseTls);
 
             endpoint = EpoxyTransport.Parse("epoxy://localhost:10000", LoggerTests.BlackHole);
@@ -628,7 +628,7 @@ namespace UnitTest.Epoxy
         public async Task IPv6Listener_RequestReply_PayloadResponse()
         {
             var transport = new EpoxyTransportBuilder().Construct();
-            listener = transport.MakeListener(new IPEndPoint(IPAddress.IPv6Loopback, EpoxyTransport.DefaultPort));
+            listener = transport.MakeListener(new IPEndPoint(IPAddress.IPv6Loopback, EpoxyTransport.DefaultInsecurePort));
             listener.AddService(new DummyTestService());
             await listener.StartAsync();
 

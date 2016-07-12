@@ -14,7 +14,7 @@ namespace UnitTest.Epoxy
     [TestFixture]
     public class EpoxyListenerTests : EpoxyTestBase
     {
-        private static readonly IPEndPoint localhostEndpoint = new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultPort);
+        private static readonly IPEndPoint localhostEndpoint = new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultInsecurePort);
         private static readonly string localhostAddress = "epoxy://127.0.0.1";
 
         [Test]

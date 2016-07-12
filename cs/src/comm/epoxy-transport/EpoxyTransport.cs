@@ -86,7 +86,7 @@ namespace Bond.Comm.Epoxy
 
     public class EpoxyTransport : Transport<EpoxyConnection, EpoxyListener>
     {
-        public const int DefaultPort = 25188;
+        public const int DefaultInsecurePort = 25188;
         public const int DefaultSecurePort = 25156;
 
         readonly ILayerStackProvider layerStackProvider;
@@ -102,14 +102,14 @@ namespace Bond.Comm.Epoxy
             public readonly int Port;
             public readonly bool UseTls;
 
-            public Endpoint(string host, int port, bool useTls = false)
+            public Endpoint(string host, int port, bool useTls)
             {
                 Host = host;
                 Port = port;
                 UseTls = useTls;
             }
 
-            public Endpoint(IPEndPoint ipEndPoint, bool useTls = false)
+            public Endpoint(IPEndPoint ipEndPoint, bool useTls)
                 : this(
                       ipEndPoint.Address.ToString(),
                       ipEndPoint.Port,
@@ -184,7 +184,7 @@ namespace Bond.Comm.Epoxy
             switch (uri.Scheme)
             {
                 case "epoxy":
-                    schemeDefaultPort = DefaultPort;
+                    schemeDefaultPort = DefaultInsecurePort;
                     useTls = false;
                     break;
 
@@ -226,8 +226,7 @@ namespace Bond.Comm.Epoxy
 
             Socket socket = await ConnectClientSocketAsync(endpoint);
 
-            // MakeClientStreamAsync uses a null TLS config to indicates
-            // insecure
+            // For MakeClientStreamAsync, null TLS config means insecure
             EpoxyClientTlsConfig tlsConfig = endpoint.UseTls ? clientTlsConfig : null;
             var epoxyStream = await EpoxyNetworkStream.MakeClientStreamAsync(endpoint.Host, socket, tlsConfig, logger);
 
@@ -286,7 +285,7 @@ namespace Bond.Comm.Epoxy
             int port;
             if (portStartIndex == -1)
             {
-                port = DefaultPort;
+                port = DefaultInsecurePort;
             }
             else
             {
@@ -339,10 +338,10 @@ namespace Bond.Comm.Epoxy
 
             logger.Site().Debug("Resolved {0} to {1}.", endpoint.Host, ipAddress);
 
-            Socket socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            var socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, ipAddress, endpoint.Port, state: null);
 
-            logger.Site().Information("Established TCP connection to {0} at {1}:{0}", endpoint.Host, ipAddress, endpoint.Port);
+            logger.Site().Information("Established TCP connection to {0} at {1}:{2}", endpoint.Host, ipAddress, endpoint.Port);
             return socket;
         }
     }

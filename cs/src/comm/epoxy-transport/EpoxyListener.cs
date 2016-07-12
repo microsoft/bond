@@ -17,7 +17,7 @@ namespace Bond.Comm.Epoxy
     {
         EpoxyTransport parentTransport;
         EpoxyServerTlsConfig tlsConfig;
-        System.Net.Sockets.TcpListener listener;
+        TcpListener listener;
         ServiceHost serviceHost;
 
         object connectionsLock = new object();
