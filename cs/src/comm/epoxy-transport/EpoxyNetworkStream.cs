@@ -9,6 +9,7 @@ namespace Bond.Comm.Epoxy
     using System.Net;
     using System.Net.Security;
     using System.Net.Sockets;
+    using System.Security.Authentication;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
@@ -18,6 +19,8 @@ namespace Bond.Comm.Epoxy
     /// </summary>
     internal class EpoxyNetworkStream
     {
+        const SslProtocols AllowedTlsProtocols = SslProtocols.Tls12;
+
         Socket socket;
         Stream stream;
 
@@ -86,7 +89,7 @@ namespace Bond.Comm.Epoxy
                 await sslStream.AuthenticateAsClientAsync(
                     remoteHostname,
                     clientCertificates,
-                    tlsConfig.EnabledProtocols,
+                    AllowedTlsProtocols,
                     tlsConfig.CheckCertificateRevocation);
 
                 logger.Site().Debug("Authenticated connection to {0}[{1}]", remoteHostname, socket.RemoteEndPoint);
@@ -121,7 +124,7 @@ namespace Bond.Comm.Epoxy
                 await sslStream.AuthenticateAsServerAsync(
                     tlsConfig.Certificate,
                     tlsConfig.ClientCertificateRequired,
-                    tlsConfig.EnabledProtocols,
+                    AllowedTlsProtocols,
                     tlsConfig.CheckCertificateRevocation);
 
                 logger.Site().Debug("Authenticated connection from {0}", socket.RemoteEndPoint);

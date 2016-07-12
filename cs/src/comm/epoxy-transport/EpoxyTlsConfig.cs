@@ -5,7 +5,6 @@ namespace Bond.Comm.Epoxy
 {
     using System;
     using System.Net.Security;
-    using System.Security.Authentication;
     using System.Security.Cryptography.X509Certificates;
 
     /// <summary>
@@ -22,20 +21,14 @@ namespace Bond.Comm.Epoxy
         /// passed to <see cref="SslStream"/>; consult the SslStream
         /// documentation for it use.
         /// </param>
-        /// <param name="enabledProtocols">
-        /// The enabled protocols. Defaults to
-        /// <see cref="SslProtocols.Tls12"/>.
-        /// </param>
         /// <param name="checkCertificateRevocation">
         /// Whether certificate revocation is checked. Defaults to <c>true</c>.
         /// </param>
         protected EpoxyTlsConfig(
             RemoteCertificateValidationCallback remoteCertificateValidationCallback = null,
-            SslProtocols enabledProtocols = SslProtocols.Tls12,
             bool checkCertificateRevocation = true)
         {
             RemoteCertificateValidationCallback = remoteCertificateValidationCallback;
-            EnabledProtocols = enabledProtocols;
             CheckCertificateRevocation = checkCertificateRevocation;
         }
 
@@ -44,11 +37,6 @@ namespace Bond.Comm.Epoxy
         /// certificates.
         /// </summary>
         public RemoteCertificateValidationCallback RemoteCertificateValidationCallback { get; }
-
-        /// <summary>
-        /// Gets the enabled protocols.
-        /// </summary>
-        public SslProtocols EnabledProtocols { get; }
 
         /// <summary>
         /// Gets a flag indicating whether certificate revocation is checked.
@@ -79,10 +67,6 @@ namespace Bond.Comm.Epoxy
         /// passed to <see cref="SslStream"/>; consult the SslStream
         /// documentation for it use.
         /// </param>
-        /// <param name="enabledProtocols">
-        /// The enabled protocols. Defaults to
-        /// <see cref="SslProtocols.Tls12"/>.
-        /// </param>
         /// <param name="checkCertificateRevocation">
         /// Whether certificate revocation is checked. Defaults to <c>true</c>.
         /// </param>
@@ -90,11 +74,9 @@ namespace Bond.Comm.Epoxy
             X509Certificate certificate,
             bool clientCertificateRequired = false,
             RemoteCertificateValidationCallback remoteCertificateValidationCallback = null,
-            SslProtocols enabledProtocols = SslProtocols.Tls12,
             bool checkCertificateRevocation = true)
             : base(
                 remoteCertificateValidationCallback: remoteCertificateValidationCallback,
-                enabledProtocols: enabledProtocols,
                 checkCertificateRevocation: checkCertificateRevocation)
         {
             if (certificate == null)
@@ -143,20 +125,14 @@ namespace Bond.Comm.Epoxy
         /// passed to <see cref="SslStream"/>; consult the SslStream
         /// documentation for it use.
         /// </param>
-        /// <param name="enabledProtocols">
-        /// The enabled protocols. Defaults to
-        /// <see cref="SslProtocols.Tls12"/>.
-        /// </param>
         /// <param name="checkCertificateRevocation">
         /// Whether certificate revocation is checked. Defaults to <c>true</c>.
         /// </param>
         public EpoxyClientTlsConfig(X509Certificate certificate = null,
             RemoteCertificateValidationCallback remoteCertificateValidationCallback = null,
-            SslProtocols enabledProtocols = SslProtocols.Tls12,
             bool checkCertificateRevocation = true)
             : base(
                 remoteCertificateValidationCallback: remoteCertificateValidationCallback,
-                enabledProtocols: enabledProtocols,
                 checkCertificateRevocation: checkCertificateRevocation)
         {
             Certificate = certificate;
