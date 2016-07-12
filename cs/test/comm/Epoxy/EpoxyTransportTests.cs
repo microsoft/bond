@@ -359,7 +359,6 @@ namespace UnitTest.Epoxy
             TestClientServer<DummyTestService> testClientServer =
                 await SetupTestClientServer<DummyTestService>(serverLayerStackProvider, clientLayerStackProvider);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
-            var request = new Dummy { int_value = 100 };
 
             clientLayerProvider.Layers.Clear();
             serverLayerProvider.Layers.Clear();
