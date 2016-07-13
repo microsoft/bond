@@ -162,7 +162,7 @@ namespace Bond.Comm.Epoxy
                 throw;
             }
 
-            var socket = MakeClientSocket();
+            var socket = MakeClientSocket(ipAddress);
             await Task.Factory.FromAsync(
                 socket.BeginConnect, socket.EndConnect, ipAddress, endpoint.Port,
                 state: null);
@@ -249,20 +249,17 @@ namespace Bond.Comm.Epoxy
                 throw new EpoxyFailedToResolveException($"Failed to resolve [{host}] due to DNS error", ex);
             }
 
-            // TODO: IPv6 support
-            IPAddress ipAddr = ipAddresses.FirstOrDefault(addr => addr.AddressFamily == AddressFamily.InterNetwork);
-
-            if (ipAddr == null)
+            if (ipAddresses.Length < 1)
             {
                 throw new EpoxyFailedToResolveException($"Could not resolve [{host}] to a supported IP address.");
             }
 
-            return ipAddr;
+            return ipAddresses[0];
         }
 
-        private Socket MakeClientSocket()
+        private Socket MakeClientSocket(IPAddress remoteIpAddress)
         {
-            return new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            return new Socket(remoteIpAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         }
     }
 }

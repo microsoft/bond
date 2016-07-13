@@ -603,5 +603,23 @@ namespace UnitTest.Epoxy
             Assert.That(exception.Message, Is.StringContaining("registered as invalid type"));
         }
 
+        [Test]
+        public async Task IPv6Listener_RequestReply_PayloadResponse()
+        {
+            var transport = new EpoxyTransportBuilder().Construct();
+            listener = transport.MakeListener(new IPEndPoint(IPAddress.IPv6Loopback, EpoxyTransport.DefaultPort));
+            listener.AddService(new DummyTestService());
+            await listener.StartAsync();
+
+            EpoxyConnection conn = await transport.ConnectToAsync("epoxy://[::1]");
+            var proxy = new DummyTestProxy<EpoxyConnection>(conn);
+            var request = new Dummy { int_value = 100 };
+
+            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
+            Assert.IsFalse(response.IsError);
+            Assert.AreEqual(101, response.Payload.Deserialize().int_value);
+
+            await transport.StopAsync();
+        }
     }
 }
