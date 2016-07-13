@@ -132,7 +132,7 @@ namespace Bond.Comm.Epoxy
                 return null;
             }
 
-            return new Endpoint(uri.Host, port);
+            return new Endpoint(uri.DnsSafeHost, port);
         }
 
         public override async Task<EpoxyConnection> ConnectToAsync(string address, CancellationToken ct)
