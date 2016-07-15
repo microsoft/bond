@@ -31,7 +31,7 @@ apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
 #{newlineSep 0 includeImport imports}
 
 #{CPP.openNamespace cpp}
-    #{newlineSepEnd 1 (applyOverloads protocols attr semi) declarations}
+    #{newlineSepEnd 1 (applyOverloads protocols cpp attr semi) declarations}
 #{CPP.closeNamespace cpp}
 |])
   where

@@ -38,6 +38,9 @@ different versioning scheme, following the Haskell community's
 * Validate default value of type aliases
 * Generated types will used `= default` move constructors if possible. This
   results in many generated types having `noexcept` move constructors.
+* Fix a bug where, if a Bond namespace contained a struct and an enum value with
+  the same name, generated C++ would contain ambiguous references.
+  [Issue #202](https://github.com/Microsoft/bond/issues/202)
 
 ### C++ ###
 
