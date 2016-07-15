@@ -41,6 +41,13 @@ find_package (Boost 1.53.0
 
 message(STATUS "Boost Python Library: ${Boost_PYTHON_LIBRARY}")
 
+# make sure our CI runs fail when unit test dependencies are not found 
+if (DEFINED ENV{APPVEYOR} AND ("$ENV{BOND_BUILD}" STREQUAL "C++"))
+    if (NOT Boost_UNIT_TEST_FRAMEWORK_FOUND)
+        message(FATAL_ERROR "Boost unit_test_framework not found")
+    endif()
+endif()
+
 # disable Boost auto-linking
 add_definitions (-DBOOST_ALL_NO_LIB)
 
