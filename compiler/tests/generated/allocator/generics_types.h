@@ -89,7 +89,7 @@ namespace tests
     };
 
     template <typename T1, typename T2>
-    inline void swap(Foo<T1, T2>& left, Foo<T1, T2>& right)
+    inline void swap(::tests::Foo<T1, T2>& left, ::tests::Foo<T1, T2>& right)
     {
         left.swap(right);
     }

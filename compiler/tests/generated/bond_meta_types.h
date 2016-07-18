@@ -84,7 +84,7 @@ namespace bondmeta
         }
     };
 
-    inline void swap(HasMetaFields& left, HasMetaFields& right)
+    inline void swap(::deprecated::bondmeta::HasMetaFields& left, ::deprecated::bondmeta::HasMetaFields& right)
     {
         left.swap(right);
     }

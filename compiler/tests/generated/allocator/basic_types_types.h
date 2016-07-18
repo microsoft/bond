@@ -156,7 +156,7 @@ namespace tests
         }
     };
 
-    inline void swap(BasicTypes& left, BasicTypes& right)
+    inline void swap(::tests::BasicTypes& left, ::tests::BasicTypes& right)
     {
         left.swap(right);
     }

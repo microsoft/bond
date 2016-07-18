@@ -146,13 +146,13 @@ namespace std
         #{initMetadata}
     };
 
-    #{template}inline void swap(#{structName}& left, #{structName}& right)
+    #{template}inline void swap(#{qualifiedStructName}& left, #{qualifiedStructName}& right)
     {
         left.swap(right);
     }|]
       where
         template = CPP.template s
-        structName = CPP.structName s
+        qualifiedStructName = [lt|#{getDeclTypeName cpp s}#{CPP.structParams s}|]
 
         otherParam = if hasOnlyMetaFields then mempty else [lt| other|]
         hasOnlyMetaFields = not (any (not . getAny . metaField) structFields) && isNothing structBase

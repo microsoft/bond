@@ -132,7 +132,7 @@ namespace test
         }
     };
 
-    inline void swap(foo& left, foo& right)
+    inline void swap(::test::foo& left, ::test::foo& right)
     {
         left.swap(right);
     }
@@ -203,7 +203,7 @@ namespace test
         }
     };
 
-    inline void swap(withFoo& left, withFoo& right)
+    inline void swap(::test::withFoo& left, ::test::withFoo& right)
     {
         left.swap(right);
     }

@@ -307,7 +307,7 @@ namespace tests
         }
     };
 
-    inline void swap(Foo& left, Foo& right)
+    inline void swap(::tests::Foo& left, ::tests::Foo& right)
     {
         left.swap(right);
     }
