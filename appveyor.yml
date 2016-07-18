@@ -48,18 +48,14 @@
         - ps: >-
             git submodule update --init
 
-            if ($env:BOND_BUILD -eq "Python") {
-
-                if ($env:BOND_BOOST -eq 56) {
-                    # Hard-coded Boost path as per https://www.appveyor.com/docs/installed-software#languages-libraries-frameworks
-                    $env:BOOST_ROOT = "C:/Libraries/boost"
-                    $env:BOOST_LIBRARYDIR = "C:/Libraries/boost/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
-                }
-                else {
-                    $env:BOOST_ROOT = "C:/Libraries/boost_1_${env:BOND_BOOST}_0"
-                    $env:BOOST_LIBRARYDIR = "C:/Libraries/boost_1_${env:BOND_BOOST}_0/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
-                }
-
+            if ($env:BOND_BOOST -eq 56) {
+                # Hard-coded Boost path per https://www.appveyor.com/docs/installed-software#languages-libraries-frameworks
+                $env:BOOST_ROOT = "C:/Libraries/boost"
+                $env:BOOST_LIBRARYDIR = "C:/Libraries/boost/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
+            }
+            else {
+                $env:BOOST_ROOT = "C:/Libraries/boost_1_${env:BOND_BOOST}_0"
+                $env:BOOST_LIBRARYDIR = "C:/Libraries/boost_1_${env:BOND_BOOST}_0/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
             }
 
             choco install haskellplatform -version 2014.2.0.0 -y
@@ -73,20 +69,6 @@
                 cabal install --verbose=0 pandoc
 
                 choco install doxygen.install -y
-
-            }
-
-            if ($env:BOND_BUILD -eq "C++") {
-
-                if ($env:BOND_BOOST -eq 56) {
-                    # Hard-coded Boost path as per https://www.appveyor.com/docs/installed-software#languages-libraries-frameworks
-                    $env:BOOST_ROOT = "C:/Libraries/boost"
-                    $env:BOOST_LIBRARYDIR = "C:/Libraries/boost/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
-                }
-                else {
-                    $env:BOOST_ROOT = "C:/Libraries/boost_1_${env:BOND_BOOST}_0"
-                    $env:BOOST_LIBRARYDIR = "C:/Libraries/boost_1_${env:BOND_BOOST}_0/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
-                }
 
             }
 
@@ -124,7 +106,7 @@
 
                 cd build
 
-                # Make sure we have Python27-64 before any other version; Python path as per https://www.appveyor.com/docs/installed-software#python
+                # Make sure we have Python27-64 before any other version; Python path per https://www.appveyor.com/docs/installed-software#python
                 if ($env:BOND_ARCH -eq 64) {
                     $env:Path = "C:\Python27-x64\scripts;C:\Python27-x64\;${env:Path}"
                 }
@@ -146,6 +128,9 @@
 
     build_script:
         - ps: >-
+            $env:PreferredToolArchitecture = "x64"
+            $env:_IsNativeEnvironment = "true"
+
             if ($env:BOND_BUILD -eq "Doc") {
 
                 cmake --build . --target documentation -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
@@ -184,9 +169,6 @@
             }
 
             if ($env:BOND_BUILD -eq "C++") {
-
-                $env:PreferredToolArchitecture = "x64"
-                $env:_IsNativeEnvironment = "true"
 
                 cmake --build . --target check -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
