@@ -185,11 +185,11 @@ or Python libraries are not found on the system, then some tests and examples wi
 not be built.
 
 In order to generate a solution to build the C++ and Python versions with Visual
-Studio 2013 run the following commands from the root `bond` directory:
+Studio 2015 run the following commands from the root `bond` directory:
 
     mkdir build
     cd build
-    cmake -G "Visual Studio 12 2013 Win64" ..
+    cmake -G "Visual Studio 14 2015 Win64" ..
 
 Instead of `cmake` you can also use `cmake-gui` and specify configuration
 settings in the UI. This configuration step has to be performed only once. From
