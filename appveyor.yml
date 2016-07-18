@@ -36,9 +36,9 @@
               BOND_CONFIG: Debug
             - BOND_BUILD: Doc
             - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 12 2013"
+              BOND_VS: "Visual Studio 12 2013 Win64"
               BOND_VS_NUM: 12
-              BOND_ARCH: 32
+              BOND_ARCH: 64
               BOND_BOOST: 56
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
@@ -143,7 +143,6 @@
 
             }
 
-            $env:PreferredToolArchitecture = "x64"
 
     build_script:
         - ps: >-
@@ -185,6 +184,9 @@
             }
 
             if ($env:BOND_BUILD -eq "C++") {
+
+                $env:PreferredToolArchitecture = "x64"
+                $env:_IsNativeEnvironment = "true"
 
                 cmake --build . --target check -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
