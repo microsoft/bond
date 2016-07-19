@@ -129,6 +129,7 @@
     build_script:
         - ps: >-
             $env:PreferredToolArchitecture = "x64"
+            
             $env:_IsNativeEnvironment = "true"
 
             if ($env:BOND_BUILD -eq "Doc") {
