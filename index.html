@@ -235,10 +235,10 @@ sudo make install</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> BOOST_ROOT<span class="op">=</span>D:<span class="op">\</span>boost_1_57_0
 <span class="bu">set</span> BOOST_LIBRARYDIR<span class="op">=</span>D:<span class="op">\</span>boost_1_57_0<span class="op">\</span>lib64<span class="op">-</span>msvc<span class="fl">-12.0</span></code></pre></div>
 <p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests and Python support. If Boost or Python libraries are not found on the system, then some tests and examples will not be built.</p>
-<p>In order to generate a solution to build the C++ and Python versions with Visual Studio 2013 run the following commands from the root <code>bond</code> directory:</p>
+<p>In order to generate a solution to build the C++ and Python versions with Visual Studio 2015 run the following commands from the root <code>bond</code> directory:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
 cd build
-cmake <span class="op">-</span>G <span class="st">&quot;Visual Studio 12 2013 Win64&quot;</span> ..</code></pre></div>
+cmake <span class="op">-</span>G <span class="st">&quot;Visual Studio 14 2015 Win64&quot;</span> ..</code></pre></div>
 <p>Instead of <code>cmake</code> you can also use <code>cmake-gui</code> and specify configuration settings in the UI. This configuration step has to be performed only once. From then on you can use the generated solution <code>build\bond.sln</code> from Visual Studio or build from command line using <code>cmake</code>:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> PreferredToolArchitecture<span class="op">=</span>x64
 cmake <span class="op">--</span>build . <span class="op">--</span>target
