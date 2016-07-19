@@ -65,6 +65,8 @@
             cabal update
 
             if ($env:BOND_BUILD -eq "Doc") {
+                
+                cabal install -v3 lifted-base-0.2.3.7
 
                 cabal install --verbose=0 pandoc
 
