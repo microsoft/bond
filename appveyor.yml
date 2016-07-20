@@ -21,6 +21,7 @@
         BOND_TOKEN:
             secure: 30K3L1s8erWFnnS/Iyb2LP7kiGZBr/GzA24Y82mCsGMBjzSUyk7uV7MvZ3NepNvB
         matrix:
+            - BOND_BUILD: Doc
             - BOND_BUILD: Python
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
@@ -34,7 +35,6 @@
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
-            - BOND_BUILD: Doc
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 12 2013"
               BOND_VS_NUM: 12
@@ -65,10 +65,9 @@
             cabal update
 
             if ($env:BOND_BUILD -eq "Doc") {
-                
-                cabal install -v3 lifted-base-0.2.3.7
 
-                cabal install --verbose=0 pandoc
+                # Temp constraint until further investigation
+                cabal install --verbose=0 pandoc --constraint='lifted-base<=0.2.3.6'
 
                 choco install doxygen.install -y
 
