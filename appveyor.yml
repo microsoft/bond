@@ -67,7 +67,7 @@
             if ($env:BOND_BUILD -eq "Doc") {
 
                 # Temp constraint until further investigation
-                cabal install --verbose=0 pandoc --constraint='lifted-base<=0.2.3.6'
+                cabal install pandoc --constraint='lifted-base<=0.2.3.6'
 
                 choco install doxygen.install -y
 
