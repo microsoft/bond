@@ -21,19 +21,25 @@
         BOND_TOKEN:
             secure: 30K3L1s8erWFnnS/Iyb2LP7kiGZBr/GzA24Y82mCsGMBjzSUyk7uV7MvZ3NepNvB
         matrix:
+            - BOND_BUILD: Doc
             - BOND_BUILD: Python
               BOND_VS: "Visual Studio 14 2015"
+              BOND_VS_NUM: 14
+              BOND_ARCH: 32
               BOND_BOOST: 59
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015 Win64"
+              BOND_VS_NUM: 14
+              BOND_ARCH: 64
               BOND_BOOST: 59
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
-            - BOND_BUILD: Doc
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 12 2013"
-              BOND_BOOST: 55
+              BOND_VS_NUM: 12
+              BOND_ARCH: 32
+              BOND_BOOST: 56
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
               BOND_CONFIG: Fields
@@ -42,22 +48,14 @@
         - ps: >-
             git submodule update --init
 
-            if ($env:BOND_BUILD -eq "Python") {
-
-                if (!(Test-Path boost.exe)) {
-
-                    echo "Downloading Boost 1.${env:BOND_BOOST} ..."
-
-                    Start-FileDownload "http://iweb.dl.sourceforge.net/project/boost/boost-binaries/1.${env:BOND_BOOST}.0/boost_1_${env:BOND_BOOST}_0-msvc-14.0-32.exe" -FileName boost.exe -Timeout 1200000
-
-                }
-
-                .\boost.exe /DIR="${env:APPVEYOR_BUILD_FOLDER}\\boost_1_${env:BOND_BOOST}_0" /VERYSILENT
-
-                $env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}/boost_1_${env:BOND_BOOST}_0"
-
-                $env:BOOST_LIBRARYDIR = "${env:BOOST_ROOT}/lib32-msvc-14.0"
-
+            if ($env:BOND_BOOST -eq 56) {
+                # Hard-coded Boost path per https://www.appveyor.com/docs/installed-software#languages-libraries-frameworks
+                $env:BOOST_ROOT = "C:/Libraries/boost"
+                $env:BOOST_LIBRARYDIR = "C:/Libraries/boost/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
+            }
+            else {
+                $env:BOOST_ROOT = "C:/Libraries/boost_1_${env:BOND_BOOST}_0"
+                $env:BOOST_LIBRARYDIR = "C:/Libraries/boost_1_${env:BOND_BOOST}_0/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
             }
 
             choco install haskellplatform -version 2014.2.0.0 -y
@@ -68,27 +66,10 @@
 
             if ($env:BOND_BUILD -eq "Doc") {
 
-                cabal install --verbose=0 pandoc
+                # Temp constraint until further investigation
+                cabal install pandoc --constraint='lifted-base<=0.2.3.6'
 
                 choco install doxygen.install -y
-
-            }
-
-            if ($env:BOND_BUILD -eq "C++") {
-
-                if (!(Test-Path boost.7z)) {
-
-                    echo "Downloading Boost 1.${env:BOND_BOOST} ..."
-
-                    Start-FileDownload "http://iweb.dl.sourceforge.net/project/boost/boost/1.${env:BOND_BOOST}.0/boost_1_${env:BOND_BOOST}_0.7z" -FileName boost.7z -Timeout 1200000
-
-                }
-
-                echo "Extracting Boost..."
-
-                7z x boost.7z -y -o"${env:APPVEYOR_BUILD_FOLDER}" "boost_1_${env:BOND_BOOST}_0/boost" > $null
-
-                $env:BOOST_ROOT = "${env:APPVEYOR_BUILD_FOLDER}/boost_1_${env:BOND_BOOST}_0"
 
             }
 
@@ -97,8 +78,6 @@
     cache:
         - cs\packages -> cs\test\core\packages.config
         - compiler\.cabal-sandbox -> compiler\bond.cabal
-        - boost.7z
-        - boost.exe
 
     before_build:
         - ps: >-
@@ -128,6 +107,11 @@
 
                 cd build
 
+                # Make sure we have Python27-64 before any other version; Python path per https://www.appveyor.com/docs/installed-software#python
+                if ($env:BOND_ARCH -eq 64) {
+                    $env:Path = "C:\Python27-x64\scripts;C:\Python27-x64\;${env:Path}"
+                }
+
                 cmake -G $env:BOND_VS ..
 
             }
@@ -142,10 +126,13 @@
 
             }
 
-            $env:PreferredToolArchitecture = "x64"
 
     build_script:
         - ps: >-
+            $env:PreferredToolArchitecture = "x64"
+            
+            $env:_IsNativeEnvironment = "true"
+
             if ($env:BOND_BUILD -eq "Doc") {
 
                 cmake --build . --target documentation -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
