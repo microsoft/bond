@@ -78,7 +78,7 @@ namespace tests
         }
     };
 
-    inline void swap(Foo& left, Foo& right)
+    inline void swap(::tests::Foo& left, ::tests::Foo& right)
     {
         left.swap(right);
     }
@@ -175,7 +175,7 @@ namespace tests
         }
     };
 
-    inline void swap(ComplexTypes& left, ComplexTypes& right)
+    inline void swap(::tests::ComplexTypes& left, ::tests::ComplexTypes& right)
     {
         left.swap(right);
     }
