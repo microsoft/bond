@@ -173,11 +173,11 @@ The C++ and Python versions of Bond additionally require:
 - Python 2.7 ([https://www.python.org/downloads/](https://www.python.org/downloads/))
 
 You may need to set the environment variables `BOOST_ROOT` and `BOOST_LIBRARYDIR`
-to specify where Boost and its pre-built libraries for your environment can be
+to specify where Boost and its pre-built libraries for your environment (MSVC 12 or MSVC 14) can be
 found, e.g.:
 
     set BOOST_ROOT=D:\boost_1_57_0
-    set BOOST_LIBRARYDIR=D:\boost_1_57_0\lib64-msvc-12.0
+    set BOOST_LIBRARYDIR=D:\boost_1_57_0\lib64-msvc-14.0
 
 The core Bond library and most examples only require Boost headers. The
 pre-built libraries are only needed for unit tests and Python support. If Boost
