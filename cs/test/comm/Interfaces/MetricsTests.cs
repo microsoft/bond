@@ -5,6 +5,7 @@ namespace UnitTest.Interfaces
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Threading;
     using Bond.Comm;
     using Bond.Comm.Epoxy;
@@ -40,6 +41,67 @@ namespace UnitTest.Interfaces
             }
         }
 
+        internal void AssertValidId(string id)
+        {
+            Assert.NotNull(id);
+            StringAssert.IsMatch("\\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\z", id);
+        }
+
+        [Test]
+        public void ValidIdFormat()
+        {
+            AssertValidId(Metrics.NewId());
+        }
+
+        [Test]
+        public void StartAndFinishConnectionMetrics()
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var connectionMetrics = Metrics.StartConnectionMetrics();
+
+            AssertValidId(connectionMetrics.connection_id);
+            Assert.AreEqual("", connectionMetrics.local_endpoint);
+            Assert.AreEqual("", connectionMetrics.remote_endpoint);
+            Assert.AreEqual(0.0, connectionMetrics.duration_millis);
+            Assert.AreEqual(ConnectionShutdownReason.Unknown, connectionMetrics.shutdown_reason);
+
+            Metrics.FinishConnectionMetrics(connectionMetrics, stopwatch);
+
+            AssertValidId(connectionMetrics.connection_id);
+            Assert.AreEqual("", connectionMetrics.local_endpoint);
+            Assert.AreEqual("", connectionMetrics.remote_endpoint);
+            Assert.Greater(connectionMetrics.duration_millis, 0.0);
+            Assert.AreEqual(ConnectionShutdownReason.Unknown, connectionMetrics.shutdown_reason);
+        }
+
+        [Test]
+        public void StartAndFinishRequestMetrics()
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var connectionMetrics = Metrics.StartConnectionMetrics();
+            var requestMetrics = Metrics.StartRequestMetrics(connectionMetrics);
+
+            AssertValidId(requestMetrics.request_id);
+            Assert.AreEqual(connectionMetrics.connection_id, requestMetrics.connection_id);
+            Assert.AreEqual("", requestMetrics.local_endpoint);
+            Assert.AreEqual("", requestMetrics.remote_endpoint);
+            Assert.AreEqual("", requestMetrics.method_name);
+            Assert.AreEqual(0.0, requestMetrics.service_method_time_millis);
+            Assert.AreEqual(0.0, requestMetrics.total_time_millis);
+            Assert.Null(requestMetrics.error);
+
+            Metrics.FinishRequestMetrics(requestMetrics, stopwatch);
+
+            AssertValidId(requestMetrics.request_id);
+            Assert.AreEqual(connectionMetrics.connection_id, requestMetrics.connection_id);
+            Assert.AreEqual("", requestMetrics.local_endpoint);
+            Assert.AreEqual("", requestMetrics.remote_endpoint);
+            Assert.AreEqual("", requestMetrics.method_name);
+            Assert.AreEqual(0.0, requestMetrics.service_method_time_millis);
+            Assert.Greater(requestMetrics.total_time_millis, 0.0);
+            Assert.Null(requestMetrics.error);
+        }
+
         [Test]
         public void Server_Request_MetricsAreEmitted()
         {
@@ -69,7 +131,6 @@ namespace UnitTest.Interfaces
                 default:
                     throw new ArgumentException(nameof(messageType));
             }
-
 
             var metricsSink = new TestMetricsSink();
             var serverTransport = new EpoxyTransportBuilder().SetMetricsSink(metricsSink).Construct();
@@ -103,10 +164,8 @@ namespace UnitTest.Interfaces
 
                     // The new RequestMetrics should have non-empty unique IDs. The request ID should be unique
                     // and the connection ID should match that of any requests previously made on this connection.
-                    Assert.NotNull(requestMetrics.request_id);
-                    Assert.AreNotEqual("", requestMetrics.request_id);
-                    Assert.NotNull(requestMetrics.connection_id);
-                    Assert.AreNotEqual("", requestMetrics.connection_id);
+                    AssertValidId(requestMetrics.request_id);
+                    AssertValidId(requestMetrics.connection_id);
                     CollectionAssert.DoesNotContain(requestIdsSeen, requestMetrics.request_id,
                         "Got two RequestMetrics with the same request ID.");
                     requestIdsSeen.Add(requestMetrics.request_id);
@@ -142,8 +201,7 @@ namespace UnitTest.Interfaces
                 Assert.NotNull(metricsSink.LastConnectionMetrics);
                 var connectionMetrics = metricsSink.LastConnectionMetrics;
 
-                Assert.NotNull(connectionMetrics.connection_id);
-                Assert.AreNotEqual("", connectionMetrics.connection_id);
+                AssertValidId(connectionMetrics.connection_id);
                 // The connection ID in the new ConnectionMetrics must match the one seen by the requests.
                 Assert.AreEqual(currentConnectionId, connectionMetrics.connection_id,
                     "Got a different connection IDs in ConnectionMetrics and this connection's RequestMetrics.");

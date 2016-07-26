@@ -16,7 +16,7 @@ namespace Bond.Comm
         /// <summary>
         /// A unique ID for calls of MakeInternalServerError that are passed a null ID.
         /// </summary>
-        private const string UniqueIdForNullId = "[4e2bec1b-42ca-482b-8895-b8586bc8f491]";
+        private const string UniqueIdForNullId = "4e2bec1b-42ca-482b-8895-b8586bc8f491";
 
         /// <summary>
         /// Checks if an <see cref="Error" /> is an <see cref="InternalServerError"/>.
@@ -42,7 +42,9 @@ namespace Bond.Comm
         /// Creates an <see cref="InternalServerError"/> with the given message.
         /// </summary>
         /// <param name="message">An error message.</param>
-        /// <param name="uniqueId">The ID of the request that caused this error.</param>
+        /// <param name="uniqueId">The ID of the request that caused this error. This should not be null,
+        /// but if it is, the generated error will contain a fixed GUID (<see cref="UniqueIdForNullId"/>) to aid
+        /// in debugging.</param>
         /// <returns>An InternalServerError representing the exception.</returns>
         public static InternalServerError MakeInternalServerError(string message, string uniqueId)
         {
@@ -61,7 +63,9 @@ namespace Bond.Comm
         /// Creates an <see cref="InternalServerError"/> from an exception.
         /// </summary>
         /// <param name="exception">An exception.</param>
-        /// <param name="uniqueId">The ID of the request that caused this error.</param>
+        /// <param name="uniqueId">The ID of the request that caused this error. This should not be null,
+        /// but if it is, the generated error will contain a fixed GUID (<see cref="UniqueIdForNullId"/>) to aid
+        /// in debugging.</param>
         /// <param name="includeDetails">
         /// <c>true</c> if debugging details should be included; <c>false</c>
         /// to omit this potentailly sensitive information

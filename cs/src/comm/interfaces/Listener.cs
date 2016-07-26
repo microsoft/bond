@@ -17,14 +17,6 @@ namespace Bond.Comm
         public readonly Connection Connection;
 
         /// <summary>
-        /// A Bond-generated unique identifier for this connection. If you need
-        /// to return an <see cref="Error"/>, give the client this identifier,
-        /// and you will be able to cross-reference it with Bond-generated log
-        /// messages.
-        /// </summary>
-        public string ConnectionId;
-
-        /// <summary>
         /// A value indicating whether the connection should be rejected.
         /// </summary>
         /// <remarks>
@@ -40,13 +32,9 @@ namespace Bond.Comm
         /// <param name="connection">
         /// The connection that was just established.
         /// </param>
-        /// <param name="connectionId">
-        /// The Bond-generated unique identifier for this connection.
-        /// </param>
-        public ConnectedEventArgs(Connection connection, string connectionId)
+        public ConnectedEventArgs(Connection connection)
         {
             Connection = connection;
-            ConnectionId = connectionId;
         }
     }
 
@@ -211,7 +199,7 @@ namespace Bond.Comm
                     catch (Exception ex)
                     {
                         logger.Site().Error(ex, "Exception in handler for connection {0}: {1}", args.Connection, ex.Message);
-                        args.DisconnectError = Errors.MakeInternalServerError(ex, args.ConnectionId, includeDetails: false);
+                        args.DisconnectError = Errors.MakeInternalServerError(ex, args.Connection.Id, includeDetails: false);
                     }
 
                     if (args.DisconnectError != null)

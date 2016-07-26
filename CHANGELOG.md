@@ -75,6 +75,8 @@ different versioning scheme, following the Haskell community's
   transport-specific subtypes.
 * Epoxy has a hook for performing custom host to IP address resolution. This
   is configured with `EpoxyTransportBuilder.SetResolver`.
+* Bond-generated Errors now give clients opaque GUIDs. These GUIDs can be
+  matched against emitted metrics for debugging.
 
 ## 4.2.1: 2016-06-02 ##
 

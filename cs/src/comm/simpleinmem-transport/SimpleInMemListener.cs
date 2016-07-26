@@ -167,7 +167,7 @@ namespace Bond.Comm.SimpleInMem
         private void Add(ConnectionPair connectionPair)
         {
             var client = connectionPair.Client;
-            var connectedEventArgs = new ConnectedEventArgs(client, connectionPair.Server.ConnectionMetrics.connection_id);
+            var connectedEventArgs = new ConnectedEventArgs(client);
             Error error = OnConnected(connectedEventArgs);
 
             if (error != null)

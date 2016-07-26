@@ -48,10 +48,22 @@ namespace Bond.Comm
             return Guid.NewGuid().ToString();
         }
 
+        public static ConnectionMetrics StartConnectionMetrics()
+        {
+            return new ConnectionMetrics
+            {
+                connection_id = NewId()
+            };
+        }
+
+        public static void FinishConnectionMetrics(ConnectionMetrics connectionMetrics, Stopwatch duration)
+        {
+            connectionMetrics.duration_millis = duration.Elapsed.TotalMilliseconds;
+        }
 
         public static RequestMetrics StartRequestMetrics(ConnectionMetrics connectionMetrics)
         {
-            var requestMetrics = new RequestMetrics
+            return new RequestMetrics
             {
                 request_id = NewId(),
                 connection_id = connectionMetrics.connection_id,
@@ -59,12 +71,11 @@ namespace Bond.Comm
                 remote_endpoint = connectionMetrics.remote_endpoint,
                 error = null
             };
-            return requestMetrics;
         }
 
         public static void FinishRequestMetrics(RequestMetrics requestMetrics, Stopwatch totalTime)
         {
-            requestMetrics.total_time_millis = (float) totalTime.Elapsed.TotalMilliseconds;
+            requestMetrics.total_time_millis = totalTime.Elapsed.TotalMilliseconds;
         }
     }
 }

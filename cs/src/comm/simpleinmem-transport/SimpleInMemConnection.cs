@@ -29,7 +29,6 @@ namespace Bond.Comm.SimpleInMem
 
     public class SimpleInMemConnection : Connection, IRequestResponseConnection, IEventConnection
     {
-        private readonly Guid connectionId;
         private readonly ConnectionType connectionType;
         private readonly SimpleInMemListener parentListener;
         private readonly ServiceHost serviceHost;
@@ -42,8 +41,6 @@ namespace Bond.Comm.SimpleInMem
         private object stateLock = new object();
         private readonly Logger logger;
         private readonly Metrics metrics;
-
-        public ConnectionMetrics ConnectionMetrics { get; } = new ConnectionMetrics();
 
         internal SimpleInMemConnection(
             SimpleInMemListener parentListener, ConnectionType connectionType,
@@ -59,12 +56,10 @@ namespace Bond.Comm.SimpleInMem
             this.serviceHost = serviceHost;
             this.transport = transport;
             writeQueue = new InMemFrameQueue();
-            connectionId = Guid.NewGuid();
 
             // start at -1 or 0 so the first conversation ID is 1 or 2.
             prevConversationId = (connectionType == ConnectionType.Client) ? -1 : 0;
             state = CnxState.Created;
-            ConnectionMetrics.connection_id = connectionId.ToString();
 
             this.logger = logger;
             this.metrics = metrics;
@@ -83,14 +78,6 @@ namespace Bond.Comm.SimpleInMem
             get
             {
                 return connectionType;
-            }
-        }
-
-        public Guid Id
-        {
-            get
-            {
-                return connectionId;
             }
         }
 
@@ -128,7 +115,7 @@ namespace Bond.Comm.SimpleInMem
 
         public override string ToString()
         {
-            return $"{nameof(SimpleInMemConnection)}({connectionId})";
+            return $"{nameof(SimpleInMemConnection)}({Id})";
         }
 
         public override Task StopAsync()
