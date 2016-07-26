@@ -231,9 +231,9 @@ sudo make install</code></pre></div>
 <li>Boost 1.54+ (<a href="http://www.boost.org/users/download/" class="uri">http://www.boost.org/users/download/</a>)</li>
 <li>Python 2.7 (<a href="https://www.python.org/downloads/" class="uri">https://www.python.org/downloads/</a>)</li>
 </ul>
-<p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment can be found, e.g.:</p>
+<p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment (MSVC 12 or MSVC 14) can be found, e.g.:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> BOOST_ROOT<span class="op">=</span>D:<span class="op">\</span>boost_1_57_0
-<span class="bu">set</span> BOOST_LIBRARYDIR<span class="op">=</span>D:<span class="op">\</span>boost_1_57_0<span class="op">\</span>lib64<span class="op">-</span>msvc<span class="fl">-12.0</span></code></pre></div>
+<span class="bu">set</span> BOOST_LIBRARYDIR<span class="op">=</span>D:<span class="op">\</span>boost_1_57_0<span class="op">\</span>lib64<span class="op">-</span>msvc<span class="fl">-14.0</span></code></pre></div>
 <p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests and Python support. If Boost or Python libraries are not found on the system, then some tests and examples will not be built.</p>
 <p>In order to generate a solution to build the C++ and Python versions with Visual Studio 2015 run the following commands from the root <code>bond</code> directory:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
