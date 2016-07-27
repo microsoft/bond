@@ -14,11 +14,6 @@ namespace Bond.Comm
         public const string InternalErrorMessage = "The server has encounted an error";
 
         /// <summary>
-        /// A unique ID for calls of MakeInternalServerError that are passed a null ID.
-        /// </summary>
-        private const string UniqueIdForNullId = "4e2bec1b-42ca-482b-8895-b8586bc8f491";
-
-        /// <summary>
         /// Checks if an <see cref="Error" /> is an <see cref="InternalServerError"/>.
         /// If it is, strips out all information except the <c>error_code</c> and
         /// <c>unique_id</c> and sets the message to <see cref="InternalErrorMessage"/>.
@@ -43,15 +38,14 @@ namespace Bond.Comm
         /// </summary>
         /// <param name="message">An error message.</param>
         /// <param name="uniqueId">The ID of the request that caused this error. This should not be null,
-        /// but if it is, the generated error will contain a fixed GUID (<see cref="UniqueIdForNullId"/>) to aid
-        /// in debugging.</param>
+        /// but if it is, the generated error will contain an empty string.</param>
         /// <returns>An InternalServerError representing the exception.</returns>
         public static InternalServerError MakeInternalServerError(string message, string uniqueId)
         {
             var internalServerError = new InternalServerError
             {
                 error_code = (int) ErrorCode.InternalServerError,
-                unique_id = uniqueId ?? UniqueIdForNullId,
+                unique_id = uniqueId ?? "",
                 message = message ?? InternalErrorMessage
             };
 
@@ -64,8 +58,7 @@ namespace Bond.Comm
         /// </summary>
         /// <param name="exception">An exception.</param>
         /// <param name="uniqueId">The ID of the request that caused this error. This should not be null,
-        /// but if it is, the generated error will contain a fixed GUID (<see cref="UniqueIdForNullId"/>) to aid
-        /// in debugging.</param>
+        /// but if it is, the generated error will contain an empty string.</param>
         /// <param name="includeDetails">
         /// <c>true</c> if debugging details should be included; <c>false</c>
         /// to omit this potentailly sensitive information
@@ -76,7 +69,7 @@ namespace Bond.Comm
             var internalServerError = new InternalServerError
             {
                 error_code = (int)ErrorCode.InternalServerError,
-                unique_id = uniqueId ?? UniqueIdForNullId
+                unique_id = uniqueId ?? ""
             };
 
             if (includeDetails && exception != null)

@@ -15,7 +15,7 @@ namespace UnitTest.Interfaces
         {
             var ex = new InvalidOperationException("You can't do that.");
 
-            InternalServerError error = Errors.MakeInternalServerError(ex, null, includeDetails: false);
+            InternalServerError error = Errors.MakeInternalServerError(ex, "some ID", includeDetails: false);
 
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.IsNotEmpty(error.unique_id);
@@ -27,7 +27,7 @@ namespace UnitTest.Interfaces
         [Test]
         public void MakeInternalServerError_NullExIncludeDetails_GenericErrorReturned()
         {
-            InternalServerError error = Errors.MakeInternalServerError(exception: null, uniqueId: null, includeDetails: true);
+            InternalServerError error = Errors.MakeInternalServerError(exception: null, uniqueId: "some ID", includeDetails: true);
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.IsNotEmpty(error.unique_id);
             Assert.IsNotEmpty(error.message);
@@ -39,7 +39,7 @@ namespace UnitTest.Interfaces
         public void CleanseInternalServerError_WithInternalServerError()
         {
             InternalServerError originalInternalError =
-                Errors.MakeInternalServerError(GenerateException<InvalidOperationException>(), null, includeDetails: true);
+                Errors.MakeInternalServerError(GenerateException<InvalidOperationException>(), "some ID", includeDetails: true);
 
             string savedID = originalInternalError.unique_id;
 
@@ -70,7 +70,7 @@ namespace UnitTest.Interfaces
         public void MakeInternalServerError_ExIncludeDetails_HasStackAndInnerExceptions()
         {
             var ex = GenerateException(new Exception("this is some message", GenerateException<InvalidOperationException>()));
-            InternalServerError error = Errors.MakeInternalServerError(ex, null, includeDetails: true);
+            InternalServerError error = Errors.MakeInternalServerError(ex, "some ID", includeDetails: true);
 
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.IsNotEmpty(error.unique_id);
@@ -84,7 +84,7 @@ namespace UnitTest.Interfaces
         {
             var innerExceptions = new[] { GenerateException<ArgumentException>(), GenerateException<InvalidOperationException>() };
             var aggEx = GenerateException(new AggregateException("this is some message", innerExceptions));
-            InternalServerError error = Errors.MakeInternalServerError(aggEx, null, includeDetails: true);
+            InternalServerError error = Errors.MakeInternalServerError(aggEx, "some ID", includeDetails: true);
 
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
             Assert.IsNotEmpty(error.unique_id);
