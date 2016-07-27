@@ -16,14 +16,18 @@ namespace Bond.Comm.Service
         private readonly object dispatchTableLock;
         private readonly Dictionary<string, ServiceMethodInfo> dispatchTable;
         private readonly Logger logger;
-        private readonly Metrics metrics;
 
-        public ServiceHost(Logger logger, Metrics metrics)
+        public ServiceHost(Logger logger)
         {
             dispatchTableLock = new object();
             dispatchTable = new Dictionary<string, ServiceMethodInfo>();
             this.logger = logger;
-            this.metrics = metrics;
+        }
+
+        private static void Update(RequestMetrics requestMetrics, string methodName, Stopwatch serviceTime)
+        {
+            requestMetrics.method_name = methodName ?? "";
+            requestMetrics.service_method_time_millis = serviceTime?.Elapsed.TotalMilliseconds ?? 0;
         }
 
         public bool IsRegistered(string serviceMethodName)
@@ -109,125 +113,108 @@ namespace Bond.Comm.Service
             logger.Site().Information("Deregistered {0}.", typeof(T).Name);
         }
 
-        public async Task<IMessage> DispatchRequest(
-            string methodName, ReceiveContext context, IMessage message, ConnectionMetrics connectionMetrics)
+        public async Task<IMessage> DispatchRequest(string methodName, ReceiveContext context, IMessage message)
         {
-            var totalTime = Stopwatch.StartNew();
             Stopwatch serviceTime = null;
-            var requestMetrics = StartRequestMetrics(methodName, connectionMetrics);
             logger.Site().Information("Got request [{0}] from {1}.", methodName, context.Connection);
 
-            ServiceMethodInfo methodInfo;
-
-            lock (dispatchTableLock)
+            try
             {
-                if (!dispatchTable.TryGetValue(methodName, out methodInfo))
+                ServiceMethodInfo methodInfo;
+                lock (dispatchTableLock)
                 {
-                    var errorMessage = "Got request for unknown method [" + methodName + "].";
+                    if (!dispatchTable.TryGetValue(methodName, out methodInfo))
+                    {
+                        var errorMessage = "Got request for unknown method [" + methodName + "].";
+
+                        logger.Site().Error(errorMessage);
+                        var error = new Error
+                        {
+                            message = errorMessage,
+                            error_code = (int) ErrorCode.MethodNotFound
+                        };
+                        return Message.FromError(error);
+                    }
+                }
+
+                if (methodInfo.CallbackType != ServiceCallbackType.RequestResponse)
+                {
+                    var errorMessage = "Method [" + methodName + "] invoked as if it were " +
+                                       ServiceCallbackType.RequestResponse + ", but it was registered as " +
+                                       methodInfo.CallbackType + ".";
 
                     logger.Site().Error(errorMessage);
                     var error = new Error
                     {
                         message = errorMessage,
-                        error_code = (int)ErrorCode.MethodNotFound
+                        error_code = (int) ErrorCode.InvalidInvocation
                     };
                     return Message.FromError(error);
                 }
-            }
 
-            if (methodInfo.CallbackType != ServiceCallbackType.RequestResponse)
-            {
-                var errorMessage = "Method [" + methodName + "] invoked as if it were " +
-                                   ServiceCallbackType.RequestResponse + ", but it was registered as " +
-                                   methodInfo.CallbackType + ".";
+                IMessage result;
 
-                logger.Site().Error(errorMessage);
-                var error = new Error
+                try
                 {
-                    message = errorMessage,
-                    error_code = (int)ErrorCode.InvalidInvocation
-                };
-                return Message.FromError(error);
+                    serviceTime = Stopwatch.StartNew();
+                    // Cast to appropriate return type which we validated when registering the service 
+                    result = await (Task<IMessage>) methodInfo.Callback(message, context, CancellationToken.None);
+                    serviceTime.Stop();
+                }
+                catch (Exception ex)
+                {
+                    logger.Site()
+                        .Error(ex, "Failed to complete method [{0}]. With exception: {1}", methodName, ex.Message);
+                    result = Message.FromError(
+                        Errors.MakeInternalServerError(ex, context.RequestMetrics.request_id, includeDetails: false));
+                }
+                return result;
             }
+            finally
+            {
+                Update(context.RequestMetrics, methodName, serviceTime);
+            }
+        }
 
-            IMessage result;
+        public async Task DispatchEvent(string methodName, ReceiveContext context, IMessage message)
+        {
+            Stopwatch serviceTime = null;
+            logger.Site().Information("Got event [{0}] from {1}.", methodName, context.Connection);
 
             try
             {
-                serviceTime = Stopwatch.StartNew();
-                // Cast to appropriate return type which we validated when registering the service 
-                result = await (Task<IMessage>)methodInfo.Callback(message, context, CancellationToken.None);
-                serviceTime.Stop();
-            }
-            catch (Exception ex)
-            {
-                logger.Site().Error(ex, "Failed to complete method [{0}]. With exception: {1}", methodName, ex.Message);
-                result = Message.FromError(Errors.MakeInternalServerError(ex, includeDetails: false));
-            }
-
-            FinishRequestMetrics(requestMetrics, totalTime, serviceTime);
-            metrics.Emit(requestMetrics);
-
-            return result;
-        }
-
-        public async Task DispatchEvent(
-            string methodName, ReceiveContext context, IMessage message, ConnectionMetrics connectionMetrics)
-        {
-            var totalTime = Stopwatch.StartNew();
-            Stopwatch serviceTime = null;
-            var requestMetrics = StartRequestMetrics(methodName, connectionMetrics);
-            logger.Site().Information("Got event [{0}] from {1}.", methodName, context.Connection);
-            ServiceMethodInfo methodInfo;
-
-            lock (dispatchTableLock)
-            {
-                if (!dispatchTable.TryGetValue(methodName, out methodInfo))
+                ServiceMethodInfo methodInfo;
+                lock (dispatchTableLock)
                 {
-                    logger.Site().Error("Got request for unknown method [{0}].", methodName);
+                    if (!dispatchTable.TryGetValue(methodName, out methodInfo))
+                    {
+                        logger.Site().Error("Got request for unknown method [{0}].", methodName);
+                        return;
+                    }
+                }
+
+                if (methodInfo.CallbackType != ServiceCallbackType.Event)
+                {
+                    logger.Site().Error("Method [{0}] invoked as if it were {1}, but it was registered as {2}.",
+                        methodName, ServiceCallbackType.Event, methodInfo.CallbackType);
                     return;
                 }
+
+                try
+                {
+                    serviceTime = Stopwatch.StartNew();
+                    await methodInfo.Callback(message, context, CancellationToken.None);
+                }
+                catch (Exception ex)
+                {
+                    logger.Site()
+                        .Error(ex, "Failed to complete method [{0}]. With exception: {1}", methodName, ex.Message);
+                }
             }
-
-            if (methodInfo.CallbackType != ServiceCallbackType.Event)
+            finally
             {
-                logger.Site().Error("Method [{0}] invoked as if it were {1}, but it was registered as {2}.",
-                    methodName, ServiceCallbackType.Event, methodInfo.CallbackType);
-                return;
+                Update(context.RequestMetrics, methodName, serviceTime);
             }
-
-            try
-            {
-                serviceTime = Stopwatch.StartNew();
-                await methodInfo.Callback(message, context, CancellationToken.None);
-            }
-            catch (Exception ex)
-            {
-                logger.Site().Error(ex, "Failed to complete method [{0}]. With exception: {1}", methodName, ex.Message);
-            }
-
-            FinishRequestMetrics(requestMetrics, totalTime, serviceTime);
-            metrics.Emit(requestMetrics);
-        }
-
-        private static RequestMetrics StartRequestMetrics(string methodName, ConnectionMetrics connectionMetrics)
-        {
-            var requestMetrics = new RequestMetrics
-            {
-                request_id = Guid.NewGuid().ToString(),
-                connection_id = connectionMetrics.connection_id,
-                local_endpoint = connectionMetrics.local_endpoint,
-                remote_endpoint = connectionMetrics.remote_endpoint,
-                method_name = methodName,
-                error = null
-            };
-            return requestMetrics;
-        }
-
-        private static void FinishRequestMetrics(RequestMetrics requestMetrics, Stopwatch totalTime, Stopwatch serviceTime)
-        {
-            requestMetrics.total_time_millis = (float)totalTime.Elapsed.TotalMilliseconds;
-            requestMetrics.service_method_time_millis = (float)(serviceTime?.Elapsed.TotalMilliseconds ?? 0);
         }
     }
 }

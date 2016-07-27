@@ -40,7 +40,7 @@ namespace UnitTest.Layers
             var testLayer2 = new TestLayer_Append("bar", testList);
             var stackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, testLayer1, testLayer2);
             ILayerStack stack;
-            Error error = stackProvider.GetLayerStack(out stack);
+            Error error = stackProvider.GetLayerStack(null, out stack);
             Assert.IsNull(error);
 
             IBonded layerData;
@@ -66,7 +66,7 @@ namespace UnitTest.Layers
             var testLayer2 = new TestLayer_Append("bar", testList);
             var stackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, testLayer1, testLayer2);
             ILayerStack stack;
-            Error error = stackProvider.GetLayerStack(out stack);
+            Error error = stackProvider.GetLayerStack(null, out stack);
             Assert.IsNull(error);
 
             error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
@@ -114,10 +114,10 @@ namespace UnitTest.Layers
         {
             var provider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, new TestLayer_AlwaysThrows(), new TestLayer_AlwaysThrows());
             ILayerStack stack;
-            Error error = provider.GetLayerStack(out stack);
+            Error error = provider.GetLayerStack(null, out stack);
             Assert.IsNull(error);
             ILayerStack stack2;
-            error = provider.GetLayerStack(out stack2);
+            error = provider.GetLayerStack(null, out stack2);
             Assert.IsNull(error);
             Assert.AreSame(stack, stack2);
         }
@@ -130,10 +130,10 @@ namespace UnitTest.Layers
                                                          new TestLayerProvider_StatefulAppend("foo"),
                                                          new TestLayer_AlwaysThrows());
             ILayerStack stack;
-            Error error = provider.GetLayerStack(out stack);
+            Error error = provider.GetLayerStack(null, out stack);
             Assert.IsNull(error);
             ILayerStack stack2;
-            error = provider.GetLayerStack(out stack2);
+            error = provider.GetLayerStack(null, out stack2);
             Assert.IsNull(error);
             Assert.AreNotSame(stack, stack2);
         }
@@ -151,6 +151,8 @@ namespace UnitTest.Layers
 
     class TestSendContext : SendContext
     {
+        public TestSendContext() : base(new ConnectionMetrics(), new RequestMetrics()) { }
+
         public override Connection Connection
         {
             get
@@ -162,6 +164,8 @@ namespace UnitTest.Layers
 
     class TestReceiveContext : ReceiveContext
     {
+        public TestReceiveContext() : base(new ConnectionMetrics(), new RequestMetrics()) { }
+
         public override Connection Connection
         {
             get
@@ -363,12 +367,12 @@ namespace UnitTest.Layers
             this.failAfterGets = failAfterGets;
         }
 
-        public Error GetLayerStack(out ILayerStack layerStack)
+        public Error GetLayerStack(string uniqueId, out ILayerStack layerStack)
         {
             if (failAfterGets == 0)
             {
                 layerStack = null;
-                return Errors.MakeInternalServerError(InternalDetails);
+                return Errors.MakeInternalServerError(InternalDetails, uniqueId);
             }
             else
             {

@@ -62,6 +62,10 @@ namespace Bond.Comm
     /// </summary>
     public abstract class Connection
     {
+        public readonly ConnectionMetrics ConnectionMetrics = Metrics.StartConnectionMetrics();
+
+        public string Id => ConnectionMetrics.connection_id;
+
         /// <summary>
         /// Starts an asynchronous operation to close a connection.
         /// </summary>

@@ -73,9 +73,11 @@ namespace Bond.Comm
         /// <summary>
         /// Get a layer stack instance for this transport.
         /// </summary>
+        /// <param name="uniqueId">A unique ID identifying the request or connection that triggered this call. Used in
+        /// layer-originated errors.</param>
         /// <param name="stack">The layer stack instance. Will be null if an error is returned.</param>
         /// <returns>An error if one occurred, null otherwise.</returns>
-        public abstract Error GetLayerStack(out ILayerStack stack);
+        public abstract Error GetLayerStack(string uniqueId, out ILayerStack stack);
 
         /// <summary>
         /// Starts an asynchronous operation to connect to the specified

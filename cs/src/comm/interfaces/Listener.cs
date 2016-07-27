@@ -199,7 +199,7 @@ namespace Bond.Comm
                     catch (Exception ex)
                     {
                         logger.Site().Error(ex, "Exception in handler for connection {0}: {1}", args.Connection, ex.Message);
-                        args.DisconnectError = Errors.MakeInternalServerError(ex, includeDetails: false);
+                        args.DisconnectError = Errors.MakeInternalServerError(ex, args.Connection.Id, includeDetails: false);
                     }
 
                     if (args.DisconnectError != null)

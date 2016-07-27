@@ -35,7 +35,7 @@ namespace Bond.Comm.SimpleInMem
             if (string.IsNullOrEmpty(address)) throw new ArgumentException(nameof(address));
 
             this.address = address;
-            serviceHost = new ServiceHost(logger, metrics);
+            serviceHost = new ServiceHost(logger);
             this.transport = transport;
             connectionPairs = new Dictionary<Guid, ConnectionPair>();
             logname = $"{nameof(SimpleInMemListener)}({this.address})";
@@ -155,7 +155,7 @@ namespace Bond.Comm.SimpleInMem
 
         internal ConnectionPair CreateConnectionPair()
         {
-            var clientConnection = new SimpleInMemConnection(this, ConnectionType.Client, new ServiceHost(logger, metrics),
+            var clientConnection = new SimpleInMemConnection(this, ConnectionType.Client, new ServiceHost(logger),
                 transport, logger, metrics);
             var serverConnection = new SimpleInMemConnection(this, ConnectionType.Server, serviceHost, transport, logger, metrics);
             var connectionPair = SimpleInMemConnection.Pair(clientConnection, serverConnection);

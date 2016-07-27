@@ -5,7 +5,8 @@ namespace Bond.Comm.SimpleInMem
 {
     public class SimpleInMemSendContext : SendContext
     {
-        public SimpleInMemSendContext(SimpleInMemConnection connection)
+        public SimpleInMemSendContext(SimpleInMemConnection connection, ConnectionMetrics connectionMetrics, RequestMetrics requestMetrics)
+            : base(connectionMetrics, requestMetrics)
         {
             Connection = connection;
         }
@@ -15,7 +16,8 @@ namespace Bond.Comm.SimpleInMem
 
     public class SimpleInMemReceiveContext : ReceiveContext
     {
-        public SimpleInMemReceiveContext(SimpleInMemConnection connection)
+        public SimpleInMemReceiveContext(SimpleInMemConnection connection, ConnectionMetrics connectionMetrics, RequestMetrics requestMetrics)
+            : base(connectionMetrics, requestMetrics)
         {
             Connection = connection;
         }
