@@ -173,28 +173,22 @@ namespace Bond.Comm.Layers
             }
 
             this.layerProviders = layerProviders;
-
-            ILayer<TLayerData>[] layers;
-            Error error = GetNewLayers(out layers);
-
-            if (error == null)
+            ILayer<TLayerData>[] layers = new ILayer<TLayerData>[layerProviders.Length];
+            for (var i = 0; i < layerProviders.Length; i++)
             {
-                bool stateless = layers.All(layer => layer is IStatelessLayer<TLayerData>);
-
-                if (stateless)
-                {
-                    cachedLayerStack = new LayerStack<TLayerData>(logger, layers);
-                }
+                layers[i] = layerProviders[i].GetLayer();
             }
-            else
+
+            bool stateless = layers.All(layer => layer is IStatelessLayer<TLayerData>);
+            if (stateless)
             {
-                throw new InvalidOperationException(error.message);
+                cachedLayerStack = new LayerStack<TLayerData>(logger, layers);
             }
 
             this.logger = logger;
         }
 
-        public Error GetLayerStack(out ILayerStack stack)
+        public Error GetLayerStack(string uniqueId, out ILayerStack stack)
         {
             Error error = null;
 
@@ -204,48 +198,33 @@ namespace Bond.Comm.Layers
             }
             else
             {
-                ILayer<TLayerData>[] layers;
-                error = GetNewLayers(out layers);
-                if (error == null)
+                var layers = new ILayer<TLayerData>[layerProviders.Length];
+                for (int i = 0; i < layerProviders.Length; i++)
                 {
-                    stack = new LayerStack<TLayerData>(logger, layers);
-                }
-                else
-                {
-                    stack = null;
-                }
-            }
-
-            return error;
-        }
-
-        Error GetNewLayers(out ILayer<TLayerData>[] layers)
-        {
-            layers = new ILayer<TLayerData>[layerProviders.Length];
-            Error result = null;
-            for (int i = 0; i < layerProviders.Length; i++)
-            {
-                try
-                {
-                    layers[i] = layerProviders[i].GetLayer();
-                    if (layers[i] == null)
+                    try
                     {
-                        result = Errors.MakeInternalServerError($"Layer provider {i} produced null layer", null);
-                        logger.Site().Error(result.message);
+                        layers[i] = layerProviders[i].GetLayer();
+                        if (layers[i] == null)
+                        {
+                            error = Errors.MakeInternalServerError($"Layer provider {i} produced null layer", uniqueId);
+                            logger.Site().Error(error.message);
+                            layers = null;
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Site().Error(ex, "Layer provider {0} threw exception", i);
+                        error = Errors.MakeInternalServerError(ex, uniqueId, includeDetails: true);
                         layers = null;
                         break;
                     }
                 }
-                catch (Exception ex)
-                {
-                    logger.Site().Error(ex, "Layer provider {0} threw exception", i);
-                    result = Errors.MakeInternalServerError(ex, null, includeDetails: true);
-                    layers = null;
-                    break;
-                }
+
+                stack = error == null ? new LayerStack<TLayerData>(logger, layers) : null;
             }
 
-            return result;
+            return error;
         }
     }
 }

@@ -32,11 +32,11 @@ namespace Bond.Comm.SimpleInMem
             this.metrics = metrics;
         }
 
-        public override Error GetLayerStack(out ILayerStack stack)
+        public override Error GetLayerStack(string uniqueId, out ILayerStack stack)
         {
             if (layerStackProvider != null)
             {
-                return layerStackProvider.GetLayerStack(out stack);
+                return layerStackProvider.GetLayerStack(uniqueId, out stack);
             }
             else
             {

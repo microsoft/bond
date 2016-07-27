@@ -77,7 +77,7 @@ namespace Bond.Comm.SimpleInMem.Processor
             var taskSource = payload.outstandingRequest;
 
             ILayerStack layerStack;
-            Error layerError = transport.GetLayerStack(out layerStack);
+            Error layerError = transport.GetLayerStack(requestMetrics.request_id, out layerStack);
 
             if (layerError == null)
             {
@@ -161,7 +161,7 @@ namespace Bond.Comm.SimpleInMem.Processor
             var message = payload.message;
 
             ILayerStack layerStack;
-            Error layerError = transport.GetLayerStack(out layerStack);
+            Error layerError = transport.GetLayerStack(requestMetrics.request_id, out layerStack);
 
             if (layerError == null)
             {

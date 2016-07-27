@@ -198,7 +198,7 @@ namespace Bond.Comm.SimpleInMem
 
             IBonded layerData = null;
             ILayerStack layerStack;
-            Error layerError = transport.GetLayerStack(out layerStack);
+            Error layerError = transport.GetLayerStack(requestMetrics.request_id, out layerStack);
 
             if (layerError == null)
             {
@@ -229,7 +229,7 @@ namespace Bond.Comm.SimpleInMem
             var sendContext = new SimpleInMemSendContext(this, ConnectionMetrics, requestMetrics);
             IBonded layerData = null;
             ILayerStack layerStack;
-            Error layerError = transport.GetLayerStack(out layerStack);
+            Error layerError = transport.GetLayerStack(requestMetrics.request_id, out layerStack);
 
             if (layerError == null)
             {

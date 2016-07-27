@@ -259,7 +259,7 @@ namespace Bond.Comm.Epoxy
 
             IBonded layerData = null;
             ILayerStack layerStack;
-            Error layerError = parentTransport.GetLayerStack(out layerStack);
+            Error layerError = parentTransport.GetLayerStack(requestMetrics.request_id, out layerStack);
 
             if (layerError == null)
             {
@@ -343,7 +343,7 @@ namespace Bond.Comm.Epoxy
 
             IBonded layerData =  null;
             ILayerStack layerStack;
-            Error layerError = parentTransport.GetLayerStack(out layerStack);
+            Error layerError = parentTransport.GetLayerStack(requestMetrics.request_id, out layerStack);
 
             if (layerError == null)
             {
@@ -726,7 +726,7 @@ namespace Bond.Comm.Epoxy
                 IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
 
                 ILayerStack layerStack;
-                Error layerError = parentTransport.GetLayerStack(out layerStack);
+                Error layerError = parentTransport.GetLayerStack(requestMetrics.request_id, out layerStack);
 
                 if (layerError == null)
                 {
@@ -824,7 +824,7 @@ namespace Bond.Comm.Epoxy
 
                 IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
                 ILayerStack layerStack;
-                Error layerError = parentTransport.GetLayerStack(out layerStack);
+                Error layerError = parentTransport.GetLayerStack(requestMetrics.request_id, out layerStack);
 
                 if (layerError == null)
                 {
