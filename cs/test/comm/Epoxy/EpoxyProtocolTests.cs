@@ -64,6 +64,7 @@ namespace UnitTest.Epoxy
         private static Frame goodEventFrame;
         private static Frame shortRequestFrame;         // a request frame with EpoxyHeaders but no PayloadData
         private static Frame doubleHeadersRequestFrame; // a request frame with duplicate EpoxyHeaders
+        private static Frame headersConfigRequestFrame; // a request frame with EpoxyHeaders, then an EpoxyConfig
         private static Frame doublePayloadRequestFrame; // a request frame with duplicate PayloadData
         private static Frame backwardsRequestFrame;     // a request frame with PayloadData before EpoxyHeaders
         private static Frame configFrame;               // a frame with a well-formed EpoxyConfig
@@ -76,6 +77,7 @@ namespace UnitTest.Epoxy
         [TestFixtureSetUp]
         public static void CreateFrames()
         {
+            // Good frames, from which we can pull good framelets to build bad frames.
             goodRequestFrame = EpoxyConnection.MessageToFrame(
                 GoodRequestId, GoodMethod, PayloadType.Request, meaninglessMessage, null, LoggerTests.BlackHole);
             goodRequestLayerDataFrame = EpoxyConnection.MessageToFrame(
@@ -85,8 +87,13 @@ namespace UnitTest.Epoxy
                 GoodResponseId, GoodMethod, PayloadType.Response, meaninglessMessage, null, LoggerTests.BlackHole);
             goodEventFrame = EpoxyConnection.MessageToFrame(
                 GoodRequestId, GoodMethod, PayloadType.Event, meaninglessMessage, null, LoggerTests.BlackHole);
+
+            configFrame = EpoxyConnection.MakeConfigFrame(LoggerTests.BlackHole);
+            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null, LoggerTests.BlackHole);
+
             var goodFrameletCount = goodRequestFrame.Count;
 
+            // Bad frames made of good framelets.
             shortRequestFrame = new Frame(goodFrameletCount - 1, LoggerTests.BlackHole);
             for (var i = 0; i < goodFrameletCount - 1; i++)
             {
@@ -99,6 +106,10 @@ namespace UnitTest.Epoxy
             {
                 doubleHeadersRequestFrame.Add(goodRequestFrame.Framelets[i]);
             }
+
+            headersConfigRequestFrame = new Frame(1, LoggerTests.BlackHole);
+            headersConfigRequestFrame.Add(goodRequestFrame.Framelets[0]);
+            headersConfigRequestFrame.Add(configFrame.Framelets[0]);
 
             doublePayloadRequestFrame = new Frame(goodFrameletCount + 1, LoggerTests.BlackHole);
             for (var i = 0; i < goodFrameletCount; i++)
@@ -113,21 +124,16 @@ namespace UnitTest.Epoxy
                 backwardsRequestFrame.Add(framelet);
             }
 
-            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null, LoggerTests.BlackHole);
-
             doubleProtocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null, LoggerTests.BlackHole);
             doubleProtocolErrorFrame.Add(doubleProtocolErrorFrame.Framelets[0]);
-
-            configFrame = EpoxyConnection.MakeConfigFrame(LoggerTests.BlackHole);
 
             configFrameExtra = EpoxyConnection.MakeConfigFrame(LoggerTests.BlackHole);
             configFrameExtra.Add(goodRequestFrame.Framelets[0]);
 
+            // Bad frames made of bad framelets.
             var invalidConfigData = new ArraySegment<byte>(new byte[] { 0x01 });
             configFrameBadConfigData = new Frame(1, LoggerTests.BlackHole);
             configFrameBadConfigData.Add(new Framelet(FrameletType.EpoxyConfig, invalidConfigData));
-
-            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null, LoggerTests.BlackHole);
         }
 
         // For each state that is implemented as a function, test:
@@ -596,6 +602,12 @@ namespace UnitTest.Epoxy
             Assert.Null(doubleHeadersResult.Headers);
             Assert.Null(doubleHeadersResult.Payload.Array);
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, doubleHeadersResult.ErrorCode);
+
+            var headersConfigRequestResult = EpoxyProtocol.Classify(headersConfigRequestFrame, LoggerTests.BlackHole);
+            Assert.AreEqual(EpoxyProtocol.FrameDisposition.SendProtocolError, headersConfigRequestResult.Disposition);
+            Assert.Null(headersConfigRequestResult.Headers);
+            Assert.Null(headersConfigRequestResult.Payload.Array);
+            Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, headersConfigRequestResult.ErrorCode);
 
             var doublePayloadResult = EpoxyProtocol.Classify(doublePayloadRequestFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.SendProtocolError, doublePayloadResult.Disposition);

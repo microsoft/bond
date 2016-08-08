@@ -374,23 +374,14 @@ namespace Bond.Comm.Epoxy
                 return ClassifyState.MalformedFrame;
             }
 
-            if (frame.Framelets[1].Type == FrameletType.PayloadData)
-            {
-                return ClassifyState.ExpectPayload;
-            }
-
             var framelet = frame.Framelets[1];
-
-            if (framelet.Type != FrameletType.LayerData)
+            if (framelet.Type == FrameletType.LayerData)
             {
-                logger.Site().Error("Frame did not continue with LayerData or PayloadData.");
-                errorCode = ProtocolErrorCode.MALFORMED_DATA;
-                return ClassifyState.MalformedFrame;
+                layerData = framelet.Contents;
+                logger.Site().Debug("Extracted {0}-byte layer data in conversation ID {1}.",
+                    layerData.Count, headers.conversation_id);
             }
 
-            layerData = framelet.Contents;
-            logger.Site().Debug("Extracted {0}-byte layer data in conversation ID {1}.",
-                layerData.Count, headers.conversation_id);
             return ClassifyState.ExpectPayload;
         }
 
