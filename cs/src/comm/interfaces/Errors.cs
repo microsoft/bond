@@ -27,7 +27,7 @@ namespace Bond.Comm
             if (internalError != null)
             {
                 internalError.message = InternalErrorMessage;
-                internalError.inner_errors.Clear();
+                internalError.inner_error = null;
                 internalError.server_stack_trace = string.Empty;
             }
             return error;
@@ -80,19 +80,25 @@ namespace Bond.Comm
                 var aggEx = exception as AggregateException;
                 if (aggEx != null)
                 {
-                    internalServerError.inner_errors = new List<IBonded<Error>>(aggEx.InnerExceptions.Count);
+                    var aggregateError = new AggregateError
+                    {
+                        error_code = (int) ErrorCode.MultipleErrorsOccured,
+                        message = "One or more errors occured",
+                        inner_errors = new List<IBonded<Error>>(aggEx.InnerExceptions.Count)
+                    };
 
                     foreach (var innerException in aggEx.InnerExceptions)
                     {
                         var innerError = MakeInternalServerError(innerException, uniqueId, includeDetails);
-                        internalServerError.inner_errors.Add(new Bonded<InternalServerError>(innerError));
+                        aggregateError.inner_errors.Add(new Bonded<InternalServerError>(innerError));
                     }
+
+                    internalServerError.inner_error = new Bonded<AggregateError>(aggregateError);
                 }
                 else if (exception.InnerException != null)
                 {
-                    internalServerError.inner_errors = new List<IBonded<Error>>(1);
                     var innerError = MakeInternalServerError(exception.InnerException, uniqueId, includeDetails);
-                    internalServerError.inner_errors.Add(new Bonded<InternalServerError>(innerError));
+                    internalServerError.inner_error = new Bonded<InternalServerError>(innerError);
                 }
             }
             else

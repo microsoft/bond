@@ -21,7 +21,7 @@ namespace UnitTest.Interfaces
             Assert.IsNotEmpty(error.unique_id);
             Assert.That(error.message, Is.Not.StringContaining(ex.Message));
             Assert.IsEmpty(error.server_stack_trace);
-            Assert.IsEmpty(error.inner_errors);
+            Assert.IsNull(error.inner_error);
         }
 
         [Test]
@@ -32,7 +32,7 @@ namespace UnitTest.Interfaces
             Assert.IsNotEmpty(error.unique_id);
             Assert.IsNotEmpty(error.message);
             Assert.IsEmpty(error.server_stack_trace);
-            Assert.IsEmpty(error.inner_errors);
+            Assert.IsNull(error.inner_error);
         }
 
         [Test]
@@ -50,7 +50,7 @@ namespace UnitTest.Interfaces
 
             Assert.AreEqual((int)ErrorCode.InternalServerError, cleansedInternalError.error_code);
             Assert.AreEqual(Errors.InternalErrorMessage, cleansedInternalError.message);
-            Assert.IsEmpty(cleansedInternalError.inner_errors);
+            Assert.IsNull(cleansedInternalError.inner_error);
             Assert.AreEqual(savedID, cleansedInternalError.unique_id);
             Assert.IsEmpty(cleansedInternalError.server_stack_trace);
         }
@@ -76,7 +76,7 @@ namespace UnitTest.Interfaces
             Assert.IsNotEmpty(error.unique_id);
             Assert.That(error.message, Is.StringContaining(ex.Message));
             Assert.IsNotEmpty(error.server_stack_trace);
-            Assert.AreEqual(1, error.inner_errors.Count);
+            Assert.IsNotNull(error.inner_error);
         }
 
         [Test]
@@ -90,7 +90,12 @@ namespace UnitTest.Interfaces
             Assert.IsNotEmpty(error.unique_id);
             Assert.That(error.message, Is.StringContaining(aggEx.Message));
             Assert.IsNotEmpty(error.server_stack_trace);
-            Assert.AreEqual(2, error.inner_errors.Count);
+            Assert.IsNotNull(error.inner_error);
+
+            var aggError = error.inner_error.Deserialize<AggregateError>();
+            Assert.AreEqual((int)ErrorCode.MultipleErrorsOccured, aggError.error_code);
+            Assert.That(aggError.message, Is.StringMatching("One or more errors occured"));
+            Assert.AreEqual(2, aggError.inner_errors.Count);
         }
 
         private static Exception GenerateException(Exception ex)
