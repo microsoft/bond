@@ -477,16 +477,15 @@ public:
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     explicit
     nullable(value_type&& value,
-             const allocator_type& alloc = allocator_type()) BOND_NOEXCEPT_IF(
-                 bond::is_nothrow_move_constructible<Allocator>::value
-                 && bond::is_nothrow_move_constructible<real_pointer>::value)
+             const allocator_type& alloc = allocator_type())
         : Allocator(alloc),
           _value(new_value(std::move(value)))
     {}
 
     nullable(nullable&& src) BOND_NOEXCEPT_IF(
         bond::is_nothrow_move_constructible<Allocator>::value
-        && bond::is_nothrow_move_constructible<real_pointer>::value)
+        && bond::is_nothrow_move_constructible<real_pointer>::value
+        && BOND_NOEXCEPT(src._value = real_pointer()))
         : Allocator(std::move(src.base())),
           _value(std::move(src._value))
     {
@@ -499,8 +498,7 @@ public:
         return *this;
     }
 
-    void set(value_type&& value) BOND_NOEXCEPT_IF(
-        bond::is_nothrow_move_constructible<real_pointer>::value)
+    void set(value_type&& value)
     {
         if (empty())
             _value = new_value(std::move(value));
