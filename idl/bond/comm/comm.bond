@@ -13,11 +13,12 @@ enum MessageType
 enum ErrorCode
 {
     OK = 0x0;
-    InternalServerError = 0xA0BD0000;
+    InternalServerError = 0xA0BD0000; // Error is an InternalServerError
     MethodNotFound = 0xA0BD0001;
     InvalidInvocation = 0xA0BD0002;
     TransportError = 0xA0BD0003;
     ConnectionShutDown = 0xA0BD0004;
+    MultipleErrorsOccured = 0xA0BD0005; // Error is an AggregateError
 }
 
 enum ConnectionShutdownReason
@@ -35,13 +36,18 @@ struct Error
 {
     0: required int32 error_code;
     1: string message;
-    2: vector<bonded<Error>> inner_errors;
+    2: nullable<bonded<Error>> inner_error;
 }
 
 struct InternalServerError : Error
 {
     0: string unique_id;
     1: string server_stack_trace;
+}
+
+struct AggregateError : Error
+{
+    0: vector<bonded<Error>> inner_errors;
 }
 
 struct ConnectionMetrics
