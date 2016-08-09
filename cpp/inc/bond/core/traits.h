@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include "scalar_interface.h"
+#include <boost/type_traits/has_nothrow_copy.hpp>
 #include <boost/utility/enable_if.hpp>
 
 #ifndef BOND_NO_CXX11_HDR_TYPE_TRAITS
@@ -40,6 +41,13 @@ using BOND_TYPE_TRAITS_NAMESPACE::remove_reference;
 using BOND_TYPE_TRAITS_NAMESPACE::true_type;
 
 #undef BOND_TYPE_TRAITS_NAMESPACE
+
+// version of is_nothrow_copy_constructible/has_nothrow_copy_constructor
+// that works across C++03 and C++11 and later: we just delegate to Boost,
+// but use the modern name and put it in the bond namespace
+template <typename T>
+struct is_nothrow_copy_constructible : boost::has_nothrow_copy_constructor<T> {};
+
 
 // is_signed_int
 template <typename T> struct
@@ -92,15 +100,15 @@ template <template <typename T> class Reader, typename I, template <typename T> 
 is_protocol_same<Reader<I>, Writer<O> >
     : is_same<typename Reader<O>::Writer, Writer<O> > {};
 
-// For protocols that have multiple versions, specialize this template
+// For protocols that have multiple versions, specialize this template...
 template <typename Reader> struct
-protocol_has_multiple_versions 
+protocol_has_multiple_versions
     : false_type {};
 
 
-// ... and overload this function. 
+// ... and overload this function.
 template <typename Reader, typename Writer>
-inline 
+inline
 bool is_protocol_version_same(const Reader&, const Writer&)
 {
     return true;
@@ -128,12 +136,12 @@ get_protocol_writer<Reader<I>, OutputStream>
 };
 
 
-template <typename T, T> struct 
+template <typename T, T> struct
 check_method
     : true_type {};
 
 
-template <typename Reader, typename Unused = void> struct 
+template <typename Reader, typename Unused = void> struct
 uses_marshaled_bonded;
 
 
@@ -144,4 +152,3 @@ is_type_alias
 
 
 } // namespace bond
-

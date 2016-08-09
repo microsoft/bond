@@ -181,7 +181,7 @@ public:
 
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     value_common(value_common&& rhs) BOND_NOEXCEPT_IF(
-        bond::is_nothrow_move_constructible<Reader>::value)
+        bond::is_nothrow_copy_constructible<Reader>::value)
         : _input(rhs._input),
           _skip(std::move(rhs._skip))
     {
