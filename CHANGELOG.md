@@ -14,6 +14,8 @@ different versioning scheme, following the Haskell community's
 ## Unreleased ##
 
 * `gbc` & compiler library: TBD (major bump needed)
+* IDL core version: 1.0 (first release)
+* IDL comm version: 1.0 (first release)
 * C++ version: TBD (minor bump needed)
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed due to dependencies)
@@ -41,6 +43,14 @@ different versioning scheme, following the Haskell community's
 * Fix a bug where, if a Bond namespace contained a struct and an enum value with
   the same name, generated C++ would contain ambiguous references.
   [Issue #202](https://github.com/Microsoft/bond/issues/202)
+
+### IDL core ###
+
+* Set up a separate IDL directory so that IDL is independent of language bindings.
+
+### IDL comm ###
+
+* Set up a separate IDL directory so that IDL is independent of language bindings.
 
 ### C++ ###
 

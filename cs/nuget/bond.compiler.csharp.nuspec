@@ -28,8 +28,8 @@
          files in this package. They're pretty small. -->
 
     <file src="cs\tools\gbc.exe" target="tools" />
-    <file src="cpp\inc\bond\core\bond.bond" target="tools\inc\bond\core" />
-    <file src="cpp\inc\bond\core\bond_const.bond" target="tools\inc\bond\core" />
+    <file src="idl\bond\core\bond.bond" target="tools\inc\bond\core" />
+    <file src="idl\bond\core\bond_const.bond" target="tools\inc\bond\core" />
 
     <file src="cs\build\nuget\Bond.Compiler.CSharp.targets" target="build\net45" />
     <file src="cs\build\nuget\Bond.Compiler.CSharp.props" target="build\net45" />

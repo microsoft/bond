@@ -23,11 +23,11 @@
     <Compile Include="EpoxyListener.cs" />
     <Compile Include="EpoxyProtocol.cs" />
     <Compile Include="EpoxyTransport.cs" />
-    <BondCodegen Include="EpoxyTransport.bond">
+    <BondCodegen Include="$(MSBuildThisFileDirectory)\..\..\..\..\idl\bond\comm\epoxy_transport.bond">
       <Options>--namespace=bond.comm=Bond.Comm --namespace=bond.comm.epoxy=Bond.Comm.Epoxy</Options>
     </BondCodegen>
     <!-- Resharper Workaround -->
-    <Compile Include="$(IntermediateOutputPath)\EpoxyTransport_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\epoxy_transport_types.cs" Condition="False" />
     <Compile Include="ResponseMap.cs" />
     <!-- End Resharper Workaround -->
   </ItemGroup>

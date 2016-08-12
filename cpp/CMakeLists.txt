@@ -1,6 +1,6 @@
 set (sources
-    ${BOND_INCLUDE}/bond/core/bond.bond
-    ${BOND_INCLUDE}/bond/core/bond_const.bond)
+    ${BOND_IDL}/bond/core/bond.bond
+    ${BOND_IDL}/bond/core/bond_const.bond)
 
 add_bond_codegen (${sources}
     ENUM_HEADER
@@ -71,5 +71,7 @@ install (TARGETS bond bond_apply
     EXPORT bond
     ARCHIVE DESTINATION lib/bond
     INCLUDES DESTINATION include)
+
+install (DIRECTORY ${BOND_IDL}/bond/core/ DESTINATION include/bond/core)
 
 add_subdirectory (test)
