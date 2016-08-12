@@ -46,11 +46,22 @@ different versioning scheme, following the Haskell community's
 
 ### IDL core ###
 
+<<<<<<< 98e4e23137ebb61a894d12695d5b93bc840db17c
 * Set up a separate IDL directory so that IDL is independent of language bindings.
 
 ### IDL comm ###
 
 * Set up a separate IDL directory so that IDL is independent of language bindings.
+=======
+* Set up a separate IDL directory so that IDL is independent of language
+  bindings. [Pull request #219](https://github.com/Microsoft/bond/pull/219)
+
+### IDL comm ###
+
+* Set up a separate IDL directory so that IDL is independent of language
+  bindings. Convert comm IDL files to use C++-style naming convention. [Pull
+  request #219](https://github.com/Microsoft/bond/pull/219)
+>>>>>>> [idl] Move .bond files to separate idl directory
 
 ### C++ ###
 
