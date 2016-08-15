@@ -70,6 +70,7 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
+* Bond can now be used with Newtonsoft.Json >= 7.0.1 and < 10
 * Runtime SchemaDef now includes information about whether BT_LIST fields
   are nullable or blobs.
   [Issue #161](https://github.com/Microsoft/bond/issues/161)
