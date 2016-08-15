@@ -28,8 +28,8 @@
     </metadata>
     <files>
         <file src="cs\tools\gbc.exe" target="tools\" />
-        <file src="cpp\inc\bond\core\bond.bond" target="tools\inc\bond\core" />
-        <file src="cpp\inc\bond\core\bond_const.bond" target="tools\inc\bond\core" />
+        <file src="idl\bond\core\bond.bond" target="tools\inc\bond\core" />
+        <file src="idl\bond\core\bond_const.bond" target="tools\inc\bond\core" />
         <file src="cs\build\nuget\Bond.CSharp.targets" target="build" />
         <file src="cs\build\nuget\Bond.CSharp.props" target="build" />
         <file src="cs\build\nuget\Common.props" target="build" />

@@ -26,11 +26,11 @@
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="Transport.cs" />
     <Compile Include="TransportException.cs" />
-    <BondCodegen Include="Comm.bond">
+    <BondCodegen Include="$(MSBuildThisFileDirectory)\..\..\..\..\idl\bond\comm\comm.bond">
       <Options>--namespace=bond.comm=Bond.Comm</Options>
     </BondCodegen>
     <!-- Resharper Workaround -->
-    <Compile Include="$(IntermediateOutputPath)\Comm_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\comm_types.cs" Condition="False" />
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
