@@ -182,11 +182,11 @@ namespace Bond.Comm.Epoxy
             logger.Site().Debug("Processing {0} framelets.", frame.Count);
 
             var state = ClassifyState.ExpectFirstFramelet;
+            var disposition = FrameDisposition.Indeterminate;
             EpoxyHeaders headers = null;
             var layerData = new ArraySegment<byte>();
             var payload = new ArraySegment<byte>();
             ProtocolError error = null;
-            var disposition = FrameDisposition.Indeterminate;
             ProtocolErrorCode? errorCode = null;
             uint transitions = 0;
             while (true)
@@ -336,7 +336,6 @@ namespace Bond.Comm.Epoxy
             }
 
             var framelet = frame.Framelets[0];
-
             var inputBuffer = new InputBuffer(framelet.Contents);
             var fastBinaryReader = new FastBinaryReader<InputBuffer>(inputBuffer, version: 1);
             switch (headersDeserializer.TryDeserialize(fastBinaryReader, out headers))
@@ -369,7 +368,7 @@ namespace Bond.Comm.Epoxy
 
             if (frame.Count < 2)
             {
-                logger.Site().Error("Frame did not continue with LayerData or PayloadData.");
+                logger.Site().Error("Frame had headers but no payload.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -398,10 +397,9 @@ namespace Bond.Comm.Epoxy
             }
 
             int payloadDataIndex = (layerData.Array == null ? 1 : 2);
-
             if (payloadDataIndex >= frame.Count)
             {
-                logger.Site().Error("Frame did not continue with PayloadData.");
+                logger.Site().Error("Frame had headers but no payload.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -409,7 +407,7 @@ namespace Bond.Comm.Epoxy
             var framelet = frame.Framelets[payloadDataIndex];
             if (framelet.Type != FrameletType.PayloadData)
             {
-                logger.Site().Error("Frame did not continue with PayloadData.");
+                logger.Site().Error("Frame had headers but no payload.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -424,13 +422,13 @@ namespace Bond.Comm.Epoxy
             ClassifyState state, Frame frame, ArraySegment<byte> layerData, ref ProtocolErrorCode? errorCode,
             Logger logger)
         {
+            // FIXME: Change all of these to asserts.
             if (state != ClassifyState.ExpectEndOfFrame || frame == null)
             {
                 return ClassifyState.InternalStateError;
             }
 
-            int validFrameSize = (layerData.Array == null ? 2 : 3);
-
+            var validFrameSize = (layerData.Array == null ? 2 : 3);
             if (frame.Count == validFrameSize)
             {
                 return ClassifyState.FrameComplete;
@@ -457,6 +455,7 @@ namespace Bond.Comm.Epoxy
                 case PayloadType.Response:
                 case PayloadType.Event:
                     return ClassifyState.ValidFrame;
+
                 default:
                     logger.Site().Warning("Received unrecognized payload type {0}.", headers.payload_type);
                     errorCode = ProtocolErrorCode.NOT_SUPPORTED;
@@ -541,6 +540,12 @@ namespace Bond.Comm.Epoxy
                 return ClassifyState.InternalStateError;
             }
 
+            if (frame.Count > 1)
+            {
+                logger.Site().Error("Protocol error frame had trailing framelets.");
+                return ClassifyState.ErrorInErrorFrame;
+            }
+
             var framelet = frame.Framelets[0];
 
             var inputBuffer = new InputBuffer(framelet.Contents);
@@ -556,15 +561,7 @@ namespace Bond.Comm.Epoxy
             }
 
             logger.Site().Debug("Deserialized {0} with code {1}.", nameof(ProtocolError), error.error_code);
-
-            if (frame.Count > 1)
-            {
-                logger.Site().Error("Frame had trailing framelets.");
-                return ClassifyState.ErrorInErrorFrame;
-            }
-
             disposition = FrameDisposition.HandleProtocolError;
-
             return ClassifyState.ClassifiedValidFrame;
         }
     }

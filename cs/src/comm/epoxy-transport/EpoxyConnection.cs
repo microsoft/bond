@@ -160,7 +160,7 @@ namespace Bond.Comm.Epoxy
             return $"{nameof(EpoxyConnection)}(local: {LocalEndPoint}, remote: {RemoteEndPoint})";
         }
 
-        internal static Frame MessageToFrame(ulong conversationId, string methodName, PayloadType type, IMessage payload, IBonded layerData, Logger logger)
+        internal static Frame MessageToFrame(ulong conversationId, string methodName, PayloadType type, IMessage message, IBonded layerData, Logger logger)
         {
             var frame = new Frame(logger);
 
@@ -172,9 +172,9 @@ namespace Bond.Comm.Epoxy
                     method_name = methodName ?? string.Empty, // method_name is not nullable
                 };
 
-                if (payload.IsError)
+                if (message.IsError)
                 {
-                    headers.error_code = payload.Error.Deserialize<Error>().error_code;
+                    headers.error_code = message.Error.Deserialize<Error>().error_code;
                 }
                 else
                 {
@@ -194,21 +194,17 @@ namespace Bond.Comm.Epoxy
                 const int initialLayerDataBufferSize = 150;
                 var outputBuffer = new OutputBuffer(initialLayerDataBufferSize);
                 var compactWriter = new CompactBinaryWriter<OutputBuffer>(outputBuffer);
-                // TODO: See TODO below about issues with IBonded Marshal.TO(...)
                 compactWriter.WriteVersion();
                 layerData.Serialize(compactWriter);
                 frame.Add(new Framelet(FrameletType.LayerData, outputBuffer.Data));
             }
 
             {
-                var userData = payload.IsError ? (IBonded)payload.Error : (IBonded)payload.RawPayload;
-
+                var userData = message.IsError ? (IBonded)message.Error : (IBonded)message.RawPayload;
 
                 const int initialPayloadBufferSize = 1024;
                 var outputBuffer = new OutputBuffer(initialPayloadBufferSize);
                 var compactWriter = new CompactBinaryWriter<OutputBuffer>(outputBuffer);
-                // TODO: marshal dies on IBonded Marshal.To(compactWriter, request)
-                // understand more deeply why and consider fixing
                 compactWriter.WriteVersion();
                 userData.Serialize(compactWriter);
 
@@ -234,7 +230,7 @@ namespace Bond.Comm.Epoxy
             var protocolError = new ProtocolError
             {
                 error_code = errorCode,
-                details = details == null ? null : new Bonded<Error>(details)
+                details = (details == null ? null : new Bonded<Error>(details))
             };
 
             var outputBuffer = new OutputBuffer(16);
