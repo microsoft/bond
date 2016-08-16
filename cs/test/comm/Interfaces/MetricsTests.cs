@@ -7,6 +7,7 @@ namespace UnitTest.Interfaces
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Threading;
+    using System.Threading.Tasks;
     using Bond.Comm;
     using Bond.Comm.Epoxy;
     using NUnit.Framework;
@@ -19,7 +20,7 @@ namespace UnitTest.Interfaces
 
         // Metrics emission does not necessarily happen before the client gets control back from
         // a request or connection shutdown. There's nothing to block on that would guarantee this.
-        internal static readonly Action WaitForMetrics = () => Thread.Sleep(25);
+        internal static readonly Action WaitForMetrics = () => Thread.Sleep(50);
 
         private class TestMetricsSink : IMetricsSink
         {
@@ -103,29 +104,32 @@ namespace UnitTest.Interfaces
         }
 
         [Test]
-        public void Server_Request_MetricsAreEmitted()
+        public async Task Server_Request_MetricsAreEmitted()
         {
-            Server_MetricsAreEmitted(MessageType.Request);
+            await Server_MetricsAreEmitted(MessageType.Request);
         }
 
         [Test]
-        public void Server_Event_MetricsAreEmitted()
+        public async Task Server_Event_MetricsAreEmitted()
         {
-            Server_MetricsAreEmitted(MessageType.Event);
+            await Server_MetricsAreEmitted(MessageType.Event);
         }
 
-        private async void Server_MetricsAreEmitted(MessageType messageType)
+        private async Task Server_MetricsAreEmitted(MessageType messageType)
         {
             // There are several invariants around metrics that involve cross-request and cross-connection state.
             // Bring up a service, connect to it several times, and make several requests each time.
 
+            string expectedMethodName;
             Action<DummyTestProxy<EpoxyConnection>> doRpc;
             switch (messageType)
             {
                 case MessageType.Request:
+                    expectedMethodName = "unittest.comm.DummyTest.ReqRspMethod";
                     doRpc = async proxy => await proxy.ReqRspMethodAsync(new Dummy());
                     break;
                 case MessageType.Event:
+                    expectedMethodName = "unittest.comm.DummyTest.EventMethod";
                     doRpc = proxy => proxy.EventMethodAsync(new Dummy());
                     break;
                 default:
@@ -181,7 +185,7 @@ namespace UnitTest.Interfaces
 
                     Assert.AreEqual(serverEndpoint, requestMetrics.local_endpoint);
                     Assert.AreEqual(clientEndpoint, requestMetrics.remote_endpoint);
-                    Assert.AreEqual("unittest.comm.DummyTest.ReqRspMethod", requestMetrics.method_name);
+                    Assert.AreEqual(expectedMethodName, requestMetrics.method_name);
                     Assert.Null(requestMetrics.error);
 
                     Assert.Greater(requestMetrics.total_time_millis, 0.0);
