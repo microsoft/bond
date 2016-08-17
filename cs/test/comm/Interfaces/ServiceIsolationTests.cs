@@ -85,7 +85,7 @@ namespace UnitTest.Interfaces
         }
 
         [Test]
-        public async void IsolatedLoggingAndMetrics()
+        public async Task IsolatedLoggingAndMetrics()
         {
             // Create two services on their own transports with separate ILogSinks and IMetricsSinks.
             // Create one client for each service on separate transports so they don't log or emit metrics.
