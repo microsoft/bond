@@ -94,6 +94,9 @@ different versioning scheme, following the Haskell community's
 * Epoxy can now be configured to use TLS to secure the connection.
   * TLS configuration is set via
     `EpoxyTransportBuilder.SetClientTlsConfig`/`EpoxyTransportBuilder.SetServerTlsConfig`.
+  * See the
+    [TLS example](https://github.com/Microsoft/bond/tree/master/examples/cs/comm/tls/)
+    for even more details.
 
 ## 4.2.1: 2016-06-02 ##
 
