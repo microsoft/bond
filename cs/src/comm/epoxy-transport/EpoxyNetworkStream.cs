@@ -80,15 +80,11 @@ namespace Bond.Comm.Epoxy
                     leaveInnerStreamOpen,
                     tlsConfig.RemoteCertificateValidationCallback);
 
-                var clientCertificates = new X509CertificateCollection();
-                if (tlsConfig.Certificate != null)
-                {
-                    clientCertificates.Add(tlsConfig.Certificate);
-                }
+                var emptyClientCertificates = new X509CertificateCollection();
 
                 await sslStream.AuthenticateAsClientAsync(
                     remoteHostname,
-                    clientCertificates,
+                    emptyClientCertificates,
                     AllowedTlsProtocols,
                     tlsConfig.CheckCertificateRevocation);
 
@@ -123,9 +119,9 @@ namespace Bond.Comm.Epoxy
 
                 await sslStream.AuthenticateAsServerAsync(
                     tlsConfig.Certificate,
-                    tlsConfig.ClientCertificateRequired,
-                    AllowedTlsProtocols,
-                    tlsConfig.CheckCertificateRevocation);
+                    clientCertificateRequired: false,
+                    enabledSslProtocols: AllowedTlsProtocols,
+                    checkCertificateRevocation: tlsConfig.CheckCertificateRevocation);
 
                 logger.Site().Debug("Authenticated connection from {0}", socket.RemoteEndPoint);
 

@@ -700,91 +700,9 @@ namespace UnitTest.Epoxy
             await serverTransport.StopAsync();
         }
 
-        [Test]
-        public async Task Tls_Mutual_CanAuthenticate()
-        {
-            var serverTlsConfig = new EpoxyServerTlsConfig
-            (
-                testHost1Cert,
-                checkCertificateRevocation: false,
-                clientCertificateRequired: true,
-                remoteCertificateValidationCallback: EnsureRootedWithTestCertificate
-            );
-
-            var clientTlsConfig = new EpoxyClientTlsConfig(certificate: testHost2Cert,
-                checkCertificateRevocation: false,
-                remoteCertificateValidationCallback: EnsureRootedWithTestCertificate);
-
-            var transport = new EpoxyTransportBuilder()
-                .SetResolver(ResolveEverythingToLocalhost)
-                .SetServerTlsConfig(serverTlsConfig)
-                .SetClientTlsConfig(clientTlsConfig)
-                .Construct();
-
-            listener = transport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
-            listener.AddService(new DummyTestService());
-            await listener.StartAsync();
-
-            EpoxyConnection clientConnection = await transport.ConnectToAsync("epoxys://bond-test-host1");
-
-            var proxy = new DummyTestProxy<EpoxyConnection>(clientConnection);
-
-            await AssertRequestResponseWorksAsync(proxy);
-
-            await transport.StopAsync();
-        }
-
-        [Test]
-        public async Task Tls_MutualNoClientCert_ConnectToThrows()
-        {
-            var serverTlsConfig = new EpoxyServerTlsConfig
-            (
-                testHost1Cert,
-                checkCertificateRevocation: false,
-                clientCertificateRequired: true,
-                remoteCertificateValidationCallback: EnsureRootedWithTestCertificateSrv
-            );
-
-            var clientTlsConfig = new EpoxyClientTlsConfig(certificate: null,
-                checkCertificateRevocation: false,
-                remoteCertificateValidationCallback: EnsureRootedWithTestCertificateClient);
-
-            var transport = new EpoxyTransportBuilder()
-                .SetResolver(ResolveEverythingToLocalhost)
-                .SetServerTlsConfig(serverTlsConfig)
-                .SetClientTlsConfig(clientTlsConfig)
-                .Construct();
-
-            listener = transport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
-            listener.AddService(new DummyTestService());
-            await listener.StartAsync();
-
-            Assert.Throws<AuthenticationException>(async () => await transport.ConnectToAsync("epoxys://bond-test-host1"));
-
-            await transport.StopAsync();
-        }
-
         private static Task<IPAddress> ResolveEverythingToLocalhost(string host)
         {
             return Task.FromResult(IPAddress.Loopback);
-        }
-
-        bool EnsureRootedWithTestCertificateSrv(
-            object sender,
-            X509Certificate certificate,
-            X509Chain chain,
-            SslPolicyErrors sslPolicyErrors)
-        {
-            return EnsureRootedWithTestCertificate(sender, certificate, chain, sslPolicyErrors);
-        }
-
-        bool EnsureRootedWithTestCertificateClient(
-     object sender,
-     X509Certificate certificate,
-     X509Chain chain,
-     SslPolicyErrors sslPolicyErrors)
-        {
-            return EnsureRootedWithTestCertificate(sender, certificate, chain, sslPolicyErrors);
         }
 
         bool EnsureRootedWithTestCertificate(
