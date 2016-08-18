@@ -238,15 +238,15 @@ sudo make install</code></pre></div>
 <p>In order to generate a solution to build the C++ and Python versions with Visual Studio 2015 run the following commands from the root <code>bond</code> directory:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
 cd build
+<span class="bu">set</span> PreferredToolArchitecture<span class="op">=</span>x64
 cmake <span class="op">-</span>G <span class="st">&quot;Visual Studio 14 2015 Win64&quot;</span> ..</code></pre></div>
+<p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed. (The Bond unit tests are too big to build with 32-bit tools.) This variable works for Visual Studio 2013 or 2015. For Visual Studio 2012 set the following environment variable instead:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> _IsNativeEnvironment<span class="op">=</span>true</code></pre></div>
 <p>Instead of <code>cmake</code> you can also use <code>cmake-gui</code> and specify configuration settings in the UI. This configuration step has to be performed only once. From then on you can use the generated solution <code>build\bond.sln</code> from Visual Studio or build from command line using <code>cmake</code>:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> PreferredToolArchitecture<span class="op">=</span>x64
-cmake <span class="op">--</span>build . <span class="op">--</span>target
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake <span class="op">--</span>build . <span class="op">--</span>target
 cmake <span class="op">--</span>build . <span class="op">--</span>target INSTALL</code></pre></div>
 <p>In order to build and execute the unit tests and examples run:</p>
 <div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake <span class="op">--</span>build . <span class="op">--</span>target check <span class="op">--</span> <span class="op">/</span>maxcpucount:<span class="dv">8</span></code></pre></div>
-<p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed. (The Bond unit tests are too big to build with 32-bit tools.) This variable works for Visual Studio 2013 or 2015. For Visual Studio 2012 set the following environment variable instead:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> _IsNativeEnvironment<span class="op">=</span>true</code></pre></div>
 <h2 id="contributing">Contributing</h2>
 <p>Interested in contributing to Bond? Take a look at our <a href="https://github.com/Microsoft/bond/blob/master/CONTRIBUTING.md">contribution guidelines</a> to get started.</p>
 </div>    
