@@ -189,20 +189,8 @@ Studio 2015 run the following commands from the root `bond` directory:
 
     mkdir build
     cd build
-    cmake -G "Visual Studio 14 2015 Win64" ..
-
-Instead of `cmake` you can also use `cmake-gui` and specify configuration
-settings in the UI. This configuration step has to be performed only once. From
-then on you can use the generated solution `build\bond.sln` from Visual Studio
-or build from command line using `cmake`:
-
     set PreferredToolArchitecture=x64
-    cmake --build . --target
-    cmake --build . --target INSTALL
-
-In order to build and execute the unit tests and examples run:
-
-    cmake --build . --target check -- /maxcpucount:8
+    cmake -G "Visual Studio 14 2015 Win64" ..
 
 Setting `PreferredToolArchitecture=x64` selects the 64-bit toolchain which
 dramatically improves build speed. (The Bond unit tests are too big to build
@@ -210,6 +198,18 @@ with 32-bit tools.) This variable works for Visual Studio 2013 or 2015. For
 Visual Studio 2012 set the following environment variable instead:
 
     set _IsNativeEnvironment=true
+
+Instead of `cmake` you can also use `cmake-gui` and specify configuration
+settings in the UI. This configuration step has to be performed only once. From
+then on you can use the generated solution `build\bond.sln` from Visual Studio
+or build from command line using `cmake`:
+
+    cmake --build . --target
+    cmake --build . --target INSTALL
+
+In order to build and execute the unit tests and examples run:
+
+    cmake --build . --target check -- /maxcpucount:8
 
 ## Contributing
 
