@@ -13,19 +13,22 @@ namespace Bond.Comm.Epoxy
 
     public class EpoxyListener : Listener
     {
-        private EpoxyTransport parentTransport;
-        private System.Net.Sockets.TcpListener listener;
-        private ServiceHost serviceHost;
+        readonly EpoxyTransport parentTransport;
+        readonly TcpListener listener;
+        readonly ServiceHost serviceHost;
 
-        private object connectionsLock = new object();
-        private HashSet<EpoxyConnection> connections;
+        readonly object connectionsLock = new object();
+        readonly HashSet<EpoxyConnection> connections;
 
-        private Task acceptTask;
+        readonly CancellationTokenSource shutdownTokenSource;
 
-        private CancellationTokenSource shutdownTokenSource;
+        public IPEndPoint ListenEndpoint { get; }
+
+        Task acceptTask;
 
         public EpoxyListener(
-            EpoxyTransport parentTransport, IPEndPoint listenEndpoint,
+            EpoxyTransport parentTransport,
+            IPEndPoint listenEndpoint,
             Logger logger, Metrics metrics) : base(logger, metrics)
         {
             this.parentTransport = parentTransport;
@@ -33,14 +36,8 @@ namespace Bond.Comm.Epoxy
             serviceHost = new ServiceHost(logger);
             connections = new HashSet<EpoxyConnection>();
             shutdownTokenSource = new CancellationTokenSource();
-        }
 
-        public IPEndPoint ListenEndpoint
-        {
-            get
-            {
-                return (IPEndPoint)listener.LocalEndpoint;
-            }
+            ListenEndpoint = listenEndpoint;
         }
 
         public override string ToString()
@@ -132,6 +129,7 @@ namespace Bond.Comm.Epoxy
                     //       connection.
                 }
             }
+
             logger.Site().Information("Shutting down connection on {0}", ListenEndpoint);
         }
 
