@@ -29,7 +29,6 @@ namespace UnitTest.Epoxy
         X509Certificate2 testRootCert;
         const string TestRootThumbprint = "29D6B3199BE91CB38D94FD1F2883A9FD2126C91D";
         X509Certificate2 testHost1Cert;
-        X509Certificate2 testHost2Cert;
 
         [TestFixtureSetUp]
         public void Init()
@@ -37,7 +36,6 @@ namespace UnitTest.Epoxy
             const string TestCertificatePassword = "bond";
             testRootCert = new X509Certificate2(@"Epoxy\certs\bond-test-root.pfx", TestCertificatePassword);
             testHost1Cert = new X509Certificate2(@"Epoxy\certs\bond-test-host1.pfx", TestCertificatePassword);
-            testHost2Cert = new X509Certificate2(@"Epoxy\certs\bond-test-host2.pfx", TestCertificatePassword);
         }
 
         [Test]
