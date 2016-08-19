@@ -160,18 +160,20 @@ only used in high constrained environments.
 
 # Connection life cycle #
 
-When a connection is initially established, a
-[two frame handshake](#establishing-a-connection) occurs. Then the endpoints
-[exchange message](#exchanging-messages) with each other.
+At the beginning of an Epoxy connection, an underlying transport connection
+is established. This is either a
+[TCP connection or a TLS connection](#secure-connections). Then, a
+[two frame handshake](#establishing-a-connection) occurs. After that, the
+endpoints [exchange message](#exchanging-messages) with each other.
 
 At any point, one of the endpoints may send a
 [protocol error](#protocol-error). It may then either gracefully or forcibly
-close its TCP connection, ending the Epoxy connection.
+close its underlying connection, ending the Epoxy connection.
 
 When one endpoint has finished sending all its messages, it gracefully
-closes its side of the TCP connection. It should then wait a reasonable
-amount of time for the other side to also gracefully close its its side of
-the TCP connection, ending the Epoxy connection.
+closes its side of the underlying connection. It should then wait a
+reasonable amount of time for the other side to also gracefully close its
+its side of the underlying connection, ending the Epoxy connection.
 
 # Establishing a connection #
 
@@ -205,8 +207,12 @@ to re-handshake.
 The Bond Epoxy wire format has no provisions for communications security.
 
 Implementations of the Epoxy transport are encouraged to offer both plain
-TCP and TLS connections. Configuration of the TLS parameters should be
-deferred to the application.
+TCP and TLS connections. TLS 1.2 or greater must be used. Configuration of
+the other TLS parameters (e.g., allowed cipher suites) should be deferred to
+the application/system administrator.
+
+When using TLS to secure Epoxy, the TLS connection is established before the
+Epoxy [handshake](#establishing-a-connection) occurs.
 
 When applications are given a chance to accept/reject a connection,
 certificate details should be made available to them.

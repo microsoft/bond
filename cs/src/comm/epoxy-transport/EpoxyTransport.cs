@@ -14,6 +14,8 @@ namespace Bond.Comm.Epoxy
     public class EpoxyTransportBuilder : TransportBuilder<EpoxyTransport>
     {
         Func<string, Task<IPAddress>> resolver;
+        EpoxyServerTlsConfig serverTlsConfig;
+        EpoxyClientTlsConfig clientTlsConfig;
 
         /// <summary>
         /// Sets a customer host resolver.
@@ -33,11 +35,49 @@ namespace Bond.Comm.Epoxy
             return this;
         }
 
+        /// <summary>
+        /// Sets the server-side TLS config to use when creating listeners.
+        /// </summary>
+        /// <param name="tlsConfig">
+        /// The server-side config. May be <c>null</c>.
+        /// </param>
+        /// <returns>The builder.</returns>
+        /// <remarks>
+        /// If <c>null</c>, the listeners created will not use TLS to secure
+        /// their communications with clients.
+        /// </remarks>
+        public EpoxyTransportBuilder SetServerTlsConfig(EpoxyServerTlsConfig tlsConfig)
+        {
+            serverTlsConfig = tlsConfig;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the client-side TLS config to use when establishing
+        /// connections.
+        /// </summary>
+        /// <param name="tlsConfig">
+        /// The client-side config. May be <c>null</c>.
+        /// </param>
+        /// <returns>The builder.</returns>
+        /// <remarks>
+        /// If <c>null</c>,
+        /// <see cref="EpoxyClientTlsConfig.Default">EpoxyClientTlsConfig.Default</see>
+        /// will be used for secure connections.
+        /// </remarks>
+        public EpoxyTransportBuilder SetClientTlsConfig(EpoxyClientTlsConfig tlsConfig)
+        {
+            clientTlsConfig = tlsConfig;
+            return this;
+        }
+
         public override EpoxyTransport Construct()
         {
             return new EpoxyTransport(
                 LayerStackProvider,
                 resolver,
+                serverTlsConfig,
+                clientTlsConfig,
                 LogSink,
                 EnableDebugLogs,
                 MetricsSink);
@@ -46,10 +86,13 @@ namespace Bond.Comm.Epoxy
 
     public class EpoxyTransport : Transport<EpoxyConnection, EpoxyListener>
     {
-        public const int DefaultPort = 25188;
+        public const int DefaultInsecurePort = 25188;
+        public const int DefaultSecurePort = 25156;
 
         readonly ILayerStackProvider layerStackProvider;
         readonly Func<string, Task<IPAddress>> resolver;
+        readonly EpoxyServerTlsConfig serverTlsConfig;
+        readonly EpoxyClientTlsConfig clientTlsConfig;
         readonly Logger logger;
         readonly Metrics metrics;
 
@@ -57,31 +100,51 @@ namespace Bond.Comm.Epoxy
         {
             public readonly string Host;
             public readonly int Port;
+            public readonly bool UseTls;
 
-            public Endpoint(string host, int port)
+            public Endpoint(string host, int port, bool useTls)
             {
                 Host = host;
                 Port = port;
+                UseTls = useTls;
             }
 
-            public Endpoint(IPEndPoint ipEndPoint) : this(ipEndPoint.Address.ToString(), ipEndPoint.Port) { }
+            public Endpoint(IPEndPoint ipEndPoint, bool useTls)
+                : this(
+                      ipEndPoint.Address.ToString(),
+                      ipEndPoint.Port,
+                      useTls)
+            {
+            }
 
             public override string ToString()
             {
-                return new UriBuilder("epoxy", Host, Port).Uri.ToString();
+                string scheme = UseTls ? "epoxys" : "epoxy";
+                return new UriBuilder(scheme, Host, Port).Uri.ToString();
             }
         }
 
         public EpoxyTransport(
             ILayerStackProvider layerStackProvider,
             Func<string, Task<IPAddress>> resolver,
+            EpoxyServerTlsConfig serverTlsConfig,
+            EpoxyClientTlsConfig clientTlsConfig,
             ILogSink logSink, bool enableDebugLogs,
             IMetricsSink metricsSink)
         {
             // Layer stack provider may be null
             this.layerStackProvider = layerStackProvider;
 
+            // Always need a resolver, so substitute in default if given null
             this.resolver = resolver ?? ResolveViaDnsAsync;
+
+            // may be null - indicates no TLS for listeners
+            this.serverTlsConfig = serverTlsConfig;
+
+            // Client-side TLS is determined by how the connection is
+            // established, so we substitute in the Default TLS config if we
+            // happened to get null
+            this.clientTlsConfig = clientTlsConfig ?? EpoxyClientTlsConfig.Default;
 
             // Log sink may be null
             logger = new Logger(logSink, enableDebugLogs);
@@ -115,16 +178,27 @@ namespace Bond.Comm.Epoxy
                 return null;
             }
 
+            int schemeDefaultPort;
+            bool useTls;
+
             switch (uri.Scheme)
             {
                 case "epoxy":
+                    schemeDefaultPort = DefaultInsecurePort;
+                    useTls = false;
                     break;
+
+                case "epoxys":
+                    schemeDefaultPort = DefaultSecurePort;
+                    useTls = true;
+                    break;
+
                 default:
-                    logger.Site().Error("given {0}, but URI scheme must be epoxy://", address);
+                    logger.Site().Error("given {0}, but URI scheme must be epoxy:// or epoxys://", address);
                     return null;
             }
 
-            var port = uri.Port != -1 ? uri.Port : DefaultPort;
+            var port = uri.Port != -1 ? uri.Port : schemeDefaultPort;
 
             if (uri.PathAndQuery != "/")
             {
@@ -132,7 +206,7 @@ namespace Bond.Comm.Epoxy
                 return null;
             }
 
-            return new Endpoint(uri.DnsSafeHost, port);
+            return new Endpoint(uri.DnsSafeHost, port, useTls);
         }
 
         public override async Task<EpoxyConnection> ConnectToAsync(string address, CancellationToken ct)
@@ -150,25 +224,14 @@ namespace Bond.Comm.Epoxy
         {
             logger.Site().Information("Connecting to {0}.", endpoint);
 
-            IPAddress ipAddress;
+            Socket socket = await ConnectClientSocketAsync(endpoint);
 
-            try
-            {
-                ipAddress = await resolver(endpoint.Host);
-            }
-            catch (EpoxyFailedToResolveException ex)
-            {
-                logger.Site().Error(ex, "Failed to resolve {0}: {1}", endpoint, ex.Message);
-                throw;
-            }
-
-            var socket = MakeClientSocket(ipAddress);
-            await Task.Factory.FromAsync(
-                socket.BeginConnect, socket.EndConnect, ipAddress, endpoint.Port,
-                state: null);
+            // For MakeClientStreamAsync, null TLS config means insecure
+            EpoxyClientTlsConfig tlsConfig = endpoint.UseTls ? clientTlsConfig : null;
+            var epoxyStream = await EpoxyNetworkStream.MakeClientStreamAsync(endpoint.Host, socket, tlsConfig, logger);
 
             // TODO: keep these in some master collection for shutdown
-            var connection = EpoxyConnection.MakeClientConnection(this, socket, logger, metrics);
+            var connection = EpoxyConnection.MakeClientConnection(this, epoxyStream, logger, metrics);
             await connection.StartAsync();
             return connection;
         }
@@ -185,7 +248,7 @@ namespace Bond.Comm.Epoxy
 
         public EpoxyListener MakeListener(IPEndPoint address)
         {
-            return new EpoxyListener(this, address, logger, metrics);
+            return new EpoxyListener(this, address, serverTlsConfig, logger, metrics);
         }
 
         public override Task StopAsync()
@@ -222,7 +285,7 @@ namespace Bond.Comm.Epoxy
             int port;
             if (portStartIndex == -1)
             {
-                port = DefaultPort;
+                port = DefaultInsecurePort;
             }
             else
             {
@@ -257,9 +320,29 @@ namespace Bond.Comm.Epoxy
             return ipAddresses[0];
         }
 
-        private Socket MakeClientSocket(IPAddress remoteIpAddress)
+        private async Task<Socket> ConnectClientSocketAsync(Endpoint endpoint)
         {
-            return new Socket(remoteIpAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            logger.Site().Information("Resolving to {0}.", endpoint.Host);
+
+            IPAddress ipAddress;
+
+            try
+            {
+                ipAddress = await resolver(endpoint.Host);
+            }
+            catch (EpoxyFailedToResolveException ex)
+            {
+                logger.Site().Error(ex, "Failed to resolve {0}: {1}", endpoint, ex.Message);
+                throw;
+            }
+
+            logger.Site().Debug("Resolved {0} to {1}.", endpoint.Host, ipAddress);
+
+            var socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, ipAddress, endpoint.Port, state: null);
+
+            logger.Site().Information("Established TCP connection to {0} at {1}:{2}", endpoint.Host, ipAddress, endpoint.Port);
+            return socket;
         }
     }
 }

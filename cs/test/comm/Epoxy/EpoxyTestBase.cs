@@ -32,7 +32,7 @@ namespace UnitTest.Epoxy
             EpoxyTransport serviceTransport = new EpoxyTransportBuilder()
                 .SetLayerStackProvider(serviceLayerStackProvider)
                 .Construct();
-            listener = serviceTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultPort));
+            listener = serviceTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultInsecurePort));
             listener.AddService(testService);
             await listener.StartAsync();
 

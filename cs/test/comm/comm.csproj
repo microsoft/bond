@@ -54,6 +54,7 @@
     <Compile Include="Epoxy\EpoxyListenerTests.cs" />
     <Compile Include="Epoxy\EpoxyProtocolTests.cs" />
     <Compile Include="Epoxy\EpoxyTestBase.cs" />
+    <Compile Include="Epoxy\EpoxyTlsConfigTests.cs" />
     <Compile Include="Epoxy\EpoxyTransportTests.cs" />
     <Compile Include="Epoxy\FrameTests.cs" />
     <Compile Include="Epoxy\ResponseMapTests.cs" />
@@ -66,6 +67,15 @@
     <Compile Include="$(IntermediateOutputPath)comm-test_services.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Epoxy\certs\bond-test-host1.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Epoxy\certs\bond-test-host2.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Epoxy\certs\bond-test-root.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

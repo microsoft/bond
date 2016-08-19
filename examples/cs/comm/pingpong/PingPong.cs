@@ -16,7 +16,7 @@ namespace Bond.Examples.PingPong
     public static class PingPong
     {
         private const string PingEndpoint = "epoxy://127.0.0.1";
-        private static readonly string reversePingEndpoint = $"epoxy://127.0.0.1:{EpoxyTransport.DefaultPort + 1}";
+        private static readonly string reversePingEndpoint = $"epoxy://127.0.0.1:{EpoxyTransport.DefaultInsecurePort + 1}";
 
         private static EpoxyConnection pingConnection;
         private static EpoxyConnection reverseConnection;
