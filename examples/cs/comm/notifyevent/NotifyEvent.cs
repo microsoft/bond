@@ -36,7 +36,7 @@ namespace Bond.Examples.NotifyEvent
                 .SetLogSink(new ConsoleLogger())
                 .Construct();
 
-            var assignAPortEndPoint = new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultPort);
+            var assignAPortEndPoint = new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultInsecurePort);
 
             var notifyService = new NotifyEventService();
             EpoxyListener notifyListener = transport.MakeListener(assignAPortEndPoint);

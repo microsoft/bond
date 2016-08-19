@@ -5,6 +5,9 @@ namespace UnitTest.Epoxy
 {
     using System;
     using System.Net;
+    using System.Net.Security;
+    using System.Security.Authentication;
+    using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm;
@@ -23,24 +26,39 @@ namespace UnitTest.Epoxy
         private static readonly IPAddress AnyIpAddress = new IPAddress(new byte[] { 10, 1, 2, 3 });
         private static readonly Message<Bond.Void> EmptyMessage = new Message<Bond.Void>(new Bond.Void());
 
+        X509Certificate2 testRootCert;
+        const string TestRootThumbprint = "29D6B3199BE91CB38D94FD1F2883A9FD2126C91D";
+        X509Certificate2 testHost1Cert;
+
+        [TestFixtureSetUp]
+        public void Init()
+        {
+            const string TestCertificatePassword = "bond";
+            testRootCert = new X509Certificate2(@"Epoxy\certs\bond-test-root.pfx", TestCertificatePassword);
+            testHost1Cert = new X509Certificate2(@"Epoxy\certs\bond-test-host1.pfx", TestCertificatePassword);
+        }
+
         [Test]
         public void DefaultPorts_AreExpected()
         {
-            Assert.AreEqual(25188, EpoxyTransport.DefaultPort);
-        }
+            Assert.AreEqual(25188, EpoxyTransport.DefaultInsecurePort);
+            Assert.AreEqual(25156, EpoxyTransport.DefaultSecurePort);
+    }
 
         [Test]
         public void Endpoint_Ctors()
         {
             var ipEndPoint = new IPEndPoint(IPAddress.Parse(AnyIpAddressString), AnyPort);
 
-            var endpointFromPieces = new EpoxyTransport.Endpoint(AnyIpAddressString, AnyPort);
+            var endpointFromPieces = new EpoxyTransport.Endpoint(AnyIpAddressString, AnyPort, useTls: true);
             Assert.AreEqual(AnyIpAddressString, endpointFromPieces.Host);
             Assert.AreEqual(AnyPort, endpointFromPieces.Port);
+            Assert.True(endpointFromPieces.UseTls);
 
-            var endpointFromIpEndPoint = new EpoxyTransport.Endpoint(ipEndPoint);
+            var endpointFromIpEndPoint = new EpoxyTransport.Endpoint(ipEndPoint, useTls: true);
             Assert.AreEqual(AnyIpAddressString, endpointFromIpEndPoint.Host);
             Assert.AreEqual(AnyPort, endpointFromIpEndPoint.Port);
+            Assert.True(endpointFromIpEndPoint.UseTls);
 
             Assert.AreEqual(endpointFromPieces, endpointFromIpEndPoint);
         }
@@ -56,7 +74,7 @@ namespace UnitTest.Epoxy
         public void ParseStringAddress_ValidIpNoPort_ReturnsIpEndpoint()
         {
             var result = EpoxyTransport.ParseStringAddress(AnyIpAddressString);
-            Assert.AreEqual(new IPEndPoint(AnyIpAddress, EpoxyTransport.DefaultPort), result);
+            Assert.AreEqual(new IPEndPoint(AnyIpAddress, EpoxyTransport.DefaultInsecurePort), result);
         }
 
         [Test]
@@ -94,7 +112,7 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
-        public void Parse_SchemeMustBeEpoxy()
+        public void Parse_SchemeMustBeEpoxyish()
         {
             Assert.Null(EpoxyTransport.Parse("http://127.0.0.1", LoggerTests.BlackHole));
         }
@@ -112,42 +130,66 @@ namespace UnitTest.Epoxy
             var endpoint = EpoxyTransport.Parse("epoxy://127.0.0.1", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("127.0.0.1", endpoint.Value.Host);
-            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+            Assert.AreEqual(EpoxyTransport.DefaultInsecurePort, endpoint.Value.Port);
+            Assert.False(endpoint.Value.UseTls);
 
             endpoint = EpoxyTransport.Parse("epoxy://127.0.0.1/", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("127.0.0.1", endpoint.Value.Host);
-            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+            Assert.AreEqual(EpoxyTransport.DefaultInsecurePort, endpoint.Value.Port);
+            Assert.False(endpoint.Value.UseTls);
 
             endpoint = EpoxyTransport.Parse("epoxy://127.0.0.1:10000", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("127.0.0.1", endpoint.Value.Host);
             Assert.AreEqual(10000, endpoint.Value.Port);
+            Assert.False(endpoint.Value.UseTls);
 
             endpoint = EpoxyTransport.Parse("epoxy://127.0.0.1:10000/", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("127.0.0.1", endpoint.Value.Host);
             Assert.AreEqual(10000, endpoint.Value.Port);
+            Assert.False(endpoint.Value.UseTls);
 
             endpoint = EpoxyTransport.Parse("epoxy://localhost", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("localhost", endpoint.Value.Host);
-            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+            Assert.AreEqual(EpoxyTransport.DefaultInsecurePort, endpoint.Value.Port);
+            Assert.False(endpoint.Value.UseTls);
 
             endpoint = EpoxyTransport.Parse("epoxy://localhost/", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("localhost", endpoint.Value.Host);
-            Assert.AreEqual(EpoxyTransport.DefaultPort, endpoint.Value.Port);
+            Assert.AreEqual(EpoxyTransport.DefaultInsecurePort, endpoint.Value.Port);
+            Assert.False(endpoint.Value.UseTls);
 
             endpoint = EpoxyTransport.Parse("epoxy://localhost:10000", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("localhost", endpoint.Value.Host);
             Assert.AreEqual(10000, endpoint.Value.Port);
+            Assert.False(endpoint.Value.UseTls);
 
             endpoint = EpoxyTransport.Parse("epoxy://localhost:10000/", LoggerTests.BlackHole);
             Assert.NotNull(endpoint);
             Assert.AreEqual("localhost", endpoint.Value.Host);
             Assert.AreEqual(10000, endpoint.Value.Port);
+            Assert.False(endpoint.Value.UseTls);
+        }
+
+        [Test]
+        public void Parse_EpoxysUris()
+        {
+            var endpoint = EpoxyTransport.Parse("epoxys://use-default-secure-port", LoggerTests.BlackHole);
+            Assert.NotNull(endpoint);
+            Assert.AreEqual("use-default-secure-port", endpoint.Value.Host);
+            Assert.AreEqual(EpoxyTransport.DefaultSecurePort, endpoint.Value.Port);
+            Assert.True(endpoint.Value.UseTls);
+
+            endpoint = EpoxyTransport.Parse("epoxys://use-custom-port:10000/", LoggerTests.BlackHole);
+            Assert.NotNull(endpoint);
+            Assert.AreEqual("use-custom-port", endpoint.Value.Host);
+            Assert.AreEqual(10000, endpoint.Value.Port);
+            Assert.True(endpoint.Value.UseTls);
         }
 
         [Test]
@@ -214,17 +256,11 @@ namespace UnitTest.Epoxy
         {
             await SetupTestClientServer<DummyTestService>();
 
-            Func<string, Task<IPAddress>> customResolver = host => Task.FromResult(IPAddress.Loopback);
-            var clientTransport = new EpoxyTransportBuilder().SetResolver(customResolver).Construct();
+            var clientTransport = new EpoxyTransportBuilder().SetResolver(ResolveEverythingToLocalhost).Construct();
             EpoxyConnection clientConnection = await clientTransport.ConnectToAsync("epoxy://resolve-this-to-localhost/");
             var proxy = new DummyTestProxy<EpoxyConnection>(clientConnection);
 
-            var request = new Dummy {int_value = 100};
-            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
-
-            Assert.IsFalse(response.IsError);
-            var result = response.Payload.Deserialize();
-            Assert.AreEqual(101, result.int_value);
+            await AssertRequestResponseWorksAsync(proxy);
 
             await clientTransport.StopAsync();
         }
@@ -274,12 +310,8 @@ namespace UnitTest.Epoxy
             var layerStackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, new TestLayer_CheckPassedValue(1234));
             TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>(layerStackProvider, layerStackProvider);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
-            var request = new Dummy { int_value = 100 };
-            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
 
-            Assert.IsFalse(response.IsError);
-            Assert.AreEqual(101, response.Payload.Deserialize().int_value);
-
+            await AssertRequestResponseWorksAsync(proxy);
             Assert.AreEqual(1, testClientServer.Service.RequestCount);
 
             await testClientServer.ServiceTransport.StopAsync();
@@ -325,25 +357,17 @@ namespace UnitTest.Epoxy
             TestClientServer<DummyTestService> testClientServer =
                 await SetupTestClientServer<DummyTestService>(serverLayerStackProvider, clientLayerStackProvider);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
-            var request = new Dummy { int_value = 100 };
 
             clientLayerProvider.Layers.Clear();
             serverLayerProvider.Layers.Clear();
 
-            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
-            Assert.IsFalse(response.IsError);
-            Assert.AreEqual(101, response.Payload.Deserialize().int_value);
-
+            await AssertRequestResponseWorksAsync(proxy);
             Assert.AreEqual(1, clientLayerProvider.Layers.Count);
             Assert.AreEqual(1, serverLayerProvider.Layers.Count);
             Assert.AreEqual("Client0SendClient0Receive", clientLayerProvider.Layers[0].State);
             Assert.AreEqual("Server0ReceiveServer0Send", serverLayerProvider.Layers[0].State);
 
-            request.int_value = 101;
-            response = await proxy.ReqRspMethodAsync(request);
-            Assert.IsFalse(response.IsError);
-            Assert.AreEqual(102, response.Payload.Deserialize().int_value);
-
+            await AssertRequestResponseWorksAsync(proxy);
             Assert.AreEqual(2, clientLayerProvider.Layers.Count);
             Assert.AreEqual(2, serverLayerProvider.Layers.Count);
             Assert.AreEqual("Client1SendClient1Receive", clientLayerProvider.Layers[1].State);
@@ -511,14 +535,11 @@ namespace UnitTest.Epoxy
             TestClientServer<DummyTestService> testClientServer =
                 await SetupTestClientServer<DummyTestService>(null, clientLayerStackProvider);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
-            var request = new Dummy { int_value = 100 };
 
+            await AssertRequestResponseWorksAsync(proxy);
+
+            var request = new Dummy { int_value = 101 };
             IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
-            Assert.IsFalse(response.IsError);
-            Assert.AreEqual(101, response.Payload.Deserialize().int_value);
-
-            request.int_value = 101;
-            response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Error error = response.Error.Deserialize();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
@@ -536,14 +557,11 @@ namespace UnitTest.Epoxy
             TestClientServer<DummyTestService> testClientServer =
                 await SetupTestClientServer<DummyTestService>(serverLayerStackProvider, null);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
-            var request = new Dummy { int_value = 100 };
 
+            await AssertRequestResponseWorksAsync(proxy);
+
+            var request = new Dummy { int_value = 101 };
             IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
-            Assert.IsFalse(response.IsError);
-            Assert.AreEqual(101, response.Payload.Deserialize().int_value);
-
-            request.int_value = 101;
-            response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Error error = response.Error.Deserialize();
             Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
@@ -607,7 +625,7 @@ namespace UnitTest.Epoxy
         public async Task IPv6Listener_RequestReply_PayloadResponse()
         {
             var transport = new EpoxyTransportBuilder().Construct();
-            listener = transport.MakeListener(new IPEndPoint(IPAddress.IPv6Loopback, EpoxyTransport.DefaultPort));
+            listener = transport.MakeListener(new IPEndPoint(IPAddress.IPv6Loopback, EpoxyTransport.DefaultInsecurePort));
             listener.AddService(new DummyTestService());
             await listener.StartAsync();
 
@@ -620,6 +638,119 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(101, response.Payload.Deserialize().int_value);
 
             await transport.StopAsync();
+        }
+
+        [Test]
+        public async Task Tls_ServerOnly_CanAuthenticate()
+        {
+            var serverTlsConfig = new EpoxyServerTlsConfig(testHost1Cert, checkCertificateRevocation: false);
+
+            var serverTransport = new EpoxyTransportBuilder().SetServerTlsConfig(serverTlsConfig).Construct();
+            listener = serverTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
+            listener.AddService(new DummyTestService());
+            await listener.StartAsync();
+
+            var clientTlsConfig = new EpoxyClientTlsConfig(
+                checkCertificateRevocation: false,
+                remoteCertificateValidationCallback: EnsureRootedWithTestCertificate);
+
+            var clientTransport = new EpoxyTransportBuilder()
+                .SetResolver(ResolveEverythingToLocalhost)
+                .SetClientTlsConfig(clientTlsConfig)
+                .Construct();
+            EpoxyConnection clientConnection = await clientTransport.ConnectToAsync("epoxys://bond-test-host1");
+
+            var proxy = new DummyTestProxy<EpoxyConnection>(clientConnection);
+
+            await AssertRequestResponseWorksAsync(proxy);
+
+            await clientTransport.StopAsync();
+            await serverTransport.StopAsync();
+        }
+
+        [Test]
+        public async Task Tls_ServerBadCert_ConnectionFails()
+        {
+            var serverTlsConfig = new EpoxyServerTlsConfig(testHost1Cert, checkCertificateRevocation: false);
+
+            var serverTransport = new EpoxyTransportBuilder().SetServerTlsConfig(serverTlsConfig).Construct();
+            listener = serverTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
+            listener.AddService(new DummyTestService());
+            await listener.StartAsync();
+
+            var clientTlsConfig = new EpoxyClientTlsConfig(
+                checkCertificateRevocation: false,
+                // Intentionally set this to null so that the client gets an
+                // invalid certificate. If this test passes on your machine,
+                // it's probably because you've installed the Bond test root
+                // certificate as a trusted root. This certificate cannot be
+                // trusted, so you should uninstall it.
+                remoteCertificateValidationCallback: null);
+
+            var clientTransport = new EpoxyTransportBuilder()
+                .SetResolver(ResolveEverythingToLocalhost)
+                .SetClientTlsConfig(clientTlsConfig)
+                .Construct();
+
+            Assert.Throws<AuthenticationException>(async () => await clientTransport.ConnectToAsync("epoxys://bond-test-host1"));
+
+            await clientTransport.StopAsync();
+            await serverTransport.StopAsync();
+        }
+
+        private static Task<IPAddress> ResolveEverythingToLocalhost(string host)
+        {
+            return Task.FromResult(IPAddress.Loopback);
+        }
+
+        bool EnsureRootedWithTestCertificate(
+            object sender,
+            X509Certificate certificate,
+            X509Chain chain,
+            SslPolicyErrors sslPolicyErrors)
+        {
+            if (sslPolicyErrors == SslPolicyErrors.None)
+            {
+                // The machine's policy allowed the certificate. Don't second
+                // guess that policy.
+                return true;
+            }
+
+            // No certificate to validate, so it isn't rooted properly.
+            if (certificate == null)
+            {
+                return false;
+            }
+
+            // Otherwise, we validate that the certificate chain is valid and
+            // rooted with the expected root.
+            var customChain = new X509Chain();
+            customChain.ChainPolicy.ExtraStore.Add(testRootCert);
+            customChain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+
+            if (customChain.Build(new X509Certificate2(certificate)))
+            {
+                return true;
+            }
+
+            if (customChain.ChainStatus.Length > 1
+                || customChain.ChainStatus[0].Status != X509ChainStatusFlags.UntrustedRoot)
+            {
+                // Some error other than untrusted root, which we were
+                // expecting has occured. Fail this request.
+                return false;
+            }
+
+            // Now, require exact thumbprint match for expected root certificate.
+            X509ChainElement root = customChain.ChainElements[customChain.ChainElements.Count - 1];
+            return root.Certificate.Thumbprint == TestRootThumbprint;
+        }
+
+        async Task AssertRequestResponseWorksAsync(DummyTestProxy<EpoxyConnection> proxy)
+        {
+            IMessage<Dummy> response = await proxy.ReqRspMethodAsync(new Dummy { int_value = 100 });
+            Assert.IsFalse(response.IsError);
+            Assert.AreEqual(101, response.Payload.Deserialize().int_value);
         }
     }
 }

@@ -168,6 +168,11 @@ namespace Bond.Comm
 
         public Listener(Logger logger, Metrics metrics)
         {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
             this.logger = logger;
             this.metrics = metrics;
         }
