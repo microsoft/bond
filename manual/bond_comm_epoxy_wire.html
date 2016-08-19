@@ -299,9 +299,9 @@
 <p>Encountering an unknown framelet indicates that the handshake <a href="#establishing-a-connection">connection handshake</a> has gone catastrophically wrong, as newer features can only be used after both endpoints have agreed to them.</p>
 <p>This complicates the implementation and deployment of Epoxy transport proxies (not to be confused with the generated client-side proxy objects), but in our experience, transport-specific proxies are extremely rare and are only used in high constrained environments.</p>
 <h1 id="connection-life-cycle">Connection life cycle</h1>
-<p>At the beginning of an Epoxy connection, an underlying transport connection is established. This is either a <a href="#secure-connections">TCP connection or a TLS connection</a>. Then, a <a href="#establishing-a-connection">two frame handshake</a> occurs. After that, the endpoints <a href="#exchanging-messages">exchange message</a> with each other.</p>
-<p>At any point, one of the endpoints may send a <a href="#protocol-error">protocol error</a>. It may then either gracefully or forcibly close its underlying connection, ending the Epoxy connection.</p>
-<p>When one endpoint has finished sending all its messages, it gracefully closes its side of the underlying connection. It should then wait a reasonable amount of time for the other side to also gracefully close its its side of the underlying connection, ending the Epoxy connection.</p>
+<p>When a connection is initially established, a <a href="#establishing-a-connection">two frame handshake</a> occurs. Then the endpoints <a href="#exchanging-messages">exchange message</a> with each other.</p>
+<p>At any point, one of the endpoints may send a <a href="#protocol-error">protocol error</a>. It may then either gracefully or forcibly close its TCP connection, ending the Epoxy connection.</p>
+<p>When one endpoint has finished sending all its messages, it gracefully closes its side of the TCP connection. It should then wait a reasonable amount of time for the other side to also gracefully close its its side of the TCP connection, ending the Epoxy connection.</p>
 <h1 id="establishing-a-connection">Establishing a connection</h1>
 <p>When a connection is initially established, a two frame handshake occurs.</p>
 <p>The client sends a frame consisting of only one <code>EpoxyConfig</code> framelet with the <a href="#epoxy-config-structure">various features it is prepared to use</a>. The client then waits for a corresponding frame to be sent by the server.</p>
@@ -310,8 +310,7 @@
 <p>If the client does not agree with the choices that the server made or if the server committed a protocol violation (e.g., selecting an option not proposed by the client), it may send a frame containing only a <code>ProtocolError</code>framelet. Then it must close the connection. There is no way to re-handshake.</p>
 <h2 id="secure-connections">Secure connections</h2>
 <p>The Bond Epoxy wire format has no provisions for communications security.</p>
-<p>Implementations of the Epoxy transport are encouraged to offer both plain TCP and TLS connections. TLS 1.2 or greater must be used. Configuration of the other TLS parameters (e.g., allowed cypher suites) should be deferred to the application/system administrator.</p>
-<p>When using TLS to secure Epoxy, the TLS connection is established before the Epoxy <a href="#establishing-a-connection">handshake</a> occurs.</p>
+<p>Implementations of the Epoxy transport are encouraged to offer both plain TCP and TLS connections. Configuration of the TLS parameters should be deferred to the application.</p>
 <p>When applications are given a chance to accept/reject a connection, certificate details should be made available to them.</p>
 <p>Authorization is an application-level problem, and applications will need to incorporate their authorization requirements into their service definitions. Layer data is a good place to store information that is used across all services and methods on the same connection.</p>
 <h2 id="recommended-port">Recommended port</h2>
