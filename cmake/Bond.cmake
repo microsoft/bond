@@ -46,11 +46,17 @@ function (add_bond_codegen)
             list(APPEND outputs "${outputDir}/${name}_enum.h")
         endif()
     endforeach()
+    # if BOND_GBC_PATH is not set we must add a dependency on the "gbc" target to build it
+    if (NOT BOND_GBC_PATH)
+        set(gbc "gbc")
+    elseif()
+        set(gbc "")
+    endif()
     add_custom_command(
         OUTPUT ${outputs}
         COMMAND ${GBC_EXECUTABLE} c++ ${options} ${inputs}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DEPENDS ${inputs} gbc ${GBC_EXECUTABLE})
+        DEPENDS ${inputs} ${gbc} ${GBC_EXECUTABLE})
     if (arg_TARGET)
         add_custom_target (${arg_TARGET}
             DEPENDS ${outputs}
