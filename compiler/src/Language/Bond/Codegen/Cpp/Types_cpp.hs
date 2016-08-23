@@ -31,6 +31,10 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
         if null declParams then CPP.schemaMetadata cpp s else mempty
 
     -- global variables for enum name/value conversions
+    --
+    -- ToString is intentionally not implemented in terms of FromEnum, as
+    -- ToString returns a reference to the name stored in the map. FromEnum
+    -- copies this name into the output paramater.
     statics Enum {..} = [lt|
     namespace _bond_enumerators
     {
@@ -58,15 +62,9 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 
         void FromString(const std::string& name, enum #{declName}& value)
         {
-            std::map<std::string, enum #{declName}>::const_iterator it =
-                _name_to_value_#{declName}.find(name);
-
-            if (_name_to_value_#{declName}.end() == it)
+            if (!ToEnum(value, name))
                 bond::InvalidEnumValueException(name.c_str(), "#{declName}");
-
-            value = it->second;
         }
-
     } // namespace #{declName}
     } // namespace _bond_enumerators|]
       where

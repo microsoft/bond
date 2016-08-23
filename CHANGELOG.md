@@ -11,6 +11,21 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased ##
+
+* `gbc` & compiler library: minor bump needed
+* IDL core version: TBD
+* IDL comm version: TBD
+* C++ version: minor bump needed
+* C# NuGet version: TBD
+* C# Comm NuGet version: TBD
+
+### C++ ###
+* Generated enum types now have a `FromEnum` method that can be used to
+  convert from an enum value to a string. Now generated enum types have all
+  four of `ToEnum`, `FromEnum`, `ToString`, and `FromString`. (The `...Enum`
+  variants return false on failure, while the `...String` variants throw.)
+
 ## 4.3.0: 2016-08-23 ##
 
 * `gbc` & compiler library: 0.5.0.0
