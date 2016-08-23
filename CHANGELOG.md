@@ -77,12 +77,15 @@ different versioning scheme, following the Haskell community's
 
 ### C# Comm ###
 
-* Logging interface revamped to eliminate boilerplate code and to handle
+* Logging interface revamped to make it non-static, eliminate boilerplate code, and to handle
   logging-related exceptions gracefully.
-  * `LogHandler` renamed to `ILogHandler`.
-  * `Log.DropBelow` added to automatically ignore some levels of logging.
-  * The `ILogHandle.Handle` method is now provided a pre-formatted string
-    instead of a format string and its arguments.
+  * `LogHandler` renamed to `ILogSink`.
+  * `TransportBuilder.SetLogSink` added to associate a logger with a
+    transport.
+  * `TransportBuilder.EnableDebugLogging` added to control whether debug
+    logs are emitted or not.
+  * The `ILogSink.Log` method is now provided a pre-formatted string instead
+    of a format string and its arguments.
 * Transport is now parameterized with Connection and Listener
   implementations. This eliminates the need to cast the results of
   `transport.ConnectToAsync()` and `transport.MakeListener()` to
