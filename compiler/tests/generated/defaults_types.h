@@ -84,6 +84,20 @@ namespace tests
 
             return true;
         }
+
+        inline
+        bool FromEnum(std::string& name, enum EnumType1 value)
+        {
+            std::map<enum EnumType1, std::string>::const_iterator it =
+                _value_to_name_EnumType1.find(value);
+
+            if (_value_to_name_EnumType1.end() == it)
+                return false;
+
+            name = it->second;
+
+            return true;
+        }
     } // namespace EnumType1
     } // namespace _bond_enumerators
 

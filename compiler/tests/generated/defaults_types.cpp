@@ -41,15 +41,9 @@ namespace tests
 
         void FromString(const std::string& name, enum EnumType1& value)
         {
-            std::map<std::string, enum EnumType1>::const_iterator it =
-                _name_to_value_EnumType1.find(name);
-
-            if (_name_to_value_EnumType1.end() == it)
+            if (!ToEnum(value, name))
                 bond::InvalidEnumValueException(name.c_str(), "EnumType1");
-
-            value = it->second;
         }
-
     } // namespace EnumType1
     } // namespace _bond_enumerators
 

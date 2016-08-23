@@ -373,6 +373,20 @@ namespace std
 
             return true;
         }
+
+        inline
+        bool FromEnum(std::string& name, enum #{declName} value)
+        {
+            std::map<enum #{declName}, std::string>::const_iterator it =
+                _value_to_name_#{declName}.find(value);
+
+            if (_value_to_name_#{declName}.end() == it)
+                return false;
+
+            name = it->second;
+
+            return true;
+        }
     } // namespace #{declName}
     } // namespace _bond_enumerators
 
