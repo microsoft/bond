@@ -8,6 +8,8 @@ namespace UnitTest.Epoxy
 {
     using Bond.Comm;
     using Bond.Comm.Epoxy;
+    using Bond.IO.Safe;
+    using Bond.Protocols;
     using NUnit.Framework;
     using UnitTest.Comm;
     using UnitTest.Interfaces;
@@ -18,11 +20,10 @@ namespace UnitTest.Epoxy
         private const uint GoodRequestId = 1;
         private const uint GoodResponseId = 1;
         private const string GoodMethod = "ShaveYaks";
-        private static readonly Error goodPayload = new Error();
-        private static readonly IMessage<Error> meaninglessMessage = new Message<Error>(goodPayload);
-        private static readonly ProtocolErrorCode meaninglessErrorCode = ProtocolErrorCode.GENERIC_ERROR;
+        private const ProtocolErrorCode MeaninglessErrorCode = ProtocolErrorCode.GENERIC_ERROR;
+        private static readonly IMessage<Dummy> meaninglessMessage = new Message<Dummy>(new Dummy());
         private static readonly ArraySegment<byte> emptyLayerData = new ArraySegment<byte>();
-        private static readonly ArraySegment<byte> nonEmptyLayerData = new ArraySegment<byte>(new byte[] { 3 });
+        private static ArraySegment<byte> goodLayerData;
 
         private static readonly EpoxyHeaders goodRequestHeaders = new EpoxyHeaders
         {
@@ -56,7 +57,6 @@ namespace UnitTest.Epoxy
         {
             int_value = 0x1234
         };
-        private static readonly Bond.IBonded goodLayerData = new Bond.Bonded<Dummy>(dummyObject);
 
         private static Frame goodRequestFrame;
         private static Frame goodRequestLayerDataFrame;
@@ -77,11 +77,19 @@ namespace UnitTest.Epoxy
         [TestFixtureSetUp]
         public static void CreateFrames()
         {
+            // Set up the non-empty layer data we'll use.
+            Bond.IBonded goodLayerObject = new Bond.Bonded<Dummy>(dummyObject);
+            var outputBuffer = new OutputBuffer();
+            var compactWriter = new CompactBinaryWriter<OutputBuffer>(outputBuffer);
+            compactWriter.WriteVersion();
+            goodLayerObject.Serialize(compactWriter);
+            goodLayerData = outputBuffer.Data;
+
             // Good frames, from which we can pull good framelets to build bad frames.
             goodRequestFrame = EpoxyConnection.MessageToFrame(
                 GoodRequestId, GoodMethod, PayloadType.Request, meaninglessMessage, null, LoggerTests.BlackHole);
             goodRequestLayerDataFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, PayloadType.Request, meaninglessMessage, goodLayerData, LoggerTests.BlackHole);
+                GoodRequestId, GoodMethod, PayloadType.Request, meaninglessMessage, goodLayerObject, LoggerTests.BlackHole);
 
             goodResponseFrame = EpoxyConnection.MessageToFrame(
                 GoodResponseId, GoodMethod, PayloadType.Response, meaninglessMessage, null, LoggerTests.BlackHole);
@@ -89,7 +97,7 @@ namespace UnitTest.Epoxy
                 GoodRequestId, GoodMethod, PayloadType.Event, meaninglessMessage, null, LoggerTests.BlackHole);
 
             configFrame = EpoxyConnection.MakeConfigFrame(LoggerTests.BlackHole);
-            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null, LoggerTests.BlackHole);
+            protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(MeaninglessErrorCode, null, LoggerTests.BlackHole);
 
             var goodFrameletCount = goodRequestFrame.Count;
 
@@ -107,7 +115,7 @@ namespace UnitTest.Epoxy
                 doubleHeadersRequestFrame.Add(goodRequestFrame.Framelets[i]);
             }
 
-            headersConfigRequestFrame = new Frame(1, LoggerTests.BlackHole);
+            headersConfigRequestFrame = new Frame(2, LoggerTests.BlackHole);
             headersConfigRequestFrame.Add(goodRequestFrame.Framelets[0]);
             headersConfigRequestFrame.Add(configFrame.Framelets[0]);
 
@@ -124,7 +132,7 @@ namespace UnitTest.Epoxy
                 backwardsRequestFrame.Add(framelet);
             }
 
-            doubleProtocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(meaninglessErrorCode, null, LoggerTests.BlackHole);
+            doubleProtocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(MeaninglessErrorCode, null, LoggerTests.BlackHole);
             doubleProtocolErrorFrame.Add(doubleProtocolErrorFrame.Framelets[0]);
 
             configFrameExtra = EpoxyConnection.MakeConfigFrame(LoggerTests.BlackHole);
@@ -240,7 +248,7 @@ namespace UnitTest.Epoxy
                 EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, goodRequestLayerDataFrame, goodRequestHeaders,
                 ref layerData, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectPayload, after);
-            Assert.NotNull(layerData.Array);
+            CollectionAssert.AreEqual(goodLayerData, layerData);
             Assert.Null(errorCode);
         }
 
@@ -286,7 +294,7 @@ namespace UnitTest.Epoxy
             Assert.Null(errorCode);
 
             after = EpoxyProtocol.TransitionExpectPayload(
-                EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestLayerDataFrame, goodRequestHeaders, nonEmptyLayerData,
+                EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestLayerDataFrame, goodRequestHeaders, goodLayerData,
                 ref payload, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectEndOfFrame, after);
             Assert.NotNull(payload.Array);
@@ -335,7 +343,7 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(ProtocolErrorCode.MALFORMED_DATA, errorCode);
 
             after = EpoxyProtocol.TransitionExpectPayload(
-                EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestFrame, goodRequestHeaders, nonEmptyLayerData,
+                EpoxyProtocol.ClassifyState.ExpectPayload, goodRequestFrame, goodRequestHeaders, goodLayerData,
                 ref payload, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.MalformedFrame, after);
             Assert.Null(payload.Array);
@@ -353,7 +361,7 @@ namespace UnitTest.Epoxy
             Assert.Null(errorCode);
 
             after = EpoxyProtocol.TransitionExpectEndOfFrame(
-                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, goodRequestLayerDataFrame, nonEmptyLayerData, ref errorCode, LoggerTests.BlackHole);
+                EpoxyProtocol.ClassifyState.ExpectEndOfFrame, goodRequestLayerDataFrame, goodLayerData, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.FrameComplete, after);
             Assert.Null(errorCode);
         }
@@ -504,7 +512,7 @@ namespace UnitTest.Epoxy
             var after = EpoxyProtocol.TransitionExpectProtocolError(
                 EpoxyProtocol.ClassifyState.ExpectProtocolError, protocolErrorFrame, ref error, ref disposition, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ClassifiedValidFrame, after);
-            Assert.AreEqual(meaninglessErrorCode, error.error_code);
+            Assert.AreEqual(MeaninglessErrorCode, error.error_code);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.HandleProtocolError, disposition);
         }
 
@@ -558,8 +566,7 @@ namespace UnitTest.Epoxy
             var requestLayerResult = EpoxyProtocol.Classify(goodRequestLayerDataFrame, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.FrameDisposition.DeliverRequestToService, requestLayerResult.Disposition);
             AssertHeadersEqual(goodRequestHeaders, requestLayerResult.Headers);
-            // FIXME: Fast way to check real equality with goodLayerData?
-            Assert.NotNull(requestLayerResult.LayerData.Array);
+            CollectionAssert.AreEqual(goodLayerData, requestLayerResult.LayerData);
             Assert.AreEqual(goodRequestLayerDataFrame.Framelets[goodRequestLayerDataFrame.Count - 1].Contents, requestLayerResult.Payload);
             Assert.Null(requestLayerResult.Error);
             Assert.Null(requestLayerResult.ErrorCode);
@@ -593,7 +600,7 @@ namespace UnitTest.Epoxy
             Assert.Null(protocolErrorResult.Headers);
             Assert.Null(protocolErrorResult.LayerData.Array);
             Assert.Null(protocolErrorResult.Payload.Array);
-            Assert.AreEqual(meaninglessErrorCode, protocolErrorResult.Error.error_code);
+            Assert.AreEqual(MeaninglessErrorCode, protocolErrorResult.Error.error_code);
             Assert.Null(protocolErrorResult.ErrorCode);
 
             var doubleProtocolErrorResult = EpoxyProtocol.Classify(doubleProtocolErrorFrame, LoggerTests.BlackHole);
