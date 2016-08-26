@@ -216,14 +216,6 @@ namespace UnitTest.Interfaces
         }
 
         [Test]
-        public void FromError_ZeroErrorCode_Throws()
-        {
-            var zeroErrorCode = new Error {error_code = 0};
-            Assert.Throws<ArgumentException>(() => Message.FromError<SomePayload>(zeroErrorCode));
-            Assert.Throws<ArgumentException>(() => Message.FromError(zeroErrorCode));
-        }
-
-        [Test]
         public void Message_ConvertToMessageT_Works()
         {
             IBonded typelessBonded = new Bonded<SomeDerivedPayload>(AnyDerivedPayload);

@@ -9,7 +9,7 @@ struct EpoxyConfig
 {
 }
 
-enum PayloadType
+enum EpoxyMessageType
 {
     Request = 1;
     Response = 2;
@@ -19,9 +19,8 @@ enum PayloadType
 struct EpoxyHeaders
 {
     0: uint64 conversation_id;
-    1: required PayloadType payload_type = Request;
+    1: required EpoxyMessageType message_type = Request;
     2: string method_name;
-    3: int32 error_code;
 }
 
 enum ProtocolErrorCode

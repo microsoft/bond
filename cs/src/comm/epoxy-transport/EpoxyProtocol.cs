@@ -35,7 +35,7 @@ namespace Bond.Comm.Epoxy
             /// The frame was a valid Event.
             /// </summary>
             DeliverEventToService,
-
+            
             /// <summary>
             /// The frame is a valid Config frame and needs to be handled.
             /// </summary>
@@ -55,6 +55,21 @@ namespace Bond.Comm.Epoxy
             /// The caller should silently close the connection.
             /// </summary>
             HangUp
+        }
+
+        /// <summary>
+        /// Struct to hold message data and indicate whether it is an Error or not.
+        /// </summary>
+        internal struct MessageData
+        {
+            public MessageData(bool isError, ArraySegment<byte> data)
+            {
+                IsError = isError;
+                Data = data;
+            }
+
+            public bool IsError { get; }
+            public ArraySegment<byte> Data { get; }
         }
 
         /// <summary>
@@ -83,10 +98,11 @@ namespace Bond.Comm.Epoxy
             public ArraySegment<byte> LayerData;
 
             /// <summary>
-            /// The payload from the <see cref="Frame"/> given to <see cref="Classify"/>. If <c>Classify</c> was unable
-            /// to find a payload or returned before it reached the payload, <c>Payload.Array</c> will be <c>null</c>.
+            /// The representation of the message from the <see cref="Frame"/> given to
+            /// <see cref="Classify"/>. If <c>Classify</c> was unable to find a message or returned
+            /// before it reached the message, <c>MessageData.Data.Array</c> will be <c>null</c>.
             /// </summary>
-            public ArraySegment<byte> Payload;
+            public MessageData MessageData;
 
             /// <summary>
             /// If the <see cref="Frame"/> given to <see cref="Classify"/> contained a <see cref="ProtocolError"/>,
@@ -121,13 +137,14 @@ namespace Bond.Comm.Epoxy
             // Does the frame have (optional) LayerData after the EpoxyHeaders?
             ExpectOptionalLayerData,
 
-            // Does the frame have a Payload immediately after the EpoxyHeaders (or LayerData if it was present)?
-            ExpectPayload,
+            // Does the frame have message data immediately after the EpoxyHeaders (or LayerData if
+            // it was present)?
+            ExpectMessageData,
 
             // The frame has all required framelets. Does it have any trailing ones?
             ExpectEndOfFrame,
 
-            // Do we know what to do with frames with this PayloadType?
+            // Do we know what to do with frames with this EpoxyMessageType?
             FrameComplete,
 
             // There are no problems with this frame. What should we do with it?
@@ -185,7 +202,7 @@ namespace Bond.Comm.Epoxy
             var disposition = FrameDisposition.Indeterminate;
             EpoxyHeaders headers = null;
             var layerData = new ArraySegment<byte>();
-            var payload = new ArraySegment<byte>();
+            var messageData = default(MessageData);
             ProtocolError error = null;
             ProtocolErrorCode? errorCode = null;
             uint transitions = 0;
@@ -214,8 +231,8 @@ namespace Bond.Comm.Epoxy
                         state = TransitionExpectOptionalLayerData(state, frame, headers, ref layerData, ref errorCode, logger);
                         continue;
 
-                    case ClassifyState.ExpectPayload:
-                        state = TransitionExpectPayload(state, frame, headers, layerData, ref payload, ref errorCode, logger);
+                    case ClassifyState.ExpectMessageData:
+                        state = TransitionExpectMessageData(state, frame, headers, layerData, ref messageData, ref errorCode, logger);
                         continue;
 
                     case ClassifyState.ExpectEndOfFrame:
@@ -250,7 +267,7 @@ namespace Bond.Comm.Epoxy
                             Disposition = disposition,
                             Headers = headers,
                             LayerData = layerData,
-                            Payload = payload,
+                            MessageData = messageData,
                             Error = error
                         };
 
@@ -349,8 +366,8 @@ namespace Bond.Comm.Epoxy
                     return ClassifyState.MalformedFrame;
             }
 
-            logger.Site().Debug("Deserialized {0} with conversation ID {1} and payload type {2}.",
-                nameof(EpoxyHeaders), headers.conversation_id, headers.payload_type);
+            logger.Site().Debug("Deserialized {0} with conversation ID {1} and message type {2}.",
+                nameof(EpoxyHeaders), headers.conversation_id, headers.message_type);
             return ClassifyState.ExpectOptionalLayerData;
         }
 
@@ -368,7 +385,7 @@ namespace Bond.Comm.Epoxy
 
             if (frame.Count < 2)
             {
-                logger.Site().Error("Frame had headers but no payload.");
+                logger.Site().Error("Frame had headers but no message.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -381,14 +398,14 @@ namespace Bond.Comm.Epoxy
                     layerData.Count, headers.conversation_id);
             }
 
-            return ClassifyState.ExpectPayload;
+            return ClassifyState.ExpectMessageData;
         }
 
-        internal static ClassifyState TransitionExpectPayload(
+        internal static ClassifyState TransitionExpectMessageData(
             ClassifyState state, Frame frame, EpoxyHeaders headers, ArraySegment<byte> layerData,
-            ref ArraySegment<byte> payload, ref ProtocolErrorCode? errorCode, Logger logger)
+            ref MessageData messageData, ref ProtocolErrorCode? errorCode, Logger logger)
         {
-            Debug.Assert(state == ClassifyState.ExpectPayload);
+            Debug.Assert(state == ClassifyState.ExpectMessageData);
             Debug.Assert(frame != null);
 
             if (headers == null)
@@ -396,25 +413,28 @@ namespace Bond.Comm.Epoxy
                 return ClassifyState.InternalStateError;
             }
 
-            int payloadDataIndex = (layerData.Array == null ? 1 : 2);
-            if (payloadDataIndex >= frame.Count)
+            int messageDataIndex = (layerData.Array == null ? 1 : 2);
+            if (messageDataIndex >= frame.Count)
             {
-                logger.Site().Error("Frame had headers but no payload.");
+                logger.Site().Error("Frame had headers but no message.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
-            var framelet = frame.Framelets[payloadDataIndex];
-            if (framelet.Type != FrameletType.PayloadData)
+            var framelet = frame.Framelets[messageDataIndex];
+            if (framelet.Type != FrameletType.PayloadData && framelet.Type != FrameletType.ErrorData)
             {
-                logger.Site().Error("Frame had headers but no payload.");
+                logger.Site().Error("Frame had headers but no message framelet. Unexpected framelet type {0}", (int)framelet.Type);
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
 
-            payload = framelet.Contents;
-            logger.Site().Debug("Extracted {0}-byte payload in conversation ID {1}.",
-                payload.Count, headers.conversation_id);
+            messageData = new MessageData(
+                isError: framelet.Type == FrameletType.ErrorData,
+                data: framelet.Contents);
+
+            logger.Site().Debug("Extracted {0}-byte message in conversation ID {1}.",
+                messageData.Data.Count, headers.conversation_id);
             return ClassifyState.ExpectEndOfFrame;
         }
 
@@ -449,15 +469,15 @@ namespace Bond.Comm.Epoxy
                 return ClassifyState.InternalStateError;
             }
 
-            switch (headers.payload_type)
+            switch (headers.message_type)
             {
-                case PayloadType.Request:
-                case PayloadType.Response:
-                case PayloadType.Event:
+                case EpoxyMessageType.Request:
+                case EpoxyMessageType.Response:
+                case EpoxyMessageType.Event:
                     return ClassifyState.ValidFrame;
 
                 default:
-                    logger.Site().Warning("Received unrecognized payload type {0}.", headers.payload_type);
+                    logger.Site().Warning("Received unrecognized message type {0}.", headers.message_type);
                     errorCode = ProtocolErrorCode.NOT_SUPPORTED;
                     return ClassifyState.MalformedFrame;
             }
@@ -471,17 +491,17 @@ namespace Bond.Comm.Epoxy
                 return ClassifyState.InternalStateError;
             }
 
-            switch (headers.payload_type)
+            switch (headers.message_type)
             {
-                case PayloadType.Request:
+                case EpoxyMessageType.Request:
                     disposition = FrameDisposition.DeliverRequestToService;
                     return ClassifyState.ClassifiedValidFrame;
 
-                case PayloadType.Response:
+                case EpoxyMessageType.Response:
                     disposition = FrameDisposition.DeliverResponseToProxy;
                     return ClassifyState.ClassifiedValidFrame;
 
-                case PayloadType.Event:
+                case EpoxyMessageType.Event:
                     disposition = FrameDisposition.DeliverEventToService;
                     return ClassifyState.ClassifiedValidFrame;
 

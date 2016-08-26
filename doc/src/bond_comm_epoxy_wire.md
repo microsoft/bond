@@ -28,14 +28,14 @@ Instead of re-implementing backward/forward compatible serialization
 schemes, it uses Bond. For any structures that are used as part of the
 protocol itself, the [Fast Binary](bond_cpp.html#fast-binary) protocol
 version 1 is used to serialize them, as this protocol is simple to
-implement. Payloads are marshalled as Compact Binary v1, as this protocol
-provides a good trade-off between payload size and
+implement. Payloads and errors are marshalled as Compact Binary v1, as this
+protocol provides a good trade-off between size and
 serialization/deserialization time.
 
 "Interesting" structures need to be able to be allocated and
 serialized/deserialized independently. For example, a Bond Epoxy transport
 proxy that only wants to inspect headers should not be required to
-deserialize entire payloads.
+deserialize entire messages.
 
 # Conventions #
 
@@ -61,8 +61,11 @@ The following hold in this document, unless otherwise specified.
 * _**initiator**_: the entity that starts a conversation
 * _**layer data**_: opaque blob of data used by Bond Communications' layers
   facility
+* _**message**_: either _payload data_ or _error data_
 * _**payload data**_: opaque blob of data that is the contents of the
-  message being sent
+  message being sent when the message contains the user's payload type
+* _**error data**_: opaque blob of data that is the contents of the message
+  being sent when the message contains an error
 * _**receiver**_: the endpoint that is reading _frames_, regardless of the
   higher-level messaging pattern being employed
 * _**sender**_: the endpoint originating _frames_, regardless of the
@@ -133,8 +136,9 @@ Each framelet has a unique type ID, regardless of which frame its is permitted t
 |----------|---------|--------------|----------|----------|----------|
 | `EpoxyConfig` | 0x47 0x43 ("GC") | Config | Yes | Fast Binary v1 serialized | [`EpoxyConfig`](#epoxy-config-structure) structure |
 | `EpoxyHeaders` | 0x52 0x48 ("RH") | Message | Yes | Fast Binary v1 serialized | [`EpoxyHeaders`](#epoxy-headers-structure) structure |
+| `ErrorData` | 0x44 0x45 ("DE") | Message | One of DP or DE | Compact Binary v1 marshalled | Message error data |
 | `LayerData` | 0x59 0x4C ("YL") | Message | No | Compact Binary v1 marshalled | Auxiliary data used by Bond Communications layers stack |
-| `PayloadData` | 0x54 0x44 ("TD") | Message | Yes | Compact Binary v1 marshalled | Actual message payload |
+| `PayloadData` | 0x44 0x50 ("DP") | Message | One of DP or DE | Compact Binary v1 marshalled | Message payload data |
 | `ProtocolError` | 0x52 0x45 ("RE") | Error | Yes | Fast Binary v1 serialized | [`ProtocolError`](#protocol-error) structure |
 
 _Note_: The framelet type IDs were assigned such that they are mnemonic
@@ -236,7 +240,7 @@ an `EpoxyHeaders` framelet. The required order of the framelets is:
 
 1. `EpoxyHeaders`
 1. optional `LayerData`
-1. `PayloadData`
+1. one of `PayloadData` or `ErrorData`
 
 This order allows for clients and servers to start processing the frame as
 it arrives.
@@ -278,7 +282,7 @@ various messaging patterns.
 
     namespace bond.comm.epoxy;
 
-    enum PayloadType
+    enum EpoxyMessageType
     {
         Request = 1;
         Response = 2;
@@ -288,9 +292,8 @@ various messaging patterns.
     struct EpoxyHeaders
     {
         0: uint64 conversation_id;
-        1: required PayloadType payload_type;
+        1: required EpoxyMessageType message_type;
         2: string method_name;
-        3: int32 error_code;
     }
 
 ### Conversation ID ###
@@ -355,32 +358,30 @@ ASCII 0x2E), as is the service name from the method name.
 
 Example: `root_namespace.child_namespace.some_service.some_method`
 
-### Payload type ###
+### Message type ###
 
-The payload type along with the [error code](#error-code) indicates what
-kind of message the `PayloadData` framelet contains.
+The `EpoxyMessageType` indicates what kind of message pattern is being
+employed:
 
-* `Request`: initiates a conversation that expects a response. The
-  `PayloadData` is a Bond structure of the expected request type for the
-  method being invoked.
+* `Request`: initiates a conversation that expects a response. The message
+  contains a `PayloadData` framelet that is a Bond structure of the expected
+  request type for the method being invoked.
 * `Response`: completes the conversation with a response to a previous
-  request. Based on the [`error_code`](#error-code) field, `PayloadData` is
-  either a Bond structure of the expected response type for the method
-  invoked or error data.
+  request. The message either contains a `PayloadData` framelet with the
+  serialized form of the expected Bond response type for the method invoked
+  or it contains an `ErrorData` framelet with a a Bond structure derived
+  from `Error`.
 * `Event`: initiates and completes a one-way, best-effort conversation. No
-  response is allowed, not even an error response.
+  response is allowed, not even an error response. The message contains a
+  `PayloadData` framelet that is a Bond structure of the expected request
+  type for the method being invoked.
 
-### Error code ###
+Notice that the `ErrorData` framelet only makes sense for a `Response`.
+Implementations will need to be robust against senders that have a mismatch
+here.
 
-The `error_code` field must be set to 0 for all payload types other than
-`Response`. For responses, the error code indicates the error/non-error
-status of a response.
-
-If the error code is 0, the `PayloadData` framelet contains a Bond structure
-of the expected response type for the method that was invoked.
-
-If the error code is non-zero, the `PayloadData` framelet contains a Bond
-structure derived from `Error`.
+Implementations must also be robust against type mismatches for
+`PayloadData` and `ErrorData` framelets.
 
 ## `ProtocolError` struct ##
 
@@ -492,7 +493,7 @@ The `EpoxyHeaders` for this request would be
     let doSomeMathHeaders = make
         EpoxyHeaders
         conversation_id:3
-        payload_type:Request
+        message_type:Request
         service_name:"examples.calc.Calc"
         method_name:"Calculate".
 
@@ -518,7 +519,7 @@ The response is similar.
     let doSomeMathResponseHeaders = make
         EpoxyHeaders
         conversation_id:3
-        payload_type:Response
+        message_type:Response
         error_code:0.
 
 The response frame is:

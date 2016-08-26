@@ -13,11 +13,12 @@ namespace Bond.Comm.Epoxy
 
     internal enum FrameletType
     {
-        EpoxyConfig = 0x4743,
-        EpoxyHeaders = 0x5248,
-        LayerData = 0x594C,
-        PayloadData = 0x5444,
-        ProtocolError = 0x5245,
+        EpoxyConfig = 0x4743,           // "GC"
+        EpoxyHeaders = 0x5248,          // "RH"
+        ErrorData = 0x4445,             // "DE"
+        LayerData = 0x594C,             // "YL"
+        PayloadData = 0x4450,           // "DP"
+        ProtocolError = 0x5245,         // "RE"
     }
 
     internal struct Framelet
@@ -28,6 +29,7 @@ namespace Bond.Comm.Epoxy
             {
                 case FrameletType.EpoxyConfig:
                 case FrameletType.EpoxyHeaders:
+                case FrameletType.ErrorData:
                 case FrameletType.LayerData:
                 case FrameletType.PayloadData:
                 case FrameletType.ProtocolError:
@@ -48,10 +50,12 @@ namespace Bond.Comm.Epoxy
 
         public static bool IsKnownType(UInt16 value)
         {
-            return value == (UInt16)FrameletType.LayerData
-                | value == (UInt16)FrameletType.PayloadData
-                | value == (UInt16)FrameletType.EpoxyHeaders
+            return false
                 | value == (UInt16)FrameletType.EpoxyConfig
+                | value == (UInt16)FrameletType.EpoxyHeaders
+                | value == (UInt16)FrameletType.ErrorData
+                | value == (UInt16)FrameletType.LayerData
+                | value == (UInt16)FrameletType.PayloadData
                 | value == (UInt16)FrameletType.ProtocolError;
         }
 
@@ -61,7 +65,7 @@ namespace Bond.Comm.Epoxy
 
     internal class Frame
     {
-        // most frames will have at most three framelets: EpoxyHeaders, LayerData, PayloadData
+        // most frames will have at most three framelets: EpoxyHeaders, LayerData, PayloadData/ErrorData
         private const int DefaultFrameCount = 3;
 
         private readonly List<Framelet> framelets;
@@ -96,7 +100,7 @@ namespace Bond.Comm.Epoxy
 
             try
             {
-                // add space for framelet type, length of payload, and actual payload content
+                // add space for framelet type, length of message, and actual message content
                 TotalSize = checked(TotalSize + sizeof(UInt16) + sizeof(UInt32) + framelet.Contents.Count);
                 framelets.Add(framelet);
             }

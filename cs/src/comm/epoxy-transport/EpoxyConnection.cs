@@ -160,7 +160,7 @@ namespace Bond.Comm.Epoxy
             return $"{nameof(EpoxyConnection)}(local: {LocalEndPoint}, remote: {RemoteEndPoint})";
         }
 
-        internal static Frame MessageToFrame(ulong conversationId, string methodName, PayloadType type, IMessage message, IBonded layerData, Logger logger)
+        internal static Frame MessageToFrame(ulong conversationId, string methodName, EpoxyMessageType type, IMessage message, IBonded layerData, Logger logger)
         {
             var frame = new Frame(logger);
 
@@ -168,18 +168,9 @@ namespace Bond.Comm.Epoxy
                 var headers = new EpoxyHeaders
                 {
                     conversation_id = conversationId,
-                    payload_type = type,
+                    message_type = type,
                     method_name = methodName ?? string.Empty, // method_name is not nullable
                 };
-
-                if (message.IsError)
-                {
-                    headers.error_code = message.Error.Deserialize<Error>().error_code;
-                }
-                else
-                {
-                    headers.error_code = (int)ErrorCode.OK;
-                }
 
                 const int initialHeaderBufferSize = 150;
                 var outputBuffer = new OutputBuffer(initialHeaderBufferSize);
@@ -200,15 +191,16 @@ namespace Bond.Comm.Epoxy
             }
 
             {
-                var userData = message.IsError ? (IBonded)message.Error : (IBonded)message.RawPayload;
+                FrameletType frameletType = message.IsError ? FrameletType.ErrorData : FrameletType.PayloadData;
+                IBonded userData = message.IsError ? message.Error : message.RawPayload;
 
-                const int initialPayloadBufferSize = 1024;
-                var outputBuffer = new OutputBuffer(initialPayloadBufferSize);
+                const int initialMessageBufferSize = 1024;
+                var outputBuffer = new OutputBuffer(initialMessageBufferSize);
                 var compactWriter = new CompactBinaryWriter<OutputBuffer>(outputBuffer);
                 compactWriter.WriteVersion();
                 userData.Serialize(compactWriter);
 
-                frame.Add(new Framelet(FrameletType.PayloadData, outputBuffer.Data));
+                frame.Add(new Framelet(frameletType, outputBuffer.Data));
             }
 
             return frame;
@@ -266,7 +258,7 @@ namespace Bond.Comm.Epoxy
                 return Message.FromError(layerError);
             }
 
-            var frame = MessageToFrame(conversationId, methodName, PayloadType.Request, request, layerData, logger);
+            var frame = MessageToFrame(conversationId, methodName, EpoxyMessageType.Request, request, layerData, logger);
 
             logger.Site().Debug("{0} Sending request {1}/{2}.", this, conversationId, methodName);
             var responseTask = responseMap.Add(conversationId, layerStack);
@@ -318,7 +310,7 @@ namespace Bond.Comm.Epoxy
                 response = Message.FromError(Errors.CleanseInternalServerError(layerError));
             }
 
-            var frame = MessageToFrame(conversationId, null, PayloadType.Response, response, layerData, logger);
+            var frame = MessageToFrame(conversationId, null, EpoxyMessageType.Response, response, layerData, logger);
             logger.Site().Debug("{0} Sending reply for conversation ID {1}.", this, conversationId);
 
             bool wasSent = await SendFrameAsync(frame);
@@ -350,7 +342,7 @@ namespace Bond.Comm.Epoxy
                 return;
             }
 
-            var frame = MessageToFrame(conversationId, methodName, PayloadType.Event, message, layerData, logger);
+            var frame = MessageToFrame(conversationId, methodName, EpoxyMessageType.Event, message, layerData, logger);
 
             logger.Site().Debug("{0} Sending event {1}/{2}.", this, conversationId, methodName);
 
@@ -593,13 +585,12 @@ namespace Bond.Comm.Epoxy
                     return State.Disconnecting;
                 }
 
-
                 var result = EpoxyProtocol.Classify(frame, logger);
                 switch (result.Disposition)
                 {
                     case EpoxyProtocol.FrameDisposition.DeliverRequestToService:
                     {
-                        State? nextState = DispatchRequest(result.Headers, result.Payload, result.LayerData);
+                        State? nextState = DispatchRequest(result.Headers, result.MessageData, result.LayerData);
                         if (nextState.HasValue)
                         {
                             return nextState.Value;
@@ -612,11 +603,11 @@ namespace Bond.Comm.Epoxy
                     }
 
                     case EpoxyProtocol.FrameDisposition.DeliverResponseToProxy:
-                        DispatchResponse(result.Headers, result.Payload, result.LayerData);
+                        DispatchResponse(result.Headers, result.MessageData, result.LayerData);
                         break;
 
                     case EpoxyProtocol.FrameDisposition.DeliverEventToService:
-                        DispatchEvent(result.Headers, result.Payload, result.LayerData);
+                        DispatchEvent(result.Headers, result.MessageData, result.LayerData);
                         break;
 
                     case EpoxyProtocol.FrameDisposition.SendProtocolError:
@@ -698,49 +689,54 @@ namespace Bond.Comm.Epoxy
             metrics.Emit(ConnectionMetrics);
         }
 
-        private State? DispatchRequest(EpoxyHeaders headers, ArraySegment<byte> payload, ArraySegment<byte> layerData)
+        private State? DispatchRequest(EpoxyHeaders headers, EpoxyProtocol.MessageData messageData, ArraySegment<byte> layerData)
         {
-            if (headers.error_code != (int)ErrorCode.OK)
-            {
-                logger.Site().Error("{0} Received request with a non-zero error code. Conversation ID: {1}",
-                    this, headers.conversation_id);
-                protocolError = ProtocolErrorCode.PROTOCOL_VIOLATED;
-                return State.SendProtocolError;
-            }
-
             Task.Run(async () =>
             {
                 var totalTime = Stopwatch.StartNew();
                 var requestMetrics = Metrics.StartRequestMetrics(ConnectionMetrics);
                 var receiveContext = new EpoxyReceiveContext(this, ConnectionMetrics, requestMetrics);
 
-                IMessage request = Message.FromPayload(Unmarshal.From(payload));
-                IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
-
-                ILayerStack layerStack;
-                Error layerError = parentTransport.GetLayerStack(requestMetrics.request_id, out layerStack);
-
-                if (layerError == null)
-                {
-                    layerError = LayerStackUtils.ProcessOnReceive(
-                            layerStack, MessageType.Request, receiveContext, bondedLayerData, logger);
-                }
-
+                ILayerStack layerStack = null; // CHWARR TODO: is not giving layers a chance on this response okay?
                 IMessage result;
 
-                if (layerError == null)
+                if (messageData.IsError)
                 {
-                    result = await serviceHost.DispatchRequest(headers.method_name, receiveContext, request);
+                    logger.Site().Error("{0} Received request with an error message. Only payload messages are allowed. Conversation ID: {1}",
+                        this, headers.conversation_id);
+                    result = Message.FromError(new Error
+                    {
+                        error_code = (int)ErrorCode.InvalidInvocation,
+                        message = "Received request with an error message"
+                    });
                 }
                 else
                 {
-                    logger.Site().Error("{0} Receiving request {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
-                        this, headers.conversation_id, headers.method_name,
-                        layerError.error_code, layerError.message);
+                    IMessage request = Message.FromPayload(Unmarshal.From(messageData.Data));
+                    IBonded bondedLayerData = (layerData.Array == null) ? null : Unmarshal.From(layerData);
 
-                    // Set layer error as result of this Bond method call and do not dispatch to method.
-                    // Since this error will be returned to client, cleanse out internal server error details, if any.
-                    result = Message.FromError(Errors.CleanseInternalServerError(layerError));
+                    Error layerError = parentTransport.GetLayerStack(requestMetrics.request_id, out layerStack);
+
+                    if (layerError == null)
+                    {
+                        layerError = LayerStackUtils.ProcessOnReceive(
+                            layerStack, MessageType.Request, receiveContext, bondedLayerData, logger);
+                    }
+
+                    if (layerError == null)
+                    {
+                        result = await serviceHost.DispatchRequest(headers.method_name, receiveContext, request);
+                    }
+                    else
+                    {
+                        logger.Site().Error("{0} Receiving request {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
+                            this, headers.conversation_id, headers.method_name,
+                            layerError.error_code, layerError.message);
+
+                        // Set layer error as result of this Bond method call and do not dispatch to method.
+                        // Since this error will be returned to client, cleanse out internal server error details, if any.
+                        result = Message.FromError(Errors.CleanseInternalServerError(layerError));
+                    }
                 }
 
                 await SendReplyAsync(headers.conversation_id, result, layerStack, requestMetrics);
@@ -752,17 +748,11 @@ namespace Bond.Comm.Epoxy
             return null;
         }
 
-        private void DispatchResponse(EpoxyHeaders headers, ArraySegment<byte> payload, ArraySegment<byte> layerData)
+        private void DispatchResponse(EpoxyHeaders headers, EpoxyProtocol.MessageData messageData, ArraySegment<byte> layerData)
         {
-            IMessage response;
-            if (headers.error_code != (int)ErrorCode.OK)
-            {
-                response = Message.FromError(Unmarshal<Error>.From(payload));
-            }
-            else
-            {
-                response = Message.FromPayload(Unmarshal.From(payload));
-            }
+            IMessage response = messageData.IsError
+                ? Message.FromError(Unmarshal<Error>.From(messageData.Data))
+                : Message.FromPayload(Unmarshal.From(messageData.Data));
 
             TaskCompletionSource<IMessage> tcs = responseMap.TakeTaskCompletionSource(headers.conversation_id);
             if (tcs == null)
@@ -798,18 +788,18 @@ namespace Bond.Comm.Epoxy
             });
         }
 
-        private void DispatchEvent(EpoxyHeaders headers, ArraySegment<byte> payload, ArraySegment<byte> layerData)
+        private void DispatchEvent(EpoxyHeaders headers, EpoxyProtocol.MessageData messageData, ArraySegment<byte> layerData)
         {
-            if (headers.error_code != (int)ErrorCode.OK)
+            if (messageData.IsError)
             {
-                logger.Site().Error("{0} Received event with a non-zero error code. Conversation ID: {1}",
+                logger.Site().Error("{0} Received event with an error message. Only payload messages are allowed. Conversation ID: {1}",
                     this, headers.conversation_id);
                 return;
             }
 
             Task.Run(async () =>
             {
-                IMessage request = Message.FromPayload(Unmarshal.From(payload));
+                IMessage request = Message.FromPayload(Unmarshal.From(messageData.Data));
                 var totalTime = Stopwatch.StartNew();
                 var requestMetrics = Metrics.StartRequestMetrics(ConnectionMetrics);
                 var receiveContext = new EpoxyReceiveContext(this, ConnectionMetrics, requestMetrics);
