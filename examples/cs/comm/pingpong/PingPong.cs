@@ -5,7 +5,6 @@ namespace Bond.Examples.PingPong
 {
     using System;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm;
@@ -15,11 +14,13 @@ namespace Bond.Examples.PingPong
 
     public static class PingPong
     {
-        private const string PingEndpoint = "epoxy://127.0.0.1";
-        private static readonly string reversePingEndpoint = $"epoxy://127.0.0.1:{EpoxyTransport.DefaultInsecurePort + 1}";
+        const string PingEndpoint = "127.0.0.1";
+        const string PingUri = "epoxy://" + PingEndpoint;
+        const string ReversePingEndpoint = "127.0.0.1:25189";
+        const string ReversePingUri = "epoxy://" + ReversePingEndpoint;
 
-        private static EpoxyConnection pingConnection;
-        private static EpoxyConnection reverseConnection;
+        static EpoxyConnection pingConnection;
+        static EpoxyConnection reverseConnection;
 
         public static void Main()
         {
@@ -31,7 +32,7 @@ namespace Bond.Examples.PingPong
 
             Shutdown(transport);
 
-            Console.WriteLine("Done with all requests.");
+            Console.WriteLine("\n\n\nDone with all requests. Press enter to exit.");
             Console.ReadLine();
         }
 
@@ -39,23 +40,22 @@ namespace Bond.Examples.PingPong
         {
             var transport = new EpoxyTransportBuilder()
                 .SetLogSink(new ConsoleLogger())
-                .SetMetricsSink(new ConsoleMetricsSink())
                 .Construct();
 
             var pingPongService = new PingPongService();
-            EpoxyListener pingPongListener = (EpoxyListener) transport.MakeListener(PingEndpoint);
+            EpoxyListener pingPongListener = transport.MakeListener(PingEndpoint);
             pingPongListener.AddService(pingPongService);
 
             var reversePingPongService = new ReversePingPongService();
-            EpoxyListener reversePingPongListener = (EpoxyListener) transport.MakeListener(reversePingEndpoint);
+            EpoxyListener reversePingPongListener = transport.MakeListener(ReversePingEndpoint);
             reversePingPongListener.AddService(reversePingPongService);
 
             await Task.WhenAll(
                 pingPongListener.StartAsync(),
                 reversePingPongListener.StartAsync());
 
-            pingConnection = (EpoxyConnection) await transport.ConnectToAsync(PingEndpoint);
-            reverseConnection = (EpoxyConnection) await transport.ConnectToAsync(reversePingEndpoint);
+            pingConnection = await transport.ConnectToAsync(PingUri);
+            reverseConnection = await transport.ConnectToAsync(ReversePingUri);
 
             return transport;
         }
