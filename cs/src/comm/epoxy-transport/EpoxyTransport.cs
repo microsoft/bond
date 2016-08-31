@@ -209,6 +209,8 @@ namespace Bond.Comm.Epoxy
             return new Endpoint(uri.DnsSafeHost, port, useTls);
         }
 
+        /// <param name="address">A URI with a scheme of epoxy:// (insecure epoxy) or epoxys:// (epoxy over TLS).</param>
+        /// <param name="ct">Unused.</param>
         public override async Task<EpoxyConnection> ConnectToAsync(string address, CancellationToken ct)
         {
             var endpoint = Parse(address, logger);
@@ -218,6 +220,12 @@ namespace Bond.Comm.Epoxy
             }
 
             return await ConnectToAsync(endpoint.Value, ct);
+        }
+
+        /// <param name="address">A URI with a scheme of epoxy:// (insecure epoxy) or epoxys:// (epoxy over TLS).</param>
+        public override async Task<EpoxyConnection> ConnectToAsync(string address)
+        {
+            return await ConnectToAsync(address, CancellationToken.None);
         }
 
         public async Task<EpoxyConnection> ConnectToAsync(Endpoint endpoint, CancellationToken ct)
