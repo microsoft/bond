@@ -53,44 +53,53 @@
                      .With.Message.Contains("FindMethod found more than one matching method"));
         }
 
+        // We test on the SchemaFields instead of the RuntimeSchema, because, for now, the list sub
+        // type is not part of Bond.TypeDef
         [Test]
         public void DifferentiateBetweenListAndNullable()
         {
-            var schemaDef = Schema<ListVsNullable>.RuntimeSchema.SchemaDef;
+            var schemaFields = typeof(ListVsNullable).GetSchemaFields();
 
-            foreach (var def in schemaDef.structs[0].fields)
+            foreach (var field in schemaFields)
             {
-                if (def.metadata.name == "nullableInt")
+                ListSubType fieldListSubType = field.GetSchemaType().GetBondListDataType();
+
+                switch (field.Name)
                 {
-                    Assert.AreEqual(ListSubType.NULLABLE_SUBTYPE, def.type.list_sub_type);
-                }
-                else if (def.metadata.name == "vectorInt")
-                {
-                    Assert.AreEqual(ListSubType.NO_SUBTYPE, def.type.list_sub_type);
-                }
-                else if (def.metadata.name == "listInt")
-                {
-                    Assert.AreEqual(ListSubType.NO_SUBTYPE, def.type.list_sub_type);
-                }
-                else if (def.metadata.name == "blobData")
-                {
-                    Assert.AreEqual(ListSubType.BLOB_SUBTYPE, def.type.list_sub_type);
-                }
-                else
-                {
-                    Assert.Fail();
+                    case "nullableInt":
+                        Assert.AreEqual(ListSubType.NULLABLE_SUBTYPE, fieldListSubType);
+                        break;
+
+                    case "vectorInt":
+                        Assert.AreEqual(ListSubType.NO_SUBTYPE, fieldListSubType);
+                        break;
+
+                    case "listInt":
+                        Assert.AreEqual(ListSubType.NO_SUBTYPE, fieldListSubType);
+                        break;
+
+                    case "blobData":
+                        Assert.AreEqual(ListSubType.BLOB_SUBTYPE, fieldListSubType);
+                        break;
+
+                    default:
+                        Assert.Fail("Unexpected field '{0}'", field.Name);
+                        break;
                 }
             }
         }
 
+        // We test on the SchemaFields instead of the RuntimeSchema, because, for now, the list sub
+        // type is not part of Bond.TypeDef
         [Test]
         public void EnsureUnknownSeqIDLType()
         {
-            var schemaDef = Schema<BasicTypes>.RuntimeSchema.SchemaDef;
+            var schemaFields = typeof(BasicTypes).GetSchemaFields();
 
-            foreach (var def in schemaDef.structs[0].fields)
+            foreach (var field in schemaFields)
             {
-                Assert.AreEqual(ListSubType.NO_SUBTYPE, def.type.list_sub_type);
+                ListSubType fieldListSubType = field.GetSchemaType().GetBondListDataType();
+                Assert.AreEqual(ListSubType.NO_SUBTYPE, fieldListSubType, "Failed on field '{0}'", field.Name);
             }
         }
 

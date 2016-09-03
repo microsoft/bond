@@ -236,46 +236,47 @@ TEST_CASE_BEGIN(RuntimeMetadataTests)
 }
 TEST_CASE_END
 
-TEST_CASE_BEGIN(DifferentiateBetweenListAndNullable)
+TEST_CASE_BEGIN(get_list_sub_type_id_ListAndNullable)
 {
     {
-        bond::SchemaDef schema = bond::GetRuntimeSchema<ListVsNullable>().GetSchema();
-        for (std::size_t i = 0; i < schema.structs[0].fields.size(); i++)
-        {
-            bond::FieldDef def = schema.structs[0].fields[i];
-            if (def.id == 0) {
-                UT_AssertAreEqual(bond::ListSubType::NULLABLE_SUBTYPE, def.type.list_sub_type);
-            }
-            else if (def.id == 1)
-            {
-                UT_AssertAreEqual(bond::ListSubType::NO_SUBTYPE, def.type.list_sub_type);
-            }
-            else if (def.id == 2)
-            {
-                UT_AssertAreEqual(bond::ListSubType::NO_SUBTYPE, def.type.list_sub_type);
-            }
-            else if (def.id == 3)
-            {
-                UT_AssertAreEqual(bond::ListSubType::BLOB_SUBTYPE, def.type.list_sub_type);
-            }
-            else
-            {
-                UT_AssertIsTrue(false);
-            }
-        }
+        // we test on the type's Schema instead of SchemaDef because--for
+        // now--the list sub type is not present in TypeDef.
+
+        UT_AssertAreEqual(
+            bond::ListSubType::NULLABLE_SUBTYPE,
+            bond::get_list_sub_type_id<ListVsNullable::Schema::var::nullableInt::field_type>::value);
+
+        UT_AssertAreEqual(
+            bond::ListSubType::NO_SUBTYPE,
+            bond::get_list_sub_type_id<ListVsNullable::Schema::var::vectorInt::field_type>::value);
+
+        UT_AssertAreEqual(
+            bond::ListSubType::NO_SUBTYPE,
+            bond::get_list_sub_type_id<ListVsNullable::Schema::var::listInt::field_type>::value);
+
+        UT_AssertAreEqual(
+            bond::ListSubType::BLOB_SUBTYPE,
+            bond::get_list_sub_type_id<ListVsNullable::Schema::var::blobData::field_type>::value);
     }
 }
 TEST_CASE_END
 
+struct NoSubTypeAsserter
+{
+    template <typename Field>
+    void operator()(const Field&)
+    {
+        UT_AssertAreEqual(bond::ListSubType::NO_SUBTYPE,
+                          bond::get_list_sub_type_id<Field::field_type>::value);
+    }
+};
+
 TEST_CASE_BEGIN(EnsureUnknownSeqIDLType)
 {
     {
-        bond::SchemaDef schema = bond::GetRuntimeSchema<StructWithDefaults>().GetSchema();
-        for (std::size_t i = 0; i < schema.structs[0].fields.size(); i++)
-        {
-            bond::FieldDef def = schema.structs[0].fields[i];
-            UT_AssertAreEqual(bond::ListSubType::NO_SUBTYPE, def.type.list_sub_type);
-        }
+        // we test on the type's Schema instead of SchemaDef because--for
+        // now--the list sub type is not present in TypeDef.
+        boost::mpl::for_each<StructWithDefaults::Schema::fields>(NoSubTypeAsserter());
     }
 }
 TEST_CASE_END
@@ -287,7 +288,7 @@ void MetadataTest::Initialize()
     AddTestCase<TEST_ID(0x2201), CompileTimeMetadataTests>
         (suite, "Compile-time metadata test");
 
-    AddTestCase<TEST_ID(0x2201), DifferentiateBetweenListAndNullable>
+    AddTestCase<TEST_ID(0x2201), get_list_sub_type_id_ListAndNullable>
         (suite, "Differentiate Between List And Nullable");
 
     AddTestCase<TEST_ID(0x2201), EnsureUnknownSeqIDLType>

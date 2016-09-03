@@ -231,24 +231,30 @@
             TestTypeAliases(from);
         }
 
+        // We test on the SchemaFields instead of the RuntimeSchema, because, for now, the list sub
+        // type is not part of Bond.TypeDef
         [Test]
-        public void AliasesReflection()
+        public void AliasesListDataType()
         {
-            var schemaDef = Schema<ContainerAlias>.RuntimeSchema.SchemaDef;
+            var schemaFields = typeof(ContainerAlias).GetSchemaFields();
 
-            foreach (var def in schemaDef.structs[0].fields)
+            foreach (var field in schemaFields)
             {
-                if (def.metadata.name == "syncListFoo")
+                ListSubType fieldListSubType = field.GetSchemaType().GetBondListDataType();
+
+                switch (field.Name)
                 {
-                    Assert.AreEqual(ListSubType.NULLABLE_SUBTYPE, def.type.list_sub_type);
-                }
-                else if (def.metadata.name == "arrayBlob")
-                {
-                    Assert.AreEqual(ListSubType.BLOB_SUBTYPE, def.type.list_sub_type);
-                }
-                else
-                {
-                    Assert.AreEqual(ListSubType.NO_SUBTYPE, def.type.list_sub_type);
+                    case "syncListFoo":
+                        Assert.AreEqual(ListSubType.NULLABLE_SUBTYPE, fieldListSubType);
+                        break;
+
+                    case "arrayBlob":
+                        Assert.AreEqual(ListSubType.BLOB_SUBTYPE, fieldListSubType);
+                        break;
+
+                    default:
+                        Assert.AreEqual(ListSubType.NO_SUBTYPE, fieldListSubType, "Failed on field '{0}'", field.Name);
+                        break;
                 }
             }
         }
