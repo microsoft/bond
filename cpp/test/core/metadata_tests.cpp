@@ -267,7 +267,7 @@ struct NoSubTypeAsserter
     void operator()(const Field&)
     {
         UT_AssertAreEqual(bond::ListSubType::NO_SUBTYPE,
-                          bond::get_list_sub_type_id<Field::field_type>::value);
+                          bond::get_list_sub_type_id<typename Field::field_type>::value);
     }
 };
 
