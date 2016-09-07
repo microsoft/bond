@@ -14,17 +14,27 @@ different versioning scheme, following the Haskell community's
 ## Unreleased ##
 
 * `gbc` & compiler library: minor bump needed
-* IDL core version: TBD
-* IDL comm version: TBD
+* IDL core version: major bump needed
+* IDL comm version: minor bump needed (dependencies updated)
 * C++ version: minor bump needed
-* C# NuGet version: TBD
-* C# Comm NuGet version: TBD
+* C# NuGet version: major bump needed
+* C# Comm NuGet version: minor bump needed (dependencies updated)
 
 ### C++ ###
 * Generated enum types now have a `FromEnum` method that can be used to
   convert from an enum value to a string. Now generated enum types have all
   four of `ToEnum`, `FromEnum`, `ToString`, and `FromString`. (The `...Enum`
   variants return false on failure, while the `...String` variants throw.)
+* Runtime SchemaDef `list_sub_type` field removed, as it was breaking some
+  consumers of serialized SchemaDef. We plan to restore this field in the
+  future.
+  [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
+
+### C# ###
+* Runtime SchemaDef `list_sub_type` field removed, as it was breaking some
+  consumers of serialized SchemaDef. We plan to restore this field in the
+  future.
+  [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
 
 ## 4.3.0: 2016-08-23 ##
 

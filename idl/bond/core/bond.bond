@@ -46,7 +46,7 @@ struct Metadata
 {
     // Name of the field or struct
     0: string name;
-    
+
     // Fully qualified name, used only for structs
     1: string qualified_name;
 
@@ -65,32 +65,34 @@ struct TypeDef
 {
     // Type identifier
     0: BondDataType id = BT_STRUCT;
-    
+
     // Index of struct definition in SchemaDef.structs when id == BT_STRUCT
     1: uint16 struct_def = 0;
-    
+
     // Type definition for:
     //  list elements (id == BT_LIST),
     //  set elements (id == BT_SET),
     //  or mapped value (id == BT_MAP)
     2: nullable<TypeDef> element;
-    
+
     // Type definition for map key when id == BT_MAP
     3: nullable<TypeDef> key;
-    
+
     // True if the type is bonded<T>; used only when id == BT_STRUCT
     4: bool bonded_type;
-    
+
     // Distinguish between kinds of lists; used only when id == BT_LIST
-    5: ListSubType list_sub_type = NO_SUBTYPE;
+    // Currently not present in TypeDef, as its addition is breaking some
+    // users that have already serialized SchemaDef structs.
+    // 5: ListSubType list_sub_type = NO_SUBTYPE;
 }
 
 // Schema representing a field definition
 struct FieldDef
 {
     // Field metadata
-    0: Metadata metadata;           
-    
+    0: Metadata metadata;
+
     // Field ordinal
     1: uint16 id;
 
@@ -106,7 +108,7 @@ struct StructDef
 
     // Type definition of base struct
     1: nullable<TypeDef> base_def;
-    
+
     // List of field definitions
     2: vector<FieldDef> fields;
 }
@@ -119,7 +121,7 @@ struct SchemaDef
     0: vector<StructDef> structs;
 
     // Root struct of the schema
-    1: TypeDef root; 
+    1: TypeDef root;
 }
 
 // Generic schema with one field of specified type

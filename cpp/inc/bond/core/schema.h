@@ -30,7 +30,7 @@ inline RuntimeSchema::RuntimeSchema(const boost::shared_ptr<SchemaDef>& schema)
       type(&schema->root),
       instance(schema)
 {}
-    
+
 inline RuntimeSchema::RuntimeSchema(const RuntimeSchema& schema, const TypeDef& type)
     : schema(schema.schema),
       type(&type),
@@ -52,7 +52,7 @@ inline RuntimeSchema RuntimeSchema::GetBaseSchema() const
 {
     return RuntimeSchema(*this, GetStruct().base_def.value());
 }
-    
+
 inline const StructDef& RuntimeSchema::GetStruct() const
 {
     BOOST_ASSERT(type->id == BT_STRUCT);
@@ -85,13 +85,13 @@ namespace detail
     inline uint16_t schema_depth(const RuntimeSchema& schema)
     {
         uint16_t depth = 1;
-    
+
         if (schema.HasBase())
             depth += schema_depth(schema.GetBaseSchema());
-    
+
         return depth;
     }
-    
+
     template <typename T, typename Unused = void>
     class SchemaCache
     {
@@ -103,9 +103,9 @@ namespace detail
             // are global static variables, and we can't depends on them being
             // initialized before the schema. Instead we initialize the schema
             // on the first call to Get().
-	    // Note that older versions of GNU C++ don't handle rvalue argument
-	    // forwarding in Boost call_once implementation so we are using
-	    // the old trusty boost::bind. 
+            // Note that older versions of GNU C++ don't handle rvalue argument
+            // forwarding in Boost call_once implementation so we are using
+            // the old trusty boost::bind.
             call_once(flag, boost::bind(&AppendStructDef, &schema));
             return schema;
         }
@@ -169,7 +169,7 @@ public:
         _schema.structs.push_back(StructDef());
     }
 
-    
+
     void Begin(const Metadata& metadata) const
     {
         This().metadata = metadata;
@@ -178,7 +178,7 @@ public:
     void End() const
     {
     }
-    
+
     template <typename T>
     bool Base(const T& /*value*/) const
     {
@@ -213,7 +213,7 @@ private:
         return type;
     }
 
-    
+
     template <typename T>
     typename boost::enable_if_c<is_container<T>::value && !is_map_container<T>::value, TypeDef>::type
     GetTypeDef() const
@@ -222,12 +222,11 @@ private:
 
         type.id = get_type_id<T>::value;
         type.element.set() = GetTypeDef<typename element_type<T>::type>();
-        type.list_sub_type = get_list_sub_type_id<T>::value;
 
         return type;
     }
 
-    
+
     template <typename T>
     typename boost::enable_if<is_map_container<T>, TypeDef>::type
     GetTypeDef() const
@@ -241,21 +240,21 @@ private:
         return type;
     }
 
-    
+
     template <typename T>
     typename boost::enable_if<is_bond_type<T>, TypeDef>::type
     GetTypeDef() const
     {
         TypeDef type;
-        
+
         type.id = get_type_id<T>::value;
         type.struct_def = GetStructDef<typename remove_bonded<T>::type>();
         type.bonded_type = is_bonded<T>::value;
-        
+
         return type;
     }
 
-    
+
     template <typename T>
     uint16_t GetStructDef() const
     {
@@ -271,7 +270,7 @@ private:
         return static_cast<uint16_t>(n);
     }
 
-    
+
     // Note that This() returns a reference to StructDef in the structs vector
     // which may be invalidated when the vector grows. In particular This()
     // can't be used in an expression that may result in adding items to the
