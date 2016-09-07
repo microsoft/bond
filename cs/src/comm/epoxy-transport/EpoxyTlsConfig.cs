@@ -16,10 +16,11 @@ namespace Bond.Comm.Epoxy
         /// Creates a new instance of the <see cref="EpoxyTlsConfig"/> class.
         /// </summary>
         /// <param name="remoteCertificateValidationCallback">
-        /// Optional delegate responsible for validating remote certificates.
-        /// May be <c>null</c> to use the default validation. This delegate is
-        /// passed to <see cref="SslStream"/>; consult the SslStream
-        /// documentation for it use.
+        /// Normal use is to omit this parameter/pass <c>null</c> so that the
+        /// system's default behavior is used. Passing something other than
+        /// null here is almost always a bug. This delegate is passed to
+        /// <see cref="SslStream"/>; consult the SslStream documentation for
+        /// more details about its use.
         /// </param>
         /// <param name="checkCertificateRevocation">
         /// Whether certificate revocation is checked. Defaults to <c>true</c>.
@@ -62,10 +63,11 @@ namespace Bond.Comm.Epoxy
         /// <c>false</c>.
         /// </param>
         /// <param name="remoteCertificateValidationCallback">
-        /// Optional delegate responsible for validating remote certificates.
-        /// May be <c>null</c> to use the default validation. This delegate is
-        /// passed to <see cref="SslStream"/>; consult the SslStream
-        /// documentation for it use.
+        /// Normal use is to omit this parameter/pass <c>null</c> so that the
+        /// system's default behavior is used. Passing something other than
+        /// null here is almost always a bug. This delegate is passed to
+        /// <see cref="SslStream"/>; consult the SslStream documentation for
+        /// more details about its use.
         /// </param>
         /// <param name="checkCertificateRevocation">
         /// Whether certificate revocation is checked. Defaults to <c>true</c>.
@@ -120,10 +122,11 @@ namespace Bond.Comm.Epoxy
         /// to <c>null</c>.
         /// </param>
         /// <param name="remoteCertificateValidationCallback">
-        /// Optional delegate responsible for validating remote certificates.
-        /// May be <c>null</c> to use the default validation. This delegate is
-        /// passed to <see cref="SslStream"/>; consult the SslStream
-        /// documentation for it use.
+        /// Normal use is to omit this parameter/pass <c>null</c> so that the
+        /// system's default behavior is used. Passing something other than
+        /// null here is almost always a bug. This delegate is passed to
+        /// <see cref="SslStream"/>; consult the SslStream documentation for
+        /// more details about its use.
         /// </param>
         /// <param name="checkCertificateRevocation">
         /// Whether certificate revocation is checked. Defaults to <c>true</c>.
