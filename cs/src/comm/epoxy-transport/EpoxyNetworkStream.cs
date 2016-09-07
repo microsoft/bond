@@ -80,11 +80,15 @@ namespace Bond.Comm.Epoxy
                     leaveInnerStreamOpen,
                     tlsConfig.RemoteCertificateValidationCallback);
 
-                var emptyClientCertificates = new X509CertificateCollection();
+                var clientCertificates = new X509CertificateCollection();
+                if (tlsConfig.Certificate != null)
+                {
+                    clientCertificates.Add(tlsConfig.Certificate);
+                }
 
                 await sslStream.AuthenticateAsClientAsync(
                     remoteHostname,
-                    emptyClientCertificates,
+                    clientCertificates,
                     AllowedTlsProtocols,
                     tlsConfig.CheckCertificateRevocation);
 
@@ -115,15 +119,24 @@ namespace Bond.Comm.Epoxy
                 var sslStream = new SslStream(
                     networkStream,
                     leaveInnerStreamOpen,
-                    tlsConfig.RemoteCertificateValidationCallback);
+                    MakeServerCertificateValidationCallback(tlsConfig, logger));
 
                 await sslStream.AuthenticateAsServerAsync(
                     tlsConfig.Certificate,
-                    clientCertificateRequired: false,
+                    tlsConfig.ClientCertificateRequired,
                     enabledSslProtocols: AllowedTlsProtocols,
                     checkCertificateRevocation: tlsConfig.CheckCertificateRevocation);
 
-                logger.Site().Debug("Authenticated connection from {0}", socket.RemoteEndPoint);
+                if (tlsConfig.ClientCertificateRequired && !sslStream.IsMutuallyAuthenticated)
+                {
+                    sslStream.Dispose();
+                    throw new AuthenticationException("Mutual authentication was required, but it could not be performed.");
+                }
+
+                logger.Site().Debug(
+                    "Authenticated connection from {0}. Mutually authenticated?: {1}",
+                    socket.RemoteEndPoint,
+                    sslStream.IsMutuallyAuthenticated);
 
                 serverStream = sslStream;
             }
@@ -177,6 +190,52 @@ namespace Bond.Comm.Epoxy
                 stream = null;
                 socket = null;
                 logger = null;
+            }
+        }
+
+        private static RemoteCertificateValidationCallback MakeServerCertificateValidationCallback(
+            EpoxyServerTlsConfig tlsConfig,
+            Logger logger)
+        {
+            if (tlsConfig.ClientCertificateRequired)
+            {
+                // If client certificates are required, then add an explicit
+                // check that the client provided a certificate. The default
+                // behavior is to allow the connection even if the client
+                // didn't present a certificate.
+                return (sender, certificate, chain, errors) =>
+                {
+                    if (certificate == null)
+                    {
+                        logger.Site().Error("Rejecting client. Certificate required, but client did not provide one.");
+                        return false;
+                    }
+
+                    if (tlsConfig.RemoteCertificateValidationCallback != null)
+                    {
+                        // There's a user-provided validation callback, so
+                        // delegate to that.
+                        return tlsConfig.RemoteCertificateValidationCallback(
+                            sender,
+                            certificate,
+                            chain,
+                            errors);
+                    }
+                    else
+                    {
+                        // Otherwise, require no errors at all to accept the
+                        // certificate.
+                        return errors == SslPolicyErrors.None;
+                    }
+                };
+            }
+            else
+            {
+                // Client certificates are not required, so just use the
+                // user-provided validation callback. This may be null, but
+                // that's fine. SslStream will just use its default behavior
+                // then.
+                return tlsConfig.RemoteCertificateValidationCallback;
             }
         }
     }

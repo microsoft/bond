@@ -67,10 +67,10 @@
     <Compile Include="$(IntermediateOutputPath)comm-test_services.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Epoxy\certs\bond-test-host1.pfx">
+    <None Include="Epoxy\certs\bond-test-client1.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Epoxy\certs\bond-test-host2.pfx">
+    <None Include="Epoxy\certs\bond-test-server1.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Epoxy\certs\bond-test-root.pfx">
