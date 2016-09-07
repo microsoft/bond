@@ -28,16 +28,16 @@ namespace UnitTest.Epoxy
 
         X509Certificate2 testRootCert;
         const string TestRootThumbprint = "29D6B3199BE91CB38D94FD1F2883A9FD2126C91D";
-        X509Certificate2 testHost1Cert;
-        X509Certificate2 testHost2Cert;
+        X509Certificate2 testServerCert;
+        X509Certificate2 testClientCert;
 
         [TestFixtureSetUp]
         public void Init()
         {
             const string TestCertificatePassword = "bond";
             testRootCert = new X509Certificate2(@"Epoxy\certs\bond-test-root.pfx", TestCertificatePassword);
-            testHost1Cert = new X509Certificate2(@"Epoxy\certs\bond-test-host1.pfx", TestCertificatePassword);
-            testHost2Cert = new X509Certificate2(@"Epoxy\certs\bond-test-host2.pfx", TestCertificatePassword);
+            testServerCert = new X509Certificate2(@"Epoxy\certs\bond-test-server1.pfx", TestCertificatePassword);
+            testClientCert = new X509Certificate2(@"Epoxy\certs\bond-test-client1.pfx", TestCertificatePassword);
         }
 
         [Test]
@@ -645,7 +645,7 @@ namespace UnitTest.Epoxy
         [Test]
         public async Task Tls_ServerOnly_CanAuthenticate()
         {
-            var serverTlsConfig = new EpoxyServerTlsConfig(testHost1Cert, checkCertificateRevocation: false);
+            var serverTlsConfig = new EpoxyServerTlsConfig(testServerCert, checkCertificateRevocation: false);
 
             var serverTransport = new EpoxyTransportBuilder().SetServerTlsConfig(serverTlsConfig).Construct();
             listener = serverTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
@@ -660,7 +660,7 @@ namespace UnitTest.Epoxy
                 .SetResolver(ResolveEverythingToLocalhost)
                 .SetClientTlsConfig(clientTlsConfig)
                 .Construct();
-            EpoxyConnection clientConnection = await clientTransport.ConnectToAsync("epoxys://bond-test-host1");
+            EpoxyConnection clientConnection = await clientTransport.ConnectToAsync("epoxys://bond-test-server1");
 
             var proxy = new DummyTestProxy<EpoxyConnection>(clientConnection);
 
@@ -673,7 +673,7 @@ namespace UnitTest.Epoxy
         [Test]
         public async Task Tls_ServerBadCert_ConnectionFails()
         {
-            var serverTlsConfig = new EpoxyServerTlsConfig(testHost1Cert, checkCertificateRevocation: false);
+            var serverTlsConfig = new EpoxyServerTlsConfig(testServerCert, checkCertificateRevocation: false);
 
             var serverTransport = new EpoxyTransportBuilder().SetServerTlsConfig(serverTlsConfig).Construct();
             listener = serverTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
@@ -694,7 +694,7 @@ namespace UnitTest.Epoxy
                 .SetClientTlsConfig(clientTlsConfig)
                 .Construct();
 
-            Assert.Throws<AuthenticationException>(async () => await clientTransport.ConnectToAsync("epoxys://bond-test-host1"));
+            Assert.Throws<AuthenticationException>(async () => await clientTransport.ConnectToAsync("epoxys://bond-test-server1"));
 
             await clientTransport.StopAsync();
             await serverTransport.StopAsync();
@@ -704,14 +704,14 @@ namespace UnitTest.Epoxy
         public async Task Tls_Mutual_CanAuthenticate()
         {
             var serverTlsConfig = new EpoxyServerTlsConfig(
-                testHost1Cert,
+                testServerCert,
                 checkCertificateRevocation: false,
                 clientCertificateRequired: true,
                 remoteCertificateValidationCallback: EnsureRootedWithTestCertificate
             );
 
             var clientTlsConfig = new EpoxyClientTlsConfig(
-                certificate: testHost2Cert,
+                certificate: testClientCert,
                 checkCertificateRevocation: false,
                 remoteCertificateValidationCallback: EnsureRootedWithTestCertificate);
 
@@ -725,7 +725,7 @@ namespace UnitTest.Epoxy
             listener.AddService(new DummyTestService());
             await listener.StartAsync();
 
-            EpoxyConnection clientConnection = await transport.ConnectToAsync("epoxys://bond-test-host1");
+            EpoxyConnection clientConnection = await transport.ConnectToAsync("epoxys://bond-test-server1");
 
             var proxy = new DummyTestProxy<EpoxyConnection>(clientConnection);
 
@@ -738,7 +738,7 @@ namespace UnitTest.Epoxy
         public async Task Tls_MutualNoClientCert_ProxyDoesNotWork()
         {
             var serverTlsConfig = new EpoxyServerTlsConfig(
-                testHost1Cert,
+                testServerCert,
                 checkCertificateRevocation: false,
                 clientCertificateRequired: true,
                 remoteCertificateValidationCallback: EnsureRootedWithTestCertificate
@@ -766,7 +766,7 @@ namespace UnitTest.Epoxy
                 // underlying socket. With Epoxy's current implementation, this
                 // can't reliably be detected at connection time. So we attempt
                 // to exercise the connection using a proxy and expect that to fail.
-                EpoxyConnection clientConnection = await transport.ConnectToAsync("epoxys://bond-test-host1");
+                EpoxyConnection clientConnection = await transport.ConnectToAsync("epoxys://bond-test-server1");
                 var proxy = new DummyTestProxy<EpoxyConnection>(clientConnection);
                 await AssertRequestResponseWorksAsync(proxy);
             }
