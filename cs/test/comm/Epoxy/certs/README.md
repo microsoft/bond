@@ -23,18 +23,18 @@ should be the same directory that this README is in), run
 `Import-PfxCertificate`:
 
     Import-PfxCertificate `
-	    -CertStoreLocation Cert:\CurrentUser\My\ `
-		-Exportable `
-		-FilePath .\bond-test-root.pfx `
-		-Password (ConvertTo-SecureString -AsPlainText -Force "bond")
+        -CertStoreLocation Cert:\CurrentUser\My\ `
+        -Exportable `
+        -FilePath .\bond-test-root.pfx `
+        -Password (ConvertTo-SecureString -AsPlainText -Force "bond")
 
 You should get output like the following:
 
     PS C:\src\bond\cs\test\comm\Epoxy\certs> Import-PfxCertificate `
-	    -CertStoreLocation Cert:\CurrentUser\My\ `
-		-Exportable `
-		-FilePath .\bond-test-root.pfx `
-		-Password (ConvertTo-SecureString -AsPlainText -Force "bond")
+        -CertStoreLocation Cert:\CurrentUser\My\ `
+        -Exportable `
+        -FilePath .\bond-test-root.pfx `
+        -Password (ConvertTo-SecureString -AsPlainText -Force "bond")
 
     PSParentPath: Microsoft.PowerShell.Security\Certificate::CurrentUser\My
 
@@ -51,24 +51,24 @@ Tab completion will help here, if you need to use a different certificate to
 sign.
 
     New-SelfSignedCertificate `
-	    -KeyUsage KeyEncipherment,DigitalSignature `
-		-NotAfter (Get-Date "2036-06-16") `
-		-Signer Cert:\CurrentUser\My\29D6B3199BE91CB38D94FD1F2883A9FD2126C91D `
-		-CertStoreLocation Cert:\CurrentUser\My\ `
-		-DNSName bond-test-client1 `
-		-FriendlyName bond-test-client1 `
-		-KeyDescription "Bond TLS Test Client 1"
+        -KeyUsage KeyEncipherment,DigitalSignature `
+        -NotAfter (Get-Date "2036-06-16") `
+        -Signer Cert:\CurrentUser\My\29D6B3199BE91CB38D94FD1F2883A9FD2126C91D `
+        -CertStoreLocation Cert:\CurrentUser\My\ `
+        -DNSName bond-test-client1 `
+        -FriendlyName bond-test-client1 `
+        -KeyDescription "Bond TLS Test Client 1"
 
 You should get output like the following:
 
     PS C:\src\bond\cs\test\comm\Epoxy\certs> New-SelfSignedCertificate `
-	    -KeyUsage KeyEncipherment,DigitalSignature `
-		-NotAfter (Get-Date "2036-06-16") `
-		-Signer Cert:\CurrentUser\My\29D6B3199BE91CB38D94FD1F2883A9FD2126C91D `
-		-CertStoreLocation Cert:\CurrentUser\My\ `
-		-DNSName bond-test-client1 `
-		-FriendlyName bond-test-client1 `
-		-KeyDescription "Bond TLS Test Client 1"
+        -KeyUsage KeyEncipherment,DigitalSignature `
+        -NotAfter (Get-Date "2036-06-16") `
+        -Signer Cert:\CurrentUser\My\29D6B3199BE91CB38D94FD1F2883A9FD2126C91D `
+        -CertStoreLocation Cert:\CurrentUser\My\ `
+        -DNSName bond-test-client1 `
+        -FriendlyName bond-test-client1 `
+        -KeyDescription "Bond TLS Test Client 1"
 
     PSParentPath: Microsoft.PowerShell.Security\Certificate::CurrentUser\My
 
@@ -85,16 +85,16 @@ password. Notice that the `Cert` parameter points to the new certificate that
 we just created. (It does _not_ point to the test root certificate.)
 
     Export-PfxCertificate `
-	    -Password (ConvertTo-SecureString -AsPlainText -Force "bond") `
-		-FilePath .\bond-test-client1.pfx `
-		-Cert Cert:\CurrentUser\My\FA4CEFE05A9CE55226C82E388B1EA873F7A75A5B
+        -Password (ConvertTo-SecureString -AsPlainText -Force "bond") `
+        -FilePath .\bond-test-client1.pfx `
+        -Cert Cert:\CurrentUser\My\FA4CEFE05A9CE55226C82E388B1EA873F7A75A5B
 
 You should get output like the following:
 
     PS C:\src\bond\cs\test\comm\Epoxy\certs> Export-PfxCertificate `
-	    -Password (ConvertTo-SecureString -AsPlainText -Force "bond") `
-		-FilePath .\bond-test-client1.pfx `
-		-Cert Cert:\CurrentUser\My\FA4CEFE05A9CE55226C82E388B1EA873F7A75A5B
+        -Password (ConvertTo-SecureString -AsPlainText -Force "bond") `
+        -FilePath .\bond-test-client1.pfx `
+        -Cert Cert:\CurrentUser\My\FA4CEFE05A9CE55226C82E388B1EA873F7A75A5B
 
         Directory: C:\src\bond\cs\test\comm\Epoxy\certs
 
@@ -110,5 +110,5 @@ Delete all of the certificates that you created or imported:
 
     # Delete the newly created certificate
     del Cert:\CurrentUser\My\FA4CEFE05A9CE55226C82E388B1EA873F7A75A5B
-	# Delete the imported root certificate.
-	del Cert:\CurrentUser\My\29D6B3199BE91CB38D94FD1F2883A9FD2126C91D
+    # Delete the imported root certificate.
+    del Cert:\CurrentUser\My\29D6B3199BE91CB38D94FD1F2883A9FD2126C91D
