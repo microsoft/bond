@@ -18,7 +18,7 @@ different versioning scheme, following the Haskell community's
 * IDL comm version: minor bump needed (dependencies updated)
 * C++ version: minor bump needed
 * C# NuGet version: major bump needed
-* C# Comm NuGet version: minor bump needed (dependencies updated)
+* C# Comm NuGet version: minor bump needed
 
 ### C++ ###
 * Generated enum types now have a `FromEnum` method that can be used to
@@ -35,6 +35,13 @@ different versioning scheme, following the Haskell community's
   consumers of serialized SchemaDef. We plan to restore this field in the
   future.
   [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
+
+### C# Comm ###
+
+* `EpoxyListeners` can now be configured to require clients to authenticate
+  themselves with a certificate. This is configured via the
+  `clientCertificateRequired` parameter when creating an
+  `EpoxyServerTlsConfig`.
 
 ## 4.3.0: 2016-08-23 ##
 

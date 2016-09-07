@@ -57,6 +57,10 @@ namespace Bond.Comm.Epoxy
         /// <param name="certificate">
         /// The certificate used to identify this server. May not be <c>null</c>.
         /// </param>
+        /// <param name="clientCertificateRequired">
+        /// Whether clients are required to present a certificate. Defaults to
+        /// <c>false</c>.
+        /// </param>
         /// <param name="remoteCertificateValidationCallback">
         /// Optional delegate responsible for validating remote certificates.
         /// May be <c>null</c> to use the default validation. This delegate is
@@ -68,6 +72,7 @@ namespace Bond.Comm.Epoxy
         /// </param>
         public EpoxyServerTlsConfig(
             X509Certificate certificate,
+            bool clientCertificateRequired = false,
             RemoteCertificateValidationCallback remoteCertificateValidationCallback = null,
             bool checkCertificateRevocation = true)
             : base(
@@ -80,12 +85,19 @@ namespace Bond.Comm.Epoxy
             }
 
             Certificate = certificate;
+            ClientCertificateRequired = clientCertificateRequired;
         }
 
         /// <summary>
         /// Gets the certificate used to authenticate when acting as a server.
         /// </summary>
         public X509Certificate Certificate { get; }
+
+        /// <summary>
+        /// Gets a flag indicating whether the server will require a
+        /// certificate from any clients that connect.
+        /// </summary>
+        public bool ClientCertificateRequired { get; }
     }
 
     /// <summary>
@@ -103,6 +115,10 @@ namespace Bond.Comm.Epoxy
         /// class, which is used to configure TLS paramaters for client
         /// connections.
         /// </summary>
+        /// <param name="certificate">
+        /// The certificate used to identify this client to servers. Defaults
+        /// to <c>null</c>.
+        /// </param>
         /// <param name="remoteCertificateValidationCallback">
         /// Optional delegate responsible for validating remote certificates.
         /// May be <c>null</c> to use the default validation. This delegate is
@@ -113,12 +129,19 @@ namespace Bond.Comm.Epoxy
         /// Whether certificate revocation is checked. Defaults to <c>true</c>.
         /// </param>
         public EpoxyClientTlsConfig(
+            X509Certificate2 certificate = null,
             RemoteCertificateValidationCallback remoteCertificateValidationCallback = null,
             bool checkCertificateRevocation = true)
             : base(
                 remoteCertificateValidationCallback: remoteCertificateValidationCallback,
                 checkCertificateRevocation: checkCertificateRevocation)
         {
+            Certificate = certificate;
         }
+
+        /// <summary>
+        /// Gets the certificate used to authenticate when acting as a client.
+        /// </summary>
+        public X509Certificate2 Certificate { get; }
     }
 }
