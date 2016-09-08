@@ -112,7 +112,8 @@ namespace #{csNamespace}
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>> #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<#{getMessageInputTypeName}, #{getMessageResultTypeName}>(
-                "#{getDeclTypeName idl s}.#{methodName}",
+                "#{getDeclTypeName idl s}",
+                "#{methodName}",
                 param,
                 ct);
         }|]
@@ -129,7 +130,8 @@ namespace #{csNamespace}
         public void #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param)
         {
             m_connection.FireEventAsync<#{getMessageInputTypeName}>(
-                "#{getDeclTypeName idl s}.#{methodName}",
+                "#{getDeclTypeName idl s}",
+                "#{methodName}",
                 param);
         }|]
           where

@@ -471,9 +471,9 @@ namespace Bond.Comm.Epoxy
 
             switch (headers.message_type)
             {
-                case EpoxyMessageType.Request:
-                case EpoxyMessageType.Response:
-                case EpoxyMessageType.Event:
+                case EpoxyMessageType.REQUEST:
+                case EpoxyMessageType.RESPONSE:
+                case EpoxyMessageType.EVENT:
                     return ClassifyState.ValidFrame;
 
                 default:
@@ -493,15 +493,15 @@ namespace Bond.Comm.Epoxy
 
             switch (headers.message_type)
             {
-                case EpoxyMessageType.Request:
+                case EpoxyMessageType.REQUEST:
                     disposition = FrameDisposition.DeliverRequestToService;
                     return ClassifyState.ClassifiedValidFrame;
 
-                case EpoxyMessageType.Response:
+                case EpoxyMessageType.RESPONSE:
                     disposition = FrameDisposition.DeliverResponseToProxy;
                     return ClassifyState.ClassifiedValidFrame;
 
-                case EpoxyMessageType.Event:
+                case EpoxyMessageType.EVENT:
                     disposition = FrameDisposition.DeliverEventToService;
                     return ClassifyState.ClassifiedValidFrame;
 

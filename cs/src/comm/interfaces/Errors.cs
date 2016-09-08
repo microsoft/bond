@@ -44,8 +44,8 @@ namespace Bond.Comm
         {
             var internalServerError = new InternalServerError
             {
-                error_code = (int) ErrorCode.InternalServerError,
-                unique_id = uniqueId ?? "",
+                error_code = (int) ErrorCode.INTERNAL_SERVER_ERROR,
+                unique_id = uniqueId ?? string.Empty,
                 message = message ?? InternalErrorMessage
             };
 
@@ -68,8 +68,8 @@ namespace Bond.Comm
         {
             var internalServerError = new InternalServerError
             {
-                error_code = (int)ErrorCode.InternalServerError,
-                unique_id = uniqueId ?? ""
+                error_code = (int)ErrorCode.INTERNAL_SERVER_ERROR,
+                unique_id = uniqueId ?? string.Empty
             };
 
             if (includeDetails && exception != null)
@@ -82,7 +82,7 @@ namespace Bond.Comm
                 {
                     var aggregateError = new AggregateError
                     {
-                        error_code = (int) ErrorCode.MultipleErrorsOccured,
+                        error_code = (int) ErrorCode.MULTIPLE_ERRORS_OCCURRED,
                         message = "One or more errors occured",
                         inner_errors = new List<IBonded<Error>>(aggEx.InnerExceptions.Count)
                     };

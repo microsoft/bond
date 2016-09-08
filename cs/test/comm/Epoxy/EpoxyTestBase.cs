@@ -108,7 +108,7 @@ namespace UnitTest.Epoxy
             {
                 var error = new Error
                 {
-                    error_code = (int) ErrorCode.InternalServerError,
+                    error_code = (int) ErrorCode.INTERNAL_SERVER_ERROR,
                 };
 
                 return Task.FromResult<IMessage>(Message.FromError(error));

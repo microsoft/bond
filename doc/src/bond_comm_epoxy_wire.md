@@ -284,16 +284,17 @@ various messaging patterns.
 
     enum EpoxyMessageType
     {
-        Request = 1;
-        Response = 2;
-        Event = 3;
+        REQUEST = 1;
+        RESPONSE = 2;
+        EVENT = 3;
     }
 
     struct EpoxyHeaders
     {
         0: uint64 conversation_id;
         1: required EpoxyMessageType message_type;
-        2: string method_name;
+        2: string service_name;
+        3: string method_name;
     }
 
 ### Conversation ID ###
@@ -346,17 +347,24 @@ connection for over 580 years before exhausting its conversation IDs. In
 practice, the `CONVERSATION_IDS_EXHAUSTED` error should never be
 encountered.
 
+### Service name ###
+
+The `serice_name` field is the name of the service that is being invoked.
+
+The `service_name` field must be set to a UTF-8 encoded string (without a
+BOM) that is the fully-qualified service name. Namespace elements are separated
+by the period character ('.', ASCII 0x2E). May be empty string if the message
+type does not require a service name.
+
+Example: `root_namespace.child_namespace.some_service`
+
 ### Method name ###
 
-The `method_name` field is the name of the service and it's method being
-invoked.
+The `method_name` field is the name of the method on the service that is being
+invoked. It is also a UTF-8 encoded string (without a BOM). May be empty string
+if the message type does not require a method name.
 
-The `method_name` field must be set to a UTF-8 encoded string (without a
-BOM) that is the concatenation of the fully-qualified service name with the
-method name. Namespace elements are separated by the period character ('.',
-ASCII 0x2E), as is the service name from the method name.
-
-Example: `root_namespace.child_namespace.some_service.some_method`
+Example: `SomeMethod`
 
 ### Message type ###
 

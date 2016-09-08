@@ -34,7 +34,8 @@ namespace tests
         public void foo11Async(global::Bond.Comm.IMessage<global::Bond.Void> param)
         {
             m_connection.FireEventAsync<global::Bond.Void>(
-                "tests.Foo.foo11",
+                "tests.Foo",
+                "foo11",
                 param);
         }
 
@@ -47,7 +48,8 @@ namespace tests
         public void foo12Async(global::Bond.Comm.IMessage<global::Bond.Void> param)
         {
             m_connection.FireEventAsync<global::Bond.Void>(
-                "tests.Foo.foo12",
+                "tests.Foo",
+                "foo12",
                 param);
         }
 
@@ -60,7 +62,8 @@ namespace tests
         public void foo13Async(global::Bond.Comm.IMessage<BasicTypes> param)
         {
             m_connection.FireEventAsync<BasicTypes>(
-                "tests.Foo.foo13",
+                "tests.Foo",
+                "foo13",
                 param);
         }
 
@@ -73,7 +76,8 @@ namespace tests
         public void foo14Async(global::Bond.Comm.IMessage<dummy> param)
         {
             m_connection.FireEventAsync<dummy>(
-                "tests.Foo.foo14",
+                "tests.Foo",
+                "foo14",
                 param);
         }
 
@@ -86,7 +90,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo21Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<global::Bond.Void, global::Bond.Void>(
-                "tests.Foo.foo21",
+                "tests.Foo",
+                "foo21",
                 param,
                 ct);
         }
@@ -100,7 +105,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo22Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<global::Bond.Void, global::Bond.Void>(
-                "tests.Foo.foo22",
+                "tests.Foo",
+                "foo22",
                 param,
                 ct);
         }
@@ -114,7 +120,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo23Async(global::Bond.Comm.IMessage<BasicTypes> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<BasicTypes, global::Bond.Void>(
-                "tests.Foo.foo23",
+                "tests.Foo",
+                "foo23",
                 param,
                 ct);
         }
@@ -128,7 +135,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo24Async(global::Bond.Comm.IMessage<dummy> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<dummy, global::Bond.Void>(
-                "tests.Foo.foo24",
+                "tests.Foo",
+                "foo24",
                 param,
                 ct);
         }
@@ -142,7 +150,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> foo31Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<global::Bond.Void, BasicTypes>(
-                "tests.Foo.foo31",
+                "tests.Foo",
+                "foo31",
                 param,
                 ct);
         }
@@ -156,7 +165,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> foo32Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<global::Bond.Void, BasicTypes>(
-                "tests.Foo.foo32",
+                "tests.Foo",
+                "foo32",
                 param,
                 ct);
         }
@@ -170,7 +180,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> foo33Async(global::Bond.Comm.IMessage<BasicTypes> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<BasicTypes, BasicTypes>(
-                "tests.Foo.foo33",
+                "tests.Foo",
+                "foo33",
                 param,
                 ct);
         }
@@ -184,7 +195,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> foo34Async(global::Bond.Comm.IMessage<dummy> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<dummy, BasicTypes>(
-                "tests.Foo.foo34",
+                "tests.Foo",
+                "foo34",
                 param,
                 ct);
         }
@@ -198,7 +210,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<dummy>> foo41Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<global::Bond.Void, dummy>(
-                "tests.Foo.foo41",
+                "tests.Foo",
+                "foo41",
                 param,
                 ct);
         }
@@ -212,7 +225,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<dummy>> foo42Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<global::Bond.Void, dummy>(
-                "tests.Foo.foo42",
+                "tests.Foo",
+                "foo42",
                 param,
                 ct);
         }
@@ -226,7 +240,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<dummy>> foo43Async(global::Bond.Comm.IMessage<BasicTypes> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<BasicTypes, dummy>(
-                "tests.Foo.foo43",
+                "tests.Foo",
+                "foo43",
                 param,
                 ct);
         }
@@ -240,7 +255,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<dummy>> foo44Async(global::Bond.Comm.IMessage<dummy> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<dummy, dummy>(
-                "tests.Foo.foo44",
+                "tests.Foo",
+                "foo44",
                 param,
                 ct);
         }

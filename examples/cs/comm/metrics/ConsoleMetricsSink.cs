@@ -24,6 +24,7 @@ namespace Bond.Examples.Metrics
             sb.Append($"\trequest ID: {metrics.request_id}\n");
             sb.Append($"\tconnection ID: {metrics.connection_id}\n");
             sb.Append($"\tendpoints: {metrics.local_endpoint} <-> {metrics.remote_endpoint}\n");
+            sb.Append($"\tservice: {metrics.service_name}\n");
             sb.Append($"\tmethod: {metrics.method_name}\n");
             sb.Append($"\ttotal millis: {metrics.total_time_millis}\n");
             sb.Append($"\tservice millis: {metrics.service_method_time_millis}\n");

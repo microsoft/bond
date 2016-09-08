@@ -20,6 +20,10 @@ different versioning scheme, following the Haskell community's
 * C# NuGet version: major bump needed
 * C# Comm NuGet version: minor bump needed
 
+### IDL comm ###
+* Update IDL to conform to naming conventions.
+* Adjust IDL for changes made to Epoxy internals
+
 ### C++ ###
 * Generated enum types now have a `FromEnum` method that can be used to
   convert from an enum value to a string. Now generated enum types have all

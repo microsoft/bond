@@ -18,9 +18,12 @@ namespace Bond.Comm
         /// </summary>
         /// <typeparam name="TRequest">The type of the request.</typeparam>
         /// <typeparam name="TResponse">The type of the response.</typeparam>
-        /// <param name="methodName">
-        /// The fully qualified name in the Bond namespace of the method to
+        /// <param name="serviceName">
+        /// The fully qualified name in the Bond namespace of the service to
         /// invoke.
+        /// </param>
+        /// <param name="methodName">
+        /// The name of the method to invoke within the indicated service.
         /// </param>
         /// <param name="message">The message to send.</param>
         /// <param name="ct">
@@ -30,7 +33,8 @@ namespace Bond.Comm
         /// A task that represents the result of invoking the method. This is
         /// usually the response to the method, but may be an error.
         /// </returns>
-        Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, IMessage<TRequest> message, CancellationToken ct);
+        Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string serviceName, string methodName,
+                                                                            IMessage<TRequest> message, CancellationToken ct);
     }
 
     /// <summary>
@@ -43,9 +47,12 @@ namespace Bond.Comm
         /// Starts an asynchronous operation to invoke an event method.
         /// </summary>
         /// <typeparam name="TPayload">The type of the event.</typeparam>
-        /// <param name="methodName">
-        /// The fully qualified name in the Bond namespace of the method to
+        /// <param name="serviceName">
+        /// The fully qualified name in the Bond namespace of the service to
         /// invoke.
+        /// </param>
+        /// <param name="methodName">
+        /// The name of the method to invoke within the indicated service.
         /// </param>
         /// <param name="message">The message to send.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
@@ -54,7 +61,7 @@ namespace Bond.Comm
         /// task may represent an error if there was a local error sending the
         /// message.
         /// </remarks>
-        Task FireEventAsync<TPayload>(string methodName, IMessage<TPayload> message);
+        Task FireEventAsync<TPayload>(string serviceName, string methodName, IMessage<TPayload> message);
     }
 
     /// <summary>

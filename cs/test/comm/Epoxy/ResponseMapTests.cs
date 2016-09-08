@@ -67,7 +67,7 @@ namespace UnitTest.Epoxy
             IMessage response = await responseTask;
             Assert.IsTrue(response.IsError);
             Error err = response.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.ConnectionShutDown, err.error_code);
+            Assert.AreEqual((int)ErrorCode.CONNECTION_SHUT_DOWN, err.error_code);
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace UnitTest.Epoxy
             var response = await responseTask;
             Assert.IsTrue(response.IsError);
             Error err = response.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.ConnectionShutDown, err.error_code);
+            Assert.AreEqual((int)ErrorCode.CONNECTION_SHUT_DOWN, err.error_code);
         }
 
         [Test]

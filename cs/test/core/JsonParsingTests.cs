@@ -214,7 +214,7 @@ World", target._str);
 
             var target = ParseJson<BasicTypes>(json);
 
-            Assert.AreEqual(string.Empty, target._str);
+            Assert.IsEmpty(target._str);
             Assert.IsTrue(target._bool);
             Assert.AreEqual(13.2, target._double);
         }

@@ -5,30 +5,30 @@ namespace bond.comm;
 
 enum MessageType
 {
-    Request = 0;
-    Response = 1;
-    Event = 2;
+    REQUEST = 0;
+    RESPONSE = 1;
+    EVENT = 2;
 }
 
 enum ErrorCode
 {
-    InternalServerError = 0xA0BD0000; // Error is an InternalServerError
-    MethodNotFound = 0xA0BD0001;
-    InvalidInvocation = 0xA0BD0002;
-    TransportError = 0xA0BD0003;
-    ConnectionShutDown = 0xA0BD0004;
-    MultipleErrorsOccured = 0xA0BD0005; // Error is an AggregateError
+    INTERNAL_SERVER_ERROR = 0xA0BD0000; // Error is an InternalServerError
+    METHOD_NOT_FOUND = 0xA0BD0001;
+    INVALID_INVOCATION = 0xA0BD0002;
+    TRANSPORT_ERROR = 0xA0BD0003;
+    CONNECTION_SHUT_DOWN = 0xA0BD0004;
+    MULTIPLE_ERRORS_OCCURRED = 0xA0BD0005; // Error is an AggregateError
 }
 
 enum ConnectionShutdownReason
 {
-    Unknown = 0x0;
-    ClientGraceful = 0x1;
-    ServerGraceful = 0x2;
-    ClientProtocolError = 0x3;
-    BondInternalError = 0x4;
-    ServiceInternalError = 0x5;
-    NetworkError = 0x6;
+    UNKNOWN= 0x0;
+    CLIENT_GRACEFUL = 0x1;
+    SERVER_GRACEFUL = 0x2;
+    CLIENT_PROTOCOL_ERROR = 0x3;
+    BOND_INTERNAL_ERROR = 0x4;
+    SERVICE_INTERNAL_ERROR = 0x5;
+    NETWORK_ERROR = 0x6;
 }
 
 struct Error
@@ -54,7 +54,7 @@ struct ConnectionMetrics
     0: string connection_id;
     1: string local_endpoint;
     2: string remote_endpoint;
-    3: ConnectionShutdownReason shutdown_reason = Unknown;
+    3: ConnectionShutdownReason shutdown_reason = UNKNOWN;
     4: double duration_millis;
 }
 
@@ -62,10 +62,11 @@ struct RequestMetrics
 {
     0: string request_id;
     1: string connection_id;
-    2: string method_name;
-    3: string local_endpoint;
-    4: string remote_endpoint;
-    5: nullable<InternalServerError> error;
-    6: double total_time_millis;
-    7: double service_method_time_millis;
+    2: string service_name;
+    3: string method_name;
+    4: string local_endpoint;
+    5: string remote_endpoint;
+    6: nullable<InternalServerError> error;
+    7: double total_time_millis;
+    8: double service_method_time_millis;
 }

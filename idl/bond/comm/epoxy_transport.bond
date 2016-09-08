@@ -11,16 +11,17 @@ struct EpoxyConfig
 
 enum EpoxyMessageType
 {
-    Request = 1;
-    Response = 2;
-    Event = 3;
+    REQUEST = 1;
+    RESPONSE = 2;
+    EVENT = 3;
 }
 
 struct EpoxyHeaders
 {
     0: uint64 conversation_id;
-    1: required EpoxyMessageType message_type = Request;
-    2: string method_name;
+    1: required EpoxyMessageType message_type = REQUEST;
+    2: string service_name;
+    3: string method_name;
 }
 
 enum ProtocolErrorCode

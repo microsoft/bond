@@ -19,7 +19,7 @@ namespace Bond.Comm.Epoxy
         /// The <see cref="ErrorCode"/> that is used in the <see cref="Error"/>
         /// response when the ResponseMap has been shutdown.
         /// </summary>
-        public static readonly ErrorCode ShutDownErrorCode = ErrorCode.ConnectionShutDown;
+        public static readonly ErrorCode ShutDownErrorCode = ErrorCode.CONNECTION_SHUT_DOWN;
         const string ShutdownMessage = "Connection has already been shutdown";
 
         static readonly Lazy<IMessage>  alreadyShutdownResponse = new Lazy<IMessage>(InitAlreadyShutdownResponse, LazyThreadSafetyMode.PublicationOnly);

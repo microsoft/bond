@@ -106,7 +106,7 @@ namespace UnitTest.Epoxy
         public void Parse_InvalidUris()
         {
             Assert.Null(EpoxyTransport.Parse(null, LoggerTests.BlackHole));
-            Assert.Null(EpoxyTransport.Parse("", LoggerTests.BlackHole));
+            Assert.Null(EpoxyTransport.Parse(string.Empty, LoggerTests.BlackHole));
             Assert.Null(EpoxyTransport.Parse("127.0.0.1", LoggerTests.BlackHole));
             Assert.Null(EpoxyTransport.Parse("cows", LoggerTests.BlackHole));
             Assert.Null(EpoxyTransport.Parse(":12", LoggerTests.BlackHole));
@@ -206,7 +206,7 @@ namespace UnitTest.Epoxy
         {
             TestClientServer<TestService> testClientServer = await SetupTestClientServer<TestService>();
 
-            var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService.RespondWithEmpty", EmptyMessage, CancellationToken.None);
+            var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService", "RespondWithEmpty", EmptyMessage, CancellationToken.None);
 
             Assert.IsFalse(response.IsError);
             Assert.IsNotNull(response.Payload);
@@ -223,13 +223,13 @@ namespace UnitTest.Epoxy
         {
             TestClientServer<TestService> testClientServer = await SetupTestClientServer<TestService>();
 
-            var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService.RespondWithError", EmptyMessage, CancellationToken.None);
+            var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService", "RespondWithError", EmptyMessage, CancellationToken.None);
 
             Assert.IsTrue(response.IsError);
             Assert.IsNotNull(response.Error);
 
             var error = response.Error.Deserialize<Error>();
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
 
             await testClientServer.ServiceTransport.StopAsync();
             await testClientServer.ClientTransport.StopAsync();
@@ -240,13 +240,13 @@ namespace UnitTest.Epoxy
         {
             TestClientServer<TestService> testClientServer = await SetupTestClientServer<TestService>();
 
-            var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService.ThrowInsteadOfResponding", EmptyMessage, CancellationToken.None);
+            var response = await testClientServer.ClientConnection.RequestResponseAsync<Bond.Void, Bond.Void>("TestService", "ThrowInsteadOfResponding", EmptyMessage, CancellationToken.None);
 
             Assert.IsTrue(response.IsError);
             Assert.IsNotNull(response.Error);
 
             var error = response.Error.Deserialize<Error>();
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.That(error.message, Is.StringContaining(Errors.InternalErrorMessage));
 
             await testClientServer.ServiceTransport.StopAsync();
@@ -329,7 +329,7 @@ namespace UnitTest.Epoxy
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
 
-            errorLayer.SetState(MessageType.Request, errorOnSend: true, errorOnReceive: false);
+            errorLayer.SetState(MessageType.REQUEST, errorOnSend: true, errorOnReceive: false);
             IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Assert.AreEqual(TestLayer_ReturnErrors.SendError, response.Error.Deserialize().error_code);
@@ -337,7 +337,7 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(0, testClientServer.Service.RequestCount);
             Assert.AreEqual(Dummy.Empty.int_value, testClientServer.Service.LastRequestReceived.int_value);
 
-            errorLayer.SetState(MessageType.Response, errorOnSend: false, errorOnReceive: true);
+            errorLayer.SetState(MessageType.RESPONSE, errorOnSend: false, errorOnReceive: true);
             response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Assert.AreEqual(TestLayer_ReturnErrors.ReceiveError, response.Error.Deserialize().error_code);
@@ -388,7 +388,7 @@ namespace UnitTest.Epoxy
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
 
-            errorLayer.SetState(MessageType.Request, errorOnSend: false, errorOnReceive: true);
+            errorLayer.SetState(MessageType.REQUEST, errorOnSend: false, errorOnReceive: true);
 
             IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
@@ -398,7 +398,7 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(0, testClientServer.Service.RequestCount);
             Assert.AreEqual(Dummy.Empty.int_value, testClientServer.Service.LastRequestReceived.int_value);
 
-            errorLayer.SetState(MessageType.Response, errorOnSend: true, errorOnReceive: false);
+            errorLayer.SetState(MessageType.RESPONSE, errorOnSend: true, errorOnReceive: false);
             response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             error = response.Error.Deserialize();
@@ -420,7 +420,7 @@ namespace UnitTest.Epoxy
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var theEvent = new Dummy { int_value = 100 };
 
-            errorLayer.SetState(MessageType.Event, errorOnSend: true, errorOnReceive: false);
+            errorLayer.SetState(MessageType.EVENT, errorOnSend: true, errorOnReceive: false);
 
             ManualResetEventSlim waitForEvent = testClientServer.Service.CreateResetEvent();
             proxy.EventMethodAsync(theEvent);
@@ -431,7 +431,7 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(0, testClientServer.Service.EventCount);
             Assert.AreEqual(Dummy.Empty.int_value, testClientServer.Service.LastEventReceived.int_value);
 
-            errorLayer.SetState(MessageType.Event, errorOnSend: false, errorOnReceive: true);
+            errorLayer.SetState(MessageType.EVENT, errorOnSend: false, errorOnReceive: true);
 
             theEvent.int_value = 101;
 
@@ -456,7 +456,7 @@ namespace UnitTest.Epoxy
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var theEvent = new Dummy { int_value = 100 };
 
-            errorLayer.SetState(MessageType.Event, errorOnSend: false, errorOnReceive: true);
+            errorLayer.SetState(MessageType.EVENT, errorOnSend: false, errorOnReceive: true);
 
             ManualResetEventSlim waitForEvent = testClientServer.Service.CreateResetEvent();
             proxy.EventMethodAsync(theEvent);
@@ -467,7 +467,7 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(0, testClientServer.Service.EventCount);
             Assert.AreEqual(Dummy.Empty.int_value, testClientServer.Service.LastEventReceived.int_value);
 
-            errorLayer.SetState(MessageType.Event, errorOnSend: true, errorOnReceive: false);
+            errorLayer.SetState(MessageType.EVENT, errorOnSend: true, errorOnReceive: false);
             theEvent.int_value = 101;
 
             waitForEvent = testClientServer.Service.CreateResetEvent();
@@ -544,7 +544,7 @@ namespace UnitTest.Epoxy
             IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Error error = response.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.AreEqual(TestLayerStackProvider_Fails.InternalDetails, error.message);
 
             await testClientServer.ServiceTransport.StopAsync();
@@ -566,7 +566,7 @@ namespace UnitTest.Epoxy
             IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Error error = response.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.AreEqual(Errors.InternalErrorMessage, error.message);
 
             await testClientServer.ServiceTransport.StopAsync();

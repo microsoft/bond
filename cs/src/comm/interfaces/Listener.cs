@@ -133,7 +133,7 @@ namespace Bond.Comm
         /// <remarks>
         /// After a service has been removed, the listener will cease directing
         /// messages to its methods and will respond with a
-        /// <see cref="ErrorCode.MethodNotFound"/> error.
+        /// <see cref="ErrorCode.METHOD_NOT_FOUND"/> error.
         /// </remarks>
         public abstract void RemoveService<T>(T service) where T : IService;
 

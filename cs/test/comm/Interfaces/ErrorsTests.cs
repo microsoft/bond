@@ -17,7 +17,7 @@ namespace UnitTest.Interfaces
 
             InternalServerError error = Errors.MakeInternalServerError(ex, "some ID", includeDetails: false);
 
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.IsNotEmpty(error.unique_id);
             Assert.That(error.message, Is.Not.StringContaining(ex.Message));
             Assert.IsEmpty(error.server_stack_trace);
@@ -28,7 +28,7 @@ namespace UnitTest.Interfaces
         public void MakeInternalServerError_NullExIncludeDetails_GenericErrorReturned()
         {
             InternalServerError error = Errors.MakeInternalServerError(exception: null, uniqueId: "some ID", includeDetails: true);
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.IsNotEmpty(error.unique_id);
             Assert.IsNotEmpty(error.message);
             Assert.IsEmpty(error.server_stack_trace);
@@ -48,7 +48,7 @@ namespace UnitTest.Interfaces
             InternalServerError cleansedInternalError = cleansedError as InternalServerError;
             Assert.NotNull(cleansedInternalError);
 
-            Assert.AreEqual((int)ErrorCode.InternalServerError, cleansedInternalError.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, cleansedInternalError.error_code);
             Assert.AreEqual(Errors.InternalErrorMessage, cleansedInternalError.message);
             Assert.IsNull(cleansedInternalError.inner_error);
             Assert.AreEqual(savedID, cleansedInternalError.unique_id);
@@ -58,11 +58,11 @@ namespace UnitTest.Interfaces
         [Test]
         public void CleanseInternalServerError_WithOtherError()
         {
-            Error error = new Error { error_code = (int)ErrorCode.TransportError, message = "message" };
+            Error error = new Error { error_code = (int)ErrorCode.TRANSPORT_ERROR, message = "message" };
 
             Error cleansedError = Errors.CleanseInternalServerError(error);
             Assert.NotNull(cleansedError);
-            Assert.AreEqual((int)ErrorCode.TransportError, cleansedError.error_code);
+            Assert.AreEqual((int)ErrorCode.TRANSPORT_ERROR, cleansedError.error_code);
             Assert.AreEqual("message", cleansedError.message);
         }
 
@@ -72,7 +72,7 @@ namespace UnitTest.Interfaces
             var ex = GenerateException(new Exception("this is some message", GenerateException<InvalidOperationException>()));
             InternalServerError error = Errors.MakeInternalServerError(ex, "some ID", includeDetails: true);
 
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.IsNotEmpty(error.unique_id);
             Assert.That(error.message, Is.StringContaining(ex.Message));
             Assert.IsNotEmpty(error.server_stack_trace);
@@ -86,14 +86,14 @@ namespace UnitTest.Interfaces
             var aggEx = GenerateException(new AggregateException("this is some message", innerExceptions));
             InternalServerError error = Errors.MakeInternalServerError(aggEx, "some ID", includeDetails: true);
 
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.IsNotEmpty(error.unique_id);
             Assert.That(error.message, Is.StringContaining(aggEx.Message));
             Assert.IsNotEmpty(error.server_stack_trace);
             Assert.IsNotNull(error.inner_error);
 
             var aggError = error.inner_error.Deserialize<AggregateError>();
-            Assert.AreEqual((int)ErrorCode.MultipleErrorsOccured, aggError.error_code);
+            Assert.AreEqual((int)ErrorCode.MULTIPLE_ERRORS_OCCURRED, aggError.error_code);
             Assert.That(aggError.message, Is.StringMatching("One or more errors occured"));
             Assert.AreEqual(2, aggError.inner_errors.Count);
         }
