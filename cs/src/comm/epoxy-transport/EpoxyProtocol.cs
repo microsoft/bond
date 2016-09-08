@@ -35,7 +35,7 @@ namespace Bond.Comm.Epoxy
             /// The frame was a valid Event.
             /// </summary>
             DeliverEventToService,
-            
+
             /// <summary>
             /// The frame is a valid Config frame and needs to be handled.
             /// </summary>

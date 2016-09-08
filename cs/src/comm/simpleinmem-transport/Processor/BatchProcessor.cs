@@ -41,23 +41,23 @@ namespace Bond.Comm.SimpleInMem.Processor
                     break;
                 }
 
-                switch(payload.headers.payload_type)
+                switch(payload.headers.message_type)
                 {
-                    case PayloadType.Event:
+                    case SimpleInMemMessageType.Event:
                         Task.Run(() => DispatchEvent(payload));
                         break;
 
-                    case PayloadType.Request:
+                    case SimpleInMemMessageType.Request:
                         Task.Run(() => DispatchRequest(payload, writeQueue));
                         break;
 
-                    case PayloadType.Response:
+                    case SimpleInMemMessageType.Response:
                         Task.Run(() => DispatchResponse(payload));
                         break;
 
                     default:
-                        logger.Site().Error("Unsupported Payload type: [{0}], for conversation id: {1}.",
-                                         payload.headers.payload_type, payload.headers.conversation_id);
+                        logger.Site().Error("Unsupported message type: [{0}], for conversation id: {1}.",
+                                         payload.headers.message_type, payload.headers.conversation_id);
                         break;
                 }
 
@@ -125,7 +125,7 @@ namespace Bond.Comm.SimpleInMem.Processor
                 response = Message.FromError(Errors.CleanseInternalServerError(layerError));
             }
 
-            var payload = Util.NewPayLoad(conversationId, PayloadType.Response, layerData, response, taskSource);
+            var payload = Util.NewPayLoad(conversationId, SimpleInMemMessageType.Response, layerData, response, taskSource);
             queue.Enqueue(payload);
         }
 

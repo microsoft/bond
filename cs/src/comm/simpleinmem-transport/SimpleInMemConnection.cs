@@ -214,7 +214,7 @@ namespace Bond.Comm.SimpleInMem
 
             // Pass the layer stack instance as state in response task completion source.
             var responseCompletionSource = new TaskCompletionSource<IMessage>(layerStack);
-            var payload = Util.NewPayLoad(conversationId, PayloadType.Request, layerData, request, responseCompletionSource);
+            var payload = Util.NewPayLoad(conversationId, SimpleInMemMessageType.Request, layerData, request, responseCompletionSource);
             payload.headers.method_name = methodName;
             writeQueue.Enqueue(payload);
 
@@ -243,7 +243,7 @@ namespace Bond.Comm.SimpleInMem
                 return;
             }
 
-            var payload = Util.NewPayLoad(conversationId, PayloadType.Event, layerData, message, null);
+            var payload = Util.NewPayLoad(conversationId, SimpleInMemMessageType.Event, layerData, message, null);
             payload.headers.method_name = methodName;
             writeQueue.Enqueue(payload);
         }
