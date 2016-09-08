@@ -21,7 +21,7 @@ namespace UnitTest.Epoxy
         private const uint GoodResponseId = 1;
         private const string GoodMethod = "ShaveYaks";
         private const ProtocolErrorCode MeaninglessErrorCode = ProtocolErrorCode.GENERIC_ERROR;
-        private static readonly IMessage<Dummy> meaninglessMessage = new Message<Dummy>(new Dummy());
+        private static readonly IMessage<Dummy> meaninglessPayload = new Message<Dummy>(new Dummy());
         private static readonly IMessage meaninglessError = Message.FromError(new InternalServerError() { error_code = (int)ErrorCode.InternalServerError, message = "Meaningless message"});
         private static readonly ArraySegment<byte> emptyLayerData = new ArraySegment<byte>();
         private static ArraySegment<byte> goodLayerData;
@@ -85,17 +85,17 @@ namespace UnitTest.Epoxy
 
             // Good frames, from which we can pull good framelets to build bad frames.
             goodRequestFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, EpoxyMessageType.Request, meaninglessMessage, null, LoggerTests.BlackHole);
+                GoodRequestId, GoodMethod, EpoxyMessageType.Request, meaninglessPayload, null, LoggerTests.BlackHole);
             goodRequestLayerDataFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, EpoxyMessageType.Request, meaninglessMessage, goodLayerObject, LoggerTests.BlackHole);
+                GoodRequestId, GoodMethod, EpoxyMessageType.Request, meaninglessPayload, goodLayerObject, LoggerTests.BlackHole);
 
             goodResponseFrame = EpoxyConnection.MessageToFrame(
-                GoodResponseId, GoodMethod, EpoxyMessageType.Response, meaninglessMessage, null, LoggerTests.BlackHole);
+                GoodResponseId, GoodMethod, EpoxyMessageType.Response, meaninglessPayload, null, LoggerTests.BlackHole);
             goodErrorResponseFrame = EpoxyConnection.MessageToFrame(
                 GoodResponseId, GoodMethod, EpoxyMessageType.Response, meaninglessError, null, LoggerTests.BlackHole);
 
             goodEventFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, EpoxyMessageType.Event, meaninglessMessage, null, LoggerTests.BlackHole);
+                GoodRequestId, GoodMethod, EpoxyMessageType.Event, meaninglessPayload, null, LoggerTests.BlackHole);
 
             configFrame = EpoxyConnection.MakeConfigFrame(LoggerTests.BlackHole);
             protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(MeaninglessErrorCode, null, LoggerTests.BlackHole);
@@ -289,6 +289,7 @@ namespace UnitTest.Epoxy
                 EpoxyProtocol.ClassifyState.ExpectMessageData, goodRequestFrame, goodRequestHeaders, emptyLayerData,
                 ref  message, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectEndOfFrame, after);
+            Assert.IsFalse(message.IsError);
             Assert.NotNull(message.Data.Array);
             Assert.Null(errorCode);
 
@@ -296,6 +297,7 @@ namespace UnitTest.Epoxy
                 EpoxyProtocol.ClassifyState.ExpectMessageData, goodRequestLayerDataFrame, goodRequestHeaders, goodLayerData,
                 ref  message, ref errorCode, LoggerTests.BlackHole);
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectEndOfFrame, after);
+            Assert.IsFalse(message.IsError);
             Assert.NotNull(message.Data.Array);
             Assert.Null(errorCode);
         }

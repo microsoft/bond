@@ -697,7 +697,7 @@ namespace Bond.Comm.Epoxy
                 var requestMetrics = Metrics.StartRequestMetrics(ConnectionMetrics);
                 var receiveContext = new EpoxyReceiveContext(this, ConnectionMetrics, requestMetrics);
 
-                ILayerStack layerStack = null; // CHWARR TODO: is not giving layers a chance on this response okay?
+                ILayerStack layerStack = null;
                 IMessage result;
 
                 if (messageData.IsError)
