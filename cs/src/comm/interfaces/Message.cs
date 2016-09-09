@@ -5,13 +5,14 @@ namespace Bond.Comm
 {
     using System;
     using System.Diagnostics;
-    using System.Linq;
-    using System.Reflection;
 
     /// <summary>
     /// Interface representing a message of an unknown payload type.
     /// </summary>
-    /// <remarks>A message can contain either a payload or an error.</remarks>
+    /// <remarks>
+    /// A message can contain either a payload or an error, represented by
+    /// <see cref="Bond.Comm.Error"/>.
+    /// </remarks>
     public interface IMessage
     {
         /// <summary>
@@ -39,13 +40,12 @@ namespace Bond.Comm
         bool IsError { get; }
 
         /// <summary>
-        /// Converts this message to a
-        /// <see cref="IMessage{T}">IMessage&lt;U&gt;</see>.
+        /// Converts this message to an <see cref="IMessage{T}">IMessage&lt;U&gt;</see>.
         /// </summary>
-        /// <typeparam name="U">The type of the message payload.</typeparam>
+        /// <typeparam name="U">The new type of the message payload.</typeparam>
         /// <returns>
-        /// An instance of <see cref="IMessage{T}">IMessage&lt;U&gt;</see>. If
-        /// the conversion fails, <c>null</c> is returned.
+        /// An instance of <see cref="IMessage{T}">IMessage&lt;U&gt;</see>. If the conversion fails,
+        /// <c>null</c> is returned.
         /// </returns>
         IMessage<U> Convert<U>();
 
@@ -55,7 +55,10 @@ namespace Bond.Comm
     /// Interface representing a message of specific payload type.
     /// </summary>
     /// <typeparam name="T">The type of the message payload.</typeparam>
-    /// <remarks>A message can contain either a payload or an error.</remarks>
+    /// <remarks>
+    /// A message can contain either a payload or an error, represented by
+    /// <see cref="Bond.Comm.Error"/>.
+    /// </remarks>
     public interface IMessage<out T> : IMessage
     {
         /// <summary>
@@ -93,10 +96,10 @@ namespace Bond.Comm
 
         // To create an error Message, use Message.FromError<TPayload>() or Message.FromError().
         //
-        // This ctor is internal so that a non-error Message<Error> can be created. If this
-        // were public, then new Message<Error>(SomeError) would resolve to this ctor, creating an
-        // Error message, instead of to the generic ctor. We need new Message<Error>(SomeError) to
-        // resolve to the generic ctor to create a non-error Message.
+        // This ctor is internal so that a non-error Message<Error> can be created. If this were
+        // public, then new Message<Error>(SomeError) would resolve to this ctor, creating an error
+        // message, instead of to the generic ctor. We need new Message<Error>(SomeError) to resolve
+        // to the generic ctor to create a non-error Message.
         internal Message(IBonded<Error> error)
         {
             if (error == null)
@@ -138,7 +141,7 @@ namespace Bond.Comm
                 throw new ArgumentNullException(nameof(payload));
             }
 
-            return FromPayload(MakeIBonded(payload));
+            return FromPayload(MakeMostDerivedIBonded(payload));
         }
 
         /// <summary>
@@ -160,12 +163,12 @@ namespace Bond.Comm
         }
 
         /// <summary>
-        /// Creates an error message from the given error.
+        /// Creates an error message from the given Error.
         /// </summary>
         /// <typeparam name="TPayload">
         /// The type of the message payload
         /// </typeparam>
-        /// <param name="err">The error for the message.</param>
+        /// <param name="err">The Error for the message.</param>
         /// <returns>An error message of the given payload type.</returns>
         public static IMessage<TPayload> FromError<TPayload>(Error err)
         {
@@ -174,21 +177,16 @@ namespace Bond.Comm
                 throw new ArgumentNullException(nameof(err));
             }
 
-            if (err.error_code == (int)ErrorCode.OK)
-            {
-                throw new ArgumentException("Error must have a non-zero error code.", nameof(err));
-            }
-
-            return FromError<TPayload>(MakeIBonded(err));
+            return FromError<TPayload>(MakeMostDerivedIBonded(err));
         }
 
         /// <summary>
-        /// Creates an error message from the given error.
+        /// Creates an error message from the given Error.
         /// </summary>
         /// <typeparam name="TPayload">
         /// The type of the message payload.
         /// </typeparam>
-        /// <param name="err">The error for the message.</param>
+        /// <param name="err">The Error for the message.</param>
         /// <returns>An error message of the given payload type.</returns>
         public static IMessage<TPayload> FromError<TPayload>(IBonded<Error> err)
         {
@@ -203,12 +201,8 @@ namespace Bond.Comm
         /// <summary>
         /// Creates an error message from the given error.
         /// </summary>
-        /// <param name="err">The error for the message.</param>
+        /// <param name="err">The Error for the message.</param>
         /// <returns>An error message of unknown payload type.</returns>
-        /// <exception cref="ArgumentException">
-        /// Thrown when <paramref name="err"/> has a zero
-        /// <see cref="Comm.Error.error_code"/>.
-        /// </exception>
         public static IMessage FromError(Error err)
         {
             if (err == null)
@@ -216,18 +210,13 @@ namespace Bond.Comm
                 throw new ArgumentNullException(nameof(err));
             }
 
-            if (err.error_code == (int)ErrorCode.OK)
-            {
-                throw new ArgumentException("Error must have a non-zero error code.", nameof(err));
-            }
-
-            return FromError(MakeIBonded(err));
+            return FromError(MakeMostDerivedIBonded(err));
         }
 
         /// <summary>
-        /// Creates an error message from the given error.
+        /// Creates an error message from the given Error.
         /// </summary>
-        /// <param name="err">The error for the message.</param>
+        /// <param name="err">The Error for the message.</param>
         /// <returns>An error message of unknown payload type.</returns>
         public static IMessage FromError(IBonded<Error> err)
         {
@@ -236,11 +225,10 @@ namespace Bond.Comm
                 throw new ArgumentNullException(nameof(err));
             }
 
-            // can't check that err has a non-zero error code without deserializaing, so we skip that
             return new Message(err);
         }
 
-        internal static IBonded<TActual> MakeIBonded<TActual>(TActual payload)
+        internal static IBonded<TActual> MakeMostDerivedIBonded<TActual>(TActual payload)
         {
             if (payload == null)
             {
@@ -257,7 +245,7 @@ namespace Bond.Comm
             {
                 if (IsError)
                 {
-                    throw new InvalidOperationException("The Payload of this message cannot be accessed, as this message contains an Error.");
+                    throw new InvalidOperationException("The Payload of this message cannot be accessed, as this message contains an error.");
                 }
 
                 Debug.Assert(payload != null);
@@ -306,7 +294,7 @@ namespace Bond.Comm
         /// Creates a payload message from the given payload.
         /// </summary>
         /// <param name="payload">The message payload.</param>
-        public Message(TPayload payload) : base(Message.MakeIBonded(payload)) { }
+        public Message(TPayload payload) : base(Message.MakeMostDerivedIBonded(payload)) { }
 
         /// <summary>
         /// Creates a payload message from the given payload.

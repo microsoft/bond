@@ -37,11 +37,12 @@ different versioning scheme, following the Haskell community's
   [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
 
 ### C# Comm ###
-
 * `EpoxyListeners` can now be configured to require clients to authenticate
   themselves with a certificate. This is configured via the
   `clientCertificateRequired` parameter when creating an
   `EpoxyServerTlsConfig`.
+* Internals of the Epoxy protocol cleaned up. See the
+  [updated wire format specification](https://microsoft.github.io/bond/manual/bond_comm_epoxy_wire.html).
 
 ## 4.3.0: 2016-08-23 ##
 
@@ -164,7 +165,7 @@ different versioning scheme, following the Haskell community's
   * Bond.Compiler.CSharp: contains `gbc` and C# MSBuild targets. No longer
     do you have to consume Bond.CSharp (which pulls in all of the rest of
     Bond) just to get codegen.
-  
+
 ### C# Comm ###
 
 * Initial preview release of the

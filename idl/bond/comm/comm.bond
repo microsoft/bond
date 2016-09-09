@@ -12,7 +12,6 @@ enum MessageType
 
 enum ErrorCode
 {
-    OK = 0x0;
     InternalServerError = 0xA0BD0000; // Error is an InternalServerError
     MethodNotFound = 0xA0BD0001;
     InvalidInvocation = 0xA0BD0002;

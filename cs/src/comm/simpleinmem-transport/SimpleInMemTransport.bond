@@ -3,7 +3,7 @@
 
 namespace bond.comm.simpleinmem;
 
-enum PayloadType
+enum SimpleInMemMessageType
 {
     Request = 1;
     Response = 2;
@@ -13,6 +13,6 @@ enum PayloadType
 struct SimpleInMemHeaders
 {
     0: uint64 conversation_id;
-    1: required PayloadType payload_type = Request;
+    1: required SimpleInMemMessageType message_type = Request;
     2: string method_name;
 }
