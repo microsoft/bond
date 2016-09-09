@@ -385,7 +385,7 @@ namespace Bond.Comm.Epoxy
 
             if (frame.Count < 2)
             {
-                logger.Site().Error("Frame had headers but no message.");
+                logger.Site().Error("Frame had headers but no message data.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -416,7 +416,7 @@ namespace Bond.Comm.Epoxy
             int messageDataIndex = (layerData.Array == null ? 1 : 2);
             if (messageDataIndex >= frame.Count)
             {
-                logger.Site().Error("Frame had headers but no message.");
+                logger.Site().Error("Frame had headers but no message data.");
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }
@@ -424,7 +424,7 @@ namespace Bond.Comm.Epoxy
             var framelet = frame.Framelets[messageDataIndex];
             if (framelet.Type != FrameletType.PayloadData && framelet.Type != FrameletType.ErrorData)
             {
-                logger.Site().Error("Frame had headers but no message framelet. Unexpected framelet type {0}", (int)framelet.Type);
+                logger.Site().Error("Frame had headers but no message data. Unexpected framelet type {0}", (int)framelet.Type);
                 errorCode = ProtocolErrorCode.MALFORMED_DATA;
                 return ClassifyState.MalformedFrame;
             }

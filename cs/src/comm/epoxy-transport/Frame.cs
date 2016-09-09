@@ -50,13 +50,12 @@ namespace Bond.Comm.Epoxy
 
         public static bool IsKnownType(UInt16 value)
         {
-            return false
-                | value == (UInt16)FrameletType.EpoxyConfig
-                | value == (UInt16)FrameletType.EpoxyHeaders
-                | value == (UInt16)FrameletType.ErrorData
-                | value == (UInt16)FrameletType.LayerData
-                | value == (UInt16)FrameletType.PayloadData
-                | value == (UInt16)FrameletType.ProtocolError;
+            return value == (UInt16) FrameletType.EpoxyConfig
+                   || value == (UInt16) FrameletType.EpoxyHeaders
+                   || value == (UInt16) FrameletType.ErrorData
+                   || value == (UInt16) FrameletType.LayerData
+                   || value == (UInt16) FrameletType.PayloadData
+                   || value == (UInt16) FrameletType.ProtocolError;
         }
 
         public FrameletType Type { get; }
