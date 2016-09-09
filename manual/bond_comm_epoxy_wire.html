@@ -124,8 +124,7 @@
 <li><a href="#epoxy-headers-structure">Epoxy Headers Structure</a><ul>
 <li><a href="#conversation-id">Conversation ID</a></li>
 <li><a href="#method-name">Method name</a></li>
-<li><a href="#payload-type">Payload type</a></li>
-<li><a href="#error-code">Error code</a></li>
+<li><a href="#message-type">Message type</a></li>
 </ul></li>
 <li><a href="#protocolerror-struct"><code>ProtocolError</code> struct</a></li>
 </ul></li>
@@ -153,8 +152,8 @@
 <p>Since Bond transports operate on messages, the Epoxy transport needs a way to group sequences of bytes within the stream of bytes provided by a TCP connection into individual messages. It does this by “framing” each message. Thus, this wire format turns a stream of bytes into a sequence of <em>frames</em>.</p>
 <p>These frames are then used to transmit Bond messages between participants. The messages are decomposed into simple tuples. These tuples are used to implement the <a href="bond_comm.html#messaging-patterns">messaging patterns</a> this transport supports.</p>
 <p>The Epoxy transport wire format should be <a href="#example">simple</a>, so that it is easy to implement–at least the basic feature set.</p>
-<p>The Epoxy transport defers to Bond serialization/marshalling when it can. Instead of re-implementing backward/forward compatible serialization schemes, it uses Bond. For any structures that are used as part of the protocol itself, the <a href="bond_cpp.html#fast-binary">Fast Binary</a> protocol version 1 is used to serialize them, as this protocol is simple to implement. Payloads are marshalled as Compact Binary v1, as this protocol provides a good trade-off between payload size and serialization/deserialization time.</p>
-<p>“Interesting” structures need to be able to be allocated and serialized/deserialized independently. For example, a Bond Epoxy transport proxy that only wants to inspect headers should not be required to deserialize entire payloads.</p>
+<p>The Epoxy transport defers to Bond serialization/marshalling when it can. Instead of re-implementing backward/forward compatible serialization schemes, it uses Bond. For any structures that are used as part of the protocol itself, the <a href="bond_cpp.html#fast-binary">Fast Binary</a> protocol version 1 is used to serialize them, as this protocol is simple to implement. Payloads and errors are marshalled as Compact Binary v1, as this protocol provides a good trade-off between size and serialization/deserialization time.</p>
+<p>“Interesting” structures need to be able to be allocated and serialized/deserialized independently. For example, a Bond Epoxy transport proxy that only wants to inspect headers should not be required to deserialize entire messages.</p>
 <h1 id="conventions">Conventions</h1>
 <p>The following hold in this document, unless otherwise specified.</p>
 <ul>
@@ -172,7 +171,9 @@
 <li><em><strong>headers</strong></em>: metadata about a conversation</li>
 <li><em><strong>initiator</strong></em>: the entity that starts a conversation</li>
 <li><em><strong>layer data</strong></em>: opaque blob of data used by Bond Communications’ layers facility</li>
-<li><em><strong>payload data</strong></em>: opaque blob of data that is the contents of the message being sent</li>
+<li><em><strong>message</strong></em>: either <em>payload data</em> or <em>error data</em></li>
+<li><em><strong>payload data</strong></em>: opaque blob of data that is the contents of the message being sent when the message contains the user’s payload type</li>
+<li><em><strong>error data</strong></em>: opaque blob of data that is the contents of the message being sent when the message contains an error</li>
 <li><em><strong>receiver</strong></em>: the endpoint that is reading <em>frames</em>, regardless of the higher-level messaging pattern being employed</li>
 <li><em><strong>sender</strong></em>: the endpoint originating <em>frames</em>, regardless of the higher-level messaging pattern being employed</li>
 <li><em><strong>server</strong></em>: an entity listening for connections from <em>clients</em>, typically on a well-known port. In Berkeley socket parlance, this entity calls <code>bind()</code>, <code>listen()</code>, and <code>accept()</code></li>
@@ -268,6 +269,14 @@
 <td><a href="#epoxy-headers-structure"><code>EpoxyHeaders</code></a> structure</td>
 </tr>
 <tr class="odd">
+<td><code>ErrorData</code></td>
+<td>0x44 0x45 (“DE”)</td>
+<td>Message</td>
+<td>One of DP or DE</td>
+<td>Compact Binary v1 marshalled</td>
+<td>Message error data</td>
+</tr>
+<tr class="even">
 <td><code>LayerData</code></td>
 <td>0x59 0x4C (“YL”)</td>
 <td>Message</td>
@@ -275,15 +284,15 @@
 <td>Compact Binary v1 marshalled</td>
 <td>Auxiliary data used by Bond Communications layers stack</td>
 </tr>
-<tr class="even">
-<td><code>PayloadData</code></td>
-<td>0x54 0x44 (“TD”)</td>
-<td>Message</td>
-<td>Yes</td>
-<td>Compact Binary v1 marshalled</td>
-<td>Actual message payload</td>
-</tr>
 <tr class="odd">
+<td><code>PayloadData</code></td>
+<td>0x44 0x50 (“DP”)</td>
+<td>Message</td>
+<td>One of DP or DE</td>
+<td>Compact Binary v1 marshalled</td>
+<td>Message payload data</td>
+</tr>
+<tr class="even">
 <td><code>ProtocolError</code></td>
 <td>0x52 0x45 (“RE”)</td>
 <td>Error</td>
@@ -322,7 +331,7 @@
 <ol style="list-style-type: decimal">
 <li><code>EpoxyHeaders</code></li>
 <li>optional <code>LayerData</code></li>
-<li><code>PayloadData</code></li>
+<li>one of <code>PayloadData</code> or <code>ErrorData</code></li>
 </ol>
 <p>This order allows for clients and servers to start processing the frame as it arrives.</p>
 <h1 id="protocol-error">Protocol Error</h1>
@@ -342,7 +351,7 @@ struct EpoxyConfig
 <p>The <code>EpoxyHeaders</code> structure is used for metadata needed to implement the various messaging patterns.</p>
 <pre><code>namespace bond.comm.epoxy;
 
-enum PayloadType
+enum EpoxyMessageType
 {
     Request = 1;
     Response = 2;
@@ -352,9 +361,8 @@ enum PayloadType
 struct EpoxyHeaders
 {
     0: uint64 conversation_id;
-    1: required PayloadType payload_type;
+    1: required EpoxyMessageType message_type;
     2: string method_name;
-    3: int32 error_code;
 }</code></pre>
 <h3 id="conversation-id">Conversation ID</h3>
 <p>Conversation IDs are used to identify <em>conversations</em>. Messaging patterns like request/response use conversation IDs to associate the request with the response, as many requests and responses are simultaneously in flight over the same connection. Other patterns, like event, just use the conversation ID for diagnostic purposes (e.g., to correlate client- and server-side logs.)</p>
@@ -370,17 +378,15 @@ struct EpoxyHeaders
 <p>The <code>method_name</code> field is the name of the service and it’s method being invoked.</p>
 <p>The <code>method_name</code> field must be set to a UTF-8 encoded string (without a BOM) that is the concatenation of the fully-qualified service name with the method name. Namespace elements are separated by the period character (‘.’, ASCII 0x2E), as is the service name from the method name.</p>
 <p>Example: <code>root_namespace.child_namespace.some_service.some_method</code></p>
-<h3 id="payload-type">Payload type</h3>
-<p>The payload type along with the <a href="#error-code">error code</a> indicates what kind of message the <code>PayloadData</code> framelet contains.</p>
+<h3 id="message-type">Message type</h3>
+<p>The <code>EpoxyMessageType</code> indicates what kind of message pattern is being employed:</p>
 <ul>
-<li><code>Request</code>: initiates a conversation that expects a response. The <code>PayloadData</code> is a Bond structure of the expected request type for the method being invoked.</li>
-<li><code>Response</code>: completes the conversation with a response to a previous request. Based on the <a href="#error-code"><code>error_code</code></a> field, <code>PayloadData</code> is either a Bond structure of the expected response type for the method invoked or error data.</li>
-<li><code>Event</code>: initiates and completes a one-way, best-effort conversation. No response is allowed, not even an error response.</li>
+<li><code>Request</code>: initiates a conversation that expects a response. The message contains a <code>PayloadData</code> framelet that is a Bond structure of the expected request type for the method being invoked.</li>
+<li><code>Response</code>: completes the conversation with a response to a previous request. The message either contains a <code>PayloadData</code> framelet with the serialized form of the expected Bond response type for the method invoked or it contains an <code>ErrorData</code> framelet with a a Bond structure derived from <code>Error</code>.</li>
+<li><code>Event</code>: initiates and completes a one-way, best-effort conversation. No response is allowed, not even an error response. The message contains a <code>PayloadData</code> framelet that is a Bond structure of the expected request type for the method being invoked.</li>
 </ul>
-<h3 id="error-code">Error code</h3>
-<p>The <code>error_code</code> field must be set to 0 for all payload types other than <code>Response</code>. For responses, the error code indicates the error/non-error status of a response.</p>
-<p>If the error code is 0, the <code>PayloadData</code> framelet contains a Bond structure of the expected response type for the method that was invoked.</p>
-<p>If the error code is non-zero, the <code>PayloadData</code> framelet contains a Bond structure derived from <code>Error</code>.</p>
+<p>Notice that the <code>ErrorData</code> framelet only makes sense for a <code>Response</code>. Implementations will need to be robust against senders that have a mismatch here.</p>
+<p>Implementations must also be robust against type mismatches for <code>PayloadData</code> and <code>ErrorData</code> framelets.</p>
 <h2 id="protocolerror-struct"><code>ProtocolError</code> struct</h2>
 <pre><code>struct ProtocolError
 {
@@ -469,7 +475,7 @@ service Calc
 <pre><code>let doSomeMathHeaders = make
     EpoxyHeaders
     conversation_id:3
-    payload_type:Request
+    message_type:Request
     service_name:&quot;examples.calc.Calc&quot;
     method_name:&quot;Calculate&quot;.</code></pre>
 <p>These two structures would then be marshalled and serialized, respectively, and put into <code>PayloadData</code> and <code>EpoxyHeaders</code> frames.</p>
@@ -485,7 +491,7 @@ service Calc
 let doSomeMathResponseHeaders = make
     EpoxyHeaders
     conversation_id:3
-    payload_type:Response
+    message_type:Response
     error_code:0.</code></pre>
 <p>The response frame is:</p>
 <pre><code>TODO: add hex dump after stabilizing representation</code></pre>
