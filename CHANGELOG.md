@@ -35,6 +35,9 @@ different versioning scheme, following the Haskell community's
   consumers of serialized SchemaDef. We plan to restore this field in the
   future.
   [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
+* The Bond.Runtime NuGet package no longer artificially limits
+  Newtonsoft.Json to versions before 10.
+  [Issue #212](https://github.com/Microsoft/bond/issues/212)
 
 ### C# Comm ###
 * `EpoxyListeners` can now be configured to require clients to authenticate
