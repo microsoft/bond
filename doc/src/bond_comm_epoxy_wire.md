@@ -349,20 +349,22 @@ encountered.
 
 ### Service name ###
 
-The `serice_name` field is the name of the service that is being invoked.
+The `service_name` field is the name of the service that is being invoked.
 
 The `service_name` field must be set to a UTF-8 encoded string (without a
-BOM) that is the fully-qualified service name. Namespace elements are separated
-by the period character ('.', ASCII 0x2E). May be empty string if the message
-type does not require a service name.
+BOM) that is the fully-qualified service name. Namespace elements are
+separated by the period character ('.', ASCII 0x2E). May be the empty string
+if the message type does not require a service name.
 
 Example: `root_namespace.child_namespace.some_service`
 
 ### Method name ###
 
-The `method_name` field is the name of the method on the service that is being
-invoked. It is also a UTF-8 encoded string (without a BOM). May be empty string
-if the message type does not require a method name.
+The `method_name` field is the name of the method on the service that is
+being invoked.
+
+It is also a UTF-8 encoded string (without a BOM). May be the
+empty string if the message type does not require a method name.
 
 Example: `SomeMethod`
 
