@@ -3,6 +3,7 @@
 
 # Bond
 
+![The Bond logo: a stylized glue gun](https://raw.githubusercontent.com/Microsoft/bond/master/doc/src/logos/bond-logo-64x64-white.png)
 Bond is an open source, cross-platform framework for working with schematized
 data. It supports cross-language serialization/deserialization and powerful
 generic mechanisms for efficiently manipulating data. Bond is broadly used at

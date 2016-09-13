@@ -1,5 +1,8 @@
 % Bond Communications
 
+![The Bond logo: a stylized glue gun](./src/logos/bond-logo-64x64-white.png)\
+
+
 # About #
 
 The Bond Communications framework allows clients and services to exchange

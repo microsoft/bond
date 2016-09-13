@@ -1,5 +1,8 @@
 %Why Bond?
 
+![The Bond logo: a stylized glue gun](./src/logos/bond-logo-64x64-white.png)\
+
+
 Bond is an [open source framework](https://github.com/Microsoft/bond/) which
 addresses similar scenarios to Protocol Buffers, Thrift and Avro. In this 
 document we try to address similarities and differences between Bond and other 

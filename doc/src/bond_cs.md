@@ -1,5 +1,8 @@
 % A Young Person's Guide to C# Bond
 
+![The Bond logo: a stylized glue gun](https://raw.githubusercontent.com/Microsoft/bond/master/doc/src/logos/bond-logo-64x64-white.png)\
+
+
 About
 =====
 

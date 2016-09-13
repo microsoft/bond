@@ -119,7 +119,8 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
 
     add_pandoc_markdown (src/why_bond.md
         TEMPLATE index.html
-        CODE python)
+        CODE python
+        OPTIONS --self-contained)
 
     set (doxygen_sources
         doxygen/bond.doxygen

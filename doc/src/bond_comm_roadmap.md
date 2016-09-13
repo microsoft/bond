@@ -1,5 +1,8 @@
 % Bond Comm Roadmap
 
+![The Bond logo: a stylized glue gun](./src/logos/bond-logo-64x64-white.png)\
+
+
 # Roadmap
 
 This is what we currently are working on for Bond Comm.
