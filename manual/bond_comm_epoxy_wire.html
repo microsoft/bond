@@ -123,6 +123,7 @@
 <li><a href="#epoxy-config-structure">Epoxy Config Structure</a></li>
 <li><a href="#epoxy-headers-structure">Epoxy Headers Structure</a><ul>
 <li><a href="#conversation-id">Conversation ID</a></li>
+<li><a href="#service-name">Service name</a></li>
 <li><a href="#method-name">Method name</a></li>
 <li><a href="#message-type">Message type</a></li>
 </ul></li>
@@ -353,16 +354,17 @@ struct EpoxyConfig
 
 enum EpoxyMessageType
 {
-    Request = 1;
-    Response = 2;
-    Event = 3;
+    REQUEST = 1;
+    RESPONSE = 2;
+    EVENT = 3;
 }
 
 struct EpoxyHeaders
 {
     0: uint64 conversation_id;
     1: required EpoxyMessageType message_type;
-    2: string method_name;
+    2: string service_name;
+    3: string method_name;
 }</code></pre>
 <h3 id="conversation-id">Conversation ID</h3>
 <p>Conversation IDs are used to identify <em>conversations</em>. Messaging patterns like request/response use conversation IDs to associate the request with the response, as many requests and responses are simultaneously in flight over the same connection. Other patterns, like event, just use the conversation ID for diagnostic purposes (e.g., to correlate client- and server-side logs.)</p>
@@ -374,10 +376,14 @@ struct EpoxyHeaders
 <h4 id="conversation-id-exhaustion">Conversation ID exhaustion</h4>
 <p>When either the client or the server has exhausted all of its conversation IDs, it must send an <a href="#protocol-error">Error frame</a> with the error code <code>CONVERSATION_IDS_EXHAUSTED</code>. This will allow the connection to be re-established, resetting the conversation IDs.</p>
 <p><em>Design Note</em>: Re-establishing the connection is a simple way to handle conversation ID exhaustion. Rollover schemes are complicated to specify, implement, debug, and test. Additionally, a single high-volume endpoint sending 1,000,000,000 conversations per second will be able to use the same connection for over 580 years before exhausting its conversation IDs. In practice, the <code>CONVERSATION_IDS_EXHAUSTED</code> error should never be encountered.</p>
+<h3 id="service-name">Service name</h3>
+<p>The <code>service_name</code> field is the name of the service that is being invoked.</p>
+<p>The <code>service_name</code> field must be set to a UTF-8 encoded string (without a BOM) that is the fully-qualified service name. Namespace elements are separated by the period character (‘.’, ASCII 0x2E). May be the empty string if the message type does not require a service name.</p>
+<p>Example: <code>root_namespace.child_namespace.some_service</code></p>
 <h3 id="method-name">Method name</h3>
-<p>The <code>method_name</code> field is the name of the service and it’s method being invoked.</p>
-<p>The <code>method_name</code> field must be set to a UTF-8 encoded string (without a BOM) that is the concatenation of the fully-qualified service name with the method name. Namespace elements are separated by the period character (‘.’, ASCII 0x2E), as is the service name from the method name.</p>
-<p>Example: <code>root_namespace.child_namespace.some_service.some_method</code></p>
+<p>The <code>method_name</code> field is the name of the method on the service that is being invoked.</p>
+<p>It is also a UTF-8 encoded string (without a BOM). May be the empty string if the message type does not require a method name.</p>
+<p>Example: <code>SomeMethod</code></p>
 <h3 id="message-type">Message type</h3>
 <p>The <code>EpoxyMessageType</code> indicates what kind of message pattern is being employed:</p>
 <ul>
