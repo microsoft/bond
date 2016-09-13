@@ -88,9 +88,9 @@ namespace UnitTest.SimpleInMem
             Assert.IsTrue(subResponse.IsError);
             Error addError = addResponse.Error.Deserialize();
             Error subError = subResponse.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.MethodNotFound, (int)addError.error_code);
+            Assert.AreEqual((int)ErrorCode.METHOD_NOT_FOUND, (int)addError.error_code);
             Assert.AreEqual("Got request for unknown method [unittest.simpleinmem.Calculator.Add].", addError.message);
-            Assert.AreEqual((int)ErrorCode.MethodNotFound, (int)subError.error_code);
+            Assert.AreEqual((int)ErrorCode.METHOD_NOT_FOUND, (int)subError.error_code);
             Assert.AreEqual("Got request for unknown method [unittest.simpleinmem.Calculator.Subtract].", subError.message);
         }
 
@@ -314,7 +314,7 @@ namespace UnitTest.SimpleInMem
             IMessage<Output> multiplyResponse = await calculatorProxy.MultiplyAsync(request, System.Threading.CancellationToken.None);
             Assert.IsTrue(multiplyResponse.IsError);
             InternalServerError error = multiplyResponse.Error.Deserialize<InternalServerError>();
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.That(error.message, Is.StringContaining(Errors.InternalErrorMessage));
         }
 
@@ -325,6 +325,7 @@ namespace UnitTest.SimpleInMem
 
             const int first = 91;
             const int second = 23;
+            const string serviceName = "Calculator";
             const string methodName = "Divide";
 
             var input = new PairedInput
@@ -333,11 +334,11 @@ namespace UnitTest.SimpleInMem
                 Second = second
             };
             var request = new Message<PairedInput>(input);
-            IMessage<Output> divideResponse = await connections[0].RequestResponseAsync<PairedInput, Output>(methodName, request, new System.Threading.CancellationToken());
+            IMessage<Output> divideResponse = await connections[0].RequestResponseAsync<PairedInput, Output>(serviceName, methodName, request, new System.Threading.CancellationToken());
             Assert.IsTrue(divideResponse.IsError);
             Error error = divideResponse.Error.Deserialize<Error>();
-            Assert.AreEqual((int)ErrorCode.MethodNotFound, error.error_code);
-            Assert.That(error.message, Is.StringContaining($"Got request for unknown method [{methodName}]."));
+            Assert.AreEqual((int)ErrorCode.METHOD_NOT_FOUND, error.error_code);
+            Assert.That(error.message, Is.StringContaining($"Got request for unknown method [{serviceName}.{methodName}]."));
         }
 
         [Test]
@@ -417,7 +418,7 @@ namespace UnitTest.SimpleInMem
             var proxy = new DummyTestProxy<SimpleInMemConnection>(connections[0]);
             var request = new Dummy { int_value = 100 };
 
-            errorLayer.SetState(MessageType.Request, errorOnSend: false, errorOnReceive: true);
+            errorLayer.SetState(MessageType.REQUEST, errorOnSend: false, errorOnReceive: true);
             IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
 
             Assert.IsTrue(response.IsError);
@@ -427,7 +428,7 @@ namespace UnitTest.SimpleInMem
             Assert.AreEqual(0, testService.RequestCount);
             Assert.AreEqual(Dummy.Empty.int_value, testService.LastRequestReceived.int_value);
 
-            errorLayer.SetState(MessageType.Request, errorOnSend: true, errorOnReceive: false);
+            errorLayer.SetState(MessageType.REQUEST, errorOnSend: true, errorOnReceive: false);
             request.int_value = 101;
             response = await proxy.ReqRspMethodAsync(request);
 
@@ -438,7 +439,7 @@ namespace UnitTest.SimpleInMem
             Assert.AreEqual(0, testService.RequestCount);
             Assert.AreEqual(Dummy.Empty.int_value, testService.LastRequestReceived.int_value);
 
-            errorLayer.SetState(MessageType.Response, errorOnSend: true, errorOnReceive: false);
+            errorLayer.SetState(MessageType.RESPONSE, errorOnSend: true, errorOnReceive: false);
             request.int_value = 102;
             response = await proxy.ReqRspMethodAsync(request);
 
@@ -449,7 +450,7 @@ namespace UnitTest.SimpleInMem
             Assert.AreEqual(1, testService.RequestCount);
             Assert.AreEqual(request.int_value, testService.LastRequestReceived.int_value);
 
-            errorLayer.SetState(MessageType.Response, errorOnSend: false, errorOnReceive: true);
+            errorLayer.SetState(MessageType.RESPONSE, errorOnSend: false, errorOnReceive: true);
             request.int_value = 103;
             response = await proxy.ReqRspMethodAsync(request);
 
@@ -460,7 +461,7 @@ namespace UnitTest.SimpleInMem
             Assert.AreEqual(2, testService.RequestCount);
             Assert.AreEqual(request.int_value, testService.LastRequestReceived.int_value);
 
-            errorLayer.SetState(MessageType.Event, errorOnSend: true, errorOnReceive: true);
+            errorLayer.SetState(MessageType.EVENT, errorOnSend: true, errorOnReceive: true);
             request.int_value = 104;
             response = await proxy.ReqRspMethodAsync(request);
 
@@ -489,7 +490,7 @@ namespace UnitTest.SimpleInMem
             response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Error error = response.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.AreEqual(TestLayerStackProvider_Fails.InternalDetails, error.message);
         }
 
@@ -511,7 +512,7 @@ namespace UnitTest.SimpleInMem
             response = await proxy.ReqRspMethodAsync(request);
             Assert.IsTrue(response.IsError);
             Error error = response.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.AreEqual(Errors.InternalErrorMessage, error.message);
         }
 
@@ -554,7 +555,7 @@ namespace UnitTest.SimpleInMem
             var proxy = new DummyTestProxy<SimpleInMemConnection>(connections[0]);
             var theEvent = new Dummy { int_value = 100 };
 
-            errorLayer.SetState(MessageType.Event, errorOnSend: false, errorOnReceive: true);
+            errorLayer.SetState(MessageType.EVENT, errorOnSend: false, errorOnReceive: true);
 
             ManualResetEventSlim waitForEvent = testService.CreateResetEvent();
             proxy.EventMethodAsync(theEvent);
@@ -565,7 +566,7 @@ namespace UnitTest.SimpleInMem
             Assert.AreEqual(0, testService.EventCount);
             Assert.AreEqual(Dummy.Empty.int_value, testService.LastEventReceived.int_value);
 
-            errorLayer.SetState(MessageType.Event, errorOnSend: true, errorOnReceive: false);
+            errorLayer.SetState(MessageType.EVENT, errorOnSend: true, errorOnReceive: false);
             theEvent.int_value = 101;
 
             waitForEvent = testService.CreateResetEvent();
@@ -577,7 +578,7 @@ namespace UnitTest.SimpleInMem
             Assert.AreEqual(0, testService.EventCount);
             Assert.AreEqual(Dummy.Empty.int_value, testService.LastEventReceived.int_value);
 
-            errorLayer.SetState(MessageType.Event, errorOnSend: false, errorOnReceive: false);
+            errorLayer.SetState(MessageType.EVENT, errorOnSend: false, errorOnReceive: false);
             theEvent.int_value = 102;
 
             waitForEvent = testService.CreateResetEvent();

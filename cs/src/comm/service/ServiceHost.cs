@@ -24,9 +24,10 @@ namespace Bond.Comm.Service
             this.logger = logger;
         }
 
-        private static void Update(RequestMetrics requestMetrics, string methodName, Stopwatch serviceTime)
+        private static void Update(RequestMetrics requestMetrics, string serviceName, string methodName, Stopwatch serviceTime)
         {
-            requestMetrics.method_name = methodName ?? "";
+            requestMetrics.service_name = serviceName ?? string.Empty;
+            requestMetrics.method_name = methodName ?? string.Empty;
             requestMetrics.service_method_time_millis = serviceTime?.Elapsed.TotalMilliseconds ?? 0;
         }
 
@@ -113,25 +114,26 @@ namespace Bond.Comm.Service
             logger.Site().Information("Deregistered {0}.", typeof(T).Name);
         }
 
-        public async Task<IMessage> DispatchRequest(string methodName, ReceiveContext context, IMessage message)
+        public async Task<IMessage> DispatchRequest(string serviceName, string methodName, ReceiveContext context, IMessage message)
         {
+            string qualifiedName = serviceName + "." + methodName;
             Stopwatch serviceTime = null;
-            logger.Site().Information("Got request [{0}] from {1}.", methodName, context.Connection);
+            logger.Site().Information("Got request [{0}] from {1}.", qualifiedName, context.Connection);
 
             try
             {
                 ServiceMethodInfo methodInfo;
                 lock (dispatchTableLock)
                 {
-                    if (!dispatchTable.TryGetValue(methodName, out methodInfo))
+                    if (!dispatchTable.TryGetValue(qualifiedName, out methodInfo))
                     {
-                        var errorMessage = "Got request for unknown method [" + methodName + "].";
+                        var errorMessage = "Got request for unknown method [" + qualifiedName + "].";
 
                         logger.Site().Error(errorMessage);
                         var error = new Error
                         {
                             message = errorMessage,
-                            error_code = (int) ErrorCode.MethodNotFound
+                            error_code = (int) ErrorCode.METHOD_NOT_FOUND
                         };
                         return Message.FromError(error);
                     }
@@ -139,7 +141,7 @@ namespace Bond.Comm.Service
 
                 if (methodInfo.CallbackType != ServiceCallbackType.RequestResponse)
                 {
-                    var errorMessage = "Method [" + methodName + "] invoked as if it were " +
+                    var errorMessage = "Method [" + qualifiedName + "] invoked as if it were " +
                                        ServiceCallbackType.RequestResponse + ", but it was registered as " +
                                        methodInfo.CallbackType + ".";
 
@@ -147,7 +149,7 @@ namespace Bond.Comm.Service
                     var error = new Error
                     {
                         message = errorMessage,
-                        error_code = (int) ErrorCode.InvalidInvocation
+                        error_code = (int) ErrorCode.INVALID_INVOCATION
                     };
                     return Message.FromError(error);
                 }
@@ -164,7 +166,7 @@ namespace Bond.Comm.Service
                 catch (Exception ex)
                 {
                     logger.Site()
-                        .Error(ex, "Failed to complete method [{0}]. With exception: {1}", methodName, ex.Message);
+                        .Error(ex, "Failed to complete method [{0}]. With exception: {1}", qualifiedName, ex.Message);
                     result = Message.FromError(
                         Errors.MakeInternalServerError(ex, context.RequestMetrics.request_id, includeDetails: false));
                 }
@@ -172,23 +174,24 @@ namespace Bond.Comm.Service
             }
             finally
             {
-                Update(context.RequestMetrics, methodName, serviceTime);
+                Update(context.RequestMetrics, serviceName, methodName, serviceTime);
             }
         }
 
-        public async Task DispatchEvent(string methodName, ReceiveContext context, IMessage message)
+        public async Task DispatchEvent(string serviceName, string methodName, ReceiveContext context, IMessage message)
         {
+            string qualifiedName = serviceName + "." + methodName;
             Stopwatch serviceTime = null;
-            logger.Site().Information("Got event [{0}] from {1}.", methodName, context.Connection);
+            logger.Site().Information("Got event [{0}] from {1}.", qualifiedName, context.Connection);
 
             try
             {
                 ServiceMethodInfo methodInfo;
                 lock (dispatchTableLock)
                 {
-                    if (!dispatchTable.TryGetValue(methodName, out methodInfo))
+                    if (!dispatchTable.TryGetValue(qualifiedName, out methodInfo))
                     {
-                        logger.Site().Error("Got request for unknown method [{0}].", methodName);
+                        logger.Site().Error("Got request for unknown method [{0}].", qualifiedName);
                         return;
                     }
                 }
@@ -196,7 +199,7 @@ namespace Bond.Comm.Service
                 if (methodInfo.CallbackType != ServiceCallbackType.Event)
                 {
                     logger.Site().Error("Method [{0}] invoked as if it were {1}, but it was registered as {2}.",
-                        methodName, ServiceCallbackType.Event, methodInfo.CallbackType);
+                        qualifiedName, ServiceCallbackType.Event, methodInfo.CallbackType);
                     return;
                 }
 
@@ -208,12 +211,12 @@ namespace Bond.Comm.Service
                 catch (Exception ex)
                 {
                     logger.Site()
-                        .Error(ex, "Failed to complete method [{0}]. With exception: {1}", methodName, ex.Message);
+                        .Error(ex, "Failed to complete method [{0}]. With exception: {1}", qualifiedName, ex.Message);
                 }
             }
             finally
             {
-                Update(context.RequestMetrics, methodName, serviceTime);
+                Update(context.RequestMetrics, serviceName, methodName, serviceTime);
             }
         }
     }

@@ -158,17 +158,18 @@ namespace Bond.Comm.SimpleInMem
             return pair;
         }
 
-        public async Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string methodName, IMessage<TRequest> message, CancellationToken ct)
+        public async Task<IMessage<TResponse>> RequestResponseAsync<TRequest, TResponse>(string serviceName, string methodName,
+                                                                                         IMessage<TRequest> message, CancellationToken ct)
         {
             EnsureCorrectState(CnxState.Connected);
-            IMessage response = await SendRequestAsync(methodName, message);
+            IMessage response = await SendRequestAsync(serviceName, methodName, message);
             return response.Convert<TResponse>();
         }
 
-        public Task FireEventAsync<TPayload>(string methodName, IMessage<TPayload> message)
+        public Task FireEventAsync<TPayload>(string serviceName, string methodName, IMessage<TPayload> message)
         {
             EnsureCorrectState(CnxState.Connected);
-            SendEventAsync(methodName, message);
+            SendEventAsync(serviceName, methodName, message);
             return TaskExt.CompletedTask;
         }
 
@@ -189,7 +190,7 @@ namespace Bond.Comm.SimpleInMem
             }
         }
 
-        private Task<IMessage> SendRequestAsync(string methodName, IMessage request)
+        private Task<IMessage> SendRequestAsync(string serviceName, string methodName, IMessage request)
         {
             var requestMetrics = Metrics.StartRequestMetrics(ConnectionMetrics);
             var conversationId = AllocateNextConversationId();
@@ -202,26 +203,27 @@ namespace Bond.Comm.SimpleInMem
 
             if (layerError == null)
             {
-                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Request, sendContext, out layerData, logger);
+                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.REQUEST, sendContext, out layerData, logger);
             }
 
             if (layerError != null)
             {
-                logger.Site().Error("{0}: Sending request {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
-                                 this, conversationId, methodName, layerError.error_code, layerError.message);
+                logger.Site().Error("{0}: Sending request {1}/{2}.{3} failed due to layer error (Code: {4}, Message: {5}).",
+                                 this, conversationId, serviceName, methodName, layerError.error_code, layerError.message);
                 return Task.FromResult<IMessage>(Message.FromError(layerError));
             }
 
             // Pass the layer stack instance as state in response task completion source.
             var responseCompletionSource = new TaskCompletionSource<IMessage>(layerStack);
-            var payload = Util.NewPayLoad(conversationId, SimpleInMemMessageType.Request, layerData, request, responseCompletionSource);
+            var payload = Util.NewPayLoad(conversationId, SimpleInMemMessageType.REQUEST, layerData, request, responseCompletionSource);
+            payload.headers.service_name = serviceName;
             payload.headers.method_name = methodName;
             writeQueue.Enqueue(payload);
 
             return payload.outstandingRequest.Task;
         }
 
-        private void SendEventAsync(string methodName, IMessage message)
+        private void SendEventAsync(string serviceName, string methodName, IMessage message)
         {
             var requestMetrics = Metrics.StartRequestMetrics(ConnectionMetrics);
             var conversationId = AllocateNextConversationId();
@@ -233,17 +235,18 @@ namespace Bond.Comm.SimpleInMem
 
             if (layerError == null)
             {
-                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.Event, sendContext, out layerData, logger);
+                layerError = LayerStackUtils.ProcessOnSend(layerStack, MessageType.EVENT, sendContext, out layerData, logger);
             }
 
             if (layerError != null)
             {
-                logger.Site().Error("{0}: Sending event {1}/{2} failed due to layer error (Code: {3}, Message: {4}).",
-                                 this, conversationId, methodName, layerError.error_code, layerError.message);
+                logger.Site().Error("{0}: Sending event {1}/{2}.{3} failed due to layer error (Code: {4}, Message: {5}).",
+                                 this, conversationId, serviceName, methodName, layerError.error_code, layerError.message);
                 return;
             }
 
-            var payload = Util.NewPayLoad(conversationId, SimpleInMemMessageType.Event, layerData, message, null);
+            var payload = Util.NewPayLoad(conversationId, SimpleInMemMessageType.EVENT, layerData, message, null);
+            payload.headers.service_name = serviceName;
             payload.headers.method_name = methodName;
             writeQueue.Enqueue(payload);
         }

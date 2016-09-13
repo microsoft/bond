@@ -61,18 +61,18 @@ namespace UnitTest.Interfaces
             var connectionMetrics = Metrics.StartConnectionMetrics();
 
             AssertValidId(connectionMetrics.connection_id);
-            Assert.AreEqual("", connectionMetrics.local_endpoint);
-            Assert.AreEqual("", connectionMetrics.remote_endpoint);
+            Assert.IsEmpty(connectionMetrics.local_endpoint);
+            Assert.IsEmpty(connectionMetrics.remote_endpoint);
             Assert.AreEqual(0.0, connectionMetrics.duration_millis);
-            Assert.AreEqual(ConnectionShutdownReason.Unknown, connectionMetrics.shutdown_reason);
+            Assert.AreEqual(ConnectionShutdownReason.UNKNOWN, connectionMetrics.shutdown_reason);
 
             Metrics.FinishConnectionMetrics(connectionMetrics, stopwatch);
 
             AssertValidId(connectionMetrics.connection_id);
-            Assert.AreEqual("", connectionMetrics.local_endpoint);
-            Assert.AreEqual("", connectionMetrics.remote_endpoint);
+            Assert.IsEmpty(connectionMetrics.local_endpoint);
+            Assert.IsEmpty(connectionMetrics.remote_endpoint);
             Assert.Greater(connectionMetrics.duration_millis, 0.0);
-            Assert.AreEqual(ConnectionShutdownReason.Unknown, connectionMetrics.shutdown_reason);
+            Assert.AreEqual(ConnectionShutdownReason.UNKNOWN, connectionMetrics.shutdown_reason);
         }
 
         [Test]
@@ -84,9 +84,10 @@ namespace UnitTest.Interfaces
 
             AssertValidId(requestMetrics.request_id);
             Assert.AreEqual(connectionMetrics.connection_id, requestMetrics.connection_id);
-            Assert.AreEqual("", requestMetrics.local_endpoint);
-            Assert.AreEqual("", requestMetrics.remote_endpoint);
-            Assert.AreEqual("", requestMetrics.method_name);
+            Assert.IsEmpty(requestMetrics.local_endpoint);
+            Assert.IsEmpty(requestMetrics.remote_endpoint);
+            Assert.IsEmpty(requestMetrics.service_name);
+            Assert.IsEmpty(requestMetrics.method_name);
             Assert.AreEqual(0.0, requestMetrics.service_method_time_millis);
             Assert.AreEqual(0.0, requestMetrics.total_time_millis);
             Assert.Null(requestMetrics.error);
@@ -95,9 +96,10 @@ namespace UnitTest.Interfaces
 
             AssertValidId(requestMetrics.request_id);
             Assert.AreEqual(connectionMetrics.connection_id, requestMetrics.connection_id);
-            Assert.AreEqual("", requestMetrics.local_endpoint);
-            Assert.AreEqual("", requestMetrics.remote_endpoint);
-            Assert.AreEqual("", requestMetrics.method_name);
+            Assert.IsEmpty(requestMetrics.local_endpoint);
+            Assert.IsEmpty(requestMetrics.remote_endpoint);
+            Assert.IsEmpty(requestMetrics.service_name);
+            Assert.IsEmpty(requestMetrics.method_name);
             Assert.AreEqual(0.0, requestMetrics.service_method_time_millis);
             Assert.Greater(requestMetrics.total_time_millis, 0.0);
             Assert.Null(requestMetrics.error);
@@ -106,13 +108,13 @@ namespace UnitTest.Interfaces
         [Test]
         public async Task Server_Request_MetricsAreEmitted()
         {
-            await Server_MetricsAreEmitted(MessageType.Request);
+            await Server_MetricsAreEmitted(MessageType.REQUEST);
         }
 
         [Test]
         public async Task Server_Event_MetricsAreEmitted()
         {
-            await Server_MetricsAreEmitted(MessageType.Event);
+            await Server_MetricsAreEmitted(MessageType.EVENT);
         }
 
         private async Task Server_MetricsAreEmitted(MessageType messageType)
@@ -120,16 +122,17 @@ namespace UnitTest.Interfaces
             // There are several invariants around metrics that involve cross-request and cross-connection state.
             // Bring up a service, connect to it several times, and make several requests each time.
 
+            const string expectedServiceName = "unittest.comm.DummyTest";
             string expectedMethodName;
             Action<DummyTestProxy<EpoxyConnection>> doRpc;
             switch (messageType)
             {
-                case MessageType.Request:
-                    expectedMethodName = "unittest.comm.DummyTest.ReqRspMethod";
+                case MessageType.REQUEST:
+                    expectedMethodName = "ReqRspMethod";
                     doRpc = async proxy => await proxy.ReqRspMethodAsync(new Dummy());
                     break;
-                case MessageType.Event:
-                    expectedMethodName = "unittest.comm.DummyTest.EventMethod";
+                case MessageType.EVENT:
+                    expectedMethodName = "EventMethod";
                     doRpc = proxy => proxy.EventMethodAsync(new Dummy());
                     break;
                 default:
@@ -185,6 +188,7 @@ namespace UnitTest.Interfaces
 
                     Assert.AreEqual(serverEndpoint, requestMetrics.local_endpoint);
                     Assert.AreEqual(clientEndpoint, requestMetrics.remote_endpoint);
+                    Assert.AreEqual(expectedServiceName, requestMetrics.service_name);
                     Assert.AreEqual(expectedMethodName, requestMetrics.method_name);
                     Assert.Null(requestMetrics.error);
 

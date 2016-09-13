@@ -23,7 +23,7 @@ namespace UnitTest.Epoxy
 
         private static readonly Error AnyDetails = new Error
         {
-            error_code = (int) ErrorCode.MethodNotFound,
+            error_code = (int) ErrorCode.METHOD_NOT_FOUND,
             message = "This is some error message"
         };
 
@@ -97,7 +97,7 @@ namespace UnitTest.Epoxy
             IMessage<SomePayload> anyPayload = Message.FromPayload(new SomePayload());
             Task<IMessage<SomePayload>> responseTask = connection
                 .RequestResponseAsync<SomePayload, SomePayload>(
-                    "TestService.NeverRespond", anyPayload, CancellationToken.None);
+                    "TestService", "NeverRespond", anyPayload, CancellationToken.None);
 
             await connection.StopAsync();
 
@@ -105,7 +105,7 @@ namespace UnitTest.Epoxy
 
             Assert.IsTrue(response.IsError);
             Error err = response.Error.Deserialize();
-            Assert.AreEqual((int)ErrorCode.ConnectionShutDown, err.error_code);
+            Assert.AreEqual((int)ErrorCode.CONNECTION_SHUT_DOWN, err.error_code);
         }
 
         class TestServiceNeverResponds : IService

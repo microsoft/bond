@@ -44,7 +44,7 @@ namespace UnitTest.Layers
             Assert.IsNull(error);
 
             IBonded layerData;
-            error = stack.OnSend(MessageType.Request, sendContext, out layerData);
+            error = stack.OnSend(MessageType.REQUEST, sendContext, out layerData);
 
             Assert.IsNull(error);
             Assert.IsNotNull(layerData);
@@ -69,7 +69,7 @@ namespace UnitTest.Layers
             Error error = stackProvider.GetLayerStack(null, out stack);
             Assert.IsNull(error);
 
-            error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
+            error = stack.OnReceive(MessageType.REQUEST, receiveContext, CreateBondedTestData(initialReceiveValue));
 
             Assert.IsNull(error);
             Assert.AreEqual(2, testList.Count);
@@ -83,9 +83,9 @@ namespace UnitTest.Layers
             var stack = new LayerStack<Dummy>(LoggerTests.BlackHole, new TestLayer_AlwaysThrows());
 
             IBonded layerData;
-            Error error = stack.OnSend(MessageType.Request, sendContext, out layerData);
+            Error error = stack.OnSend(MessageType.REQUEST, sendContext, out layerData);
             Assert.IsNotNull(error);
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
         }
 
         [Test]
@@ -93,9 +93,9 @@ namespace UnitTest.Layers
         {
             var stack = new LayerStack<Dummy>(LoggerTests.BlackHole, new TestLayer_AlwaysThrows());
 
-            Error error = stack.OnReceive(MessageType.Request, receiveContext, CreateBondedTestData(initialReceiveValue));
+            Error error = stack.OnReceive(MessageType.REQUEST, receiveContext, CreateBondedTestData(initialReceiveValue));
             Assert.IsNotNull(error);
-            Assert.AreEqual((int)ErrorCode.InternalServerError, error.error_code);
+            Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
         }
 
         public void LayerStackProvider_BadCtorArguments_Throw()

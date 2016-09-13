@@ -19,33 +19,38 @@ namespace UnitTest.Epoxy
     {
         private const uint GoodRequestId = 1;
         private const uint GoodResponseId = 1;
+        private const string GoodService = "MyService";
         private const string GoodMethod = "ShaveYaks";
         private const ProtocolErrorCode MeaninglessErrorCode = ProtocolErrorCode.GENERIC_ERROR;
         private static readonly IMessage<Dummy> meaninglessPayload = new Message<Dummy>(new Dummy());
-        private static readonly IMessage meaninglessError = Message.FromError(new InternalServerError() { error_code = (int)ErrorCode.InternalServerError, message = "Meaningless message"});
+        private static readonly IMessage meaninglessError = Message.FromError(new InternalServerError() { error_code = (int)ErrorCode.INTERNAL_SERVER_ERROR, message = "Meaningless message"});
         private static readonly ArraySegment<byte> emptyLayerData = new ArraySegment<byte>();
         private static ArraySegment<byte> goodLayerData;
 
         private static readonly EpoxyHeaders goodRequestHeaders = new EpoxyHeaders
         {
+            service_name = GoodService,
             method_name = GoodMethod,
-            message_type = EpoxyMessageType.Request,
+            message_type = EpoxyMessageType.REQUEST,
             conversation_id = GoodRequestId
         };
         private static readonly EpoxyHeaders goodResponseHeaders = new EpoxyHeaders
         {
+            service_name = GoodService,
             method_name = GoodMethod,
-            message_type = EpoxyMessageType.Response,
+            message_type = EpoxyMessageType.RESPONSE,
             conversation_id = GoodResponseId
         };
         private static readonly EpoxyHeaders goodEventHeaders = new EpoxyHeaders
         {
+            service_name = GoodService,
             method_name = GoodMethod,
-            message_type = EpoxyMessageType.Event,
+            message_type = EpoxyMessageType.EVENT,
             conversation_id = GoodRequestId
         };
         private static readonly EpoxyHeaders unknownTypeHeaders = new EpoxyHeaders
         {
+            service_name = GoodService,
             method_name = GoodMethod,
             message_type = (EpoxyMessageType)(-100),
             conversation_id = GoodRequestId
@@ -85,17 +90,17 @@ namespace UnitTest.Epoxy
 
             // Good frames, from which we can pull good framelets to build bad frames.
             goodRequestFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, EpoxyMessageType.Request, meaninglessPayload, null, LoggerTests.BlackHole);
+                GoodRequestId, GoodService, GoodMethod, EpoxyMessageType.REQUEST, meaninglessPayload, null, LoggerTests.BlackHole);
             goodRequestLayerDataFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, EpoxyMessageType.Request, meaninglessPayload, goodLayerObject, LoggerTests.BlackHole);
+                GoodRequestId, GoodService, GoodMethod, EpoxyMessageType.REQUEST, meaninglessPayload, goodLayerObject, LoggerTests.BlackHole);
 
             goodResponseFrame = EpoxyConnection.MessageToFrame(
-                GoodResponseId, GoodMethod, EpoxyMessageType.Response, meaninglessPayload, null, LoggerTests.BlackHole);
+                GoodResponseId, GoodService, GoodMethod, EpoxyMessageType.RESPONSE, meaninglessPayload, null, LoggerTests.BlackHole);
             goodErrorResponseFrame = EpoxyConnection.MessageToFrame(
-                GoodResponseId, GoodMethod, EpoxyMessageType.Response, meaninglessError, null, LoggerTests.BlackHole);
+                GoodResponseId, GoodService, GoodMethod, EpoxyMessageType.RESPONSE, meaninglessError, null, LoggerTests.BlackHole);
 
             goodEventFrame = EpoxyConnection.MessageToFrame(
-                GoodRequestId, GoodMethod, EpoxyMessageType.Event, meaninglessPayload, null, LoggerTests.BlackHole);
+                GoodRequestId, GoodService, GoodMethod, EpoxyMessageType.EVENT, meaninglessPayload, null, LoggerTests.BlackHole);
 
             configFrame = EpoxyConnection.MakeConfigFrame(LoggerTests.BlackHole);
             protocolErrorFrame = EpoxyConnection.MakeProtocolErrorFrame(MeaninglessErrorCode, null, LoggerTests.BlackHole);
@@ -196,8 +201,9 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, after);
             Assert.NotNull(headers);
             Assert.AreEqual(GoodRequestId, headers.conversation_id);
+            Assert.AreEqual(GoodService, headers.service_name);
             Assert.AreEqual(GoodMethod, headers.method_name);
-            Assert.AreEqual(EpoxyMessageType.Request, headers.message_type);
+            Assert.AreEqual(EpoxyMessageType.REQUEST, headers.message_type);
             Assert.Null(errorCode);
 
             after = EpoxyProtocol.TransitionExpectEpoxyHeaders(
@@ -206,8 +212,9 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(EpoxyProtocol.ClassifyState.ExpectOptionalLayerData, after);
             Assert.NotNull(headers);
             Assert.AreEqual(GoodRequestId, headers.conversation_id);
+            Assert.AreEqual(GoodService, headers.service_name);
             Assert.AreEqual(GoodMethod, headers.method_name);
-            Assert.AreEqual(EpoxyMessageType.Request, headers.message_type);
+            Assert.AreEqual(EpoxyMessageType.REQUEST, headers.message_type);
             Assert.Null(errorCode);
         }
 
@@ -549,6 +556,7 @@ namespace UnitTest.Epoxy
         {
             Assert.AreEqual(expected.conversation_id, actual.conversation_id);
             Assert.AreEqual(expected.message_type, actual.message_type);
+            Assert.AreEqual(expected.service_name, actual.service_name);
             Assert.AreEqual(expected.method_name, actual.method_name);
         }
 

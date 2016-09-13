@@ -34,7 +34,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo31Async(global::Bond.Comm.IMessage<Payload> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<Payload, global::Bond.Void>(
-                "tests.Foo.foo31",
+                "tests.Foo",
+                "foo31",
                 param,
                 ct);
         }
@@ -48,7 +49,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<Payload>> foo32Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<global::Bond.Void, Payload>(
-                "tests.Foo.foo32",
+                "tests.Foo",
+                "foo32",
                 param,
                 ct);
         }
@@ -62,7 +64,8 @@ namespace tests
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<Payload>> foo33Async(global::Bond.Comm.IMessage<Payload> param, global::System.Threading.CancellationToken ct)
         {
             return m_connection.RequestResponseAsync<Payload, Payload>(
-                "tests.Foo.foo33",
+                "tests.Foo",
+                "foo33",
                 param,
                 ct);
         }
