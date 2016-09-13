@@ -9,6 +9,7 @@
         <projectUrl>https://github.com/Microsoft/bond/</projectUrl>
         <licenseUrl>https://github.com/Microsoft/bond/blob/master/LICENSE</licenseUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <iconUrl>https://raw.githubusercontent.com/Microsoft/bond/master/doc/src/logos/bond-logo-64x64-transparent.png</iconUrl>
         <summary>Bond is an open source, cross-platform, cross-language framework for working with schematized data.</summary>
         <description>
             Bond is an open source, cross-platform framework for working with schematized data. It supports cross-language serialization/deserialization and powerful generic mechanisms for efficiently manipulating data.

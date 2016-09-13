@@ -9,6 +9,7 @@
     <projectUrl>https://github.com/Microsoft/bond/</projectUrl>
     <licenseUrl>https://github.com/Microsoft/bond/blob/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <iconUrl>https://raw.githubusercontent.com/Microsoft/bond/master/doc/src/logos/bond-logo-64x64-transparent.png</iconUrl>
     <summary>The Bond project's code generation C# MSBuild targets</summary>
     <description>
       Includes the Bond compiler (gbc) and C# MSBuild targets for easy integration into project builds.

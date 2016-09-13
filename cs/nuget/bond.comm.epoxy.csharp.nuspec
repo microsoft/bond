@@ -9,6 +9,7 @@
         <projectUrl>https://github.com/Microsoft/bond/</projectUrl>
         <licenseUrl>https://github.com/Microsoft/bond/blob/master/LICENSE</licenseUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <iconUrl>https://raw.githubusercontent.com/Microsoft/bond/master/doc/src/logos/bond-logo-64x64-transparent.png</iconUrl>
         <summary>Bond Epoxy is part of an open source, cross-platform, cross-language framework for cross-process and cross-server messaging using Bond schematized data.</summary>
         <description>
             Bond Comm is an open source, cross-platform, cross-language framework for cross-process and cross-server messaging using Bond schematized data.
