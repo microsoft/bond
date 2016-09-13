@@ -11,14 +11,14 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Unreleased ##
+## 5.0.0: 2016-09-12 #
 
-* `gbc` & compiler library: minor bump needed
-* IDL core version: major bump needed
-* IDL comm version: minor bump needed (dependencies updated)
-* C++ version: minor bump needed
-* C# NuGet version: major bump needed
-* C# Comm NuGet version: minor bump needed
+* `gbc` & compiler library: 0.6.0.0
+* IDL core version: 2.0
+* IDL comm version: 1.1
+* C++ version: 5.0.0
+* C# NuGet version: 5.0.0
+* C# Comm NuGet version: 0.7.0
 
 ### IDL comm ###
 * Update IDL to conform to naming conventions.
