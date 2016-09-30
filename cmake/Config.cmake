@@ -1,5 +1,20 @@
 include (Compiler)
 
+set (BOND_GBC_PATH_DESCRIPTION
+     "Optional path to the gbc executable to use. If set, this gbc will be used when generating code from .bond files. If not set, then gbc will be built (and the Haskell toolchain will need to be present on the machine) and the gbc tests will be run.")
+
+find_program (BOND_GBC_PATH "gbc"
+    HINTS ENV BOND_GBC_PATH
+    DOC ${BOND_GBC_PATH_DESCRIPTION}
+    # We don't really want to pull gbc from the system path. If someone
+    # wants to do that, they'll need to set BOND_GBC_PATH instead.
+    NO_SYSTEM_ENVIRONMENT_PATH)
+
+if (BOND_GBC_PATH)
+    set (GBC_EXECUTABLE ${BOND_GBC_PATH})
+    message (STATUS "Existing GBC executable found: '${GBC_EXECUTABLE}'")
+endif()
+
 if (MSVC)
     # disable MSVC warnings
     add_compile_options (/bigobj /FIbond/core/warning.h /W4 /WX)
@@ -41,7 +56,7 @@ find_package (Boost 1.53.0
 
 message(STATUS "Boost Python Library: ${Boost_PYTHON_LIBRARY}")
 
-# Make sure AppVeyor CI runs fail when unit test dependencies are not found 
+# Make sure AppVeyor CI runs fail when unit test dependencies are not found
 if (DEFINED ENV{APPVEYOR} AND ("$ENV{BOND_BUILD}" STREQUAL "C++"))
     if (NOT Boost_UNIT_TEST_FRAMEWORK_FOUND)
         message(FATAL_ERROR "Boost unit_test_framework not found")
@@ -70,4 +85,3 @@ include_directories (
     ${BOND_GENERATED}
     ${Boost_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson/include)
-
