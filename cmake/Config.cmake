@@ -85,3 +85,7 @@ include_directories (
     ${BOND_GENERATED}
     ${Boost_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson/include)
+
+set (BOND_LIBRARIES_ONLY
+    "FALSE"
+    CACHE BOOL "If TRUE, then only build the Bond library files, skipping any tools. gbc will still be built if it cannot be found, however, as gbc is needed to build the libraries.")

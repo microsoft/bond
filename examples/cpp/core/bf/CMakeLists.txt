@@ -1,10 +1,18 @@
-add_bond_executable (bf cmd_arg.bond main.cpp)
+if (BOND_LIBRARIES_ONLY)
+  set (bf_EXCLUDE "EXCLUDE_FROM_ALL")
+else ()
+  set (bf_EXCLUDE "")
+endif ()
+
+add_bond_executable (bf ${bf_EXCLUDE} cmd_arg.bond main.cpp)
+target_use_cxx11 (bf)
+
+if (NOT BOND_LIBRARIES_ONLY)
+  # bf was excluded from the all target, so it cannot be installed
+  install (TARGETS bf DESTINATION bin)
+endif()
 
 add_dependencies (check bf)
-
-install (TARGETS bf DESTINATION bin)
-
-target_use_cxx11 (bf)
 
 add_test (
     NAME bf
