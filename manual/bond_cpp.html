@@ -245,10 +245,10 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 24
 25
 26
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ot">#include &quot;example_reflection.h&quot;</span>
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="pp">#include </span><span class="im">&quot;example_reflection.h&quot;</span>
 
-<span class="ot">#include &lt;bond/core/bond.h&gt;</span>
-<span class="ot">#include &lt;bond/stream/output_buffer.h&gt;</span>
+<span class="pp">#include </span><span class="im">&lt;bond/core/bond.h&gt;</span>
+<span class="pp">#include </span><span class="im">&lt;bond/stream/output_buffer.h&gt;</span>
 
 <span class="dt">int</span> main()
 {
@@ -269,7 +269,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 
     Deserialize(reader, dst);
 
-    <span class="kw">return</span> <span class="dv">0</span>;
+    <span class="cf">return</span> <span class="dv">0</span>;
 }</code></pre></td></tr></table></div>
 <h1 id="serialization">Serialization</h1>
 <p>The core feature provided by Bond is the ability to serialize and deserialize instances of user-defined schemas. The serialization APIs are declared in the <code>bond\core\bond.h</code> header file:</p>
@@ -282,7 +282,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 7
 8
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T, <span class="kw">typename</span> Writer&gt;
-<span class="dt">void</span> Serialize(<span class="dt">const</span> T&amp; obj, Writer&amp; output);
+<span class="dt">void</span> Serialize(<span class="at">const</span> T&amp; obj, Writer&amp; output);
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T, <span class="kw">typename</span> Reader&gt;
 <span class="dt">void</span> Deserialize(Reader input, T&amp; obj);
@@ -330,10 +330,10 @@ Deserialize(reader, obj2);</code></pre></td></tr></table></div>
 4
 5
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T, <span class="kw">typename</span> Reader&gt;
-<span class="dt">void</span> Deserialize(Reader input, T&amp; obj, <span class="dt">const</span> RuntimeSchema&amp; schema);
+<span class="dt">void</span> Deserialize(Reader input, T&amp; obj, <span class="at">const</span> RuntimeSchema&amp; schema);
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T, <span class="kw">typename</span> Reader&gt;
-T Deserialize(Reader input, <span class="dt">const</span> RuntimeSchema&amp; schema);</code></pre></td></tr></table></div>
+T Deserialize(Reader input, <span class="at">const</span> RuntimeSchema&amp; schema);</code></pre></td></tr></table></div>
 <p>Typically the <a href="#runtime-schema">runtime schema</a> is stored together with the data, for example in a system table or a header of a data file. Since Bond may need to access the runtime schema after the <code>Deserialize</code> function returns (to support <a href="#lazy-deserialization">lazy deserialization</a>), it is recommended that applications manage lifetime of the schema object using smart pointers:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
@@ -344,7 +344,7 @@ T Deserialize(Reader input, <span class="dt">const</span> RuntimeSchema&amp; sch
 7
 8
 9
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">boost::shared_ptr&lt;bond::SchemaDef&gt; schema(boost::make_shared&lt;bond::SchemaDef&gt;());
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ex">boost::</span>shared_ptr&lt;bond::SchemaDef&gt; schema(<span class="ex">boost::</span>make_shared&lt;bond::SchemaDef&gt;());
 
 <span class="co">// Deserialize the runtime schema</span>
 bond::CompactBinaryReader&lt;bond::InputBuffer&gt; cb_reader(schema_data);
@@ -447,7 +447,7 @@ Deserialize(simple_reader, obj, schema);</code></pre></td></tr></table></div>
     <span class="dv">3</span>: nullable&lt;TypeDef&gt; key;
 
     <span class="co">// True if the type is bonded&lt;T&gt;; used only when id == BT_STRUCT</span>
-    <span class="dv">4</span>: <span class="dt">bool</span> bonded_type;
+    <span class="dv">4</span>: <span class="dt">bool</span> <span class="dt">bonded_type</span>;
 }</code></pre></td></tr></table></div>
 <p><code>TypeDef</code> struct is used to represent type of a field in a Bond schema. If the type is a container such as list or map, the type definition becomes recursive. For example, a list type definition contains type of the list element which of course itself can be a container of elements of some other type, and so on, until recursion is terminated with a <code>null</code> value for the <code>element</code> and <code>key</code> fields.</p>
 <h1 id="runtime-schema">Runtime schema</h1>
@@ -473,7 +473,7 @@ Deserialize(simple_reader, obj, schema);</code></pre></td></tr></table></div>
 4
 5
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">bond::SimpleBinaryReader reader(dataPayload);
-<span class="kw">auto</span> schema = boost::make_shared&lt;bond::SchemaDef&gt;();
+<span class="kw">auto</span> schema = <span class="ex">boost::</span>make_shared&lt;bond::SchemaDef&gt;();
 
 Unmarshal(schemaPayload, *schema);
 Deserialize(reader, obj, schema);</code></pre></td></tr></table></div>
@@ -543,10 +543,10 @@ MyStruct obj;
 bonded&lt;MyStruct&gt; b1(obj);
 
 <span class="co">// Store reference to obj</span>
-bonded&lt;MyStruct&gt; b2(boost::ref(obj));
+bonded&lt;MyStruct&gt; b2(<span class="ex">boost::</span>ref(obj));
 
 <span class="co">// Store shared_ptr to object</span>
-<span class="kw">auto</span> ptr = boost::make_shared&lt;MyStruct&gt;();
+<span class="kw">auto</span> ptr = <span class="ex">boost::</span>make_shared&lt;MyStruct&gt;();
 bonded&lt;MyStruct&gt; b3(ptr);</code></pre></td></tr></table></div>
 <ul>
 <li>Serialized payload</li>
@@ -603,8 +603,8 @@ bonded&lt;MyStruct&gt; b9(b8);</code></pre></td></tr></table></div>
 5
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Example
 {
-    <span class="dv">0</span>: Always            m_always;
-    <span class="dv">1</span>: bonded&lt;Sometimes&gt; m_sometimes;
+    <span class="dv">0</span>: Always            <span class="va">m_always</span>;
+    <span class="dv">1</span>: bonded&lt;Sometimes&gt; <span class="va">m_sometimes</span>;
 }</code></pre></td></tr></table></div>
 <p>The schema defined above contains two nested fields. When an object of type <code>Example</code> is deserialized, the field <code>m_always</code> will be fully instantiated and deserialized, but field <code>m_sometimes</code>, which is declared as <code>bonded&lt;Sometimes&gt;</code>, will be merely initialized with a reference to its serialized representation <a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>.</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -623,11 +623,11 @@ bonded&lt;MyStruct&gt; b9(b8);</code></pre></td></tr></table></div>
 Deserialize(reader, example);
 
 <span class="co">// Deserialize m_sometimes only when needed</span>
-<span class="kw">if</span> (needSometimes)
+<span class="cf">if</span> (needSometimes)
 {
     Sometimes sometimes;
 
-    example.m_sometimes.Deserialize(sometimes);
+    example.<span class="va">m_sometimes</span>.Deserialize(sometimes);
 }</code></pre></td></tr></table></div>
 <h2 id="protocol-transcoding">Protocol transcoding</h2>
 <p>If <code>bonded&lt;T&gt;</code> contains data representing a serialized struct, what does it mean to serialize it? The answer to this questions is the key to understanding the power and versatility of <code>bonded&lt;T&gt;</code>. When serializing a <code>bonded&lt;T&gt;</code> object, Bond will iterate through the serialized data, decode each field and write it to target protocol writer <a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a>. What’s more, if the source data is encoded using a tagged protocol (e.g. Compact Binary) Bond doesn’t depend on definition of struct <code>T</code> to know what fields the payload contains. The payload is self-described and Bond is able to preserve all fields, even those that are not part of struct <code>T</code> (e.g. because the payload was created using a newer version of the schema). In fact <code>bonded&lt;T&gt;</code> can be serialized <em>even</em> if definition of type <code>T</code> is not known!</p>
@@ -728,11 +728,11 @@ Serialize(payload, writer);</code></pre></td></tr></table></div>
 5
 6
 7
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="dt">void</span> ProcessResponse(<span class="dt">const</span> Upstream&amp; upstream)
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="dt">void</span> ProcessResponse(<span class="at">const</span> Upstream&amp; upstream)
 {
-    <span class="kw">if</span> (upstream.ranking &gt; threshold)
+    <span class="cf">if</span> (upstream.ranking &gt; threshold)
     {
-        m_aggregated.responses.push_back(upstream.response);
+        <span class="va">m_aggregated</span>.responses.push_back(upstream.response);
     }
 }</code></pre></td></tr></table></div>
 <h2 id="polymorphism">Polymorphism</h2>
@@ -875,7 +875,7 @@ pp = <span class="kw">static_cast</span>&lt;Bar*&gt;(p);</code></pre></div></td>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T, <span class="kw">typename</span> Reader, <span class="kw">typename</span> Writer&gt;
-<span class="dt">void</span> Merge(<span class="dt">const</span> T&amp; obj, Reader input, Writer&amp; output);</code></pre></td></tr></table></div>
+<span class="dt">void</span> Merge(<span class="at">const</span> T&amp; obj, Reader input, Writer&amp; output);</code></pre></td></tr></table></div>
 <p>The <code>Reader</code> and <code>Writer</code> can be for different protocols (in other words merging can transcode payload at the same time). The type <code>T</code> of the object is usually somehow related to the schema of the input payload (e.g. a different version of the schema or its base). In the typical usage scenario, the object is first deserialized from the payload, and then modified and merged with original payload.</p>
 <p>The <code>Merge</code> API is a thin wrapper around the <code>Merger</code> transform which can be applied to a <a href="#understanding-bondedt"><code>bonded&lt;T&gt;</code></a> in order to merge its payload with an instance of T, e.g.:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -898,7 +898,7 @@ Apply(bond::Merger&lt;T, Writer&gt;(obj, output), payload);</code></pre></td></t
 3
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
 <span class="kw">template</span> &lt;<span class="kw">typename</span> X&gt;
-<span class="dt">void</span> bonded&lt;T&gt;::Merge(<span class="dt">const</span> X&amp; var);</code></pre></td></tr></table></div>
+<span class="dt">void</span> bonded&lt;T&gt;::Merge(<span class="at">const</span> X&amp; var);</code></pre></td></tr></table></div>
 <p>See example: <code>examples/cpp/core/merge</code>.</p>
 <h1 id="required-fields">Required fields</h1>
 <p>By default, struct fields in Bond schemas are considered optional. This means that during deserialization, if the payload doesn’t contain a field, Bond will just use the field’s default value specified in the schema. Consequently, during serialization optional fields which are set to their default value <em>can</em> be omitted, resulting in a more compact payload. This behavior is fundamental to enabling forward and backward compatibility between different schema versions. As long as fields are optional, they can be freely added and removed, without breaking the ability of the old code to deserialize the new data and vice versa. In distributed systems, where we usually can’t depend on deployment order, this two-way compatibility is a critical feature. This is why optional fields are the implicit default in Bond, and why avoiding required fields is generally considered a good rule of thumb.</p>
@@ -919,7 +919,7 @@ Apply(bond::Merger&lt;T, Writer&gt;(obj, output), payload);</code></pre></td></t
 <h1 id="tuples">Tuples</h1>
 <p>Bond can de/serialize instances of std::tuple&lt;T…&gt; as if they were regular Bond-defined structs. For example the following tuple instance:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">std::tuple&lt;std::string, <span class="dt">double</span>, std::vector&lt;<span class="dt">uint32_t</span>&gt;&gt;</code></pre></td></tr></table></div>
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="bu">std::</span>tuple&lt;<span class="bu">std::</span>string, <span class="dt">double</span>, <span class="bu">std::</span>vector&lt;<span class="dt">uint32_t</span>&gt;&gt;</code></pre></td></tr></table></div>
 <p>is equivalent to this Bond schema:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
@@ -941,7 +941,7 @@ Apply(bond::Merger&lt;T, Writer&gt;(obj, output), payload);</code></pre></td></t
 3
 4
 5
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">auto</span> obj = std::tuple&lt;string, <span class="dt">double</span>&gt;;
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">auto</span> obj = <span class="bu">std::</span>tuple&lt;string, <span class="dt">double</span>&gt;;
 
 Serialize(obj, writer);
 Deserialize(reader, obj);
@@ -953,18 +953,18 @@ Deserialize(reader, obj);
 4
 5
 6
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">std::string str;
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="bu">std::</span>string str;
 Pack(writer, str, <span class="dv">10</span>);
 
 <span class="dt">int</span> n;
-std::string str2;
+<span class="bu">std::</span>string str2;
 Unpack(reader, str2, n);</code></pre></td></tr></table></div>
 <p>If the payload contains more fields than variables provided to <code>Unpack</code> the tail fields are ignored. The special object <code>std::ignore</code> can be passed as an argument to <code>Pack</code> and <code>Unpack</code> in order to ignore field(s) at particular position(s). For example:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">Pack(writer, std::ignore, <span class="dv">10</span>);</code></pre></td></tr></table></div>
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">Pack(writer, <span class="bu">std::</span>ignore, <span class="dv">10</span>);</code></pre></td></tr></table></div>
 <p>will serialize a struct/tuple containing one field with ordinal 1 and type <code>int</code>. Similarly:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">Unpack(reader, std::ignore, n);</code></pre></td></tr></table></div>
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">Unpack(reader, <span class="bu">std::</span>ignore, n);</code></pre></td></tr></table></div>
 <p>will ignore the field with ordinal 0, if any, and deserialize the field with ordinal 1 into the variable <code>n</code>.</p>
 <p>Examples:</p>
 <ul>
@@ -989,7 +989,7 @@ Unpack(reader, str2, n);</code></pre></td></tr></table></div>
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="co">// Serialize and Deserialize APIs as defined in bond.h</span>
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T, <span class="kw">typename</span> Writer&gt;
-<span class="kw">inline</span> <span class="dt">void</span> Serialize(<span class="dt">const</span> T&amp; obj, Writer&amp; output)
+<span class="kw">inline</span> <span class="dt">void</span> Serialize(<span class="at">const</span> T&amp; obj, Writer&amp; output)
 {
     Apply(Serializer&lt;Writer&gt;(output), obj);
 }
@@ -1010,13 +1010,13 @@ Unpack(reader, str2, n);</code></pre></td></tr></table></div>
 7
 8
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> Transform, <span class="kw">typename</span> T, <span class="kw">typename</span> Reader&gt;
-<span class="dt">bool</span> Apply(<span class="dt">const</span> Transform&amp; transform, <span class="dt">const</span> bonded&lt;T, Reader&gt;&amp; bonded);
+<span class="dt">bool</span> Apply(<span class="at">const</span> Transform&amp; transform, <span class="at">const</span> bonded&lt;T, Reader&gt;&amp; bonded);
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> Transform, <span class="kw">typename</span> T, <span class="kw">typename</span> Reader&gt;
-<span class="dt">void</span> Apply(<span class="dt">const</span> Transform&amp; transform, <span class="dt">const</span> value&lt;T, Reader&gt;&amp; value);
+<span class="dt">void</span> Apply(<span class="at">const</span> Transform&amp; transform, <span class="at">const</span> value&lt;T, Reader&gt;&amp; value);
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> Transform, <span class="kw">typename</span> T&gt;
-<span class="dt">bool</span> Apply(<span class="dt">const</span> Transform&amp; transform, T&amp; value);</code></pre></td></tr></table></div>
+<span class="dt">bool</span> Apply(<span class="at">const</span> Transform&amp; transform, T&amp; value);</code></pre></td></tr></table></div>
 <p>A transform class must inherit from one of the following classes:</p>
 <ul>
 <li><a href="../reference/cpp/structbond_1_1_serializing_transform.html"><code>bond::SerializingTransform</code></a></li>
@@ -1057,30 +1057,30 @@ Unpack(reader, str2, n);</code></pre></td></tr></table></div>
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Transform
 {
     <span class="co">// All transforms</span>
-    <span class="dt">void</span> Begin(<span class="dt">const</span> bond::Metadata&amp; metadata) <span class="dt">const</span>;
+    <span class="dt">void</span> Begin(<span class="at">const</span> bond::Metadata&amp; metadata) <span class="at">const</span>;
 
-    <span class="dt">void</span> End() <span class="dt">const</span>;
-
-    <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
-    <span class="dt">bool</span> Base(<span class="dt">const</span> T&amp; value) <span class="dt">const</span>;
+    <span class="dt">void</span> End() <span class="at">const</span>;
 
     <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
-    <span class="dt">bool</span> Field(<span class="dt">uint16_t</span> id, <span class="dt">const</span> bond::Metadata&amp; metadata, T&amp; value) <span class="dt">const</span>;
+    <span class="dt">bool</span> Base(<span class="at">const</span> T&amp; value) <span class="at">const</span>;
+
+    <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
+    <span class="dt">bool</span> Field(<span class="dt">uint16_t</span> id, <span class="at">const</span> bond::Metadata&amp; metadata, T&amp; value) <span class="at">const</span>;
 
     <span class="co">// Only serializing and deserializing transforms</span>
-    <span class="dt">void</span> UnknownEnd() <span class="dt">const</span>;
+    <span class="dt">void</span> UnknownEnd() <span class="at">const</span>;
 
     <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
-    <span class="dt">bool</span> UnknownField(<span class="dt">uint16_t</span> id, T&amp; value) <span class="dt">const</span>;
+    <span class="dt">bool</span> UnknownField(<span class="dt">uint16_t</span> id, T&amp; value) <span class="at">const</span>;
 
-    <span class="dt">bool</span> OmittedField(<span class="dt">uint16_t</span> id, <span class="dt">const</span> bond::Metadata&amp; metadata, bond::BondDataType type) <span class="dt">const</span>;
+    <span class="dt">bool</span> OmittedField(<span class="dt">uint16_t</span> id, <span class="at">const</span> bond::Metadata&amp; metadata, bond::BondDataType type) <span class="at">const</span>;
 
     <span class="co">// Only serializing transforms</span>
     <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
-    <span class="dt">void</span> Container(<span class="dt">const</span> T&amp; element, <span class="dt">uint32_t</span> size) <span class="dt">const</span>;
+    <span class="dt">void</span> Container(<span class="at">const</span> T&amp; element, <span class="dt">uint32_t</span> size) <span class="at">const</span>;
 
     <span class="kw">template</span> &lt;<span class="kw">typename</span> Key, <span class="kw">typename</span> T&gt;
-    <span class="dt">void</span> Container(<span class="dt">const</span> Key&amp; key, <span class="dt">const</span> T&amp; value, <span class="dt">uint32_t</span> size) <span class="dt">const</span>;
+    <span class="dt">void</span> Container(<span class="at">const</span> Key&amp; key, <span class="at">const</span> T&amp; value, <span class="dt">uint32_t</span> size) <span class="at">const</span>;
 };</code></pre></td></tr></table></div>
 <p>The type <code>T</code> of the values visited by a transform depends on what the transform is applied to. If it is applied to an instance of a Bond type, the visited values will be references to the object’s fields and/or its base object (if any). If a transform is applied to a serialized payload, the visited values will represent the serialized fields, elements of a container and/or base (if any). The serialized data is represented by one of two types: <code>bond::bonded&lt;T,  Reader&gt;</code> or <code>bond::value&lt;T, Reader&gt;</code>. The former represents a serialized Bond object and the latter a serialized value of a basic type or a container.</p>
 <p>A transform can generally do one of two things with the serialized values:</p>
@@ -1097,12 +1097,12 @@ Unpack(reader, str2, n);</code></pre></td></tr></table></div>
 7
 8
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T, <span class="kw">typename</span> Reader&gt;
-<span class="kw">typename</span> boost::enable_if&lt;bond::is_basic_type&lt;T&gt;&gt;::type
-Field(<span class="dt">uint16_t</span>, <span class="dt">const</span> bond::Metadata&amp;, <span class="dt">const</span> bond::value&lt;T, Reader&gt;&amp; value) <span class="dt">const</span>
+<span class="kw">typename</span> <span class="ex">boost::</span>enable_if&lt;bond::<span class="dt">is_basic_type</span>&lt;T&gt;&gt;::type
+Field(<span class="dt">uint16_t</span>, <span class="at">const</span> bond::Metadata&amp;, <span class="at">const</span> bond::value&lt;T, Reader&gt;&amp; value) <span class="at">const</span>
 {
     T x;
     value.Deserialize(x);
-    <span class="kw">return</span> <span class="kw">false</span>;
+    <span class="cf">return</span> <span class="kw">false</span>;
 }</code></pre></td></tr></table></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Recursively apply the transform</li>
@@ -1114,9 +1114,9 @@ Field(<span class="dt">uint16_t</span>, <span class="dt">const</span> bond::Meta
 4
 5
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
-<span class="dt">bool</span> Base(<span class="dt">const</span> T&amp; value) <span class="dt">const</span>
+<span class="dt">bool</span> Base(<span class="at">const</span> T&amp; value) <span class="at">const</span>
 {
-    <span class="kw">return</span> Apply(MyTransform(), value);
+    <span class="cf">return</span> Apply(MyTransform(), value);
 }</code></pre></td></tr></table></div>
 <p>Recursive application of transforms is a key technique which enables transformations of arbitrary complex/nested schemas/containers. By creating and applying an new instance of its class, a transform class can easily implement management of per-hierarchy-level state. For example a transform creating a text output such as XML, could store the indentation level in its data member and create a new instance with increased indentation to be applied to nested fields.</p>
 <p>Transforms are a deep topic and by necessity this article only touches on the most basic concepts. Users writing their own custom transforms are encouraged to study the implementation of built in transforms in <a href="../reference/cpp/transforms_8h_source.html">transfroms.h</a>, in particular the <code>Serializer&lt;Writer&gt;</code> and <code>To&lt;T&gt;</code> transforms.</p>
@@ -1212,7 +1212,7 @@ Field(<span class="dt">uint16_t</span>, <span class="dt">const</span> bond::Meta
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">gbc c++ --header=<span class="st">&quot;&lt;time_alias.h&gt;&quot;</span> --<span class="kw">using</span>=<span class="st">&quot;time=boost::posix_time::ptime&quot;</span> time.bond</code></pre></td></tr></table></div>
 <p>The above command will add the following statement at the top of the generated header file <code>time_types.h</code>:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ot">#include &lt;time_alias.h&gt;</span></code></pre></td></tr></table></div>
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="pp">#include </span><span class="im">&lt;time_alias.h&gt;</span></code></pre></td></tr></table></div>
 <h2 id="container-concept">Container concept</h2>
 <p>The custom container concept defined in <code>bond/core/container_interface.h</code> serves as an interface between a custom container type and Bond. The concept consists of compile-time meta-function (traits) that need to be specialized for the custom container type and overloaded free functions which implement the runtime interaction with the container instances. The concept forms a non-intrusive interface, which can be provided for any type without changes to its implementation.</p>
 <p>The first step is to identify a type as an appropriate container by specializing one of the following traits:</p>
@@ -1229,22 +1229,22 @@ Field(<span class="dt">uint16_t</span>, <span class="dt">const</span> bond::Meta
 11
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
 is_set_container
-    : std::false_type {};
+    : <span class="bu">std::</span>false_type {};
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
 is_map_container
-    : std::false_type {};
+    : <span class="bu">std::</span>false_type {};
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
 is_list_container
-    : std::false_type {};</code></pre></td></tr></table></div>
+    : <span class="bu">std::</span>false_type {};</code></pre></td></tr></table></div>
 <p>For example the following specialization would allow Bond to treat <code>std::array</code> as a list type:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T, std::size_t N&gt; <span class="kw">struct</span>
-is_list_container&lt;std::array&lt;T, N&gt; &gt;
-    : std::true_type {};</code></pre></td></tr></table></div>
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T, <span class="bu">std::</span>size_t N&gt; <span class="kw">struct</span>
+is_list_container&lt;<span class="bu">std::</span>array&lt;T, N&gt; &gt;
+    : <span class="bu">std::</span>true_type {};</code></pre></td></tr></table></div>
 <p>The second trait called <code>element_type</code> specifies the type of the container elements:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
@@ -1252,9 +1252,9 @@ is_list_container&lt;std::array&lt;T, N&gt; &gt;
 4
 5
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
-element_type
+<span class="dt">element_type</span>
 {
-    <span class="kw">typedef</span> <span class="kw">typename</span> T::value_type type;
+    <span class="kw">typedef</span> <span class="kw">typename</span> T::<span class="dt">value_type</span> type;
 };</code></pre></td></tr></table></div>
 <p>The default implementation assumes a commonly used STL convention of using a nested <code>value_type</code> typedef and will likely work for many container implementations from libraries like Boost. For other containers the trait can specialized, e.g.:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -1263,7 +1263,7 @@ element_type
 4
 5
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
-element_type&lt;MyList&lt;T&gt; &gt;
+<span class="dt">element_type</span>&lt;MyList&lt;T&gt; &gt;
 {
     <span class="kw">typedef</span> T type;
 };</code></pre></td></tr></table></div>
@@ -1286,7 +1286,7 @@ element_type&lt;MyList&lt;T&gt; &gt;
 16
 17
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
-<span class="dt">uint32_t</span> container_size(<span class="dt">const</span> T&amp; container);
+<span class="dt">uint32_t</span> container_size(<span class="at">const</span> T&amp; container);
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
 <span class="dt">void</span> resize_list(T&amp; list, <span class="dt">uint32_t</span> size);
@@ -1295,13 +1295,13 @@ element_type&lt;MyList&lt;T&gt; &gt;
 <span class="dt">void</span> clear_set(T&amp; set);
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> S, <span class="kw">typename</span> T&gt;
-<span class="dt">void</span> set_insert(S&amp; set, <span class="dt">const</span> T&amp; item);
+<span class="dt">void</span> set_insert(S&amp; set, <span class="at">const</span> T&amp; item);
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
 <span class="dt">void</span> clear_map(T&amp; map);
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> M, <span class="kw">typename</span> K, <span class="kw">typename</span> T&gt;
-T&amp; mapped_at(M&amp; map, <span class="dt">const</span> K&amp; key);</code></pre></td></tr></table></div>
+T&amp; mapped_at(M&amp; map, <span class="at">const</span> K&amp; key);</code></pre></td></tr></table></div>
 <p>Note that unlike the traits which need to be specialized in the <code>bond</code> namespace, these function can be overloaded in the namespace of the container type.</p>
 <p>The final part of the container concept are enumerators:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -1324,17 +1324,17 @@ T&amp; mapped_at(M&amp; map, <span class="dt">const</span> K&amp; key);</code></
 <span class="kw">class</span> enumerator
 {
     <span class="kw">explicit</span> enumerator(T&amp; container);
-    <span class="dt">bool</span> more() <span class="dt">const</span>;
-    <span class="kw">typename</span> element_type&lt;T&gt;::type&amp; next();
+    <span class="dt">bool</span> more() <span class="at">const</span>;
+    <span class="kw">typename</span> <span class="dt">element_type</span>&lt;T&gt;::type&amp; next();
 };
 
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
 <span class="kw">class</span> const_enumerator
 {
-    <span class="kw">explicit</span> const_enumerator(<span class="dt">const</span> T&amp; container);
-    <span class="dt">bool</span> more() <span class="dt">const</span>;
-    <span class="dt">const</span> <span class="kw">typename</span> element_type&lt;T&gt;::type&amp; next();
+    <span class="kw">explicit</span> const_enumerator(<span class="at">const</span> T&amp; container);
+    <span class="dt">bool</span> more() <span class="at">const</span>;
+    <span class="at">const</span> <span class="kw">typename</span> <span class="dt">element_type</span>&lt;T&gt;::type&amp; next();
 };</code></pre></td></tr></table></div>
 <p>The <code>const_enumerator</code> must be implemented for any custom container while the <code>enumerator</code> is used only for lists. As the name indicates, the enumerators abstract iteration over elements of the container. The default implementation of <code>const_enumerator</code> illustrates well the simple semantics of the interface <a href="#fn7" class="footnoteRef" id="fnref7"><sup>7</sup></a>:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -1364,20 +1364,20 @@ T&amp; mapped_at(M&amp; map, <span class="dt">const</span> K&amp; key);</code></
 <span class="kw">class</span> const_enumerator
 {
 <span class="kw">public</span>:
-    <span class="kw">explicit</span> const_enumerator(<span class="dt">const</span> T&amp; container)
+    <span class="kw">explicit</span> const_enumerator(<span class="at">const</span> T&amp; container)
         : it(container.begin()),
           end(container.end())
     {}
 
-    <span class="dt">bool</span> more() <span class="dt">const</span> 
+    <span class="dt">bool</span> more() <span class="at">const</span> 
     {
-        <span class="kw">return</span> it != end;
+        <span class="cf">return</span> it != end;
     }
 
     <span class="kw">typename</span> T::const_reference 
     next()
     {
-        <span class="kw">return</span> *(it++);
+        <span class="cf">return</span> *(it++);
     }
 
 <span class="kw">private</span>:
@@ -1400,18 +1400,18 @@ T&amp; mapped_at(M&amp; map, <span class="dt">const</span> K&amp; key);</code></
 7
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
 is_string
-    : std::false_type {};
+    : <span class="bu">std::</span>false_type {};
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
 is_wstring
-    : std::false_type {};</code></pre></td></tr></table></div>
+    : <span class="bu">std::</span>false_type {};</code></pre></td></tr></table></div>
 <p>For example the following specialization would allow Bond to treat <code>boost::string_ref</code> as a string type:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;&gt; <span class="kw">struct</span>
-is_string&lt;boost::string_ref&gt;
-    : std::true_type {};</code></pre></td></tr></table></div>
+is_string&lt;<span class="ex">boost::</span>string_ref&gt;
+    : <span class="bu">std::</span>true_type {};</code></pre></td></tr></table></div>
 <p>The operations on custom strings are exposed by overloading the following free functions:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
@@ -1425,13 +1425,13 @@ is_string&lt;boost::string_ref&gt;
 10
 11
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span>&lt;<span class="kw">typename</span> C, <span class="kw">typename</span> T&gt;
-<span class="dt">const</span> C* string_data(<span class="dt">const</span> T&amp; str);
+<span class="at">const</span> C* string_data(<span class="at">const</span> T&amp; str);
 
 <span class="kw">template</span>&lt;<span class="kw">typename</span> C, <span class="kw">typename</span> T&gt;
 C* string_data(T&amp; str);
 
 <span class="kw">template</span>&lt;<span class="kw">typename</span> T&gt;
-<span class="dt">uint32_t</span> string_length(<span class="dt">const</span> T&amp; str);
+<span class="dt">uint32_t</span> string_length(<span class="at">const</span> T&amp; str);
 
 <span class="kw">template</span>&lt;<span class="kw">typename</span> T&gt;
 <span class="dt">void</span> resize_string(T&amp; str, <span class="dt">uint32_t</span> size);</code></pre></td></tr></table></div>
@@ -1447,7 +1447,7 @@ C* string_data(T&amp; str);
 4
 5
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
-aliased_type
+<span class="dt">aliased_type</span>
 {
     <span class="kw">typedef</span> <span class="dt">void</span> type;
 };</code></pre></td></tr></table></div>
@@ -1458,7 +1458,7 @@ aliased_type
 4
 5
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;&gt; <span class="kw">struct</span>
-aliased_type&lt;boost::posix_time::ptime&gt;
+<span class="dt">aliased_type</span>&lt;<span class="ex">boost::</span>posix_time<span class="ex">::</span>ptime&gt;
 {
     <span class="kw">typedef</span> <span class="dt">int64_t</span> type;
 };</code></pre></td></tr></table></div>
@@ -1469,10 +1469,10 @@ aliased_type&lt;boost::posix_time::ptime&gt;
 4
 5
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
-<span class="dt">void</span> set_aliased_value(T&amp; var, <span class="kw">typename</span> aliased_type&lt;T&gt;::type value);
+<span class="dt">void</span> set_aliased_value(T&amp; var, <span class="kw">typename</span> <span class="dt">aliased_type</span>&lt;T&gt;::type value);
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
-<span class="kw">typename</span> aliased_type&lt;T&gt;::type get_aliased_value(<span class="dt">const</span> T&amp; value);</code></pre></td></tr></table></div>
+<span class="kw">typename</span> <span class="dt">aliased_type</span>&lt;T&gt;::type get_aliased_value(<span class="at">const</span> T&amp; value);</code></pre></td></tr></table></div>
 <ul>
 <li><code>examples/cpp/core/time_alias</code></li>
 </ul>
@@ -1542,13 +1542,13 @@ bond::CompactBinaryWriter&lt;Output&gt; writer(output);</code></pre></td></tr></
 <span class="kw">public</span>:
     <span class="co">// Write overload(s) for arithmetic types</span>
     <span class="kw">template</span>&lt;<span class="kw">typename</span> T&gt;
-    <span class="dt">void</span> Write(<span class="dt">const</span> T&amp; value);
+    <span class="dt">void</span> Write(<span class="at">const</span> T&amp; value);
 
     <span class="co">// Write a memory buffer</span>
-    <span class="dt">void</span> Write(<span class="dt">const</span> <span class="dt">void</span>* value, <span class="dt">uint32_t</span> size);
+    <span class="dt">void</span> Write(<span class="at">const</span> <span class="dt">void</span>* value, <span class="dt">uint32_t</span> size);
 
     <span class="co">// Write a memory blob</span>
-    <span class="dt">void</span> Write(<span class="dt">const</span> bond::blob&amp; blob);
+    <span class="dt">void</span> Write(<span class="at">const</span> bond::blob&amp; blob);
 };</code></pre></td></tr></table></div>
 <h1 id="scoped-enumerations">Scoped enumerations</h1>
 <p>Bond provides a standard-compliant solution for scoped enumerations in C++ that overcomes the limitations of normal C++ enumeration types. Usually enumerations are part of a schema used with library Bond APIs. However applications can use the following technique to defined standalone enum types.</p>
@@ -1595,7 +1595,7 @@ bond::CompactBinaryWriter&lt;Output&gt; writer(output);</code></pre></td></tr></
 13
 14
 15
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ot">#include &quot;enumerations_enum.h&quot;</span>
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="pp">#include </span><span class="im">&quot;enumerations_enum.h&quot;</span>
 
 <span class="dt">int</span> main()
 {
@@ -1608,7 +1608,7 @@ bond::CompactBinaryWriter&lt;Output&gt; writer(output);</code></pre></td></tr></
     color = example::Green;
     color = example::Color::Orange;
 
-    <span class="kw">return</span> <span class="dv">0</span>;
+    <span class="cf">return</span> <span class="dv">0</span>;
 }</code></pre></td></tr></table></div>
 <p>This solution uses the Bond compiler to generate the code that you use but your code does not take a dependency on the Bond library.</p>
 <p>See example: <code>examples/cpp/core/enumerations</code>.</p>

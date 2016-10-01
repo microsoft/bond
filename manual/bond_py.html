@@ -198,12 +198,12 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 6
 7
 8
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ot">#include &quot;example_reflection.h&quot;</span>
-<span class="ot">#include &lt;bond/python/struct.h&gt;</span>
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="pp">#include </span><span class="im">&quot;example_reflection.h&quot;</span>
+<span class="pp">#include </span><span class="im">&lt;bond/python/struct.h&gt;</span>
 
-BOOST_PYTHON_MODULE(example)
+<span class="ex">BOOST_</span>PYTHON_MODULE(example)
 {
-    bond::python::struct_&lt;example::Record&gt;()
+    bond::python::<span class="va">struct_</span>&lt;example::Record&gt;()
         .def();
 } </code></pre></td></tr></table></div>
 <p>Finally, we can import the extension as a module that can be used in a Python program:</p>
@@ -245,14 +245,14 @@ BOOST_PYTHON_MODULE(example)
 8
 9
 10
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">BOOST_PYTHON_MODULE(example)
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ex">BOOST_</span>PYTHON_MODULE(example)
 {
     <span class="kw">using</span> <span class="kw">namespace</span> bond::python;
 
-    struct_&lt;example::Nested&gt;()
+    <span class="va">struct_</span>&lt;example::Nested&gt;()
         .def(bond::qualified_name);
 
-    struct_&lt;example::Example&gt;()
+    <span class="va">struct_</span>&lt;example::Example&gt;()
         .def();
 }</code></pre></td></tr></table></div>
 <h2 id="enums">Enums</h2>
@@ -268,14 +268,14 @@ BOOST_PYTHON_MODULE(example)
 8
 9
 10
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">BOOST_PYTHON_MODULE(example)
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ex">BOOST_</span>PYTHON_MODULE(example)
 {
     <span class="kw">using</span> <span class="kw">namespace</span> bond::python;
 
-    enum_&lt;example::Colors&gt;()
+    <span class="va">enum_</span>&lt;example::Colors&gt;()
         .def(bond::qualified_name);
 
-    struct_&lt;example::Example&gt;()
+    <span class="va">struct_</span>&lt;example::Example&gt;()
         .def();
 }</code></pre></td></tr></table></div>
 <h2 id="containers">Containers</h2>
@@ -308,14 +308,14 @@ BOOST_PYTHON_MODULE(example)
 10
 </pre></td><td class="sourceCode"><pre><code class="sourceCode python">    obj <span class="op">=</span> example.Record()
 
-    <span class="cf">assert</span>(obj.x <span class="op">is</span> <span class="va">None</span>)
-    <span class="cf">assert</span>(obj.s <span class="op">is</span> <span class="va">None</span>)
+    <span class="cf">assert</span>(obj.x <span class="kw">is</span> <span class="va">None</span>)
+    <span class="cf">assert</span>(obj.s <span class="kw">is</span> <span class="va">None</span>)
 
     x <span class="op">=</span> <span class="dv">100</span>
     s <span class="op">=</span> <span class="st">&quot;test&quot;</span>
 
-    <span class="cf">assert</span>(obj.x <span class="op">is</span> <span class="op">not</span> <span class="va">None</span>)
-    <span class="cf">assert</span>(obj.s <span class="op">is</span> <span class="op">not</span> <span class="va">None</span>)</code></pre></td></tr></table></div>
+    <span class="cf">assert</span>(obj.x <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>)
+    <span class="cf">assert</span>(obj.s <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>)</code></pre></td></tr></table></div>
 <h2 id="generics">Generics</h2>
 <p>While generic Bond schemas can not be instantiated from within a Python program, specific instances of generic schemas can be used like any other concrete structs. In fact any instances of a generic schema used within exposed structs are also implicitly exposed, just like any other nested struct.</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -351,14 +351,14 @@ BOOST_PYTHON_MODULE(example)
 8
 9
 10
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">BOOST_PYTHON_MODULE(example)
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ex">BOOST_</span>PYTHON_MODULE(example)
 {
     <span class="co">// Expose Example and implicitly Generic&lt;string&gt;</span>
-    bond::python::struct_&lt;generic.Example&gt;()
+    bond::python::<span class="va">struct_</span>&lt;generic.Example&gt;()
         .def();
 
     <span class="co">// Explicitly expose Generic&lt;bond.GUID&gt;</span>
-    bond::python::struct_&lt;generic.Generic&lt;bond::GUID&gt; &gt;()
+    bond::python::<span class="va">struct_</span>&lt;generic.Generic&lt;bond::GUID&gt; &gt;()
         .def();
 }</code></pre></td></tr></table></div>
 <p>The name of a generic schema instance is converted to a valid Python identifier by replacing all non-alphanumeric characters with an underscore. The names of type parameters that are Bond-defined structs are used in their fully qualified form. For example, using the extension defined above we can use the following types:</p>
