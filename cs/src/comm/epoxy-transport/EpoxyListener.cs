@@ -16,7 +16,8 @@ namespace Bond.Comm.Epoxy
     public class EpoxyListener : Listener
     {
         readonly EpoxyTransport parentTransport;
-	readonly EpoxyServerTlsConfig tlsConfig;
+        readonly EpoxyServerTlsConfig tlsConfig;
+        readonly EpoxyTransport.TimeoutConfig timeoutConfig;
         readonly TcpListener listener;
         readonly ServiceHost serviceHost;
 
@@ -33,6 +34,7 @@ namespace Bond.Comm.Epoxy
             EpoxyTransport parentTransport,
             IPEndPoint listenEndpoint,
             EpoxyServerTlsConfig tlsConfig,
+            EpoxyTransport.TimeoutConfig timeoutConfig,
             Logger logger, Metrics metrics) : base(logger, metrics)
         {
             Debug.Assert(parentTransport != null);
@@ -42,6 +44,7 @@ namespace Bond.Comm.Epoxy
 
             // will be null if not using TLS
             this.tlsConfig = tlsConfig;
+            this.timeoutConfig = timeoutConfig;
 
             listener = new TcpListener(listenEndpoint);
             serviceHost = new ServiceHost(logger);
@@ -110,6 +113,8 @@ namespace Bond.Comm.Epoxy
                     socket = await listener.AcceptSocketAsync();
                     logger.Site().Debug("Accepted connection from {0}.", socket.RemoteEndPoint);
 
+                    EpoxyTransport.ConfigureSocketKeepAlive(socket, timeoutConfig, logger);
+
                     epoxyStream = await EpoxyNetworkStream.MakeServerStreamAsync(socket, tlsConfig, logger);
                     socket = null; // epoxyStream now owns the socket
 
@@ -145,11 +150,6 @@ namespace Bond.Comm.Epoxy
                 catch (ObjectDisposedException)
                 {
                     ShutdownSocketSafe(socket, epoxyStream);
-
-                    // TODO: ignoring this exception is needed during shutdown,
-                    //       but there should be a cleaner way. We should
-                    //       switch to having a proper life-cycle for a
-                    //       connection.
                 }
             }
 
