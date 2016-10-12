@@ -11,14 +11,9 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Unreleased #
+## C# Comm 0.8.0: 2016-10-12 #
 
-* `gbc` & compiler library: TBD
-* IDL core version: TBD
-* IDL comm version: TBD
-* C++ version: TBD
-* C# NuGet version: TBD
-* C# Comm NuGet version: minor version bump needed
+* C# Comm NuGet version: 0.8.0
 
 ### C# Comm ###
 * `EpoxyTransport` can be configured to enable TCP keep-alive to help detect
