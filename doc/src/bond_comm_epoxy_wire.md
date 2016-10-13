@@ -1,8 +1,5 @@
 % Bond Epoxy transport wire format
 
-![The Bond logo: a stylized glue gun](./src/logos/bond-logo-64x64-white.png)\
-
-
 # Epoxy transport wire format #
 
 This documents the [Bond Epoxy transport](bond_comm_epoxy.html) wire format.
