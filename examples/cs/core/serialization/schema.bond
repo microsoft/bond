@@ -1,7 +1,8 @@
-﻿namespace Examples
+﻿namespace examples.serialization
 
-struct Example
+struct Struct
 {
-    0: string Name;
-    1: vector<double> Constants;
+    0: uint32          n;
+    1: string          str;
+    2: vector<double>  items;
 }
