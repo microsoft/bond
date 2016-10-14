@@ -156,7 +156,7 @@ namespace Bond.Comm.Epoxy
         {
             if (layerStackProvider != null)
             {
-                return layerStackProvider.GetLayerStack(uniqueId, out stack);
+                return layerStackProvider.GetLayerStack(uniqueId, out stack, logger);
             }
             else
             {

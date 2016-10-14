@@ -309,7 +309,7 @@ namespace UnitTest.Epoxy
         [Test]
         public async Task GeneratedService_GeneratedProxy_PayloadResponse_LayerData()
         {
-            var layerStackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, new TestLayer_CheckPassedValue(1234));
+            var layerStackProvider = new LayerStackProvider<Dummy>(new TestLayer_CheckPassedValue(1234));
             TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>(layerStackProvider, layerStackProvider);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
 
@@ -324,7 +324,7 @@ namespace UnitTest.Epoxy
         public async Task GeneratedService_GeneratedProxy_PayloadResponse_ClientLayerErrors()
         {
             var errorLayer = new TestLayer_ReturnErrors();
-            var clientLayerStack = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, errorLayer);
+            var clientLayerStack = new LayerStackProvider<Dummy>(errorLayer);
             TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>(null, clientLayerStack);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
@@ -353,9 +353,9 @@ namespace UnitTest.Epoxy
         public async Task GeneratedService_GeneratedProxy_PayloadResponse_StatefulLayers()
         {
             var clientLayerProvider = new TestLayerProvider_StatefulAppend("Client");
-            var clientLayerStackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, clientLayerProvider);
+            var clientLayerStackProvider = new LayerStackProvider<Dummy>(clientLayerProvider);
             var serverLayerProvider = new TestLayerProvider_StatefulAppend("Server");
-            var serverLayerStackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, serverLayerProvider);
+            var serverLayerStackProvider = new LayerStackProvider<Dummy>(serverLayerProvider);
             TestClientServer<DummyTestService> testClientServer =
                 await SetupTestClientServer<DummyTestService>(serverLayerStackProvider, clientLayerStackProvider);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
@@ -383,7 +383,7 @@ namespace UnitTest.Epoxy
         public async Task GeneratedService_GeneratedProxy_PayloadResponse_ServerLayerErrors()
         {
             var errorLayer = new TestLayer_ReturnErrors();
-            var serverLayerStackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, errorLayer);
+            var serverLayerStackProvider = new LayerStackProvider<Dummy>(errorLayer);
             TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>(serverLayerStackProvider, null);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var request = new Dummy { int_value = 100 };
@@ -415,7 +415,7 @@ namespace UnitTest.Epoxy
         public async Task GeneratedService_GeneratedProxy_Event_ClientLayerErrors()
         {
             var errorLayer = new TestLayer_ReturnErrors();
-            var clientLayerStackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, errorLayer);
+            var clientLayerStackProvider = new LayerStackProvider<Dummy>(errorLayer);
             TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>(null, clientLayerStackProvider);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var theEvent = new Dummy { int_value = 100 };
@@ -451,7 +451,7 @@ namespace UnitTest.Epoxy
         public async Task GeneratedService_GeneratedProxy_Event_ServerLayerErrors()
         {
             var errorLayer = new TestLayer_ReturnErrors();
-            var serverLayerStackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, errorLayer);
+            var serverLayerStackProvider = new LayerStackProvider<Dummy>(errorLayer);
             TestClientServer<DummyTestService> testClientServer = await SetupTestClientServer<DummyTestService>(serverLayerStackProvider, null);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);
             var theEvent = new Dummy { int_value = 100 };
@@ -486,9 +486,9 @@ namespace UnitTest.Epoxy
         public async Task GeneratedService_GeneratedProxy_Event_StatefulLayers()
         {
             var clientLayerProvider = new TestLayerProvider_StatefulAppend("Client");
-            var clientLayerStackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, clientLayerProvider);
+            var clientLayerStackProvider = new LayerStackProvider<Dummy>(clientLayerProvider);
             var serverLayerProvider = new TestLayerProvider_StatefulAppend("Server");
-            var serverLayerStackProvider = new LayerStackProvider<Dummy>(LoggerTests.BlackHole, serverLayerProvider);
+            var serverLayerStackProvider = new LayerStackProvider<Dummy>(serverLayerProvider);
             TestClientServer<DummyTestService> testClientServer =
                 await SetupTestClientServer<DummyTestService>(serverLayerStackProvider, clientLayerStackProvider);
             var proxy = new DummyTestProxy<EpoxyConnection>(testClientServer.ClientConnection);

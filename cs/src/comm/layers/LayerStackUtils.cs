@@ -17,7 +17,7 @@ namespace Bond.Comm.Layers
 
             if (layerStack != null)
             {
-                error = layerStack.OnSend(messageType, sendContext, out layerData);
+                error = layerStack.OnSend(messageType, sendContext, out layerData, logger);
                 if (error != null)
                 {
                     logger.Site().Warning("Layer error occurred sending message of type {0} (Code: {1} Message: {2}).",
@@ -40,7 +40,7 @@ namespace Bond.Comm.Layers
                     logger.Site().Warning("Layer stack present but no layer data received.");
                 }
 
-                error = layerStack.OnReceive(messageType, receiveContext, layerData);
+                error = layerStack.OnReceive(messageType, receiveContext, layerData, logger);
 
                 if (error != null)
                 {

@@ -15,11 +15,12 @@ namespace Bond.Comm
         /// <param name="messageType">The type of message</param>
         /// <param name="context">The send context. May not be null.</param>
         /// <param name="layerData">The layer data for this layer, provided as an instance in an <see cref="IBonded"/> ready to be serialized</param>
+        /// <param name="logger">The logger</param>
         /// <returns>An error, or null if there is no error.</returns>
         /// <remarks>
         /// In general, the layer is not expected to interact with the message payload itself.
         /// </remarks>
-        Error OnSend(MessageType messageType, SendContext context, out IBonded layerData);
+        Error OnSend(MessageType messageType, SendContext context, out IBonded layerData, Logger logger);
 
         /// <summary>
         /// Take action on receipt of a message, by invoking a stack of layers (in reverse order).
@@ -27,11 +28,12 @@ namespace Bond.Comm
         /// <param name="messageType">The type of message</param>
         /// <param name="context">The receive context. May not be null.</param>
         /// <param name="layerData">The layer data for this layer, provided as an <see cref="IBonded"/> to be deserialized</param>
+        /// <param name="logger">The logger</param>
         /// <returns>An error, or null if there is no error.</returns>
         /// <remarks>
         /// In general, the layer is not expected to interact with the message payload itself.
         /// </remarks>
-        Error OnReceive(MessageType messageType, ReceiveContext context, IBonded layerData);
+        Error OnReceive(MessageType messageType, ReceiveContext context, IBonded layerData, Logger logger);
     }
 
     /// <summary>
@@ -48,7 +50,8 @@ namespace Bond.Comm
         /// <param name="uniqueId">A unique ID identifying the request or connection that triggered this call. Used in
         /// layer-originated errors.</param>
         /// <param name="stack">The layer stack instance. May be null if an error occurred.</param>
+        /// <param name="logger">The logger</param>
         /// <returns>An error, or null if there is no error.</returns>
-        Error GetLayerStack(string uniqueId, out ILayerStack stack);
+        Error GetLayerStack(string uniqueId, out ILayerStack stack, Logger logger);
     }
 }

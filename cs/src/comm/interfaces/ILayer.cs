@@ -19,6 +19,7 @@ namespace Bond.Comm
         /// <summary>
         /// Take action on sending of a message.
         /// </summary>
+        /// <param name="logger">The logger</param>
         /// <param name="messageType">The type of message</param>
         /// <param name="context">The send context</param>
         /// <param name="layerData">The layer data for this layer</param>
@@ -28,11 +29,12 @@ namespace Bond.Comm
         /// If this method throws, the exception will be caught and converted into an error.
         /// Errors returned from layers for request-response methods will replace the response.
         /// </remarks>
-        Error OnSend(MessageType messageType, SendContext context, TLayerData layerData);
+        Error OnSend(Logger logger, MessageType messageType, SendContext context, TLayerData layerData);
 
         /// <summary>
         /// Take action on receipt of a message.
         /// </summary>
+        /// <param name="logger">The logger</param>
         /// <param name="messageType">The type of message</param>
         /// <param name="context">The receive context</param>
         /// <param name="layerData">The layer data for this layer</param>
@@ -42,7 +44,7 @@ namespace Bond.Comm
         /// If this method throws, the exception will be caught and converted into an error.
         /// Errors returned from layers for request-response methods will replace the response.
         /// </remarks>
-        Error OnReceive(MessageType messageType, ReceiveContext context, TLayerData layerData);
+        Error OnReceive(Logger logger, MessageType messageType, ReceiveContext context, TLayerData layerData);
     }
 
     /// <summary>

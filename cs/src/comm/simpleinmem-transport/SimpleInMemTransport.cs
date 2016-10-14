@@ -36,7 +36,7 @@ namespace Bond.Comm.SimpleInMem
         {
             if (layerStackProvider != null)
             {
-                return layerStackProvider.GetLayerStack(uniqueId, out stack);
+                return layerStackProvider.GetLayerStack(uniqueId, out stack, logger);
             }
             else
             {
