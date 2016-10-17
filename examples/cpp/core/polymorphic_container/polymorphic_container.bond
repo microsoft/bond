@@ -1,8 +1,15 @@
 namespace examples.polymorphic_containers
 
+enum StructKind
+{
+    StructKind_Unknown;
+    StructKind_Struct1;
+    StructKind_Struct2;
+}
+
 struct Base
 {
-    0: bond_meta::full_name name;
+    0: StructKind kind = StructKind_Unknown;
 }
 
 

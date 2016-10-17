@@ -1,5 +1,6 @@
 #include "polymorphic_container_reflection.h"
 
+#include <cassert>
 #include <bond/core/bond.h>
 #include <bond/stream/output_buffer.h>
 
@@ -10,51 +11,46 @@ template <typename T>
 bond::bonded<T> Serialize(const T& obj)
 {
     bond::OutputBuffer buffer;
-    
     bond::CompactBinaryWriter<bond::OutputBuffer> writer(buffer);
-
     bond::Serialize(obj, writer);
 
     bond::CompactBinaryReader<bond::InputBuffer> reader(buffer.GetBuffer());
-    
     return bond::bonded<T>(reader);
 }
 
 
-void DeserializeStruct1(const bond::bonded<Base>& base)
+Struct1 DeserializeStruct1(const bond::bonded<Base>& base)
 {
     // Explicit down-casting from bonded<Base> to bonded<Struct1>
-    bond::bonded<Struct1> bonded(base);       
-
+    bond::bonded<Struct1> bonded(base);
     Struct1 obj;
-
     bonded.Deserialize(obj);
+    return obj;
 }
 
-                                                                        
-void DeserializeStruct2(const bond::bonded<Base>& base)
+
+Struct2 DeserializeStruct2(const bond::bonded<Base>& base)
 {
     // Explicit down-casting from bonded<Base> to bonded<Struct2>
     bond::bonded<Struct2> bonded(base);
-
     Struct2 obj;
-
     bonded.Deserialize(obj);
+    return obj;
 }
 
 
 int main()
 {
     bond::bonded<Polymorphic> bonded;
-    
+
     {
         Struct1 obj1;
-
+        obj1.kind = StructKind_Struct1;
         obj1.n = 1;
         obj1.str = "1";
 
         Struct2 obj2;
-
+        obj2.kind = StructKind_Struct2;
         obj2.n = 2;
         obj2.str = "2";
 
@@ -75,25 +71,42 @@ int main()
     Polymorphic polymorphic;
 
     bonded.Deserialize(polymorphic);
-    
-    for (std::list<bond::bonded<Base> >::const_iterator it = polymorphic.items.begin(); it != polymorphic.items.end(); ++it)
+
+    for (
+        std::list<bond::bonded<Base> >::const_iterator it = polymorphic.items.begin();
+        it != polymorphic.items.end();
+        ++it)
     {
         Base base;
-
         it->Deserialize(base);
 
         // The field Base::name is declared as bond_meta::full_name, and thus
         // was automatically initialized by the system to fully qualified
         // name of the struct.
-        if (base.name == Struct1::Schema::metadata.qualified_name)
+        switch (base.kind)
         {
-            DeserializeStruct1(*it);
-        }
-        else if (base.name == Struct2::Schema::metadata.qualified_name)
-        {
-            DeserializeStruct2(*it);
+            case StructKind_Struct1:
+            {
+                Struct1 obj1 = DeserializeStruct1(*it);
+                assert(obj1.str == "1");
+                assert(obj1.n == 1);
+            }
+            break;
+
+            case StructKind_Struct2:
+            {
+                Struct2 obj2 = DeserializeStruct2(*it);
+                assert(obj2.b == false);
+                assert(obj2.n == 2);
+                assert(obj2.str == "2");
+            }
+            break;
+
+            default:
+                assert(false);
+                break;
         }
     }
-    
-    return 0;    
+
+    return 0;
 }
