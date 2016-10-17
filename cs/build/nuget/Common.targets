@@ -44,13 +44,13 @@
     *    on change, but this doesn't reflect the internal import logic of bond.  A change to common.bond would
     *    only rebuild common*cs, not all the others that import common.bond.  Without a bond parser prepass we
     *    must rebuild all .bond files when any of them change.  We force that by putting a non-transform output
-    *    (bondfiles.tmp) in the list so IFF any input changes, then all inputs rebuild since MSBuild can't
+    *    (bondcodegen.done) in the list so IFF any input changes, then all inputs rebuild since MSBuild can't
     *    know what should create the unmapped output item and so can't be selective.
     *    NOTE - this still won't catch changes to files outside declared BondCodegen elements.
   -->
   <Target Name="BondCodegenCs"
           Inputs="@(BondCodegen)"
-          Outputs="$(BondOutputDirectory)bondfiles.tmp;@(BondCodegen -> '$(BondOutputDirectory)%(FileName)_types.cs')"
+          Outputs="$(BondOutputDirectory)bondcodegen.done;@(BondCodegen -> '$(BondOutputDirectory)%(FileName)_types.cs')"
           BeforeTargets="CoreCompile"
           Condition="'@(BondCodegen)' != ''">
 
@@ -74,16 +74,21 @@
       <_BondCodegenWithDefaultOptions Include="@(BondCodegen)" Condition="'%(BondCodegen.Options)' == ''" />
     </ItemGroup>
 
-    <WriteLinesToFile File="$(BondOutputDirectory)bondfiles.tmp"
+    <WriteLinesToFile File="$(BondOutputDirectory)bonddefaultcodegen.in"
                       Lines="@(_BondCodegenWithDefaultOptions)"
                       Overwrite="true" />
 
-    <Exec Command="$(_BondCommand) $(BondOptions) @&quot;$(BondOutputDirectory)bondfiles.tmp&quot;"
+    <Exec Command="$(_BondCommand) $(BondOptions) @&quot;$(BondOutputDirectory)bonddefaultcodegen.in&quot;"
           Condition="'@(_BondCodegenWithDefaultOptions)' != ''" />
 
     <!-- And for any files needing custom options we'll have to generate one by one -->
     <Exec Command="$(_BondCommand) %(BondCodegen.Options) &quot;%(BondCodegen.Identity)&quot;"
           Condition="'%(BondCodegen.Options)' != ''" />
+
+    <!-- Record all that we successfully ran codegen on all the files. -->
+    <WriteLinesToFile File="$(BondOutputDirectory)bondcodegen.done"
+                      Lines="#Ran codegen on the following files:;@(BondCodegen)"
+                      Overwrite="true" />
   </Target>
 
   <!--
@@ -107,7 +112,8 @@
         * MsBuild wants to keep track of all our outputs, to understand how to clean build.  It seems it
         * needs to know all of them regardless of what we actually produced THIS build, so adding always.
       -->
-      <FileWrites Include="$(BondOutputDirectory)bondfiles.tmp;
+      <FileWrites Include="$(BondOutputDirectory)bondcodegen.done;
+                           $(BondOutputDirectory)bonddefaultcodegen.in;
                            @(_BondGeneratedFileNames)" />
     </ItemGroup>
   </Target>
