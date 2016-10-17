@@ -1,0 +1,22 @@
+{
+    "name": "Bond.Attributes",
+    "version": "1.0.0-*",
+    "buildOptions": {
+        "compile": {
+            "include": [
+                "../../../src/attributes/*.cs",
+                "../../../src/attributes/properties/*.cs"
+            ]
+        },
+        "debugType": "portable",
+        "keyFile": "../../../build/internal/bond.snk",
+        "publicSign": true
+    },
+    "frameworks": {
+        "netstandard1.6": {
+            "dependencies": {
+                "NETStandard.Library": "1.6.0"
+            }
+        }
+    }
+}

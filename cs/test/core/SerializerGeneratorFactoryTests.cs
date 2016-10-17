@@ -8,6 +8,7 @@
     using Bond.Expressions;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
+    using Bond.Reflection;
 
     [TestFixture]
     public class SerializerGeneratorFactoryTests
@@ -218,10 +219,10 @@
             {
                 var body = Expression.Block(
                     Expression.Assign(
-                        Expression.Property(writer, typeof(W).GetProperty("WasCalled")),
+                        Expression.Property(writer, typeof(W).GetDeclaredProperty("WasCalled", typeof(bool))),
                         Expression.Constant(true)),
                     Expression.Assign(
-                        Expression.Property(writer, typeof(W).GetProperty("Type")),
+                        Expression.Property(writer, typeof(W).GetDeclaredProperty("Type", typeof(Type))),
                         Expression.Constant(type, typeof(Type))));
                 
                 return new[] { Expression.Lambda<Action<R, W>>(body, parser.ReaderParam, writer) };

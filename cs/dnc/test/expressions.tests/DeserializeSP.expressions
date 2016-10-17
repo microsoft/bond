@@ -1,0 +1,256 @@
+.Lambda #Lambda1<System.Func`2[Bond.Protocols.SimpleBinaryReader`1[Bond.IO.Unsafe.InputStream],System.Object]>(Bond.Protocols.SimpleBinaryReader`1[Bond.IO.Unsafe.InputStream] $reader)
+{
+    .Block(ExpressionsTest.Example $Example) {
+        .Block() {
+            $Example = .New ExpressionsTest.Example();
+            .Block() {
+                .Default(System.Void);
+                .Block() {
+                    .Block() {
+                        .Default(System.Void);
+                        .If (
+                            .Call $reader.ReadFieldOmitted()
+                        ) {
+                            .Default(System.Void)
+                        } .Else {
+                            .Block(System.Int32 $count) {
+                                $count = .Call $reader.ReadContainerBegin();
+                                .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example).vvb_item) {
+                                    (((ExpressionsTest.Base)$Example).vvb).Capacity = $count;
+                                    .Loop  {
+                                        .If ($count-- > 0) {
+                                            .Block() {
+                                                .Block(System.Int32 $count) {
+                                                    $count = .Call $reader.ReadContainerBegin();
+                                                    .Block(System.UInt64 $Convert(Example).vvb_item_item) {
+                                                        $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($count);
+                                                        .Loop  {
+                                                            .If ($count-- > 0) {
+                                                                .Block() {
+                                                                    $Convert(Example).vvb_item_item = .Call $reader.ReadUInt64();
+                                                                    .Call $Convert(Example).vvb_item.Add($Convert(Example).vvb_item_item)
+                                                                }
+                                                            } .Else {
+                                                                .Break end { }
+                                                            }
+                                                        }
+                                                        .LabelTarget end:;
+                                                        .Default(System.Void)
+                                                    };
+                                                    .Call $reader.ReadContainerEnd()
+                                                };
+                                                .Call (((ExpressionsTest.Base)$Example).vvb).Add($Convert(Example).vvb_item)
+                                            }
+                                        } .Else {
+                                            .Break end { }
+                                        }
+                                    }
+                                    .LabelTarget end:;
+                                    .Default(System.Void)
+                                };
+                                .Call $reader.ReadContainerEnd()
+                            }
+                        };
+                        .Default(System.Void)
+                    }
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    $Example._bool = .Call $reader.ReadBool()
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    $Example._str = .Call $reader.ReadString()
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    $Example._uint32 = .Call $reader.ReadUInt32()
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    $Example._int8 = .Call $reader.ReadInt8()
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Invoke (.Lambda #Lambda2<System.Action`2[System.String,System.String]>)(
+                        "Example",
+                        "_int64")
+                } .Else {
+                    $Example._int64 = .Call $reader.ReadInt64()
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    $Example._double = .Call $reader.ReadDouble()
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    .Block() {
+                        .Block() {
+                            .Default(System.Void);
+                            .If (
+                                .Call $reader.ReadFieldOmitted()
+                            ) {
+                                .Default(System.Void)
+                            } .Else {
+                                ($Example.guid).Data1 = .Call $reader.ReadUInt32()
+                            };
+                            .If (
+                                .Call $reader.ReadFieldOmitted()
+                            ) {
+                                .Default(System.Void)
+                            } .Else {
+                                ($Example.guid).Data2 = .Call $reader.ReadUInt16()
+                            };
+                            .If (
+                                .Call $reader.ReadFieldOmitted()
+                            ) {
+                                .Default(System.Void)
+                            } .Else {
+                                ($Example.guid).Data3 = .Call $reader.ReadUInt16()
+                            };
+                            .If (
+                                .Call $reader.ReadFieldOmitted()
+                            ) {
+                                .Default(System.Void)
+                            } .Else {
+                                ($Example.guid).Data4 = .Call $reader.ReadUInt64()
+                            };
+                            .Default(System.Void)
+                        }
+                    }
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    .Block(System.Int32 $count) {
+                        $count = .Call $reader.ReadContainerBegin();
+                        .Block(System.Int32 $Example._int32Vector_item) {
+                            ($Example._int32Vector).Capacity = $count;
+                            .Loop  {
+                                .If ($count-- > 0) {
+                                    .Block() {
+                                        $Example._int32Vector_item = .Call $reader.ReadInt32();
+                                        .Call ($Example._int32Vector).Add($Example._int32Vector_item)
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:;
+                            .Default(System.Void)
+                        };
+                        .Call $reader.ReadContainerEnd()
+                    }
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    .Block(System.Int32 $count) {
+                        $count = .Call $reader.ReadContainerBegin();
+                        .Block(ExpressionsTest.Nested $Example._nestedVector_item) {
+                            .Default(System.Void);
+                            .Loop  {
+                                .If ($count-- > 0) {
+                                    .Block() {
+                                        .Block() {
+                                            $Example._nestedVector_item = .New ExpressionsTest.Nested();
+                                            .Block() {
+                                                .Default(System.Void);
+                                                .If (
+                                                    .Call $reader.ReadFieldOmitted()
+                                                ) {
+                                                    .Default(System.Void)
+                                                } .Else {
+                                                    $Example._nestedVector_item._double = .Call $reader.ReadDouble()
+                                                };
+                                                .Default(System.Void)
+                                            }
+                                        };
+                                        .Call ($Example._nestedVector).Add($Example._nestedVector_item)
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:;
+                            .Default(System.Void)
+                        };
+                        .Call $reader.ReadContainerEnd()
+                    }
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    .Block(System.Int32 $count) {
+                        $count = .Call $reader.ReadContainerBegin();
+                        $Example.b = .Call $reader.ReadBytes($count);
+                        .Call $reader.ReadContainerEnd()
+                    }
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    .Block(System.Int32 $count) {
+                        $count = .Call $reader.ReadContainerBegin();
+                        .Block(
+                            System.Int32 $Example._map_key,
+                            System.Double $Example._map_value) {
+                            .Default(System.Void);
+                            .Loop  {
+                                .If ($count-- > 0) {
+                                    .Block() {
+                                        $Example._map_key = .Call $reader.ReadInt32();
+                                        .Default(System.Void);
+                                        $Example._map_value = .Call $reader.ReadDouble();
+                                        ($Example._map).Item[$Example._map_key] = $Example._map_value
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:
+                        };
+                        .Call $reader.ReadContainerEnd()
+                    }
+                };
+                .Default(System.Void)
+            }
+        };
+        (System.Object)$Example
+    }
+}
+
+.Lambda #Lambda2<System.Action`2[System.String,System.String]>(
+    System.String $s,
+    System.String $f) {
+    .Call Bond.Expressions.ThrowExpression.ThrowRequiredFieldMissingException(
+        $s,
+        $f)
+}

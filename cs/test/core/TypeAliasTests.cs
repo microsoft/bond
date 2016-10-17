@@ -150,7 +150,7 @@
 
             var seed = (int)DateTime.Now.ToBinary();
             var r = new System.Random(seed);
-            System.Diagnostics.Trace.TraceInformation("Random seed {0}", seed);
+            System.Diagnostics.Debug.WriteLine("Random seed {0}", seed);
 
             var target = new bool[66];
             foreach (var i in Enumerable.Range(0, 66))
