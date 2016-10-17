@@ -199,14 +199,14 @@ namespace UnitTest.Layers
             return this;
         }
 
-        public Error OnSend(Logger logger, MessageType messageType, SendContext context, Dummy layerData)
+        public Error OnSend(MessageType messageType, SendContext context, Dummy layerData, Logger logger)
         {
             layerData.string_value += value;
             list.Add(layerData.string_value);
             return null;
         }
 
-        public Error OnReceive(Logger logger, MessageType messageType, ReceiveContext context, Dummy layerData)
+        public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData, Logger logger)
         {
             layerData.string_value += value;
             list.Add(layerData.string_value);
@@ -221,12 +221,12 @@ namespace UnitTest.Layers
             return this;
         }
 
-        public Error OnSend(Logger logger, MessageType messageType, SendContext context, Dummy layerData)
+        public Error OnSend(MessageType messageType, SendContext context, Dummy layerData, Logger logger)
         {
             throw new LayerStackException();
         }
 
-        public Error OnReceive(Logger logger, MessageType messageType, ReceiveContext context, Dummy layerData)
+        public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData, Logger logger)
         {
             throw new LayerStackException();
         }
@@ -252,13 +252,13 @@ namespace UnitTest.Layers
             return this;
         }
 
-        public Error OnSend(Logger logger, MessageType messageType, SendContext context, Dummy layerData)
+        public Error OnSend(MessageType messageType, SendContext context, Dummy layerData, Logger logger)
         {
             layerData.int_value = expectedValue;
             return null;
         }
 
-        public Error OnReceive(Logger logger, MessageType messageType, ReceiveContext context, Dummy layerData)
+        public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData, Logger logger)
         {
             if (layerData.int_value != expectedValue)
             {
@@ -291,7 +291,7 @@ namespace UnitTest.Layers
             this.errorOnReceive = errorOnReceive;
         }
 
-        public Error OnSend(Logger logger, MessageType messageType, SendContext context, Dummy layerData)
+        public Error OnSend(MessageType messageType, SendContext context, Dummy layerData, Logger logger)
         {
             if (errorOnSend && messageType == badMessageType)
             {
@@ -303,7 +303,7 @@ namespace UnitTest.Layers
             }
         }
 
-        public Error OnReceive(Logger logger, MessageType messageType, ReceiveContext context, Dummy layerData)
+        public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData, Logger logger)
         {
             if (errorOnReceive && messageType == badMessageType)
             {
@@ -348,13 +348,13 @@ namespace UnitTest.Layers
             this.prefix = prefix;
         }
 
-        public Error OnSend(Logger logger, MessageType messageType, SendContext context, Dummy layerData)
+        public Error OnSend(MessageType messageType, SendContext context, Dummy layerData, Logger logger)
         {
             State += prefix + SendMessage;
             return null;
         }
 
-        public Error OnReceive(Logger logger, MessageType messageType, ReceiveContext context, Dummy layerData)
+        public Error OnReceive(MessageType messageType, ReceiveContext context, Dummy layerData, Logger logger)
         {
             State += prefix + ReceiveMessage;
             return null;

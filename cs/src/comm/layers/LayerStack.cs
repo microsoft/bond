@@ -79,7 +79,7 @@ namespace Bond.Comm.Layers
             {
                 try
                 {
-                    error = layers[layerIndex].OnSend(logger, messageType, context, layerData);
+                    error = layers[layerIndex].OnSend(messageType, context, layerData, logger);
                 }
                 catch (Exception ex)
                 {
@@ -100,7 +100,7 @@ namespace Bond.Comm.Layers
             {
                 try
                 {
-                    error = layers[layerIndex].OnReceive(logger, messageType, context, layerData);
+                    error = layers[layerIndex].OnReceive(messageType, context, layerData, logger);
                 }
                 catch (Exception ex)
                 {
