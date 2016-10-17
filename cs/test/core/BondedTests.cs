@@ -7,6 +7,7 @@
     using Bond.Protocols;
     using Bond.IO;
     using Bond.IO.Unsafe;
+    using Bond.Reflection;
 
     [TestFixture]
     public class BondedTests

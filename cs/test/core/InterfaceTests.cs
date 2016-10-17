@@ -11,6 +11,7 @@
     using Bond.IO;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
+    using Bond.Reflection;
 
     [TestFixture]
     public class InterfaceTests
@@ -170,7 +171,7 @@
             }
         }
 
-        static Expression Construct<T>(params Expression[] arguments)         
+        static Expression Construct<T>(params Expression[] arguments)
         {
             var ctor = typeof(T).GetConstructor(arguments.Select(a => a.Type).ToArray());
             return ctor != null ? Expression.New(ctor, arguments) : null;

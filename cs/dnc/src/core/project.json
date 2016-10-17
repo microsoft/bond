@@ -1,0 +1,37 @@
+{
+    "name": "Bond",
+    "version": "1.0.0-*",
+    "buildOptions": {
+        "compile": {
+            "include": [
+                "../../../src/core/*.cs",
+                "../../../src/core/expressions/*.cs",
+                "../../../src/core/expressions/pull/*.cs",
+                "../../../src/core/expressions/xml/*.cs",
+                "../../../src/core/io/*.cs",
+                "../../../src/core/io/safe/*.cs",
+                "../../../src/core/properties/*.cs",
+                "../../../src/core/protocols/*.cs",
+                "gen/bond_const_types.cs",
+                "gen/bond_types.cs"
+            ]
+        },
+        "debugType": "portable",
+        "keyFile": "../../../build/internal/bond.snk",
+        "publicSign": true
+    },
+    "dependencies": {
+        "attributes": "1.0.0-*",
+        "reflection": "1.0.0-*"
+    },
+    "frameworks": {
+        "netstandard1.6": {
+            "dependencies": {
+                "NETStandard.Library": "1.6.0"
+            }
+        }
+    },
+    "scripts": {
+        "precompile": "bondcodegen.cmd"
+    }
+}

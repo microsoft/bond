@@ -112,9 +112,12 @@
     {
         static void Write(string name, IDebugView codegen)
         {
-            using (var file = new StreamWriter(name, false))
+            using (var file = File.Create(name))
             {
-                file.Write(codegen.DebugView);
+                using (var sw = new StreamWriter(file))
+                {
+                    sw.Write(codegen.DebugView);
+                }
             }
         }
 

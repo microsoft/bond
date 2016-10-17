@@ -1,0 +1,32 @@
+{
+    "name": "Bond.JSON",
+    "version": "1.0.0-*",
+    "buildOptions": {
+        "compile": {
+            "include": [
+                "../../../src/json/*.cs",
+                "../../../src/json/expressions/json/*.cs",
+                "../../../src/json/properties/*.cs",
+                "../../../src/json/protocols/*.cs"
+            ]
+        },
+        "debugType": "portable",
+        "keyFile": "../../../build/internal/bond.snk",
+        "publicSign": true
+    },
+    "dependencies": {
+        "attributes": "1.0.0-*",
+        "core": "1.0.0-*",
+        "Newtonsoft.Json": {
+            "version": "9.0.1"
+        },
+        "reflection": "1.0.0-*"
+    },
+    "frameworks": {
+        "netstandard1.6": {
+            "dependencies": {
+                "NETStandard.Library": "1.6.0"
+            }
+        }
+    }
+}

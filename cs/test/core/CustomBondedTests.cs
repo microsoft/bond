@@ -12,6 +12,7 @@ namespace UnitTest
     using Bond.IO;
     using Bond.IO.Unsafe;
     using Bond.Protocols;
+    using Bond.Reflection;
     using NUnit.Framework;
 
     [TestFixture]
@@ -264,14 +265,14 @@ namespace UnitTest
 
             private static Expression ObjectBondedFactory(Type objectType, Expression value)
             {
-                var method = typeof(CustomBonded<>).MakeGenericType(objectType).GetMethod("From", new[] {value.Type});
+                var method = objectType.GetMethod(typeof(CustomBonded<>), "From", value.Type);
 
                 return Expression.Call(method, value);
             }
 
             private static Expression PayloadBondedFactory(Expression reader, Expression schema)
             {
-                var ctor = typeof(CustomBondedVoid<>).MakeGenericType(reader.Type).GetConstructor(BindingFlags.Instance | BindingFlags.Public, null, new [] { reader.Type, schema.Type }, null);
+                var ctor = typeof(CustomBondedVoid<>).MakeGenericType(reader.Type).GetConstructor(reader.Type, schema.Type);
                 return Expression.New(ctor, reader, schema);
             }
 
@@ -282,13 +283,18 @@ namespace UnitTest
 
             private static Expression Factory(Type type, Type schemaType, params Expression[] arguments)
             {
-                if (type.IsGenericType)
+                if (type.IsGenericType())
                 {
                     var typeDefinition = type.GetGenericTypeDefinition();
                     if (typeDefinition == typeof(CustomBonded<>))
                     {
                         var arg = arguments[0]; // CustomBondedVoid<R>
-                        var bondedConvert = typeof(IBonded).GetMethod("Convert").MakeGenericMethod(type.GetGenericArguments());
+#if NETCOREAPP1_0
+                        Type[] genericArgs = Bond.Reflection.Reflection45.GetGenericArguments(type);
+#else
+                        Type[] genericArgs = type.GetGenericArguments();
+#endif
+                        var bondedConvert = typeof(IBonded).GetMethod("Convert").MakeGenericMethod(genericArgs);
 
                         return Expression.ConvertChecked(Expression.Call(arg, bondedConvert), type);
                     }
