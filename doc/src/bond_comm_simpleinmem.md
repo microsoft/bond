@@ -1,8 +1,5 @@
 % Bond Simple In Memory (SimpleInMem) transport
 
-![The Bond logo: a stylized glue gun](./src/logos/bond-logo-64x64-white.png)\
-
-
 # About #
 
 The Bond SimpleInMem transport is a Bond
