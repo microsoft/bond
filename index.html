@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>Bond, Microsoft's cross-platform framework for working with schematized data - </title>
   <style type="text/css">
 div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
@@ -42,10 +42,10 @@ code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Ann
 code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
 code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
   body {
-      line-height: 1.5; 
-      font-family: Helvetica, Arial, sans-serif; 
+      line-height: 1.5;
+      font-family: Helvetica, Arial, sans-serif;
       color: #333333;
-      font-size: 0.9em;
+      font-size: 1em;
   }
   code {
       font-size: 1em;
@@ -59,26 +59,18 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
     padding: 25px;
     overflow: auto;
   }
-  code > span.kw { color: #000000; font-style:normal; }
-  code > span.dt { color: #000000; font-style:normal; }
-  code > span.dv { color: #000000; font-style:normal; }
-  code > span.bn { color: #000000; font-style:normal; }
-  code > span.fl { color: #000000; font-style:normal; }
-  code > span.ch { color: #000000; font-style:normal; }
-  code > span.st { color: #000000; font-style:normal; }
-  code > span.co { color: #000000; font-style:normal; }
-  code > span.ot { color: #000000; font-style:normal; }
-  code > span.al { color: #000000; font-style:normal; }
-  code > span.fu { color: #000000; font-style:normal; }
-  code > span.er { color: #000000; font-style:normal; }
-  code > span.cf { color: #000000; font-weight: normal; } /* ControlFlow */
+  code > span.kw { color: #204a87; font-weight: normal; } /* Keyword */
+  code > span.co { color: #4E9A06; font-style: normal; }
+  code > span.st { color: #8A0303; font-style: normal; }
+  code > span.cf { color: #204a87; font-weight: normal; } /* ControlFlow */
   code > span.op { color: #000000; font-weight: normal; } /* Operator */
-  code > span.pp { color: #000000; font-style: normal; } /* Preprocessor */
-  code > span.at { color: #000000; } /* Attribute */
-  code > span.do { color: #000000; font-weight: normal; font-style: normal; } /* Documentation */
-  code > span.an { color: #000000; font-weight: normal; font-style: normal; } /* Annotation */
-  code > span.cv { color: #000000; font-weight: normal; font-style: normal; } /* CommentVar */
-  code > span.in { color: #000000; font-weight: normal; font-style: normal; } /* Information */
+  code > span.pp { color: #8f5902; font-style: normal; } /* Preprocessor */
+  code > span.ex { } /* Extension */
+  code > span.at { color: #c4a000; } /* Attribute */
+  code > span.do { color: #8f5902; font-weight: normal; font-style: normal; } /* Documentation */
+  code > span.an { color: #8f5902; font-weight: normal; font-style: normal; } /* Annotation */
+  code > span.cv { color: #8f5902; font-weight: normal; font-style: normal; } /* CommentVar */
+  code > span.in { color: #8f5902; font-weight: normal; font-style: normal; } /* Information */
 
   h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
@@ -87,21 +79,22 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 
   div.sourceCode {
     overflow-x: auto;
+    max-height: 620px;
   }
 
-  table.sourceCode { 
+  table.sourceCode {
     line-height: 120%;
-  }   
+  }
 
   #toc {
-    width: 300px; 
+    width: 300px;
     position:fixed;
     overflow: auto;
     height: 95%;
   }
 
   #main {
-    margin-left: 320px;  
+    margin-left: 320px;
     margin-rigth: auto;
     max-width: 800px;
   }
@@ -123,7 +116,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
     margin-right: auto;
   }
   #toc {
-    left: -300px; 
+    left: -300px;
   }
   }
   </style>
@@ -141,78 +134,93 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <body>
 <nav id="TOC"/>
 <div id="all">
+<div id="toc">
+<p><img src="data:image/png;base64,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" alt="The Bond logo: a stylized glue gun" /></p>
+<ul>
+<li><a href="#bond">Bond</a><ul>
+<li><a href="#dependencies">Dependencies</a><ul>
+<li><a href="#linux">Linux</a></li>
+<li><a href="#os-x">OS X</a></li>
+<li><a href="#windows">Windows</a></li>
+</ul></li>
+<li><a href="#contributing">Contributing</a></li>
+</ul></li>
+</ul>
+</div>
 <div id="main">
+<img src="https://raw.githubusercontent.com/Microsoft/bond/master/doc/src/logos/bond-logo-64x64-white.png" alt="The Bond logo: a stylized glue gun" />
+<hr />
 <p><a href="https://travis-ci.org/Microsoft/bond"><img src="https://travis-ci.org/Microsoft/bond.svg?branch=master" alt="Build Status" /></a> <a href="https://Microsoft.github.io/bond/manual/bond_cs.html#nuget-packages"><img src="https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat" alt="Bond.CSharp NuGet package" /></a></p>
 <h1 id="bond">Bond</h1>
-<p><img src="https://raw.githubusercontent.com/Microsoft/bond/master/doc/src/logos/bond-logo-64x64-white.png" alt="The Bond logo: a stylized glue gun" /> Bond is an open source, cross-platform framework for working with schematized data. It supports cross-language serialization/deserialization and powerful generic mechanisms for efficiently manipulating data. Bond is broadly used at Microsoft in high scale services.</p>
+<p>Bond is an open source, cross-platform framework for working with schematized data. It supports cross-language serialization/deserialization and powerful generic mechanisms for efficiently manipulating data. Bond is broadly used at Microsoft in high scale services.</p>
 <p>We are also introducing the <a href="https://Microsoft.github.io/bond/manual/bond_comm.html">Bond Communications framework</a>–known as Bond Comm–which allows for remote process communication. Currently, we are making the C# version of this framework available; the C++ version will be released in the coming weeks. This framework is based on is the successor to an internal framework that is used by several large services inside Microsoft. Bond Comm is undergoing active evolution at this time and so we are marking the initial release as version 0.5. Consult the <a href="https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm">C# manual</a> for more details on Bond Comm’s usage and capabilities.</p>
 <p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
 <p>For details, see the User’s Manuals for <a href="https://Microsoft.github.io/bond/manual/bond_cpp.html">C++</a>, <a href="https://Microsoft.github.io/bond/manual/bond_cs.html">C#</a> and <a href="https://Microsoft.github.io/bond/manual/bond_py.html">Python</a>, and the documentation of the compiler <a href="https://microsoft.github.io/bond/manual/compiler.html">tool</a> and <a href="https://hackage.haskell.org/package/bond">library</a>.</p>
 <p>For a discussion how Bond compares to similar frameworks see <a href="https://Microsoft.github.io/bond/why_bond.html">Why Bond</a>.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>The Bond repository uses Git submodules and should be cloned with the <code>--recursive</code> flag:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">git clone <span class="op">--</span>recursive https:<span class="op">//</span>github.com<span class="op">/</span>Microsoft<span class="op">/</span>bond.git</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> clone --recursive https://github.com/Microsoft/bond.git</code></pre></div>
 <p>In order to build Bond you will need CMake (2.8.12+), Haskell (ghc 7.4+ and cabal-install 1.18+) and Boost (1.54+). The core Bond C++ library can be used with C++03 compilers, although Python support, unit tests and various examples require some C++11 features.</p>
 <p>Following are specific instructions for building on various platforms.</p>
 <h3 id="linux">Linux</h3>
 <p>Bond can be built with Clang (3.4+) or GNU C++ (4.7+). We recommend the latest version of Clang as it’s much faster with template-heavy code like Bond.</p>
 <p>Run the following commands to install the minimal set of packages needed to build the core Bond library on Ubuntu 14.04:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">sudo apt<span class="op">-</span>get install <span class="op">\</span>
-    clang <span class="op">\</span>
-    cmake <span class="op">\</span>
-    zlib1g<span class="op">-</span>dev <span class="op">\</span>
-    ghc <span class="op">\</span>
-    cabal<span class="op">-</span>install <span class="op">\</span>
-    libboost<span class="op">-</span>dev <span class="op">\</span>
-    libboost<span class="op">-</span>thread<span class="op">-</span>dev
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> apt-get install \
+    clang \
+    cmake \
+    zlib1g-dev \
+    ghc \
+    cabal-install \
+    libboost-dev \
+    libboost-thread-dev
 
-cabal update
-cabal install cabal<span class="op">-</span>install</code></pre></div>
+<span class="ex">cabal</span> update
+<span class="ex">cabal</span> install cabal-install</code></pre></div>
 <p>In the root <code>bond</code> directory run:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
-cd build
-cmake ..
-make
-sudo make install</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
+<span class="bu">cd</span> build
+<span class="fu">cmake</span> ..
+<span class="fu">make</span>
+<span class="fu">sudo</span> make install</code></pre></div>
 <p>The <code>build</code> directory is just an example. Any directory can be used as the build destination.</p>
 <p>In order to build all the C++ and Python tests and examples, a few more packages are needed:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">sudo apt<span class="op">-</span>get install <span class="op">\</span>
-    python2<span class="fl">.7</span><span class="op">-</span>dev <span class="op">\</span>
-    libboost<span class="op">-</span>date<span class="op">-</span>time<span class="op">-</span>dev <span class="op">\</span>
-    libboost<span class="op">-</span>test<span class="op">-</span>dev <span class="op">\</span>
-    libboost<span class="op">-</span>python<span class="op">-</span>dev
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> apt-get install \
+    python2.7-dev \
+    libboost-date-time-dev \
+    libboost-test-dev \
+    libboost-python-dev
 
-cabal install happy</code></pre></div>
+<span class="ex">cabal</span> install happy</code></pre></div>
 <p>Running the following command in the build directory will build and execute all the tests and examples:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">make <span class="op">--</span>jobs <span class="dv">8</span> check</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">make</span> --jobs 8 check</code></pre></div>
 <p>(The unit tests are large so you may want to run 4-8 build jobs in parallel, assuming you have enough memory.)</p>
 <h3 id="os-x">OS X</h3>
 <p>Install Xcode and then run the following command to install the required packages using Homebrew (<a href="http://brew.sh/" class="uri">http://brew.sh/</a>):</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">brew install <span class="op">\</span>
-    cmake <span class="op">\</span>
-    ghc <span class="op">\</span>
-    cabal<span class="op">-</span>install <span class="op">\</span>
-    boost <span class="op">\</span>
-    boost<span class="op">-</span>python</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">brew</span> install \
+    cmake \
+    ghc \
+    cabal-install \
+    boost \
+    boost-python</code></pre></div>
 <p>(boost-python is optional and only needed for Python support.)</p>
 <p>Update the cabal package database and install <code>happy</code> (only needed for tests):</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cabal update
-cabal install happy</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">cabal</span> update
+<span class="ex">cabal</span> install happy</code></pre></div>
 <p>Bond can be built on OS X using either standard *nix makefiles or Xcode. In order to generate and build from makefiles, in the root <code>bond</code> directory run:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
-cd build
-cmake ..
-make
-sudo make install</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
+<span class="bu">cd</span> build
+<span class="fu">cmake</span> ..
+<span class="fu">make</span>
+<span class="fu">sudo</span> make install</code></pre></div>
 <p>Alternatively, you can generate Xcode projects by passing the <code>-G Xcode</code> option to cmake:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake <span class="op">-</span>G Xcode ..</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> -G Xcode ..</code></pre></div>
 <p>You can build and run unit tests by building the <code>check</code> target in Xcode or by running make in the build directory:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">make <span class="op">--</span>jobs <span class="dv">8</span> check</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">make</span> --jobs 8 check</code></pre></div>
 <p>Note that if you are using Homebrew’s Python, you’ll need to build boost-python from source:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">brew install <span class="op">--</span>build<span class="op">-</span><span class="im">from</span><span class="op">-</span>source boost<span class="op">-</span>python</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">brew</span> install --build-from-source boost-python</code></pre></div>
 <p>and tell cmake the location of Homebrew’s libpython by setting the <code>PYTHON_LIBRARY</code> variable, e.g.:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake .. <span class="op">\</span>
-    <span class="op">-</span>DPYTHON_LIBRARY<span class="op">=/</span>usr<span class="op">/</span>local<span class="op">/</span>Cellar<span class="op">/</span>python<span class="op">/</span><span class="fl">2.7.9</span><span class="op">/</span>Frameworks<span class="op">/</span>Python.framework<span class="op">/</span>Versions<span class="op">/</span><span class="fl">2.7</span><span class="op">/</span>lib<span class="op">/</span>libpython2<span class="fl">.7</span>.dylib</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> .. \
+    -DPYTHON_LIBRARY=/usr/local/Cellar/python/2.7.9/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib</code></pre></div>
 <h3 id="windows">Windows</h3>
 <p><a href="https://ci.appveyor.com/project/sapek/bond/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&amp;branch=master" alt="Build Status" /></a></p>
 <p>Install the following tools:</p>
@@ -222,9 +230,9 @@ sudo make install</code></pre></div>
 <li>Haskell Platform (<a href="http://haskell.org/platform/" class="uri">http://haskell.org/platform/</a>)</li>
 </ul>
 <p>If you are building on a network behind a proxy, set the environment variable <code>HTTP_PROXY</code>, e.g.:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> HTTP_PROXY<span class="op">=</span>http:<span class="op">//</span>your<span class="op">-</span>proxy<span class="op">-</span>name:<span class="dv">80</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="va">HTTP_PROXY=</span>http://your-proxy-name:80</code></pre></div>
 <p>Update the cabal package database:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cabal update</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">cabal</span> update</code></pre></div>
 <p>Now you are ready to build the C# version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio and build as usual. The C# unit tests can also be run from within the solution.</p>
 <p>The C++ and Python versions of Bond additionally require:</p>
 <ul>
@@ -232,24 +240,24 @@ sudo make install</code></pre></div>
 <li>Python 2.7 (<a href="https://www.python.org/downloads/" class="uri">https://www.python.org/downloads/</a>)</li>
 </ul>
 <p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment (MSVC 12 or MSVC 14) can be found, e.g.:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> BOOST_ROOT<span class="op">=</span>D:<span class="op">\</span>boost_1_57_0
-<span class="bu">set</span> BOOST_LIBRARYDIR<span class="op">=</span>D:<span class="op">\</span>boost_1_57_0<span class="op">\</span>lib64<span class="op">-</span>msvc<span class="fl">-14.0</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="va">BOOST_ROOT=</span>D:\<span class="ex">boost_1_57_0</span>
+<span class="kw">set</span> <span class="va">BOOST_LIBRARYDIR=</span>D:\<span class="ex">boost_1_57_0</span>\lib64-msvc-14.0</code></pre></div>
 <p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests and Python support. If Boost or Python libraries are not found on the system, then some tests and examples will not be built.</p>
 <p>In order to generate a solution to build the C++ and Python versions with Visual Studio 2015 run the following commands from the root <code>bond</code> directory:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">mkdir build
-cd build
-<span class="bu">set</span> PreferredToolArchitecture<span class="op">=</span>x64
-cmake <span class="op">-</span>G <span class="st">&quot;Visual Studio 14 2015 Win64&quot;</span> ..</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
+<span class="bu">cd</span> build
+<span class="kw">set</span> <span class="va">PreferredToolArchitecture=</span>x64
+<span class="fu">cmake</span> -G <span class="st">&quot;Visual Studio 14 2015 Win64&quot;</span> ..</code></pre></div>
 <p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed. (The Bond unit tests are too big to build with 32-bit tools.) This variable works for Visual Studio 2013 or 2015. For Visual Studio 2012 set the following environment variable instead:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">set</span> _IsNativeEnvironment<span class="op">=</span>true</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="va">_IsNativeEnvironment=</span>true</code></pre></div>
 <p>Instead of <code>cmake</code> you can also use <code>cmake-gui</code> and specify configuration settings in the UI. This configuration step has to be performed only once. From then on you can use the generated solution <code>build\bond.sln</code> from Visual Studio or build from command line using <code>cmake</code>:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake <span class="op">--</span>build . <span class="op">--</span>target
-cmake <span class="op">--</span>build . <span class="op">--</span>target INSTALL</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> --build . --target
+<span class="fu">cmake</span> --build . --target INSTALL</code></pre></div>
 <p>In order to build and execute the unit tests and examples run:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">cmake <span class="op">--</span>build . <span class="op">--</span>target check <span class="op">--</span> <span class="op">/</span>maxcpucount:<span class="dv">8</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> --build . --target check -- /maxcpucount:8</code></pre></div>
 <h2 id="contributing">Contributing</h2>
 <p>Interested in contributing to Bond? Take a look at our <a href="https://github.com/Microsoft/bond/blob/master/CONTRIBUTING.md">contribution guidelines</a> to get started.</p>
-</div>    
+</div>
 </div>
 </body>
 </html>

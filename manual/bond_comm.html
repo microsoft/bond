@@ -7,8 +7,8 @@
   <title>Bond Communications</title>
   <style type="text/css">
   body {
-      line-height: 1.5; 
-      font-family: Helvetica, Arial, sans-serif; 
+      line-height: 1.5;
+      font-family: Helvetica, Arial, sans-serif;
       color: #333333;
       font-size: 1em;
   }
@@ -24,7 +24,7 @@
     padding: 25px;
     overflow: auto;
   }
-  code > span.kw { color: #204a87; font-weight: normal; } /* Keyword */  
+  code > span.kw { color: #204a87; font-weight: normal; } /* Keyword */
   code > span.co { color: #4E9A06; font-style: normal; }
   code > span.st { color: #8A0303; font-style: normal; }
   code > span.cf { color: #204a87; font-weight: normal; } /* ControlFlow */
@@ -47,19 +47,19 @@
     max-height: 620px;
   }
 
-  table.sourceCode { 
+  table.sourceCode {
     line-height: 120%;
-  } 
+  }
 
   #toc {
-    width: 300px; 
+    width: 300px;
     position:fixed;
     overflow: auto;
     height: 95%;
   }
 
   #main {
-    margin-left: 320px;  
+    margin-left: 320px;
     margin-rigth: auto;
     max-width: 800px;
   }
@@ -81,7 +81,7 @@
     margin-right: auto;
   }
   #toc {
-    left: -300px; 
+    left: -300px;
   }
   }
   </style>
@@ -100,6 +100,7 @@
 <nav id="TOC"></nav>
 <div id="all">
 <div id="toc">
+<p><img src="data:image/png;base64,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" alt="The Bond logo: a stylized glue gun" /></p>
 <ul>
 <li><a href="#about">About</a></li>
 <li><a href="#features">Features</a><ul>
@@ -113,11 +114,9 @@
 </ul>
 </div>
 <div id="main">
-<div id="header">    
+<div id="header">
 <h1 class="title">Bond Communications</h1>
 </div>
-<p><img src="data:image/png;base64,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" alt="The Bond logo: a stylized glue gun" /><br />
-</p>
 <h1 id="about">About</h1>
 <p>The Bond Communications framework allows clients and services to exchange Bond messages.</p>
 <h1 id="features">Features</h1>
@@ -152,7 +151,7 @@
 </ul>
 <h1 id="implementations">Implementations</h1>
 <p>Bond Communications is available for <a href="bond_cs.html#bond-comm">C#</a> today. C++ support is <a href="bond_comm_roadmap.html">forthcoming</a>.</p>
-</div>    
+</div>
 </div>
 </body>
 </html>
