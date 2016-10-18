@@ -39,6 +39,12 @@
         <file src="net45\Bond.Attributes.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
         <file src="net45\Bond.Attributes.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
         <file src="net45\Bond.Attributes.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.dll" target="lib\netstandard1.0" />
+        <file src="net45\Bond.xml" target="lib\netstandard1.0" />
+        <file src="net45\Bond.pdb" target="lib\netstandard1.0" />
+        <file src="net45\Bond.Attributes.dll" target="lib\netstandard1.0" />
+        <file src="net45\Bond.Attributes.xml" target="lib\netstandard1.0" />
+        <file src="net45\Bond.Attributes.pdb" target="lib\netstandard1.0" />
         <file src="net40\Bond.dll" target="lib\net40" />
         <file src="net40\Bond.xml" target="lib\net40" />
         <file src="net40\Bond.pdb" target="lib\net40" />

@@ -34,5 +34,14 @@
       <file src="net45\Bond.Comm.Layers.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
       <file src="net45\Bond.Comm.Layers.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
       <file src="net45\Bond.Comm.Layers.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+      <file src="net45\Bond.Comm.Interfaces.dll" target="lib\netstandard1.0" />
+      <file src="net45\Bond.Comm.Interfaces.xml" target="lib\netstandard1.0" />
+      <file src="net45\Bond.Comm.Interfaces.pdb" target="lib\netstandard1.0" />
+      <file src="net45\Bond.Comm.Service.dll" target="lib\netstandard1.0" />
+      <file src="net45\Bond.Comm.Service.xml" target="lib\netstandard1.0" />
+      <file src="net45\Bond.Comm.Service.pdb" target="lib\netstandard1.0" />
+      <file src="net45\Bond.Comm.Layers.dll" target="lib\netstandard1.0" />
+      <file src="net45\Bond.Comm.Layers.xml" target="lib\netstandard1.0" />
+      <file src="net45\Bond.Comm.Layers.pdb" target="lib\netstandard1.0" />
     </files>
 </package>

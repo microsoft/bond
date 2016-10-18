@@ -41,6 +41,10 @@
     <file src="cs\build\nuget\Bond.Compiler.CSharp.props" target="build\portable-net45+wp80+win8+wpa81+dnxcore50" />
     <file src="cs\build\nuget\Common.props" target="build\portable-net45+wp80+win8+wpa81+dnxcore50" />
     <file src="cs\build\nuget\Common.targets" target="build\portable-net45+wp80+win8+wpa81+dnxcore50" />
+    <file src="cs\build\nuget\Bond.Compiler.CSharp.targets" target="build\netstandard1.0" />
+    <file src="cs\build\nuget\Bond.Compiler.CSharp.props" target="build\netstandard1.0" />
+    <file src="cs\build\nuget\Common.props" target="build\netstandard1.0" />
+    <file src="cs\build\nuget\Common.targets" target="build\netstandard1.0" />
 
     <file src="cs\build\nuget\Bond.Compiler.CSharp.targets" target="build\net40" />
     <file src="cs\build\nuget\Bond.Compiler.CSharp.props" target="build\net40" />
