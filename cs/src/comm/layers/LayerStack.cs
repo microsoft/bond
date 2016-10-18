@@ -6,6 +6,7 @@ namespace Bond.Comm.Layers
     using System;
     using System.Diagnostics;
     using System.Linq;
+    using System.Threading;
 
     /// <summary>
     /// Concrete layer stack implementation. The layer stack encapsulates
@@ -19,14 +20,12 @@ namespace Bond.Comm.Layers
     public class LayerStack<TLayerData> : ILayerStack where TLayerData : class, new()
     {
         readonly ILayer<TLayerData>[] layers;
-        readonly Logger logger;
 
         /// <summary>
         /// Construct a layer stack instance from a set of layers.
         /// </summary>
-        /// <param name="logger"></param>
         /// <param name="layers">Layers for this stack. Must be at least one and all must not be null.</param>
-        public LayerStack(Logger logger, params ILayer<TLayerData>[] layers)
+        public LayerStack(params ILayer<TLayerData>[] layers)
         {
             if ((layers == null) || (layers.Length == 0)) { throw new ArgumentException("At least one layer must be provided"); }
 
@@ -39,15 +38,14 @@ namespace Bond.Comm.Layers
             }
 
             this.layers = layers;
-            this.logger = logger;
         }
 
-        public Error OnSend(MessageType messageType, SendContext context, out IBonded layerData)
+        public Error OnSend(MessageType messageType, SendContext context, out IBonded layerData, Logger logger)
         {
             if (context == null) { throw new ArgumentNullException(nameof(context)); }
 
             var realLayerData = new TLayerData();
-            var error = OnSendImpl(messageType, context, realLayerData);
+            var error = OnSendImpl(messageType, context, realLayerData, logger);
             layerData = (error == null
                             ? (IBonded<TLayerData>)new Bonded<TLayerData>(realLayerData)
                             : null);
@@ -56,23 +54,23 @@ namespace Bond.Comm.Layers
             return error;
         }
 
-        public Error OnReceive(MessageType messageType, ReceiveContext context, IBonded layerData)
+        public Error OnReceive(MessageType messageType, ReceiveContext context, IBonded layerData, Logger logger)
         {
             if (context == null) { throw new ArgumentNullException(nameof(context)); }
 
             TLayerData realLayerData;
-            Error error = DeserializeLayerData(layerData, context.RequestMetrics.request_id, out realLayerData);
+            Error error = DeserializeLayerData(layerData, context.RequestMetrics.request_id, out realLayerData, logger);
 
             if (error == null)
             {
                 Debug.Assert(realLayerData != null);
-                error = OnReceiveImpl(messageType, context, realLayerData);
+                error = OnReceiveImpl(messageType, context, realLayerData, logger);
             }
 
             return error;
         }
 
-        private Error OnSendImpl(MessageType messageType, SendContext context, TLayerData layerData)
+        private Error OnSendImpl(MessageType messageType, SendContext context, TLayerData layerData, Logger logger)
         {
             Error error = null;
 
@@ -81,7 +79,7 @@ namespace Bond.Comm.Layers
             {
                 try
                 {
-                    error = layers[layerIndex].OnSend(messageType, context, layerData);
+                    error = layers[layerIndex].OnSend(messageType, context, layerData, logger);
                 }
                 catch (Exception ex)
                 {
@@ -93,7 +91,7 @@ namespace Bond.Comm.Layers
             return error;
         }
 
-        private Error OnReceiveImpl(MessageType messageType, ReceiveContext context, TLayerData layerData)
+        private Error OnReceiveImpl(MessageType messageType, ReceiveContext context, TLayerData layerData, Logger logger)
         {
             Error error = null;
 
@@ -102,7 +100,7 @@ namespace Bond.Comm.Layers
             {
                 try
                 {
-                    error = layers[layerIndex].OnReceive(messageType, context, layerData);
+                    error = layers[layerIndex].OnReceive(messageType, context, layerData, logger);
                 }
                 catch (Exception ex)
                 {
@@ -114,7 +112,7 @@ namespace Bond.Comm.Layers
             return error;
         }
 
-        private Error DeserializeLayerData(IBonded layerData, string uniqueId, out TLayerData realLayerData)
+        private Error DeserializeLayerData(IBonded layerData, string uniqueId, out TLayerData realLayerData, Logger logger)
         {
             Error error = null;
             if (layerData == null)
@@ -149,15 +147,13 @@ namespace Bond.Comm.Layers
     public class LayerStackProvider<TLayerData> : ILayerStackProvider where TLayerData : class, new()
     {
         readonly ILayerProvider<TLayerData>[] layerProviders;
-        readonly LayerStack<TLayerData> cachedLayerStack;
-        readonly Logger logger;
+        readonly Lazy<LayerStack<TLayerData>> cachedLayerStack;
 
         /// <summary>
         /// Construct a layer stack provider from a set of layer providers.
         /// </summary>
-        /// <param name="logger"></param>
         /// <param name="layerProviders">Layer providers for this stack provider. Must be at least one and all must not be null.</param>
-        public LayerStackProvider(Logger logger, params ILayerProvider<TLayerData>[] layerProviders)
+        public LayerStackProvider(params ILayerProvider<TLayerData>[] layerProviders)
         {
             if ((layerProviders == null) || (layerProviders.Length == 0))
             {
@@ -179,24 +175,27 @@ namespace Bond.Comm.Layers
                 layers[i] = layerProviders[i].GetLayer();
             }
 
-            bool stateless = layers.All(layer => layer is IStatelessLayer<TLayerData>);
-            if (stateless)
+            cachedLayerStack = new Lazy<LayerStack<TLayerData>>(() =>
             {
-                cachedLayerStack = new LayerStack<TLayerData>(logger, layers);
-            }
-
-            this.logger = logger;
+                bool stateless = layers.All(layer => layer is IStatelessLayer<TLayerData>);
+                if (stateless)
+                {
+                    return new LayerStack<TLayerData>(layers);
+                }
+                else
+                {
+                    return null;
+                }
+            }, LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
-        public Error GetLayerStack(string uniqueId, out ILayerStack stack)
+        public Error GetLayerStack(string uniqueId, out ILayerStack stack, Logger logger)
         {
             Error error = null;
 
-            if (cachedLayerStack != null)
-            {
-                stack = cachedLayerStack;
-            }
-            else
+            stack = cachedLayerStack.Value;
+
+            if (stack == null)
             {
                 var layers = new ILayer<TLayerData>[layerProviders.Length];
                 for (int i = 0; i < layerProviders.Length; i++)
@@ -221,7 +220,7 @@ namespace Bond.Comm.Layers
                     }
                 }
 
-                stack = error == null ? new LayerStack<TLayerData>(logger, layers) : null;
+                stack = error == null ? new LayerStack<TLayerData>(layers) : null;
             }
 
             return error;
