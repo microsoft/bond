@@ -80,9 +80,6 @@ int main()
         Base base;
         it->Deserialize(base);
 
-        // The field Base::name is declared as bond_meta::full_name, and thus
-        // was automatically initialized by the system to fully qualified
-        // name of the struct.
         switch (base.kind)
         {
             case StructKind_Struct1:
