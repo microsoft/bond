@@ -11,7 +11,26 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## C# Comm 0.8.0: 2016-10-12 #
+## Unreleased ##
+
+* `gbc` & compiler library: TBD
+* IDL core version: TBD
+* IDL comm version: TBD
+* C++ version: TBD
+* C# NuGet version: TBD (bug fix bump needed)
+* C# Comm NuGet version: TBD (minor bump needed)
+
+### C# ###
+* Fixed a bug in the MSBuild targets that caused codegen to always be run if
+  all of the BondCodegen items has Options metadata.
+
+### C# Comm ###
+* The constructor for `LayerStackProvider` no longer requires a logger;
+  instead, the transport's logger is passed to `OnSend`/`OnReceive`. Before,
+  using the same logger with a transport and `LayerStackProvider` required a
+  duplicate implementation.
+
+## C# Comm 0.8.0: 2016-10-12 ##
 
 * C# Comm NuGet version: 0.8.0
 
