@@ -15,14 +15,15 @@ namespace Bond.Comm.Service
             return tcs.Task;
         }
 
-        private static Task completedTask = Task.FromResult(default(object));
+        public static Task CompletedTask { get; } = Task.FromResult(default(object));
 
-        public static Task CompletedTask
+        /// <summary>
+        /// Consumes a task and doesn't do anything with it. Useful for fire-and-forget calls to
+        /// async methods within async methods.
+        /// </summary>
+        /// <param name="task">The task whose result is to be ignored.</param>
+        public static void Forget(this Task task)
         {
-            get
-            {
-                return completedTask;
-            }
         }
     }
 }

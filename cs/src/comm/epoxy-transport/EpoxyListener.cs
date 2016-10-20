@@ -24,6 +24,7 @@ namespace Bond.Comm.Epoxy
         readonly object connectionsLock = new object();
         readonly HashSet<EpoxyConnection> connections;
 
+        // used to request that other components start shutting down
         readonly CancellationTokenSource shutdownTokenSource;
 
         public IPEndPoint ListenEndpoint { get; }
@@ -134,8 +135,10 @@ namespace Bond.Comm.Epoxy
                         connections.Add(connection);
                     }
 
-                    await connection.StartAsync();
-                    logger.Site().Debug("Started server-side connection for {0}", connection.RemoteEndPoint);
+                    logger.Site().Debug("Setup server-side connection for {0}", connection.RemoteEndPoint);
+                    // Don't need to wait for the connection to get fully established before
+                    // accepting the next one, so fire and forget (with logging) StartAsync.
+                    connection.StartAsync().ContinueWith(startTask => LogClientStartResult(connection, startTask)).Forget();
                 }
                 catch (AuthenticationException ex)
                 {
@@ -174,6 +177,25 @@ namespace Bond.Comm.Epoxy
             {
                 // We tried to cleanly shutdown the socket, oh well.
                 logger.Site().Debug(ex, "Exception encountered when shutting down a socket.");
+            }
+        }
+
+        private void LogClientStartResult(EpoxyConnection connection, Task startTask)
+        {
+            if (startTask.IsFaulted)
+            {
+                logger.Site().Error(
+                    startTask.Exception,
+                    "Starting connection for {0} failed",
+                    connection.RemoteEndPoint);
+            }
+            else if (startTask.IsCanceled)
+            {
+                logger.Site().Debug("Starting connection for {0} was canceled", connection.RemoteEndPoint);
+            }
+            else
+            {
+                logger.Site().Debug("Finished starting connection for {0}", connection.RemoteEndPoint);
             }
         }
     }

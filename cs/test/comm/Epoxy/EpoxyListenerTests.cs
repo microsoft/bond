@@ -4,7 +4,9 @@
 namespace UnitTest.Epoxy
 {
     using System;
+    using System.Diagnostics;
     using System.Net;
+    using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm;
@@ -119,6 +121,25 @@ namespace UnitTest.Epoxy
 
             Assert.IsNotNull(disconnectedConnection);
             Assert.AreEqual(connection.LocalEndPoint, disconnectedConnection.RemoteEndPoint);
+        }
+
+        [Test]
+        public async Task OneConnectionStalledDuringHandshake_CanAcceptAnother()
+        {
+            EpoxyTransport transport = MakeTransport();
+            listener = transport.MakeListener(localhostEndpoint);
+            await listener.StartAsync();
+
+            var noHandshakeConnection = new TcpClient();
+            // This will just establish a TCP connection. It won't perform the Epoxy handshake, so
+            // the listener will just be sitting there waiting for the client to send some data.
+            await noHandshakeConnection.ConnectAsync(localhostEndpoint.Address, localhostEndpoint.Port);
+
+            var connectTask = transport.ConnectToAsync(localhostAddress);
+            bool didConnect = connectTask.Wait(TimeSpan.FromSeconds(30));
+            Assert.IsTrue(didConnect, "Timed out waiting for connection to be established.");
+
+            await transport.StopAsync();
         }
 
         private static EpoxyTransport MakeTransport()
