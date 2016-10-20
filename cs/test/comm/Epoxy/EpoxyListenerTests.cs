@@ -12,10 +12,15 @@ namespace UnitTest.Epoxy
     using Bond.Comm;
     using Bond.Comm.Epoxy;
     using NUnit.Framework;
+    using UnitTest.Comm;
 
     [TestFixture]
     public class EpoxyListenerTests : EpoxyTestBase
     {
+        private const string AnyServiceName = "AnyServiceName";
+        private const string AnyMethodName = "AnyMethodName";
+        private static readonly IMessage<Dummy> AnyMessage = Message.FromPayload(new Dummy());
+
         private static readonly IPEndPoint localhostEndpoint = new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultInsecurePort);
         private static readonly string localhostAddress = "epoxy://127.0.0.1";
 
@@ -140,6 +145,22 @@ namespace UnitTest.Epoxy
             Assert.IsTrue(didConnect, "Timed out waiting for connection to be established.");
 
             await transport.StopAsync();
+        }
+
+        [Test]
+        public async Task StopAsync_ClosesAllOutstandingConnections()
+        {
+            EpoxyTransport transport = MakeTransport();
+            listener = transport.MakeListener(localhostEndpoint);
+
+            await listener.StartAsync();
+            var clientConnection = await transport.ConnectToAsync(localhostAddress);
+
+            await listener.StopAsync();
+
+            Assert.Throws<InvalidOperationException>(
+                async () => await clientConnection.RequestResponseAsync<Dummy, Dummy>(
+                    AnyServiceName, AnyMethodName, AnyMessage, CancellationToken.None));
         }
 
         private static EpoxyTransport MakeTransport()

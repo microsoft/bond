@@ -83,21 +83,56 @@ namespace Bond.Comm.Epoxy
             return TaskExt.CompletedTask;
         }
 
-        public override Task StopAsync()
+        public override async Task StopAsync()
         {
+            // Request that the accept loop stop
             shutdownTokenSource.Cancel();
+            // Stop listening. This causes the accept loop's wait for an
+            // incomming socket to fail, which then causes the accept loop to
+            // look at the value of shutdownTokenSource.Token.
             listener.Stop();
 
-            return acceptTask;
+            // Wait for the accept loop to exit. Once it has exited, no new
+            // connections will be accepted, so we can close the outstanding
+            // ones.
+            await acceptTask;
+
+            // Collect the connections to stop.
+            HashSet<EpoxyConnection> connectionsToClose;
+            lock (connectionsLock)
+            {
+                connectionsToClose = new HashSet<EpoxyConnection>(connections);
+                connections.Clear();
+            }
+
+            // Stop all outstanding connections. EpoxyConnection shutdown is
+            // idempotent, so it's safe to call even if someone else called
+            // StopAsync.
+            var connectionShutdownTasks = new Task[connectionsToClose.Count];
+            int idx = 0;
+            foreach (var connection in connectionsToClose)
+            {
+                connectionShutdownTasks[idx] = connection.StopAsync();
+                ++idx;
+            }
+
+            await Task.WhenAll(connectionShutdownTasks);
         }
 
-        internal Error InvokeOnConnected(ConnectedEventArgs args)
+        internal Error InformConnected(EpoxyConnection connection)
         {
+            var args = new ConnectedEventArgs(connection);
             return OnConnected(args);
         }
 
-        internal void InvokeOnDisconnected(DisconnectedEventArgs args)
+        internal void InformDisconnected(EpoxyConnection connection, Error error)
         {
+            lock (connectionsLock)
+            {
+                connections.Remove(connection);
+            }
+
+            var args = new DisconnectedEventArgs(connection, error);
             OnDisconnected(args);
         }
 
