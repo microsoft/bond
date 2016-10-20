@@ -108,6 +108,15 @@ of `nothing`](bond_cpp.html#default-value-of-nothing), e.g.:
         0: string str = nothing;
     }
 
+Caveat: `blob`, `nullable<blob>` and `blob = nothing` are all represented as
+an `ArraySegment<byte>` in the generated C# code. The default value for all
+three is `default(ArraySegment<byte>)` (in which the `Array` field is
+`null`). An empty `ArraySegment<byte>` (in which the `Array` field is not
+`null` but the `Count` is 0) is treated as a non-default value, so it will
+not be omitted for optional fields. This behavior will be changing in a
+future release, to align it with how other types are handled and how
+nullable/nothing fields are handled in other languages.
+
 Code generation can be customized by passing one or more of the following
 command line options to `gbc`:
 
