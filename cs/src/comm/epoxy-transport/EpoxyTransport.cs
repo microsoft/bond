@@ -260,7 +260,7 @@ namespace Bond.Comm.Epoxy
 
         /// <param name="address">A URI with a scheme of epoxy:// (insecure epoxy) or epoxys:// (epoxy over TLS).</param>
         /// <param name="ct">Unused.</param>
-        public override async Task<EpoxyConnection> ConnectToAsync(string address, CancellationToken ct)
+        public override Task<EpoxyConnection> ConnectToAsync(string address, CancellationToken ct)
         {
             var endpoint = Parse(address, logger);
             if (endpoint == null)
@@ -268,13 +268,13 @@ namespace Bond.Comm.Epoxy
                 throw new ArgumentException(address + " was not a valid Epoxy URI", nameof(address));
             }
 
-            return await ConnectToAsync(endpoint.Value, ct);
+            return ConnectToAsync(endpoint.Value, ct);
         }
 
         /// <param name="address">A URI with a scheme of epoxy:// (insecure epoxy) or epoxys:// (epoxy over TLS).</param>
-        public override async Task<EpoxyConnection> ConnectToAsync(string address)
+        public override Task<EpoxyConnection> ConnectToAsync(string address)
         {
-            return await ConnectToAsync(address, CancellationToken.None);
+            return ConnectToAsync(address, CancellationToken.None);
         }
 
         public async Task<EpoxyConnection> ConnectToAsync(Endpoint endpoint, CancellationToken ct)
@@ -293,9 +293,9 @@ namespace Bond.Comm.Epoxy
             return connection;
         }
 
-        public async Task<EpoxyConnection> ConnectToAsync(Endpoint endpoint)
+        public Task<EpoxyConnection> ConnectToAsync(Endpoint endpoint)
         {
-            return await ConnectToAsync(endpoint, CancellationToken.None);
+            return ConnectToAsync(endpoint, CancellationToken.None);
         }
 
         public override EpoxyListener MakeListener(string address)
