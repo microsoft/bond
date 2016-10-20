@@ -494,8 +494,7 @@ namespace Bond.Comm.Epoxy
 
             if (connectionType == ConnectionType.Server)
             {
-                var args = new ConnectedEventArgs(this);
-                Error disconnectError = parentListener.InvokeOnConnected(args);
+                Error disconnectError = parentListener.InformConnected(this);
 
                 if (disconnectError == null)
                 {
@@ -656,8 +655,7 @@ namespace Bond.Comm.Epoxy
 
             if (connectionType == ConnectionType.Server)
             {
-                var args = new DisconnectedEventArgs(this, errorDetails);
-                parentListener.InvokeOnDisconnected(args);
+                parentListener.InformDisconnected(this, errorDetails);
             }
 
             responseMap.Shutdown();

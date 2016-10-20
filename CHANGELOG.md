@@ -11,6 +11,19 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased ##
+* `gbc` & compiler library: TBD
+* IDL core version: TBD
+* IDL comm version: TBD
+* C++ version: TBD
+* C# NuGet version: TBD
+* C# Comm NuGet version: TBD (minor bump needed)
+
+### C# Comm ###
+
+* EpoxyListener's StopAsync() now stops all the outstanding connections that
+  is accepted.
+
 ## 5.2.0: 2017-02-07 ##
 
 * `gbc` & compiler library: 0.8.0.0
