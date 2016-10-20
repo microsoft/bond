@@ -50,7 +50,7 @@ namespace Bond.Comm.SimpleInMem
         /// </summary>
         /// <returns>a <see cref="SimpleInMemConnection"/> that may be used to perform request operations.</returns>
         /// <exception cref="ArgumentException">the listener for given address does not exist.</exception>
-        public async override Task<SimpleInMemConnection> ConnectToAsync(string address, CancellationToken ct)
+        public override Task<SimpleInMemConnection> ConnectToAsync(string address, CancellationToken ct)
         {
             logger.Site().Information("Connecting to {0}.", address);
             SimpleInMemListener listener;
@@ -64,7 +64,7 @@ namespace Bond.Comm.SimpleInMem
                 }
             }
 
-            return await Task.Run(() => listener.CreateConnectionPair().Client, ct);
+            return Task.Run(() => listener.CreateConnectionPair().Client, ct);
         }
 
         /// <summary>

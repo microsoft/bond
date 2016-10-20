@@ -35,7 +35,6 @@ namespace UnitTest.Interfaces
             public readonly List<ConnectionMetrics> ConnectionMetricses = new List<ConnectionMetrics>();
             public readonly List<RequestMetrics> RequestMetricses = new List<RequestMetrics>();
 
-
             public void Emit(ConnectionMetrics metrics)
             {
                 ConnectionMetricses.Add(metrics);
@@ -65,13 +64,10 @@ namespace UnitTest.Interfaces
             return transport;
         }
 
-        private static async Task<EpoxyConnection> ClientConn(string address)
+        private static Task<EpoxyConnection> ClientConn(string address)
         {
-            var transport = new EpoxyTransportBuilder()
-                .Construct();
-
-            return await transport.ConnectToAsync(address);
-
+            var transport = new EpoxyTransportBuilder().Construct();
+            return transport.ConnectToAsync(address);
         }
 
         [TearDown]
