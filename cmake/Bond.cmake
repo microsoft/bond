@@ -113,16 +113,22 @@ endfunction()
 #
 # add_bond_test (name
 #   [schem.bond [schema2.bond]]
-#   source.cpp [source2.cpp])
+#   source.cpp [source2.cpp]
+#   [BUILD_ONLY])
 #
 function (add_bond_test test)
+    set (flagArgs BUILD_ONLY)
+    cmake_parse_arguments (arg "${flagArgs}" "" "" ${ARGN})
+    list (REMOVE_ITEM ARGV BUILD_ONLY)
     list (INSERT ARGV 1 EXCLUDE_FROM_ALL)
     add_bond_executable (${ARGV})
     add_dependencies (check ${test})
-    add_test (
-        NAME ${test}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMAND ${test})
+    if (NOT arg_BUILD_ONLY)
+        add_test (
+            NAME ${test}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMAND ${test})
+    endif()
 endfunction()
 
 #
