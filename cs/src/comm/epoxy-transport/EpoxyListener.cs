@@ -106,11 +106,15 @@ namespace Bond.Comm.Epoxy
             logger.Site().Information("Accepting connections on {0}", ListenEndpoint);
             while (!t.IsCancellationRequested)
             {
+                // We only need to handle exceptions from AcceptSocketAsync. Exceptions from other
+                // code are handled via StartClientConnectionAsync and LogClientStartResult.
                 try
                 {
-                    Socket socket = await listener.AcceptSocketAsync();
-                    EndPoint remoteEndpoint = socket.RemoteEndPoint;
-                    logger.Site().Debug("Accepted connection from {0}.", remoteEndpoint);
+                    // We need a Task<Socket> later on, so we don't directly await this call here.
+                    Task<Socket> socket = listener.AcceptSocketAsync();
+                    // We await here to block this loop until the next connection has come in.
+                    await socket;
+                    logger.Site().Debug("Accepted TCP connection from {0}.", socket.Result.RemoteEndPoint);
 
                     // Disabling CS4014 "Because this call is not awaited,
                     // execution of the current method continues before the
@@ -121,79 +125,55 @@ namespace Bond.Comm.Epoxy
                     // Don't need to wait for the connection to get fully established before
                     // accepting the next one, so fire and forget (with logging) StartAsync.
                     StartClientConnectionAsync(socket)
-                        .ContinueWith(startTask => LogClientStartResult(remoteEndpoint, startTask));
+                        .ContinueWith(startTask => LogClientStartResult(socket.Result.RemoteEndPoint, startTask));
                     #pragma warning restore 4014
                 }
                 catch (SocketException ex)
                 {
                     logger.Site().Error(ex, "Accept failed with error {0}.", ex.SocketErrorCode);
-                    // continue on to accept the next connection
+                    // Continue on and try to accept the next connection.
                 }
                 catch (ObjectDisposedException)
                 {
-                    // continue on to accept the next connection
+                    // Continue on and try to accept the next connection. Though, it is likey that
+                    // the listener has been shutdown, so we're just going to exit the loop anyway.
                 }
             }
 
-            logger.Site().Information("Shutting down connection on {0}", ListenEndpoint);
+            logger.Site().Information("Stopping listening on {0}", ListenEndpoint);
         }
 
-        async Task StartClientConnectionAsync(Socket socket)
+        async Task StartClientConnectionAsync(Task<Socket> socketTask)
         {
-            EpoxyNetworkStream epoxyStream = null;
+            // If this throws, it will have cleaned up before getting here, so we don't need to
+            // handle cleanup.
+            EpoxyNetworkStream epoxyStream = await EpoxyNetworkStream.SocketToNetworkStreamAsync(
+                getSocketFunc: () => socketTask,
+                getNetworkStreamFunc: socket => EpoxyNetworkStream.MakeServerStreamAsync(socket, tlsConfig, logger),
+                timeoutConfig: timeoutConfig,
+                logger: logger);
 
-            try
+            // We now have a completely established EpoxyNetworkStream that will eventually need to
+            // be shutdown. None of the code between here and adding the connection to our collection
+            // will throw (for network I/O reasons), so we'll safely save the connection. (The
+            // intervening code may throw for things like OOM. If it does, we've got bigger problems
+            // that we likely won't be able to recover from anyway. Ignoring that contingency for
+            // now.)
+            var connection = EpoxyConnection.MakeServerConnection(
+                parentTransport,
+                this,
+                serviceHost,
+                epoxyStream,
+                logger,
+                metrics);
+
+            lock (connectionsLock)
             {
-                EpoxyTransport.ConfigureSocketKeepAlive(socket, timeoutConfig, logger);
-
-                epoxyStream = await EpoxyNetworkStream.MakeServerStreamAsync(socket, tlsConfig, logger);
-                socket = null; // epoxyStream now owns the socket
-
-                var connection = EpoxyConnection.MakeServerConnection(
-                    parentTransport,
-                    this,
-                    serviceHost,
-                    epoxyStream,
-                    logger,
-                    metrics);
-
-                // connection now owns the EpoxyNetworkStream
-                epoxyStream = null;
-
-                lock (connectionsLock)
-                {
-                    connections.Add(connection);
-                }
-
-                logger.Site().Debug("Setup server-side connection for {0}. Starting Epoxy handshake.", connection.RemoteEndPoint);
-                await connection.StartAsync();
-            }
-            catch (Exception)
-            {
-                ShutdownSocketSafe(socket, epoxyStream);
-                throw;
-            }
-        }
-
-        private void ShutdownSocketSafe(Socket socket, EpoxyNetworkStream epoxyStream)
-        {
-            if (epoxyStream != null)
-            {
-                epoxyStream.Shutdown();
-                // epoxyStream owns the socket, so we shouldn't try to shutdown
-                socket = null;
+                connections.Add(connection);
             }
 
-            try
-            {
-                socket?.Shutdown(SocketShutdown.Both);
-                socket?.Close();
-            }
-            catch (SocketException ex)
-            {
-                // We tried to cleanly shutdown the socket, oh well.
-                logger.Site().Debug(ex, "Exception encountered when shutting down a socket.");
-            }
+            logger.Site().Debug("Setup server-side connection for {0}. Starting Epoxy handshake.", connection.RemoteEndPoint);
+            await connection.StartAsync();
         }
 
         private void LogClientStartResult(EndPoint remoteEndPoint, Task startTask)

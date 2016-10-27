@@ -58,6 +58,62 @@ namespace Bond.Comm.Epoxy
             this.logger = logger;
         }
 
+        /// <summary>
+        /// Safely creates an EpoxyNetworkStream from a TCP socket, handling cleaning up resources
+        /// when errors are encountered.
+        /// </summary>
+        /// <remarks>
+        /// This is a helper function that centralizes error handling and socket shutdown.
+        /// </remarks>
+        /// <param name="getSocketFunc">A function to invoke to acquire a socket.</param>
+        /// <param name="getNetworkStreamFunc">
+        /// A function to invoke to wrap a socket in a network stream.
+        /// </param>
+        /// <param name="timeoutConfig">The timeout config to use for this stream.</param>
+        /// <param name="logger">The logger.</param>
+        /// <returns>A connected EpoxyNetworkStream.</returns>
+        public static async Task<EpoxyNetworkStream> SocketToNetworkStreamAsync(
+            Func<Task<Socket>> getSocketFunc,
+            Func<Socket, Task<EpoxyNetworkStream>> getNetworkStreamFunc,
+            EpoxyTransport.TimeoutConfig timeoutConfig,
+            Logger logger)
+        {
+            Socket socket = null;
+            EpoxyNetworkStream epoxyStream = null;
+
+            try
+            {
+                socket = await getSocketFunc();
+                ConfigureSocketKeepAlive(socket, timeoutConfig, logger);
+
+                epoxyStream = await getNetworkStreamFunc(socket);
+                socket = null; // epoxyStream now owns the socket
+
+                return epoxyStream;
+            }
+            catch (Exception)
+            {
+                ShutdownSocketSafe(socket, epoxyStream, logger);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Creates a connected client-side EpoxyNetworkStream from a connected TCP socket.
+        /// </summary>
+        /// <remarks>
+        /// If TLS is enabled, this will establish the TLS connection. Upon successful return, the
+        /// stream owns the socket.
+        /// </remarks>
+        /// <param name="remoteHostname">
+        /// The expected name of the remote host. Used during certificate validation.
+        /// </param>
+        /// <param name="socket">The socket to wrap.</param>
+        /// <param name="tlsConfig">
+        /// TLS config. May be <c>null</c> to indicate a plain-text connection.
+        /// </param>
+        /// <param name="logger">A logger.</param>
+        /// <returns>An connected EpoxyNetworkStream.</returns>
         public static async Task<EpoxyNetworkStream> MakeClientStreamAsync(
             string remoteHostname,
             Socket socket,
@@ -100,6 +156,19 @@ namespace Bond.Comm.Epoxy
             return new EpoxyNetworkStream(socket, clientStream, logger);
         }
 
+        /// <summary>
+        /// Creates a connected server-side EpoxyNetworkStream from a connected TCP socket.
+        /// </summary>
+        /// <remarks>
+        /// If TLS is enabled, this will establish the TLS connection. Upon successful return, the
+        /// stream owns the socket.
+        /// </remarks>
+        /// <param name="socket">The socket to wrap.</param>
+        /// <param name="tlsConfig">
+        /// TLS config. May be <c>null</c> to indicate a plain-text connection.
+        /// </param>
+        /// <param name="logger">A logger.</param>
+        /// <returns>An connected EpoxyNetworkStream.</returns>
         public static async Task<EpoxyNetworkStream> MakeServerStreamAsync(
             Socket socket,
             EpoxyServerTlsConfig tlsConfig,
@@ -144,6 +213,9 @@ namespace Bond.Comm.Epoxy
             return new EpoxyNetworkStream(socket, serverStream, logger);
         }
 
+        /// <summary>
+        /// Gets a <see cref="Stream"/> that can be used for network I/O.
+        /// </summary>
         public Stream Stream
         {
             get
@@ -157,6 +229,12 @@ namespace Bond.Comm.Epoxy
             }
         }
 
+        /// <summary>
+        /// Shutdowns the connection.
+        /// </summary>
+        /// <remarks>
+        /// Shutdown is idempotent and may be called multiple times.
+        /// </remarks>
         public void Shutdown()
         {
             int oldIsShutdown = Interlocked.CompareExchange(ref isShutdown, 1, 0);
@@ -193,7 +271,7 @@ namespace Bond.Comm.Epoxy
             }
         }
 
-        private static RemoteCertificateValidationCallback MakeServerCertificateValidationCallback(
+        static RemoteCertificateValidationCallback MakeServerCertificateValidationCallback(
             EpoxyServerTlsConfig tlsConfig,
             Logger logger)
         {
@@ -236,6 +314,79 @@ namespace Bond.Comm.Epoxy
                 // that's fine. SslStream will just use its default behavior
                 // then.
                 return tlsConfig.RemoteCertificateValidationCallback;
+            }
+        }
+
+        static void ConfigureSocketKeepAlive(
+            Socket socket,
+            EpoxyTransport.TimeoutConfig timeoutConfig,
+            Logger logger)
+        {
+            if (timeoutConfig.KeepAliveTime != TimeSpan.Zero && timeoutConfig.KeepAliveInterval != TimeSpan.Zero)
+            {
+                // Socket.IOControl for IOControlCode.KeepAliveValues is expecting a structure like
+                // the following on Windows:
+                //
+                // struct tcp_keepalive
+                // {
+                //     u_long onoff; // 0 for off, non-zero for on
+                //     u_long keepalivetime; // milliseconds
+                //     u_long keepaliveinterval; // milliseconds
+                // };
+                //
+                // On some platforms this gets mapped to the relevant OS structures, but on other
+                // platforms, this may fail with a PlatformNotSupportedException.
+                UInt32 keepAliveTimeMillis = checked((UInt32)timeoutConfig.KeepAliveTime.TotalMilliseconds);
+                UInt32 keepAliveIntervalMillis = checked((UInt32)timeoutConfig.KeepAliveInterval.TotalMilliseconds);
+
+                var keepAliveVals = new byte[sizeof(UInt32) * 3];
+                keepAliveVals[0] = 1;
+
+                keepAliveVals[4] = (byte)(keepAliveTimeMillis & 0xff);
+                keepAliveVals[5] = (byte)((keepAliveTimeMillis >> 8) & 0xff);
+                keepAliveVals[6] = (byte)((keepAliveTimeMillis >> 16) & 0xff);
+                keepAliveVals[7] = (byte)((keepAliveTimeMillis >> 24) & 0xff);
+
+                keepAliveVals[8] = (byte)(keepAliveIntervalMillis & 0xff);
+                keepAliveVals[9] = (byte)((keepAliveIntervalMillis >> 8) & 0xff);
+                keepAliveVals[10] = (byte)((keepAliveIntervalMillis >> 16) & 0xff);
+                keepAliveVals[11] = (byte)((keepAliveIntervalMillis >> 24) & 0xff);
+
+                try
+                {
+                    socket.IOControl(IOControlCode.KeepAliveValues, keepAliveVals, null);
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Oh well: the connection went down before we could configure it. Nothing to be
+                    // done, except to wait for the next socket operation to fail and let normal
+                    // clean up take over.
+                }
+                catch (Exception ex) when (ex is SocketException || ex is PlatformNotSupportedException)
+                {
+                    logger.Site().Warning(ex, "Socket keep-alive could not be configured");
+                }
+            }
+        }
+
+        static void ShutdownSocketSafe(Socket socket, EpoxyNetworkStream epoxyStream, Logger logger)
+        {
+            if (epoxyStream != null)
+            {
+                epoxyStream.Shutdown();
+                // epoxyStream owns the socket, so we shouldn't try to shutdown the socket
+                socket = null;
+            }
+
+            try
+            {
+                socket?.Shutdown(SocketShutdown.Both);
+                socket?.Close();
+            }
+            catch (SocketException ex)
+            {
+                // We tried to cleanly shutdown the socket, oh well.
+                logger.Site().Debug(ex, "Exception encountered when shutting down a socket.");
             }
         }
     }
