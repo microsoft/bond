@@ -1,3 +1,5 @@
+use_cxx11 ()
+
 set (sources
     ${BOND_IDL}/bond/core/bond.bond
     ${BOND_IDL}/bond/core/bond_const.bond)

@@ -77,18 +77,18 @@ inline Skip(Reader& input, const RuntimeSchema& schema)
 {
     switch (schema.GetTypeId())
     {
-        case bond::BT_SET:
-        case bond::BT_LIST:
+        case bond::BondDataType::BT_SET:
+        case bond::BondDataType::BT_LIST:
         {
             return SkipContainer(
                 value<void, Reader&>(input, element_schema(schema), false), input);
         }
-        case bond::BT_MAP:
+        case bond::BondDataType::BT_MAP:
         {
             return SkipMap(key_schema(schema).GetTypeId(),
                 value<void, Reader&>(input, element_schema(schema), false), input);
         }
-        case bond::BT_STRUCT:
+        case bond::BondDataType::BT_STRUCT:
         {
             return bonded<void, Reader&>(input, schema).Skip();
         }
@@ -547,18 +547,18 @@ public:
     {
         _skip = false;
 
-        if (_schema.GetTypeId() == bond::BT_STRUCT)
+        if (_schema.GetTypeId() == bond::BondDataType::BT_STRUCT)
         {
             Apply(transform, bonded<void, Reader>(_input, _schema));
         }
-        else if(_schema.GetTypeId() == bond::BT_MAP)
+        else if(_schema.GetTypeId() == bond::BondDataType::BT_MAP)
         {
             DeserializeMap(transform, key_schema(_schema).GetTypeId(),
                 value<void, Reader>(_input, element_schema(_schema), false), _input);
         }
         else
         {
-            BOOST_ASSERT(_schema.GetTypeId() == bond::BT_LIST || _schema.GetTypeId() == bond::BT_SET);
+            BOOST_ASSERT(_schema.GetTypeId() == bond::BondDataType::BT_LIST || _schema.GetTypeId() == bond::BondDataType::BT_SET);
 
             DeserializeContainer(transform,
                 value<void, Reader>(_input, element_schema(_schema), false), _input);
@@ -740,10 +740,10 @@ inline DeserializeContainer(X& var, const T& element, Reader& input)
 
     switch (type)
     {
-        case bond::BT_SET:
-        case bond::BT_MAP:
-        case bond::BT_LIST:
-        case bond::BT_STRUCT:
+        case bond::BondDataType::BT_SET:
+        case bond::BondDataType::BT_MAP:
+        case bond::BondDataType::BT_LIST:
+        case bond::BondDataType::BT_STRUCT:
         {
             if (type == GetTypeId(element))
             {
@@ -800,10 +800,10 @@ inline DeserializeContainer(X& var, const T& element, Reader& input)
 
     switch (type)
     {
-        case bond::BT_SET:
-        case bond::BT_MAP:
-        case bond::BT_LIST:
-        case bond::BT_STRUCT:
+        case bond::BondDataType::BT_SET:
+        case bond::BondDataType::BT_MAP:
+        case bond::BondDataType::BT_LIST:
+        case bond::BondDataType::BT_STRUCT:
         {
             if (type == GetTypeId(element))
             {
@@ -907,10 +907,10 @@ inline DeserializeMap(X& var, BondDataType keyType, const T& element, Reader& in
 
     switch (type.second)
     {
-        case bond::BT_SET:
-        case bond::BT_MAP:
-        case bond::BT_LIST:
-        case bond::BT_STRUCT:
+        case bond::BondDataType::BT_SET:
+        case bond::BondDataType::BT_MAP:
+        case bond::BondDataType::BT_LIST:
+        case bond::BondDataType::BT_STRUCT:
         {
             if (type.second == GetTypeId(element))
             {
@@ -970,10 +970,10 @@ inline DeserializeMap(X& var, BondDataType keyType, const T& element, Reader& in
 
     switch (type.second)
     {
-        case bond::BT_SET:
-        case bond::BT_MAP:
-        case bond::BT_LIST:
-        case bond::BT_STRUCT:
+        case bond::BondDataType::BT_SET:
+        case bond::BondDataType::BT_MAP:
+        case bond::BondDataType::BT_LIST:
+        case bond::BondDataType::BT_STRUCT:
         {
             if (type.second == GetTypeId(element))
             {

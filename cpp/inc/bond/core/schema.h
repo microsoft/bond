@@ -55,7 +55,7 @@ inline RuntimeSchema RuntimeSchema::GetBaseSchema() const
 
 inline const StructDef& RuntimeSchema::GetStruct() const
 {
-    BOOST_ASSERT(type->id == BT_STRUCT);
+    BOOST_ASSERT(type->id == BondDataType::BT_STRUCT);
     return schema->structs[type->struct_def];
 }
 
@@ -134,7 +134,7 @@ namespace detail
         {
             // SchemaDef for unknown types: struct with no fields
             SchemaDef schema;
-            schema.root.id = BT_STRUCT;
+            schema.root.id = BondDataType::BT_STRUCT;
             schema.structs.resize(1);
             return schema;
         }

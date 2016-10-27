@@ -1,3 +1,4 @@
+use_cxx11 ()
 add_subdirectory (access_control)
 add_subdirectory (attributes)
 add_subdirectory (bf)

@@ -99,7 +99,7 @@ public:
 
     bool IsOptional() const
     {
-        return metadata.modifier == bond::Optional;
+        return metadata.modifier == bond::Modifier::Optional;
     }
 
 private:
@@ -168,7 +168,7 @@ private:
     typename boost::enable_if<bond::is_basic_type<T>, std::string>::type
     Default() const
     {
-            if (metadata.modifier == bond::Optional && !metadata.default_value.nothing)
+            if (metadata.modifier == bond::Modifier::Optional && !metadata.default_value.nothing)
             {
                 T var;
 

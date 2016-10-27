@@ -150,5 +150,4 @@ template <typename T> struct
 is_type_alias
     : is_object<typename aliased_type<T>::type> {};
 
-
 } // namespace bond

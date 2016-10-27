@@ -13,7 +13,7 @@ struct EnumConverter
         typename boost::mpl::if_<boost::mpl::contains<typename incompatible_types<Num1>::type, int32_t>,
             NumericConverterFail<Reader, Writer, Num1>,
             NumericConverter2<Reader, Writer, Num1>
-        >::type()(EnumValue3);
+        >::type()(EnumType1::EnumValue3);
     }
 };
 
