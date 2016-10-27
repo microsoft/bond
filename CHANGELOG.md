@@ -26,6 +26,11 @@ different versioning scheme, following the Haskell community's
 * Added controls to cap pre-allocation during deserialization of containers
   and blobs.
 
+### C# Comm ###
+
+* Resources are now properly cleaned up if failures are encountered when
+  establishing client-side Epoxy connections.
+
 ## 5.1.0: 2016-11-14 ##
 
 * `gbc` & compiler library: 0.7.0.0
