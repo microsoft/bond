@@ -58,6 +58,18 @@ endif()
 # -DPython_ADDITIONAL_VERSIONS=Major.Minor
 # if your python version is not implicitly supported by cmake
 find_package (PythonInterp 2.7)
+if (APPLE)
+    if (NOT PYTHON_LIBRARY)
+        # find_package (PythonLibs) doesn't find libpython in /usr/local/Cellar,
+        # so if PYTHON_LIBRARY wasn't passed as a cmake -D, we have to set it
+        # here.
+        execute_process (
+            COMMAND "python-config" "--prefix"
+            OUTPUT_VARIABLE PYTHON_PREFIX
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
+        string (CONCAT PYTHON_LIBRARY ${PYTHON_PREFIX} "/lib/libpython2.7.dylib")
+    endif()
+endif()
 find_package (PythonLibs 2.7)
 
 find_package (Boost 1.53.0
