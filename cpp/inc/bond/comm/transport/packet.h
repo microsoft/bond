@@ -227,39 +227,48 @@ protected:
 private:
 
     class ConnectionSink
-        : public INetworkConnectionSink,
-          public boost::enable_shared_from_this<ConnectionSink>
+        : public INetworkConnectionSink
     {
         //
         // Dispatch response.
         //
-        void DispatchResponse(const boost::shared_ptr<INetworkConnection>& connection,
+        static
+        void DispatchResponse(const boost::weak_ptr<INetworkConnection>& ptr,
                               const Address& address,
                               uint64_t conversation_id,
                               Response& response)
         {
-            BOND_LOG(LOG_DEBUG,
-                     "ConnectionSink",
-                     "Send response (id: " << conversation_id << ") to " << address);
-
-            Packet packet;
-            packet.message_type = MessageType::RESPONSE;
-            packet.message_data.is_error = response.is_error;
-            if (response.is_error)
+            if (boost::shared_ptr<INetworkConnection> connection = ptr.lock())
             {
-                // FIXME -- delegate to implementation here
-                OutputBuffer output;
-                CompactBinaryWriter<OutputBuffer> cbw(output);
-                Marshal(response.error, cbw);
-                packet.message_data.data.emplace_back(output.GetBuffer());
+                BOND_LOG(LOG_DEBUG,
+                         "ConnectionSink",
+                         "Send response (id: " << conversation_id << ") to " << address);
+
+                Packet packet;
+                packet.message_type = MessageType::RESPONSE;
+                packet.message_data.is_error = response.is_error;
+                if (response.is_error)
+                {
+                    // FIXME -- delegate to implementation here
+                    OutputBuffer output;
+                    CompactBinaryWriter<OutputBuffer> cbw(output);
+                    Marshal(response.error, cbw);
+                    packet.message_data.data.emplace_back(output.GetBuffer());
+                }
+                else
+                {
+                    packet.message_data.data = std::move(response.payload);
+                }
+                packet.layers = std::move(response.layers);
+
+                connection->Send(conversation_id, std::move(packet));
             }
             else
             {
-                packet.message_data.data = std::move(response.payload);
+                BOND_LOG(LOG_INFO,
+                         "ConnectionSink",
+                         "Response (id: " << conversation_id << ") to " << address << " dropped, connection closed");
             }
-            packet.layers = std::move(response.layers);
-
-            connection->Send(conversation_id, std::move(packet));
         }
 
 
@@ -310,8 +319,7 @@ private:
 
 
         void HandleRequest(uint64_t conversation_id,
-                           Packet& packet,
-                           const boost::shared_ptr<INetworkConnection>& connection)
+                           Packet& packet)
         {
             BOND_LOG(LOG_DEBUG,
                      "ConnectionSink",
@@ -319,8 +327,7 @@ private:
 
             ResponseCallback callback =
                 boost::bind(&ConnectionSink::DispatchResponse,
-                            this->shared_from_this(),
-                            connection,
+                            m_connection,
                             m_address,
                             conversation_id,
                             _1);
@@ -534,18 +541,6 @@ private:
             }
 
             //
-            // Check if connection is still available.
-            //
-            boost::shared_ptr<INetworkConnection> connection = m_connection.lock();
-            if (nullptr == connection)
-            {
-                BOND_LOG(LOG_ERROR,
-                         "ConnectionSink",
-                         "Ignore packet (id: " << conversation_id << ") from closed connection " << m_address);
-                return;
-            }
-
-            //
             // Execute appropriate handler against de-serialized packet.
             //
             switch (packet.message_type)
@@ -558,7 +553,7 @@ private:
 
                 case MessageType::REQUEST:
                 {
-                    HandleRequest(conversation_id, packet, connection);
+                    HandleRequest(conversation_id, packet);
                     break;
                 }
 
@@ -593,7 +588,7 @@ private:
                     }
                     else
                     {
-                        DispatchResponse(connection,
+                        DispatchResponse(m_connection,
                                          m_address,
                                          conversation_id,
                                          response);
@@ -676,11 +671,6 @@ private:
         boost::atomic_uint64_t m_conversationEnum;
 
         //
-        // Default service instance.
-        //
-        boost::shared_ptr<IService> m_service;
-
-        //
         // Remote endpoint address.
         //
         Address m_address;
@@ -689,6 +679,11 @@ private:
         // Network connection associated with this event handler.
         //
         boost::weak_ptr<INetworkConnection> m_connection;
+
+        //
+        // Default service instance.
+        //
+        boost::shared_ptr<IService> m_service;
 
     public:
 
@@ -891,9 +886,10 @@ private:
                     lock(*m_connections)->insert(connection);
                 }
 
+                const boost::shared_ptr<IService> service = m_sessionFactory(address, context);
                 return boost::make_shared<ServerConnectionSink>(connection,
                                                                 address,
-                                                                m_sessionFactory(address, context),
+                                                                service,
                                                                 m_connections);
             }
 

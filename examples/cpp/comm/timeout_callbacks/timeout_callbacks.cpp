@@ -18,12 +18,16 @@ using namespace examples::timeout_callbacks;
 // Implement service
 class ServiceImpl : public Service
 {
+    bond::comm::thread_pool threads;
+
     void Method(const bond::comm::payload<void>&,
                 const std::function<void(const bond::comm::message<void>&)>& callback) override
     {
-        // Wait couple of seconds, to let client trigger timeout.
-        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-        callback(bond::comm::message<void>());
+        threads.schedule([callback](){
+            // Wait couple of seconds, to let client trigger timeout.
+            std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+            callback(bond::comm::message<void>());
+        });
     }
 };
 

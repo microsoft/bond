@@ -15,6 +15,9 @@ target_include_directories (comm_test_common PUBLIC
 target_link_libraries (comm_test_common PRIVATE
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
+cxx_target_compile_options (Clang unit_test_comm PRIVATE -DBOOST_ASIO_HAS_STD_CHRONO)
+cxx_target_compile_options (AppleClang unit_test_comm PRIVATE -DBOOST_ASIO_HAS_STD_CHRONO)
+
 target_link_libraries (unit_test_comm PRIVATE
     comm_test_common
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}

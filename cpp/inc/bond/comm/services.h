@@ -49,9 +49,9 @@ public:
     ServiceStub(const boost::reference_wrapper<Service>& service,
                const WireProtocol& wire_protocol,
                const std::string& service_name = Service::Schema::metadata.qualified_name)
-        : _service(service),
-          _service_name(service_name),
-          _wire_protocol(wire_protocol)
+        : _service(service)
+        , _service_name(service_name)
+        , _wire_protocol(wire_protocol)
     {
         Register::Methods(*this);
     }
@@ -60,10 +60,10 @@ public:
     ServiceStub(const boost::shared_ptr<Service>& service,
                const WireProtocol& wire_protocol,
                const std::string& service_name = Service::Schema::metadata.qualified_name)
-        : _serviceInstance(service),
-          _service(*service),
-          _service_name(service_name),
-          _wire_protocol(wire_protocol)
+        : _service(*service)
+        , _service_name(service_name)
+        , _wire_protocol(wire_protocol)
+        , _serviceInstance(service)
     {
         Register::Methods(*this);
     }
@@ -72,10 +72,10 @@ public:
     ServiceStub(const typename Service::Proxy& proxy,
                const WireProtocol& wire_protocol,
                const std::string& service_name = Service::Schema::metadata.qualified_name)
-        : _proxyInstance(proxy),
-          _service(_proxyInstance),
-          _service_name(service_name),
-          _wire_protocol(wire_protocol)
+        : _service(_proxyInstance)
+        , _service_name(service_name)
+        , _wire_protocol(wire_protocol)
+        , _proxyInstance(proxy)
     {
         Register::Methods(*this);
     }
@@ -134,8 +134,8 @@ private:
         }
 
         notify_adaptor(const ServiceStub& stub, Method method)
-            : _stub(stub),
-              _method(method)
+            : _stub(stub)
+            , _method(method)
         {}
 
         const ServiceStub& _stub;
@@ -154,11 +154,12 @@ private:
                         const ResponseCallback& callback)
         {
             ProtocolType requestProtocol;
-            auto data = _stub._wire_protocol.template Unpack<typename payload<InPayload>::value_type>(request.payload, requestProtocol);
+            auto wire_protocol = _stub._wire_protocol;
+            auto data = wire_protocol.template Unpack<typename payload<InPayload>::value_type>(request.payload, requestProtocol);
 
             (_stub._service.*_method)(
                 data,
-                [this, callback, requestProtocol](const message<OutPayload>& msg)
+                [wire_protocol, callback, requestProtocol](const message<OutPayload>& msg)
                 {
                     Response response;
                     response.is_error = msg.is_error();
@@ -168,15 +169,15 @@ private:
                     }
                     else
                     {
-                        response.payload = _stub._wire_protocol.Pack(msg.value(), requestProtocol);
+                        response.payload = wire_protocol.Pack(msg.value(), requestProtocol);
                     }
                     callback(response);
                 });
         }
 
         invoke_adaptor(const ServiceStub& stub, Method method)
-            : _stub(stub),
-              _method(method)
+            : _stub(stub)
+            , _method(method)
         {}
 
         const ServiceStub& _stub;
@@ -230,13 +231,13 @@ private:
 
     friend class ServiceTable;
 
-    boost::shared_ptr<Service> _serviceInstance;
-    typename Service::Proxy _proxyInstance;
     Service& _service;
     std::string _service_name;
     std::map<std::string, NotifyCallback> _notifyTable;
     std::map<std::string, InvokeCallback> _invokeTable;
     WireProtocol _wire_protocol;
+    typename Service::Proxy _proxyInstance;
+    boost::shared_ptr<Service> _serviceInstance;
 };
 
 
@@ -248,8 +249,8 @@ class ServiceProxy
 {
 public:
     ServiceProxy(const boost::shared_ptr<IService>& service, const WireProtocol& writer)
-        : _service(service),
-          _wire_protocol(writer)
+        : _service(service)
+        , _wire_protocol(writer)
     {}
 
     //
@@ -261,13 +262,14 @@ public:
         const payload<InPayload>& input,
         const std::function<void(const message<OutPayload>&)>& callback) const
     {
+        auto wire_protocol = _wire_protocol;
         Request request;
-        request.payload = _wire_protocol.Pack(input.value());
+        request.payload = wire_protocol.Pack(input.value());
         request.service_name = service_name;
         request.method_name = method_name;
 
         _service->Invoke(request,
-            [callback, this](Response& response)
+            [callback, wire_protocol](Response& response)
             {
                 if (response.is_error)
                 {
@@ -275,7 +277,7 @@ public:
                 }
                 else
                 {
-                    callback(_wire_protocol.template Unpack<typename message<OutPayload>::value_type>(response.payload));
+                    callback(wire_protocol.template Unpack<typename message<OutPayload>::value_type>(response.payload));
                 }
             });
     }
@@ -297,7 +299,9 @@ public:
     }
 
 private:
+
     boost::shared_ptr<IService> _service;
+
     WireProtocol _wire_protocol;
 };
 

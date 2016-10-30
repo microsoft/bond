@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <boost/asio.hpp>
@@ -9,6 +8,7 @@
 #include <bond/comm/epoxy_transport_reflection.h>
 #include <bond/comm/transport/detail/epoxy_data_structs.h>
 #include <bond/comm/transport/detail/epoxy_protocol.h>
+#include <bond/comm/transport/thread_service.h>
 #include <bond/comm/transport/packet.h>
 
 #include <boost/atomic/atomic.hpp>
@@ -43,11 +43,8 @@ public:
     EpoxyTransport(uint32_t numberOfThreads = uint32_t(),
                    const Allocator& allocator = Allocator())
         : m_allocator(allocator)
-        , m_ioServicePtr(new boost::asio::io_service())
-        , m_ioService(*m_ioServicePtr)
-    {
-        Initialize(numberOfThreads);
-    }
+        , m_threadService(boost::make_shared<ThreadService>(numberOfThreads))
+    {}
 
     //
     // Construct transport:
@@ -58,57 +55,22 @@ public:
     explicit
     EpoxyTransport(const Allocator& allocator)
         : m_allocator(allocator)
-        , m_ioServicePtr(new boost::asio::io_service())
-        , m_ioService(*m_ioServicePtr)
-    {
-        Initialize(0);
-    }
+        , m_threadService(boost::make_shared<ThreadService>())
+    {}
 
     //
     // Construct transport:
     //
-    //  @param ioService: shared instance of io_service;
+    //  @param threadService: shared instance of ThreadService; must not be null
     //  @param allocator: allocator instance.
     //
     explicit
-    EpoxyTransport(boost::asio::io_service& ioService,
+    EpoxyTransport(boost::shared_ptr<ThreadService> threadService,
                    const Allocator& allocator = Allocator())
         : m_allocator(allocator)
-        , m_ioService(ioService)
-    {}
-
-
-    ~EpoxyTransport()
+        , m_threadService(threadService)
     {
-        BOND_LOG(LOG_DEBUG, "EpoxyTransport",
-                 "Transport to be destroyed");
-
-        if (nullptr != m_ioServicePtr)
-        {
-            //
-            // Release internal io_service.
-            //
-
-            BOND_LOG(LOG_DEBUG, "EpoxyTransport",
-                     "Stopping io_service");
-
-            m_work.reset();
-            m_ioService.stop();
-        }
-
-        BOND_LOG(LOG_DEBUG, "EpoxyTransport",
-                 "Stopping working threads");
-
-        //
-        // Wait for working threads to complete.
-        //
-        for (boost::thread& thread : m_threads)
-        {
-            thread.join();
-        }
-
-        BOND_LOG(LOG_DEBUG, "EpoxyTransport",
-                 "Network threads stopped");
+        BOOST_ASSERT(nullptr != m_threadService);
     }
 
     typedef typename PacketTransport<SocketAddress, WireProtocol>::Address Address;
@@ -182,6 +144,11 @@ private:
                             if (auto this_ = ptr.lock())
                             {
                                 this_->OnSend(id, ec);
+                            }
+                            else
+                            {
+                                BOND_LOG(LOG_ERROR, "EpoxyConnection",
+                                         "Write for (id: " << id << ") failed: connection destroyed");
                             }
                         });
         }
@@ -748,6 +715,8 @@ private:
 
         SocketAddress m_address;
 
+        boost::shared_ptr<boost::asio::io_service> m_ioServicePtr;
+
         boost::shared_ptr<INetworkConnectionSink> m_handler;
 
         boost::asio::ip::tcp::socket m_socket;
@@ -772,11 +741,12 @@ private:
         EpoxyConnection(const Allocator& allocator,
                         const SocketAddress& address,
                         const boost::shared_ptr<INetworkConnectionSink>& handler,
-                        boost::asio::io_service& ioService)
+                        const boost::shared_ptr<boost::asio::io_service>& ioServicePtr)
             : m_allocator(allocator)
             , m_address(address)
+            , m_ioServicePtr(ioServicePtr)
             , m_handler(handler)
-            , m_socket(ioService)
+            , m_socket(*ioServicePtr)
             , m_sending(false)
             , m_reading(false)
             , m_handshake_received(false)
@@ -784,15 +754,16 @@ private:
             , m_isClient(true)
         {}
 
-
         //
         // Construct server side connection.
         //
         EpoxyConnection(const Allocator& allocator,
                         const SocketAddress& address,
-                        boost::asio::ip::tcp::socket&& socket)
+                        boost::asio::ip::tcp::socket&& socket,
+                        const boost::shared_ptr<boost::asio::io_service>& ioServicePtr)
             : m_allocator(allocator)
             , m_address(address)
+            , m_ioServicePtr(ioServicePtr)
             , m_socket(std::move(socket))
             , m_sending(false)
             , m_reading(false)
@@ -944,81 +915,134 @@ private:
     class EpoxyServer
         : public INetworkServer
     {
-        typedef std::map<SocketAddress, boost::shared_ptr<INetworkConnectionSink>> SinkMap;
-
         //
-        // Schedule next incoming connection acceptance.
+        // Acceptor logic
         //
-        void DoAccept()
+        class EpoxyServerContext : public boost::enable_shared_from_this<EpoxyServerContext>
         {
-            m_acceptor.async_accept(
-                m_socket,
-                [this](const boost::system::error_code& ec) {
-                    if (!ec)
-                    {
-                        const boost::asio::ip::tcp::endpoint endpoint =  m_socket.remote_endpoint();
-                        const SocketAddress address(endpoint);
+            void OnAccept()
+            {
+                const SocketAddress address(m_socket.remote_endpoint());
 
-                        BOND_LOG(LOG_INFO, "EpoxyServer",
-                                 "Accepted connection from: " << address);
+                BOND_LOG(LOG_INFO, "EpoxyServerContext",
+                         "Accepted connection from: " << address);
 
-                        boost::shared_ptr<EpoxyConnection> connection =
-                            boost::make_shared<EpoxyConnection>(m_allocator,
-                                                                address,
-                                                                std::move(this->m_socket));
+                boost::shared_ptr<EpoxyConnection> connection =
+                    boost::make_shared<EpoxyConnection>(m_allocator,
+                                                        address,
+                                                        std::move(m_socket),
+                                                        m_ioService);
 
-                        boost::shared_ptr<INetworkConnectionSink> sink =
-                            m_handler->ConnectionAccepted(connection,
-                                                          address,
-                                                          address);
-                        connection->Listen(sink);
+                boost::shared_ptr<INetworkConnectionSink> sink =
+                    m_handler->ConnectionAccepted(connection,
+                                                  address,
+                                                  address);
+                connection->Listen(sink);
 
-                        DoAccept();
-                    }
-                    else if (boost::asio::error::operation_aborted == ec)
-                    {
-                        BOND_LOG(LOG_INFO, "EpoxyServer",
-                                 "Accept aborted: " << ec.message());
-                    }
-                    else
-                    {
-                        BOND_LOG(LOG_ERROR, "EpoxyServer",
-                                 "Failed to accept: " << ec.message());
-                    }
-                });
-        }
+                DoAccept();
+            }
 
 
-        Allocator m_allocator;
+            Allocator m_allocator;
 
-        boost::asio::ip::tcp::acceptor m_acceptor;
+            boost::shared_ptr<boost::asio::io_service> m_ioService;
 
-        boost::asio::ip::tcp::socket m_socket;
+            boost::shared_ptr<INetworkServerSink> m_handler;
 
-        boost::shared_ptr<INetworkServerSink> m_handler;
+            boost::asio::ip::tcp::socket m_socket;
 
-        lockable<SinkMap> m_sinkMap;
+            boost::asio::ip::tcp::acceptor m_acceptor;
+
+        public:
+
+            EpoxyServerContext(const Allocator& allocator,
+                               const SocketAddress& address,
+                               const boost::shared_ptr<INetworkServerSink>& handler,
+                               const boost::shared_ptr<boost::asio::io_service>& ioService)
+                : m_allocator(allocator)
+                , m_ioService(ioService)
+                , m_handler(handler)
+                , m_socket(*ioService)
+                , m_acceptor(*ioService)
+            {
+                BOOST_ASSERT(nullptr != m_handler);
+                BOOST_ASSERT(nullptr != m_ioService);
+
+                BOND_LOG(LOG_DEBUG, "EpoxyServerContext",
+                         "Bind server to " << address);
+
+                boost::system::error_code ec;
+                BOOST_VERIFY(!m_acceptor.open(address.protocol(), ec));
+                BOOST_VERIFY(!m_acceptor.set_option(boost::asio::socket_base::reuse_address(true), ec));
+                if (m_acceptor.bind(address, ec))
+                {
+                    BOND_LOG(LOG_ERROR, "EpoxyServerContext",
+                             "Failed to bind to " << address << ": " << ec.message());
+
+                    BOND_THROW(TransportException,
+                               "Failed to bind to " << address << ": " << ec.message());
+                }
+
+                BOOST_VERIFY(!m_acceptor.listen(boost::asio::socket_base::max_connections, ec));
+            }
+
+            //
+            // Schedule next incoming connection acceptance.
+            //
+            void DoAccept()
+            {
+                boost::weak_ptr<EpoxyServerContext> ptr = this->shared_from_this();
+                m_acceptor.async_accept(
+                    m_socket,
+                    [ptr](const boost::system::error_code& ec) {
+                        auto this_ = ptr.lock();
+                        if (!ec && this_)
+                        {
+                            this_->OnAccept();
+                        }
+                        else if (boost::asio::error::operation_aborted == ec)
+                        {
+                            BOND_LOG(LOG_INFO, "EpoxyServerContext",
+                                     "Accept aborted: " << ec.message());
+                        }
+                        else
+                        {
+                            BOND_LOG(LOG_ERROR, "EpoxyServerContext",
+                                     "Failed to accept: " << ec.message());
+                        }
+                    });
+            }
+
+            void Shutdown()
+            {
+                boost::system::error_code ec;
+                if (m_acceptor.close(ec))
+                {
+                    BOND_LOG(LOG_ERROR, "EpoxyServerContext",
+                             "Failed to stop server acceptor: " << ec.message());
+                }
+            }
+        };
+
+        boost::shared_ptr<ThreadService> m_threadService;
+
+        boost::shared_ptr<EpoxyServerContext> m_context;
 
     public:
 
         EpoxyServer(const Allocator& allocator,
                     const SocketAddress& address,
                     const boost::shared_ptr<INetworkServerSink>& handler,
-                    boost::asio::io_service& ioService)
-            : m_allocator(allocator)
-            , m_acceptor(ioService, address, true)
-            , m_socket(ioService)
-            , m_handler(handler)
+                    const boost::shared_ptr<ThreadService>& threadService)
+            : m_threadService(threadService)
         {
-            BOND_LOG(LOG_DEBUG, "EpoxyServer",
-                     "Bind server to " << address);
-
-            BOOST_ASSERT(nullptr != m_handler);
+            BOOST_ASSERT(nullptr != m_threadService);
+            m_context = boost::make_shared<EpoxyServerContext>(allocator, address, handler, m_threadService->io_service());
 
             //
             // Start accepting incoming connections.
             //
-            DoAccept();
+            m_context->DoAccept();
         }
 
 
@@ -1027,12 +1051,41 @@ private:
             BOND_LOG(LOG_DEBUG, "EpoxyServer",
                      "Stopping network server");
 
-            boost::system::error_code ec;
-            if (m_acceptor.close(ec))
-            {
-                BOND_LOG(LOG_ERROR, "EpoxyServer",
-                         "Failed to stop server acceptor: " << ec.message());
-            }
+            m_context->Shutdown();
+        }
+    };
+
+    class ClientConnection
+        : public INetworkConnection
+    {
+        boost::shared_ptr<ThreadService> m_threadService;
+
+        boost::shared_ptr<EpoxyConnection> m_connection;
+
+    public:
+        //
+        // Construct client side connection.
+        //
+        ClientConnection(const Allocator& allocator,
+                         const SocketAddress& address,
+                         const boost::shared_ptr<INetworkConnectionSink>& handler,
+                         const boost::shared_ptr<ThreadService>& threadService)
+            : m_threadService(threadService)
+            , m_connection(boost::make_shared<EpoxyConnection>(allocator, address, handler, threadService->io_service()))
+        {
+            m_connection->Connect();
+        }
+
+        //
+        // Schedule a packet into outstanding queue:
+        //
+        // @param conversation_id: unique packet id;
+        // @param buffers: packet payload;
+        //
+        void Send(uint64_t conversation_id,
+                  Packet packet) override
+        {
+            m_connection->Send(conversation_id, std::move(packet));
         }
     };
 
@@ -1043,11 +1096,7 @@ private:
                           const boost::shared_ptr<INetworkConnectionSink>& handler)
     override
     {
-        boost::shared_ptr<EpoxyConnection> connection =
-            boost::make_shared<EpoxyConnection>(m_allocator, address, handler, m_ioService);
-
-        connection->Connect();
-        return connection;
+        return boost::make_shared<ClientConnection>(m_allocator, address, handler, m_threadService);
     }
 
 
@@ -1060,7 +1109,7 @@ private:
             boost::make_shared<EpoxyServer>(m_allocator,
                                             address,
                                             handler,
-                                            m_ioService);
+                                            m_threadService);
 
         //
         // Notify bond.rpc of server start.
@@ -1069,38 +1118,6 @@ private:
         return server;
     }
 
-    //
-    // Initialize spin io_service and working threads.
-    //
-    void Initialize(uint32_t numberOfThreads)
-    {
-        //
-        // Keep io_service spinning.
-        //
-        m_work.reset(new boost::asio::io_service::work(m_ioService));
-
-        //
-        // If preferred # of threads is 0, use # of cpu cores.
-        //
-        if (0 == numberOfThreads)
-        {
-            numberOfThreads = std::thread::hardware_concurrency();
-        }
-
-        //
-        // Spin working threads.
-        //
-        for (uint32_t i = 0; i < numberOfThreads; ++i)
-        {
-            m_threads.emplace_back(
-                [this]() {
-                    this->m_ioService.run();
-                });
-        }
-
-        BOND_LOG(LOG_DEBUG, "EpoxyTransport",
-                 numberOfThreads << " network threads started, transport initialized");
-    }
 
     //
     //  Allocator instance to be used.
@@ -1108,24 +1125,9 @@ private:
     Allocator m_allocator;
 
     //
-    // Optional io_service instance.
+    // Bond thread service
     //
-    boost::scoped_ptr<boost::asio::io_service> m_ioServicePtr;
-
-    //
-    // Asio io service ref.
-    //
-    boost::asio::io_service& m_ioService;
-
-    //
-    // Working threads.
-    //
-    std::list<boost::thread> m_threads;
-
-    //
-    // Helper to keep io_service spinning.
-    //
-    boost::scoped_ptr<boost::asio::io_service::work> m_work;
+    boost::shared_ptr<ThreadService> m_threadService;
 };
 } // namespace detail
 

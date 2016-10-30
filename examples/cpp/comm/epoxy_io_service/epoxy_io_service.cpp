@@ -28,12 +28,12 @@ class ServiceImpl : public Service
 
 int BOND_CALL main()
 {
-    boost::asio::io_service io_service;
+    auto thread_service = boost::make_shared<bond::comm::ThreadService>();
 
     bond::comm::SocketAddress loopback("127.0.0.1", 25188);
 
     // Construct epoxy transport instance against explicit io_service
-    bond::comm::epoxy::EpoxyTransport transport(io_service);
+    bond::comm::epoxy::EpoxyTransport transport(thread_service);
 
     auto server = transport.Bind(loopback, boost::make_shared<ServiceImpl>());
 
@@ -46,7 +46,7 @@ int BOND_CALL main()
     while (std::future_status::ready != result.wait_for(std::chrono::milliseconds(1)))
     {
         // Poll and process ready events
-        io_service.poll();
+        thread_service->io_service()->poll();
     }
 
     bond::comm::message<void> response = result.get();
