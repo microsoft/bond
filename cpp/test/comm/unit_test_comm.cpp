@@ -182,9 +182,6 @@ class GenericTransportTests
                                         false));
                     }
 
-                //
-                // Return r.z == 2 after 1s delay.
-                //
                 case DelayCallback:
                     {
                         Result r;
@@ -355,15 +352,11 @@ class GenericTransportTests
 
         void WaitForMethod1Start()
         {
-            // First wait for at least 1 call start.
             m_method1StartEvent.Wait();
         }
 
         void WaitForMethod1Complete()
         {
-            //WaitForMethod1Start();
-            SignalDelayed();
-
             ++m_method1SemaphoreCount;
             while (--m_method1SemaphoreCount > 0)
             {
@@ -851,16 +844,18 @@ class GenericTransportTests
                 Params params;
                 Result result;
 
-                params.op = DelayCallback;
+                params.op = DelayCallback; // Sleep at server side until explicitly signaled
 
                 WaitForResponse<Result> syncMessage;
                 proxy.Method1(params, syncMessage);
-                firstService.WaitForMethod1Start();
 
-                UT_AssertThrows((syncMessage.Deserialize(result, 100)), bond::Exception);
+                firstService.WaitForMethod1Start(); // Wait for Method1 to start
 
+                UT_AssertThrows((syncMessage.Deserialize(result, 50)), bond::Exception);
+
+                firstService.SignalDelayed(); // Signal server side delayed thread to wake up
             }
-            firstService.WaitForMethod1Complete(); // Wait for delayed messages processed.
+            firstService.WaitForMethod1Complete(); // Wait for delayed thread to respond
         }
     }
 
@@ -923,19 +918,22 @@ class GenericTransportTests
                 Params params;
                 Result result;
 
-                params.op = DelayCallback; // Sleep at server side for 1000ms.
+                params.op = DelayCallback; // Sleep at server side until explicitly signaled
 
                 WaitForResponse<Result> syncMessage;
                 WaitForResponse<Result> lateMessage;
                 proxy.Method1(params,
                               bond::comm::schedule_timeout<Result>(threads.get_io_service(), syncMessage, 10, lateMessage));
 
+                firstService.WaitForMethod1Start(); // Wait for Method1 to start
+
                 UT_AssertThrows((syncMessage.Deserialize(result)), bond::Exception);
 
-                firstService.SignalDelayed();
+                firstService.SignalDelayed(); // Signal server side delayed thread to wake up
 
                 lateMessage.Deserialize(result);
             }
+            firstService.WaitForMethod1Complete(); // Wait for delayed thread to respond
 
             {
                 //
@@ -945,16 +943,20 @@ class GenericTransportTests
                 Params params;
                 Result result;
 
-                params.op = DelayCallback; // sleep at server side for 1000ms
+                params.op = DelayCallback; // Sleep at server side until explicitly signaled
 
                 WaitForResponse<Result> syncMessage;
                 WaitForResponse<Result> lateMessage;
                 proxy.Method1(params,
                               bond::comm::schedule_timeout<Result>(threads.get_io_service(), syncMessage, 10, lateMessage));
 
+                firstService.WaitForMethod1Start(); // Wait for Method1 to start
+
                 UT_AssertThrows((syncMessage.Deserialize(result)), bond::Exception);
-                firstService.SignalDelayed();
+
+                firstService.SignalDelayed(); // Signal server side delayed thread to wake up
             }
+            firstService.WaitForMethod1Complete(); // Wait for delayed thread to respond
         }
     }
 
@@ -1791,8 +1793,10 @@ class GenericTransportTests
 
 
             UT_AssertAreEqual(stream.str(), "1:snd-req,2:snd-req,2:rcv-req,1:rcv-req,1:snd-resp,2:snd-resp,2:rcv-resp,1:rcv-resp.");
-            std::stringstream emptyStream;
-            stream.swap(emptyStream);
+
+            // Reset the stream
+            stream.clear();
+            stream.str(std::string());
         }
     }
 
@@ -3088,10 +3092,10 @@ class GenericTransportTests
                 First::Proxy proxy(client);
 
                 Params params;
-                params.op = DelayCallback;
+                params.op = DelayCallback; // Sleep at server side until explicitly signaled
 
                 proxy.Method1(params, syncMessage);
-                firstService.WaitForMethod1Start();
+                firstService.WaitForMethod1Start(); // Wait for Method1 to start
 
                 //
                 // Client will be destroyed here.
@@ -3102,7 +3106,9 @@ class GenericTransportTests
 
             UT_AssertThrows((syncMessage.Deserialize(result)), bond::Exception);
 
-            firstService.WaitForMethod1Complete(); // Wait for delayed messages processed.
+            firstService.SignalDelayed(); // Signal server side delayed thread to wake up
+
+            firstService.WaitForMethod1Complete(); // Wait for delayed thread to respond
         }
     }
 
