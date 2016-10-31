@@ -10,3 +10,7 @@
 # Vim
 *.swp
 *.swo
+*.swm
+
+# VS Code
+/.vscode/

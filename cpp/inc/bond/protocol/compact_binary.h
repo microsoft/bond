@@ -596,7 +596,7 @@ public:
     }
 
     // WriteFieldBegin
-    void WriteFieldBegin(BondDataType type, uint16_t id, const bond::Metadata& /*metadata*/)
+    void WriteFieldBegin(BondDataType type, uint16_t id, const ::bond::Metadata& /*metadata*/)
     {
         WriteFieldBegin(type, id);
     }

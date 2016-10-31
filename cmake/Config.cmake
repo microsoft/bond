@@ -30,8 +30,22 @@ if (WIN32)
         PATH_SUFFIXES net40 net45
         NO_DEFAULT_PATH
         PATHS
-            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/bin/debug"
-            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/bin/retail")
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/core/bin/debug"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/core/bin/retail")
+
+    find_program (BOND_CSHARP_COMM_COMPAT_SERVER CommCompatServer.exe
+        PATH_SUFFIXES net40 net45
+        NO_DEFAULT_PATH
+        PATHS
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/server/bin/debug"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/server/bin/retail")
+
+    find_program (BOND_CSHARP_COMM_COMPAT_CLIENT CommCompatClient.exe
+        PATH_SUFFIXES net40 net45
+        NO_DEFAULT_PATH
+        PATHS
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/client/bin/debug"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/client/bin/retail")
 endif()
 
 # find python interpreter, library and boost python library.
@@ -48,6 +62,7 @@ find_package (PythonLibs 2.7)
 
 find_package (Boost 1.53.0
     OPTIONAL_COMPONENTS
+        chrono
         date_time
         thread
         system
@@ -66,8 +81,20 @@ endif()
 # disable Boost auto-linking
 add_definitions (-DBOOST_ALL_NO_LIB)
 
+# VS2015U2 fixed a bug with atomics and emits a warning without this definition.
+add_definitions (-D_ENABLE_ATOMIC_ALIGNMENT_FIX)
+
 cxx_add_compile_options(Clang
     -fPIC
+    --std=c++11
+    -Wall
+    -Werror
+    -Wno-unknown-warning-option
+    -Wno-unused-local-typedefs)
+
+cxx_add_compile_options(AppleClang
+    -fPIC
+    --std=c++11
     -Wall
     -Werror
     -Wno-unknown-warning-option
@@ -75,6 +102,7 @@ cxx_add_compile_options(Clang
 
 cxx_add_compile_options(GNU
     -fPIC
+    --std=c++11
     -Wall
     -Werror
     -Wno-unknown-warning-option
@@ -89,3 +117,11 @@ include_directories (
 set (BOND_LIBRARIES_ONLY
     "FALSE"
     CACHE BOOL "If TRUE, then only build the Bond library files, skipping any tools. gbc will still be built if it cannot be found, however, as gbc is needed to build the libraries.")
+
+set (BOND_CORE_ONLY
+    "FALSE"
+    CACHE BOOL "If TRUE, then only build the Bond Core")
+
+if ((NOT BOND_CORE_ONLY) AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
+    message(FATAL_ERROR "BOND_CORE_ONLY is FALSE but compiler specified does not support C++11 standard")
+endif()

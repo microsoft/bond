@@ -18,6 +18,7 @@ enum ErrorCode
     TRANSPORT_ERROR = 0xA0BD0003;
     CONNECTION_SHUT_DOWN = 0xA0BD0004;
     MULTIPLE_ERRORS_OCCURRED = 0xA0BD0005; // Error is an AggregateError
+    TIMEOUT_ERROR = 0xA0BD0006;
 }
 
 enum ConnectionShutdownReason

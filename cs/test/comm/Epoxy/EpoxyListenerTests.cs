@@ -56,6 +56,7 @@ namespace UnitTest.Epoxy
         }
 
         [Test]
+        [Ignore("This test has a race between socket shutdown and reading the protocol error")]
         public async Task ConnectedEvent_SetDisconnectError_DisconnectsConnection()
         {
             const int DisconnectErrorCode = 100;

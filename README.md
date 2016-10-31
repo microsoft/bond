@@ -43,7 +43,7 @@ The Bond repository uses Git submodules and should be cloned with the
 git clone --recursive https://github.com/Microsoft/bond.git
 ```
 
-In order to build Bond you will need CMake (2.8.12+), Haskell (ghc 7.4+ and
+In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and
 cabal-install 1.18+) and Boost (1.54+). The core Bond C++ library can be used
 with C++03 compilers, although Python support, unit tests and various examples
 require some C++11 features.

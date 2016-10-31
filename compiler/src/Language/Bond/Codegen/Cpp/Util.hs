@@ -7,8 +7,9 @@
 module Language.Bond.Codegen.Cpp.Util
     ( openNamespace
     , closeNamespace
-    , structName
-    , structParams
+    , className
+    , classParams
+    , qualifiedClassName
     , template
     , modifierTag
     , defaultValue
@@ -23,7 +24,8 @@ module Language.Bond.Codegen.Cpp.Util
 
 import Data.Monoid
 import Prelude
-import Data.Text.Lazy (Text)
+import Data.Text.Lazy (Text, unpack)
+import Data.Text.Lazy.Builder (toLazyText)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.Util
@@ -44,13 +46,17 @@ closeNamespace cpp = newlineSep 0 close (reverse $ getNamespace cpp)
   where
     close n = [lt|} // namespace #{n}|]
 
-structName :: Declaration -> String
-structName s@Struct {..} = declName <> structParams s
-structName _ = error "structName: impossible happened."
+className :: Declaration -> String
+className decl = declName decl <> classParams decl
 
-structParams :: Declaration -> String
-structParams Struct {..} = angles $ sepBy ", " paramName declParams
-structParams _ = error "structName: impossible happened."
+classParams :: Declaration -> String
+classParams = angles . sepBy ", " paramName . declParams
+
+qualifiedClassName :: MappingContext -> Declaration -> String
+qualifiedClassName cpp s@Struct {..} = qualifiedName <> classParams s
+  where
+    qualifiedName = unpack $ toLazyText $ getDeclTypeName cpp s
+qualifiedClassName _ _ = error "qualifiedClassName: impossible happened."
 
 template :: Declaration -> Text
 template d = if null $ declParams d then mempty else [lt|template <typename #{params}>
@@ -60,7 +66,7 @@ template d = if null $ declParams d then mempty else [lt|template <typename #{pa
 
 -- attribute initializer
 attributeInit :: [Attribute] -> Text
-attributeInit [] = "bond::reflection::Attributes()"
+attributeInit [] = "::bond::reflection::Attributes()"
 attributeInit xs = [lt|boost::assign::map_list_of<std::string, std::string>#{newlineBeginSep 5 attrNameValue xs}|]
   where
     idl = MappingContext idlTypeMapping [] [] []  
@@ -69,7 +75,7 @@ attributeInit xs = [lt|boost::assign::map_list_of<std::string, std::string>#{new
 
 -- modifier tag type for a field
 modifierTag :: Field -> Text
-modifierTag Field {..} = [lt|bond::reflection::#{modifier fieldType fieldModifier}_field_modifier|]
+modifierTag Field {..} = [lt|::bond::reflection::#{modifier fieldType fieldModifier}_field_modifier|]
   where
     modifier BT_MetaName _ = [lt|required_optional|]
     modifier BT_MetaFullName _ = [lt|required_optional|]
@@ -102,26 +108,42 @@ enumValue _ _ _ = error "enumValue: impossible happened."
 -- schema metadata static member definitions
 schemaMetadata :: MappingContext -> Declaration -> Text
 schemaMetadata cpp s@Struct {..} = [lt|
-    #{template s}const bond::Metadata #{structName s}::Schema::metadata
-        = #{structName s}::Schema::GetMetadata();#{newlineBeginSep 1 staticDef structFields}|]
+    #{template s}const ::bond::Metadata #{className s}::Schema::metadata
+        = #{className s}::Schema::GetMetadata();#{newlineBeginSep 1 staticDef structFields}|]
   where
     -- static member definition for field metadata
     staticDef f@Field {..}
         | fieldModifier == Optional && null fieldAttributes = [lt|
-    #{template s}const bond::Metadata #{structName s}::Schema::s_#{fieldName}_metadata
-        = bond::reflection::MetadataInit(#{defaultInit f}"#{fieldName}");|]
+    #{template s}const ::bond::Metadata #{className s}::Schema::s_#{fieldName}_metadata
+        = ::bond::reflection::MetadataInit(#{defaultInit f}"#{fieldName}");|]
         | otherwise = [lt|
-    #{template s}const bond::Metadata #{structName s}::Schema::s_#{fieldName}_metadata
-        = bond::reflection::MetadataInit(#{defaultInit f}"#{fieldName}", #{modifierTag f}::value,
-            #{attributeInit fieldAttributes});|]
+    #{template s}const ::bond::Metadata #{className s}::Schema::s_#{fieldName}_metadata
+        = ::bond::reflection::MetadataInit(#{defaultInit f}"#{fieldName}", #{modifierTag f}::value,
+                #{attributeInit fieldAttributes});|]
       where
         defaultInit Field {fieldDefault = (Just def)} = [lt|#{explicitDefault def}, |]
         defaultInit _ = mempty
-        explicitDefault (DefaultNothing) = "bond::nothing"
+        explicitDefault (DefaultNothing) = "::bond::nothing"
         explicitDefault d@(DefaultInteger _) = staticCast d
         explicitDefault d@(DefaultFloat _) = staticCast d
         explicitDefault d = defaultValue cpp fieldType d
         staticCast d = [lt|static_cast<#{getTypeName cpp fieldType}>(#{defaultValue cpp fieldType d})|]
+schemaMetadata _ s@Service {..} = [lt|
+    #{template s}const ::bond::Metadata #{className s}::Schema::metadata
+        = ::bond::reflection::MetadataInit#{metadataInitArgs}("#{declName}", "#{idlNamespace}",
+                #{attributeInit declAttributes});#{newlineBeginSep 1 staticDef serviceMethods}|]
+  where
+    idl = MappingContext idlTypeMapping [] [] []
+    idlNamespace = getDeclTypeName idl s
+    metadataInitArgs = if null declParams then mempty else [lt|<boost::mpl::list#{classParams s} >|]
+    -- static member definition for method metadata
+    staticDef m = [lt|
+    #{template s}const ::bond::Metadata #{className s}::Schema::s_#{methodName m}_metadata
+        = ::bond::reflection::MetadataInit("#{methodName m}"#{attributes $ methodAttributes m}|]
+      where
+        attributes [] = [lt|);|]
+        attributes a = [lt|,
+                #{attributeInit a});|]
 schemaMetadata _ _ = error "schemaMetadata: impossible happened."
 
 defaultedFunctions, defaultedMoveCtors, rvalueReferences :: Text

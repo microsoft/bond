@@ -1,0 +1,8 @@
+namespace examples.epoxy_io_service
+
+service Service
+{
+    void Method();
+};
+
+

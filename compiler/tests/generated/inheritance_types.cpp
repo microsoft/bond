@@ -5,18 +5,18 @@
 namespace tests
 {
     
-    const bond::Metadata Base::Schema::metadata
+    const ::bond::Metadata Base::Schema::metadata
         = Base::Schema::GetMetadata();
     
-    const bond::Metadata Base::Schema::s_x_metadata
-        = bond::reflection::MetadataInit("x");
+    const ::bond::Metadata Base::Schema::s_x_metadata
+        = ::bond::reflection::MetadataInit("x");
 
     
-    const bond::Metadata Foo::Schema::metadata
+    const ::bond::Metadata Foo::Schema::metadata
         = Foo::Schema::GetMetadata();
     
-    const bond::Metadata Foo::Schema::s_x_metadata
-        = bond::reflection::MetadataInit("x");
+    const ::bond::Metadata Foo::Schema::s_x_metadata
+        = ::bond::reflection::MetadataInit("x");
 
     
 } // namespace tests

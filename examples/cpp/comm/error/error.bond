@@ -1,0 +1,15 @@
+
+namespace examples.error
+
+struct Param
+{
+}
+
+struct Result
+{
+}
+
+service Service
+{
+    Result Method(Param);
+}

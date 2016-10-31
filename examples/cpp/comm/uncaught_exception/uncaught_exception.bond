@@ -1,0 +1,15 @@
+
+namespace examples.uncaught_exception
+
+struct Param
+{
+}
+
+struct Result
+{
+}
+
+service Service
+{
+    Result Method(Param);
+}

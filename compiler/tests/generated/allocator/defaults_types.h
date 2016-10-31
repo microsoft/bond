@@ -50,7 +50,7 @@ namespace tests
         }
 
         inline
-        const char* GetTypeName(enum EnumType1, const bond::qualified_name_tag&)
+        const char* GetTypeName(enum EnumType1, const ::bond::qualified_name_tag&)
         {
             return "tests.EnumType1";
         }
@@ -109,40 +109,40 @@ namespace tests
     {
         bool m_bool_1;
         bool m_bool_2;
-        bond::maybe<bool> m_bool_3;
+        ::bond::maybe<bool> m_bool_3;
         std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> m_str_1;
-        bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> > m_str_2;
+        ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> > m_str_2;
         int8_t m_int8_4;
-        bond::maybe<int8_t> m_int8_5;
+        ::bond::maybe<int8_t> m_int8_5;
         int16_t m_int16_4;
-        bond::maybe<int16_t> m_int16_5;
-        bond::maybe<int32_t> m_int32_4;
+        ::bond::maybe<int16_t> m_int16_5;
+        ::bond::maybe<int32_t> m_int32_4;
         int32_t m_int32_max;
-        bond::maybe<int64_t> m_int64_4;
+        ::bond::maybe<int64_t> m_int64_4;
         int64_t m_int64_max;
         uint8_t m_uint8_2;
-        bond::maybe<uint8_t> m_uint8_3;
+        ::bond::maybe<uint8_t> m_uint8_3;
         uint16_t m_uint16_2;
-        bond::maybe<uint16_t> m_uint16_3;
-        bond::maybe<uint32_t> m_uint32_3;
+        ::bond::maybe<uint16_t> m_uint16_3;
+        ::bond::maybe<uint32_t> m_uint32_3;
         uint32_t m_uint32_max;
-        bond::maybe<uint64_t> m_uint64_3;
+        ::bond::maybe<uint64_t> m_uint64_3;
         uint64_t m_uint64_max;
-        bond::maybe<double> m_double_3;
+        ::bond::maybe<double> m_double_3;
         double m_double_4;
         double m_double_5;
-        bond::maybe<float> m_float_3;
+        ::bond::maybe<float> m_float_3;
         float m_float_4;
         float m_float_7;
         ::tests::EnumType1 m_enum1;
         ::tests::EnumType1 m_enum2;
-        bond::maybe< ::tests::EnumType1> m_enum3;
+        ::bond::maybe< ::tests::EnumType1> m_enum3;
         ::tests::EnumType1 m_enum_int32min;
         ::tests::EnumType1 m_enum_int32max;
         ::tests::EnumType1 m_enum_uint32_min;
         ::tests::EnumType1 m_enum_uint32_max;
         std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other> m_wstr_1;
-        bond::maybe<std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other> > m_wstr_2;
+        ::bond::maybe<std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other> > m_wstr_2;
         
         Foo()
           : m_bool_1(true),

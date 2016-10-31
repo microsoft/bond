@@ -36,7 +36,7 @@ namespace tests
         int64_t _int64;
         double _double;
         float _float;
-        bond::blob _blob;
+        ::bond::blob _blob;
         
         BasicTypes()
           : _bool(),

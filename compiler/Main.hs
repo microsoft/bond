@@ -72,21 +72,23 @@ cppCodegen options@Cpp {..} = do
     concurrentlyFor_ files $ codeGen options typeMapping $
         [ reflection_h
         , types_cpp
+        , types_comm_cpp
         , types_h header enum_header allocator
         , apply_h applyProto apply_attribute
         , apply_cpp applyProto
+        , comm_h
         ] <>
         [ enum_h | enum_header]
   where
     applyProto = map snd $ filter (enabled apply) protocols
     enabled a p = null a || fst p `elem` a
     protocols =
-        [ (Compact, Protocol "bond::CompactBinaryReader<bond::InputBuffer>"
-                             "bond::CompactBinaryWriter<bond::OutputBuffer>")
-        , (Fast,    Protocol "bond::FastBinaryReader<bond::InputBuffer>"
-                             "bond::FastBinaryWriter<bond::OutputBuffer>")
-        , (Simple,  Protocol "bond::SimpleBinaryReader<bond::InputBuffer>"
-                             "bond::SimpleBinaryWriter<bond::OutputBuffer>")
+        [ (Compact, Protocol " ::bond::CompactBinaryReader< ::bond::InputBuffer>"
+                             " ::bond::CompactBinaryWriter< ::bond::OutputBuffer>")
+        , (Fast,    Protocol " ::bond::FastBinaryReader< ::bond::InputBuffer>"
+                             " ::bond::FastBinaryWriter< ::bond::OutputBuffer>")
+        , (Simple,  Protocol " ::bond::SimpleBinaryReader< ::bond::InputBuffer>"
+                             " ::bond::SimpleBinaryWriter< ::bond::OutputBuffer>")
         ]
 cppCodegen _ = error "cppCodegen: impossible happened."
 

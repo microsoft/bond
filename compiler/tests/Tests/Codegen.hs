@@ -7,6 +7,7 @@
 module Tests.Codegen
     ( verifyCodegen
     , verifyCppCodegen
+    , verifyCppCommCodegen
     , verifyApplyCodegen
     , verifyCsCodegen
     , verifyCsCommCodegen
@@ -61,6 +62,14 @@ verifyApplyCodegen args baseName =
                    "bond::SimpleBinaryWriter<bond::OutputBuffer>"
         ]
 
+verifyCppCommCodegen :: [String] -> FilePath -> TestTree
+verifyCppCommCodegen args baseName =
+    testGroup baseName $
+        map (verifyFile (processOptions args) baseName cppTypeMapping "")
+            [ comm_h
+            , types_cpp
+            , types_comm_cpp
+            ]
 
 verifyCsCommCodegen :: [String] -> FilePath -> TestTree
 verifyCsCommCodegen args baseName =
@@ -95,6 +104,7 @@ verifyFiles options baseName =
     templates Cpp {..} =
         [ reflection_h
         , types_cpp
+        , types_comm_cpp
         , types_h header enum_header allocator
         ]
     templates Cs {..} =

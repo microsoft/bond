@@ -24,12 +24,12 @@ void MakeInput(bond::blob& data, bond::blob& schema)
 
     obj.ticker = "MSFT";
     obj.city = "Redmond";
-    
+
     obj.ceo.name = "John Doe";
     obj.ceo.address = "Main Campus";
-    
+
     obj.employees.resize(2);
-    
+
     obj.employees[0].name = "Bob";
     obj.employees[0].address = "Main Campus";
 
@@ -98,7 +98,7 @@ public:
 
         while (size--)
             Write(element);
-    
+
         _output.WriteContainerEnd();
     }
 
@@ -112,7 +112,7 @@ public:
             Write(key);
             Write(value);
         }
-    
+
         _output.WriteContainerEnd();
     }
 
@@ -126,17 +126,17 @@ private:
         it = metadata.attributes.find("ACL");
 
         // Allow access if the ACL attribute matches or specifies "all" access
-        return it != metadata.attributes.end() 
+        return it != metadata.attributes.end()
             && (it->second == _ACL || it->second == "all");
     }
 
-    
+
     template <typename Reader, typename T>
     typename boost::enable_if<bond::is_basic_type<T> >::type
     Write(const bond::value<T, Reader>& value) const
     {
         T data;
-        
+
         value.Deserialize(data);
         _output.Write(data);
     }
@@ -175,7 +175,7 @@ int main()
 {
     // In order to make the example self contained, we generate blobs with
     // serialized data and runtime schema. Normally these would come from
-    // outside, e.g. from a file or over network. 
+    // outside, e.g. from a file or over network.
     // Note that the rest of the code doesn't assume compile-time knowledge of
     // the type of the object, the code only needs runtime schema, which can be
     // provided at runtime.
@@ -184,30 +184,30 @@ int main()
 
     // De-serialize the schema.
     // We use shared_ptr to allow bonded<T> objects to hold a reference to the
-    // schema. In this simple example a local SchemaDef on the stack would work 
+    // schema. In this simple example a local SchemaDef on the stack would work
     // as well, but it is a good practice to use a shared_ptr, especially when
-    // de-serializing to a structure that has any bonded<T> fields. 
+    // de-serializing to a structure that has any bonded<T> fields.
     boost::shared_ptr<bond::SchemaDef> schema(boost::make_shared<bond::SchemaDef>());
     {
         bond::CompactBinaryReader<bond::InputBuffer> reader(schema_buffer);
         bond::Deserialize(reader, *schema);
     }
-    
+
     // Create instance of Compact Protocol reader from the blob of serialized
     // data. The application must know what protocol was used for serialization.
     bond::CompactBinaryReader<bond::InputBuffer> reader(data_buffer);
-    
-    // bond::bonded<void> binds the protocol reader with the schema of the object 
+
+    // bond::bonded<void> binds the protocol reader with the schema of the object
     // contained within the serialized data.
     bond::bonded<void> input(reader, schema);
 
     // We apply a transform to the data to filter fields based on ACL attributes.
-    // The result is blob of serialized data which only includes fields to which 
+    // The result is blob of serialized data which only includes fields to which
     // we have access.
-    
+
     const char* ACLs[] = {"identity", "location", "nothing"};
-    
-    for (int i = 0; i < sizeof(ACLs)/sizeof(*ACLs); ++i)
+
+    for (size_t i = 0; i < sizeof(ACLs)/sizeof(*ACLs); ++i)
     {
         bond::OutputBuffer                              output;
         bond::CompactBinaryWriter<bond::OutputBuffer>   writer(output);
@@ -217,6 +217,6 @@ int main()
 
         ConsumeOutput(output.GetBuffer());
     }
-    
-    return 0;    
+
+    return 0;
 }

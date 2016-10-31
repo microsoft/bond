@@ -16,3 +16,5 @@ add_bond_test (static_library
 
 target_link_libraries (static_library PRIVATE
     static_library_lib)
+
+target_use_cxx11 (static_library)

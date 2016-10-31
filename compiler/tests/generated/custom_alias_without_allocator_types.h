@@ -29,11 +29,11 @@ namespace test
         my::map<my::string, bool> m;
         my::string st;
         my::string d;
-        bond::maybe<my::list<bool> > l1;
-        bond::maybe<my::vector<bool> > v1;
-        bond::maybe<my::set<bool> > s1;
-        bond::maybe<my::map<my::string, bool> > m1;
-        bond::maybe<my::string> st1;
+        ::bond::maybe<my::list<bool> > l1;
+        ::bond::maybe<my::vector<bool> > v1;
+        ::bond::maybe<my::set<bool> > s1;
+        ::bond::maybe<my::map<my::string, bool> > m1;
+        ::bond::maybe<my::string> st1;
         
         foo()
           : l(),

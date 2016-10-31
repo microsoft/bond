@@ -162,8 +162,6 @@ public:
         // merge all blobs in the active list with the current one
         //
         blob current(_buffer, _rangeOffset, _rangeSize);
-        //
-        // TODO: optimize extra copy
         return merge(_allocator, merge(_allocator, _blobs.begin(), _blobs.end()), current);
     }
 

@@ -20,12 +20,12 @@ add_test (
         ${CMAKE_COMMAND}
             -DBF=$<TARGET_FILE:bf>
             -DBOND_COMPAT=$<TARGET_FILE:compatibility_test>
-            -DCOMPAT_DATA=${BOND_COMPAT_TEST_DIR}/data
+            -DCOMPAT_DATA=${BOND_COMPAT_TEST_DIR}/core/data
             -P ${CMAKE_CURRENT_SOURCE_DIR}/bf_test.cmake
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 add_test (
     NAME bf_schema
     COMMAND
-        bf ${BOND_COMPAT_TEST_DIR}/data/compat.schema.dat
+        bf ${BOND_COMPAT_TEST_DIR}/core/data/compat.schema.dat
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})

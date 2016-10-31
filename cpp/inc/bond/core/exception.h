@@ -6,7 +6,7 @@
 #include "detail/string_stream.h"
 #include <bond/core/bond_types.h>
 
-#define BOND_THROW(x, y)  throw x((bond::detail::basic_string_stream<1024>() << y).content());
+#define BOND_THROW(x, y)  throw x((::bond::detail::basic_string_stream<1024>() << y).content());
 
 namespace bond
 {

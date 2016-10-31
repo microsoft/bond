@@ -11,19 +11,19 @@ namespace test
     //
     struct foo::Schema
     {
-        typedef bond::no_base base;
+        typedef ::bond::no_base base;
 
-        static const bond::Metadata metadata;
+        static const ::bond::Metadata metadata;
         
-        private: static const bond::Metadata s_m_metadata;
-        private: static const bond::Metadata s_s_metadata;
+        private: static const ::bond::Metadata s_m_metadata;
+        private: static const ::bond::Metadata s_s_metadata;
 
         public: struct var
         {
             // m
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 0,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
                 std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, int32_t, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, int32_t> >::other>,
                 &foo::m,
@@ -31,9 +31,9 @@ namespace test
             > m;
         
             // s
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 1,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
                 std::set<int32_t, std::less<int32_t>, typename arena::rebind<int32_t>::other>,
                 &foo::s,
@@ -48,10 +48,10 @@ namespace test
         public: typedef fields2::type fields;
         
         
-        static bond::Metadata GetMetadata()
+        static ::bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit("foo", "test.foo",
-                bond::reflection::Attributes()
+            return ::bond::reflection::MetadataInit("foo", "test.foo",
+                ::bond::reflection::Attributes()
             );
         }
     };

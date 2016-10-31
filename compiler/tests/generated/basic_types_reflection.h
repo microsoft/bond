@@ -11,31 +11,31 @@ namespace tests
     //
     struct BasicTypes::Schema
     {
-        typedef bond::no_base base;
+        typedef ::bond::no_base base;
 
-        static const bond::Metadata metadata;
+        static const ::bond::Metadata metadata;
         
-        private: static const bond::Metadata s__bool_metadata;
-        private: static const bond::Metadata s__str_metadata;
-        private: static const bond::Metadata s__wstr_metadata;
-        private: static const bond::Metadata s__uint64_metadata;
-        private: static const bond::Metadata s__uint16_metadata;
-        private: static const bond::Metadata s__uint32_metadata;
-        private: static const bond::Metadata s__uint8_metadata;
-        private: static const bond::Metadata s__int8_metadata;
-        private: static const bond::Metadata s__int16_metadata;
-        private: static const bond::Metadata s__int32_metadata;
-        private: static const bond::Metadata s__int64_metadata;
-        private: static const bond::Metadata s__double_metadata;
-        private: static const bond::Metadata s__float_metadata;
-        private: static const bond::Metadata s__blob_metadata;
+        private: static const ::bond::Metadata s__bool_metadata;
+        private: static const ::bond::Metadata s__str_metadata;
+        private: static const ::bond::Metadata s__wstr_metadata;
+        private: static const ::bond::Metadata s__uint64_metadata;
+        private: static const ::bond::Metadata s__uint16_metadata;
+        private: static const ::bond::Metadata s__uint32_metadata;
+        private: static const ::bond::Metadata s__uint8_metadata;
+        private: static const ::bond::Metadata s__int8_metadata;
+        private: static const ::bond::Metadata s__int16_metadata;
+        private: static const ::bond::Metadata s__int32_metadata;
+        private: static const ::bond::Metadata s__int64_metadata;
+        private: static const ::bond::Metadata s__double_metadata;
+        private: static const ::bond::Metadata s__float_metadata;
+        private: static const ::bond::Metadata s__blob_metadata;
 
         public: struct var
         {
             // _bool
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 0,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 bool,
                 &BasicTypes::_bool,
@@ -43,9 +43,9 @@ namespace tests
             > _bool;
         
             // _str
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 2,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 std::string,
                 &BasicTypes::_str,
@@ -53,9 +53,9 @@ namespace tests
             > _str;
         
             // _wstr
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 3,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 std::wstring,
                 &BasicTypes::_wstr,
@@ -63,9 +63,9 @@ namespace tests
             > _wstr;
         
             // _uint64
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 10,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 uint64_t,
                 &BasicTypes::_uint64,
@@ -73,9 +73,9 @@ namespace tests
             > _uint64;
         
             // _uint16
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 11,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 uint16_t,
                 &BasicTypes::_uint16,
@@ -83,9 +83,9 @@ namespace tests
             > _uint16;
         
             // _uint32
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 12,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 uint32_t,
                 &BasicTypes::_uint32,
@@ -93,9 +93,9 @@ namespace tests
             > _uint32;
         
             // _uint8
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 13,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 uint8_t,
                 &BasicTypes::_uint8,
@@ -103,9 +103,9 @@ namespace tests
             > _uint8;
         
             // _int8
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 14,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 int8_t,
                 &BasicTypes::_int8,
@@ -113,9 +113,9 @@ namespace tests
             > _int8;
         
             // _int16
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 15,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 int16_t,
                 &BasicTypes::_int16,
@@ -123,9 +123,9 @@ namespace tests
             > _int16;
         
             // _int32
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 16,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 int32_t,
                 &BasicTypes::_int32,
@@ -133,9 +133,9 @@ namespace tests
             > _int32;
         
             // _int64
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 17,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 int64_t,
                 &BasicTypes::_int64,
@@ -143,9 +143,9 @@ namespace tests
             > _int64;
         
             // _double
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 18,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 double,
                 &BasicTypes::_double,
@@ -153,9 +153,9 @@ namespace tests
             > _double;
         
             // _float
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 20,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 float,
                 &BasicTypes::_float,
@@ -163,11 +163,11 @@ namespace tests
             > _float;
         
             // _blob
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 21,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 BasicTypes,
-                bond::blob,
+                ::bond::blob,
                 &BasicTypes::_blob,
                 &s__blob_metadata
             > _blob;
@@ -192,10 +192,10 @@ namespace tests
         public: typedef fields14::type fields;
         
         
-        static bond::Metadata GetMetadata()
+        static ::bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit("BasicTypes", "tests.BasicTypes",
-                bond::reflection::Attributes()
+            return ::bond::reflection::MetadataInit("BasicTypes", "tests.BasicTypes",
+                ::bond::reflection::Attributes()
             );
         }
     };

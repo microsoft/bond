@@ -42,11 +42,11 @@ reflection_h cpp file imports declarations = ("_reflection.h", [lt|
     schema s@Struct {..} = [lt|//
     // #{declName}
     //
-    #{CPP.template s}struct #{structName}::Schema
+    #{CPP.template s}struct #{className}::Schema
     {
         typedef #{baseType structBase} base;
 
-        static const bond::Metadata metadata;
+        static const ::bond::Metadata metadata;
         #{newlineBeginSep 2 fieldMetadata structFields}
 
         public: struct var
@@ -58,22 +58,22 @@ reflection_h cpp file imports declarations = ("_reflection.h", [lt|
         public: typedef #{typename}fields#{length structFields}::type fields;
         #{constructor}
         
-        static bond::Metadata GetMetadata()
+        static ::bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit#{metadataInitArgs}("#{declName}", "#{getDeclTypeName idl s}",
+            return ::bond::reflection::MetadataInit#{metadataInitArgs}("#{declName}", "#{getDeclTypeName idl s}",
                 #{CPP.attributeInit declAttributes}
             );
         }
     };
     #{onlyTemplate $ CPP.schemaMetadata cpp s}|]
       where
-        structParams = CPP.structParams s
+        classParams = CPP.classParams s
 
-        structName = CPP.structName s
+        className = CPP.className s
 
         onlyTemplate x = if null declParams then mempty else x
 
-        metadataInitArgs = onlyTemplate [lt|<boost::mpl::list#{structParams} >|]
+        metadataInitArgs = onlyTemplate [lt|<boost::mpl::list#{classParams} >|]
 
         typename = onlyTemplate [lt|typename |]
 
@@ -93,22 +93,22 @@ reflection_h cpp file imports declarations = ("_reflection.h", [lt|
         indexedFields = zipWith ((,) . fieldName) (reverse structFields) [0..]
 
         baseType (Just base) = cppType base
-        baseType Nothing = "bond::no_base"
+        baseType Nothing = "::bond::no_base"
 
         pushField (field, i) =
             [lt|private: typedef #{typename}boost::mpl::push_front<fields#{i}, #{typename}var::#{field}>::type fields#{i + 1};|]
 
         fieldMetadata Field {..} =
-            [lt|private: static const bond::Metadata s_#{fieldName}_metadata;|]
+            [lt|private: static const ::bond::Metadata s_#{fieldName}_metadata;|]
 
         fieldTemplates = F.foldMap $ \ f@Field {..} -> [lt|
             // #{fieldName}
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 #{fieldOrdinal},
                 #{CPP.modifierTag f},
-                #{structName},
+                #{className},
                 #{cppType fieldType},
-                &#{structName}::#{fieldName},
+                &#{className}::#{fieldName},
                 &s_#{fieldName}_metadata
             > #{fieldName};
         |]

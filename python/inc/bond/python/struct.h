@@ -30,7 +30,7 @@ public:
     void operator()(const Field&) const
     {
         // Define read-write property
-        add_property(Field::metadata.name, Field::field_ptr);
+        add_property(Field::metadata.name, Field::field);
 
         // Define field type
         def_type<typename Field::value_type>();

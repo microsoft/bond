@@ -11,20 +11,20 @@ namespace tests
     //
     struct Foo::Schema
     {
-        typedef bond::no_base base;
+        typedef ::bond::no_base base;
 
-        static const bond::Metadata metadata;
+        static const ::bond::Metadata metadata;
         
-        private: static const bond::Metadata s_o_metadata;
-        private: static const bond::Metadata s_r_metadata;
-        private: static const bond::Metadata s_ro_metadata;
+        private: static const ::bond::Metadata s_o_metadata;
+        private: static const ::bond::Metadata s_r_metadata;
+        private: static const ::bond::Metadata s_ro_metadata;
 
         public: struct var
         {
             // o
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 0,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 Foo,
                 bool,
                 &Foo::o,
@@ -32,9 +32,9 @@ namespace tests
             > o;
         
             // r
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 1,
-                bond::reflection::required_field_modifier,
+                ::bond::reflection::required_field_modifier,
                 Foo,
                 int16_t,
                 &Foo::r,
@@ -42,9 +42,9 @@ namespace tests
             > r;
         
             // ro
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 2,
-                bond::reflection::required_optional_field_modifier,
+                ::bond::reflection::required_optional_field_modifier,
                 Foo,
                 double,
                 &Foo::ro,
@@ -60,10 +60,10 @@ namespace tests
         public: typedef fields3::type fields;
         
         
-        static bond::Metadata GetMetadata()
+        static ::bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit("Foo", "tests.Foo",
-                bond::reflection::Attributes()
+            return ::bond::reflection::MetadataInit("Foo", "tests.Foo",
+                ::bond::reflection::Attributes()
             );
         }
     };

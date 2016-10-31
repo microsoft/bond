@@ -145,6 +145,8 @@ private:
     std::vector<char, Allocator> buffer;
 };
 
+typedef basic_string_stream<1024> string_stream;
+
 }
 
 }

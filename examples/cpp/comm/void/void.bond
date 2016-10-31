@@ -1,0 +1,8 @@
+namespace examples.Void
+
+service Service
+{
+    void Method();
+};
+
+

@@ -29,11 +29,11 @@ namespace test
         std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> m;
         std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> st;
         std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> d;
-        bond::maybe<std::list<bool, typename arena::rebind<bool>::other> > l1;
-        bond::maybe<std::vector<bool, typename arena::rebind<bool>::other> > v1;
-        bond::maybe<std::set<bool, std::less<bool>, typename arena::rebind<bool>::other> > s1;
-        bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> > m1;
-        bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> > st1;
+        ::bond::maybe<std::list<bool, typename arena::rebind<bool>::other> > l1;
+        ::bond::maybe<std::vector<bool, typename arena::rebind<bool>::other> > v1;
+        ::bond::maybe<std::set<bool, std::less<bool>, typename arena::rebind<bool>::other> > s1;
+        ::bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> > m1;
+        ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> > st1;
         
         foo()
           : d("foo")

@@ -23,7 +23,7 @@ namespace tests
     
     struct Foo
     {
-        bond::maybe<bond::blob> b;
+        ::bond::maybe< ::bond::blob> b;
         
         Foo()
         {

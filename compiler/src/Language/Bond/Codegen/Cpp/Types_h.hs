@@ -103,7 +103,7 @@ namespace std
 |]
       where
         usesAllocator s@Struct {..} = [lt|template <typename _Alloc#{sepBeginBy ", typename " paramName declParams}>
-    struct uses_allocator<#{typename} #{getDeclTypeName cpp s}#{CPP.structParams s}, _Alloc>
+    struct uses_allocator<#{typename} #{getDeclTypeName cpp s}#{CPP.classParams s}, _Alloc>
         : is_convertible<_Alloc, #{allocParam}>
     {};|]
           where
@@ -146,13 +146,13 @@ namespace std
         #{initMetadata}
     };
 
-    #{template}inline void swap(#{qualifiedStructName}& left, #{qualifiedStructName}& right)
+    #{template}inline void swap(#{qualifiedClassName}& left, #{qualifiedClassName}& right)
     {
         left.swap(right);
     }|]
       where
         template = CPP.template s
-        qualifiedStructName = [lt|#{getDeclTypeName cpp s}#{CPP.structParams s}|]
+        qualifiedClassName = CPP.qualifiedClassName cpp s
 
         otherParam = if hasOnlyMetaFields then mempty else [lt| other|]
         hasOnlyMetaFields = not (any (not . getAny . metaField) structFields) && isNothing structBase
@@ -339,7 +339,7 @@ namespace std
         }
 
         inline
-        const char* GetTypeName(enum #{declName}, const bond::qualified_name_tag&)
+        const char* GetTypeName(enum #{declName}, const ::bond::qualified_name_tag&)
         {
             return "#{getDeclTypeName idl e}";
         }

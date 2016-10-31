@@ -28,12 +28,12 @@ applyOverloads protocols cpp attr body s@Struct {..} | null declParams = [lt|
     //
     // Overloads of Apply function with common transforms for #{declName}.
     // These overloads will be selected using argument dependent lookup
-    // before bond::Apply function templates.
+    // before ::bond::Apply function templates.
     //
-    #{attr}bool Apply(const bond::To< #{qualifiedName}>& transform,
-               const bond::bonded< #{qualifiedName}>& value)#{body}
+    #{attr}bool Apply(const ::bond::To< #{qualifiedName}>& transform,
+               const ::bond::bonded< #{qualifiedName}>& value)#{body}
 
-    #{attr}bool Apply(const bond::InitSchemaDef& transform,
+    #{attr}bool Apply(const ::bond::InitSchemaDef& transform,
                const #{qualifiedName}& value)#{body}
     #{newlineSep 1 applyOverloads' protocols}|]
   where
@@ -47,22 +47,22 @@ applyOverloads protocols cpp attr body s@Struct {..} | null declParams = [lt|
     marshaler = "Marshaler" :: String
 
     deserialization Protocol {..} = [lt|
-    #{attr}bool Apply(const bond::To< #{qualifiedName}>& transform,
-               const bond::bonded< #{qualifiedName}, #{protocolReader}&>& value)#{body}
+    #{attr}bool Apply(const ::bond::To< #{qualifiedName}>& transform,
+               const ::bond::bonded< #{qualifiedName}, #{protocolReader}&>& value)#{body}
 
-    #{attr}bool Apply(const bond::To< #{qualifiedName}>& transform,
-               const bond::bonded<void, #{protocolReader}&>& value)#{body}|]
+    #{attr}bool Apply(const ::bond::To< #{qualifiedName}>& transform,
+               const ::bond::bonded<void, #{protocolReader}&>& value)#{body}|]
 
     serialization transform Protocol {..} = [lt|
-    #{attr}bool Apply(const bond::#{transform}<#{protocolWriter} >& transform,
+    #{attr}bool Apply(const ::bond::#{transform}<#{protocolWriter} >& transform,
                const #{qualifiedName}& value)#{body}
 
-    #{attr}bool Apply(const bond::#{transform}<#{protocolWriter} >& transform,
-               const bond::bonded< #{qualifiedName}>& value)#{body}
+    #{attr}bool Apply(const ::bond::#{transform}<#{protocolWriter} >& transform,
+               const ::bond::bonded< #{qualifiedName}>& value)#{body}
     #{newlineSep 1 (transcoding transform) protocols}|]
       where
         transcoding transform' Protocol {protocolReader = fromReader} = [lt|
-    #{attr}bool Apply(const bond::#{transform'}<#{protocolWriter} >& transform,
-               const bond::bonded< #{qualifiedName}, #{fromReader}&>& value)#{body}|]
+    #{attr}bool Apply(const ::bond::#{transform'}<#{protocolWriter} >& transform,
+               const ::bond::bonded< #{qualifiedName}, #{fromReader}&>& value)#{body}|]
 
 applyOverloads _ _ _ _ _ = mempty

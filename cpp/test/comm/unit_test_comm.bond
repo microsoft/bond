@@ -1,0 +1,112 @@
+
+import "bond/core/bond.bond"
+namespace unittest.rpc
+
+enum Operation
+{
+    SyncCallback,
+    AsyncCallback,
+    DelayCallback,
+    ThrowStdException,
+    ReturnUserError,
+    ForgetCallback,
+    DoubleDispatch,
+    ForwardCallback,
+    FetchCallback,
+    PostCallback,
+
+    PassCallbackAndReleaseBeforeResponse,
+    PassCallbackAndReleaseAfterResponse,
+    PassCallbackAndThrow,
+
+    PassCallbackAndInvokeNotifyBeforeAfterReleaseAndSchedule,
+    PassCallbackInvokeNotifyAndThrow,
+
+    PassCallbackAndInvokeUpdateBeforeAfterReleaseAndSchedule,
+    PassCallbackInvokeUpdateAndThrow,
+    PassCallbackInvoke,
+};
+
+struct Params
+{
+    1: required_optional uint32   x;
+    2: required_optional uint32   y;
+    3: required_optional Operation op = ForgetCallback;
+    4: required_optional vector<uint32> v;
+    5: required_optional vector<blob> b;
+};
+
+struct Result
+{
+    1: required_optional uint32 z;
+    2: vector<uint32> v;
+    3: vector<blob> b;
+};
+
+struct Data
+{
+    1: uint64 m_x;
+};
+
+service Listener
+{
+    nothing Notify();
+    nothing Update(Params);
+    void Invoke();
+    Data GetInstance();
+};
+
+service First
+{
+    Result Method1(Params);
+
+    void MethodVoidParams(Params);
+
+    Result MethodResultVoid();
+
+    void MethodVoid();
+
+    void MethodVoidExceptionParams(Params);
+
+    Result MethodResultVoidException();
+
+    void MethodVoidException();
+
+    bond.Box<Result> MethodGenParams(Params);
+
+    Result MethodResultGen(bond.Box<Params>);
+
+    bond.Box<Result> MethodGen(bond.Box<Params>);
+
+    Result GetInstance();
+
+    nothing Event(Params);
+};
+
+service Second
+{
+    Result Method2(Params);
+};
+
+service Test
+{
+    Result TestMethod1(Params);
+    void TestMethod2();
+};
+
+service Generic<T>
+{
+    T MethodGenParams(Params);
+
+    Result MethodResultGen(T);
+        
+    T MethodGen(T);
+
+    bond.Box<T> MethodBox(bond.Box<T>);
+};
+
+struct Dummy
+{
+    0: int32 int_value;
+    1: string string_value;
+}

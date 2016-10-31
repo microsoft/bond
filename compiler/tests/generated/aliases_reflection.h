@@ -12,18 +12,18 @@ namespace tests
     template <typename T>
     struct Foo<T>::Schema
     {
-        typedef bond::no_base base;
+        typedef ::bond::no_base base;
 
-        static const bond::Metadata metadata;
+        static const ::bond::Metadata metadata;
         
-        private: static const bond::Metadata s_aa_metadata;
+        private: static const ::bond::Metadata s_aa_metadata;
 
         public: struct var
         {
             // aa
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 0,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 Foo<T>,
                 std::vector<std::vector<T> >,
                 &Foo<T>::aa,
@@ -43,21 +43,21 @@ namespace tests
             (void)s_aa_metadata;
         }
         
-        static bond::Metadata GetMetadata()
+        static ::bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit<boost::mpl::list<T> >("Foo", "tests.Foo",
-                bond::reflection::Attributes()
+            return ::bond::reflection::MetadataInit<boost::mpl::list<T> >("Foo", "tests.Foo",
+                ::bond::reflection::Attributes()
             );
         }
     };
     
     template <typename T>
-    const bond::Metadata Foo<T>::Schema::metadata
+    const ::bond::Metadata Foo<T>::Schema::metadata
         = Foo<T>::Schema::GetMetadata();
     
     template <typename T>
-    const bond::Metadata Foo<T>::Schema::s_aa_metadata
-        = bond::reflection::MetadataInit("aa");
+    const ::bond::Metadata Foo<T>::Schema::s_aa_metadata
+        = ::bond::reflection::MetadataInit("aa");
 
     
 } // namespace tests

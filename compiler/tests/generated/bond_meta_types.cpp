@@ -7,14 +7,14 @@ namespace deprecated
 namespace bondmeta
 {
     
-    const bond::Metadata HasMetaFields::Schema::metadata
+    const ::bond::Metadata HasMetaFields::Schema::metadata
         = HasMetaFields::Schema::GetMetadata();
     
-    const bond::Metadata HasMetaFields::Schema::s_full_name_metadata
-        = bond::reflection::MetadataInit("full_name");
+    const ::bond::Metadata HasMetaFields::Schema::s_full_name_metadata
+        = ::bond::reflection::MetadataInit("full_name");
     
-    const bond::Metadata HasMetaFields::Schema::s_name_metadata
-        = bond::reflection::MetadataInit("name");
+    const ::bond::Metadata HasMetaFields::Schema::s_name_metadata
+        = ::bond::reflection::MetadataInit("name");
 
     
 } // namespace bondmeta

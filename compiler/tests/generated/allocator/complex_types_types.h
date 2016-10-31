@@ -90,11 +90,11 @@ namespace tests
     {
         std::list<int8_t, typename arena::rebind<int8_t>::other> li8;
         std::set<bool, std::less<bool>, typename arena::rebind<bool>::other> sb;
-        std::vector<bond::blob, typename arena::rebind<bond::blob>::other> vb;
-        bond::nullable<float> nf;
+        std::vector< ::bond::blob, typename arena::rebind< ::bond::blob>::other> vb;
+        ::bond::nullable<float> nf;
         std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other>, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other> > >::other> msws;
-        bond::bonded< ::tests::Foo> bfoo;
-        std::map<double, std::list<std::vector<bond::nullable<bond::bonded< ::tests::Bar> >, typename arena::rebind<bond::nullable<bond::bonded< ::tests::Bar> > >::other>, typename arena::rebind<std::vector<bond::nullable<bond::bonded< ::tests::Bar> >, typename arena::rebind<bond::nullable<bond::bonded< ::tests::Bar> > >::other> >::other>, std::less<double>, typename arena::rebind<std::pair<const double, std::list<std::vector<bond::nullable<bond::bonded< ::tests::Bar> >, typename arena::rebind<bond::nullable<bond::bonded< ::tests::Bar> > >::other>, typename arena::rebind<std::vector<bond::nullable<bond::bonded< ::tests::Bar> >, typename arena::rebind<bond::nullable<bond::bonded< ::tests::Bar> > >::other> >::other> > >::other> m;
+        ::bond::bonded< ::tests::Foo> bfoo;
+        std::map<double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other>, typename arena::rebind<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other> >::other>, std::less<double>, typename arena::rebind<std::pair<const double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other>, typename arena::rebind<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other> >::other> > >::other> m;
         
         ComplexTypes()
         {

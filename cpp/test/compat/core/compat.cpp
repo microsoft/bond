@@ -2,6 +2,9 @@
 #   define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#include <stdarg.h>
+#include <stdio.h>
+
 #include "compat_reflection.h"
 #include "compat_no_generics_reflection.h"
 #include "compat.h"
@@ -14,7 +17,15 @@
 #include <bond/protocol/simple_json_writer.h>
 #include <bond/stream/stdio_output_stream.h>
 
-#define die(ARGS) (printf ARGS, exit(1), true);
+void die(const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    vprintf(fmt, args);
+    va_end(args);
+
+    exit(1);
+}
 
 template <typename T>
 void Render(const T& obj, FILE* file)
@@ -34,18 +45,22 @@ void Verify(Options options, const T& obj, const T& obj2)
         if (!options.expected.empty() && !options.actual.empty())
         {
             FILE* file1 = fopen(options.expected.c_str(), "w");
-            
-            file1 || die(("\nCan't open %s\n", options.expected.c_str()));
+            if (file1 == nullptr)
+            {
+                die("\nCan't open %s\n", options.expected.c_str());
+            }
 
             FILE* file2 = fopen(options.actual.c_str(), "w");
-
-            file2 || die(("\nCan't open %s\n", options.actual.c_str()));
+            if (file2 == nullptr)
+            {
+                die("\nCan't open %s\n", options.actual.c_str());
+            }
 
             Render(obj, file1);
-            Render(obj2, file2); 
+            Render(obj2, file2);
         }
 
-        die(("\nThe deserialized object doesn't match\n"));
+        die("\nThe deserialized object doesn't match\n");
     }
 }
 
@@ -71,15 +86,19 @@ int main(int argc, char** argv)
     else if (!options.deserialize.empty())
     {
         void* buffer = malloc(MAX_SIZE);
+        if (buffer == nullptr)
+        {
+            die("\nFailed to allocate memory\n");
+        }
 
-        buffer || die(("\nFailed to allocate memory\n"));
-        
         FILE* file = fopen(options.deserialize.c_str(), "rb");
+        if (file == nullptr)
+        {
+            die("\nCan't open %s\n", options.deserialize.c_str());
+        }
 
-        file || die(("\nCan't open %s\n", options.deserialize.c_str()));
-        
         size_t size = fread(buffer, 1, MAX_SIZE, file);
-        
+
         Compat obj;
         Init(options.test, obj);
 
@@ -89,7 +108,7 @@ int main(int argc, char** argv)
         bond::SchemaDef schema2;
 
         Deserialize(options.test, input, obj2, schema2);
-    
+
         if (!options.no_generics)
         {
             if (options.test == schema)
@@ -122,17 +141,22 @@ int main(int argc, char** argv)
     {
         Compat obj;
         Init(options.test, obj);
- 
+
         bond::blob output = Serialize(options.test, obj);
 
         FILE* file = fopen(options.serialize.c_str(), "wb");
-
-        file || die(("Can't open %s\n", options.serialize.c_str()));
+        if (file == nullptr)
+        {
+            die("Can't open %s\n", options.serialize.c_str());
+        }
 
         fwrite(output.data(), 1, output.size(), file);
 
-        output.size() < MAX_SIZE || die(("\nSerialized object is too big\n"));
+        if (output.size() >= MAX_SIZE)
+        {
+            die("\nSerialized object is too big\n");
+        }
     }
 
-    return 0;    
+    return 0;
 }

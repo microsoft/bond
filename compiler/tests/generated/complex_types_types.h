@@ -85,11 +85,11 @@ namespace tests
     {
         std::list<int8_t> li8;
         std::set<bool> sb;
-        std::vector<bond::blob> vb;
-        bond::nullable<float> nf;
+        std::vector< ::bond::blob> vb;
+        ::bond::nullable<float> nf;
         std::map<std::string, std::wstring> msws;
-        bond::bonded< ::tests::Foo> bfoo;
-        std::map<double, std::list<std::vector<bond::nullable<bond::bonded< ::tests::Bar> > > > > m;
+        ::bond::bonded< ::tests::Foo> bfoo;
+        std::map<double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > m;
         
         ComplexTypes()
         {

@@ -11,6 +11,9 @@
 
 #define UT_AssertThrows BOOST_CHECK_THROW
 
+#define UT_AssertIsNull(...) BOOST_CHECK(nullptr == (__VA_ARGS__))
+
+#define UT_AssertIsNotNull(...) BOOST_CHECK(nullptr != (__VA_ARGS__))
 
 #if defined(BOND_COMPACT_BINARY_PROTOCOL)
 #   define  TEST_COMPACT_BINARY_PROTOCOL(...)  __VA_ARGS__
@@ -89,14 +92,18 @@ public:
     {
         char id[20];    
         sprintf(id, "0x%x ", key);
+        AddTestCase(func, id + test);
+    }
 
+    void AddTestCase(void (*func)(), const std::string& test)
+    {
         if (!suite)
         {
             suite = BOOST_TEST_SUITE(name);
             parent.add(suite);    
         }
 
-        suite->add(MAKE_BOOST_TEST_CASE(func, id + test));
+        suite->add(MAKE_BOOST_TEST_CASE(func, test));
     }
 
 private:

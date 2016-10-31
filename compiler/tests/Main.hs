@@ -10,7 +10,7 @@ import Tests.Codegen
 tests :: TestTree
 tests = testGroup "Compiler tests"
     [ testGroup "AST"
-        [ localOption (QuickCheckMaxSize 15) $
+        [ localOption (QuickCheckMaxSize 6) $
             testProperty "roundtrip" roundtripAST
         , testGroup "Compare .bond and .json"
             [ testCase "attributes" $ compareAST "attributes"
@@ -27,6 +27,7 @@ tests = testGroup "Compiler tests"
             , testCase "simple service syntax" $ compareAST "service"
             , testCase "service attributes" $ compareAST "service_attributes"
             , testCase "generic service" $ compareAST "generic_service"
+            , testCase "documentation example" $ compareAST "example"
             ]
         ]
     , testGroup "SchemaDef"
@@ -97,6 +98,20 @@ tests = testGroup "Compiler tests"
                 ]
                 "basic_types"
             ]
+            , testGroup "Comm"
+                [ verifyCppCommCodegen
+                    [ "c++"
+                    ]
+                    "service"
+                , verifyCppCommCodegen
+                    [ "c++"
+                    ]
+                    "generic_service"
+                , verifyCppCommCodegen
+                    [ "c++"
+                    ]
+                    "service_attributes"
+                ]
     , testGroup "C#"
             [ verifyCsCodegen "attributes"
             , verifyCsCodegen "basic_types"

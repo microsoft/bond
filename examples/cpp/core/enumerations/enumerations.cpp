@@ -33,11 +33,13 @@ void DisambiguateEnumsWithSameName()
 
     color = Color::Orange;
     color = Yellow;
+    assert(color == Yellow);
 
     Fruit fruit;
 
     fruit = Apple;
     fruit = Fruit::Orange;
+    assert(fruit == Fruit::Orange);
 }
 
 // Bond enums are represented as signed 32-bit integers on the wire, but
@@ -47,7 +49,7 @@ void EnumValueLimits()
     assert(Limits::Int32Min == std::numeric_limits<int32_t>::min());
     assert(Limits::Int32Max == std::numeric_limits<int32_t>::max());
     assert(Limits::UInt32Min == std::numeric_limits<uint32_t>::min());
-    assert(Limits::UInt32Max == std::numeric_limits<uint32_t>::max());
+    assert(static_cast<uint32_t>(Limits::UInt32Max) == std::numeric_limits<uint32_t>::max());
 }
 
 // The ToEnum and FromEnum functions can be used to convert between enum

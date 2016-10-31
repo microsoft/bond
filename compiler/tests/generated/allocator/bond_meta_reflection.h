@@ -13,19 +13,19 @@ namespace bondmeta
     //
     struct HasMetaFields::Schema
     {
-        typedef bond::no_base base;
+        typedef ::bond::no_base base;
 
-        static const bond::Metadata metadata;
+        static const ::bond::Metadata metadata;
         
-        private: static const bond::Metadata s_full_name_metadata;
-        private: static const bond::Metadata s_name_metadata;
+        private: static const ::bond::Metadata s_full_name_metadata;
+        private: static const ::bond::Metadata s_name_metadata;
 
         public: struct var
         {
             // full_name
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 0,
-                bond::reflection::required_optional_field_modifier,
+                ::bond::reflection::required_optional_field_modifier,
                 HasMetaFields,
                 std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>,
                 &HasMetaFields::full_name,
@@ -33,9 +33,9 @@ namespace bondmeta
             > full_name;
         
             // name
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 1,
-                bond::reflection::required_optional_field_modifier,
+                ::bond::reflection::required_optional_field_modifier,
                 HasMetaFields,
                 std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>,
                 &HasMetaFields::name,
@@ -50,10 +50,10 @@ namespace bondmeta
         public: typedef fields2::type fields;
         
         
-        static bond::Metadata GetMetadata()
+        static ::bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit("HasMetaFields", "deprecated.bondmeta.HasMetaFields",
-                bond::reflection::Attributes()
+            return ::bond::reflection::MetadataInit("HasMetaFields", "deprecated.bondmeta.HasMetaFields",
+                ::bond::reflection::Attributes()
             );
         }
     };

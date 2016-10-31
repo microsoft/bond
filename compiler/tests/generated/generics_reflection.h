@@ -12,19 +12,19 @@ namespace tests
     template <typename T1, typename T2>
     struct Foo<T1, T2>::Schema
     {
-        typedef bond::no_base base;
+        typedef ::bond::no_base base;
 
-        static const bond::Metadata metadata;
+        static const ::bond::Metadata metadata;
         
-        private: static const bond::Metadata s_t2_metadata;
-        private: static const bond::Metadata s_n_metadata;
+        private: static const ::bond::Metadata s_t2_metadata;
+        private: static const ::bond::Metadata s_n_metadata;
 
         public: struct var
         {
             // t2
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 0,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 Foo<T1, T2>,
                 T2,
                 &Foo<T1, T2>::t2,
@@ -32,11 +32,11 @@ namespace tests
             > t2;
         
             // n
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 1,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 Foo<T1, T2>,
-                bond::nullable< ::tests::Foo<T1, bool> >,
+                ::bond::nullable< ::tests::Foo<T1, bool> >,
                 &Foo<T1, T2>::n,
                 &s_n_metadata
             > n;
@@ -56,25 +56,25 @@ namespace tests
             (void)s_n_metadata;
         }
         
-        static bond::Metadata GetMetadata()
+        static ::bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit<boost::mpl::list<T1, T2> >("Foo", "tests.Foo",
-                bond::reflection::Attributes()
+            return ::bond::reflection::MetadataInit<boost::mpl::list<T1, T2> >("Foo", "tests.Foo",
+                ::bond::reflection::Attributes()
             );
         }
     };
     
     template <typename T1, typename T2>
-    const bond::Metadata Foo<T1, T2>::Schema::metadata
+    const ::bond::Metadata Foo<T1, T2>::Schema::metadata
         = Foo<T1, T2>::Schema::GetMetadata();
     
     template <typename T1, typename T2>
-    const bond::Metadata Foo<T1, T2>::Schema::s_t2_metadata
-        = bond::reflection::MetadataInit("t2");
+    const ::bond::Metadata Foo<T1, T2>::Schema::s_t2_metadata
+        = ::bond::reflection::MetadataInit("t2");
     
     template <typename T1, typename T2>
-    const bond::Metadata Foo<T1, T2>::Schema::s_n_metadata
-        = bond::reflection::MetadataInit("n");
+    const ::bond::Metadata Foo<T1, T2>::Schema::s_n_metadata
+        = ::bond::reflection::MetadataInit("n");
 
     
 } // namespace tests

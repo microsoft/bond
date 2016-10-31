@@ -1,0 +1,6 @@
+namespace examples.logging
+
+service Service
+{
+    void Method();
+};

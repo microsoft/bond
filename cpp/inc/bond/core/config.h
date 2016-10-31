@@ -5,10 +5,12 @@
 
 #include <boost/config.hpp>
 
-#if _MSC_VER < 1900
 #if defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS)
 #define BOND_NO_CXX11_DEFAULTED_FUNCTIONS
-#endif
+#else
+  #if defined(_MSC_VER) && (_MSC_VER < 1900)
+  #define BOND_NO_CXX11_DEFAULTED_FUNCTIONS
+  #endif
 #endif
 
 #if defined(BOOST_NO_CXX11_AUTO_DECLARATIONS) || defined(BOOST_NO_AUTO_DECLARATIONS)

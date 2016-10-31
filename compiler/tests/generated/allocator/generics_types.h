@@ -25,7 +25,7 @@ namespace tests
     struct Foo
     {
         T2 t2;
-        bond::nullable< ::tests::Foo<T1, bool>, arena> n;
+        ::bond::nullable< ::tests::Foo<T1, bool>, arena> n;
         
         Foo()
           : t2()

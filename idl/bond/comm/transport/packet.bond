@@ -1,0 +1,41 @@
+import "bond/comm/comm.bond"
+
+namespace bond.comm
+
+struct MessageData
+{
+    0: vector<blob> data;
+
+    1: bool is_error;
+}
+
+//
+// Generalized representation of rpc request/event and response.
+//
+struct Packet
+{
+    //
+    // Type of encapsulated entity.
+    //
+    0: MessageType message_type =  REQUEST;
+
+    //
+    // Service name of remote call.
+    //
+    1: string service_name;
+
+    //
+    // Method name of remote call.
+    //
+    2: string method_name;
+
+    //
+    // Message data (payload or error).
+    //
+    3: MessageData message_data;
+
+    //
+    // Layer data.
+    //
+    4: vector<blob> layers;
+}

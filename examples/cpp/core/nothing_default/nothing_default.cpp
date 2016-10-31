@@ -75,6 +75,8 @@ int main()
             
         printf("Using field bar... ");
         d = v2.bar;
+        fprintf(stderr, "Accessing field bar should have thrown, but we got %g instead", d);
+        exit(1); // should not have gotten here
     }
     catch(const bond::CoreException& e)
     {

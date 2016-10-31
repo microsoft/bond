@@ -16,6 +16,7 @@
 #include <bond/core/bond_types.h>
 #include "bonded.h"
 #include "detail/metadata.h"
+#include <functional>
 
 namespace bond
 {
@@ -68,28 +69,26 @@ struct required_optional_field_modifier
 
 
 /// @brief Field description in compile-time schema
-template
-<
-    uint16_t t_id,
-    typename t_modifierTag,
-    typename t_struct,
-    typename t_fieldType,
-    t_fieldType t_struct::*t_fieldAddr,
-    const bond::Metadata* t_metadata
->
+template <
+    uint16_t field_id,
+    typename ModifierTag,
+    typename Struct,
+    typename FieldType,
+    FieldType Struct::*field_ptr,
+    const bond::Metadata* metadata_ptr>
 struct FieldTemplate
 {
     /// @brief Type of the field's parent struct
-    typedef t_struct struct_type;
+    typedef Struct struct_type;
 
     /// @brief Type of the field pointer
-    typedef t_fieldType t_struct::*field_pointer;
+    typedef FieldType Struct::*field_pointer;
 
     /// @brief Type of the field
-    typedef typename remove_maybe<t_fieldType>::type field_type;
+    typedef typename remove_maybe<FieldType>::type field_type;
 
     /// @brief Type of the field value
-    typedef t_fieldType value_type;
+    typedef FieldType value_type;
 
     /// @brief Modifier tag for the field
     ///
@@ -97,57 +96,118 @@ struct FieldTemplate
     /// - bond::reflection::optional_field_modifier
     /// - bond::reflection::required_field_modifier
     /// - bond::reflection::required_optional_field_modifier
-    typedef t_modifierTag field_modifier;
+    typedef ModifierTag field_modifier;
 
     /// @brief Static data member describing field metadata
     static const Metadata& metadata;
 
     /// @brief Static data member representing the field pointer
-    static const field_pointer field_ptr;
+    static const field_pointer field;
 
     /// @brief Static data member equal to the field ordinal
-    static const uint16_t id = t_id;
+    static const uint16_t id = field_id;
 
     /// @brief Static method returning const reference to the field value for a particular object
     static
-    const t_fieldType& GetVariable(const struct_type& object)
+    const value_type& GetVariable(const struct_type& object)
     {
-        return object.*t_fieldAddr;
+        return object.*field;
     }
 
     /// @brief Static method returning reference to the field value for a particular object
     static
-    t_fieldType& GetVariable(struct_type& object)
+    value_type& GetVariable(struct_type& object)
     {
-        return object.*t_fieldAddr;
+        return object.*field;
     }
 
-    BOOST_STATIC_ASSERT(t_id != invalid_field_id);
+    BOOST_STATIC_ASSERT(field_id != invalid_field_id);
 };
 
 
-template
-<
-    uint16_t t_id,
-    typename t_modifierTag,
-    typename t_struct,
-    typename t_fieldType,
-    t_fieldType t_struct::*t_fieldAddr,
-    const Metadata* t_metadata
->
-const bond::Metadata& FieldTemplate<t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata>::metadata = *t_metadata;
+template <
+    uint16_t field_id,
+    typename ModifierTag,
+    typename Struct,
+    typename FieldType,
+    FieldType Struct::*field_ptr,
+    const Metadata* metadata_ptr>
+const bond::Metadata&
+    FieldTemplate<field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr>::metadata = *metadata_ptr;
 
 template
 <
-    uint16_t t_id,
-    typename t_modifierTag,
-    typename t_struct,
-    typename t_fieldType,
-    t_fieldType t_struct::*t_fieldAddr,
-    const Metadata* t_metadata
+    uint16_t field_id,
+    typename ModifierTag,
+    typename Struct,
+    typename FieldType,
+    FieldType Struct::*field_ptr,
+    const Metadata* metadata_ptr
 >
-const typename FieldTemplate<t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata>::field_pointer
-      FieldTemplate<t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata>::field_ptr = t_fieldAddr;
+const typename FieldTemplate<field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr>::field_pointer
+    FieldTemplate<field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr>::field = field_ptr;
+
+
+template <typename Service, typename Input, typename Result> struct
+method_pointer
+{
+    typedef void (Service::*type)(
+        const Input&,
+        const std::function<void(const Result&)>&);
+};
+
+
+template <typename Service, typename Input> struct
+method_pointer<Service, Input, void>
+{
+    typedef void (Service::*type)(const Input&);
+};
+
+
+/// @brief Method description in compile-time schema
+template <
+    typename Service,
+    typename Input,
+    typename Result,
+    typename method_pointer<Service, Input, Result>::type method_ptr,
+    const Metadata* metadata_ptr>
+struct MethodTemplate
+{
+    /// @brief Type of the service
+    typedef Service service_type;
+
+    /// @brief Type of the request
+    typedef Input input_type;
+
+    /// @brief Type of the response
+    typedef Result result_type;
+
+    /// @brief Static data member describing method metadata
+    static const Metadata& metadata;
+
+    /// @brief Static data member representing the member pointer to the method
+    static const typename method_pointer<service_type, input_type, result_type>::type method;
+};
+
+
+template <
+    typename Service,
+    typename Input,
+    typename Result,
+    typename method_pointer<Service, Input, Result>::type method_ptr,
+    const bond::Metadata* metadata_ptr>
+const bond::Metadata&
+    MethodTemplate<Service, Input, Result, method_ptr, metadata_ptr>::metadata = *metadata_ptr;
+
+template <
+    typename Service,
+    typename Input,
+    typename Result,
+    typename method_pointer<Service, Input, Result>::type method_ptr,
+    const bond::Metadata* metadata_ptr>
+const typename method_pointer<Service, Input, Result>::type
+    MethodTemplate<Service, Input, Result, method_ptr, metadata_ptr>::method = method_ptr;
+
 
 // Metadata initializer for fields
 inline
@@ -166,6 +226,17 @@ bond::Metadata MetadataInit(const char* name, bond::Modifier modifier, const Att
 
     metadata.name = name;
     metadata.modifier = modifier;
+    metadata.attributes = attributes;
+
+    return metadata;
+}
+
+inline
+bond::Metadata MetadataInit(const char* name, const Attributes& attributes)
+{
+    bond::Metadata metadata;
+
+    metadata.name = name;
     metadata.attributes = attributes;
 
     return metadata;
@@ -249,7 +320,6 @@ bond::Metadata MetadataInit(const char* name, const char* qualified_name, const 
 
     return metadata;
 }
-
 
 } // namespace reflection
 

@@ -5,14 +5,14 @@
 namespace test
 {
     
-    const bond::Metadata foo::Schema::metadata
+    const ::bond::Metadata foo::Schema::metadata
         = foo::Schema::GetMetadata();
     
-    const bond::Metadata foo::Schema::s_m_metadata
-        = bond::reflection::MetadataInit("m");
+    const ::bond::Metadata foo::Schema::s_m_metadata
+        = ::bond::reflection::MetadataInit("m");
     
-    const bond::Metadata foo::Schema::s_s_metadata
-        = bond::reflection::MetadataInit("s");
+    const ::bond::Metadata foo::Schema::s_s_metadata
+        = ::bond::reflection::MetadataInit("s");
 
     
 } // namespace test

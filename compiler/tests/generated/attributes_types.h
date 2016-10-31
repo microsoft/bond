@@ -40,7 +40,7 @@ namespace tests
         }
 
         inline
-        const char* GetTypeName(enum Enum, const bond::qualified_name_tag&)
+        const char* GetTypeName(enum Enum, const ::bond::qualified_name_tag&)
         {
             return "tests.Enum";
         }

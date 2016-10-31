@@ -1,0 +1,23 @@
+
+namespace examples.passthrough
+
+struct Param
+{
+    1: uint32   x;
+};
+
+struct Result
+{
+    1: uint32   x;
+};
+
+service Intermediate
+{
+    Result Pass(Param);
+};
+
+service Service
+{
+    Result Process(Param);
+};
+

@@ -1,0 +1,8 @@
+namespace examples.timeout_callbacks
+
+service Service
+{
+    void Method();
+};
+
+

@@ -1,0 +1,13 @@
+
+namespace examples.event
+
+struct Signal
+{
+    1: int32 x;
+};
+
+service Service
+{
+    nothing Poke(Signal);
+};
+

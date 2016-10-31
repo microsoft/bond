@@ -248,6 +248,15 @@ struct type
     }
 };
 
+// service
+template <typename T>
+struct type<T, typename boost::enable_if<is_class<typename T::Schema::methods> >::type>
+{
+    static std::string name()
+    {
+        return T::Schema().metadata.qualified_name;
+    }
+};
 
 // string
 template <typename T>

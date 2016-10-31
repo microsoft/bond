@@ -11,20 +11,20 @@ namespace tests
     //
     struct Foo::Schema
     {
-        typedef bond::no_base base;
+        typedef ::bond::no_base base;
 
-        static const bond::Metadata metadata;
+        static const ::bond::Metadata metadata;
         
-        private: static const bond::Metadata s_b_metadata;
+        private: static const ::bond::Metadata s_b_metadata;
 
         public: struct var
         {
             // b
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 0,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 Foo,
-                bond::maybe<bond::blob>,
+                ::bond::maybe< ::bond::blob>,
                 &Foo::b,
                 &s_b_metadata
             > b;
@@ -36,10 +36,10 @@ namespace tests
         public: typedef fields1::type fields;
         
         
-        static bond::Metadata GetMetadata()
+        static ::bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit("Foo", "tests.Foo",
-                bond::reflection::Attributes()
+            return ::bond::reflection::MetadataInit("Foo", "tests.Foo",
+                ::bond::reflection::Attributes()
             );
         }
     };

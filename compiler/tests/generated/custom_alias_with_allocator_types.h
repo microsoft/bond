@@ -29,11 +29,11 @@ namespace test
         my::map<my::string<arena>, bool, arena> m;
         my::string<arena> st;
         my::string<arena> d;
-        bond::maybe<my::list<bool, arena> > l1;
-        bond::maybe<my::vector<bool, arena> > v1;
-        bond::maybe<my::set<bool, arena> > s1;
-        bond::maybe<my::map<my::string<arena>, bool, arena> > m1;
-        bond::maybe<my::string<arena> > st1;
+        ::bond::maybe<my::list<bool, arena> > l1;
+        ::bond::maybe<my::vector<bool, arena> > v1;
+        ::bond::maybe<my::set<bool, arena> > s1;
+        ::bond::maybe<my::map<my::string<arena>, bool, arena> > m1;
+        ::bond::maybe<my::string<arena> > st1;
         
         foo()
           : l(),

@@ -11,28 +11,28 @@ namespace test
     //
     struct foo::Schema
     {
-        typedef bond::no_base base;
+        typedef ::bond::no_base base;
 
-        static const bond::Metadata metadata;
+        static const ::bond::Metadata metadata;
         
-        private: static const bond::Metadata s_l_metadata;
-        private: static const bond::Metadata s_v_metadata;
-        private: static const bond::Metadata s_s_metadata;
-        private: static const bond::Metadata s_m_metadata;
-        private: static const bond::Metadata s_st_metadata;
-        private: static const bond::Metadata s_d_metadata;
-        private: static const bond::Metadata s_l1_metadata;
-        private: static const bond::Metadata s_v1_metadata;
-        private: static const bond::Metadata s_s1_metadata;
-        private: static const bond::Metadata s_m1_metadata;
-        private: static const bond::Metadata s_st1_metadata;
+        private: static const ::bond::Metadata s_l_metadata;
+        private: static const ::bond::Metadata s_v_metadata;
+        private: static const ::bond::Metadata s_s_metadata;
+        private: static const ::bond::Metadata s_m_metadata;
+        private: static const ::bond::Metadata s_st_metadata;
+        private: static const ::bond::Metadata s_d_metadata;
+        private: static const ::bond::Metadata s_l1_metadata;
+        private: static const ::bond::Metadata s_v1_metadata;
+        private: static const ::bond::Metadata s_s1_metadata;
+        private: static const ::bond::Metadata s_m1_metadata;
+        private: static const ::bond::Metadata s_st1_metadata;
 
         public: struct var
         {
             // l
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 0,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
                 std::list<bool, typename arena::rebind<bool>::other>,
                 &foo::l,
@@ -40,9 +40,9 @@ namespace test
             > l;
         
             // v
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 1,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
                 std::vector<bool, typename arena::rebind<bool>::other>,
                 &foo::v,
@@ -50,9 +50,9 @@ namespace test
             > v;
         
             // s
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 2,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
                 std::set<bool, std::less<bool>, typename arena::rebind<bool>::other>,
                 &foo::s,
@@ -60,9 +60,9 @@ namespace test
             > s;
         
             // m
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 3,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
                 std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other>,
                 &foo::m,
@@ -70,9 +70,9 @@ namespace test
             > m;
         
             // st
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 4,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
                 std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>,
                 &foo::st,
@@ -80,9 +80,9 @@ namespace test
             > st;
         
             // d
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 5,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
                 std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>,
                 &foo::d,
@@ -90,51 +90,51 @@ namespace test
             > d;
         
             // l1
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 10,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
-                bond::maybe<std::list<bool, typename arena::rebind<bool>::other> >,
+                ::bond::maybe<std::list<bool, typename arena::rebind<bool>::other> >,
                 &foo::l1,
                 &s_l1_metadata
             > l1;
         
             // v1
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 11,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
-                bond::maybe<std::vector<bool, typename arena::rebind<bool>::other> >,
+                ::bond::maybe<std::vector<bool, typename arena::rebind<bool>::other> >,
                 &foo::v1,
                 &s_v1_metadata
             > v1;
         
             // s1
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 12,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
-                bond::maybe<std::set<bool, std::less<bool>, typename arena::rebind<bool>::other> >,
+                ::bond::maybe<std::set<bool, std::less<bool>, typename arena::rebind<bool>::other> >,
                 &foo::s1,
                 &s_s1_metadata
             > s1;
         
             // m1
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 13,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
-                bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> >,
+                ::bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> >,
                 &foo::m1,
                 &s_m1_metadata
             > m1;
         
             // st1
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 14,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 foo,
-                bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >,
+                ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >,
                 &foo::st1,
                 &s_st1_metadata
             > st1;
@@ -156,10 +156,10 @@ namespace test
         public: typedef fields11::type fields;
         
         
-        static bond::Metadata GetMetadata()
+        static ::bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit("foo", "test.foo",
-                bond::reflection::Attributes()
+            return ::bond::reflection::MetadataInit("foo", "test.foo",
+                ::bond::reflection::Attributes()
             );
         }
     };
@@ -170,19 +170,19 @@ namespace test
     //
     struct withFoo::Schema
     {
-        typedef bond::no_base base;
+        typedef ::bond::no_base base;
 
-        static const bond::Metadata metadata;
+        static const ::bond::Metadata metadata;
         
-        private: static const bond::Metadata s_f_metadata;
-        private: static const bond::Metadata s_f1_metadata;
+        private: static const ::bond::Metadata s_f_metadata;
+        private: static const ::bond::Metadata s_f1_metadata;
 
         public: struct var
         {
             // f
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 0,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 withFoo,
                 ::test::foo,
                 &withFoo::f,
@@ -190,9 +190,9 @@ namespace test
             > f;
         
             // f1
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 1,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 withFoo,
                 ::test::foo,
                 &withFoo::f1,
@@ -207,10 +207,10 @@ namespace test
         public: typedef fields2::type fields;
         
         
-        static bond::Metadata GetMetadata()
+        static ::bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit("withFoo", "test.withFoo",
-                bond::reflection::Attributes()
+            return ::bond::reflection::MetadataInit("withFoo", "test.withFoo",
+                ::bond::reflection::Attributes()
             );
         }
     };

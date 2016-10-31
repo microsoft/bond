@@ -11,18 +11,18 @@ namespace tests
     //
     struct Foo::Schema
     {
-        typedef bond::no_base base;
+        typedef ::bond::no_base base;
 
-        static const bond::Metadata metadata;
+        static const ::bond::Metadata metadata;
         
-        private: static const bond::Metadata s_f_metadata;
+        private: static const ::bond::Metadata s_f_metadata;
 
         public: struct var
         {
             // f
-            typedef bond::reflection::FieldTemplate<
+            typedef ::bond::reflection::FieldTemplate<
                 0,
-                bond::reflection::optional_field_modifier,
+                ::bond::reflection::optional_field_modifier,
                 Foo,
                 std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>,
                 &Foo::f,
@@ -36,9 +36,9 @@ namespace tests
         public: typedef fields1::type fields;
         
         
-        static bond::Metadata GetMetadata()
+        static ::bond::Metadata GetMetadata()
         {
-            return bond::reflection::MetadataInit("Foo", "tests.Foo",
+            return ::bond::reflection::MetadataInit("Foo", "tests.Foo",
                 boost::assign::map_list_of<std::string, std::string>
                     ("StructAttribute1", "one")
                     ("StructAttribute2", "two")

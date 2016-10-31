@@ -28,7 +28,7 @@ apply_cpp protocols cpp file _imports declarations = ("_apply.cpp", [lt|
   where
     body = [lt|
     {
-        return bond::Apply<>(transform, value);
+        return ::bond::Apply<>(transform, value);
     }|]
 
     attr = [lt||]
