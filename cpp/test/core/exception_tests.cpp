@@ -337,3 +337,11 @@ void ExceptionTest::Initialize()
             bond::FastBinaryWriter<bond::OutputBuffer> >("Exception tests for FastBinary"); 
     );
 }
+
+
+bool init_unit_test()
+{
+    ExceptionTest::Initialize();
+    return true;
+}
+

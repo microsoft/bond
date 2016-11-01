@@ -25,7 +25,7 @@ void CustomProtocolsTests(const char* name)
 }
 
 
-void SerializationTest::CustomProtocolsTestsInit()
+void CustomProtocolsTestsInit()
 {
     TEST_COMPACT_BINARY_PROTOCOL(
         CustomProtocolsTests<
@@ -34,3 +34,10 @@ void SerializationTest::CustomProtocolsTestsInit()
             unit_test::TestWriter<bond::OutputBuffer> >("Custom protocol TestReader");
     );
 }
+
+bool init_unit_test()
+{
+    CustomProtocolsTestsInit();
+    return true;
+}
+

@@ -48,7 +48,7 @@ void BasicTypesMapTests(const char* name)
 }
 
 
-void SerializationTest::BasicTypesMapTestsInit()
+void BasicTypesMapTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         BasicTypesMapTests<
@@ -78,3 +78,10 @@ void SerializationTest::BasicTypesMapTestsInit()
             bond::SimpleJsonWriter<bond::OutputBuffer> >("Basic types maps for Simple JSON");
     );
 }
+
+bool init_unit_test()
+{
+    BasicTypesMapTestsInit();
+    return true;
+}
+

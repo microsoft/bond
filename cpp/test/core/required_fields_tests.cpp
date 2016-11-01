@@ -158,7 +158,7 @@ void RequiredTests(const char* name)
 }
 
 
-void SerializationTest::RequiredTestsInit()
+void RequiredTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         RequiredTests<
@@ -192,5 +192,11 @@ void SerializationTest::RequiredTestsInit()
             0x1405,
             UntaggedProtocolReader<bond::InputBuffer>,
             UntaggedProtocolWriter<bond::OutputBuffer> >("Required fields tests for untagged protocol");
+}
+
+bool init_unit_test()
+{
+    RequiredTestsInit();
+    return true;
 }
 

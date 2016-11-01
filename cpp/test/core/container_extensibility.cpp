@@ -183,3 +183,12 @@ void ExtensibilityTest::Initialize()
             bond::SimpleJsonWriter<bond::OutputBuffer> >("Container extensibility tests for Simple JSON");
     );
 }
+
+
+bool init_unit_test()
+{
+    ExtensibilityTest::Initialize();
+    ExtensibilityTest::InitializeAssociative();
+    return true;
+}
+

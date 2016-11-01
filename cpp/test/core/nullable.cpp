@@ -292,7 +292,7 @@ void BasicTypesNullableTests(const char* name)
 }
 
 
-void SerializationTest::NullableTestsInit()
+void NullableTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         BasicTypesNullableTests<
@@ -330,3 +330,10 @@ void SerializationTest::NullableTestsInit()
     AddTestCase<TEST_ID(0x506),
         NullableAllocators>(suite, "Nullable allocators");
 }
+
+bool init_unit_test()
+{
+    NullableTestsInit();
+    return true;
+}
+

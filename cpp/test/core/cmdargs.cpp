@@ -556,3 +556,11 @@ void CmdArgs::Initialize()
     AddTestCase<TEST_ID(0x2401), FailureTests>(suite, "argument failures");
     AddTestCase<TEST_ID(0x2401), UsageTests>(suite, "usage help");
 }
+
+
+bool init_unit_test()
+{
+    CmdArgs::Initialize();
+    return true;
+}
+

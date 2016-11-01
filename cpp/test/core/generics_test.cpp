@@ -15,7 +15,7 @@ void GenericStructTests(const char* name)
 }
 
 
-void SerializationTest::GenericsTestsInit()
+void GenericsTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         GenericStructTests<
@@ -45,3 +45,10 @@ void SerializationTest::GenericsTestsInit()
             bond::SimpleJsonWriter<bond::OutputBuffer> >("Generics tests for Simple JSON");
     );
 }
+
+bool init_unit_test()
+{
+    GenericsTestsInit();
+    return true;
+}
+

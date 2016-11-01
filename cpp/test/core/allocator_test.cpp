@@ -59,7 +59,7 @@ void AllocatorTests(const char* name)
 }
 
 
-void SerializationTest::AllocatorTestsInit()
+void AllocatorTestsInit()
 {
     typedef bond::OutputMemoryStream<TestAllocator> OutputStream;
 
@@ -84,3 +84,10 @@ void SerializationTest::AllocatorTestsInit()
             bond::FastBinaryWriter<OutputStream> >("Allocator tests for FastBinary");
     );
 }
+
+bool init_unit_test()
+{
+    AllocatorTestsInit();
+    return true;
+}
+

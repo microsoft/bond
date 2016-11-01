@@ -463,9 +463,13 @@ public:
         // reason is that you didn't include the generated file *_reflection.h.
         BOOST_STATIC_ASSERT(has_schema<T>::value);
 
+#ifndef BOND_UNIT_TEST_ONLY_PERMIT_OBJECT_REUSE
         // Triggering this assert means you are reusing an object w/o resetting
         // it to default value first.
+        //
+        // This should only be disabled for unit tests.
         BOOST_ASSERT(detail::OptionalDefault<T>(_var));
+#endif
 
         Validator::Begin();
     }

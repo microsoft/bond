@@ -84,44 +84,10 @@ class SerializationTest
 public:
     static void Initialize()
     {
-        MergeTestsInit();
-        MayOmitFieldsTestsInit();
-        PassThroughTestsInit();
-        NullableTestsInit();
-        InheritanceTestsInit();
         SimpleStructTestsInit();
-        NumericConversionTestsInit();
-        EnumConversionTestsInit();
-        ListTestsInit();
-        BasicTypesListTestsInit();
-        SetTestsInit();
-        BasicTypesMapTestsInit();
-        BlobTestsInit();
-        RequiredTestsInit();
-        GenericsTestsInit();
-        MarshalTestsInit();
-        AllocatorTestsInit();
-        CustomProtocolsTestsInit();
     }
 
 private:
-    static void MergeTestsInit();
-    static void PassThroughTestsInit();
-    static void NullableTestsInit();
-    static void InheritanceTestsInit();
     static void SimpleStructTestsInit();
-    static void NumericConversionTestsInit();
-    static void EnumConversionTestsInit();
-    static void ListTestsInit();
-    static void BasicTypesListTestsInit();
-    static void SetTestsInit();
-    static void BasicTypesMapTestsInit();
-    static void BlobTestsInit();
-    static void RequiredTestsInit();
-    static void GenericsTestsInit();
-    static void MarshalTestsInit();
-    static void AllocatorTestsInit();
-    static void MayOmitFieldsTestsInit();
-    static void CustomProtocolsTestsInit();
 };
 

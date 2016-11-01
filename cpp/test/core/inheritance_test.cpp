@@ -58,7 +58,7 @@ void InheritanceTests(const char* name)
 }
 
 
-void SerializationTest::InheritanceTestsInit()
+void InheritanceTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         InheritanceTests<
@@ -88,3 +88,10 @@ void SerializationTest::InheritanceTestsInit()
             bond::FastBinaryWriter<bond::OutputBuffer> >("Inheritance tests for FastBinary");
     );
 }
+
+bool init_unit_test()
+{
+    InheritanceTestsInit();
+    return true;
+}
+

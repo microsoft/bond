@@ -1,6 +1,6 @@
 #include "precompiled.h"
 #include "serialization_test.h"
-#include "numeric_convertions.h"
+#include "numeric_conversions.h"
 
 template <typename Reader, typename Writer>
 struct EnumConverter
@@ -37,30 +37,37 @@ void EnumConversionsTests(const char* name)
 {
     UnitTestSuite suite(name);
 
-    AddTestCase<TEST_ID(N), EnumConversions, Reader, Writer>(suite, "Enum convertions");
+    AddTestCase<TEST_ID(N), EnumConversions, Reader, Writer>(suite, "Enum conversions");
 }
 
 
-void SerializationTest::EnumConversionTestsInit()
+void EnumConversionTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         EnumConversionsTests<
             0xe01,
             bond::SimpleBinaryReader<bond::InputBuffer>,
-            bond::SimpleBinaryWriter<bond::OutputBuffer> >("Enum convertion tests for SimpleBinary");
+            bond::SimpleBinaryWriter<bond::OutputBuffer> >("Enum conversion tests for SimpleBinary");
     );
 
     TEST_COMPACT_BINARY_PROTOCOL(
         EnumConversionsTests<
             0xe02,
             bond::CompactBinaryReader<bond::InputBuffer>,
-            bond::CompactBinaryWriter<bond::OutputBuffer> >("Enum convertion tests for CompactBinary");
+            bond::CompactBinaryWriter<bond::OutputBuffer> >("Enum conversion tests for CompactBinary");
     );
 
     TEST_FAST_BINARY_PROTOCOL(
         EnumConversionsTests<
             0xe03,
             bond::FastBinaryReader<bond::InputBuffer>,
-            bond::FastBinaryWriter<bond::OutputBuffer> >("Enum convertion tests for FastBinary");
+            bond::FastBinaryWriter<bond::OutputBuffer> >("Enum conversion tests for FastBinary");
     );
 }
+
+bool init_unit_test()
+{
+    EnumConversionTestsInit();
+    return true;
+}
+

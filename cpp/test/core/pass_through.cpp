@@ -465,7 +465,7 @@ void TranscodingTests(const char* name)
 }
 
 
-void SerializationTest::PassThroughTestsInit()
+void PassThroughTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         PassThroughTests<
@@ -538,3 +538,10 @@ void SerializationTest::PassThroughTestsInit()
         UntaggedProtocolReader<bond::InputBuffer>,
         UntaggedProtocolWriter<bond::OutputBuffer> >("UntaggedProtocol-UntaggedProtocol transcoding");
 }
+
+bool init_unit_test()
+{
+    PassThroughTestsInit();
+    return true;
+}
+

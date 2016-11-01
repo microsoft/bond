@@ -65,7 +65,7 @@ void MayOmitFieldsTests(const char* name)
 };
 
 
-void SerializationTest::MayOmitFieldsTestsInit()
+void MayOmitFieldsTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         MayOmitFieldsTests<
@@ -88,3 +88,10 @@ void SerializationTest::MayOmitFieldsTestsInit()
             bond::FastBinaryWriter<MyOutputBuffer> >("may_omit_fields tests for FastBinary");
     );
 }
+
+bool init_unit_test()
+{
+    MayOmitFieldsTestsInit();
+    return true;
+}
+

@@ -387,3 +387,11 @@ void BondedTest::Initialize()
             bond::SimpleBinaryWriter<bond::OutputBuffer> >("Marshaled bonded tests for SimpleBinary");
     );
 }
+
+
+bool init_unit_test()
+{
+    BondedTest::Initialize();
+    return true;
+}
+

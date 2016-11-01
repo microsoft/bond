@@ -207,3 +207,10 @@ void MaybeTest::Initialize()
     AddTestCase<TEST_ID(0x1a05), MaybeInterface>(suite, "APIs");
 }
 
+
+bool init_unit_test()
+{
+    MaybeTest::Initialize();
+    return true;
+}
+
