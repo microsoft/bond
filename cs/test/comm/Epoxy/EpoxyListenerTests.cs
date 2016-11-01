@@ -48,7 +48,7 @@ namespace UnitTest.Epoxy
 
             await listener.StartAsync();
             var connection = await transport.ConnectToAsync(localhostAddress);
-            bool wasSignaled = connectedEventDone.Wait(TimeSpan.FromSeconds(30));
+            bool wasSignaled = connectedEventDone.Wait(TimeSpan.FromSeconds(10));
             Assert.IsTrue(wasSignaled, "Timed out waiting for Connected event to complete");
 
             Assert.AreEqual(connection.LocalEndPoint, remoteConnection.RemoteEndPoint);
@@ -116,7 +116,7 @@ namespace UnitTest.Epoxy
             var connection = await transport.ConnectToAsync(localhostAddress);
             await connection.StopAsync();
 
-            bool wasSignaled = disconnectedEventDone.Wait(TimeSpan.FromSeconds(30));
+            bool wasSignaled = disconnectedEventDone.Wait(TimeSpan.FromSeconds(10));
             Assert.IsTrue(wasSignaled, "Timed out waiting for Disconnected event to complete");
 
             Assert.IsNotNull(disconnectedConnection);
@@ -136,7 +136,7 @@ namespace UnitTest.Epoxy
             await noHandshakeConnection.ConnectAsync(localhostEndpoint.Address, localhostEndpoint.Port);
 
             var connectTask = transport.ConnectToAsync(localhostAddress);
-            bool didConnect = connectTask.Wait(TimeSpan.FromSeconds(30));
+            bool didConnect = connectTask.Wait(TimeSpan.FromSeconds(10));
             Assert.IsTrue(didConnect, "Timed out waiting for connection to be established.");
 
             await transport.StopAsync();

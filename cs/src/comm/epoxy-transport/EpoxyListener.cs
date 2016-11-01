@@ -112,11 +112,17 @@ namespace Bond.Comm.Epoxy
                     EndPoint remoteEndpoint = socket.RemoteEndPoint;
                     logger.Site().Debug("Accepted connection from {0}.", remoteEndpoint);
 
+                    // Disabling CS4014 "Because this call is not awaited,
+                    // execution of the current method continues before the
+                    // call is completed.Consider applying the 'await' operator
+                    // to the result of the call.", as we've attached a logger
+                    // task that doesn't need to be observed.
+                    #pragma warning disable 4014
                     // Don't need to wait for the connection to get fully established before
                     // accepting the next one, so fire and forget (with logging) StartAsync.
                     StartClientConnectionAsync(socket)
-                        .ContinueWith(startTask => LogClientStartResult(remoteEndpoint, startTask))
-                        .Forget();
+                        .ContinueWith(startTask => LogClientStartResult(remoteEndpoint, startTask));
+                    #pragma warning restore 4014
                 }
                 catch (SocketException ex)
                 {
