@@ -82,3 +82,11 @@ void SkipTest::InitializeMismatchedIdTests()
             bond::FastBinaryWriter<bond::OutputBuffer> >("Skip mismatched id tests for FastBinary");
     );
 }
+
+
+bool init_unit_test()
+{
+    SkipTest::InitializeMismatchedIdTests();
+    return true;
+}
+

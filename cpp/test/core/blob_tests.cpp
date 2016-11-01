@@ -103,7 +103,7 @@ void BlobTests(const char* name)
 }
 
 
-void SerializationTest::BlobTestsInit()
+void BlobTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         BlobTests<
@@ -133,3 +133,10 @@ void SerializationTest::BlobTestsInit()
             bond::SimpleJsonWriter<bond::OutputBuffer> >("Blob tests for Simple JSON");
     );
 }
+
+bool init_unit_test()
+{
+    BlobTestsInit();
+    return true;
+}
+

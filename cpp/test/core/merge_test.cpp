@@ -1,7 +1,87 @@
+// Required by a particular set of tests. The affected tests have comments
+// referencing this macro.
+#define BOND_UNIT_TEST_ONLY_PERMIT_OBJECT_REUSE
+
 #include "precompiled.h"
 #include "serialization_test.h"
 
-bool g_merging;
+
+template <typename Reader, typename Writer, typename Payload, typename T>
+void Merging(Payload payload, const T& obj, uint16_t version = bond::v1, bool mergeByDeserialize = true)
+{
+    Reader merged = Merge<Reader, Writer>(payload, obj, version);
+
+    // Deserialize merged into T and compare against obj
+    {
+        T to;
+        
+        if (boost::mpl::count_if<typename T::Schema::fields, is_optional_field<_> >::value == 0)
+        {
+            to = InitRandom<T>();
+            Fixup(to);
+        }
+
+        Deserialize(merged, to);
+
+        UT_AssertIsTrue(Equal(obj, to));
+    }
+
+    // Deserialize merged into Payload and compare against combination of the 
+    // orginal payload and the obj.
+    {
+        Payload to;
+
+        if (boost::mpl::count_if<typename Payload::Schema::fields, is_optional_field<_> >::value == 0)
+        {
+            to = InitRandom<Payload>();
+            Fixup(to);
+        }
+        
+        Deserialize(merged, to);
+
+        if (mergeByDeserialize)
+        {
+            // Will fail an assert without
+            // #define BOND_UNIT_TEST_ONLY_PERMIT_OBJECT_REUSE
+            Deserialize(Serialize<Reader, Writer>(obj, version), payload);
+
+            UT_AssertIsTrue(Equal(payload, to));
+        }
+        else
+        {
+            UT_AssertIsTrue(MergedEqual(payload, to, obj));
+        }
+    }
+}
+
+
+template <typename Reader, typename Writer, typename Payload, typename T>
+void MergingRandom()
+{
+    // random values
+    for (uint32_t i = 0; i < c_iterations; ++i)
+    {
+        Merging<Reader, Writer>(InitRandom<Payload>(), InitRandom<T>());
+        Merging<Reader, Writer>(InitRandom<Payload>(), InitRandom<T>(), Reader::version);
+    }
+}
+
+
+template <typename Reader, typename Writer, typename Payload, typename T>
+void AllMerging()
+{
+    // default value
+    Merging<Reader, Writer>(Payload(), T());
+    Merging<Reader, Writer>(Payload(), T(), Reader::version);
+    Merging<Reader, Writer>(InitRandom<Payload>(), T());
+    Merging<Reader, Writer>(InitRandom<Payload>(), T(), Reader::version);
+    Merging<Reader, Writer>(Payload(), InitRandom<T>());
+    Merging<Reader, Writer>(Payload(), InitRandom<T>(), Reader::version);
+    
+    // random values
+    MergingRandom<Reader, Writer, Payload, T>();
+}
+
 
 namespace unittest
 {
@@ -262,7 +342,7 @@ void MergeTests(const char* name)
 }
 
 
-void SerializationTest::MergeTestsInit()
+void MergeTestsInit()
 {
     TEST_COMPACT_BINARY_PROTOCOL(
         MergeTests<
@@ -278,3 +358,10 @@ void SerializationTest::MergeTestsInit()
             bond::FastBinaryWriter<bond::OutputBuffer> >("Merge tests for FastBinary");
     );
 }
+
+bool init_unit_test()
+{
+    MergeTestsInit();
+    return true;
+}
+

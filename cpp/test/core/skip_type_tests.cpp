@@ -74,3 +74,11 @@ void SkipTest::InitializeMismatchedTypeTests()
             bond::FastBinaryWriter<bond::OutputBuffer> >("Skip mismatched type tests for FastBinary");
     );
 }
+
+
+bool init_unit_test()
+{
+    SkipTest::InitializeMismatchedTypeTests();
+    return true;
+}
+

@@ -113,7 +113,7 @@ void SetTests(const char* name)
 }
 
 
-void SerializationTest::SetTestsInit()
+void SetTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         SetTests<
@@ -143,3 +143,10 @@ void SerializationTest::SetTestsInit()
             bond::SimpleJsonWriter<bond::OutputBuffer> >("Set tests for Simple JSON");
     );
 }
+
+bool init_unit_test()
+{
+    SetTestsInit();
+    return true;
+}
+

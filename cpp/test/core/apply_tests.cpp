@@ -2,8 +2,16 @@
 #include "apply_tests.h"
 #include "apply_test_apply.h"
 
-void Init(unittest::apply::Struct& obj);
-void Init(unittest::apply::Derived& obj);
+void Init(unittest::apply::Struct& obj)
+{
+    obj = InitRandom<unittest::apply::Struct>();
+}
+
+
+void Init(unittest::apply::Derived& obj)
+{
+    obj = InitRandom<unittest::apply::Derived>();
+}
 
 
 template <typename Reader, typename Writer, typename X>
@@ -178,5 +186,12 @@ void ApplyTest::Initialize()
             bond::FastBinaryReader<bond::InputBuffer>,
             bond::FastBinaryWriter<bond::OutputBuffer> >("Apply tests for FastBinary");
     );
+}
+
+
+bool init_unit_test()
+{
+    ApplyTest::Initialize();
+    return true;
 }
 

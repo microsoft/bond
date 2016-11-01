@@ -277,3 +277,11 @@ void ProtocolTest::Initialize()
             bond::FastBinaryWriter<bond::OutputBuffer> >("FastBinary protocol test");
     );
 }
+
+
+bool init_unit_test()
+{
+    ProtocolTest::Initialize();
+    return true;
+}
+

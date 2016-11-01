@@ -49,7 +49,7 @@ void BasicTypesListTests(const char* name)
 }
 
 
-void SerializationTest::BasicTypesListTestsInit()
+void BasicTypesListTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         BasicTypesListTests<
@@ -79,3 +79,10 @@ void SerializationTest::BasicTypesListTestsInit()
             bond::SimpleJsonWriter<bond::OutputBuffer> >("Basic types lists for Simple JSON");
     );
 }
+
+bool init_unit_test()
+{
+    BasicTypesListTestsInit();
+    return true;
+}
+

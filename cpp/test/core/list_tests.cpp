@@ -51,7 +51,7 @@ void SimpleListTests(const char* name)
 #endif
 }
 
-void SerializationTest::ListTestsInit()
+void ListTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         SimpleListTests<
@@ -81,3 +81,10 @@ void SerializationTest::ListTestsInit()
             bond::SimpleJsonWriter<bond::OutputBuffer> >("List deserialization tests for Simple JSON");
     );
 }
+
+bool init_unit_test()
+{
+    ListTestsInit();
+    return true;
+}
+

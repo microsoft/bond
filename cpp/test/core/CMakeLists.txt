@@ -1,6 +1,11 @@
-function (add_unit_test_library name)
-    list (INSERT ARGV 1 EXCLUDE_FROM_ALL)
-    add_library (${ARGV})
+# To add a new unit test suite, call add_unit_test at the bottom of this file on
+# all of the files you want built into your test suite. The name of the suite
+# will be derived from the name of the file that is given first.
+function (add_unit_test)
+    get_filename_component(name ${ARGV0} NAME_WE)
+    set (files ${ARGV})
+
+    add_bond_test (${name} EXCLUDE_FROM_ALL ${files})
     add_target_to_folder (${name})
     add_dependencies (${name}
         bond
@@ -15,12 +20,42 @@ function (add_unit_test_library name)
         -DBOND_COMPACT_BINARY_PROTOCOL
         -DBOND_SIMPLE_BINARY_PROTOCOL
         -DBOND_FAST_BINARY_PROTOCOL
-        -DBOND_SIMPLE_JSON_PROTOCOL
-        -DBOOST_ENABLE_ASSERT_HANDLER)
-    target_use_cxx11 (${name})
-    target_link_libraries (${name} INTERFACE unit_test_idl bond)
-    target_link_libraries (unit_test PRIVATE ${name})
+        -DBOND_SIMPLE_JSON_PROTOCOL)
+    target_link_libraries (${name} PRIVATE
+      bond
+      unit_test_common
+      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 endfunction()
+
+
+# Build common code into its own library.
+add_library (unit_test_common EXCLUDE_FROM_ALL "main.cpp" "idl.cpp")
+add_target_to_folder (unit_test_common)
+add_dependencies(unit_test_common
+    unit_test_codegen1
+    unit_test_codegen2
+    unit_test_codegen3)
+target_include_directories (unit_test_common PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
+target_compile_definitions (unit_test_common PUBLIC
+ #       -DENABLE_TEST_CASE=0x20010000
+        -DBOND_COMPACT_BINARY_PROTOCOL
+        -DBOND_SIMPLE_BINARY_PROTOCOL
+        -DBOND_FAST_BINARY_PROTOCOL
+        -DBOND_SIMPLE_JSON_PROTOCOL)
+target_link_libraries (unit_test_common PRIVATE
+    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+
+add_bond_codegen (TARGET unit_test_codegen1
+    unit_test.bond
+    OPTIONS
+        --using=\"static_string=std::array<char, {0}>\"
+        --using=\"static_wstring=std::array<wchar_t, {0}>\"
+        --using=\"simple_list=SimpleList<{0}>\"
+        --header=\\\"custom_protocols.h\\\"
+        --header=\\\"container_extensibility.h\\\")
 
 add_bond_codegen (TARGET unit_test_codegen2
     unit_test_core.bond
@@ -34,15 +69,6 @@ add_bond_codegen (TARGET unit_test_codegen2
     OPTIONS
         --header=\\\"custom_protocols.h\\\")
 
-add_bond_codegen (TARGET unit_test_codegen1
-    unit_test.bond
-    OPTIONS
-        --using=\"static_string=std::array<char, {0}>\"
-        --using=\"static_wstring=std::array<wchar_t, {0}>\"
-        --using=\"simple_list=SimpleList<{0}>\"
-        --header=\\\"custom_protocols.h\\\"
-        --header=\\\"container_extensibility.h\\\")
-
 add_bond_codegen (TARGET unit_test_codegen3
     allocator_test.bond
     OPTIONS
@@ -51,16 +77,6 @@ add_bond_codegen (TARGET unit_test_codegen3
         --header=\\\"allocators.h\\\"
         --allocator=TestAllocator)
 
-add_bond_test (unit_test init.cpp)
-
-target_use_cxx11 (unit_test)
-
-add_library (unit_test_main EXCLUDE_FROM_ALL main.cpp)
-add_target_to_folder (unit_test_main)
-
-target_link_libraries (unit_test PRIVATE
-    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-    unit_test_main)
 
 # Full unit test is too big, .pdb files exceed compiler limit;
 # Since debugging such large executable is not practical anyways,
@@ -68,51 +84,36 @@ target_link_libraries (unit_test PRIVATE
 # TODO: add support for selecting individual test case via ENABLE_TEST_CASE macro.
 no_pdb()
 
-# split across multiple libraries to parallelize build
-add_unit_test_library (unit_test_idl
-    idl.cpp)
 
-add_unit_test_library (unit_test_lib1
-    skip_id_tests.cpp
-    skip_type_tests.cpp
-    inheritance.cpp
-    protocol_test.cpp
-    bonded_tests.cpp
-    blob_tests.cpp
-    basic_tests.cpp
-    validate_tests.cpp
-    required_fields_tests.cpp
-    custom_protocols.cpp
-    cmdargs.cpp
-    metadata_tests.cpp)
-
-add_unit_test_library (unit_test_lib2
-    json_tests.cpp
-    pass_through.cpp
-    associative_container_extensibility.cpp
-    apply_tests.cpp
-    apply_init.cpp
-    may_omit_fields.cpp)
-
-add_unit_test_library (unit_test_lib3
-    numeric_convertions.cpp)
-
-add_unit_test_library (unit_test_lib4
-    generics_test.cpp
-    merge_test.cpp)
-
-add_unit_test_library (unit_test_lib5
-    list_tests.cpp
-    serialization_test.cpp
-    allocator_test.cpp
-    set_tests.cpp
-    basic_type_lists.cpp
-    nullable.cpp)
-
-add_unit_test_library (unit_test_lib6
-    marshal.cpp
-    container_extensibility.cpp
-    basic_type_map.cpp
-    enum_convertions.cpp
-    exception_tests.cpp
-    maybe_tests.cpp)
+add_unit_test (allocator_test.cpp)
+add_unit_test (apply_tests.cpp)
+add_unit_test (basic_tests.cpp)
+add_unit_test (basic_type_lists.cpp)
+add_unit_test (basic_type_map.cpp)
+add_unit_test (blob_tests.cpp)
+add_unit_test (bonded_tests.cpp)
+add_unit_test (cmdargs.cpp)
+add_unit_test (container_extensibility.cpp
+    associative_container_extensibility.cpp)
+add_unit_test (custom_protocols.cpp)
+add_unit_test (enum_conversions.cpp)
+add_unit_test (exception_tests.cpp)
+add_unit_test (generics_test.cpp)
+add_unit_test (inheritance_test.cpp)
+add_unit_test (json_tests.cpp)
+add_unit_test (list_tests.cpp)
+add_unit_test (marshal.cpp)
+add_unit_test (maybe_tests.cpp)
+add_unit_test (may_omit_fields.cpp)
+add_unit_test (merge_test.cpp)
+add_unit_test (metadata_tests.cpp)
+add_unit_test (nullable.cpp)
+add_unit_test (numeric_conversions.cpp)
+add_unit_test (pass_through.cpp)
+add_unit_test (protocol_test.cpp)
+add_unit_test (required_fields_tests.cpp)
+add_unit_test (serialization_test.cpp)
+add_unit_test (set_tests.cpp)
+add_unit_test (skip_id_tests.cpp)
+add_unit_test (skip_type_tests.cpp)
+add_unit_test (validate_tests.cpp)

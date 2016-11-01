@@ -299,3 +299,11 @@ void MetadataTest::Initialize()
             (suite, "Runtime metadata test");
     );
 }
+
+
+bool init_unit_test()
+{
+    MetadataTest::Initialize();
+    return true;
+}
+

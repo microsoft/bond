@@ -1,6 +1,6 @@
 #include "precompiled.h"
 #include "serialization_test.h"
-#include "numeric_convertions.h"
+#include "numeric_conversions.h"
 
 
 template <typename Reader, typename Writer>
@@ -143,32 +143,39 @@ void NumericConversionTests(const char* name)
     // every other numeric type Num2. 
     // The test succeeds if the value of the field in the deserialized structure
     // is equal to a static_cast<Num2> of the value in serialized structure.
-    AddTestCase<TEST_ID(N), NumericConversions, Reader, Writer>(suite, "Numeric convertions");
+    AddTestCase<TEST_ID(N), NumericConversions, Reader, Writer>(suite, "Numeric conversions");
 
     AddTestCase<TEST_ID(N), NonmatchingContainers, Reader, Writer>(suite, "Nonmatching containers");
 }
 
 
-void SerializationTest::NumericConversionTestsInit()
+void NumericConversionTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         NumericConversionTests<
             0x601,
             bond::SimpleBinaryReader<bond::InputBuffer>,
-            bond::SimpleBinaryWriter<bond::OutputBuffer> >("Numeric convertion tests for SimpleBinary");
+            bond::SimpleBinaryWriter<bond::OutputBuffer> >("Numeric conversion tests for SimpleBinary");
     );
 
     TEST_COMPACT_BINARY_PROTOCOL(
         NumericConversionTests<
             0x602,
             bond::CompactBinaryReader<bond::InputBuffer>,
-            bond::CompactBinaryWriter<bond::OutputBuffer> >("Numeric convertion tests for CompactBinary");
+            bond::CompactBinaryWriter<bond::OutputBuffer> >("Numeric conversion tests for CompactBinary");
     );
 
     TEST_FAST_BINARY_PROTOCOL(
         NumericConversionTests<
             0x603,
             bond::FastBinaryReader<bond::InputBuffer>,
-            bond::FastBinaryWriter<bond::OutputBuffer> >("Numeric convertion tests for FastBinary");
+            bond::FastBinaryWriter<bond::OutputBuffer> >("Numeric conversion tests for FastBinary");
     );
 }
+
+bool init_unit_test()
+{
+    NumericConversionTestsInit();
+    return true;
+}
+

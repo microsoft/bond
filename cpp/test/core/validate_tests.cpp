@@ -172,3 +172,11 @@ void ValidateTest::Initialize()
         ValidationTests<0x2001>("Validation tests");
     );
 }
+
+
+bool init_unit_test()
+{
+    ValidateTest::Initialize();
+    return true;
+}
+

@@ -204,3 +204,10 @@ void JSONTest::Initialize()
             bond::SimpleJsonWriter<bond::OutputBuffer> >("Simple JSON test");
     );
 }
+
+bool init_unit_test()
+{
+    JSONTest::Initialize();
+    return true;
+}
+

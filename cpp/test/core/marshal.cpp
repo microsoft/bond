@@ -158,7 +158,7 @@ void MarshalTests(const char* name)
 }
 
 
-void SerializationTest::MarshalTestsInit()
+void MarshalTestsInit()
 {
     TEST_SIMPLE_PROTOCOL(
         MarshalTests<
@@ -178,3 +178,10 @@ void SerializationTest::MarshalTestsInit()
             bond::FastBinaryWriter<bond::OutputBuffer> >("Marshal tests for FastBinary");
     );
 }
+
+bool init_unit_test()
+{
+    MarshalTestsInit();
+    return true;
+}
+

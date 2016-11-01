@@ -411,3 +411,10 @@ void BasicTest::Initialize()
     AddTestCase<TEST_ID(0xb08), EnumScopeTest>(suite, "Enum scope tests");
 }
 
+
+bool init_unit_test()
+{
+    BasicTest::Initialize();
+    return true;
+}
+
