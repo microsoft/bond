@@ -29,6 +29,8 @@ different versioning scheme, following the Haskell community's
   instead, the transport's logger is passed to `OnSend`/`OnReceive`. Before,
   using the same logger with a transport and `LayerStackProvider` required a
   duplicate implementation.
+* Fixed a bug that prevented `EpoxyListener` from accepting multiple
+  connections in parallel.
 
 ## C# Comm 0.8.0: 2016-10-12 ##
 
