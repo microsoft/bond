@@ -11,8 +11,9 @@ namespace Bond
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Text;
+    using Bond.Reflection;
 
-    public static class Reflection
+    public static class BondReflection
     {
         static readonly object Empty = new object();
         static readonly Dictionary<BondDataType, string> bondTypeName = new Dictionary<BondDataType, string>
@@ -352,169 +353,6 @@ namespace Bond
 
         #endregion
 
-        #region PCL compatibility
-
-        internal static bool IsClass(this Type type)
-        {
-            return type.GetTypeInfo().IsClass;
-        }
-
-        internal static bool IsValueType(this Type type)
-        {
-            return type.GetTypeInfo().IsValueType;
-        }
-
-        static bool IsInterface(this Type type)
-        {
-            return type.GetTypeInfo().IsInterface;
-        }
-
-        static bool IsEnum(this Type type)
-        {
-            return type.GetTypeInfo().IsEnum;
-        }
-
-        internal static bool IsGenericType(this Type type)
-        {
-            return type.GetTypeInfo().IsGenericType;
-        }
-
-        static Type GetBaseType(this Type type)
-        {
-            if (type.IsInterface())
-            {
-                throw new ArgumentException("GetBaseType cannot be called on an interface, as there may be multiple base interfaces", "type");
-            }
-
-            return type.GetTypeInfo().BaseType;
-        }
-
-        internal static bool IsAssignableFrom(this Type type, Type that)
-        {
-            return type.GetTypeInfo().IsAssignableFrom(that.GetTypeInfo());
-        }
-
-        internal static MethodInfo FindMethod(this Type type, string name, params Type[] paramTypes)
-        {
-            var methods = type.GetDeclaredMethods(name);
-
-            var result = (
-                from method in methods
-                let parameters = method.GetParameters()
-                where parameters != null
-                where parameters.Select(p => p.ParameterType).Where(t => !t.IsGenericParameter).SequenceEqual(paramTypes)
-                select method).FirstOrDefault();
-            
-            if (result == null)
-            {
-                if (type.IsInterface())
-                {
-                    var interfaces = type.GetInterfaces();
-                    var matchedMethods = interfaces.Select(x => x.FindMethod(name, paramTypes)).Where(x => x != null).ToList();
-
-                    if (matchedMethods.Count > 1)
-                    {
-                        throw new AmbiguousMatchException("FindMethod found more than one matching method");
-                    }
-                    else
-                    {
-                        result = matchedMethods.FirstOrDefault();
-                    }
-                }
-                else
-                {
-                    var baseType = type.GetBaseType();
-                    if (baseType != null)
-                        result = baseType.FindMethod(name, paramTypes);
-                }
-            }
-
-            return result;
-        }
-
-        internal static MethodInfo ResolveMethod(this Type type, string name, params Type[] argumentTypes)
-        {
-            var methods = type.GetDeclaredMethods(name);
-            var typeArgs = new Type[0];
-
-            foreach (var method in methods)
-            {
-                var parameters = method.GetParameters();
-                if (parameters.Length != argumentTypes.Length)
-                    continue;
-                 
-                int paramIndex;
-                for (paramIndex = 0; paramIndex < parameters.Length; ++paramIndex)
-                {
-                    var param = parameters[paramIndex].ParameterType;
-                    var arg = argumentTypes[paramIndex];
-                    
-                    if (param == arg)
-                        continue;
-
-                    if (param.IsGenericType() && arg.IsGenericType() &&
-                        param.GetGenericTypeDefinition() == arg.GetGenericTypeDefinition() &&
-                        param.GetGenericArguments().All(p => p.IsGenericParameter))
-                    {
-                        typeArgs = arg.GetGenericArguments();
-                        continue;
-                    }
-                    break;
-                }
-                
-                if (paramIndex == parameters.Length) 
-                    return typeArgs.Length == 0 ? method : method.MakeGenericMethod(typeArgs);
-            }
-            return null;
-        }
-
-        internal static MethodInfo GetMethod(this Type type, Type declaringType, string name, params Type[] paramTypes)
-        {
-            return declaringType.MakeGenericTypeFrom(type).FindMethod(name, paramTypes);
-        }
-
-        internal static ConstructorInfo GetConstructor(this Type type, params Type[] paramTypes)
-        {
-            var methods = type.GetDeclaredConstructors();
-
-            return (
-                from method in methods
-                let parameters = method.GetParameters()
-                where parameters != null
-                where method.IsStatic == false
-                where parameters.Select(p => p.ParameterType).SequenceEqual(paramTypes)
-                select method).FirstOrDefault();
-        }
-
-        internal static PropertyInfo GetDeclaredProperty(this Type type, string name, Type returnType)
-        {
-            var property = type.GetDeclaredProperty(name);
-            return (property != null && property.PropertyType == returnType) ? property : null;
-        }
-
-        internal static PropertyInfo GetDeclaredProperty(this Type type, Type declaringType, string name, Type returnType)
-        {
-            return declaringType.MakeGenericTypeFrom(type).GetDeclaredProperty(name, returnType);
-        }
-
-        static Type MakeGenericTypeFrom(this Type genericType, Type concreteType)
-        {
-            var typeArguments = concreteType.GetGenericArguments();
-            if (concreteType.IsArray)
-            {
-                typeArguments = new[] { concreteType.GetElementType() };
-            }
-
-            var typeParameters = genericType.GetGenericParameters();
-
-            if (typeArguments.Length == 2 && typeParameters.Length == 1)
-                typeArguments = new[] { typeof(KeyValuePair<,>).MakeGenericType(typeArguments) };
-
-            return genericType.MakeGenericType(typeArguments);
-        }
-
-        #endregion
-
         #region Internal
 
         /// <summary>
@@ -526,7 +364,7 @@ namespace Bond
         /// <returns>Member information of the top-level node in the body of the lambda expression. An exception occurs if this node does not contain member information.</returns>
         /// <example>
         /// To obtain the MethodInfo for the "int Math::Abs(int)" overload, you can write:
-        /// <code>(MethodInfo)Reflection.InfoOf((int x) => Math.Abs(x))</code>
+        /// <code>(MethodInfo)BondReflection.InfoOf((int x) => Math.Abs(x))</code>
         /// </example>
         static MemberInfo InfoOf<T, TResult>(Expression<Func<T, TResult>> expression)
         {
@@ -545,7 +383,7 @@ namespace Bond
         /// <returns>Member information of the top-level node in the body of the lambda expression. Return null if that member is not a method. An exception occurs if this node does not contain member information.</returns>
         /// <example>
         /// To obtain the MethodInfo for the "int Math::Abs(int)" overload, you can write:
-        /// <code>Reflection.MethodInfoOf((int x) => Math.Abs(x))</code>
+        /// <code>BondReflection.MethodInfoOf((int x) => Math.Abs(x))</code>
         /// </example>
         internal static MethodInfo MethodInfoOf<T, TResult>(Expression<Func<T, TResult>> expression)
         {
@@ -561,7 +399,7 @@ namespace Bond
         /// <returns>Member information of the top-level node in the body of the lambda expression. Return null if the member is not a generic method definition. An exception occurs if this node does not contain member information.</returns>
         /// <example>
         /// To obtain the generic method definition for some "int Foo::Bar&lt;T>(T)" overload, you can write:
-        /// <code>Reflection.GenericMethodInfoOf((int x) => Foo.Bar(x))</code>, which returns the definition Foo.Bar&lt;>
+        /// <code>BondReflection.GenericMethodInfoOf((int x) => Foo.Bar(x))</code>, which returns the definition Foo.Bar&lt;>
         /// </example>
         internal static MethodInfo GenericMethodInfoOf<T, TResult>(Expression<Func<T, TResult>> expression)
         {
@@ -578,7 +416,7 @@ namespace Bond
         /// <returns>Member information of the top-level node in the body of the lambda expression. Return null if the member is not a PropertyInfo. An exception occurs if this node does not contain member information.</returns>
         /// <example>
         /// To obtain the PropertyInfo for the "int Foo::SomeProperty", you can write:
-        /// <code>Reflection.PropertyInfoOf((Foo f) => f.SomeProperty)</code>
+        /// <code>BondReflection.PropertyInfoOf((Foo f) => f.SomeProperty)</code>
         /// </example>
         internal static PropertyInfo PropertyInfoOf<T, TResult>(Expression<Func<T, TResult>> expression)
         {
@@ -594,7 +432,7 @@ namespace Bond
         /// <returns>Member information of the top-level node in the body of the lambda expression. Return null if the member is not a FieldInfo. An exception occurs if this node does not contain member information.</returns>
         /// <example>
         /// To obtain the FieldInfo for the "int Foo::someField" field, you can write:
-        /// <code>Reflection.FieldInfoOf((Foo f) => f.someField)</code>
+        /// <code>BondReflection.FieldInfoOf((Foo f) => f.someField)</code>
         /// </example>
         internal static FieldInfo FieldInfoOf<T, TResult>(Expression<Func<T, TResult>> expression)
         {
@@ -609,7 +447,7 @@ namespace Bond
         /// <returns>Member information of the top-level node in the body of the lambda expression. An exception occurs if this node does not contain member information.</returns>
         /// <example>
         /// To obtain the PropertyInfo of "DateTime DateTime::Now { get; }", you can write:
-        /// <code>(PropertyInfo)Reflection.InfoOf(() => DateTime.Now)</code>
+        /// <code>(PropertyInfo)BondReflection.InfoOf(() => DateTime.Now)</code>
         /// </example>
         static MemberInfo InfoOf<TResult>(Expression<Func<TResult>> expression)
         {
@@ -627,7 +465,7 @@ namespace Bond
         /// <returns>Member information of the top-level node in the body of the lambda expression. Return null if that member is not a method. An exception occurs if this node does not contain member information.</returns>
         /// <example>
         /// To obtain the MethodInfo for the "int Math::Abs(int)" overload, you can write:
-        /// <code>Reflection.MethodInfoOf(() => Math.Abs(default(int)))</code>
+        /// <code>BondReflection.MethodInfoOf(() => Math.Abs(default(int)))</code>
         /// </example>
         internal static MethodInfo MethodInfoOf<TResult>(Expression<Func<TResult>> expression)
         {
@@ -642,7 +480,7 @@ namespace Bond
         /// <returns>Member information of the top-level node in the body of the lambda expression. Return null if the member is not a generic method definition. An exception occurs if this node does not contain member information.</returns>
         /// <example>
         /// To obtain the generic method definition for some "int Foo::Bar&lt;T>(T)" overload, you can write:
-        /// <code>Reflection.GenericMethodInfoOf(() => Foo.Bar(default(int)))</code>, which returns the definition Foo.Bar&lt;>
+        /// <code>BondReflection.GenericMethodInfoOf(() => Foo.Bar(default(int)))</code>, which returns the definition Foo.Bar&lt;>
         /// </example>
         internal static MethodInfo GenericMethodInfoOf<TResult>(Expression<Func<TResult>> expression)
         {
@@ -658,7 +496,7 @@ namespace Bond
         /// <returns>Member information of the top-level node in the body of the lambda expression. An exception occurs if this node does not contain member information.</returns>
         /// <example>
         /// To obtain the MethodInfo for the "void Console::WriteLine(string)" overload, you can write:
-        /// <code>(MethodInfo)Reflection.InfoOf((string s) => Console.WriteLine(s))</code>
+        /// <code>(MethodInfo)BondReflection.InfoOf((string s) => Console.WriteLine(s))</code>
         /// </example>
         static MemberInfo InfoOf<T>(Expression<Action<T>> expression)
         {
@@ -676,7 +514,7 @@ namespace Bond
         /// <returns>Member information of the top-level node in the body of the lambda expression. Return null if that member is not a method. An exception occurs if this node does not contain member information.</returns>
         /// <example>
         /// To obtain the MethodInfo for the "void Foo::DoThing(int)" overload, you can write:
-        /// <code>Reflection.MethodInfoOf(() => Foo.DoThing(default(int)))</code>
+        /// <code>BondReflection.MethodInfoOf(() => Foo.DoThing(default(int)))</code>
         /// </example>
         internal static MethodInfo MethodInfoOf<T>(Expression<Action<T>> expression)
         {
@@ -691,7 +529,7 @@ namespace Bond
         /// <returns>Member information of the top-level node in the body of the lambda expression. Return null if the member is not a generic method definition. An exception occurs if this node does not contain member information.</returns>
         /// <example>
         /// To obtain the generic method definition for some "void Foo::Bar&lt;T>(T)" overload, you can write:
-        /// <code>Reflection.GenericMethodInfoOf(() => Foo.Bar(default(int)))</code>, which returns the definition Foo.Bar&lt;>
+        /// <code>BondReflection.GenericMethodInfoOf(() => Foo.Bar(default(int)))</code>, which returns the definition Foo.Bar&lt;>
         /// </example>
         internal static MethodInfo GenericMethodInfoOf<T>(Expression<Action<T>> expression)
         {

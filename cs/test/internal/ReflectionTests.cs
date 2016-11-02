@@ -6,6 +6,7 @@
     using Bond;
     using NUnit.Framework;
     using Bond.Tag;
+    using Bond.Reflection;
 
     [TestFixture]
     public class ReflectionTests

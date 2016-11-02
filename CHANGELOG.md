@@ -17,12 +17,17 @@ different versioning scheme, following the Haskell community's
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: TBD
-* C# NuGet version: TBD (bug fix bump needed)
+* C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed)
 
 ### C# ###
 * Fixed a bug in the MSBuild targets that caused codegen to always be run if
   all of the BondCodegen items has Options metadata.
+* A new assembly, Bond.Reflection.dll, has been added, due to some internal
+  refactoring to make way for full .NET Core support. Many of the Bond
+  assemblies now have a dependency on this assembly, so you'll need to
+  deploy it. If you use NuGet to consume Bond, this is should be handled
+  automatically.
 
 ### C# Comm ###
 * The constructor for `LayerStackProvider` no longer requires a logger;

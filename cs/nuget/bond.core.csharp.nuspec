@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Bond.Core.CSharp</id>
@@ -30,21 +30,30 @@
         <file src="net45\Bond.Attributes.dll" target="lib\net45" />
         <file src="net45\Bond.Attributes.xml" target="lib\net45" />
         <file src="net45\Bond.Attributes.pdb" target="lib\net45" />
-        <file src="net45\Bond.IO.dll" target="lib\net45" />
-        <file src="net45\Bond.IO.xml" target="lib\net45" />
-        <file src="net45\Bond.IO.pdb" target="lib\net45" />
+        <file src="net45\Bond.Reflection.dll" target="lib\net45" />
+        <file src="net45\Bond.Reflection.xml" target="lib\net45" />
+        <file src="net45\Bond.Reflection.pdb" target="lib\net45" />
         <file src="net45\Bond.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
         <file src="net45\Bond.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
         <file src="net45\Bond.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
         <file src="net45\Bond.Attributes.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-        <file src="net45\Bond.Attributes.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
         <file src="net45\Bond.Attributes.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.Attributes.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.Reflection.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.Reflection.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.Reflection.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.IO.dll" target="lib\net45" />
+        <file src="net45\Bond.IO.xml" target="lib\net45" />
+        <file src="net45\Bond.IO.pdb" target="lib\net45" />
         <file src="net40\Bond.dll" target="lib\net40" />
         <file src="net40\Bond.xml" target="lib\net40" />
         <file src="net40\Bond.pdb" target="lib\net40" />
         <file src="net40\Bond.Attributes.dll" target="lib\net40" />
         <file src="net40\Bond.Attributes.xml" target="lib\net40" />
         <file src="net40\Bond.Attributes.pdb" target="lib\net40" />
+        <file src="net40\Bond.Reflection.dll" target="lib\net40" />
+        <file src="net40\Bond.Reflection.xml" target="lib\net40" />
+        <file src="net40\Bond.Reflection.pdb" target="lib\net40" />
         <file src="net40\Bond.IO.dll" target="lib\net40" />
         <file src="net40\Bond.IO.xml" target="lib\net40" />
         <file src="net40\Bond.IO.pdb" target="lib\net40" />

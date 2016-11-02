@@ -7,6 +7,7 @@ namespace Bond.Expressions
     using System.Globalization;
     using System.Linq.Expressions;
     using Bond.Protocols;
+    using Bond.Reflection;
 
     /// <summary>
     /// Creates expression of type <see cref="IBonded"/> given a reader and runtime schema.

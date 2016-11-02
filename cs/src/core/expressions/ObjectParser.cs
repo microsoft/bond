@@ -10,6 +10,7 @@ namespace Bond.Expressions
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using Bond.Reflection;
 
     /// <summary>
     /// Creates expression of type <see cref="IBonded{T}"/> given a object type and value.
@@ -21,7 +22,7 @@ namespace Bond.Expressions
 
     public class ObjectParser : IParser
     {
-        static readonly MethodInfo moveNext = Reflection.MethodInfoOf((IEnumerator e) => e.MoveNext());
+        static readonly MethodInfo moveNext = BondReflection.MethodInfoOf((IEnumerator e) => e.MoveNext());
         static readonly ConstructorInfo arraySegmentCtor = typeof(ArraySegment<byte>).GetConstructor(typeof(byte[]));
         delegate Expression ContainerItemHandler(Expression value, Expression next, Expression count);
         readonly ParameterExpression objParam;

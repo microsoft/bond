@@ -9,6 +9,7 @@ namespace Bond
     using Bond.Expressions;
     using Bond.IO;
     using Bond.Protocols;
+    using Bond.Reflection;
 
     /// <summary>
     /// Transcode payload from one protocol into another

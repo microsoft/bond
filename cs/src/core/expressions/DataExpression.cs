@@ -4,10 +4,11 @@
 namespace Bond.Expressions
 {
     using System.Linq.Expressions;
+    using Bond.Reflection;
 
     internal static class DataExpression
     {
-        // Similar to Expression.PropertyOrField but considers only members declared 
+        // Similar to Expression.PropertyOrField but considers only members declared
         // in the type, ignoring inherited members.
         public static MemberExpression PropertyOrField(Expression expression, string name)
         {

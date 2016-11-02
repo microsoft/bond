@@ -4,7 +4,7 @@
 // Even though this file is compiled conditionally, the #if is necessary to unconfuse resharper
 #if NET40
 
-namespace Bond
+namespace Bond.Reflection
 {
     using System;
     using System.Collections.Generic;

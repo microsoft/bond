@@ -9,6 +9,7 @@ namespace Bond
 
     using Bond.Expressions;
     using Bond.Protocols;
+    using Bond.Reflection;
 
     /// <summary>
     /// Serialize objects

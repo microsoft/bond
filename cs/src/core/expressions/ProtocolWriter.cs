@@ -10,6 +10,7 @@ namespace Bond.Expressions
     using System.Linq.Expressions;
     using System.Reflection;
     using Bond.Protocols;
+    using Bond.Reflection;
 
     /// <summary>
     /// Abstracts calling protocol writer methods via Expressions
@@ -20,40 +21,40 @@ namespace Bond.Expressions
     {
         readonly ParameterExpression writer = Expression.Parameter(typeof(W), "writer");
 
-        static readonly MethodInfo marshalBonded =   Reflection.MethodInfoOf(() => Marshaler.Marshal(default(IBonded)));
-        static readonly MethodInfo serializeBonded = Reflection.MethodInfoOf((IBonded bonded) => bonded.Serialize(default(W)));
-        static readonly MethodInfo writeBytes =      GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteBytes(default(ArraySegment<byte>))));
-        static readonly MethodInfo structBegin =     GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteStructBegin(default(Metadata))));
-        static readonly MethodInfo baseBegin =       GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteBaseBegin(default(Metadata))));
-        static readonly MethodInfo structEnd =       GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteStructEnd()));
-        static readonly MethodInfo baseEnd =         GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteBaseEnd()));
-        static readonly MethodInfo fieldBegin =      GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteFieldBegin(default(BondDataType), default(UInt16), default(Metadata))));
-        static readonly MethodInfo fieldEnd =        GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteFieldEnd()));
-        static readonly MethodInfo fieldOmitted =    GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteFieldOmitted(default(BondDataType), default(UInt16), default(Metadata))));
-        static readonly MethodInfo containerBegin =  GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteContainerBegin(default(int), default(BondDataType))));
-        static readonly MethodInfo containerBegin2 = GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteContainerBegin(default(int), default(BondDataType), default(BondDataType))));
-        static readonly MethodInfo containerEnd =    GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteContainerEnd()));
-        static readonly MethodInfo itemBegin =       GetMethod(Reflection.MethodInfoOf((ITextProtocolWriter writer) => writer.WriteItemBegin()));
-        static readonly MethodInfo itemEnd =         GetMethod(Reflection.MethodInfoOf((ITextProtocolWriter writer) => writer.WriteItemEnd()));
+        static readonly MethodInfo marshalBonded =   BondReflection.MethodInfoOf(() => Marshaler.Marshal(default(IBonded)));
+        static readonly MethodInfo serializeBonded = BondReflection.MethodInfoOf((IBonded bonded) => bonded.Serialize(default(W)));
+        static readonly MethodInfo writeBytes =      GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteBytes(default(ArraySegment<byte>))));
+        static readonly MethodInfo structBegin =     GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteStructBegin(default(Metadata))));
+        static readonly MethodInfo baseBegin =       GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteBaseBegin(default(Metadata))));
+        static readonly MethodInfo structEnd =       GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteStructEnd()));
+        static readonly MethodInfo baseEnd =         GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteBaseEnd()));
+        static readonly MethodInfo fieldBegin =      GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteFieldBegin(default(BondDataType), default(UInt16), default(Metadata))));
+        static readonly MethodInfo fieldEnd =        GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteFieldEnd()));
+        static readonly MethodInfo fieldOmitted =    GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteFieldOmitted(default(BondDataType), default(UInt16), default(Metadata))));
+        static readonly MethodInfo containerBegin =  GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteContainerBegin(default(int), default(BondDataType))));
+        static readonly MethodInfo containerBegin2 = GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteContainerBegin(default(int), default(BondDataType), default(BondDataType))));
+        static readonly MethodInfo containerEnd =    GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteContainerEnd()));
+        static readonly MethodInfo itemBegin =       GetMethod(BondReflection.MethodInfoOf((ITextProtocolWriter writer) => writer.WriteItemBegin()));
+        static readonly MethodInfo itemEnd =         GetMethod(BondReflection.MethodInfoOf((ITextProtocolWriter writer) => writer.WriteItemEnd()));
         
         static readonly bool untaggedProtocol =
             typeof(IUntaggedProtocolReader).IsAssignableFrom(typeof(W).GetAttribute<ReaderAttribute>().ReaderType);
 
         static readonly Dictionary<BondDataType, MethodInfo> write = new Dictionary<BondDataType, MethodInfo>
             {
-                { BondDataType.BT_BOOL,    GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteBool(default(bool)))) },
-                { BondDataType.BT_UINT8,   GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteUInt8(default(byte)))) },
-                { BondDataType.BT_UINT16,  GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteUInt16(default(UInt16)))) },
-                { BondDataType.BT_UINT32,  GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteUInt32(default(UInt32)))) },
-                { BondDataType.BT_UINT64,  GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteUInt64(default(UInt64)))) },
-                { BondDataType.BT_FLOAT,   GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteFloat(default(float)))) },
-                { BondDataType.BT_DOUBLE,  GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteDouble(default(double)))) },
-                { BondDataType.BT_STRING,  GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteString(default(string)))) },
-                { BondDataType.BT_INT8,    GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteInt8(default(sbyte)))) },
-                { BondDataType.BT_INT16,   GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteInt16(default(Int16)))) },
-                { BondDataType.BT_INT32,   GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteInt32(default(Int32)))) },
-                { BondDataType.BT_INT64,   GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteInt64(default(Int64)))) },
-                { BondDataType.BT_WSTRING, GetMethod(Reflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteWString(default(string)))) },
+                { BondDataType.BT_BOOL,    GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteBool(default(bool)))) },
+                { BondDataType.BT_UINT8,   GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteUInt8(default(byte)))) },
+                { BondDataType.BT_UINT16,  GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteUInt16(default(UInt16)))) },
+                { BondDataType.BT_UINT32,  GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteUInt32(default(UInt32)))) },
+                { BondDataType.BT_UINT64,  GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteUInt64(default(UInt64)))) },
+                { BondDataType.BT_FLOAT,   GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteFloat(default(float)))) },
+                { BondDataType.BT_DOUBLE,  GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteDouble(default(double)))) },
+                { BondDataType.BT_STRING,  GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteString(default(string)))) },
+                { BondDataType.BT_INT8,    GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteInt8(default(sbyte)))) },
+                { BondDataType.BT_INT16,   GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteInt16(default(Int16)))) },
+                { BondDataType.BT_INT32,   GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteInt32(default(Int32)))) },
+                { BondDataType.BT_INT64,   GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteInt64(default(Int64)))) },
+                { BondDataType.BT_WSTRING, GetMethod(BondReflection.MethodInfoOf((IProtocolWriter writer) => writer.WriteWString(default(string)))) },
             };
 
         static MethodInfo GetMethod(MethodInfo method)

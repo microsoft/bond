@@ -1,7 +1,10 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Bond
+// Even though this file is compiled conditionally, the #if is necessary to unconfuse resharper
+#if !NET40
+
+namespace Bond.Reflection
 {
     using System;
     using System.Collections.Generic;
@@ -56,3 +59,5 @@ namespace Bond
         }
     }
 }
+
+#endif

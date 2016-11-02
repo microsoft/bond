@@ -6,7 +6,8 @@ namespace Bond.Expressions
     using System;
     using System.Globalization;
     using System.Linq.Expressions;
-    
+    using Bond.Reflection;
+
     internal static class SerializerGeneratorFactory<R, W>
     {
         public static ISerializerGenerator<R, W> Create<S>(

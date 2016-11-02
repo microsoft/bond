@@ -11,12 +11,13 @@
     using Bond.Expressions;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
+    using Bond.Reflection;
 
     internal static class DebugViewHelper
     {
         static readonly PropertyInfo debugView;
 
-        static DebugViewHelper() 
+        static DebugViewHelper()
         {
             debugView = typeof(Expression).GetProperty("DebugView", BindingFlags.NonPublic | BindingFlags.Instance);
         }

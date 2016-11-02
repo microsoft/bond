@@ -9,13 +9,13 @@ namespace Bond.Expressions.Json
 
     public class JsonReader<R> where R : IJsonReader
     {
-        static readonly MethodInfo read = Reflection.MethodInfoOf((IJsonReader r) => r.Read());
-        static readonly MethodInfo skip = Reflection.MethodInfoOf((IJsonReader r) => r.Skip());
-        static readonly PropertyInfo eof = Reflection.PropertyInfoOf((IJsonReader r) => r.EOF);
-        static readonly PropertyInfo tokenType = Reflection.PropertyInfoOf((IJsonReader r) => r.TokenType);
-        static readonly PropertyInfo lineNumber = Reflection.PropertyInfoOf((IJsonReader r) => r.LineNumber);
-        static readonly PropertyInfo linePosition = Reflection.PropertyInfoOf((IJsonReader r) => r.LinePosition);
-        static readonly PropertyInfo value = Reflection.PropertyInfoOf((IJsonReader r) => r.Value);
+        static readonly MethodInfo read = BondReflection.MethodInfoOf((IJsonReader r) => r.Read());
+        static readonly MethodInfo skip = BondReflection.MethodInfoOf((IJsonReader r) => r.Skip());
+        static readonly PropertyInfo eof = BondReflection.PropertyInfoOf((IJsonReader r) => r.EOF);
+        static readonly PropertyInfo tokenType = BondReflection.PropertyInfoOf((IJsonReader r) => r.TokenType);
+        static readonly PropertyInfo lineNumber = BondReflection.PropertyInfoOf((IJsonReader r) => r.LineNumber);
+        static readonly PropertyInfo linePosition = BondReflection.PropertyInfoOf((IJsonReader r) => r.LinePosition);
+        static readonly PropertyInfo value = BondReflection.PropertyInfoOf((IJsonReader r) => r.Value);
         
         readonly ParameterExpression reader = Expression.Parameter(typeof(R), "reader");
 

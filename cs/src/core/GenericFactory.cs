@@ -6,6 +6,7 @@ namespace Bond
     using System;
     using System.Linq.Expressions;
     using Bond.Expressions;
+    using Bond.Reflection;
 
     /// <summary>
     /// Generic object factory
