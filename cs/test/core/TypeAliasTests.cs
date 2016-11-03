@@ -1,10 +1,11 @@
 ﻿namespace UnitTest.Aliases
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using Bond;
     using NUnit.Framework;
-    using System.Linq;
 
     public class Lazy<T> : IBonded<T>
     {
@@ -69,7 +70,7 @@
 
         public override bool Equals(object obj)
         {
-            return Comparer.Equal(Value, (obj as Lazy<T>).Value);
+            return Bond.Comparer.Equal(Value, (obj as Lazy<T>).Value);
         }
 
         public override int GetHashCode()
@@ -280,6 +281,57 @@
 
             var to = Clone<T>.From(Clone<U>.From(from));
             Assert.IsTrue(from.IsEqual<T>(to));
+        }
+    }
+
+    // An extremely simple example of a custom container implementation.
+    public class SomeCustomList<T> : ICollection<T>
+    {
+        readonly List<T> backingList = new List<T>();
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return backingList.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)backingList).GetEnumerator();
+        }
+
+        public void Add(T item)
+        {
+            backingList.Add(item);
+        }
+
+        public void Clear()
+        {
+            backingList.Clear();
+        }
+
+        public bool Contains(T item)
+        {
+            return backingList.Contains(item);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            backingList.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(T item)
+        {
+            return backingList.Remove(item);
+        }
+
+        public int Count
+        {
+            get { return backingList.Count; }
+        }
+
+        bool ICollection<T>.IsReadOnly
+        {
+            get { return ((ICollection<T>)backingList).IsReadOnly; }
         }
     }
 }
