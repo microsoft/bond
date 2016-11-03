@@ -1,65 +1,50 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EFDC5304-C12E-406A-9206-BC6F45766D86}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CommCompatClient</RootNamespace>
     <AssemblyName>CommCompatClient</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bond, Version=1.0.0.0, Culture=neutral, PublicKeyToken=87e9ead25a117286, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\bin\debug\net45\Bond.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Attributes">
-      <HintPath>..\..\..\..\bin\debug\net45\Bond.Attributes.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Comm.Epoxy">
-      <HintPath>..\..\..\..\bin\debug\net45\Bond.Comm.Epoxy.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Comm.Interfaces">
-      <HintPath>..\..\..\..\bin\debug\net45\Bond.Comm.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Comm.Layers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=87e9ead25a117286, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\bin\debug\net45\Bond.Comm.Layers.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Comm.Service">
-      <HintPath>..\..\..\..\bin\debug\net45\Bond.Comm.Service.dll</HintPath>
-    </Reference>
-    <Reference Include="CommCompatShared">
-      <HintPath>..\shared\obj\Debug\net45\CommCompatShared.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Bond">
+      <HintPath>..\..\..\..\$(OutputPath)\Bond.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.Attributes">
+      <HintPath>..\..\..\..\$(OutputPath)\Bond.Attributes.dll</HintPath>
+    </Reference>
+    <ProjectReference Include="..\..\..\..\src\comm\epoxy-transport\epoxy-transport.csproj">
+      <Project>{c687c52c-0a5b-4f10-8cb3-dbaf9a72d042}</Project>
+      <Name>epoxy-transport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\src\comm\interfaces\interfaces.csproj">
+      <Project>{45efb397-298a-4a32-a178-a2bdf8abbbd9}</Project>
+      <Name>interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\src\comm\layers\layers.csproj">
+      <Project>{5f6cbc77-8fb5-4644-bab5-f8e62792266e}</Project>
+      <Name>layers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\src\comm\service\service.csproj">
+      <Project>{79d2423a-87c8-44a2-89c2-2fa94521747e}</Project>
+      <Name>service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\shared\CommCompatShared.csproj">
+      <Project>{5d90c693-10df-4378-8073-0d8e58d1245f}</Project>
+      <Name>CommCompatShared</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\internal\Common.Internal.targets" />
 </Project>
