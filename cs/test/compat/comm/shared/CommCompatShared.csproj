@@ -1,45 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{5D90C693-10DF-4378-8073-0D8E58D1245F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CommCompatShared</RootNamespace>
     <AssemblyName>CommCompatShared</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bond">
-      <HintPath>..\..\..\..\bin\debug\net45\Bond.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Attributes">
-      <HintPath>..\..\..\..\bin\debug\net45\Bond.Attributes.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Comm.Interfaces">
-      <HintPath>..\..\..\..\bin\debug\net45\Bond.Comm.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +24,18 @@
     <Compile Include="$(IntermediateOutputPath)\pingpong_services.cs" />
     <!-- End Resharper Workaround -->
     <Compile Include="TestLayer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Bond">
+      <HintPath>..\..\..\..\$(OutputPath)\Bond.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.Attributes">
+      <HintPath>..\..\..\..\$(OutputPath)\Bond.Attributes.dll</HintPath>
+    </Reference>
+    <ProjectReference Include="..\..\..\..\src\comm\interfaces\interfaces.csproj">
+      <Project>{45efb397-298a-4a32-a178-a2bdf8abbbd9}</Project>
+      <Name>interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\internal\Common.Internal.targets" />
 </Project>
