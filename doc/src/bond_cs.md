@@ -108,6 +108,11 @@ of `nothing`](bond_cpp.html#default-value-of-nothing), e.g.:
         0: string str = nothing;
     }
 
+Caveat: `blob` is represented as `ArraySegment<byte>` in generated C# code and
+can't be set to `null` even if defined as `nullable` or with default value of 
+nothing. When reading such value from the stream, field will be set to zero-length
+`ArraySegment`.
+
 Code generation can be customized by passing one or more of the following
 command line options to `gbc`:
 
