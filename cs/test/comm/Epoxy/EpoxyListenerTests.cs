@@ -4,7 +4,9 @@
 namespace UnitTest.Epoxy
 {
     using System;
+    using System.Diagnostics;
     using System.Net;
+    using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm;
@@ -46,7 +48,7 @@ namespace UnitTest.Epoxy
 
             await listener.StartAsync();
             var connection = await transport.ConnectToAsync(localhostAddress);
-            bool wasSignaled = connectedEventDone.Wait(TimeSpan.FromSeconds(30));
+            bool wasSignaled = connectedEventDone.Wait(TimeSpan.FromSeconds(10));
             Assert.IsTrue(wasSignaled, "Timed out waiting for Connected event to complete");
 
             Assert.AreEqual(connection.LocalEndPoint, remoteConnection.RemoteEndPoint);
@@ -114,11 +116,30 @@ namespace UnitTest.Epoxy
             var connection = await transport.ConnectToAsync(localhostAddress);
             await connection.StopAsync();
 
-            bool wasSignaled = disconnectedEventDone.Wait(TimeSpan.FromSeconds(30));
+            bool wasSignaled = disconnectedEventDone.Wait(TimeSpan.FromSeconds(10));
             Assert.IsTrue(wasSignaled, "Timed out waiting for Disconnected event to complete");
 
             Assert.IsNotNull(disconnectedConnection);
             Assert.AreEqual(connection.LocalEndPoint, disconnectedConnection.RemoteEndPoint);
+        }
+
+        [Test]
+        public async Task OneConnectionStalledDuringHandshake_CanAcceptAnother()
+        {
+            EpoxyTransport transport = MakeTransport();
+            listener = transport.MakeListener(localhostEndpoint);
+            await listener.StartAsync();
+
+            var noHandshakeConnection = new TcpClient();
+            // This will just establish a TCP connection. It won't perform the Epoxy handshake, so
+            // the listener will just be sitting there waiting for the client to send some data.
+            await noHandshakeConnection.ConnectAsync(localhostEndpoint.Address, localhostEndpoint.Port);
+
+            var connectTask = transport.ConnectToAsync(localhostAddress);
+            bool didConnect = connectTask.Wait(TimeSpan.FromSeconds(10));
+            Assert.IsTrue(didConnect, "Timed out waiting for connection to be established.");
+
+            await transport.StopAsync();
         }
 
         private static EpoxyTransport MakeTransport()

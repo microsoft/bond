@@ -24,6 +24,7 @@ namespace Bond.Comm.Epoxy
         readonly object connectionsLock = new object();
         readonly HashSet<EpoxyConnection> connections;
 
+        // used to request that other components start shutting down
         readonly CancellationTokenSource shutdownTokenSource;
 
         public IPEndPoint ListenEndpoint { get; }
@@ -105,55 +106,73 @@ namespace Bond.Comm.Epoxy
             logger.Site().Information("Accepting connections on {0}", ListenEndpoint);
             while (!t.IsCancellationRequested)
             {
-                Socket socket = null;
-                EpoxyNetworkStream epoxyStream = null;
-
                 try
                 {
-                    socket = await listener.AcceptSocketAsync();
-                    logger.Site().Debug("Accepted connection from {0}.", socket.RemoteEndPoint);
+                    Socket socket = await listener.AcceptSocketAsync();
+                    EndPoint remoteEndpoint = socket.RemoteEndPoint;
+                    logger.Site().Debug("Accepted connection from {0}.", remoteEndpoint);
 
-                    EpoxyTransport.ConfigureSocketKeepAlive(socket, timeoutConfig, logger);
-
-                    epoxyStream = await EpoxyNetworkStream.MakeServerStreamAsync(socket, tlsConfig, logger);
-                    socket = null; // epoxyStream now owns the socket
-
-                    var connection = EpoxyConnection.MakeServerConnection(
-                        parentTransport,
-                        this,
-                        serviceHost,
-                        epoxyStream,
-                        logger,
-                        metrics);
-
-                    // connection now owns the EpoxyNetworkStream
-                    epoxyStream = null;
-
-                    lock (connectionsLock)
-                    {
-                        connections.Add(connection);
-                    }
-
-                    await connection.StartAsync();
-                    logger.Site().Debug("Started server-side connection for {0}", connection.RemoteEndPoint);
-                }
-                catch (AuthenticationException ex)
-                {
-                    logger.Site().Error(ex, "Failed to authenticate remote connection from {0}", socket?.RemoteEndPoint);
-                    ShutdownSocketSafe(socket, epoxyStream);
+                    // Disabling CS4014 "Because this call is not awaited,
+                    // execution of the current method continues before the
+                    // call is completed.Consider applying the 'await' operator
+                    // to the result of the call.", as we've attached a logger
+                    // task that doesn't need to be observed.
+                    #pragma warning disable 4014
+                    // Don't need to wait for the connection to get fully established before
+                    // accepting the next one, so fire and forget (with logging) StartAsync.
+                    StartClientConnectionAsync(socket)
+                        .ContinueWith(startTask => LogClientStartResult(remoteEndpoint, startTask));
+                    #pragma warning restore 4014
                 }
                 catch (SocketException ex)
                 {
                     logger.Site().Error(ex, "Accept failed with error {0}.", ex.SocketErrorCode);
-                    ShutdownSocketSafe(socket, epoxyStream);
+                    // continue on to accept the next connection
                 }
                 catch (ObjectDisposedException)
                 {
-                    ShutdownSocketSafe(socket, epoxyStream);
+                    // continue on to accept the next connection
                 }
             }
 
             logger.Site().Information("Shutting down connection on {0}", ListenEndpoint);
+        }
+
+        async Task StartClientConnectionAsync(Socket socket)
+        {
+            EpoxyNetworkStream epoxyStream = null;
+
+            try
+            {
+                EpoxyTransport.ConfigureSocketKeepAlive(socket, timeoutConfig, logger);
+
+                epoxyStream = await EpoxyNetworkStream.MakeServerStreamAsync(socket, tlsConfig, logger);
+                socket = null; // epoxyStream now owns the socket
+
+                var connection = EpoxyConnection.MakeServerConnection(
+                    parentTransport,
+                    this,
+                    serviceHost,
+                    epoxyStream,
+                    logger,
+                    metrics);
+
+                // connection now owns the EpoxyNetworkStream
+                epoxyStream = null;
+
+                lock (connectionsLock)
+                {
+                    connections.Add(connection);
+                }
+
+                logger.Site().Debug("Setup server-side connection for {0}. Starting Epoxy handshake.", connection.RemoteEndPoint);
+                await connection.StartAsync();
+            }
+            catch (Exception)
+            {
+                ShutdownSocketSafe(socket, epoxyStream);
+                throw;
+            }
         }
 
         private void ShutdownSocketSafe(Socket socket, EpoxyNetworkStream epoxyStream)
@@ -174,6 +193,25 @@ namespace Bond.Comm.Epoxy
             {
                 // We tried to cleanly shutdown the socket, oh well.
                 logger.Site().Debug(ex, "Exception encountered when shutting down a socket.");
+            }
+        }
+
+        private void LogClientStartResult(EndPoint remoteEndPoint, Task startTask)
+        {
+            if (startTask.IsFaulted)
+            {
+                logger.Site().Error(
+                    startTask.Exception,
+                    "Starting connection for {0} failed",
+                    remoteEndPoint);
+            }
+            else if (startTask.IsCanceled)
+            {
+                logger.Site().Debug("Starting connection for {0} was canceled", remoteEndPoint);
+            }
+            else
+            {
+                logger.Site().Debug("Finished starting connection for {0}", remoteEndPoint);
             }
         }
     }

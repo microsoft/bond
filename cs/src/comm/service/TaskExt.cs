@@ -15,14 +15,6 @@ namespace Bond.Comm.Service
             return tcs.Task;
         }
 
-        private static Task completedTask = Task.FromResult(default(object));
-
-        public static Task CompletedTask
-        {
-            get
-            {
-                return completedTask;
-            }
-        }
+        public static Task CompletedTask { get; } = Task.FromResult(default(object));
     }
 }
