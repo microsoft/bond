@@ -19,7 +19,7 @@
 
         static DebugViewHelper()
         {
-            debugView = typeof(Expression).GetProperty("DebugView", BindingFlags.NonPublic | BindingFlags.Instance);
+            debugView = typeof(Expression).GetDeclaredProperty("DebugView", typeof(string));
         }
 
         public static string ToString(Expression expression)
