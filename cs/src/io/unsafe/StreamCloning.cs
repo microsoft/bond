@@ -75,7 +75,7 @@ namespace Bond.IO.Unsafe
             public const uint FILE_GENERIC_READ = 0x00120089;
 
             [DllImport("kernel32.dll", SetLastError = true)]
-#if (!NETSTANDARD1_6)
+#if !(NETSTANDARD1_3 || NETSTANDARD1_6)
             [SuppressUnmanagedCodeSecurity]
 #endif
             public static extern SafeFileHandle ReOpenFile(SafeFileHandle hFile, uint access, FileShare mode, uint flags);
@@ -83,7 +83,7 @@ namespace Bond.IO.Unsafe
 
         static class MemoryStreamCloner
         {
-#if (!NETSTANDARD1_6)
+#if !(NETSTANDARD1_3 || NETSTANDARD1_6)
             delegate void GetOriginAndLength(MemoryStream stream, out int origin, out int length);
             static readonly GetOriginAndLength getOriginAndLength;
 
@@ -125,7 +125,7 @@ namespace Bond.IO.Unsafe
                 getOriginAndLength(stream, out origin, out length);
                 return new MemoryStream(stream.GetBuffer(), origin, length - origin, false, true) { Position = stream.Position };
             }
-#else // NETSTANDARD1_6
+#else // NETSTANDARD implementation
             internal static MemoryStream CloneMemoryStream(MemoryStream stream)
             {
                 ArraySegment<byte> buffer;
