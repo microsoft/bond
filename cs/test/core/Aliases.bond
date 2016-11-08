@@ -1,6 +1,6 @@
 ﻿namespace UnitTest.Aliases
 
-using SynchronizedList<T> = list<T>;
+using CustomList<T> = list<T>;
 using OrderedSet<T> = set<T>;
 using Decimal = blob;
 using EnumString<T> = string;
@@ -24,9 +24,9 @@ struct Foo
 
 struct ContainerAlias
 {
-    0: SynchronizedList<string> syncListString;
-    1: nullable<SynchronizedList<Foo>> syncListFoo;
-    2: SynchronizedList<OrderedSet<string>> syncListOrderedSetString;
+    0: CustomList<string> customListString;
+    1: nullable<CustomList<Foo>> customListFoo;
+    2: CustomList<OrderedSet<string>> customListOrderedSetString;
     // Don't get rid of the `nothing` here. Bond will attempt to use "normal"
     // C# init syntax here. Arrays have irregular syntax though, so
     // `new bool[]()` won't work. To compensate, we just leave it null.

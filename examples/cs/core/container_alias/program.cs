@@ -1,9 +1,12 @@
 ﻿namespace Examples
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using Bond;
-    using Bond.Protocols;
     using Bond.IO.Unsafe;
+    using Bond.Protocols;
 
     static class Program
     {
@@ -24,7 +27,79 @@
             var reader = new CompactBinaryReader<InputBuffer>(input);
 
             var dst = Deserialize<Example>.From(reader);
-            Debug.Assert(Comparer.Equal(src, dst));
+            Debug.Assert(Bond.Comparer.Equal(src, dst));
+        }
+    }
+
+    // An extremely simple example of a custom container implementation.
+    public class SomeCustomList<T> : ICollection<T>, ICollection
+    {
+        readonly List<T> backingList = new List<T>();
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return backingList.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)backingList).GetEnumerator();
+        }
+
+        public void Add(T item)
+        {
+            backingList.Add(item);
+        }
+
+        public void Clear()
+        {
+            backingList.Clear();
+        }
+
+        public bool Contains(T item)
+        {
+            return backingList.Contains(item);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            backingList.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(T item)
+        {
+            return backingList.Remove(item);
+        }
+
+        public void CopyTo(Array array, int index)
+        {
+            ((ICollection)backingList).CopyTo(array, index);
+        }
+
+        public int Count
+        {
+            get { return backingList.Count; }
+        }
+
+        bool ICollection<T>.IsReadOnly
+        {
+            get { return ((ICollection<T>) backingList).IsReadOnly; }
+        }
+
+        public object SyncRoot
+        {
+            get
+            {
+                return ((ICollection)backingList).SyncRoot;
+            }
+        }
+
+        public bool IsSynchronized
+        {
+            get
+            {
+                return ((ICollection)backingList).IsSynchronized;
+            }
         }
     }
 }
