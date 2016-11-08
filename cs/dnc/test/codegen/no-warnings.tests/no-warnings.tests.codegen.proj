@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="BondCodegenCs" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\nuget\Common.props" />
+  <PropertyGroup>
+    <BondOutputDirectory>gen\</BondOutputDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <BondCodegen Include="..\..\..\..\test\codegen\no-warnings\simple.bond" />
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\nuget\Common.targets" />
+</Project>
