@@ -1,5 +1,6 @@
 ﻿namespace Examples
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -31,7 +32,7 @@
     }
 
     // An extremely simple example of a custom container implementation.
-    public class SomeCustomList<T> : ICollection<T>
+    public class SomeCustomList<T> : ICollection<T>, ICollection
     {
         readonly List<T> backingList = new List<T>();
 
@@ -70,9 +71,24 @@
             return backingList.Remove(item);
         }
 
+        public void CopyTo(Array array, int index)
+        {
+            ((ICollection)backingList).CopyTo(array, index);
+        }
+
         public int Count
         {
             get { return backingList.Count; }
+        }
+
+        public object SyncRoot
+        {
+            get { return ((ICollection)backingList).SyncRoot; }
+        }
+
+        public bool IsSynchronized
+        {
+            get { return ((ICollection)backingList).IsSynchronized; }
         }
 
         bool ICollection<T>.IsReadOnly
