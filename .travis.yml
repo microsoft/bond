@@ -7,6 +7,7 @@ cache:
     directories:
         - compiler/.cabal-sandbox
         - cs/packages
+        - /home/travis/.ccache
 env:
     - BOND_LANG=cpp-clang
     - BOND_LANG=cpp-gcc
@@ -28,6 +29,7 @@ addons:
         - ghc-7.8.4
         - ghc-7.6.3
         - ghc
+        - ccache
 matrix:
   exclude:
     # linux VM is too small to build C++ unit tests with g++
@@ -48,16 +50,22 @@ matrix:
       env: BOND_LANG=py-gcc
 
 before_install:
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then system_profiler SPHardwareDataType; fi
     # select C++ compiler
-    - export CXX="clang++" CC="clang"
-    - if [[ $BOND_LANG == *gcc ]]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+    # ccache splits up your C{,XX}FLAGS and makes separate preprocessor and
+    # compiler calls. It includes a few flags that aren't used by one half of
+    # the process or the other. -Qunused-arguments prevents clang from failing
+    # the build because of this.
+    - export CXX="ccache clang++ -Qunused-arguments" CC="ccache clang -Qunused-arguments"
+    - if [[ $BOND_LANG == *gcc ]]; then export CXX="ccache g++-4.8" CC="ccache gcc-4.8"; fi
     # linux prereqisite packages
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then wget --no-check-certificate https://www.cmake.org/files/v3.2/cmake-3.2.3-Linux-x86_64.tar.gz; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then tar -xzvf cmake-3.2.3-Linux-x86_64.tar.gz; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PWD/cmake-3.2.3-Linux-x86_64/bin:$PATH; fi
     # OS X prerequisite packages
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install ghc cabal-install; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install ghc cabal-install ccache; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [[ $BOND_LANG == py* ]]; then brew unlink boost; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [[ $BOND_LANG == py* ]]; then brew install boost boost-python; fi
     # nunit installation
