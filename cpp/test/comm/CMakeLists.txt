@@ -1,7 +1,15 @@
-add_bond_test (unit_test_comm
-    unit_test_comm.cpp
-    unit_test_comm.bond
-    COMM)
+if (MSVC)
+    add_bond_test (unit_test_comm
+        unit_test_comm.cpp
+        unit_test_comm.bond
+        COMM)
+else()
+    add_bond_test (unit_test_comm
+        unit_test_comm.cpp
+        unit_test_comm.bond
+        COMM
+        BUILD_ONLY)
+endif()
 
 # TODO: needed for lock, should be abstracted away in platform specific stuff
 target_compile_definitions (unit_test_comm PRIVATE -D_WIN32_WINNT=0x0600)
