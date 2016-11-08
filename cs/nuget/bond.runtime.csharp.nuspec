@@ -23,7 +23,7 @@
         <copyright>Copyright (c) Microsoft</copyright>
         <tags>Bond .NET C# serialization</tags>
         <dependencies>
-            <dependency id="Newtonsoft.Json" version="7.0.1" />
+            <dependency id="Newtonsoft.Json" version="9.0.1" />
             <dependency id="Bond.Core.CSharp" version ="[$version$]"/>
         </dependencies>
     </metadata>
@@ -34,6 +34,9 @@
         <file src="net45\Bond.JSON.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
         <file src="net45\Bond.JSON.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
         <file src="net45\Bond.JSON.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
+        <file src="net45\Bond.JSON.dll" target="lib\netstandard1.0" />
+        <file src="net45\Bond.JSON.xml" target="lib\netstandard1.0" />
+        <file src="net45\Bond.JSON.pdb" target="lib\netstandard1.0" />
         <file src="net40\Bond.JSON.dll" target="lib\net40" />
         <file src="net40\Bond.JSON.xml" target="lib\net40" />
         <file src="net40\Bond.JSON.pdb" target="lib\net40" />

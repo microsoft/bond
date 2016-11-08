@@ -45,6 +45,15 @@
         <file src="net45\Bond.IO.dll" target="lib\net45" />
         <file src="net45\Bond.IO.xml" target="lib\net45" />
         <file src="net45\Bond.IO.pdb" target="lib\net45" />
+        <file src="net45\Bond.dll" target="lib\netstandard1.0" />
+        <file src="net45\Bond.xml" target="lib\netstandard1.0" />
+        <file src="net45\Bond.pdb" target="lib\netstandard1.0" />
+        <file src="net45\Bond.Attributes.dll" target="lib\netstandard1.0" />
+        <file src="net45\Bond.Attributes.xml" target="lib\netstandard1.0" />
+        <file src="net45\Bond.Attributes.pdb" target="lib\netstandard1.0" />
+        <file src="net45\Bond.Reflection.dll" target="lib\netstandard1.0" />
+        <file src="net45\Bond.Reflection.xml" target="lib\netstandard1.0" />
+        <file src="net45\Bond.Reflection.pdb" target="lib\netstandard1.0" />
         <file src="net40\Bond.dll" target="lib\net40" />
         <file src="net40\Bond.xml" target="lib\net40" />
         <file src="net40\Bond.pdb" target="lib\net40" />
