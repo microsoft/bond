@@ -23,6 +23,8 @@ different versioning scheme, following the Haskell community's
 ### C# ###
 * Fixed a bug in the MSBuild targets that caused codegen to always be run if
   all of the BondCodegen items has Options metadata.
+* Fixed a bug in the MSBuild targets that caused compilation to fail if the
+  $BondOutputDirectory did not end with a trailing slash.
 * A new assembly, Bond.Reflection.dll, has been added, due to some internal
   refactoring to make way for full .NET Core support. Many of the Bond
   assemblies now have a dependency on this assembly, so you'll need to

@@ -50,7 +50,7 @@
   -->
   <Target Name="BondCodegenCs"
           Inputs="@(BondCodegen)"
-          Outputs="$(BondOutputDirectory)bondcodegen.done;@(BondCodegen -> '$(BondOutputDirectory)%(FileName)_types.cs')"
+          Outputs="$(BondOutputDirectory)\bondcodegen.done;@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_types.cs')"
           BeforeTargets="CoreCompile"
           Condition="'@(BondCodegen)' != ''">
 
@@ -74,11 +74,11 @@
       <_BondCodegenWithDefaultOptions Include="@(BondCodegen)" Condition="'%(BondCodegen.Options)' == ''" />
     </ItemGroup>
 
-    <WriteLinesToFile File="$(BondOutputDirectory)bonddefaultcodegen.in"
+    <WriteLinesToFile File="$(BondOutputDirectory)\bonddefaultcodegen.in"
                       Lines="@(_BondCodegenWithDefaultOptions)"
                       Overwrite="true" />
 
-    <Exec Command="$(_BondCommand) $(BondOptions) @&quot;$(BondOutputDirectory)bonddefaultcodegen.in&quot;"
+    <Exec Command="$(_BondCommand) $(BondOptions) @&quot;$(BondOutputDirectory)\bonddefaultcodegen.in&quot;"
           Condition="'@(_BondCodegenWithDefaultOptions)' != ''" />
 
     <!-- And for any files needing custom options we'll have to generate one by one -->
@@ -86,7 +86,7 @@
           Condition="'%(BondCodegen.Options)' != ''" />
 
     <!-- Record all that we successfully ran codegen on all the files. -->
-    <WriteLinesToFile File="$(BondOutputDirectory)bondcodegen.done"
+    <WriteLinesToFile File="$(BondOutputDirectory)\bondcodegen.done"
                       Lines="#Ran codegen on the following files:;@(BondCodegen)"
                       Overwrite="true" />
   </Target>
@@ -100,7 +100,7 @@
           Condition="'@(BondCodegen)' != ''">
 
     <ItemGroup>
-      <_BondGeneratedFiles Include="@(BondCodegen -> '$(BondOutputDirectory)%(FileName)_types.cs')">
+      <_BondGeneratedFiles Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_types.cs')">
         <AutoGen>true</AutoGen>
         <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
       </_BondGeneratedFiles>
@@ -112,8 +112,8 @@
         * MsBuild wants to keep track of all our outputs, to understand how to clean build.  It seems it
         * needs to know all of them regardless of what we actually produced THIS build, so adding always.
       -->
-      <FileWrites Include="$(BondOutputDirectory)bondcodegen.done;
-                           $(BondOutputDirectory)bonddefaultcodegen.in;
+      <FileWrites Include="$(BondOutputDirectory)\bondcodegen.done;
+                           $(BondOutputDirectory)\bonddefaultcodegen.in;
                            @(_BondGeneratedFileNames)" />
     </ItemGroup>
   </Target>
