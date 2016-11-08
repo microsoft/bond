@@ -1,4 +1,6 @@
-sudo: false
+dist: trusty
+# trusty requires virtualization, which is set by 'sudo: required'
+sudo: required
 language: csharp
 os:
     - linux
@@ -19,12 +21,18 @@ env:
 addons:
   apt:
     sources:
-        - boost-latest
+        - sourceline: 'ppa:kzemek/boost'
         - ubuntu-toolchain-r-test
         - hvr-ghc
     packages:
         - g++-4.8
-        - libboost1.55-all-dev
+        - boost1.58
+        - libboost-chrono1.58
+        - libboost-date-time1.58
+        - libboost-thread1.58
+        - libboost-system1.58
+        - libboost-test1.58
+        - libboost-python1.58
         - cabal-install-1.22
         - ghc-7.8.4
         - ghc-7.6.3
