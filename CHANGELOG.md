@@ -28,6 +28,16 @@ different versioning scheme, following the Haskell community's
   assemblies now have a dependency on this assembly, so you'll need to
   deploy it. If you use NuGet to consume Bond, this is should be handled
   automatically.
+* The NuGet packages now include initial support for
+  [.NET Standard 1.0](https://blogs.msdn.microsoft.com/dotnet/2016/09/26/introducing-net-standard/),
+  which makes it easier to use Bond in .NET Core applications. This initial
+  support is based on the .NET 4.5 build, not on an explicit .NET Standard
+  1.0 build. [Pull request #243](https://github.com/Microsoft/bond/pull/243)
+  * Not all assemblies and not all packages work with .NET Standard. If
+    package restore fails, then the package likely doesn't support .NET
+    Standard 1.0.
+* Bond.JSON now depends on Newsoft.JSON 9.0.1, the earliest version that
+  support .NET Standard 1.0
 
 ### C# Comm ###
 * The constructor for `LayerStackProvider` no longer requires a logger;
