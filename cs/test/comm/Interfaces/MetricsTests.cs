@@ -20,7 +20,7 @@ namespace UnitTest.Interfaces
 
         // Metrics emission does not necessarily happen before the client gets control back from
         // a request or connection shutdown. There's nothing to block on that would guarantee this.
-        internal static readonly Action WaitForMetrics = () => Thread.Sleep(50);
+        internal static readonly Action WaitForMetrics = () => Thread.Sleep(500);
 
         private class TestMetricsSink : IMetricsSink
         {
