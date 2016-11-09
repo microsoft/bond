@@ -8,8 +8,47 @@
             ]
         },
         "debugType": "portable",
-        "keyFile": "../../../../build/internal/bond.snk",
-        "publicSign": true
+        "nowarn": [
+            "CS1591"
+        ],
+        "warningsAsErrors": true,
+        "xmlDoc": true
+    },
+    "configurations": {
+        "debug": {
+            "buildOptions": {
+                "keyFile": "../../../../build/internal/bond.snk",
+                "optimize": false,
+                "publicSign": true
+            }
+        },
+        "debug-delay": {
+            "buildOptions": {
+                "define": [
+                    "DELAY_SIGN"
+                ],
+                "delaySign": true,
+                "keyFile": "../../../keys/delay-sign.snk",
+                "optimize": true
+            }
+        },
+        "release": {
+            "buildOptions": {
+                "keyFile": "../../../../build/internal/bond.snk",
+                "optimize": true,
+                "publicSign": true
+            }
+        },
+        "release-delay": {
+            "buildOptions": {
+                "define": [
+                    "DELAY_SIGN"
+                ],
+                "delaySign": true,
+                "keyFile": "../../../keys/delay-sign.snk",
+                "optimize": true
+            }
+        }
     },
     "dependencies": {
         "attributes": "1.0.0-*"
