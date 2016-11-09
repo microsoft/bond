@@ -10,15 +10,19 @@
     .PARAMETER DelaySignKey
         The optional delay sign key to use.
 
+    .PARAMETER Test
+        Whether to run the tests.
+
     .EXAMPLE
         PS c:\src\bond> .\build.ps1
 
-        This will build the debug configuration.
+        This will build just the debug configuration.
 
     .EXAMPLE
-        PS c:\src\bond> .\build.ps1 -Configuration release -DelaySignKey c:\src\private\delay-key.snk
+        PS c:\src\bond> .\build.ps1 -Configuration release -DelaySignKey c:\src\private\delay-key.snk -Test
 
-        This will build the release configuration and delay sign it with the specified key.
+        This will build the release configuration, delay sign it with the
+        specified key, and run all the test projects.
 #>
 [CmdletBinding(SupportsShouldProcess=$True)]
 param
@@ -28,7 +32,10 @@ param
     $Configuration = "debug",
 
     [string]
-    $DelaySignKey = ""
+    $DelaySignKey = "",
+
+    [switch]
+    $Test = $false
 )
 
 $script:dotnet_cfg = $Configuration
@@ -70,4 +77,18 @@ if (-not $?) {
 dotnet build --configuration $script:dotnet_cfg '.\src\attributes\project.json' '.\src\reflection\project.json' '**\project.json'
 if (-not $?) {
     throw ".NET Core build failed."
+}
+
+if ($Test) {
+    $testProjectJsonPaths =  Get-ChildItem -File -Recurse project.json |
+      Select-String 'testRunner' |
+      Select-Object -ExpandProperty Path |
+      Select-Object -Unique
+
+    $testProjectJsonPaths | foreach {
+        dotnet test --no-build --configuration $script:dotnet_cfg $psitem
+        if (-not $?) {
+            throw "Tests failed for $psitem"
+        }
+    }
 }
