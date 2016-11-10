@@ -7,6 +7,7 @@ namespace UnitTest.Interfaces
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm;
     using Bond.Comm.Epoxy;
@@ -17,6 +18,10 @@ namespace UnitTest.Interfaces
     [TestFixture]
     class ServiceIsolationTests
     {
+        // Metrics emission does not necessarily happen before the client gets control back from
+        // a request or connection shutdown. There's nothing to block on that would guarantee this.
+        internal static readonly Action WaitForLogsAndMetrics = () => Thread.Sleep(500);
+
         // For cleanup in a [TearDown].
         private List<EpoxyListener> listeners = new List<EpoxyListener>();
 
@@ -120,6 +125,7 @@ namespace UnitTest.Interfaces
             await secondClientConn.StopAsync();
             await firstServer.StopAsync();
             await secondServer.StopAsync();
+            WaitForLogsAndMetrics();
 
             // We're targeting a log line that looks something like this:
             // C:\...\bond\cs\src\comm\service\ServiceHost.cs:119 - DispatchRequest - Got request [unittest.comm.DummyTest.ReqRspMethod] from EpoxyConnection(local: 127.0.0.1:20000, remote: 127.0.0.1:26056).
