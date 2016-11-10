@@ -50,15 +50,41 @@
         <file target="lib\net45" src="net45\Bond.pdb" />
         <file target="lib\net45" src="net45\Bond.xml" />
 
-        <file target="lib\netstandard1.0" src="net45\Bond.Attributes.dll" />
-        <file target="lib\netstandard1.0" src="net45\Bond.Attributes.pdb" />
-        <file target="lib\netstandard1.0" src="net45\Bond.Attributes.xml" />
-        <file target="lib\netstandard1.0" src="net45\Bond.Reflection.dll" />
-        <file target="lib\netstandard1.0" src="net45\Bond.Reflection.pdb" />
-        <file target="lib\netstandard1.0" src="net45\Bond.Reflection.xml" />
-        <file target="lib\netstandard1.0" src="net45\Bond.dll" />
-        <file target="lib\netstandard1.0" src="net45\Bond.pdb" />
-        <file target="lib\netstandard1.0" src="net45\Bond.xml" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.Attributes.dll" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.Attributes.pdb" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.Attributes.xml" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.Reflection.dll" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.Reflection.pdb" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.Reflection.xml" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.dll" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.pdb" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.xml" />
+
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.Attributes.dll" />
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.Attributes.pdb" />
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.Attributes.xml" />
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.Reflection.dll" />
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.Reflection.pdb" />
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.Reflection.xml" />
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.dll" />
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.pdb" />
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.xml" />
+        <file target="lib\netstandard1.3" src="netstandard1.3\Bond.IO.dll" />
+        <file target="lib\netstandard1.3" src="netstandard1.3\Bond.IO.pdb" />
+        <file target="lib\netstandard1.3" src="netstandard1.3\Bond.IO.xml" />
+
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.Attributes.dll" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.Attributes.pdb" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.Attributes.xml" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.IO.dll" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.IO.pdb" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.IO.xml" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.Reflection.dll" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.Reflection.pdb" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.Reflection.xml" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.dll" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.pdb" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.xml" />
 
         <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.Attributes.dll" />
         <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.Attributes.pdb" />
