@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Bond.Compiler</id>
@@ -22,11 +22,10 @@
         </description>
         <copyright>Copyright (c) Microsoft</copyright>
         <tags>Bond .NET C# serialization</tags>
-        <dependencies />
     </metadata>
     <files>
-        <file src="cs\tools\gbc.exe" target="tools" />
-        <file src="idl\bond\core\bond.bond" target="tools\inc\bond\core" />
-        <file src="idl\bond\core\bond_const.bond" target="tools\inc\bond\core" />
+        <file target="tools" src="cs\tools\gbc.exe" />
+        <file target="tools\inc\bond\core" src="idl\bond\core\bond.bond" />
+        <file target="tools\inc\bond\core" src="idl\bond\core\bond_const.bond" />
     </files>
 </package>

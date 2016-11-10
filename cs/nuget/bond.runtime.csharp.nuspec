@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Bond.Runtime.CSharp</id>
@@ -24,21 +24,24 @@
         <tags>Bond .NET C# serialization</tags>
         <dependencies>
             <dependency id="Newtonsoft.Json" version="9.0.1" />
-            <dependency id="Bond.Core.CSharp" version ="[$version$]"/>
+            <dependency id="Bond.Core.CSharp" version ="[$version$] "/>
         </dependencies>
     </metadata>
     <files>
-        <file src="net45\Bond.JSON.dll" target="lib\net45" />
-        <file src="net45\Bond.JSON.xml" target="lib\net45" />
-        <file src="net45\Bond.JSON.pdb" target="lib\net45" />
-        <file src="net45\Bond.JSON.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-        <file src="net45\Bond.JSON.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-        <file src="net45\Bond.JSON.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-        <file src="net45\Bond.JSON.dll" target="lib\netstandard1.0" />
-        <file src="net45\Bond.JSON.xml" target="lib\netstandard1.0" />
-        <file src="net45\Bond.JSON.pdb" target="lib\netstandard1.0" />
-        <file src="net40\Bond.JSON.dll" target="lib\net40" />
-        <file src="net40\Bond.JSON.xml" target="lib\net40" />
-        <file src="net40\Bond.JSON.pdb" target="lib\net40" />
+        <file target="lib\net40" src="net40\Bond.JSON.dll" />
+        <file target="lib\net40" src="net40\Bond.JSON.pdb" />
+        <file target="lib\net40" src="net40\Bond.JSON.xml" />
+
+        <file target="lib\net45" src="net45\Bond.JSON.dll" />
+        <file target="lib\net45" src="net45\Bond.JSON.pdb" />
+        <file target="lib\net45" src="net45\Bond.JSON.xml" />
+
+        <file target="lib\netstandard1.0" src="net45\Bond.JSON.dll" />
+        <file target="lib\netstandard1.0" src="net45\Bond.JSON.pdb" />
+        <file target="lib\netstandard1.0" src="net45\Bond.JSON.xml" />
+
+        <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.JSON.dll" />
+        <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.JSON.pdb" />
+        <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.JSON.xml" />
     </files>
 </package>
