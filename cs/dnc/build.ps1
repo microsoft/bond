@@ -100,6 +100,28 @@ try
         throw ".NET Core build failed."
     }
 
+    $script:to_publish = (
+        @{'source'='attributes'; 'files'='Bond.Attributes.*'},
+        @{'source'='core'; 'files'='Bond.*'},
+        @{'source'='io'; 'files'='Bond.IO.*'},
+        @{'source'='json'; 'files'='Bond.JSON.*'},
+        @{'source'='reflection'; 'files'='Bond.Reflection.*'}
+    )
+
+    $script:publish_dir = "bin\$script:dotnet_cfg\"
+    mkdir -Force $script:publish_dir
+    if (-not $?) {
+        throw "Creating of publish directory '$script:publish_dir' failed"
+    }
+
+    $script:to_publish | foreach {
+        $source_xcopy_path = "src\$($psitem.source)\bin\$script:dotnet_cfg\*$($psitem.files)"
+        xcopy /i /s /y $source_xcopy_path $script:publish_dir
+        if (-not $?) {
+            throw "Copying files '$source_xcopy_path' failed"
+        }
+    }
+
     if ($Test) {
         $testProjectJsonPaths =  Get-ChildItem -File -Recurse project.json |
           Select-String 'testRunner' |
