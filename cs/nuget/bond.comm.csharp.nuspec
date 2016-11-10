@@ -21,9 +21,9 @@
         <copyright>Copyright (c) Microsoft</copyright>
         <tags>Bond .NET C# RPC messaging network communication</tags>
         <dependencies>
-            <dependency id="Bond.CSharp" version ="[$coreversion$]"/>
-            <dependency id="Bond.Comm.Runtime.CSharp" version ="[$version$]"/>
-            <dependency id="Bond.Comm.Epoxy.CSharp" version ="[$version$]"/>
+            <dependency id="Bond.CSharp" version ="[$coreversion$]" />
+            <dependency id="Bond.Comm.Runtime.CSharp" version ="[$version$]" />
+            <dependency id="Bond.Comm.Epoxy.CSharp" version ="[$version$]" />
         </dependencies>
     </metadata>
     <files>

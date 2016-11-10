@@ -21,27 +21,28 @@
         <copyright>Copyright (c) Microsoft</copyright>
         <tags>Bond .NET C# RPC messaging network communication</tags>
         <dependencies>
-            <dependency id="Bond.Core.CSharp" version ="[$coreversion$]"/>
+            <dependency id="Bond.Core.CSharp" version ="[$coreversion$]" />
         </dependencies>
     </metadata>
     <files>
-      <file src="net45\Bond.Comm.Interfaces.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-      <file src="net45\Bond.Comm.Interfaces.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-      <file src="net45\Bond.Comm.Interfaces.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-      <file src="net45\Bond.Comm.Service.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-      <file src="net45\Bond.Comm.Service.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-      <file src="net45\Bond.Comm.Service.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-      <file src="net45\Bond.Comm.Layers.dll" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-      <file src="net45\Bond.Comm.Layers.xml" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-      <file src="net45\Bond.Comm.Layers.pdb" target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" />
-      <file src="net45\Bond.Comm.Interfaces.dll" target="lib\netstandard1.0" />
-      <file src="net45\Bond.Comm.Interfaces.xml" target="lib\netstandard1.0" />
-      <file src="net45\Bond.Comm.Interfaces.pdb" target="lib\netstandard1.0" />
-      <file src="net45\Bond.Comm.Service.dll" target="lib\netstandard1.0" />
-      <file src="net45\Bond.Comm.Service.xml" target="lib\netstandard1.0" />
-      <file src="net45\Bond.Comm.Service.pdb" target="lib\netstandard1.0" />
-      <file src="net45\Bond.Comm.Layers.dll" target="lib\netstandard1.0" />
-      <file src="net45\Bond.Comm.Layers.xml" target="lib\netstandard1.0" />
-      <file src="net45\Bond.Comm.Layers.pdb" target="lib\netstandard1.0" />
+      <file target="lib\netstandard1.0" src="net45\Bond.Comm.Interfaces.dll" />
+      <file target="lib\netstandard1.0" src="net45\Bond.Comm.Interfaces.pdb" />
+      <file target="lib\netstandard1.0" src="net45\Bond.Comm.Interfaces.xml" />
+      <file target="lib\netstandard1.0" src="net45\Bond.Comm.Layers.dll" />
+      <file target="lib\netstandard1.0" src="net45\Bond.Comm.Layers.pdb" />
+      <file target="lib\netstandard1.0" src="net45\Bond.Comm.Layers.xml" />
+      <file target="lib\netstandard1.0" src="net45\Bond.Comm.Service.dll" />
+      <file target="lib\netstandard1.0" src="net45\Bond.Comm.Service.pdb" />
+      <file target="lib\netstandard1.0" src="net45\Bond.Comm.Service.xml" />
+
+      <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.Comm.Interfaces.dll" />
+      <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.Comm.Interfaces.pdb" />
+      <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.Comm.Interfaces.xml" />
+      <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.Comm.Layers.dll" />
+      <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.Comm.Layers.pdb" />
+      <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.Comm.Layers.xml" />
+      <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.Comm.Service.dll" />
+      <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.Comm.Service.pdb" />
+      <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.Comm.Service.xml" />
     </files>
 </package>

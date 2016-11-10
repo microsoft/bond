@@ -21,12 +21,12 @@
         <copyright>Copyright (c) Microsoft</copyright>
         <tags>Bond .NET C# RPC messaging network communication</tags>
         <dependencies>
-            <dependency id="Bond.Comm.Runtime.CSharp" version ="[$version$]"/>
+            <dependency id="Bond.Comm.Runtime.CSharp" version ="[$version$]" />
         </dependencies>
     </metadata>
     <files>
-      <file src="net45\Bond.Comm.Epoxy.dll" target="lib\net45" />
-      <file src="net45\Bond.Comm.Epoxy.pdb" target="lib\net45" />
-      <file src="net45\Bond.Comm.Epoxy.xml" target="lib\net45" />
+      <file target="lib\net45" src="net45\Bond.Comm.Epoxy.dll" />
+      <file target="lib\net45" src="net45\Bond.Comm.Epoxy.pdb" />
+      <file target="lib\net45" src="net45\Bond.Comm.Epoxy.xml" />
     </files>
 </package>
