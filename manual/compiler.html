@@ -163,6 +163,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#enum">Enum</a></li>
 <li><a href="#type-alias">Type alias</a></li>
 <li><a href="#forward-declaration-1">Forward declaration</a></li>
+<li><a href="#service-1">Service</a></li>
 </ul></li>
 <li><a href="#qualified-name">Qualified name</a></li>
 <li><a href="#type-parameter">Type parameter</a></li>
@@ -173,6 +174,10 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#type">Type</a><ul>
 <li><a href="#basic-types">Basic types</a></li>
 <li><a href="#complex-types">Complex types</a></li>
+</ul></li>
+<li><a href="#service-method">Service method</a><ul>
+<li><a href="#message">Message</a></li>
+<li><a href="#service-type">Service type</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#runtime-schema">Runtime Schema</a><ul>
@@ -334,6 +339,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">service Calculator
 {
     Result Calculate(Operation);
+    <span class="dt">void</span> Configure(Settings);
     Stats GetStats();
 }</code></pre></div>
 <p>Methods take one parameter and can return a result. A method can return:</p>
@@ -614,6 +620,24 @@ service Example
   <span class="st">&quot;declParams&quot;</span>: [
   ]
 }</code></pre></div>
+<h3 id="service-1">Service</h3>
+<p>A JSON object representing a <code>Service</code> declaration has the following properties:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
+  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Service&quot;</span>,
+  <span class="st">&quot;declNamespaces&quot;</span>: [
+  ],
+  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;ServiceName&quot;</span>,
+  <span class="st">&quot;declParams&quot;</span>: [
+  ],
+  <span class="st">&quot;declAttributes&quot;</span>: [
+  ],
+  <span class="st">&quot;serviceMethods&quot;</span>: [
+  ]
+}</code></pre></div>
+<p>where:</p>
+<ul>
+<li><code>serviceMethods</code> is an array of zero or more <a href="#service-method">methods</a>.</li>
+</ul>
 <h2 id="qualified-name">Qualified name</h2>
 <p>Qualified names are represented in JSON by an array of strings. For example:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">foo.bar</code></pre></div>
@@ -742,6 +766,62 @@ service Example
 <li><code>declaration</code> is a <a href="#declaration">declaration</a> of a user defined type.</li>
 <li><code>arguments</code> is an array of zero or more <a href="#type">types</a> representing type arguments for a generic user defined type. The property is optional and may be omitted for non-generic types.</li>
 </ul></li>
+</ul>
+<h2 id="service-method">Service method</h2>
+<p>A JSON object representing a <code>Method</code> has the following properties:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
+  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Tag&quot;</span>,
+  <span class="st">&quot;methodName&quot;</span>: <span class="st">&quot;MethodName&quot;</span>,
+  <span class="st">&quot;methodAttributes&quot;</span>: [
+  ],
+  <span class="st">&quot;methodResult&quot;</span>: {
+  },
+  <span class="st">&quot;methodInput&quot;</span>: {
+  }
+}</code></pre></div>
+<p>where</p>
+<ul>
+<li><code>tag</code> is one of the following string values:
+<ul>
+<li><code>&quot;Sink&quot;</code> to represent a one-way method that doesn’t return any result.</li>
+<li><code>&quot;Function&quot;</code> to represent a method that returns a result.</li>
+</ul></li>
+<li><code>methodName</code> is a string.</li>
+<li><code>methodAttributes</code> is an array of zero or more <a href="#attribute">attributes</a>.</li>
+<li><code>methodResult</code> is an object representing <a href="#message">message</a> returned from the method as the result.</li>
+<li><code>methodInput</code> is an object representing <a href="#message">message</a> accepted by the method as the input.</li>
+</ul>
+<h3 id="message">Message</h3>
+<p>A JSON object representing a <code>Message</code> has the following properties:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
+  <span class="st">&quot;messagePayload&quot;</span>: {
+  },
+  <span class="st">&quot;messageService&quot;</span>: {
+  }
+}</code></pre></div>
+<p>where</p>
+<ul>
+<li><code>messagePayload</code> is <code>null</code> or an object representing <a href="#type">type</a> of data payload carried by the message. The type must be a user defined struct.</li>
+<li><code>messageService</code> is <code>null</code> or an object representing <a href="#service-type">type of a service</a> that can be passed in the message, e.g. as a callback.</li>
+</ul>
+<h3 id="service-type">Service type</h3>
+<p>Service type can be specified using one of the following JSON objects:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
+  <span class="st">&quot;typeParam&quot;</span>: {
+  }
+}</code></pre></div>
+<p>or</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
+  <span class="st">&quot;declaration&quot;</span>: {
+  },
+  <span class="st">&quot;arguments&quot;</span>: {
+  }
+}</code></pre></div>
+<p>where</p>
+<ul>
+<li><code>typeParam</code> is an object representing <a href="#type-parameter">type parameter</a>.</li>
+<li><code>declaration</code> is a <a href="#service">service declaration</a>.</li>
+<li><code>arguments</code> is an array of zero or more <a href="#type">types</a> representing type arguments for a generic service. The property is optional and may be omitted for non-generic services.</li>
 </ul>
 <h1 id="runtime-schema">Runtime Schema</h1>
 <p>Bond defines <code>SchemaDef</code> structure to represent Bond schemas at runtime. <code>SchemaDef</code> is accepted as an argument by various Bond APIs. For example when transcoding binary payload into a text protocol like JSON, the <code>SchemaDef</code> of the payload is used to provide the necessary meta-data such as names of the fields.</p>

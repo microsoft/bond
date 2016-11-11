@@ -309,6 +309,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 {
     <span class="dv">0</span>: <span class="dt">string</span> str = nothing;
 }</code></pre></td></tr></table></div>
+<p>Caveat: <code>blob</code>, <code>nullable&lt;blob&gt;</code> and <code>blob = nothing</code> are all represented as an <code>ArraySegment&lt;byte&gt;</code> in the generated C# code. The default value for all three is <code>default(ArraySegment&lt;byte&gt;)</code> (in which the <code>Array</code> field is <code>null</code>). An empty <code>ArraySegment&lt;byte&gt;</code> (in which the <code>Array</code> field is not <code>null</code> but the <code>Count</code> is 0) is treated as a non-default value, so it will not be omitted for optional fields. This behavior will be changing in a future release, to align it with how other types are handled and how nullable/nothing fields are handled in other languages.</p>
 <p>Code generation can be customized by passing one or more of the following command line options to <code>gbc</code>:</p>
 <p><code>--fields</code></p>
 <p>Schema fields are represented by public fields with initializers and no constructor is generated.</p>

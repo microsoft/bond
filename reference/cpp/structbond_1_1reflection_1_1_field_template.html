@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Bond: bond::reflection::FieldTemplate&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt; Struct Template Reference</title>
+<title>Bond: bond::reflection::FieldTemplate&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ $(document).ready(function(){initNavTree('structbond_1_1reflection_1_1_field_tem
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="structbond_1_1reflection_1_1_field_template-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">bond::reflection::FieldTemplate&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt; Struct Template Reference</div>  </div>
+<div class="title">bond::reflection::FieldTemplate&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -104,57 +104,57 @@ $(document).ready(function(){initNavTree('structbond_1_1reflection_1_1_field_tem
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a58100150ba9c847d98e3ec8a5e41a310"><td class="memItemLeft" align="right" valign="top">typedef t_struct&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a58100150ba9c847d98e3ec8a5e41a310">struct_type</a></td></tr>
-<tr class="memdesc:a58100150ba9c847d98e3ec8a5e41a310"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the field's parent struct.  <a href="#a58100150ba9c847d98e3ec8a5e41a310">More...</a><br /></td></tr>
-<tr class="separator:a58100150ba9c847d98e3ec8a5e41a310"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a719ff331dae8fb50300bd12f8a6d0acf"><td class="memItemLeft" align="right" valign="top">typedef t_fieldType t_struct::*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a719ff331dae8fb50300bd12f8a6d0acf">field_pointer</a></td></tr>
-<tr class="memdesc:a719ff331dae8fb50300bd12f8a6d0acf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the field pointer.  <a href="#a719ff331dae8fb50300bd12f8a6d0acf">More...</a><br /></td></tr>
-<tr class="separator:a719ff331dae8fb50300bd12f8a6d0acf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8d273bac77be8469d51539af8c344c7"><td class="memItemLeft" align="right" valign="top">typedef remove_maybe&lt; t_fieldType &gt;::type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#ab8d273bac77be8469d51539af8c344c7">field_type</a></td></tr>
-<tr class="memdesc:ab8d273bac77be8469d51539af8c344c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the field.  <a href="#ab8d273bac77be8469d51539af8c344c7">More...</a><br /></td></tr>
-<tr class="separator:ab8d273bac77be8469d51539af8c344c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f5c32e66cce3654530235aaf421073c"><td class="memItemLeft" align="right" valign="top">typedef t_fieldType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a9f5c32e66cce3654530235aaf421073c">value_type</a></td></tr>
-<tr class="memdesc:a9f5c32e66cce3654530235aaf421073c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the field value.  <a href="#a9f5c32e66cce3654530235aaf421073c">More...</a><br /></td></tr>
-<tr class="separator:a9f5c32e66cce3654530235aaf421073c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07ead4d82ce29bcc1ac75b03ad359882"><td class="memItemLeft" align="right" valign="top">typedef t_modifierTag&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a07ead4d82ce29bcc1ac75b03ad359882">field_modifier</a></td></tr>
-<tr class="memdesc:a07ead4d82ce29bcc1ac75b03ad359882"><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifier tag for the field.  <a href="#a07ead4d82ce29bcc1ac75b03ad359882">More...</a><br /></td></tr>
-<tr class="separator:a07ead4d82ce29bcc1ac75b03ad359882"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a565000634035eed1b3559b9bebcc9a12"><td class="memItemLeft" align="right" valign="top">typedef Struct&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a565000634035eed1b3559b9bebcc9a12">struct_type</a></td></tr>
+<tr class="memdesc:a565000634035eed1b3559b9bebcc9a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the field's parent struct.  <a href="#a565000634035eed1b3559b9bebcc9a12">More...</a><br /></td></tr>
+<tr class="separator:a565000634035eed1b3559b9bebcc9a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae709b2554b797f5209f8f394284bf1d"><td class="memItemLeft" align="right" valign="top">typedef FieldType Struct::*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#aae709b2554b797f5209f8f394284bf1d">field_pointer</a></td></tr>
+<tr class="memdesc:aae709b2554b797f5209f8f394284bf1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the field pointer.  <a href="#aae709b2554b797f5209f8f394284bf1d">More...</a><br /></td></tr>
+<tr class="separator:aae709b2554b797f5209f8f394284bf1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace30bbaf65f63831316c0bd12cd87260"><td class="memItemLeft" align="right" valign="top">typedef remove_maybe&lt; FieldType &gt;::type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#ace30bbaf65f63831316c0bd12cd87260">field_type</a></td></tr>
+<tr class="memdesc:ace30bbaf65f63831316c0bd12cd87260"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the field.  <a href="#ace30bbaf65f63831316c0bd12cd87260">More...</a><br /></td></tr>
+<tr class="separator:ace30bbaf65f63831316c0bd12cd87260"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60c7865a42831b1de4900610cbad5753"><td class="memItemLeft" align="right" valign="top">typedef FieldType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a60c7865a42831b1de4900610cbad5753">value_type</a></td></tr>
+<tr class="memdesc:a60c7865a42831b1de4900610cbad5753"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the field value.  <a href="#a60c7865a42831b1de4900610cbad5753">More...</a><br /></td></tr>
+<tr class="separator:a60c7865a42831b1de4900610cbad5753"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd083f1d610c38f67da966ffed8fa3ae"><td class="memItemLeft" align="right" valign="top">typedef ModifierTag&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#acd083f1d610c38f67da966ffed8fa3ae">field_modifier</a></td></tr>
+<tr class="memdesc:acd083f1d610c38f67da966ffed8fa3ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifier tag for the field.  <a href="#acd083f1d610c38f67da966ffed8fa3ae">More...</a><br /></td></tr>
+<tr class="separator:acd083f1d610c38f67da966ffed8fa3ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a17df4b473ca6d05c6e5f1e1390e23b91"><td class="memItemLeft" align="right" valign="top">static const t_fieldType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a17df4b473ca6d05c6e5f1e1390e23b91">GetVariable</a> (const <a class="el" href="structbond_1_1reflection_1_1_field_template.html#a58100150ba9c847d98e3ec8a5e41a310">struct_type</a> &amp;object)</td></tr>
-<tr class="memdesc:a17df4b473ca6d05c6e5f1e1390e23b91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static method returning const reference to the field value for a particular object.  <a href="#a17df4b473ca6d05c6e5f1e1390e23b91">More...</a><br /></td></tr>
-<tr class="separator:a17df4b473ca6d05c6e5f1e1390e23b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a334d048b653aa13abe35a06a1db614e2"><td class="memItemLeft" align="right" valign="top">static t_fieldType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a334d048b653aa13abe35a06a1db614e2">GetVariable</a> (<a class="el" href="structbond_1_1reflection_1_1_field_template.html#a58100150ba9c847d98e3ec8a5e41a310">struct_type</a> &amp;object)</td></tr>
-<tr class="memdesc:a334d048b653aa13abe35a06a1db614e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static method returning reference to the field value for a particular object.  <a href="#a334d048b653aa13abe35a06a1db614e2">More...</a><br /></td></tr>
-<tr class="separator:a334d048b653aa13abe35a06a1db614e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3e473bb6e672fe80ca19f2d01306f9f"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structbond_1_1reflection_1_1_field_template.html#a60c7865a42831b1de4900610cbad5753">value_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#ae3e473bb6e672fe80ca19f2d01306f9f">GetVariable</a> (const <a class="el" href="structbond_1_1reflection_1_1_field_template.html#a565000634035eed1b3559b9bebcc9a12">struct_type</a> &amp;object)</td></tr>
+<tr class="memdesc:ae3e473bb6e672fe80ca19f2d01306f9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static method returning const reference to the field value for a particular object.  <a href="#ae3e473bb6e672fe80ca19f2d01306f9f">More...</a><br /></td></tr>
+<tr class="separator:ae3e473bb6e672fe80ca19f2d01306f9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61f075b758d3a9fdefaffc36e21a0734"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structbond_1_1reflection_1_1_field_template.html#a60c7865a42831b1de4900610cbad5753">value_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a61f075b758d3a9fdefaffc36e21a0734">GetVariable</a> (<a class="el" href="structbond_1_1reflection_1_1_field_template.html#a565000634035eed1b3559b9bebcc9a12">struct_type</a> &amp;object)</td></tr>
+<tr class="memdesc:a61f075b758d3a9fdefaffc36e21a0734"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static method returning reference to the field value for a particular object.  <a href="#a61f075b758d3a9fdefaffc36e21a0734">More...</a><br /></td></tr>
+<tr class="separator:a61f075b758d3a9fdefaffc36e21a0734"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a05340e7c5e5febc9ba8fe66e411dc31c"><td class="memItemLeft" align="right" valign="top">static const Metadata &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a05340e7c5e5febc9ba8fe66e411dc31c">metadata</a> = *t_metadata</td></tr>
-<tr class="memdesc:a05340e7c5e5febc9ba8fe66e411dc31c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static data member describing field metadata.  <a href="#a05340e7c5e5febc9ba8fe66e411dc31c">More...</a><br /></td></tr>
-<tr class="separator:a05340e7c5e5febc9ba8fe66e411dc31c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c5eabf7f59c8325eeb529e3441afe0d"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structbond_1_1reflection_1_1_field_template.html#a719ff331dae8fb50300bd12f8a6d0acf">field_pointer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a0c5eabf7f59c8325eeb529e3441afe0d">field_ptr</a> = t_fieldAddr</td></tr>
-<tr class="memdesc:a0c5eabf7f59c8325eeb529e3441afe0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static data member representing the field pointer.  <a href="#a0c5eabf7f59c8325eeb529e3441afe0d">More...</a><br /></td></tr>
-<tr class="separator:a0c5eabf7f59c8325eeb529e3441afe0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3823fba51296c5c2ee5519d0f9776646"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a3823fba51296c5c2ee5519d0f9776646">id</a> = t_id</td></tr>
-<tr class="memdesc:a3823fba51296c5c2ee5519d0f9776646"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static data member equal to the field ordinal.  <a href="#a3823fba51296c5c2ee5519d0f9776646">More...</a><br /></td></tr>
-<tr class="separator:a3823fba51296c5c2ee5519d0f9776646"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef3425067490554d13260a0fbd6277fe"><td class="memItemLeft" align="right" valign="top">static const Metadata &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#aef3425067490554d13260a0fbd6277fe">metadata</a> = *metadata_ptr</td></tr>
+<tr class="memdesc:aef3425067490554d13260a0fbd6277fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static data member describing field metadata.  <a href="#aef3425067490554d13260a0fbd6277fe">More...</a><br /></td></tr>
+<tr class="separator:aef3425067490554d13260a0fbd6277fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32f61cd5d3d0fc4d70988458c2780b46"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structbond_1_1reflection_1_1_field_template.html#aae709b2554b797f5209f8f394284bf1d">field_pointer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a32f61cd5d3d0fc4d70988458c2780b46">field</a> = field_ptr</td></tr>
+<tr class="memdesc:a32f61cd5d3d0fc4d70988458c2780b46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static data member representing the field pointer.  <a href="#a32f61cd5d3d0fc4d70988458c2780b46">More...</a><br /></td></tr>
+<tr class="separator:a32f61cd5d3d0fc4d70988458c2780b46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ff5e53e60cc1ff3e6c0267c4f7faa8e"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a4ff5e53e60cc1ff3e6c0267c4f7faa8e">id</a> = field_id</td></tr>
+<tr class="memdesc:a4ff5e53e60cc1ff3e6c0267c4f7faa8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static data member equal to the field ordinal.  <a href="#a4ff5e53e60cc1ff3e6c0267c4f7faa8e">More...</a><br /></td></tr>
+<tr class="separator:a4ff5e53e60cc1ff3e6c0267c4f7faa8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t_fieldType, t_fieldType t_struct::* t_fieldAddr, const bond::Metadata * t_metadata&gt;<br />
-struct bond::reflection::FieldTemplate&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;</h3>
+<div class="textblock"><h3>template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt;<br />
+struct bond::reflection::FieldTemplate&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;</h3>
 
 <p>Field description in compile-time schema. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a class="anchor" id="a07ead4d82ce29bcc1ac75b03ad359882"></a>
+<a class="anchor" id="acd083f1d610c38f67da966ffed8fa3ae"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t_fieldType, t_fieldType t_struct::* t_fieldAddr, const bond::Metadata * t_metadata&gt; </div>
+template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">typedef t_modifierTag <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#a07ead4d82ce29bcc1ac75b03ad359882">field_modifier</a></td>
+          <td class="memname">typedef ModifierTag <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#acd083f1d610c38f67da966ffed8fa3ae">field_modifier</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -168,14 +168,14 @@ template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t
 
 </div>
 </div>
-<a class="anchor" id="a719ff331dae8fb50300bd12f8a6d0acf"></a>
+<a class="anchor" id="aae709b2554b797f5209f8f394284bf1d"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t_fieldType, t_fieldType t_struct::* t_fieldAddr, const bond::Metadata * t_metadata&gt; </div>
+template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">typedef t_fieldType t_struct::* <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#a719ff331dae8fb50300bd12f8a6d0acf">field_pointer</a></td>
+          <td class="memname">typedef FieldType Struct::* <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#aae709b2554b797f5209f8f394284bf1d">field_pointer</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -184,14 +184,14 @@ template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t
 
 </div>
 </div>
-<a class="anchor" id="ab8d273bac77be8469d51539af8c344c7"></a>
+<a class="anchor" id="ace30bbaf65f63831316c0bd12cd87260"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t_fieldType, t_fieldType t_struct::* t_fieldAddr, const bond::Metadata * t_metadata&gt; </div>
+template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">typedef remove_maybe&lt;t_fieldType&gt;::type <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#ab8d273bac77be8469d51539af8c344c7">field_type</a></td>
+          <td class="memname">typedef remove_maybe&lt;FieldType&gt;::type <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#ace30bbaf65f63831316c0bd12cd87260">field_type</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -200,14 +200,14 @@ template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t
 
 </div>
 </div>
-<a class="anchor" id="a58100150ba9c847d98e3ec8a5e41a310"></a>
+<a class="anchor" id="a565000634035eed1b3559b9bebcc9a12"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t_fieldType, t_fieldType t_struct::* t_fieldAddr, const bond::Metadata * t_metadata&gt; </div>
+template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">typedef t_struct <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#a58100150ba9c847d98e3ec8a5e41a310">struct_type</a></td>
+          <td class="memname">typedef Struct <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#a565000634035eed1b3559b9bebcc9a12">struct_type</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -216,14 +216,14 @@ template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t
 
 </div>
 </div>
-<a class="anchor" id="a9f5c32e66cce3654530235aaf421073c"></a>
+<a class="anchor" id="a60c7865a42831b1de4900610cbad5753"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t_fieldType, t_fieldType t_struct::* t_fieldAddr, const bond::Metadata * t_metadata&gt; </div>
+template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">typedef t_fieldType <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#a9f5c32e66cce3654530235aaf421073c">value_type</a></td>
+          <td class="memname">typedef FieldType <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#a60c7865a42831b1de4900610cbad5753">value_type</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -233,19 +233,19 @@ template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a17df4b473ca6d05c6e5f1e1390e23b91"></a>
+<a class="anchor" id="ae3e473bb6e672fe80ca19f2d01306f9f"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t_fieldType, t_fieldType t_struct::* t_fieldAddr, const bond::Metadata * t_metadata&gt; </div>
+template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static const t_fieldType&amp; <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;::GetVariable </td>
+          <td class="memname">static const <a class="el" href="structbond_1_1reflection_1_1_field_template.html#a60c7865a42831b1de4900610cbad5753">value_type</a>&amp; <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::GetVariable </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="structbond_1_1reflection_1_1_field_template.html#a58100150ba9c847d98e3ec8a5e41a310">struct_type</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structbond_1_1reflection_1_1_field_template.html#a565000634035eed1b3559b9bebcc9a12">struct_type</a> &amp;&#160;</td>
           <td class="paramname"><em>object</em></td><td>)</td>
           <td></td>
         </tr>
@@ -261,19 +261,19 @@ template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t
 
 </div>
 </div>
-<a class="anchor" id="a334d048b653aa13abe35a06a1db614e2"></a>
+<a class="anchor" id="a61f075b758d3a9fdefaffc36e21a0734"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t_fieldType, t_fieldType t_struct::* t_fieldAddr, const bond::Metadata * t_metadata&gt; </div>
+template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static t_fieldType&amp; <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;::GetVariable </td>
+          <td class="memname">static <a class="el" href="structbond_1_1reflection_1_1_field_template.html#a60c7865a42831b1de4900610cbad5753">value_type</a>&amp; <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::GetVariable </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a58100150ba9c847d98e3ec8a5e41a310">struct_type</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a565000634035eed1b3559b9bebcc9a12">struct_type</a> &amp;&#160;</td>
           <td class="paramname"><em>object</em></td><td>)</td>
           <td></td>
         </tr>
@@ -290,17 +290,17 @@ template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a0c5eabf7f59c8325eeb529e3441afe0d"></a>
+<a class="anchor" id="a32f61cd5d3d0fc4d70988458c2780b46"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t_fieldType, t_fieldType t_struct::* t_fieldAddr, const bond::Metadata * t_metadata&gt; </div>
+template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="structbond_1_1reflection_1_1_field_template.html">FieldTemplate</a>&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#a719ff331dae8fb50300bd12f8a6d0acf">field_pointer</a> <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;::field_ptr = t_fieldAddr</td>
+          <td class="memname">const <a class="el" href="structbond_1_1reflection_1_1_field_template.html">FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::<a class="el" href="structbond_1_1reflection_1_1_field_template.html#aae709b2554b797f5209f8f394284bf1d">field_pointer</a> <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::field = field_ptr</td>
         </tr>
       </table>
   </td>
@@ -314,17 +314,17 @@ template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t
 
 </div>
 </div>
-<a class="anchor" id="a3823fba51296c5c2ee5519d0f9776646"></a>
+<a class="anchor" id="a4ff5e53e60cc1ff3e6c0267c4f7faa8e"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t_fieldType, t_fieldType t_struct::* t_fieldAddr, const bond::Metadata * t_metadata&gt; </div>
+template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const uint16_t <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;::id = t_id</td>
+          <td class="memname">const uint16_t <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::id = field_id</td>
         </tr>
       </table>
   </td>
@@ -338,17 +338,17 @@ template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t
 
 </div>
 </div>
-<a class="anchor" id="a05340e7c5e5febc9ba8fe66e411dc31c"></a>
+<a class="anchor" id="aef3425067490554d13260a0fbd6277fe"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;uint16_t t_id, typename t_modifierTag, typename t_struct, typename t_fieldType, t_fieldType t_struct::* t_fieldAddr, const bond::Metadata * t_metadata&gt; </div>
+template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const bond::Metadata &amp; <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; t_id, t_modifierTag, t_struct, t_fieldType, t_fieldAddr, t_metadata &gt;::metadata = *t_metadata</td>
+          <td class="memname">const bond::Metadata &amp; <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::metadata = *metadata_ptr</td>
         </tr>
       </table>
   </td>
