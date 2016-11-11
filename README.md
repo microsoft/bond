@@ -178,8 +178,10 @@ cmake .. \
 Install the following tools:
 
 - Visual Studio 2013 or 2015
+    - Visual Studio 2015 is required to build C# Bond from source
 - CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
 - Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
+- .NET Core SDK ([https://www.microsoft.com/net/core](https://www.microsoft.com/net/core#windows))
 
 If you are building on a network behind a proxy, set the environment variable
 `HTTP_PROXY`, e.g.:
@@ -194,9 +196,16 @@ Update the cabal package database:
 cabal update
 ```
 
-Now you are ready to build the C# version of Bond. Open the solution file
-`cs\cs.sln` in Visual Studio and build as usual. The C# unit tests can
+Now you are ready to build the C# 4.0/4.5 version of Bond. Open the solution
+file `cs\cs.sln` in Visual Studio and build as usual. The C# unit tests can
 also be run from within the solution.
+
+To build the .NET Core version of Bond, run the build script. The `-Test`
+switch is used to run the unit tests as well.
+
+```bash
+.\cs\dnc\build -Test
+```
 
 The C++ and Python versions of Bond additionally require:
 

@@ -1150,7 +1150,7 @@ Pre-compiled versions of Bond are distributed via NuGet packages from NuGet.org.
 [![Bond.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.CSharp/)
 **Bond.CSharp** - An omnibus package that pulls in everything required to
 use Bond in a C# project. If you're not sure which packages to use, use this
-one. (It will pull in the rest of them.)
+one. (It will pull in all the other packages you need.)
 
 [![Bond.Core.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Core.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Core.CSharp/)
 **Bond.Core.CSharp** - The assemblies required to use Bond at runtime.
@@ -1188,6 +1188,27 @@ Bond.IO.dll (which provides the types in the Bond.IO.Unsafe namespace) is
 currently Windows-only, as it relies on some Win32 APIs. To stay
 cross-platform, only use the types from Bond.dll (in the Bond.IO.Safe
 namespace).
+
+## Frameworks targeted ##
+
+This table lists which frameworks are targeted by the Bond assemblies.
+
+NB: This table is accurate for releases _after_ 5.0.0.
+
+| Assembly                 | .NET 4.0 | .NET 4.5 | Profile78 | .NET Standard 1.0 | .NET Standard 1.3 | .NET Standard 1.6 |
+|--------------------------|----------|----------|-----------|-------------------|-------------------|-------------------|
+| Bond.Attributes.dll      | Yes      | Yes      | Yes       | Yes               | ←                 | Yes               |
+| Bond.Reflection.dll      | Yes      | Yes      | Yes       | Yes               | ←                 | Yes               |
+| Bond.dll                 | Yes      | Yes      | Yes       | Yes               | ←                 | Yes               |
+| Bond.JSON.dll            | Yes      | Yes      | No        | Yes               | ←                 | Yes               |
+| Bond.IO.dll              | Win only | Win only | No        | No                | Win only          | Win only          |
+| Bond.Comm.Interfaces.dll | No       | Yes      | Yes       | ←                 | ←                 | ←                 |
+| Bond.Comm.Layers.dll     | No       | Yes      | Yes       | ←                 | ←                 | ←                 |
+| Bond.Comm.Services.dll   | No       | Yes      | Yes       | ←                 | ←                 | ←                 |
+| Bond.Comm.Epoxy.dll      | No       | Yes      | No        | No                | No                | No                |
+
+A left arrow (←) indicates that support for that framework is provided by
+the version of the assembly that targets a lower version of the framework.
 
 Bond Comm
 =========
