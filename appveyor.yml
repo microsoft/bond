@@ -43,6 +43,8 @@
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
               BOND_CONFIG: Fields
+            - BOND_BUILD: "C# .NET Core"
+              BOND_CONFIG: Debug
 
     install:
         - ps: >-
@@ -129,7 +131,7 @@
     build_script:
         - ps: >-
             $env:PreferredToolArchitecture = "x64"
-            
+
             $env:_IsNativeEnvironment = "true"
 
             if ($env:BOND_BUILD -eq "Doc") {
@@ -181,6 +183,12 @@
 
             }
 
+            if ($env:BOND_BUILD -eq "C# .NET Core") {
+
+                & cs\dnc\build.ps1 -Configuration $env:BOND_CONFIG -Verbosity minimal -MSBuildLogger "C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+            }
+
             if (-not $?) { throw "build failed" }
 
     test_script:
@@ -203,6 +211,13 @@
                 # We need to investigate why these tests are failing in AppVeyor, but not locally.
                 # nunit-console-x86 /framework:net-4.5 /labels "cs\test\comm\bin\debug\net45\${env:BOND_OUTPUT}\Bond.Comm.UnitTest.dll"
                 # if (-not $?) { throw "tests failed" }
+
+            }
+
+            if ($env:BOND_BUILD -eq "C# .NET Core") {
+
+                & cs\dnc\build.ps1 -Test -Configuration $env:BOND_CONFIG -Verbosity minimal -MSBuildLogger "C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                if (-not $?) { throw "tests failed" }
 
             }
 

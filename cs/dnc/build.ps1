@@ -17,6 +17,20 @@ The optional delay sign key to use.
 
 Whether to run the tests.
 
+.PARAMETER Verbosity
+
+The verbosity of the build process. Valid values are, in increasing order of
+verbosity:
+- quiet
+- minimal
+- normal
+- detailed
+
+.PARAMETER MSBuildLogger
+
+An optional logger to pass to MSBuild. Consult the MSBuild help for the
+switch /logger: for details about the syntax.
+
 .EXAMPLE
 
 PS c:\src\bond\cs\dnc> .\build.ps1
@@ -42,15 +56,39 @@ param
     $DelaySignKey = "",
 
     [switch]
-    $Test = $false
+    $Test = $false,
+
+    [ValidateSet("quiet", "minimal", "normal", "detailed")]
+    [string]
+    $Verbosity = "minimal",
+
+    [string]
+    $MSBuildLogger = ""
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+function ComputeMSBuildVerbosity() {
+    # The set of values we use map directly to MSBuild levels.
+    $Verbosity
+}
+
+function ComputeDotNetRestoreVerbosity() {
+    switch ($Verbosity) {
+        'quiet' { 'minimal' }
+        'minimal' { 'minimal' }
+        'normal' { 'information' }
+        'detailed' { 'debug' }
+    }
+}
+
 try
 {
-    $script:dotnet_cfg = $Configuration
+    $script:msb_logger = $null
+    if ($MSBuildLogger) {
+        $script:msb_logger = "/logger:$($MSBuildLogger)"
+    }
 
     # We push to a stack other than the default one so that we don't
     # accidentally change its contents.
@@ -61,6 +99,9 @@ try
     $script:script_dir = Split-Path -LiteralPath $PSCommandPath
     Push-Location -Path (Split-Path -LiteralPath $PSCommandPath) -StackName bond_dnc_build
 
+    # The dotnet configurations have a -delay if we use delay signing. We
+    # also need to copy the key to the fixed location.
+    $script:dotnet_cfg = $Configuration
     if ($DelaySignKey) {
         mkdir -Force 'keys'
         if (-not $?) {
@@ -75,17 +116,17 @@ try
         $script:dotnet_cfg += "-delay"
     }
 
-    msbuild /m /p:Configuration=$Configuration /p:Platform=Win32 '..\Compiler.vcxproj'
+    msbuild /m "/verbosity:$(ComputeMSBuildVerbosity)" $script:msb_logger /p:Configuration=$Configuration /p:Platform=Win32 '..\Compiler.vcxproj'
     if (-not $?) {
         throw "Building GBC failed."
     }
 
-    msbuild /m /p:Configuration=$Configuration 'dirs.proj'
+    msbuild /m "/verbosity:$(ComputeMSBuildVerbosity)" $script:msb_logger /p:Configuration=$Configuration 'dirs.proj'
     if (-not $?) {
         throw "Code generation failed."
     }
 
-    dotnet restore
+    dotnet restore --verbosity (ComputeDotNetRestoreVerbosity)
     if (-not $?) {
         throw "Package restore failed."
     }
