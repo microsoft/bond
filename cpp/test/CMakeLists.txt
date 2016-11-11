@@ -1,6 +1,9 @@
 # warning C4310: cast truncates constant value
 cxx_add_compile_options(MSVC /wd4310)
 
+# Core unit tests don't build under VS2013 without this.
+cxx_add_compile_options(MSVC /EHa)
+
 add_subfolder (compat/core "tests/compat/core")
 
 if (Boost_UNIT_TEST_FRAMEWORK_FOUND)
