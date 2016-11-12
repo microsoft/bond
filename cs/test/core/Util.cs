@@ -17,7 +17,7 @@ namespace UnitTest
 
     public static class Util
     {
-        private const int UnsafeBufferSize = 192 * 1024;
+        private const int UnsafeBufferSize = 4 * 1024 * 1024;
 
         public static IEnumerable<MethodInfo> GetDeclaredMethods(this Type type, string name)
         {
