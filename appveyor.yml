@@ -26,12 +26,12 @@
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 32
-              BOND_BOOST: 59
+              BOND_BOOST: 60
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015 Win64"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
-              BOND_BOOST: 59
+              BOND_BOOST: 60
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
@@ -39,7 +39,7 @@
               BOND_VS: "Visual Studio 12 2013"
               BOND_VS_NUM: 12
               BOND_ARCH: 32
-              BOND_BOOST: 56
+              BOND_BOOST: 58
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
               BOND_CONFIG: Fields
