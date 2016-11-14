@@ -1193,7 +1193,8 @@ namespace).
 
 This table lists which frameworks are targeted by the Bond assemblies.
 
-NB: This table is accurate for releases _after_ 5.0.0.
+This table is accurate for Bond NuGet packages 5.1.0 and later and Bond Comm
+0.9.0 and later.
 
 | Assembly                 | .NET 4.0 | .NET 4.5 | Profile78 | .NET Standard 1.0 | .NET Standard 1.3 | .NET Standard 1.6 |
 |--------------------------|----------|----------|-----------|-------------------|-------------------|-------------------|
@@ -1256,7 +1257,7 @@ The initial release of Bond Comm provides a binary transport called
 The Epoxy transport is designed to be .NET&nbsp;Core compliant, which will
 allow for cross-platform support.
 
-TLS support in Epoxy is forthcoming.
+TLS support in Epoxy is available as of version 0.6.0.
 
 
 ### SimpleInMem Transport ###

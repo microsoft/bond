@@ -28,10 +28,10 @@ potential pitfalls before too much time is spent.
   [README](https://github.com/Microsoft/bond/blob/master/README.md).
 * Make small and atomic commits that include tests.
 * Make sure that all the tests continue to pass.
-  * The CMake `check` target will run the C++ tests for you.
-  * The C# unit tests can be run from
-    [the command line](https://github.com/Microsoft/bond/blob/56b5914a5bb41178521e01f6ce078d429e3e6b71/appveyor.yml#L214)
-    or from within Visual Studio.
+    * The CMake `check` target will run the C++ tests for you.
+    * The C# unit tests can be run from
+      [the command line](https://github.com/Microsoft/bond/blob/56b5914a5bb41178521e01f6ce078d429e3e6b71/appveyor.yml#L214)
+      or from within Visual Studio.
 * Update the [changelog](https://github.com/Microsoft/bond/blob/master/CHANGELOG.md).
 
 ### Rebase commits
