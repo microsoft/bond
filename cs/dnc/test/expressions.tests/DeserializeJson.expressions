@@ -1,0 +1,1075 @@
+.Lambda #Lambda1<System.Func`2[Bond.Protocols.SimpleJsonReader,System.Object]>(Bond.Protocols.SimpleJsonReader $reader) {
+    .Block(ExpressionsTest.Example $Example) {
+        .Block() {
+            $Example = .New ExpressionsTest.Example();
+            .Block(
+                System.Byte $state,
+                Bond.Expressions.RequiredFields+Bitmap $requiredFields) {
+                .Default(System.Void);
+                $requiredFields = .New Bond.Expressions.RequiredFields+Bitmap(1);
+                $state = .Constant<System.Byte>(1);
+                .Loop  {
+                    .If (
+                        !$reader.EOF && $state != .Constant<System.Byte>(5)
+                    ) {
+                        .Switch ($reader.TokenType) {
+                        .Case (.Constant<Newtonsoft.Json.JsonToken>(None)):
+                                .Switch ($state) {
+                                .Case (.Constant<System.Byte>(1)):
+                                        .Block() {
+                                            .Call $reader.Read();
+                                            .Default(System.Void)
+                                        }
+                                .Default:
+                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                                .NewArray System.Object[] {
+                                                    (System.Object)$reader.TokenType,
+                                                    (System.Object)$state,
+                                                    (System.Object)$reader.LineNumber,
+                                                    (System.Object)$reader.LinePosition
+                                                }))
+                                }
+                        .Case (.Constant<Newtonsoft.Json.JsonToken>(StartObject)):
+                                .Switch ($state) {
+                                .Case (.Constant<System.Byte>(1)):
+                                        .Block() {
+                                            .Call $reader.Read();
+                                            $state = .Constant<System.Byte>(2);
+                                            .Default(System.Void)
+                                        }
+                                .Default:
+                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                                .NewArray System.Object[] {
+                                                    (System.Object)$reader.TokenType,
+                                                    (System.Object)$state,
+                                                    (System.Object)$reader.LineNumber,
+                                                    (System.Object)$reader.LinePosition
+                                                }))
+                                }
+                        .Case (.Constant<Newtonsoft.Json.JsonToken>(EndObject)):
+                                .Switch ($state) {
+                                .Case (.Constant<System.Byte>(2)):
+                                        .Block() {
+                                            .Call $reader.Read();
+                                            $state = .Constant<System.Byte>(5);
+                                            .Default(System.Void)
+                                        }
+                                .Default:
+                                        .Default(System.Void)
+                                }
+                        .Case (.Constant<Newtonsoft.Json.JsonToken>(PropertyName)):
+                                .Switch ($state) {
+                                .Case (.Constant<System.Byte>(2)):
+                                        .Block() {
+                                            .If ((System.String)$reader.Value == "vvb") {
+                                                .Block() {
+                                                    .Call $reader.Read();
+                                                    .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Null)) {
+                                                        .Block() {
+                                                            .Call $reader.Read();
+                                                            .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example).vvb_item) {
+                                                                (((ExpressionsTest.Base)$Example).vvb).Capacity = 0;
+                                                                .Loop  {
+                                                                    .Break end { }
+                                                                }
+                                                                .LabelTarget end:;
+                                                                .Default(System.Void)
+                                                            }
+                                                        }
+                                                    } .Else {
+                                                        .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(StartArray)) {
+                                                            .Block() {
+                                                                .Call $reader.Read();
+                                                                .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example).vvb_item) {
+                                                                    (((ExpressionsTest.Base)$Example).vvb).Capacity = 0;
+                                                                    .Loop  {
+                                                                        .If ($reader.TokenType != .Constant<Newtonsoft.Json.JsonToken>(EndArray)) {
+                                                                            .Block() {
+                                                                                .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Null)) {
+                                                                                    .Block() {
+                                                                                        .Call $reader.Read();
+                                                                                        .Block(System.UInt64 $Convert(Example).vvb_item_item) {
+                                                                                            $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64](0);
+                                                                                            .Loop  {
+                                                                                                .Break end { }
+                                                                                            }
+                                                                                            .LabelTarget end:;
+                                                                                            .Default(System.Void)
+                                                                                        }
+                                                                                    }
+                                                                                } .Else {
+                                                                                    .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(StartArray)) {
+                                                                                        .Block() {
+                                                                                            .Call $reader.Read();
+                                                                                            .Block(System.UInt64 $Convert(Example).vvb_item_item) {
+                                                                                                $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64](0);
+                                                                                                .Loop  {
+                                                                                                    .If ($reader.TokenType != .Constant<Newtonsoft.Json.JsonToken>(EndArray)) {
+                                                                                                        .Block() {
+                                                                                                            .Block() {
+                                                                                                                .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                                                    $Convert(Example).vvb_item_item = (System.UInt64)((System.Int64)$reader.Value)
+                                                                                                                } .Else {
+                                                                                                                    .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                            "{0} (line {1} position {2})",
+                                                                                                                            .NewArray System.Object[] {
+                                                                                                                                .Call System.String.Format(
+                                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                    "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                    .NewArray System.Object[] {
+                                                                                                                                        .Constant<System.Object>(Integer),
+                                                                                                                                        (System.Object)$reader.TokenType
+                                                                                                                                    }),
+                                                                                                                                (System.Object)$reader.LineNumber,
+                                                                                                                                (System.Object)$reader.LinePosition
+                                                                                                                            }))
+                                                                                                                };
+                                                                                                                .Call $reader.Read()
+                                                                                                            };
+                                                                                                            .Call $Convert(Example).vvb_item.Add($Convert(Example).vvb_item_item)
+                                                                                                        }
+                                                                                                    } .Else {
+                                                                                                        .Break end { }
+                                                                                                    }
+                                                                                                }
+                                                                                                .LabelTarget end:;
+                                                                                                .Default(System.Void)
+                                                                                            };
+                                                                                            .Call $reader.Read()
+                                                                                        }
+                                                                                    } .Else {
+                                                                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                "{0} (line {1} position {2})",
+                                                                                                .NewArray System.Object[] {
+                                                                                                    "Expected JSON array or null.",
+                                                                                                    (System.Object)$reader.LineNumber,
+                                                                                                    (System.Object)$reader.LinePosition
+                                                                                                }))
+                                                                                    }
+                                                                                };
+                                                                                .Call (((ExpressionsTest.Base)$Example).vvb).Add($Convert(Example).vvb_item)
+                                                                            }
+                                                                        } .Else {
+                                                                            .Break end { }
+                                                                        }
+                                                                    }
+                                                                    .LabelTarget end:;
+                                                                    .Default(System.Void)
+                                                                };
+                                                                .Call $reader.Read()
+                                                            }
+                                                        } .Else {
+                                                            .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                    "{0} (line {1} position {2})",
+                                                                    .NewArray System.Object[] {
+                                                                        "Expected JSON array or null.",
+                                                                        (System.Object)$reader.LineNumber,
+                                                                        (System.Object)$reader.LinePosition
+                                                                    }))
+                                                        }
+                                                    }
+                                                }
+                                            } .Else {
+                                                .If ((System.String)$reader.Value == "_map") {
+                                                    .Block() {
+                                                        .Call $reader.Read();
+                                                        .Block() {
+                                                            .Call $reader.Read();
+                                                            .Block(
+                                                                System.Int32 $Example._map_key,
+                                                                System.Double $Example._map_value) {
+                                                                .Default(System.Void);
+                                                                .Loop  {
+                                                                    .If ($reader.TokenType != .Constant<Newtonsoft.Json.JsonToken>(EndArray)) {
+                                                                        .Block() {
+                                                                            .Block() {
+                                                                                .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                    $Example._map_key = (System.Int32)((System.Int64)$reader.Value)
+                                                                                } .Else {
+                                                                                    .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                            "{0} (line {1} position {2})",
+                                                                                            .NewArray System.Object[] {
+                                                                                                .Call System.String.Format(
+                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                    "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                    .NewArray System.Object[] {
+                                                                                                        .Constant<System.Object>(Integer),
+                                                                                                        (System.Object)$reader.TokenType
+                                                                                                    }),
+                                                                                                (System.Object)$reader.LineNumber,
+                                                                                                (System.Object)$reader.LinePosition
+                                                                                            }))
+                                                                                };
+                                                                                .Call $reader.Read()
+                                                                            };
+                                                                            $reader.TokenType != .Constant<Newtonsoft.Json.JsonToken>(EndArray);
+                                                                            .Block() {
+                                                                                .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                    $Example._map_value = (System.Double)((System.Int64)$reader.Value)
+                                                                                } .Else {
+                                                                                    .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Float)) {
+                                                                                        $Example._map_value = (System.Double)$reader.Value
+                                                                                    } .Else {
+                                                                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                "{0} (line {1} position {2})",
+                                                                                                .NewArray System.Object[] {
+                                                                                                    .Call System.String.Format(
+                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                        "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                        .NewArray System.Object[] {
+                                                                                                            .Constant<System.Object>(Float),
+                                                                                                            (System.Object)$reader.TokenType
+                                                                                                        }),
+                                                                                                    (System.Object)$reader.LineNumber,
+                                                                                                    (System.Object)$reader.LinePosition
+                                                                                                }))
+                                                                                    }
+                                                                                };
+                                                                                .Call $reader.Read()
+                                                                            };
+                                                                            ($Example._map).Item[$Example._map_key] = $Example._map_value
+                                                                        }
+                                                                    } .Else {
+                                                                        .Break end { }
+                                                                    }
+                                                                }
+                                                                .LabelTarget end:
+                                                            };
+                                                            .Call $reader.Read()
+                                                        }
+                                                    }
+                                                } .Else {
+                                                    .If ((System.String)$reader.Value == "b") {
+                                                        .Block() {
+                                                            .Call $reader.Read();
+                                                            .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Null)) {
+                                                                .Block() {
+                                                                    .Call $reader.Read();
+                                                                    .Block(
+                                                                        System.Int32 $index,
+                                                                        System.Byte[] $array) {
+                                                                        .Block() {
+                                                                            $index = 0;
+                                                                            $array = .NewArray System.Byte[0]
+                                                                        };
+                                                                        .Loop  {
+                                                                            .Break end { }
+                                                                        }
+                                                                        .LabelTarget end:;
+                                                                        $Example.b = .New System.ArraySegment`1[System.Byte](
+                                                                            $array,
+                                                                            0,
+                                                                            $index)
+                                                                    }
+                                                                }
+                                                            } .Else {
+                                                                .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(StartArray)) {
+                                                                    .Block() {
+                                                                        .Call $reader.Read();
+                                                                        .Block(
+                                                                            System.Int32 $index,
+                                                                            System.Byte[] $array) {
+                                                                            .Block() {
+                                                                                $index = 0;
+                                                                                $array = .NewArray System.Byte[0]
+                                                                            };
+                                                                            .Loop  {
+                                                                                .If ($reader.TokenType != .Constant<Newtonsoft.Json.JsonToken>(EndArray)) {
+                                                                                    .Block() {
+                                                                                        .If ($index >= $array.Length) {
+                                                                                            .Call System.Array.Resize(
+                                                                                                $array,
+                                                                                                .If ($index > 512) {
+                                                                                                    $index * 2
+                                                                                                } .Else {
+                                                                                                    1024
+                                                                                                })
+                                                                                        } .Else {
+                                                                                            .Default(System.Void)
+                                                                                        };
+                                                                                        .Block() {
+                                                                                            .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                                $array[$index++] = (System.Byte)((System.Int64)$reader.Value)
+                                                                                            } .Else {
+                                                                                                .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                        "{0} (line {1} position {2})",
+                                                                                                        .NewArray System.Object[] {
+                                                                                                            .Call System.String.Format(
+                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                .NewArray System.Object[] {
+                                                                                                                    .Constant<System.Object>(Integer),
+                                                                                                                    (System.Object)$reader.TokenType
+                                                                                                                }),
+                                                                                                            (System.Object)$reader.LineNumber,
+                                                                                                            (System.Object)$reader.LinePosition
+                                                                                                        }))
+                                                                                            };
+                                                                                            .Call $reader.Read()
+                                                                                        }
+                                                                                    }
+                                                                                } .Else {
+                                                                                    .Break end { }
+                                                                                }
+                                                                            }
+                                                                            .LabelTarget end:;
+                                                                            $Example.b = .New System.ArraySegment`1[System.Byte](
+                                                                                $array,
+                                                                                0,
+                                                                                $index)
+                                                                        };
+                                                                        .Call $reader.Read()
+                                                                    }
+                                                                } .Else {
+                                                                    .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                            "{0} (line {1} position {2})",
+                                                                            .NewArray System.Object[] {
+                                                                                "Expected JSON array or null.",
+                                                                                (System.Object)$reader.LineNumber,
+                                                                                (System.Object)$reader.LinePosition
+                                                                            }))
+                                                                }
+                                                            }
+                                                        }
+                                                    } .Else {
+                                                        .If ((System.String)$reader.Value == "_nestedVector") {
+                                                            .Block() {
+                                                                .Call $reader.Read();
+                                                                .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Null)) {
+                                                                    .Block() {
+                                                                        .Call $reader.Read();
+                                                                        .Block(ExpressionsTest.Nested $Example._nestedVector_item) {
+                                                                            .Default(System.Void);
+                                                                            .Loop  {
+                                                                                .Break end { }
+                                                                            }
+                                                                            .LabelTarget end:;
+                                                                            .Default(System.Void)
+                                                                        }
+                                                                    }
+                                                                } .Else {
+                                                                    .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(StartArray)) {
+                                                                        .Block() {
+                                                                            .Call $reader.Read();
+                                                                            .Block(ExpressionsTest.Nested $Example._nestedVector_item) {
+                                                                                .Default(System.Void);
+                                                                                .Loop  {
+                                                                                    .If ($reader.TokenType != .Constant<Newtonsoft.Json.JsonToken>(EndArray)) {
+                                                                                        .Block() {
+                                                                                            .Block() {
+                                                                                                $Example._nestedVector_item = .New ExpressionsTest.Nested();
+                                                                                                .Block(
+                                                                                                    System.Byte $state,
+                                                                                                    Bond.Expressions.RequiredFields+Bitmap $requiredFields) {
+                                                                                                    .Default(System.Void);
+                                                                                                    .Default(System.Void);
+                                                                                                    $state = .Constant<System.Byte>(1);
+                                                                                                    .Loop  {
+                                                                                                        .If (
+                                                                                                            !$reader.EOF && $state != .Constant<System.Byte>(5)
+                                                                                                        ) {
+                                                                                                            .Switch ($reader.TokenType) {
+                                                                                                            .Case (.Constant<Newtonsoft.Json.JsonToken>(None)):
+                                                                                                                    .Switch ($state) {
+                                                                                                                    .Case (.Constant<System.Byte>(1)):
+                                                                                                                            .Block() {
+                                                                                                                                .Call $reader.Read();
+                                                                                                                                .Default(System.Void)
+                                                                                                                            }
+                                                                                                                    .Default:
+                                                                                                                            .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                    "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                                                                                                                    .NewArray System.Object[] {
+                                                                                                                                        (System.Object)$reader.TokenType,
+                                                                                                                                        (System.Object)$state,
+                                                                                                                                        (System.Object)$reader.LineNumber,
+                                                                                                                                        (System.Object)$reader.LinePosition
+                                                                                                                                    }))
+                                                                                                                    }
+                                                                                                            .Case (.Constant<Newtonsoft.Json.JsonToken>(StartObject)):
+                                                                                                                    .Switch ($state) {
+                                                                                                                    .Case (.Constant<System.Byte>(1)):
+                                                                                                                            .Block() {
+                                                                                                                                .Call $reader.Read();
+                                                                                                                                $state = .Constant<System.Byte>(2);
+                                                                                                                                .Default(System.Void)
+                                                                                                                            }
+                                                                                                                    .Default:
+                                                                                                                            .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                    "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                                                                                                                    .NewArray System.Object[] {
+                                                                                                                                        (System.Object)$reader.TokenType,
+                                                                                                                                        (System.Object)$state,
+                                                                                                                                        (System.Object)$reader.LineNumber,
+                                                                                                                                        (System.Object)$reader.LinePosition
+                                                                                                                                    }))
+                                                                                                                    }
+                                                                                                            .Case (.Constant<Newtonsoft.Json.JsonToken>(EndObject)):
+                                                                                                                    .Switch ($state) {
+                                                                                                                    .Case (.Constant<System.Byte>(2)):
+                                                                                                                            .Block() {
+                                                                                                                                .Call $reader.Read();
+                                                                                                                                $state = .Constant<System.Byte>(5);
+                                                                                                                                .Default(System.Void)
+                                                                                                                            }
+                                                                                                                    .Default:
+                                                                                                                            .Default(System.Void)
+                                                                                                                    }
+                                                                                                            .Case (.Constant<Newtonsoft.Json.JsonToken>(PropertyName)):
+                                                                                                                    .Switch ($state) {
+                                                                                                                    .Case (.Constant<System.Byte>(2)):
+                                                                                                                            .Block() {
+                                                                                                                                .If ((System.String)$reader.Value == "_double") {
+                                                                                                                                    .Block() {
+                                                                                                                                        .Call $reader.Read();
+                                                                                                                                        .Block() {
+                                                                                                                                            .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                                                                                $Example._nestedVector_item._double = (System.Double)((System.Int64)$reader.Value)
+                                                                                                                                            } .Else {
+                                                                                                                                                .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Float)) {
+                                                                                                                                                    $Example._nestedVector_item._double = (System.Double)$reader.Value
+                                                                                                                                                } .Else {
+                                                                                                                                                    .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                                            "{0} (line {1} position {2})",
+                                                                                                                                                            .NewArray System.Object[] {
+                                                                                                                                                                .Call System.String.Format(
+                                                                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                                                    "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                                                    .NewArray System.Object[] {
+                                                                                                                                                                        .Constant<System.Object>(Float),
+                                                                                                                                                                        (System.Object)$reader.TokenType
+                                                                                                                                                                    }),
+                                                                                                                                                                (System.Object)$reader.LineNumber,
+                                                                                                                                                                (System.Object)$reader.LinePosition
+                                                                                                                                                            }))
+                                                                                                                                                }
+                                                                                                                                            };
+                                                                                                                                            .Call $reader.Read()
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                } .Else {
+                                                                                                                                    .Block() {
+                                                                                                                                        .Call $reader.Read();
+                                                                                                                                        .Block() {
+                                                                                                                                            .If (
+                                                                                                                                                $reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(StartObject) || $reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(StartArray)
+                                                                                                                                            ) {
+                                                                                                                                                .Call $reader.Skip()
+                                                                                                                                            } .Else {
+                                                                                                                                                .Default(System.Void)
+                                                                                                                                            };
+                                                                                                                                            .Call $reader.Read()
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                };
+                                                                                                                                .Default(System.Void)
+                                                                                                                            }
+                                                                                                                    .Default:
+                                                                                                                            .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                    "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                                                                                                                    .NewArray System.Object[] {
+                                                                                                                                        (System.Object)$reader.TokenType,
+                                                                                                                                        (System.Object)$state,
+                                                                                                                                        (System.Object)$reader.LineNumber,
+                                                                                                                                        (System.Object)$reader.LinePosition
+                                                                                                                                    }))
+                                                                                                                    }
+                                                                                                            .Default:
+                                                                                                                    .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                            "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                                                                                                            .NewArray System.Object[] {
+                                                                                                                                (System.Object)$reader.TokenType,
+                                                                                                                                (System.Object)$state,
+                                                                                                                                (System.Object)$reader.LineNumber,
+                                                                                                                                (System.Object)$reader.LinePosition
+                                                                                                                            }))
+                                                                                                            }
+                                                                                                        } .Else {
+                                                                                                            .Break endStateMachineLoop { }
+                                                                                                        }
+                                                                                                    }
+                                                                                                    .LabelTarget endStateMachineLoop:;
+                                                                                                    .Default(System.Void);
+                                                                                                    .Default(System.Void)
+                                                                                                }
+                                                                                            };
+                                                                                            .Call ($Example._nestedVector).Add($Example._nestedVector_item)
+                                                                                        }
+                                                                                    } .Else {
+                                                                                        .Break end { }
+                                                                                    }
+                                                                                }
+                                                                                .LabelTarget end:;
+                                                                                .Default(System.Void)
+                                                                            };
+                                                                            .Call $reader.Read()
+                                                                        }
+                                                                    } .Else {
+                                                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                "{0} (line {1} position {2})",
+                                                                                .NewArray System.Object[] {
+                                                                                    "Expected JSON array or null.",
+                                                                                    (System.Object)$reader.LineNumber,
+                                                                                    (System.Object)$reader.LinePosition
+                                                                                }))
+                                                                    }
+                                                                }
+                                                            }
+                                                        } .Else {
+                                                            .If ((System.String)$reader.Value == "_int32Vector") {
+                                                                .Block() {
+                                                                    .Call $reader.Read();
+                                                                    .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Null)) {
+                                                                        .Block() {
+                                                                            .Call $reader.Read();
+                                                                            .Block(System.Int32 $Example._int32Vector_item) {
+                                                                                ($Example._int32Vector).Capacity = 0;
+                                                                                .Loop  {
+                                                                                    .Break end { }
+                                                                                }
+                                                                                .LabelTarget end:;
+                                                                                .Default(System.Void)
+                                                                            }
+                                                                        }
+                                                                    } .Else {
+                                                                        .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(StartArray)) {
+                                                                            .Block() {
+                                                                                .Call $reader.Read();
+                                                                                .Block(System.Int32 $Example._int32Vector_item) {
+                                                                                    ($Example._int32Vector).Capacity = 0;
+                                                                                    .Loop  {
+                                                                                        .If ($reader.TokenType != .Constant<Newtonsoft.Json.JsonToken>(EndArray)) {
+                                                                                            .Block() {
+                                                                                                .Block() {
+                                                                                                    .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                                        $Example._int32Vector_item = (System.Int32)((System.Int64)$reader.Value)
+                                                                                                    } .Else {
+                                                                                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                "{0} (line {1} position {2})",
+                                                                                                                .NewArray System.Object[] {
+                                                                                                                    .Call System.String.Format(
+                                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                        "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                        .NewArray System.Object[] {
+                                                                                                                            .Constant<System.Object>(Integer),
+                                                                                                                            (System.Object)$reader.TokenType
+                                                                                                                        }),
+                                                                                                                    (System.Object)$reader.LineNumber,
+                                                                                                                    (System.Object)$reader.LinePosition
+                                                                                                                }))
+                                                                                                    };
+                                                                                                    .Call $reader.Read()
+                                                                                                };
+                                                                                                .Call ($Example._int32Vector).Add($Example._int32Vector_item)
+                                                                                            }
+                                                                                        } .Else {
+                                                                                            .Break end { }
+                                                                                        }
+                                                                                    }
+                                                                                    .LabelTarget end:;
+                                                                                    .Default(System.Void)
+                                                                                };
+                                                                                .Call $reader.Read()
+                                                                            }
+                                                                        } .Else {
+                                                                            .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                    "{0} (line {1} position {2})",
+                                                                                    .NewArray System.Object[] {
+                                                                                        "Expected JSON array or null.",
+                                                                                        (System.Object)$reader.LineNumber,
+                                                                                        (System.Object)$reader.LinePosition
+                                                                                    }))
+                                                                        }
+                                                                    }
+                                                                }
+                                                            } .Else {
+                                                                .If ((System.String)$reader.Value == "guid") {
+                                                                    .Block() {
+                                                                        .Call $reader.Read();
+                                                                        .Block() {
+                                                                            .Block(
+                                                                                System.Byte $state,
+                                                                                Bond.Expressions.RequiredFields+Bitmap $requiredFields) {
+                                                                                .Default(System.Void);
+                                                                                .Default(System.Void);
+                                                                                $state = .Constant<System.Byte>(1);
+                                                                                .Loop  {
+                                                                                    .If (
+                                                                                        !$reader.EOF && $state != .Constant<System.Byte>(5)
+                                                                                    ) {
+                                                                                        .Switch ($reader.TokenType) {
+                                                                                        .Case (.Constant<Newtonsoft.Json.JsonToken>(None)):
+                                                                                                .Switch ($state) {
+                                                                                                .Case (.Constant<System.Byte>(1)):
+                                                                                                        .Block() {
+                                                                                                            .Call $reader.Read();
+                                                                                                            .Default(System.Void)
+                                                                                                        }
+                                                                                                .Default:
+                                                                                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                                                                                                .NewArray System.Object[] {
+                                                                                                                    (System.Object)$reader.TokenType,
+                                                                                                                    (System.Object)$state,
+                                                                                                                    (System.Object)$reader.LineNumber,
+                                                                                                                    (System.Object)$reader.LinePosition
+                                                                                                                }))
+                                                                                                }
+                                                                                        .Case (.Constant<Newtonsoft.Json.JsonToken>(StartObject)):
+                                                                                                .Switch ($state) {
+                                                                                                .Case (.Constant<System.Byte>(1)):
+                                                                                                        .Block() {
+                                                                                                            .Call $reader.Read();
+                                                                                                            $state = .Constant<System.Byte>(2);
+                                                                                                            .Default(System.Void)
+                                                                                                        }
+                                                                                                .Default:
+                                                                                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                                                                                                .NewArray System.Object[] {
+                                                                                                                    (System.Object)$reader.TokenType,
+                                                                                                                    (System.Object)$state,
+                                                                                                                    (System.Object)$reader.LineNumber,
+                                                                                                                    (System.Object)$reader.LinePosition
+                                                                                                                }))
+                                                                                                }
+                                                                                        .Case (.Constant<Newtonsoft.Json.JsonToken>(EndObject)):
+                                                                                                .Switch ($state) {
+                                                                                                .Case (.Constant<System.Byte>(2)):
+                                                                                                        .Block() {
+                                                                                                            .Call $reader.Read();
+                                                                                                            $state = .Constant<System.Byte>(5);
+                                                                                                            .Default(System.Void)
+                                                                                                        }
+                                                                                                .Default:
+                                                                                                        .Default(System.Void)
+                                                                                                }
+                                                                                        .Case (.Constant<Newtonsoft.Json.JsonToken>(PropertyName)):
+                                                                                                .Switch ($state) {
+                                                                                                .Case (.Constant<System.Byte>(2)):
+                                                                                                        .Block() {
+                                                                                                            .If ((System.String)$reader.Value == "Data4") {
+                                                                                                                .Block() {
+                                                                                                                    .Call $reader.Read();
+                                                                                                                    .Block() {
+                                                                                                                        .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                                                            ($Example.guid).Data4 = (System.UInt64)((System.Int64)$reader.Value)
+                                                                                                                        } .Else {
+                                                                                                                            .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                    "{0} (line {1} position {2})",
+                                                                                                                                    .NewArray System.Object[] {
+                                                                                                                                        .Call System.String.Format(
+                                                                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                            "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                            .NewArray System.Object[] {
+                                                                                                                                                .Constant<System.Object>(Integer),
+                                                                                                                                                (System.Object)$reader.TokenType
+                                                                                                                                            }),
+                                                                                                                                        (System.Object)$reader.LineNumber,
+                                                                                                                                        (System.Object)$reader.LinePosition
+                                                                                                                                    }))
+                                                                                                                        };
+                                                                                                                        .Call $reader.Read()
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            } .Else {
+                                                                                                                .If ((System.String)$reader.Value == "Data3") {
+                                                                                                                    .Block() {
+                                                                                                                        .Call $reader.Read();
+                                                                                                                        .Block() {
+                                                                                                                            .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                                                                ($Example.guid).Data3 = (System.UInt16)((System.Int64)$reader.Value)
+                                                                                                                            } .Else {
+                                                                                                                                .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                        "{0} (line {1} position {2})",
+                                                                                                                                        .NewArray System.Object[] {
+                                                                                                                                            .Call System.String.Format(
+                                                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                                "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                                .NewArray System.Object[] {
+                                                                                                                                                    .Constant<System.Object>(Integer),
+                                                                                                                                                    (System.Object)$reader.TokenType
+                                                                                                                                                }),
+                                                                                                                                            (System.Object)$reader.LineNumber,
+                                                                                                                                            (System.Object)$reader.LinePosition
+                                                                                                                                        }))
+                                                                                                                            };
+                                                                                                                            .Call $reader.Read()
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                } .Else {
+                                                                                                                    .If ((System.String)$reader.Value == "Data2") {
+                                                                                                                        .Block() {
+                                                                                                                            .Call $reader.Read();
+                                                                                                                            .Block() {
+                                                                                                                                .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                                                                    ($Example.guid).Data2 = (System.UInt16)((System.Int64)$reader.Value)
+                                                                                                                                } .Else {
+                                                                                                                                    .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                            "{0} (line {1} position {2})",
+                                                                                                                                            .NewArray System.Object[] {
+                                                                                                                                                .Call System.String.Format(
+                                                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                                    "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                                    .NewArray System.Object[] {
+                                                                                                                                                        .Constant<System.Object>(Integer),
+                                                                                                                                                        (System.Object)$reader.TokenType
+                                                                                                                                                    }),
+                                                                                                                                                (System.Object)$reader.LineNumber,
+                                                                                                                                                (System.Object)$reader.LinePosition
+                                                                                                                                            }))
+                                                                                                                                };
+                                                                                                                                .Call $reader.Read()
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    } .Else {
+                                                                                                                        .If ((System.String)$reader.Value == "Data1") {
+                                                                                                                            .Block() {
+                                                                                                                                .Call $reader.Read();
+                                                                                                                                .Block() {
+                                                                                                                                    .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                                                                        ($Example.guid).Data1 = (System.UInt32)((System.Int64)$reader.Value)
+                                                                                                                                    } .Else {
+                                                                                                                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                                "{0} (line {1} position {2})",
+                                                                                                                                                .NewArray System.Object[] {
+                                                                                                                                                    .Call System.String.Format(
+                                                                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                                                        "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                                                        .NewArray System.Object[] {
+                                                                                                                                                            .Constant<System.Object>(Integer),
+                                                                                                                                                            (System.Object)$reader.TokenType
+                                                                                                                                                        }),
+                                                                                                                                                    (System.Object)$reader.LineNumber,
+                                                                                                                                                    (System.Object)$reader.LinePosition
+                                                                                                                                                }))
+                                                                                                                                    };
+                                                                                                                                    .Call $reader.Read()
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        } .Else {
+                                                                                                                            .Block() {
+                                                                                                                                .Call $reader.Read();
+                                                                                                                                .Block() {
+                                                                                                                                    .If (
+                                                                                                                                        $reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(StartObject) || $reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(StartArray)
+                                                                                                                                    ) {
+                                                                                                                                        .Call $reader.Skip()
+                                                                                                                                    } .Else {
+                                                                                                                                        .Default(System.Void)
+                                                                                                                                    };
+                                                                                                                                    .Call $reader.Read()
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            };
+                                                                                                            .Default(System.Void)
+                                                                                                        }
+                                                                                                .Default:
+                                                                                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                                                                                                .NewArray System.Object[] {
+                                                                                                                    (System.Object)$reader.TokenType,
+                                                                                                                    (System.Object)$state,
+                                                                                                                    (System.Object)$reader.LineNumber,
+                                                                                                                    (System.Object)$reader.LinePosition
+                                                                                                                }))
+                                                                                                }
+                                                                                        .Default:
+                                                                                                .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                        "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                                                                                        .NewArray System.Object[] {
+                                                                                                            (System.Object)$reader.TokenType,
+                                                                                                            (System.Object)$state,
+                                                                                                            (System.Object)$reader.LineNumber,
+                                                                                                            (System.Object)$reader.LinePosition
+                                                                                                        }))
+                                                                                        }
+                                                                                    } .Else {
+                                                                                        .Break endStateMachineLoop { }
+                                                                                    }
+                                                                                }
+                                                                                .LabelTarget endStateMachineLoop:;
+                                                                                .Default(System.Void);
+                                                                                .Default(System.Void)
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                } .Else {
+                                                                    .If ((System.String)$reader.Value == "_double") {
+                                                                        .Block() {
+                                                                            .Call $reader.Read();
+                                                                            .Block() {
+                                                                                .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                    $Example._double = (System.Double)((System.Int64)$reader.Value)
+                                                                                } .Else {
+                                                                                    .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Float)) {
+                                                                                        $Example._double = (System.Double)$reader.Value
+                                                                                    } .Else {
+                                                                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                "{0} (line {1} position {2})",
+                                                                                                .NewArray System.Object[] {
+                                                                                                    .Call System.String.Format(
+                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                        "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                        .NewArray System.Object[] {
+                                                                                                            .Constant<System.Object>(Float),
+                                                                                                            (System.Object)$reader.TokenType
+                                                                                                        }),
+                                                                                                    (System.Object)$reader.LineNumber,
+                                                                                                    (System.Object)$reader.LinePosition
+                                                                                                }))
+                                                                                    }
+                                                                                };
+                                                                                .Call $reader.Read()
+                                                                            }
+                                                                        }
+                                                                    } .Else {
+                                                                        .If ((System.String)$reader.Value == "_int64") {
+                                                                            .Block() {
+                                                                                .Call $reader.Read();
+                                                                                .Block() {
+                                                                                    .Call $requiredFields.Reset(
+                                                                                        0,
+                                                                                        1L);
+                                                                                    .Block() {
+                                                                                        .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                            $Example._int64 = (System.Int64)$reader.Value
+                                                                                        } .Else {
+                                                                                            .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                    "{0} (line {1} position {2})",
+                                                                                                    .NewArray System.Object[] {
+                                                                                                        .Call System.String.Format(
+                                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                            "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                            .NewArray System.Object[] {
+                                                                                                                .Constant<System.Object>(Integer),
+                                                                                                                (System.Object)$reader.TokenType
+                                                                                                            }),
+                                                                                                        (System.Object)$reader.LineNumber,
+                                                                                                        (System.Object)$reader.LinePosition
+                                                                                                    }))
+                                                                                        };
+                                                                                        .Call $reader.Read()
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        } .Else {
+                                                                            .If ((System.String)$reader.Value == "_int8") {
+                                                                                .Block() {
+                                                                                    .Call $reader.Read();
+                                                                                    .Block() {
+                                                                                        .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                            $Example._int8 = (System.SByte)((System.Int64)$reader.Value)
+                                                                                        } .Else {
+                                                                                            .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                    "{0} (line {1} position {2})",
+                                                                                                    .NewArray System.Object[] {
+                                                                                                        .Call System.String.Format(
+                                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                            "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                            .NewArray System.Object[] {
+                                                                                                                .Constant<System.Object>(Integer),
+                                                                                                                (System.Object)$reader.TokenType
+                                                                                                            }),
+                                                                                                        (System.Object)$reader.LineNumber,
+                                                                                                        (System.Object)$reader.LinePosition
+                                                                                                    }))
+                                                                                        };
+                                                                                        .Call $reader.Read()
+                                                                                    }
+                                                                                }
+                                                                            } .Else {
+                                                                                .If ((System.String)$reader.Value == "JsonUint32") {
+                                                                                    .Block() {
+                                                                                        .Call $reader.Read();
+                                                                                        .Block() {
+                                                                                            .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
+                                                                                                $Example._uint32 = (System.UInt32)((System.Int64)$reader.Value)
+                                                                                            } .Else {
+                                                                                                .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                        "{0} (line {1} position {2})",
+                                                                                                        .NewArray System.Object[] {
+                                                                                                            .Call System.String.Format(
+                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                .NewArray System.Object[] {
+                                                                                                                    .Constant<System.Object>(Integer),
+                                                                                                                    (System.Object)$reader.TokenType
+                                                                                                                }),
+                                                                                                            (System.Object)$reader.LineNumber,
+                                                                                                            (System.Object)$reader.LinePosition
+                                                                                                        }))
+                                                                                            };
+                                                                                            .Call $reader.Read()
+                                                                                        }
+                                                                                    }
+                                                                                } .Else {
+                                                                                    .If ((System.String)$reader.Value == "_str") {
+                                                                                        .Block() {
+                                                                                            .Call $reader.Read();
+                                                                                            .Block() {
+                                                                                                .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(String)) {
+                                                                                                    $Example._str = (System.String)$reader.Value
+                                                                                                } .Else {
+                                                                                                    .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                            System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                            "{0} (line {1} position {2})",
+                                                                                                            .NewArray System.Object[] {
+                                                                                                                .Call System.String.Format(
+                                                                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                    "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                    .NewArray System.Object[] {
+                                                                                                                        .Constant<System.Object>(String),
+                                                                                                                        (System.Object)$reader.TokenType
+                                                                                                                    }),
+                                                                                                                (System.Object)$reader.LineNumber,
+                                                                                                                (System.Object)$reader.LinePosition
+                                                                                                            }))
+                                                                                                };
+                                                                                                .Call $reader.Read()
+                                                                                            }
+                                                                                        }
+                                                                                    } .Else {
+                                                                                        .If ((System.String)$reader.Value == "_bool") {
+                                                                                            .Block() {
+                                                                                                .Call $reader.Read();
+                                                                                                .Block() {
+                                                                                                    .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Boolean)) {
+                                                                                                        $Example._bool = (System.Boolean)$reader.Value
+                                                                                                    } .Else {
+                                                                                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                                                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                "{0} (line {1} position {2})",
+                                                                                                                .NewArray System.Object[] {
+                                                                                                                    .Call System.String.Format(
+                                                                                                                        System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                        "Invalid input, expected JSON token of type {0}, encountered {1}",
+                                                                                                                        .NewArray System.Object[] {
+                                                                                                                            .Constant<System.Object>(Boolean),
+                                                                                                                            (System.Object)$reader.TokenType
+                                                                                                                        }),
+                                                                                                                    (System.Object)$reader.LineNumber,
+                                                                                                                    (System.Object)$reader.LinePosition
+                                                                                                                }))
+                                                                                                    };
+                                                                                                    .Call $reader.Read()
+                                                                                                }
+                                                                                            }
+                                                                                        } .Else {
+                                                                                            .Block() {
+                                                                                                .Call $reader.Read();
+                                                                                                .Block() {
+                                                                                                    .If (
+                                                                                                        $reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(StartObject) || $reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(StartArray)
+                                                                                                    ) {
+                                                                                                        .Call $reader.Skip()
+                                                                                                    } .Else {
+                                                                                                        .Default(System.Void)
+                                                                                                    };
+                                                                                                    .Call $reader.Read()
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            };
+                                            .Default(System.Void)
+                                        }
+                                .Default:
+                                        .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                                System.Globalization.CultureInfo.InvariantCulture,
+                                                "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                                .NewArray System.Object[] {
+                                                    (System.Object)$reader.TokenType,
+                                                    (System.Object)$state,
+                                                    (System.Object)$reader.LineNumber,
+                                                    (System.Object)$reader.LinePosition
+                                                }))
+                                }
+                        .Default:
+                                .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
+                                        System.Globalization.CultureInfo.InvariantCulture,
+                                        "Unexpected JsonToken '{0}' at state {1} (line {2} position {3})",
+                                        .NewArray System.Object[] {
+                                            (System.Object)$reader.TokenType,
+                                            (System.Object)$state,
+                                            (System.Object)$reader.LineNumber,
+                                            (System.Object)$reader.LinePosition
+                                        }))
+                        }
+                    } .Else {
+                        .Break endStateMachineLoop { }
+                    }
+                }
+                .LabelTarget endStateMachineLoop:;
+                .If (
+                    $requiredFields.IsAnySet
+                ) {
+                    .Invoke (.Lambda #Lambda3<System.Action`2[System.Collections.Generic.List`1[System.String],System.Int32]>)(
+                        .New System.Collections.Generic.List`1[System.String](){
+                            "ExpressionsTest.Example._int64"
+                        },
+                        $requiredFields.FirstSet)
+                } .Else {
+                    .Default(System.Void)
+                };
+                .Default(System.Void)
+            }
+        };
+        (System.Object)$Example
+    }
+}
+
+.Lambda #Lambda2<System.Action`1[System.String]>(System.String $m) {
+    .Call Bond.Expressions.ThrowExpression.ThrowInvalidDataException($m)
+}
+
+.Lambda #Lambda3<System.Action`2[System.Collections.Generic.List`1[System.String],System.Int32]>(
+    System.Collections.Generic.List`1[System.String] $f,
+    System.Int32 $i) {
+    .Call Bond.Expressions.ThrowExpression.ThrowRequiredFieldsMissingException(
+        $f,
+        $i)
+}

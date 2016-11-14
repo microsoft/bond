@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Reflection;
     using Bond;
+    using Bond.Reflection;
 
     public static class Equal
     {
@@ -32,7 +33,7 @@
                 return !n1 && !n2;
             }
 
-            if (left.GetType().IsGenericType)
+            if (left.GetType().IsGenericType())
             {
                 if (left.GetType().GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
                 {

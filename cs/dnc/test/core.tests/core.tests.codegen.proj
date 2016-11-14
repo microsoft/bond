@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="BondCodegenCs" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\nuget\Common.props" />
+  <PropertyGroup>
+    <BOND_INCLUDE_PATH>..\..\..\..\idl</BOND_INCLUDE_PATH>
+    <BondOutputDirectory>gen\</BondOutputDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <BondImportDirectory Include="..\..\..\test\core\import dir with spaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BondCodegen Include="..\..\..\test\core\Aliases.bond">
+      <Options>$(BondOptions) --using="Lazy=Lazy&lt;{0}&gt;" --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[] --using="CustomList=UnitTest.Aliases.SomeCustomList&lt;{0}&gt;"</Options>
+    </BondCodegen>
+    <BondCodegen Include="..\..\..\test\core\NamespaceConflict.bond" />
+    <BondCodegen Include="..\..\..\test\core\NamespaceConflictBond.bond" />
+    <BondCodegen Include="..\..\..\test\core\ReadOnly.bond">
+      <Options>$(BondOptions) --readonly-properties</Options>
+    </BondCodegen>
+    <BondCodegen Include="..\..\..\test\core\Containers.bond">
+      <Options>$(BondOptions) --collection-interfaces</Options>
+    </BondCodegen>
+    <BondCodegen Include="..\..\..\test\core\UnitTest.bond">
+      <Options>$(BondOptions) --using="DateTime=System.DateTime"</Options>
+    </BondCodegen>
+    <BondCodegen Include="..\..\..\test\core\import dir with spaces\Bond File With Spaces.bond" />
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\nuget\Common.targets" />
+</Project>

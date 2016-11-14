@@ -25,21 +25,22 @@ different versioning scheme, following the Haskell community's
   all of the BondCodegen items has Options metadata.
 * Fixed a bug in the MSBuild targets that caused compilation to fail if the
   $BondOutputDirectory did not end with a trailing slash.
+* Bond C# now supports
+  [.NET Standard 1.0, 1.3, and 1.6](https://blogs.msdn.microsoft.com/dotnet/2016/09/26/introducing-net-standard/),
+  so you can use Bond in .NET Core applications.
+  [Pull request #243](https://github.com/Microsoft/bond/pull/243)
+  * Not all assemblies work with all versions of the .NET Standard or on all
+    platforms. The
+    [manual](https://microsoft.github.io/bond/manual/bond_cs.html#frameworks-targeted)
+    lists which assemblies target which frameworks.
+  * Bond C# Comm is not yet building with .NET Core toolchain, so it's .NET
+    Core support is preliminary.
 * A new assembly, Bond.Reflection.dll, has been added, due to some internal
-  refactoring to make way for full .NET Core support. Many of the Bond
-  assemblies now have a dependency on this assembly, so you'll need to
-  deploy it. If you use NuGet to consume Bond, this is should be handled
-  automatically.
-* The NuGet packages now include initial support for
-  [.NET Standard 1.0](https://blogs.msdn.microsoft.com/dotnet/2016/09/26/introducing-net-standard/),
-  which makes it easier to use Bond in .NET Core applications. This initial
-  support is based on the .NET 4.5 build, not on an explicit .NET Standard
-  1.0 build. [Pull request #243](https://github.com/Microsoft/bond/pull/243)
-  * Not all assemblies and not all packages work with .NET Standard. If
-    package restore fails, then the package likely doesn't support .NET
-    Standard 1.0.
+  refactoring needed for .NET Core support. Many of the Bond assemblies now
+  have a dependency on this assembly, so you'll need to deploy it. If you
+  use NuGet to consume Bond, this is should be handled automatically.
 * Bond.JSON now depends on Newsoft.JSON 9.0.1, the earliest version that
-  support .NET Standard 1.0
+  supports .NET Standard 1.0
 
 ### C# Comm ###
 * The constructor for `LayerStackProvider` no longer requires a logger;

@@ -16,8 +16,10 @@
             new XmlReaderSettings
             {
                 IgnoreProcessingInstructions = true,
+#if !NETCOREAPP1_0
                 ValidationType = ValidationType.None,
                 ValidationFlags = XmlSchemaValidationFlags.None,
+#endif
             };
 
         [Test]

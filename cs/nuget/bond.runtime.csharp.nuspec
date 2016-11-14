@@ -36,9 +36,17 @@
         <file target="lib\net45" src="net45\Bond.JSON.pdb" />
         <file target="lib\net45" src="net45\Bond.JSON.xml" />
 
-        <file target="lib\netstandard1.0" src="net45\Bond.JSON.dll" />
-        <file target="lib\netstandard1.0" src="net45\Bond.JSON.pdb" />
-        <file target="lib\netstandard1.0" src="net45\Bond.JSON.xml" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.JSON.dll" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.JSON.pdb" />
+        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.JSON.xml" />
+
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.JSON.dll" />
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.JSON.pdb" />
+        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.JSON.xml" />
+
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.JSON.dll" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.JSON.pdb" />
+        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.JSON.xml" />
 
         <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.JSON.dll" />
         <file target="lib\portable-net45+wp80+win8+wpa81+dnxcore50" src="net45\Bond.JSON.pdb" />
