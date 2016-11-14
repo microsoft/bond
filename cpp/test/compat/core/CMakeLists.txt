@@ -17,8 +17,6 @@ target_compile_definitions (compatibility_test PRIVATE
     -DBOND_FAST_BINARY_PROTOCOL
     -DBOND_SIMPLE_JSON_PROTOCOL)
 
-target_use_cxx11 (compatibility_test)
-
 # disable generation of debug symbols to speed up build
 no_pdb()
 
