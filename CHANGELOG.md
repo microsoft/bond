@@ -29,12 +29,12 @@ different versioning scheme, following the Haskell community's
   [.NET Standard 1.0, 1.3, and 1.6](https://blogs.msdn.microsoft.com/dotnet/2016/09/26/introducing-net-standard/),
   so you can use Bond in .NET Core applications.
   [Pull request #243](https://github.com/Microsoft/bond/pull/243)
-  * Not all assemblies work with all versions of the .NET Standard or on all
-    platforms. The
-    [manual](https://microsoft.github.io/bond/manual/bond_cs.html#frameworks-targeted)
-    lists which assemblies target which frameworks.
-  * Bond C# Comm is not yet building with .NET Core toolchain, so it's .NET
-    Core support is preliminary.
+    * Not all assemblies work with all versions of the .NET Standard or on
+      all platforms. The
+      [manual](https://microsoft.github.io/bond/manual/bond_cs.html#frameworks-targeted)
+      lists which assemblies target which frameworks.
+    * Bond C# Comm is not yet building with .NET Core toolchain, so it's
+      .NET Core support is preliminary.
 * A new assembly, Bond.Reflection.dll, has been added, due to some internal
   refactoring needed for .NET Core support. Many of the Bond assemblies now
   have a dependency on this assembly, so you'll need to deploy it. If you
@@ -146,9 +146,9 @@ different versioning scheme, following the Haskell community's
 ### C++ ###
 
 * Improvements in the `nullable` implementation. [Pull request #174](https://github.com/Microsoft/bond/pull/174)
-  * Correctly use allocator model.
-  * Reduce size of `nullable` in the normal case.
-  * And others
+    * Correctly use allocator model.
+    * Reduce size of `nullable` in the normal case.
+    * And others
 * Runtime SchemaDef now includes information about whether BT_LIST fields
   are nullable or blobs.
   [Issue #161](https://github.com/Microsoft/bond/issues/161)
@@ -167,13 +167,13 @@ different versioning scheme, following the Haskell community's
 
 * Logging interface revamped to make it non-static, eliminate boilerplate code, and to handle
   logging-related exceptions gracefully.
-  * `LogHandler` renamed to `ILogSink`.
-  * `TransportBuilder.SetLogSink` added to associate a logger with a
-    transport.
-  * `TransportBuilder.EnableDebugLogging` added to control whether debug
-    logs are emitted or not.
-  * The `ILogSink.Log` method is now provided a pre-formatted string instead
-    of a format string and its arguments.
+    * `LogHandler` renamed to `ILogSink`.
+    * `TransportBuilder.SetLogSink` added to associate a logger with a
+      transport.
+    * `TransportBuilder.EnableDebugLogging` added to control whether debug
+      logs are emitted or not.
+    * The `ILogSink.Log` method is now provided a pre-formatted string
+      instead of a format string and its arguments.
 * Transport is now parameterized with Connection and Listener
   implementations. This eliminates the need to cast the results of
   `transport.ConnectToAsync()` and `transport.MakeListener()` to
@@ -183,11 +183,11 @@ different versioning scheme, following the Haskell community's
 * Bond-generated Errors now give clients opaque GUIDs. These GUIDs can be
   matched against emitted metrics for debugging.
 * Epoxy can now be configured to use TLS to secure the connection.
-  * TLS configuration is set via
-    `EpoxyTransportBuilder.SetClientTlsConfig`/`EpoxyTransportBuilder.SetServerTlsConfig`.
-  * See the
-    [TLS example](https://github.com/Microsoft/bond/tree/master/examples/cs/comm/tls/)
-    for even more details.
+    * TLS configuration is set via
+      `EpoxyTransportBuilder.SetClientTlsConfig`/`EpoxyTransportBuilder.SetServerTlsConfig`.
+    * See the
+      [TLS example](https://github.com/Microsoft/bond/tree/master/examples/cs/comm/tls/)
+      for even more details.
 
 ## 4.2.1: 2016-06-02 ##
 
@@ -200,11 +200,11 @@ different versioning scheme, following the Haskell community's
 * Support for parsing
   [service definitions](https://microsoft.github.io/bond/manual/compiler.html#service-definition)
   and generating C# service bases, interfaces, and proxies.
-  * New types for
-    [services](https://microsoft.github.io/bond/manual/compiler.html#services)
-    and
-    [methods](https://microsoft.github.io/bond/manual/compiler.html#methods)
-    have been added to the compiler AST.
+    * New types for
+      [services](https://microsoft.github.io/bond/manual/compiler.html#services)
+      and
+      [methods](https://microsoft.github.io/bond/manual/compiler.html#methods)
+      have been added to the compiler AST.
 * MSBuild-compatible error messages.
   [Issue #136](https://github.com/Microsoft/bond/issues/136)
 
@@ -215,11 +215,11 @@ different versioning scheme, following the Haskell community's
 * Added two new
   [NuGet packages](https://microsoft.github.io/bond/manual/bond_cs.html#nuget-packages)
   to make it easier to consume Bond piecemeal.
-  * Bond.Compiler: contains `gbc`, `bond.bond`, and `bond_const.bond` in a
-    tools-only package
-  * Bond.Compiler.CSharp: contains `gbc` and C# MSBuild targets. No longer
-    do you have to consume Bond.CSharp (which pulls in all of the rest of
-    Bond) just to get codegen.
+    * Bond.Compiler: contains `gbc`, `bond.bond`, and `bond_const.bond` in a
+      tools-only package
+    * Bond.Compiler.CSharp: contains `gbc` and C# MSBuild targets. No longer
+      do you have to consume Bond.CSharp (which pulls in all of the rest of
+      Bond) just to get codegen.
 
 ### C# Comm ###
 
