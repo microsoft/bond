@@ -5,7 +5,6 @@ else ()
 endif ()
 
 add_bond_executable (bf ${bf_EXCLUDE} cmd_arg.bond main.cpp)
-target_use_cxx11 (bf)
 
 if (NOT BOND_LIBRARIES_ONLY)
   # bf was excluded from the all target, so it cannot be installed

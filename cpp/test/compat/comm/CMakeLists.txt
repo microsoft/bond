@@ -31,10 +31,6 @@ target_link_libraries (cpp_comm_compat_server PRIVATE
 target_link_libraries (cpp_comm_compat_client PRIVATE
     ${Boost_CHRONO_LIBRARY})
 
-target_use_cxx11 (cpp_comm_compat_server)
-target_use_cxx11 (cpp_comm_compat_client)
-target_use_cxx11 (comm_compatibility_test)
-
 # disable generation of debug symbols to speed up build
 no_pdb()
 

@@ -7,5 +7,3 @@ add_bond_test (container_of_pointers
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/container_of_pointers_types.cpp
     container_of_pointers.cpp)
 
-target_use_cxx11 (container_of_pointers)
-
