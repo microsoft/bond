@@ -12,7 +12,6 @@ would like to help implement a feature, please see the
 
 ## Short term (next few weeks)
 
-* TLS support in C# Epoxy
 * C# Epoxy performance improvements
 * C++ support
 
