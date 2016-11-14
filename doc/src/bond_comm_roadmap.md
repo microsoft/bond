@@ -10,9 +10,12 @@ If there's a feature you think is useful and should be on the roadmap or
 would like to help implement a feature, please see the
 [guidelines for contributing](https://github.com/Microsoft/bond/blob/master/CONTRIBUTING.md).
 
+## Shipped
+
+* TLS support in C# Epoxy: version 0.6.0
+
 ## Short term (next few weeks)
 
-* TLS support in C# Epoxy
 * C# Epoxy performance improvements
 * C++ support
 

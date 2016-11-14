@@ -11,20 +11,27 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Unreleased ##
+## 5.1.0: 2016-11-14 ##
 
-* `gbc` & compiler library: TBD
-* IDL core version: TBD
-* IDL comm version: TBD
-* C++ version: TBD
-* C# NuGet version: TBD (minor bump needed)
-* C# Comm NuGet version: TBD (minor bump needed)
+* `gbc` & compiler library: 0.7.0.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 5.1.0
+* C# NuGet version: 5.1.0
+* C# Comm NuGet version: 0.9.0
+
+### `gbc` and Bond compiler library ###
+
+* Added initial support for generating C++ Comm services and proxies.
+* The Haskell utility functions `structName` and `structParams` were renamed
+  to `className` and `classParams` (in the `Language.Bond.Codegen.Cpp.Util`
+  module).
+
+### C++ Comm ###
+* The initial C++ Comm code has been merged in, but there is still work left
+  to be done before the first preview release. Use at your own risk.
 
 ### C# ###
-* Fixed a bug in the MSBuild targets that caused codegen to always be run if
-  all of the BondCodegen items has Options metadata.
-* Fixed a bug in the MSBuild targets that caused compilation to fail if the
-  $BondOutputDirectory did not end with a trailing slash.
 * Bond C# now supports
   [.NET Standard 1.0, 1.3, and 1.6](https://blogs.msdn.microsoft.com/dotnet/2016/09/26/introducing-net-standard/),
   so you can use Bond in .NET Core applications.
@@ -39,8 +46,10 @@ different versioning scheme, following the Haskell community's
   refactoring needed for .NET Core support. Many of the Bond assemblies now
   have a dependency on this assembly, so you'll need to deploy it. If you
   use NuGet to consume Bond, this is should be handled automatically.
-* Bond.JSON now depends on Newsoft.JSON 9.0.1, the earliest version that
-  supports .NET Standard 1.0
+* Fixed a bug in the MSBuild targets that caused codegen to always be run if
+  all of the BondCodegen items has Options metadata.
+* Fixed a bug in the MSBuild targets that caused compilation to fail if the
+  $BondOutputDirectory did not end with a trailing slash.
 
 ### C# Comm ###
 * The constructor for `LayerStackProvider` no longer requires a logger;
