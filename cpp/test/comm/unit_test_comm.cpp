@@ -3820,15 +3820,11 @@ bool init_unit_test()
     TestUtils::Initialize();
     TestCore::Initialize();
 
-//  boost::mpl::for_each<TransportList>(TestScheduler());
+    // This MPL construct doesn't work on VC12, so we explicitly enumerate the
+    // transports instead.
+    //  boost::mpl::for_each<TransportList>(TestScheduler());
     GenericTransportTests<test::EpoxyTransport<bond::comm::FastWireProtocol>>::Initialize();
     GenericTransportTests<test::NullTransport<bond::comm::FastWireProtocol>>::Initialize();
     GenericTransportTests<test::ExampleTransport<bond::comm::FastWireProtocol>>::Initialize();
     return true;
-}
-
-boost::unit_test::test_suite* init_unit_test_suite(int, char*[])
-{
-    init_unit_test();
-    return 0;
 }
