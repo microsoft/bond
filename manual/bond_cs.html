@@ -179,6 +179,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li><a href="#nuget-packages">NuGet packages</a><ul>
 <li><a href="#platform-limitations">Platform limitations</a></li>
+<li><a href="#frameworks-targeted">Frameworks targeted</a></li>
 </ul></li>
 <li><a href="#bond-comm">Bond Comm</a><ul>
 <li><a href="#defining-services">Defining services</a></li>
@@ -1195,7 +1196,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 }</code></pre></td></tr></table></div>
 <h1 id="nuget-packages">NuGet packages</h1>
 <p>Pre-compiled versions of Bond are distributed via NuGet packages from NuGet.org.</p>
-<p><a href="https://www.nuget.org/packages/Bond.CSharp/"><img src="https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat" alt="Bond.CSharp NuGet package" /></a> <strong>Bond.CSharp</strong> - An omnibus package that pulls in everything required to use Bond in a C# project. If you’re not sure which packages to use, use this one. (It will pull in the rest of them.)</p>
+<p><a href="https://www.nuget.org/packages/Bond.CSharp/"><img src="https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat" alt="Bond.CSharp NuGet package" /></a> <strong>Bond.CSharp</strong> - An omnibus package that pulls in everything required to use Bond in a C# project. If you’re not sure which packages to use, use this one. (It will pull in all the other packages you need.)</p>
 <p><a href="https://www.nuget.org/packages/Bond.Core.CSharp/"><img src="https://img.shields.io/nuget/v/Bond.Core.CSharp.svg?style=flat" alt="Bond.Core.CSharp NuGet package" /></a> <strong>Bond.Core.CSharp</strong> - The assemblies required to use Bond at runtime. Useful if some other assembly already contains the compiled types. If your project contains .bond files, you will need to use either Bond.CSharp or Bond.Compiler.CSharp to perform code generation at build time.</p>
 <p><a href="https://www.nuget.org/packages/Bond.Runtime.CSharp/"><img src="https://img.shields.io/nuget/v/Bond.Runtime.CSharp.svg?style=flat" alt="Bond.Runtime.CSharp NuGet package" /></a> <strong>Bond.Runtime.CSharp</strong> - Additional assemblies that may be needed at runtime depending on which Bond <a href="bond_cpp.html#protocols">protocols</a> are being used. Needed for Simple JSON.</p>
 <p><a href="https://www.nuget.org/packages/Bond.Compiler.CSharp/"><img src="https://img.shields.io/nuget/v/Bond.Compiler.CSharp.svg?style=flat" alt="Bond.Compiler.CSharp NuGet package" /></a> <strong>Bond.Compiler.CSharp</strong> - A package with the <a href="compiler.html">Bond compiler (gbc)</a> and MSBuild targets for C# code generation. Bond.CSharp includes similar functionality, but pulls in lots of dependencies. Bond.Complier.CSharp has no dependencies.</p>
@@ -1204,6 +1205,115 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <h2 id="platform-limitations">Platform limitations</h2>
 <p>The pre-compiled gbc that is included in these packages is Windows-only. See the <a href="https://github.com/Microsoft/bond/blob/master/README.md">README</a> for instructions to build gbc for other platforms.</p>
 <p>Bond.IO.dll (which provides the types in the Bond.IO.Unsafe namespace) is currently Windows-only, as it relies on some Win32 APIs. To stay cross-platform, only use the types from Bond.dll (in the Bond.IO.Safe namespace).</p>
+<h2 id="frameworks-targeted">Frameworks targeted</h2>
+<p>This table lists which frameworks are targeted by the Bond assemblies.</p>
+<p>NB: This table is accurate for releases <em>after</em> 5.0.0.</p>
+<table style="width:100%;">
+<colgroup>
+<col width="22%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="16%" />
+<col width="16%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Assembly</th>
+<th>.NET 4.0</th>
+<th>.NET 4.5</th>
+<th>Profile78</th>
+<th>.NET Standard 1.0</th>
+<th>.NET Standard 1.3</th>
+<th>.NET Standard 1.6</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Bond.Attributes.dll</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>←</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Bond.Reflection.dll</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>←</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Bond.dll</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>←</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Bond.JSON.dll</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+<td>←</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Bond.IO.dll</td>
+<td>Win only</td>
+<td>Win only</td>
+<td>No</td>
+<td>No</td>
+<td>Win only</td>
+<td>Win only</td>
+</tr>
+<tr class="even">
+<td>Bond.Comm.Interfaces.dll</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>←</td>
+<td>←</td>
+<td>←</td>
+</tr>
+<tr class="odd">
+<td>Bond.Comm.Layers.dll</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>←</td>
+<td>←</td>
+<td>←</td>
+</tr>
+<tr class="even">
+<td>Bond.Comm.Services.dll</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>←</td>
+<td>←</td>
+<td>←</td>
+</tr>
+<tr class="odd">
+<td>Bond.Comm.Epoxy.dll</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>A left arrow (←) indicates that support for that framework is provided by the version of the assembly that targets a lower version of the framework.</p>
 <h1 id="bond-comm">Bond Comm</h1>
 <p>The <a href="bond_comm.html">Bond Communications framework</a> in C# makes it easy and efficent to construct services and hook clients up to those services. Built on top of the Bond serialization framework, Bond Comm aims for the same principles of high-performance and extensibility.</p>
 <p>Today the framework supports two messaging patterns:</p>
