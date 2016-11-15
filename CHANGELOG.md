@@ -42,6 +42,8 @@ different versioning scheme, following the Haskell community's
       lists which assemblies target which frameworks.
     * Bond C# Comm is not yet building with .NET Core toolchain, so its
       .NET Core support is preliminary.
+* Bond.JSON now depends on Newsoft.JSON 9.0.1, the earliest version that
+  supports .NET Standard 1.0.
 * A new assembly, Bond.Reflection.dll, has been added, due to some internal
   refactoring needed for .NET Core support. Many of the Bond assemblies now
   have a dependency on this assembly, so you'll need to deploy it. If you
