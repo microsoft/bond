@@ -23,28 +23,28 @@ function (add_unit_test)
         -DBOND_SIMPLE_JSON_PROTOCOL)
     target_link_libraries (${name} PRIVATE
       bond
-      unit_test_common
+      core_test_common
       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 endfunction()
 
 
 # Build common code into its own library.
-add_library (unit_test_common EXCLUDE_FROM_ALL "main.cpp" "idl.cpp")
-add_target_to_folder (unit_test_common)
-add_dependencies(unit_test_common
+add_library (core_test_common EXCLUDE_FROM_ALL "main.cpp" "idl.cpp")
+add_target_to_folder (core_test_common)
+add_dependencies(core_test_common
     unit_test_codegen1
     unit_test_codegen2
     unit_test_codegen3)
-target_include_directories (unit_test_common PUBLIC
+target_include_directories (core_test_common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
-target_compile_definitions (unit_test_common PUBLIC
+target_compile_definitions (core_test_common PUBLIC
  #       -DENABLE_TEST_CASE=0x20010000
         -DBOND_COMPACT_BINARY_PROTOCOL
         -DBOND_SIMPLE_BINARY_PROTOCOL
         -DBOND_FAST_BINARY_PROTOCOL
         -DBOND_SIMPLE_JSON_PROTOCOL)
-target_link_libraries (unit_test_common PRIVATE
+target_link_libraries (core_test_common PRIVATE
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 

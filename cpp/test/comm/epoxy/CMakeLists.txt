@@ -10,5 +10,5 @@ target_use_cxx11 (epoxy_protocol_tests)
 target_compile_definitions (epoxy_protocol_tests PRIVATE -D_WIN32_WINNT=0x0600)
 
 target_link_libraries (epoxy_protocol_tests PRIVATE
-    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-    unit_test_main)
+    comm_test_common
+    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
