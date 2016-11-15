@@ -11,6 +11,13 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased ##
+
+### C++ ###
+
+* Fixed compatibility with RapidJSON v1.1.0.
+  [Issue #271](https://github.com/Microsoft/bond/issues/271)
+
 ## 5.1.0: 2016-11-14 ##
 
 * `gbc` & compiler library: 0.7.0.0
