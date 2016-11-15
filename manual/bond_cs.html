@@ -1207,7 +1207,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <p>Bond.IO.dll (which provides the types in the Bond.IO.Unsafe namespace) is currently Windows-only, as it relies on some Win32 APIs. To stay cross-platform, only use the types from Bond.dll (in the Bond.IO.Safe namespace).</p>
 <h2 id="frameworks-targeted">Frameworks targeted</h2>
 <p>This table lists which frameworks are targeted by the Bond assemblies.</p>
-<p>NB: This table is accurate for releases <em>after</em> 5.0.0.</p>
+<p>This table is accurate for Bond NuGet packages 5.1.0 and later and Bond Comm 0.9.0 and later.</p>
 <table style="width:100%;">
 <colgroup>
 <col width="22%" />
@@ -1336,7 +1336,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <p>The generated proxy stub provides a class with methods that the developer can call to exhange messages with the service.</p>
 <h3 id="epoxy-transport">Epoxy Transport</h3>
 <p>The initial release of Bond Comm provides a binary transport called <a href="bond_comm_epoxy.html">Epoxy</a>. This is the recommended default Transport. The Epoxy transport is designed to be .NET Core compliant, which will allow for cross-platform support.</p>
-<p>TLS support in Epoxy is forthcoming.</p>
+<p>Epoxy supports TLS as of version 0.6.0.</p>
 <h3 id="simpleinmem-transport">SimpleInMem Transport</h3>
 <p>Bond Comm provides an in-memory, single process, binary transport called <a href="bond_comm_simpleinmem.html">SimpleInMem</a>. This is not a shared memory transport.</p>
 <p>This is an example Transport recommended only for test automation.</p>
