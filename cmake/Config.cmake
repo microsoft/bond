@@ -134,6 +134,10 @@ set (BOND_CORE_ONLY
     "FALSE"
     CACHE BOOL "If TRUE, then only build the Bond Core")
 
+set (BOND_SKIP_CORE_TESTS
+    "FALSE"
+    CACHE BOOL "If TRUE, then skip Bond Core tests and examples")
+
 if ((NOT BOND_CORE_ONLY) AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
     message(FATAL_ERROR "BOND_CORE_ONLY is FALSE but compiler specified does not support C++11 standard")
 endif()

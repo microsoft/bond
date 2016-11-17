@@ -28,7 +28,7 @@
               BOND_ARCH: 32
               BOND_BOOST: 60
             - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 14 2015 Win64"
+              BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
               BOND_BOOST: 60
@@ -40,6 +40,13 @@
               BOND_VS_NUM: 12
               BOND_ARCH: 32
               BOND_BOOST: 58
+              BOND_CMAKE_FLAGS: "-DBOND_CORE_ONLY=TRUE"
+            - BOND_BUILD: C++
+              BOND_VS: "Visual Studio 12 2013"
+              BOND_VS_NUM: 12
+              BOND_ARCH: 64
+              BOND_BOOST: 58
+              BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE"
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
               BOND_CONFIG: Fields
@@ -82,6 +89,18 @@
 
     before_build:
         - ps: >-
+            $env:PreferredToolArchitecture = "x64"
+
+            $env:_IsNativeEnvironment = "true"
+
+            $cmakeGenerator = $env:BOND_VS
+
+            if ($env:BOND_ARCH -eq 64) {
+                $cmakeGenerator += " Win64"
+            }
+
+            $cmakeFlags = $env:BOND_CMAKE_FLAGS -split ';'
+
             if ($env:BOND_BUILD -eq "C#" -Or $env:BOND_BUILD -eq "C++") {
 
                 nuget restore cs\cs.sln
@@ -96,7 +115,7 @@
 
                 Wait-Process -name boost
 
-                cmake "-DBoost_ADDITIONAL_VERSIONS=1.${env:BOND_BOOST}.0" -G $env:BOND_VS ..
+                cmake "-DBoost_ADDITIONAL_VERSIONS=1.${env:BOND_BOOST}.0" $cmakeFlags -G $cmakeGenerator ..
 
             }
 
@@ -113,7 +132,7 @@
                     $env:Path = "C:\Python27-x64\scripts;C:\Python27-x64\;${env:Path}"
                 }
 
-                cmake -G $env:BOND_VS ..
+                cmake $cmakeFlags -G $cmakeGenerator ..
 
             }
 
