@@ -85,9 +85,9 @@ function ComputeDotNetRestoreVerbosity() {
 
 try
 {
-    $script:msb_logger = $null
+    $script:msb_common = ("/m", "/verbosity:$(ComputeMSBuildVerbosity)")
     if ($MSBuildLogger) {
-        $script:msb_logger = "/logger:$($MSBuildLogger)"
+        $script:msb_common += "/logger:$($MSBuildLogger)"
     }
 
     # We push to a stack other than the default one so that we don't
@@ -116,12 +116,12 @@ try
         $script:dotnet_cfg += "-delay"
     }
 
-    msbuild /m "/verbosity:$(ComputeMSBuildVerbosity)" $script:msb_logger /p:Configuration=$Configuration /p:Platform=Win32 '..\Compiler.vcxproj'
+    msbuild $script:msb_common /p:Configuration=$Configuration /p:Platform=Win32 '..\Compiler.vcxproj'
     if (-not $?) {
         throw "Building GBC failed."
     }
 
-    msbuild /m "/verbosity:$(ComputeMSBuildVerbosity)" $script:msb_logger /p:Configuration=$Configuration 'dirs.proj'
+    msbuild $script:msb_common /p:Configuration=$Configuration 'dirs.proj'
     if (-not $?) {
         throw "Code generation failed."
     }
