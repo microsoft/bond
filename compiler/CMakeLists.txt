@@ -104,9 +104,11 @@ add_cabal_build (gbc
     DEPENDS sandbox ${completion}
     SOURCES ${sources})
 
-add_cabal_test (gbc-tests
-    DEPENDS gbc
-    SOURCES ${test_sources})
+if(NOT BOND_SKIP_GBC_TESTS)
+    add_cabal_test (gbc-tests
+        DEPENDS gbc
+        SOURCES ${test_sources})
+endif()
 
 install (FILES ${output}
     PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE
