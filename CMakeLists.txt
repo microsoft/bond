@@ -25,7 +25,9 @@ add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} -C ${CMAKE_CFG_INTDIR} --
 
 if (NOT BOND_GBC_PATH)
     add_subfolder (compiler "compiler")
-    add_dependencies (check gbc-tests)
+    if (NOT BOND_SKIP_GBC_TESTS)
+        add_dependencies (check gbc-tests)
+    endif()
 endif()
 
 add_subdirectory (cpp)

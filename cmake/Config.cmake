@@ -134,6 +134,10 @@ set (BOND_CORE_ONLY
     "FALSE"
     CACHE BOOL "If TRUE, then only build the Bond Core")
 
+set (BOND_SKIP_GBC_TESTS
+    "FALSE"
+    CACHE BOOL "If TRUE, then skip gbc tests")
+
 set (BOND_SKIP_CORE_TESTS
     "FALSE"
     CACHE BOOL "If TRUE, then skip Bond Core tests and examples")
