@@ -3,5 +3,7 @@ if (NOT BOND_SKIP_CORE_TESTS)
 endif()
 
 if (NOT BOND_CORE_ONLY)
-    #add_subfolder (comm "examples/comm")
+    if (MSVC)
+        add_subfolder (comm "examples/comm")
+    endif()
 endif()
