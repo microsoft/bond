@@ -1063,50 +1063,6 @@ class GenericTransportTests
 
     }
 
-    static
-    void Server1Service1Send1LocalhostAny()
-    {
-        //
-        // publish First_ServiceImpl at port 9000, 0.0.0.0
-        // connect one First::Proxy instance to it via localhost.
-        // invoke method.
-        //
-
-        //
-        // Create service.
-        First_ServiceImpl firstService;
-
-        bond::comm::SocketAddress serverAddress(static_cast<uint32_t>(INADDR_ANY), 9000);
-        bond::comm::SocketAddress clientAddress("127.0.0.1", 9000);
-
-        //
-        // Start transport.
-        //
-        Transport transport;
-
-        // Publish First_Service.
-        bond::comm::Server server = transport.Bind(serverAddress, boost::ref(firstService));
-
-        auto client = transport.Connect(clientAddress);
-
-        First::Proxy proxy(client);
-
-        LOOP("Server1Service1Send1LocalhostAny")
-        {
-            Params params;
-            Result result;
-
-            params.op = SyncCallback;
-
-            WaitForResponse<Result> syncMessage;
-            proxy.Method1(params, syncMessage);
-
-            syncMessage.Deserialize(result);
-
-            UT_AssertIsTrue(result.z == 1);
-        }
-    }
-
     /*
     static
     void Server1Service1Send1UrlAddress()
@@ -3149,8 +3105,6 @@ public:
         //suite.AddTestCase(Server1Service1Send1UrlAddress, "Server1Service1Send1UrlAddress");
 
         suite.AddTestCase(Server1Service1Send1SocketAddress, "Server1Service1Send1SocketAddress");
-
-        suite.AddTestCase(Server1Service1Send1LocalhostAny, "Server1Service1Send1LocalhostAny");
 
         //suite.AddTestCase(Server1Service1Send1Reconnect, "Server1Service1Send1Reconnect");
 
