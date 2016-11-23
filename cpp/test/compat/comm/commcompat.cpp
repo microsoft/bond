@@ -15,9 +15,27 @@
 #include "commcmd_arg_types.h"
 #include "commcmd_arg_reflection.h"
 
-#define die(ARGS) (printf ARGS, exit(1), true);
+#define die(ARGS) printf(ARGS); exit(1);
 
 using namespace unittest::compat;
+
+FILE* popen_wrapper(const char* command, const char* mode)
+{
+#ifdef _WIN32
+    return _popen(command, mode);
+#else
+    return popen(command, mode);
+#endif
+}
+
+int pclose_wrapper(FILE* stream)
+{
+#ifdef _WIN32
+    return _pclose(stream);
+#else
+    return pclose(stream);
+#endif
+}
 
 int main(int argc, char** argv)
 {
@@ -40,20 +58,20 @@ int main(int argc, char** argv)
     }
     else if (options.server_exe.empty())
     {
-        die(("Server exe must be provided"));
+        die("Server exe must be provided");
     }
     else if (options.client_exe.empty())
     {
-        die(("Client exe must be provided"));
+        die("Client exe must be provided");
     }
 
     FILE *server_process;
 
     printf("Spawning server\n");
 
-    if ((server_process = _popen(options.server_exe.c_str(), "rt")) == NULL)
+    if ((server_process = popen_wrapper(options.server_exe.c_str(), "r")) == NULL)
     {
-        printf("_popen of server process failed");
+        printf("popen of server process failed\n");
         exit(1);
     }
 
@@ -64,7 +82,7 @@ int main(int argc, char** argv)
 
     if (fgets(server_buffer, 128, server_process))
     {
-        printf(server_buffer);
+        printf("Server status: %s\n", server_buffer);
         if (strcmp("Server ready\n", server_buffer) != 0)
         {
             exit(1);
@@ -75,9 +93,9 @@ int main(int argc, char** argv)
 
     FILE *client_process;
 
-    if ((client_process = _popen(options.client_exe.c_str(), "rt")) == NULL)
+    if ((client_process = popen_wrapper(options.client_exe.c_str(), "r")) == NULL)
     {
-        printf("_popen of client process failed");
+        printf("popen of client process failed\n");
         exit(1);
     }
 
@@ -85,7 +103,7 @@ int main(int argc, char** argv)
 
     while (fgets(client_buffer, 128, client_process))
     {
-        printf(client_buffer);
+        printf("Client status: %s\n", client_buffer);
         if (strcmp("Client succeeded\n", client_buffer) == 0)
         {
             client_ok = true;
@@ -94,15 +112,15 @@ int main(int argc, char** argv)
 
     while (fgets(server_buffer, 128, server_process))
     {
-        printf(server_buffer);
+        printf("Server status: %s\n", server_buffer);
         if (strcmp("Server completed\n", server_buffer) == 0)
         {
             server_ok = true;
         }
     }
 
-    _pclose(server_process);
-    _pclose(client_process);
+    pclose_wrapper(server_process);
+    pclose_wrapper(client_process);
 
     if (!server_ok || !client_ok)
     {
