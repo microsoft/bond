@@ -15,12 +15,6 @@ if (Boost_UNIT_TEST_FRAMEWORK_FOUND)
     if (NOT BOND_CORE_ONLY)
         add_subfolder (comm "tests/unit_test/comm")
         add_subfolder (comm/epoxy "tests/unit_test/comm/epoxy")
-    endif()
-endif()
-
-if (NOT BOND_CORE_ONLY)
-    # Only run C++/C# compat tests for MSVC until we qualify C# Comm on Linux/MacOS
-    if (MSVC)
         add_subfolder (compat/comm "tests/compat/comm")
     endif()
 endif()
