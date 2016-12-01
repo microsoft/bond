@@ -17,6 +17,7 @@ different versioning scheme, following the Haskell community's
 
 * Fixed compatibility with RapidJSON v1.1.0.
   [Issue #271](https://github.com/Microsoft/bond/issues/271)
+* The minimum supported version of Boost is now 1.58
 
 ## 5.1.0: 2016-11-14 ##
 

@@ -1,4 +1,4 @@
-% A Young Person's Guide to C# Bond
+﻿% A Young Person's Guide to C# Bond
 
 About
 =====
@@ -1227,12 +1227,9 @@ Today the framework supports two messaging patterns:
 Bond Comm is naturally asynchronous, and the C# implementation takes advantage of the
 idiomatic Task and async/await facilities of .NET.
 
-The initial release of Bond Comm is designed to run on Windows running
-.NET&nbsp;4.5 or .NET&nbsp;Core. Since .NET&nbsp;Core is still under development, we
-will update as needed. Mono support is forthcoming, as are Linux and
-Mac&nbsp;OS&nbsp;X.
-
-Only Windows 10 and Windows Server 2012 R2 have been tested to date.
+Bond Comm is designed to run on NET&nbsp;4.5 or .NET&nbsp;Core. Mono
+support is forthcoming, as are Linux and Mac&nbsp;OS&nbsp;X -- only Windows 10 and Windows
+Server 2012 R2 have been tested to date.
 
 See the following examples:
 
@@ -1252,7 +1249,7 @@ exhange messages with the service.
 
 ### Epoxy Transport ###
 
-The initial release of Bond Comm provides a binary transport called
+Bond Comm provides a binary transport called
 [Epoxy](bond_comm_epoxy.html). This is the recommended default Transport.
 The Epoxy transport is designed to be .NET&nbsp;Core compliant, which will
 allow for cross-platform support.
@@ -1277,31 +1274,9 @@ See the following examples:
 - `examples/cs/comm/logging`
 - `examples/cs/comm/metrics`
 
-### Layers ###
-
-Bond Comm includes extensibility points called "layers" that provides hooks
-for capabilites that are not service- or method-specific. An example of this
-would be tracing hooks like those mentioned in the [Dapper
-paper](http://research.google.com/pubs/pub36356.html).
-
-A set of layers are encapsulated together in a "layer stack", which can be
-provided to the Transport. When the Transport sends out a message, the layer
-stack invokes the layers in forward order. On the receive side, the layer
-stack invokes the layers in reverse order.
-
-The layers in a layer stack are expected to share a single Bond structure
-for passing state from the send side to the receive side. This structure is
-serialized by the transport and sent alongside the actual message payload.
-
-If any layer returns an error, the layer stack is halted and the error
-replaces the current message; therefore, layers should only return errors
-for conditions that are truly fatal for the current message.
-
-Support for layers that contain per-instance state is forthcoming.
-
 ### Roadmap ###
 
-We have a [roadmap](bond_comm_roadmap.html) for Bond Comm.
+We have a [brief roadmap](bond_comm_roadmap.html) for Bond Comm.
 
 ### Comm NuGet Packages ###
 
