@@ -13,14 +13,14 @@ Microsoft in high scale services.
 
 We are also introducing the
 [Bond Communications framework](https://Microsoft.github.io/bond/manual/bond_comm.html)--known
-as Bond Comm--which allows for remote process communication. Currently, we
-are making the C# version of this framework available; the C++ version will
-be released in the coming weeks. This framework is based on is the successor
+as Bond Comm--which allows for remote process communication. This framework is the successor
 to an internal framework that is used by several large services inside
-Microsoft. Bond Comm is undergoing active evolution at this time and so we
-are marking the initial release as version 0.5. Consult the
-[C# manual](https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm)
-for more details on Bond Comm's usage and capabilities.
+Microsoft. We have now released versions of Bond Comm for C# and C++. Consult
+the [C# manual](https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm)
+and the [C++ manual](https://Microsoft.github.io/bond/manual/bond_cpp.html#bond-comm)
+for more details on Bond Comm's usage and capabilities. Note that the wire format should be
+considered firm at this point but the APIs and implementation are still evolving so Bond Comm is
+still considered "pre-1.0".
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
@@ -44,9 +44,10 @@ git clone --recursive https://github.com/Microsoft/bond.git
 ```
 
 In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and
-cabal-install 1.18+) and Boost (1.54+). The core Bond C++ library can be used
-with C++03 compilers, although Python support, unit tests and various examples
-require some C++11 features.
+cabal-install 1.18+) and Boost (1.58+). The core Bond C++ library can be used
+with C++03 compilers, although Bond Comm, Python support, unit tests and various
+examples require some C++11 features. (Note: Boost 1.59 may not work with
+Bond Comm due to some bugs in that version of the Boost ASIO library).
 
 Following are specific instructions for building on various platforms.
 
@@ -209,7 +210,7 @@ switch is used to run the unit tests as well.
 
 The C++ and Python versions of Bond additionally require:
 
-- Boost 1.54+ ([http://www.boost.org/users/download/](http://www.boost.org/users/download/))
+- Boost 1.58+ ([http://www.boost.org/users/download/](http://www.boost.org/users/download/))
 - Python 2.7 ([https://www.python.org/downloads/](https://www.python.org/downloads/))
 
 You may need to set the environment variables `BOOST_ROOT` and `BOOST_LIBRARYDIR`
@@ -217,8 +218,8 @@ to specify where Boost and its pre-built libraries for your environment (MSVC 12
 found, e.g.:
 
 ```bash
-set BOOST_ROOT=D:\boost_1_57_0
-set BOOST_LIBRARYDIR=D:\boost_1_57_0\lib64-msvc-14.0
+set BOOST_ROOT=D:\boost_1_58_0
+set BOOST_LIBRARYDIR=D:\boost_1_58_0\lib64-msvc-14.0
 ```
 
 The core Bond library and most examples only require Boost headers. The

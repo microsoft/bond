@@ -34,8 +34,6 @@ Bond includes the following transports:
 Not all transports support all messaging patterns. Check the documentation
 for the respective transports.
 
-See the [roadmap](bond_comm_roadmap.html) for plans about future transports.
-
 ## Messaging Patterns ##
 
 There are a number of conceptual messaging patterns that are supported:
@@ -60,7 +58,32 @@ that are intriguing include--but are not limited to:
 * aggregations: send requests to multiple receivers and combine their
   responses in various ways
 
+## Layers ##
+
+Bond Comm includes extensibility points called "layers" that provides hooks
+for capabilites that are not service- or method-specific. An example of this
+would be tracing hooks like those mentioned in the [Dapper
+paper](http://research.google.com/pubs/pub36356.html).
+
+A set of layers are encapsulated together in a "layer stack", which can be
+provided to the Transport. When the Transport sends out a message, the layer
+stack invokes the layers in forward order. On the receive side, the layer
+stack invokes the layers in reverse order.
+
+The layers in a layer stack are expected to share a single Bond structure
+for passing state from the send side to the receive side. This structure is
+serialized by the transport and sent alongside the actual message payload.
+
+If any layer returns an error, the layer stack is halted and the error
+replaces the current message; therefore, layers should only return errors
+for conditions that are truly fatal for the current message.
+
+Layers may be stateful or stateless. In the case of request/response messages,
+a stateful layer instance is shared across the two halves of the conversation
+-- i.e. on the client side, a stateful layer instance can pass its state from the
+outbound request to the inbound response, and on the server side, from the
+inbound request to the outbound response.
+
 # Implementations #
 
-Bond Communications is available for [C#](bond_cs.html#bond-comm) today. C++
-support is [forthcoming](bond_comm_roadmap.html).
+Bond Communications is available for [C#](bond_cs.html#bond-comm) and [C++](bond_cpp.html#bond-comm).

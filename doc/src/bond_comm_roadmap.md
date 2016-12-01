@@ -10,20 +10,19 @@ If there's a feature you think is useful and should be on the roadmap or
 would like to help implement a feature, please see the
 [guidelines for contributing](https://github.com/Microsoft/bond/blob/master/CONTRIBUTING.md).
 
-## Short term (next few weeks)
+## Short term (next couple of months)
 
 * C# Epoxy performance improvements
-* C++ support
+* C++ TLS Support
 
-## Medium term (next few months)
+## Medium Term (next six months)
 
-* additional languages, based on interest
-* HTTP(S)-based transports (HTTP 1.1 or HTTP 2 TBD)
+* Bi-directional communication support
 
-## Long term (next few years)
+## Longer Term (next two years)
 
-* additional messaging patterns
-* additional transports
+* Additional messaging patterns
+* Other language implementations
 
 ## Never
 
