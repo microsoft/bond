@@ -153,14 +153,14 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p><a href="https://travis-ci.org/Microsoft/bond"><img src="https://travis-ci.org/Microsoft/bond.svg?branch=master" alt="Build Status" /></a> <a href="https://Microsoft.github.io/bond/manual/bond_cs.html#nuget-packages"><img src="https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat" alt="Bond.CSharp NuGet package" /></a></p>
 <h1 id="bond">Bond</h1>
 <p>Bond is an open source, cross-platform framework for working with schematized data. It supports cross-language serialization/deserialization and powerful generic mechanisms for efficiently manipulating data. Bond is broadly used at Microsoft in high scale services.</p>
-<p>We are also introducing the <a href="https://Microsoft.github.io/bond/manual/bond_comm.html">Bond Communications framework</a>–known as Bond Comm–which allows for remote process communication. Currently, we are making the C# version of this framework available; the C++ version will be released in the coming weeks. This framework is based on is the successor to an internal framework that is used by several large services inside Microsoft. Bond Comm is undergoing active evolution at this time and so we are marking the initial release as version 0.5. Consult the <a href="https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm">C# manual</a> for more details on Bond Comm’s usage and capabilities.</p>
+<p>We are also introducing the <a href="https://Microsoft.github.io/bond/manual/bond_comm.html">Bond Communications framework</a>–known as Bond Comm–which allows for remote process communication. This framework is the successor to an internal framework that is used by several large services inside Microsoft. We have now released versions of Bond Comm for C# and C++. Consult the <a href="https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm">C# manual</a> and the <a href="https://Microsoft.github.io/bond/manual/bond_cpp.html#bond-comm">C++ manual</a> for more details on Bond Comm’s usage and capabilities. Note that the wire format should be considered firm at this point but the APIs and implementation are still evolving so Bond Comm is still considered “pre-1.0”.</p>
 <p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
 <p>For details, see the User’s Manuals for <a href="https://Microsoft.github.io/bond/manual/bond_cpp.html">C++</a>, <a href="https://Microsoft.github.io/bond/manual/bond_cs.html">C#</a> and <a href="https://Microsoft.github.io/bond/manual/bond_py.html">Python</a>, and the documentation of the compiler <a href="https://microsoft.github.io/bond/manual/compiler.html">tool</a> and <a href="https://hackage.haskell.org/package/bond">library</a>.</p>
 <p>For a discussion how Bond compares to similar frameworks see <a href="https://Microsoft.github.io/bond/why_bond.html">Why Bond</a>.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>The Bond repository uses Git submodules and should be cloned with the <code>--recursive</code> flag:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> clone --recursive https://github.com/Microsoft/bond.git</code></pre></div>
-<p>In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and cabal-install 1.18+) and Boost (1.54+). The core Bond C++ library can be used with C++03 compilers, although Python support, unit tests and various examples require some C++11 features.</p>
+<p>In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and cabal-install 1.18+) and Boost (1.58+). The core Bond C++ library can be used with C++03 compilers, although Bond Comm, Python support, unit tests and various examples require some C++11 features. (Note: Boost 1.59 may not work with Bond Comm due to some bugs in that version of the Boost ASIO library).</p>
 <p>Following are specific instructions for building on various platforms.</p>
 <h3 id="linux">Linux</h3>
 <p>Bond can be built with Clang (3.4+) or GNU C++ (4.7+). We recommend the latest version of Clang as it’s much faster with template-heavy code like Bond.</p>
@@ -242,12 +242,12 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">.</span>\cs\dnc\build -Test</code></pre></div>
 <p>The C++ and Python versions of Bond additionally require:</p>
 <ul>
-<li>Boost 1.54+ (<a href="http://www.boost.org/users/download/" class="uri">http://www.boost.org/users/download/</a>)</li>
+<li>Boost 1.58+ (<a href="http://www.boost.org/users/download/" class="uri">http://www.boost.org/users/download/</a>)</li>
 <li>Python 2.7 (<a href="https://www.python.org/downloads/" class="uri">https://www.python.org/downloads/</a>)</li>
 </ul>
 <p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment (MSVC 12 or MSVC 14) can be found, e.g.:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="va">BOOST_ROOT=</span>D:\<span class="ex">boost_1_57_0</span>
-<span class="kw">set</span> <span class="va">BOOST_LIBRARYDIR=</span>D:\<span class="ex">boost_1_57_0</span>\lib64-msvc-14.0</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="va">BOOST_ROOT=</span>D:\<span class="ex">boost_1_58_0</span>
+<span class="kw">set</span> <span class="va">BOOST_LIBRARYDIR=</span>D:\<span class="ex">boost_1_58_0</span>\lib64-msvc-14.0</code></pre></div>
 <p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests and Python support. If Boost or Python libraries are not found on the system, then some tests and examples will not be built.</p>
 <p>In order to generate a solution to build the C++ and Python versions with Visual Studio 2015 run the following commands from the root <code>bond</code> directory:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build

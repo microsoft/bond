@@ -109,6 +109,7 @@
 <li><a href="#messaging-patterns">Messaging Patterns</a><ul>
 <li><a href="#future-messaging-patterns">Future Messaging Patterns</a></li>
 </ul></li>
+<li><a href="#layers">Layers</a></li>
 </ul></li>
 <li><a href="#implementations">Implementations</a></li>
 </ul>
@@ -134,7 +135,6 @@
 <li><a href="bond_comm_simpleinmem.html">SimpleInMem</a>: asynchronous communication over in-memory connections using a binary protocol</li>
 </ul>
 <p>Not all transports support all messaging patterns. Check the documentation for the respective transports.</p>
-<p>See the <a href="bond_comm_roadmap.html">roadmap</a> for plans about future transports.</p>
 <h2 id="messaging-patterns">Messaging Patterns</h2>
 <p>There are a number of conceptual messaging patterns that are supported:</p>
 <ul>
@@ -149,8 +149,14 @@
 <li>topics/subscriptions: publish a stream of events and receive a filtered view of that stream</li>
 <li>aggregations: send requests to multiple receivers and combine their responses in various ways</li>
 </ul>
+<h2 id="layers">Layers</h2>
+<p>Bond Comm includes extensibility points called “layers” that provides hooks for capabilites that are not service- or method-specific. An example of this would be tracing hooks like those mentioned in the <a href="http://research.google.com/pubs/pub36356.html">Dapper paper</a>.</p>
+<p>A set of layers are encapsulated together in a “layer stack”, which can be provided to the Transport. When the Transport sends out a message, the layer stack invokes the layers in forward order. On the receive side, the layer stack invokes the layers in reverse order.</p>
+<p>The layers in a layer stack are expected to share a single Bond structure for passing state from the send side to the receive side. This structure is serialized by the transport and sent alongside the actual message payload.</p>
+<p>If any layer returns an error, the layer stack is halted and the error replaces the current message; therefore, layers should only return errors for conditions that are truly fatal for the current message.</p>
+<p>Layers may be stateful or stateless. In the case of request/response messages, a stateful layer instance is shared across the two halves of the conversation – i.e. on the client side, a stateful layer instance can pass its state from the outbound request to the inbound response, and on the server side, from the inbound request to the outbound response.</p>
 <h1 id="implementations">Implementations</h1>
-<p>Bond Communications is available for <a href="bond_cs.html#bond-comm">C#</a> today. C++ support is <a href="bond_comm_roadmap.html">forthcoming</a>.</p>
+<p>Bond Communications is available for <a href="bond_cs.html#bond-comm">C#</a> and <a href="bond_cpp.html#bond-comm">C++</a>.</p>
 </div>
 </div>
 </body>

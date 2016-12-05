@@ -186,7 +186,6 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#epoxy-transport">Epoxy Transport</a></li>
 <li><a href="#simpleinmem-transport">SimpleInMem Transport</a></li>
 <li><a href="#logging-and-metrics-facades">Logging and Metrics Facades</a></li>
-<li><a href="#layers">Layers</a></li>
 <li><a href="#roadmap">Roadmap</a></li>
 <li><a href="#comm-nuget-packages">Comm NuGet Packages</a></li>
 </ul></li>
@@ -1322,8 +1321,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <li>event: one-way, fire-and-forget messages with no responses</li>
 </ul>
 <p>Bond Comm is naturally asynchronous, and the C# implementation takes advantage of the idiomatic Task and async/await facilities of .NET.</p>
-<p>The initial release of Bond Comm is designed to run on Windows running .NET 4.5 or .NET Core. Since .NET Core is still under development, we will update as needed. Mono support is forthcoming, as are Linux and Mac OS X.</p>
-<p>Only Windows 10 and Windows Server 2012 R2 have been tested to date.</p>
+<p>Bond Comm is designed to run on NET 4.5 or .NET Core. Mono support is forthcoming, as are Linux and Mac OS X – only Windows 10 and Windows Server 2012 R2 have been tested to date.</p>
 <p>See the following examples:</p>
 <ul>
 <li>the <a href="https://github.com/Microsoft/bond-comm-cs-example">C# calculator sample project</a></li>
@@ -1335,7 +1333,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <p>The generated C# service stub contains a service base class that the developer should subclass to provide the business logic of their service.</p>
 <p>The generated proxy stub provides a class with methods that the developer can call to exhange messages with the service.</p>
 <h3 id="epoxy-transport">Epoxy Transport</h3>
-<p>The initial release of Bond Comm provides a binary transport called <a href="bond_comm_epoxy.html">Epoxy</a>. This is the recommended default Transport. The Epoxy transport is designed to be .NET Core compliant, which will allow for cross-platform support.</p>
+<p>Bond Comm provides a binary transport called <a href="bond_comm_epoxy.html">Epoxy</a>. This is the recommended default Transport. The Epoxy transport is designed to be .NET Core compliant, which will allow for cross-platform support.</p>
 <p>Epoxy supports TLS as of version 0.6.0.</p>
 <h3 id="simpleinmem-transport">SimpleInMem Transport</h3>
 <p>Bond Comm provides an in-memory, single process, binary transport called <a href="bond_comm_simpleinmem.html">SimpleInMem</a>. This is not a shared memory transport.</p>
@@ -1347,14 +1345,8 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <li><code>examples/cs/comm/logging</code></li>
 <li><code>examples/cs/comm/metrics</code></li>
 </ul>
-<h3 id="layers">Layers</h3>
-<p>Bond Comm includes extensibility points called “layers” that provides hooks for capabilites that are not service- or method-specific. An example of this would be tracing hooks like those mentioned in the <a href="http://research.google.com/pubs/pub36356.html">Dapper paper</a>.</p>
-<p>A set of layers are encapsulated together in a “layer stack”, which can be provided to the Transport. When the Transport sends out a message, the layer stack invokes the layers in forward order. On the receive side, the layer stack invokes the layers in reverse order.</p>
-<p>The layers in a layer stack are expected to share a single Bond structure for passing state from the send side to the receive side. This structure is serialized by the transport and sent alongside the actual message payload.</p>
-<p>If any layer returns an error, the layer stack is halted and the error replaces the current message; therefore, layers should only return errors for conditions that are truly fatal for the current message.</p>
-<p>Support for layers that contain per-instance state is forthcoming.</p>
 <h3 id="roadmap">Roadmap</h3>
-<p>We have a <a href="bond_comm_roadmap.html">roadmap</a> for Bond Comm.</p>
+<p>We have a <a href="bond_comm_roadmap.html">brief roadmap</a> for Bond Comm.</p>
 <h3 id="comm-nuget-packages">Comm NuGet Packages</h3>
 <p>Bond Comm is split into a number of NuGet packages to allow for granular consumption. Some of these packages will have dependencies on core Bond packages as well.</p>
 <p><a href="https://www.nuget.org/packages/Bond.Comm.CSharp/"><img src="https://img.shields.io/nuget/v/Bond.Comm.CSharp.svg?style=flat" alt="Bond.Comm.CSharp NuGet package" /></a> <strong>Bond.Comm.CSharp</strong> - An omnibus package that contains everything needed to use Bond Comm. If you’re not sure which packages to use, use this one. (It will pull in the rest of them.)</p>
