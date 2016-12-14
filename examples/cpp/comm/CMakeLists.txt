@@ -1,4 +1,7 @@
 add_subdirectory (comm_static_library)
+if (MSVC)
+    add_subdirectory (comm_dll)
+endif()
 add_subdirectory (epoxy_io_service)
 add_subdirectory (error)
 add_subdirectory (event)

@@ -1,0 +1,18 @@
+namespace examples.comm_dll
+
+struct Item
+{
+    0: string       str = "default string value";
+    1: list<uint32> numbers;
+}
+
+struct MyStruct
+{
+    0: vector<Item> items;
+    1: bonded<Item> item;
+}
+
+service TestService
+{
+    Item TestMethod(MyStruct);
+}
