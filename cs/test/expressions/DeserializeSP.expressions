@@ -16,14 +16,30 @@
                             .Block(System.Int32 $count) {
                                 $count = .Call $reader.ReadContainerBegin();
                                 .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example).vvb_item) {
-                                    (((ExpressionsTest.Base)$Example).vvb).Capacity = $count;
+                                    .Block(System.Int32 $Convert(Example).vvb_count) {
+                                        $Convert(Example).vvb_count = $count;
+                                        .If ($Convert(Example).vvb_count > 65536) {
+                                            $Convert(Example).vvb_count = 65536
+                                        } .Else {
+                                            .Default(System.Void)
+                                        };
+                                        (((ExpressionsTest.Base)$Example).vvb).Capacity = $Convert(Example).vvb_count
+                                    };
                                     .Loop  {
                                         .If ($count-- > 0) {
                                             .Block() {
                                                 .Block(System.Int32 $count) {
                                                     $count = .Call $reader.ReadContainerBegin();
                                                     .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                        $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($count);
+                                                        .Block(System.Int32 $Convert(Example).vvb_item_count) {
+                                                            $Convert(Example).vvb_item_count = $count;
+                                                            .If ($Convert(Example).vvb_item_count > 65536) {
+                                                                $Convert(Example).vvb_item_count = 65536
+                                                            } .Else {
+                                                                .Default(System.Void)
+                                                            };
+                                                            $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                        };
                                                         .Loop  {
                                                             .If ($count-- > 0) {
                                                                 .Block() {
@@ -146,7 +162,15 @@
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
                         .Block(System.Int32 $Example._int32Vector_item) {
-                            ($Example._int32Vector).Capacity = $count;
+                            .Block(System.Int32 $Example._int32Vector_count) {
+                                $Example._int32Vector_count = $count;
+                                .If ($Example._int32Vector_count > 65536) {
+                                    $Example._int32Vector_count = 65536
+                                } .Else {
+                                    .Default(System.Void)
+                                };
+                                ($Example._int32Vector).Capacity = $Example._int32Vector_count
+                            };
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {

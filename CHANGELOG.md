@@ -21,6 +21,11 @@ different versioning scheme, following the Haskell community's
 * The `bf` utility now supports multiple payloads.
   [Pull request #288](https://github.com/Microsoft/bond/pull/288)
 
+### C# ###
+
+* Added controls to cap pre-allocation during deserialization of containers
+  and blobs.
+
 ## 5.1.0: 2016-11-14 ##
 
 * `gbc` & compiler library: 0.7.0.0

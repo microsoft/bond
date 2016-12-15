@@ -49,7 +49,11 @@
                                                         .Block(System.Boolean $isEmpty) {
                                                             $isEmpty = $reader.IsEmptyElement;
                                                             .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example).vvb_item) {
-                                                                (((ExpressionsTest.Base)$Example).vvb).Capacity = 0;
+                                                                .Block(System.Int32 $Convert(Example).vvb_count) {
+                                                                    $Convert(Example).vvb_count = 0;
+                                                                    .Default(System.Void);
+                                                                    (((ExpressionsTest.Base)$Example).vvb).Capacity = $Convert(Example).vvb_count
+                                                                };
                                                                 .Loop  {
                                                                     .If (
                                                                         .If (
@@ -98,7 +102,11 @@
                                                                             .Block(System.Boolean $isEmpty) {
                                                                                 $isEmpty = $reader.IsEmptyElement;
                                                                                 .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                                                    $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64](0);
+                                                                                    .Block(System.Int32 $Convert(Example).vvb_item_count) {
+                                                                                        $Convert(Example).vvb_item_count = 0;
+                                                                                        .Default(System.Void);
+                                                                                        $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                                                    };
                                                                                     .Loop  {
                                                                                         .If (
                                                                                             .If (
@@ -434,9 +442,13 @@
                                                                     .Block(
                                                                         System.Int32 $index,
                                                                         System.Byte[] $array) {
-                                                                        .Block() {
-                                                                            $index = 0;
-                                                                            $array = .NewArray System.Byte[0]
+                                                                        .Block(System.Int32 $Example.b_count) {
+                                                                            $Example.b_count = 0;
+                                                                            .Default(System.Void);
+                                                                            .Block() {
+                                                                                $index = 0;
+                                                                                $array = .NewArray System.Byte[$Example.b_count]
+                                                                            }
                                                                         };
                                                                         .Loop  {
                                                                             .If (
@@ -799,7 +811,11 @@
                                                                         .Block(System.Boolean $isEmpty) {
                                                                             $isEmpty = $reader.IsEmptyElement;
                                                                             .Block(System.Int32 $Example._int32Vector_item) {
-                                                                                ($Example._int32Vector).Capacity = 0;
+                                                                                .Block(System.Int32 $Example._int32Vector_count) {
+                                                                                    $Example._int32Vector_count = 0;
+                                                                                    .Default(System.Void);
+                                                                                    ($Example._int32Vector).Capacity = $Example._int32Vector_count
+                                                                                };
                                                                                 .Loop  {
                                                                                     .If (
                                                                                         .If (
