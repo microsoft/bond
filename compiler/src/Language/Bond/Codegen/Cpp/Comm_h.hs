@@ -11,6 +11,7 @@ import Prelude
 import qualified Data.Text.Lazy as L
 import Data.Text.Lazy.Builder
 import Text.Shakespeare.Text
+import Language.Bond.Util
 import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.Util
 import Language.Bond.Codegen.Util
@@ -20,8 +21,8 @@ import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- | Codegen template for generating /base_name/_comm.h containing declarations of
 -- of service interface and proxy.
-comm_h :: MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
-comm_h cpp file imports declarations = ("_comm.h", [lt|
+comm_h :: Maybe String -> MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
+comm_h export_attribute cpp file imports declarations = ("_comm.h", [lt|
 #pragma once
 
 #include <bond/comm/services.h>
@@ -72,7 +73,7 @@ comm_h cpp file imports declarations = ("_comm.h", [lt|
 
     #{template}struct #{className}::Schema
     {
-        static const ::bond::Metadata metadata;
+        #{export_attr}static const ::bond::Metadata metadata;
 
         #{newlineSep 2 methodMetadata serviceMethods}
 
@@ -173,10 +174,13 @@ comm_h cpp file imports declarations = ("_comm.h", [lt|
         onlyTemplate x = if null declParams then mempty else x
         typename = onlyTemplate [lt|typename |]
 
+        export_attr = optional (\a -> [lt|#{a}
+        |]) export_attribute
+
         methodMetadataVar m = [lt|s_#{methodName m}_metadata|]
 
         methodMetadata m =
-            [lt|private: static const ::bond::Metadata #{methodMetadataVar m};|]
+            [lt|private: #{export_attr}static const ::bond::Metadata #{methodMetadataVar m};|]
 
         -- reversed list of method names zipped with indexes
         indexedMethods :: [(String, Int)]

@@ -1,5 +1,5 @@
 add_bond_codegen (comm_dll.bond
-    OPTIONS --header=\\\"dllexample_dynlink.h\\\" --apply=compact --apply-attribute=DLLEXAMPLE_DYNLINK
+    OPTIONS --header=\\\"dllexample_dynlink.h\\\" --apply=compact --export-attribute=DLLEXAMPLE_DYNLINK
     COMM)
 
 add_library (comm_dll_example_lib EXCLUDE_FROM_ALL

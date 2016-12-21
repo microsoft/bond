@@ -92,12 +92,20 @@ tests = testGroup "Compiler tests"
                 , "--using=String=my::string"
                 ]
                 "custom_alias_without_allocator"
-            , verifyApplyCodegen
-                [ "c++"
-                , "--apply-attribute=DllExport"
+           , testGroup "Apply"
+                [ verifyApplyCodegen
+                    [ "c++"
+                    , "--apply-attribute=DllExport"
+                    ]
+                    "basic_types"
                 ]
-                "basic_types"
-            ]
+           , testGroup "Exports"
+                [ verifyExportsCodegen
+                    [ "c++"
+                    , "--export-attribute=DllExport"
+                    ]
+                    "service"
+                ]
             , testGroup "Comm"
                 [ verifyCppCommCodegen
                     [ "c++"
@@ -112,7 +120,8 @@ tests = testGroup "Compiler tests"
                     ]
                     "service_attributes"
                 ]
-    , testGroup "C#"
+            ]
+        , testGroup "C#"
             [ verifyCsCodegen "attributes"
             , verifyCsCodegen "basic_types"
             , verifyCsCodegen "bond_meta"

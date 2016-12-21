@@ -22,7 +22,7 @@ import qualified Language.Bond.Codegen.Cpp.Util as CPP
 apply_h :: [Protocol]   -- ^ List of protocols for which @Apply@ overloads should be generated
         -> Maybe String -- ^ Optional attribute to decorate the @Apply@ function declarations
         -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
-apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
+apply_h protocols export_attribute cpp file imports declarations = ("_apply.h", [lt|
 #pragma once
 
 #include "#{file}_types.h"
@@ -31,14 +31,14 @@ apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
 #{newlineSep 0 includeImport imports}
 
 #{CPP.openNamespace cpp}
-    #{newlineSepEnd 1 (applyOverloads protocols cpp attr semi) declarations}
+    #{newlineSepEnd 1 (applyOverloads protocols cpp export_attr semi) declarations}
 #{CPP.closeNamespace cpp}
 |])
   where
     includeImport (Import path) = [lt|#include "#{dropExtension path}_apply.h"|]
 
-    attr = optional (\a -> [lt|#{a}
-    |]) attribute
+    export_attr = optional (\a -> [lt|#{a}
+    |]) export_attribute
 
     semi = [lt|;|]
 

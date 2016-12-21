@@ -13,17 +13,21 @@ different versioning scheme, following the Haskell community's
 
 ## Unreleased ##
 
-* `gbc` & compiler library: TBD (B version bump needed)
+* `gbc` & compiler library: TBD (major version bump needed)
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: TBD (minor bump needed [Boost dependencies changed])
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed [dependencies changed])
 
-### bond compiler library ###
+### `gbc` and Bond compiler library ###
 
 * The C++ Comm .cpp template has been renamed to `comm_cpp` from
   `types_comm_cpp` to match the file it generates.
+* Add export-attribute option for C++ and make apply-attribute a
+  deprecated synonym for export-attribute
+* Fix C++ Comm build problems when services are shared via DLL.
+  [Issue #314](https://github.com/Microsoft/bond/issues/314)
 
 ### C++ ###
 

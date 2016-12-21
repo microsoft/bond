@@ -9,6 +9,7 @@ module Tests.Codegen
     , verifyCppCodegen
     , verifyCppCommCodegen
     , verifyApplyCodegen
+    , verifyExportsCodegen
     , verifyCsCodegen
     , verifyCsCommCodegen
     ) where
@@ -50,7 +51,7 @@ verifyApplyCodegen args baseName =
   where
     options = processOptions args
     templates =
-        [ apply_h protocols (apply_attribute options)
+        [ apply_h protocols (export_attribute options)
         , apply_cpp protocols
         ]
     protocols =
@@ -62,14 +63,28 @@ verifyApplyCodegen args baseName =
                    "bond::SimpleBinaryWriter<bond::OutputBuffer>"
         ]
 
+verifyExportsCodegen :: [String] -> FilePath -> TestTree
+verifyExportsCodegen args baseName =
+    testGroup baseName $
+        map (verifyFile options baseName cppTypeMapping "exports") templates
+  where
+    options = processOptions args
+    templates =
+        [ reflection_h (export_attribute options)
+        , comm_h (export_attribute options)
+        ]
+
 verifyCppCommCodegen :: [String] -> FilePath -> TestTree
 verifyCppCommCodegen args baseName =
     testGroup baseName $
-        map (verifyFile (processOptions args) baseName cppTypeMapping "")
-            [ comm_h
-            , comm_cpp
-            , types_cpp
-            ]
+        map (verifyFile options baseName cppTypeMapping "") templates
+  where
+    options = processOptions args
+    templates =
+        [ comm_h (export_attribute options)
+        , comm_cpp
+        , types_cpp
+        ]
 
 verifyCsCommCodegen :: [String] -> FilePath -> TestTree
 verifyCsCommCodegen args baseName =
@@ -102,7 +117,7 @@ verifyFiles options baseName =
     typeMapping Cpp {..} = maybe cppTypeMapping cppCustomAllocTypeMapping allocator
     typeMapping Cs {} = csTypeMapping
     templates Cpp {..} =
-        [ reflection_h
+        [ (reflection_h export_attribute)
         , types_cpp
         , comm_cpp
         , types_h header enum_header allocator

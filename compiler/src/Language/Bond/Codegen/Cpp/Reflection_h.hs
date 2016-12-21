@@ -11,6 +11,7 @@ import Prelude
 import Data.Text.Lazy (Text)
 import qualified Data.Foldable as F
 import Text.Shakespeare.Text
+import Language.Bond.Util
 import Language.Bond.Syntax.Types
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
@@ -18,8 +19,8 @@ import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- | Codegen template for generating /base_name/_reflection.h containing schema
 -- metadata definitions.
-reflection_h :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
-reflection_h cpp file imports declarations = ("_reflection.h", [lt|
+reflection_h :: Maybe String -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
+reflection_h export_attribute cpp file imports declarations = ("_reflection.h", [lt|
 #pragma once
 
 #include "#{file}_types.h"
@@ -46,7 +47,7 @@ reflection_h cpp file imports declarations = ("_reflection.h", [lt|
     {
         typedef #{baseType structBase} base;
 
-        static const ::bond::Metadata metadata;
+        #{export_attr}static const ::bond::Metadata metadata;
         #{newlineBeginSep 2 fieldMetadata structFields}
 
         public: struct var
@@ -70,6 +71,9 @@ reflection_h cpp file imports declarations = ("_reflection.h", [lt|
         classParams = CPP.classParams s
 
         className = CPP.className s
+
+        export_attr = optional (\a -> [lt|#{a}
+        |]) export_attribute
 
         onlyTemplate x = if null declParams then mempty else x
 
@@ -99,7 +103,7 @@ reflection_h cpp file imports declarations = ("_reflection.h", [lt|
             [lt|private: typedef #{typename}boost::mpl::push_front<fields#{i}, #{typename}var::#{field}>::type fields#{i + 1};|]
 
         fieldMetadata Field {..} =
-            [lt|private: static const ::bond::Metadata s_#{fieldName}_metadata;|]
+            [lt|private: #{export_attr}static const ::bond::Metadata s_#{fieldName}_metadata;|]
 
         fieldTemplates = F.foldMap $ \ f@Field {..} -> [lt|
             // #{fieldName}

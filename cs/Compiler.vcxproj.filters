@@ -59,6 +59,9 @@
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Comm_h.hs">
       <Filter>Bond\Codegen\Cpp</Filter>
     </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Comm_cpp.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
+    </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Enum_h.hs">
       <Filter>Bond\Codegen\Cpp</Filter>
     </None>

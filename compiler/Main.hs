@@ -70,13 +70,13 @@ cppCodegen :: Options -> IO()
 cppCodegen options@Cpp {..} = do
     let typeMapping = maybe cppTypeMapping cppCustomAllocTypeMapping allocator
     concurrentlyFor_ files $ codeGen options typeMapping $
-        [ reflection_h
-        , types_cpp
+        [ reflection_h export_attribute
         , types_h header enum_header allocator
-        , apply_h applyProto apply_attribute
+        , types_cpp
+        , apply_h applyProto export_attribute
         , apply_cpp applyProto
+        , comm_h export_attribute
         , comm_cpp
-        , comm_h
         ] <>
         [ enum_h | enum_header]
   where

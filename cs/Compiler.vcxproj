@@ -67,6 +67,7 @@ if %errorlevel% neq 0 goto :VCEnd
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_cpp.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_h.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Comm_h.hs" />
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Comm_cpp.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Enum_h.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Reflection_h.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_cpp.hs" />
