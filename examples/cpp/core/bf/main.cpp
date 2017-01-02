@@ -102,7 +102,7 @@ bond::SchemaDef LoadSchema(const std::string& file)
 
     char c;
     tryJson.Read(c);
-        
+
     return (c == '{')
         ? bond::Deserialize<bond::SchemaDef>(bond::SimpleJsonReader<InputFile>(input))
         : bond::Unmarshal<bond::SchemaDef>(input);
@@ -111,9 +111,9 @@ bond::SchemaDef LoadSchema(const std::string& file)
 template <typename Reader, typename Writer>
 void TranscodeFromTo(Reader& reader, Writer& writer, const Options& options)
 {
-    if (!options.schema.empty())
+    if (!options.schema.empty() && !options.schema.front().empty())
     {
-        bond::SchemaDef schema(LoadSchema(options.schema));
+        bond::SchemaDef schema(LoadSchema(options.schema.front()));
         bond::bonded<void, typename bond::ProtocolReader<typename Reader::Buffer> >(reader, bond::RuntimeSchema(schema)).Serialize(writer);
     }
     else
@@ -126,9 +126,9 @@ void TranscodeFromTo(Reader& reader, Writer& writer, const Options& options)
 template <typename Writer>
 void TranscodeFromTo(InputFile& input, Writer& writer, const Options& options)
 {
-    if (!options.schema.empty())
+    if (!options.schema.empty() && !options.schema.front().empty())
     {
-        bond::SchemaDef schema(LoadSchema(options.schema));
+        bond::SchemaDef schema(LoadSchema(options.schema.front()));
         bond::SelectProtocolAndApply(bond::RuntimeSchema(schema), input, SerializeTo(writer));
     }
     else
@@ -193,23 +193,31 @@ bool TranscodeFrom(Reader reader, const Options& options)
     }
 }
 
-
-bool Transcode(InputFile& input, const Options& options)
+template <typename Input>
+bool Transcode(Input input, const Options& options)
 {
-    switch (options.from)
+    bf::Protocol from = options.from.empty() ? guess : options.from.front();
+
+    if (from == guess)
+    {
+        from = Guess(input);
+        std::cerr << std::endl << "Guessed " << ToString(from) << std::endl;
+    }
+
+    switch (from)
     {
         case marshal:
             return TranscodeFrom(input, options);
         case compact:
-            return TranscodeFrom(bond::CompactBinaryReader<InputFile>(input), options);
+            return TranscodeFrom(bond::CompactBinaryReader<Input>(input), options);
         case compact2:
-            return TranscodeFrom(bond::CompactBinaryReader<InputFile>(input, bond::v2), options);
+            return TranscodeFrom(bond::CompactBinaryReader<Input>(input, bond::v2), options);
         case fast:
-            return TranscodeFrom(bond::FastBinaryReader<InputFile>(input), options);
+            return TranscodeFrom(bond::FastBinaryReader<Input>(input), options);
         case simple:
-            return TranscodeFrom(bond::SimpleBinaryReader<InputFile>(input), options);
+            return TranscodeFrom(bond::SimpleBinaryReader<Input>(input), options);
         case simple2:
-            return TranscodeFrom(bond::SimpleBinaryReader<InputFile>(input, bond::v2), options);
+            return TranscodeFrom(bond::SimpleBinaryReader<Input>(input, bond::v2), options);
         default:
             return false;
     }
@@ -226,11 +234,32 @@ int main(int argc, char** argv)
         {
             InputFile input(options.file);
 
-            if (options.from == guess)
-                std::cerr << "Guessed " << ToString(options.from = Guess(input)) << std::endl;
+            do
+            {
+                // In order to decode multiple payloads from a file we need to
+                // use InputFile& however that usage doesn't support marshalled
+                // bonded<T> in untagged protocols. As a compromise we use
+                // InputFile for the last payload and InputFile& otherwise.
+                if (options.schema.size() > 1 || options.from.size() > 1)
+                {
+                    if (!Transcode<InputFile&>(input, options))
+                        return 1;
+                }
+                else
+                {
+                    if (!Transcode<InputFile>(input, options))
+                        return 1;
+                }
 
-            if (Transcode(input, options))
-                return 0;
+                if (!options.schema.empty())
+                    options.schema.pop_front();
+
+                if (!options.from.empty())
+                    options.from.pop_front();
+            }
+            while (!options.schema.empty() || !options.from.empty());
+
+            return 0;
         }
     }
     catch(const std::exception& error)
