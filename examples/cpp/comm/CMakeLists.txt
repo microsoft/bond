@@ -1,7 +1,6 @@
 add_subdirectory (epoxy_io_service)
 add_subdirectory (error)
 add_subdirectory (event)
-add_subdirectory (futures)
 add_subdirectory (generic)
 add_subdirectory (layer)
 add_subdirectory (logging)
