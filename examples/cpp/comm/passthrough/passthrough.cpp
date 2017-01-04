@@ -10,6 +10,7 @@
 #include <bond/comm/transport/epoxy.h>
 
 #include <future>
+#include <boost/core/ignore_unused.hpp>
 
 using namespace examples::passthrough;
 
@@ -38,7 +39,7 @@ class ServiceImpl : public Service
 {
     void Process(const bond::comm::payload<Param>& input,
                  const std::function<void(const bond::comm::message<Result>&)>& callback) override
-    {        
+    {
         Param param = input.value().Deserialize();
 
         // Process request, dispatch response
@@ -68,9 +69,8 @@ int BOND_CALL main()
 
     Result result = proxy.Pass(param).get().value().Deserialize();
 
+    boost::ignore_unused(result);
     assert(42 == result.x);
 
     return 0;
 }
-
-

@@ -10,10 +10,11 @@
 #include <bond/comm/transport/epoxy.h>
 
 #include <future>
+#include <boost/core/ignore_unused.hpp>
 
 using namespace examples::generic;
 
-// Implement service 
+// Implement service
 struct ServiceImpl : Service<Result, Param>
 {
     void Method(const bond::comm::payload<Param>& input,
@@ -39,6 +40,7 @@ int main()
 
     Result result = proxy.Method(std::move(param)).get().value().Deserialize();
 
+    boost::ignore_unused(result);
     assert(42 == result.z);
 
     return 0;
