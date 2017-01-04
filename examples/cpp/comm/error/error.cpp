@@ -61,6 +61,7 @@ int BOND_CALL main()
     }
     catch (const bond::comm::CommException& ex)
     {
+        boost::ignore_unused_variable_warning(ex);
         // Expect InvalidInvocation when trying to access error payload.
         assert(bond::comm::ErrorCode::INVALID_INVOCATION == ex.error_code);
     }
