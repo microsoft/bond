@@ -5,6 +5,10 @@
 
 #include <bond/core/containers.h>
 #include <bond/core/blob.h>
+#include <bond/core/traits.h>
+
+#include <cstring>
+#include <boost/static_assert.hpp>
 
 namespace bond
 {
@@ -14,7 +18,7 @@ class RandomProtocolEngine
 {
 public:
     // We don't need a good pseudo-random number generator but we do need one
-    // that is consistent accross compilers/libraries so that we can use 
+    // that is consistent accross compilers/libraries so that we can use
     // randomly generated data files from one platfom to verify compatibility
     // on another platform.
     RandomProtocolEngine()
@@ -46,11 +50,11 @@ template <typename T>
 uint64_t RandomProtocolEngine<T>::state[2] = {seed1, seed2};
 
 //
-// Protocol which generates a random stream of bits. 
+// Protocol which generates a random stream of bits.
 // In some cases it may be useful for initializing data in tests, e.g.:
 //
 // Params param;
-// Apply(bond::To<Params>(param), bond::bonded<Params>(bond::RandomProtocolReader())); 
+// Apply(bond::To<Params>(param), bond::bonded<Params>(bond::RandomProtocolReader()));
 //
 class RandomProtocolReader
     : public RandomProtocolEngine<RandomProtocolReader>
@@ -59,7 +63,7 @@ public:
     typedef bond::StaticParser<RandomProtocolReader&> Parser;
 
     RandomProtocolReader(uint32_t max_string_length = 50, uint32_t max_list_size = 20, bool json = false)
-        : _max_string_length(max_string_length), 
+        : _max_string_length(max_string_length),
           _max_list_size(max_list_size),
           _json(json)
     {}
@@ -76,11 +80,19 @@ public:
 
     template <typename T>
     typename boost::disable_if<is_string_type<T> >::type
-    Read(T& value) 
+    Read(T& value)
     {
-        uint64_t random = RandomProtocolEngine::Next();
+        // T needs to be trivially copyable to use std::memcpy.
+        // std::is_trivially_copyable isn't available until C++11, so we use
+        // bond::is_arithmetic instead. This works, because we only ever
+        // read arithmetic types in this version of Read(), so we don't need
+        // the full generality.
+        BOOST_STATIC_ASSERT(bond::is_arithmetic<T>::value);
+        // We only have 64 bits of randomness, so T needs to fit in that.
+        BOOST_STATIC_ASSERT(sizeof(T) <= sizeof(uint64_t));
 
-        value = *static_cast<T*>(static_cast<void*>(&random));
+        uint64_t random = RandomProtocolEngine::Next();
+        std::memcpy(&value, &random, sizeof(T));
     }
 
     void Read(uint64_t& value)
@@ -145,7 +157,7 @@ public:
     Read(T& value)
     {
         uint32_t length = 0;
-        
+
         Read(length);
 
         length %= _max_string_length;
@@ -169,7 +181,7 @@ public:
     void Read(blob& value, uint32_t size)
     {
         boost::shared_ptr<char[]> buffer(boost::make_shared_noinit<char[]>(size));
-        
+
         for (unsigned i = 0; i < size; ++i)
             Read(buffer[i]);
 
@@ -204,11 +216,11 @@ private:
 };
 
 
-template <typename Unused> struct 
+template <typename Unused> struct
 uses_marshaled_bonded<RandomProtocolReader, Unused>
     : boost::false_type {};
 
-template <typename Unused> struct 
+template <typename Unused> struct
 uses_marshaled_bonded<RandomProtocolReader&, Unused>
     : boost::false_type {};
 
