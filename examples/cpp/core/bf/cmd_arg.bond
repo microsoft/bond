@@ -24,17 +24,17 @@ struct Options
     [help("output file")]
     1: string output = "stdout";
 
-    [help("guess | marshal | compact | compact2 | fast | simple | simple2")]
-    2: Protocol from = guess;
+    [help("guess | marshal | compact | compact2 | fast | simple | simple2, default guess")]
+    2: list<Protocol> from;
 
     [help("json | compact | compact2 | fast | simple | simple2")]
     3: Protocol to = json;
 
-    [help("include values for omitted optional fields when transcoding to json format with input schema)")]
+    [help("include values for omitted optional fields when transcoding to json format with input schema")]
     4: bool all_fields;
     
     [help("file with marshaled schema of the input; required when input format is simple*")]
-    5: string schema;
+    5: list<string> schema;
 
     [help("input file")]
     [naked("")]

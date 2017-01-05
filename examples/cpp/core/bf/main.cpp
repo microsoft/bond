@@ -113,12 +113,12 @@ void TranscodeFromTo(Reader& reader, Writer& writer, const Options& options)
 {
     if (!options.schema.empty())
     {
-        bond::SchemaDef schema(LoadSchema(options.schema));
-        bond::bonded<void, typename bond::ProtocolReader<typename Reader::Buffer> >(reader, bond::RuntimeSchema(schema)).Serialize(writer);
+        bond::SchemaDef schema(LoadSchema(options.schema.front()));
+        bond::bonded<void, Reader&>(reader, bond::RuntimeSchema(schema)).Serialize(writer);
     }
     else
     {
-        bond::bonded<UnknownSchema, typename bond::ProtocolReader<typename Reader::Buffer> >(reader).Serialize(writer);
+        bond::bonded<UnknownSchema, Reader&>(reader).Serialize(writer);
     }
 }
 
@@ -128,7 +128,7 @@ void TranscodeFromTo(InputFile& input, Writer& writer, const Options& options)
 {
     if (!options.schema.empty())
     {
-        bond::SchemaDef schema(LoadSchema(options.schema));
+        bond::SchemaDef schema(LoadSchema(options.schema.front()));
         bond::SelectProtocolAndApply(bond::RuntimeSchema(schema), input, SerializeTo(writer));
     }
     else
@@ -196,20 +196,25 @@ bool TranscodeFrom(Reader reader, const Options& options)
 
 bool Transcode(InputFile& input, const Options& options)
 {
-    switch (options.from)
+    bf::Protocol from = options.from.empty() ? guess : options.from.front();
+
+    if (from == guess)
+        std::cerr << std::endl << "Guessed " << ToString(from = Guess(input)) << std::endl;
+
+    switch (from)
     {
         case marshal:
             return TranscodeFrom(input, options);
         case compact:
-            return TranscodeFrom(bond::CompactBinaryReader<InputFile>(input), options);
+            return TranscodeFrom(bond::CompactBinaryReader<InputFile&>(input), options);
         case compact2:
-            return TranscodeFrom(bond::CompactBinaryReader<InputFile>(input, bond::v2), options);
+            return TranscodeFrom(bond::CompactBinaryReader<InputFile&>(input, bond::v2), options);
         case fast:
-            return TranscodeFrom(bond::FastBinaryReader<InputFile>(input), options);
+            return TranscodeFrom(bond::FastBinaryReader<InputFile&>(input), options);
         case simple:
-            return TranscodeFrom(bond::SimpleBinaryReader<InputFile>(input), options);
+            return TranscodeFrom(bond::SimpleBinaryReader<InputFile&>(input), options);
         case simple2:
-            return TranscodeFrom(bond::SimpleBinaryReader<InputFile>(input, bond::v2), options);
+            return TranscodeFrom(bond::SimpleBinaryReader<InputFile&>(input, bond::v2), options);
         default:
             return false;
     }
@@ -226,11 +231,20 @@ int main(int argc, char** argv)
         {
             InputFile input(options.file);
 
-            if (options.from == guess)
-                std::cerr << "Guessed " << ToString(options.from = Guess(input)) << std::endl;
+            do
+            {
+                if (!Transcode(input, options))
+                    return 1;
+                
+                if (!options.schema.empty())
+                    options.schema.pop_front();
 
-            if (Transcode(input, options))
-                return 0;
+                if (!options.from.empty())
+                    options.from.pop_front();
+            }
+            while (!options.schema.empty() || !options.from.empty());
+
+            return 0;
         }
     }
     catch(const std::exception& error)
