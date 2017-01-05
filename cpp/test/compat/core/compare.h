@@ -1,22 +1,17 @@
 #pragma once
 
+#include <algorithm>
+#include <complex>
+#include <limits>
+
 template <typename T>
 class Compare;
 
 inline bool Equal(double left, double right)
 {
-    // http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
-    int64_t l = *(int64_t*)&left;
-    if (l < 0)
-        l = 0x8000000000000000LL - l;
-
-    int64_t r = *(int64_t*)&right;
-    if (r < 0)
-        r = 0x8000000000000000LL - r;
-
-    return (l - r) < 5 && (l - r) > -5;
+    const int ulp = 5;
+    return std::abs(left - right) <= std::numeric_limits<double>::epsilon() * (std::max)(std::abs(left), std::abs(right)) * ulp;
 }
-
 
 template <typename T>
 typename boost::enable_if<bond::is_basic_type<T>, bool>::type
@@ -75,7 +70,7 @@ Equal(const T& left, const T& right)
 template <typename T1, typename T2>
 bool Equal(const std::pair<T1, T2>& left, const std::pair<T1, T2>& right)
 {
-    return Equal(left.first, right.first) 
+    return Equal(left.first, right.first)
         && Equal(left.second, right.second);
 }
 

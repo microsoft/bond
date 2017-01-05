@@ -298,8 +298,9 @@ void SchemaCache<T, Unused>::AppendStructDef(SchemaDef* s)
     // need to support stateful allocators that can't allocate from
     // a default-constructed instance and containers which allocate in
     // default constructor.
-    char o;
-    Apply(InitSchemaDef(*s), reinterpret_cast<const T&>(o));
+    //
+    // Thus, we make a dummy const T& from a nullptr.
+    Apply(InitSchemaDef(*s), static_cast<const T&>(*static_cast<T*>(0)));
 }
 
 } // detail

@@ -734,7 +734,7 @@ typename boost::disable_if<is_container<X> >::type
 inline DeserializeContainer(X& var, const T& element, Reader& input)
 {
     BondDataType type = GetTypeId(element);
-    uint32_t     size;
+    uint32_t     size = 0;
 
     input.ReadContainerBegin(size, type);
 
@@ -901,7 +901,7 @@ typename boost::disable_if<is_container<X> >::type
 inline DeserializeMap(X& var, BondDataType keyType, const T& element, Reader& input)
 {
     std::pair<BondDataType, BondDataType> type(keyType, GetTypeId(element));
-    uint32_t                              size;
+    uint32_t                              size = 0;
 
     input.ReadContainerBegin(size, type);
 
