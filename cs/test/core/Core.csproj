@@ -45,6 +45,7 @@
     <Compile Include="Partial.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="Random.cs" />
+    <Compile Include="ReadOnlyCollectionTests.cs" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="SerializerGeneratorFactoryTests.cs" />
     <Compile Include="GenericsTests.cs" />

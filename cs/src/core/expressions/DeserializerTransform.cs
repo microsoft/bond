@@ -4,6 +4,7 @@
 namespace Bond.Expressions
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
@@ -251,101 +252,33 @@ namespace Bond.Expressions
 
                         parameters = new[] { index, array };
                     }
-                    else if (container.Type.IsArray)
+                    else if (container.Type.IsArray || schemaType.IsArray)
                     {
-                        var arrayElemType = container.Type.GetValueType();
-                        var containerResizeMethod = arrayResize.MakeGenericMethod(arrayElemType);
-
-                        if (initialize)
+                        if(initialize && (!container.Type.IsArray && schemaType.IsArray))
                         {
-                            beforeLoop = 
-                                Expression.Assign(container, newContainer(container.Type, schemaType, count));
+                            var array = Expression.Variable(schemaType, "tmpArray");
+                            var arrayInit = ArrayHandler(parser, array, schemaType, initialize, valueParser, elementType, next, count);
+                            return Expression.Block(
+                                new[] { array },
+                                arrayInit,
+                                Expression.Assign(container, array));
                         }
 
-                        if (arrayElemType == typeof(byte))
-                        {
-                            var parseBlob = parser.Blob(count);
-                            if (parseBlob != null)
-                            {
-                                var blob = Expression.Variable(typeof(ArraySegment<byte>), "blob");
-                                return Expression.Block(
-                                    new[] { blob },
-                                    beforeLoop,
-                                    Expression.Assign(blob, parseBlob),
-                                    Expression.Call(null, bufferBlockCopy, new[]
-                                    {
-                                        Expression.Property(blob, "Array"),
-                                        Expression.Property(blob, "Offset"),
-                                        container,
-                                        Expression.Constant(0),
-                                        count
-                                    }));
-                            }
-                        }
-
-                        var i = Expression.Variable(typeof(int), "i");
-
-                        beforeLoop = Expression.Block(
-                            beforeLoop,
-                            Expression.Assign(i, Expression.Constant(0)));
-
-                        // Resize the array if we've run out of room
-                        var maybeResize =
-                            Expression.IfThen(
-                                Expression.Equal(i, Expression.ArrayLength(container)),
-                                Expression.Call(
-                                    containerResizeMethod,
-                                    container,
-                                    Expression.Multiply(
-                                        Expression.Condition(
-                                            Expression.LessThan(i, Expression.Constant(32)),
-                                            Expression.Constant(32),
-                                            i),
-                                        Expression.Constant(2))));
-
-                        // Puts a single element into the array.
-                        addItem = Expression.Block(
-                            maybeResize,
-                            Value(
-                                valueParser,
-                                Expression.ArrayAccess(container, i),
-                                elementType,
-                                itemSchemaType,
-                                initialize: true),
-                            Expression.PostIncrementAssign(i));
-
-                        // Expanding the array potentially leaves many blank
-                        // entries; this resize will get rid of them.
-                        afterLoop = Expression.IfThen(
-                            Expression.GreaterThan(Expression.ArrayLength(container), i),
-                            Expression.Call(containerResizeMethod, container, i));
-
-                        parameters = new[] { i };
+                        return ArrayHandler(parser, container, schemaType, initialize, valueParser, elementType, next, count);
                     }
                     else
                     {
-                        var item = Expression.Variable(container.Type.GetValueType(), container + "_item");
-
-                        if (initialize)
+                        if(initialize && !typeof(ICollection<>).MakeGenericType(container.Type.GetGenericArguments()).IsAssignableFrom(container.Type))
                         {
-                            beforeLoop = Expression.Assign(container, newContainer(container.Type, schemaType, count));
-                        }
-                        else
-                        {
-                            var capacity = container.Type.GetDeclaredProperty("Capacity", count.Type);
-                            if (capacity != null)
-                            {
-                                beforeLoop = Expression.Assign(Expression.Property(container, capacity), count);
-                            }
+                            var collection = Expression.Variable(schemaType, "tmpCollection");
+                            var collectionInit = CollectionHandler(collection, schemaType, initialize, valueParser, elementType, next, count);
+                            return Expression.Block(
+                                new[] { collection },
+                                collectionInit,
+                                Expression.Assign(container, collection));
                         }
 
-                        var add = container.Type.GetMethod(typeof(ICollection<>), "Add", item.Type);
-
-                        addItem = Expression.Block(
-                            Value(valueParser, item, elementType, itemSchemaType, initialize: true),
-                            Expression.Call(container, add, item));
-
-                        parameters = new[] { item };
+                        return CollectionHandler(container, schemaType, initialize, valueParser, elementType, next, count);
                     }
 
                     return Expression.Block(
@@ -357,6 +290,119 @@ namespace Bond.Expressions
                 });
         }
 
+        Expression ArrayHandler(IParser parser, Expression container, Type schemaType, bool initialize, IParser valueParser, Expression elementType, Expression next, Expression count)
+        {
+            var itemSchemaType = schemaType.GetValueType();
+
+            var arrayElemType = container.Type.GetValueType();
+            var containerResizeMethod = arrayResize.MakeGenericMethod(arrayElemType);
+
+            Expression afterLoop = Expression.Empty();
+            Expression beforeLoop = Expression.Empty();
+            if (initialize)
+            {
+                beforeLoop = Expression.Assign(container, newContainer(container.Type, schemaType, count));
+            }
+
+            if (arrayElemType == typeof(byte))
+            {
+                var parseBlob = parser.Blob(count);
+                if (parseBlob != null)
+                {
+                    var blob = Expression.Variable(typeof(ArraySegment<byte>), "blob");
+
+                    return Expression.Block(
+                        new[] { blob },
+                        beforeLoop,
+                        Expression.Assign(blob, parseBlob),
+                        Expression.Call(null, bufferBlockCopy, new[]
+                        {
+                            Expression.Property(blob, "Array"),
+                            Expression.Property(blob, "Offset"),
+                            container,
+                            Expression.Constant(0),
+                            count
+                        }));
+                }
+            }
+
+            var i = Expression.Variable(typeof(int), "i");
+
+            beforeLoop = Expression.Block(
+                beforeLoop,
+                Expression.Assign(i, Expression.Constant(0)));
+
+            // Resize the array if we've run out of room
+            var maybeResize =
+                Expression.IfThen(
+                    Expression.Equal(i, Expression.ArrayLength(container)),
+                    Expression.Call(
+                        containerResizeMethod,
+                        container,
+                        Expression.Multiply(
+                            Expression.Condition(
+                                Expression.LessThan(i, Expression.Constant(32)),
+                                Expression.Constant(32),
+                                i),
+                            Expression.Constant(2))));
+
+            // Puts a single element into the array.
+            Expression addItem = Expression.Block(
+                maybeResize,
+                Value(
+                    valueParser,
+                    Expression.ArrayAccess(container, i),
+                    elementType,
+                    itemSchemaType,
+                    initialize: true),
+                Expression.PostIncrementAssign(i));
+
+            // Expanding the array potentially leaves many blank
+            // entries; this resize will get rid of them.
+            afterLoop = Expression.IfThen(
+                Expression.GreaterThan(Expression.ArrayLength(container), i),
+                Expression.Call(containerResizeMethod, container, i));
+
+            return Expression.Block(
+                new[] { i },
+                beforeLoop,
+                ControlExpression.While(next,
+                    addItem),
+                afterLoop);
+        }
+
+        Expression CollectionHandler(Expression container, Type schemaType, bool initialize, IParser valueParser, Expression elementType, Expression next, Expression count)
+        {
+            var itemSchemaType = schemaType.GetValueType();
+            var item = Expression.Variable(container.Type.GetValueType(), container + "_item");
+
+            Expression beforeLoop = Expression.Empty();
+            if (initialize)
+            {
+                beforeLoop = Expression.Assign(container, newContainer(container.Type, schemaType, count));
+            }
+            else
+            {
+                var capacity = container.Type.GetDeclaredProperty("Capacity", count.Type);
+                if (capacity != null)
+                {
+                    beforeLoop = Expression.Assign(Expression.Property(container, capacity), count);
+                }
+            }
+
+            var add = container.Type.GetMethod(typeof(ICollection<>), "Add", item.Type);
+
+            Expression addItem = Expression.Block(
+                Value(valueParser, item, elementType, itemSchemaType, initialize: true),
+                Expression.Call(container, add, item));
+
+            return Expression.Block(
+                new[] { item },
+                beforeLoop,
+                ControlExpression.While(next,
+                    addItem));
+        }
+
         Expression Map(IParser parser, Expression map, Type schemaType, bool initialize)
         {
             var itemSchemaType = schemaType.GetKeyValueType();
@@ -364,32 +410,50 @@ namespace Bond.Expressions
             return parser.Map(itemSchemaType.Key.GetBondDataType(), itemSchemaType.Value.GetBondDataType(),
                 (keyParser, valueParser, keyType, valueType, nextKey, nextValue, count) =>
                 {
-                    Expression init = Expression.Empty();
-
-                    var itemType = map.Type.GetKeyValueType();
-                    var key = Expression.Variable(itemType.Key, map + "_key");
-                    var value = Expression.Variable(itemType.Value, map + "_value");
-
-                    if (initialize)
+                    if (initialize && !typeof(IDictionary).IsAssignableFrom(map.Type))
                     {
-                        // TODO: should we use non-default Comparer
-                        init = Expression.Assign(map, newContainer(map.Type, schemaType, count));
+                        var dictionary = Expression.Variable(schemaType, "tmpDictionary");
+                        var dictionaryInit = MapHandler(dictionary, schemaType, true, keyParser, valueParser, keyType, valueType, nextKey, nextValue, count);
+                        return Expression.Block(
+                            new[] { dictionary },
+                            dictionaryInit,
+                            Expression.Assign(map, dictionary));
                     }
 
-                    var add = map.Type.GetDeclaredProperty(typeof(IDictionary<,>), "Item", value.Type);
-
-                    Expression addItem = Expression.Block(
-                        Value(keyParser, key, keyType, itemSchemaType.Key, initialize: true),
-                        nextValue,
-                        Value(valueParser, value, valueType, itemSchemaType.Value, initialize: true),
-                        Expression.Assign(Expression.Property(map, add, new Expression[] { key }), value));
-
-                    return Expression.Block(
-                        new [] { key, value },
-                        init,
-                        ControlExpression.While(nextKey,
-                            addItem));
+                    return MapHandler(map, schemaType, initialize, keyParser, valueParser, keyType, valueType, nextKey, nextValue, count);
                 });
+        }
+
+        Expression MapHandler(Expression map, Type schemaType, bool initialize, IParser keyParser, IParser valueParser,
+            Expression keyType, Expression valueType, Expression nextKey, Expression nextValue, Expression count)
+        {
+            var itemSchemaType = schemaType.GetKeyValueType();
+
+            Expression init = Expression.Empty();
+
+            var itemType = map.Type.GetKeyValueType();
+            var key = Expression.Variable(itemType.Key, map + "_key");
+            var value = Expression.Variable(itemType.Value, map + "_value");
+
+            if (initialize)
+            {
+                // TODO: should we use non-default Comparer
+                init = Expression.Assign(map, newContainer(map.Type, schemaType, count));
+            }
+
+            var add = map.Type.GetDeclaredProperty(typeof(IDictionary<,>), "Item", value.Type);
+
+            Expression addItem = Expression.Block(
+                Value(keyParser, key, keyType, itemSchemaType.Key, initialize: true),
+                nextValue,
+                Value(valueParser, value, valueType, itemSchemaType.Value, initialize: true),
+                Expression.Assign(Expression.Property(map, add, new Expression[] { key }), value));
+
+            return Expression.Block(
+                new[] { key, value },
+                init,
+                ControlExpression.While(nextKey,
+                    addItem));
         }
 
         Expression FieldValue(IParser parser, Expression var, Expression valueType, Type schemaType, bool initialize)
@@ -445,7 +509,9 @@ namespace Bond.Expressions
             }
 
             if (schemaType.IsBondMap())
+            {
                 return Map(parser, var, schemaType, initialize);
+            }
             
             if (schemaType.IsBondContainer())
                 return Container(parser, var, schemaType, initialize);
