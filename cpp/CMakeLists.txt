@@ -135,10 +135,10 @@ install (TARGETS bond bond_apply
     ARCHIVE DESTINATION lib/bond
     INCLUDES DESTINATION include)
 
-install (DIRECTORY ${BOND_IDL}/bond/core DESTINATION include/bond/core)
+install (DIRECTORY ${BOND_IDL}/bond/core DESTINATION include/bond)
 
 if (NOT BOND_CORE_ONLY)
-    install (DIRECTORY ${BOND_IDL}/bond/comm DESTINATION include/bond/comm)
+    install (DIRECTORY ${BOND_IDL}/bond/comm DESTINATION include/bond)
 endif()
 
 add_subdirectory (test)
