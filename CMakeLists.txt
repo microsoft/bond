@@ -39,6 +39,7 @@ install (DIRECTORY
     cpp/inc/bond
     cpp/generated/bond
     python/inc/bond
+    thirdparty/rapidjson/include/rapidjson
     DESTINATION include
     PATTERN *.cpp EXCLUDE)
 
