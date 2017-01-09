@@ -2,6 +2,10 @@
 
 #include <bond/core/reflection.h>
 
+#include <algorithm>
+#include <complex>
+#include <limits>
+
 #define UT_Equal(x, y) UT_AssertIsTrue(Equal(x, y))
 
 template <typename T1, typename T2>
@@ -14,7 +18,7 @@ template <typename T1, typename T2>
 bool operator==(const BondStruct<T1>& left, const BondStruct<T2>& right);
 
 template <typename T1, typename T2>
-typename boost::enable_if<bond::is_container<T1>, bool>::type 
+typename boost::enable_if<bond::is_container<T1>, bool>::type
 Equal(const T1& lhs, const T2& rhs);
 
 template <typename T>
@@ -41,16 +45,8 @@ private:
 
 inline bool Equal(double left, double right)
 {
-    // http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
-    int64_t l = *(int64_t*)&left;
-    if (l < 0)
-        l = 0x8000000000000000LL - l;
-
-    int64_t r = *(int64_t*)&right;
-    if (r < 0)
-        r = 0x8000000000000000LL - r;
-
-    return (l - r) < 5 && (l - r) > -5;
+    const int ulp = 5;
+    return std::abs(left - right) <= std::numeric_limits<double>::epsilon() * (std::max)(std::abs(left), std::abs(right)) * ulp;
 }
 
 
@@ -71,7 +67,7 @@ Equal(const T& left, const T& right)
 
 // "loose" equality for matching but different types
 template <typename T1, typename T2>
-typename boost::enable_if<bond::is_basic_type<T1>, bool>::type 
+typename boost::enable_if<bond::is_basic_type<T1>, bool>::type
 Equal(const T1& lhs, const T2& rhs)
 {
     return bond::cast<T2>(lhs) == rhs;
@@ -80,8 +76,8 @@ Equal(const T1& lhs, const T2& rhs)
 
 // "loose" equality for struct just calls ==
 template <typename T1, typename T2>
-typename boost::enable_if_c<bond::has_schema<T1>::value 
-                         && bond::has_schema<T2>::value, bool>::type 
+typename boost::enable_if_c<bond::has_schema<T1>::value
+                         && bond::has_schema<T2>::value, bool>::type
 Equal(const T1& lhs, const T2& rhs)
 {
     return lhs == rhs;
@@ -143,7 +139,7 @@ bool Equal(const std::pair<T1, T2>& p1, const std::pair<T1, T2>& p2)
 
 // "loose" equality for lists of matching but different types
 template <typename T1, typename T2>
-typename boost::enable_if<bond::is_container<T1>, bool>::type 
+typename boost::enable_if<bond::is_container<T1>, bool>::type
 Equal(const T1& lhs, const T2& rhs)
 {
     if (container_size(lhs) != container_size(rhs))
@@ -177,7 +173,7 @@ inline bool Equal(const std::vector<int8_t>& lhs, const bond::blob& rhs)
 
 
 template <typename T1, typename T2>
-typename boost::enable_if_c<bond::has_base<T1>::value 
+typename boost::enable_if_c<bond::has_base<T1>::value
                          && bond::has_base<T2>::value, bool>::type
 BaseIsEqual(const T1& left, const T2& right)
 {
@@ -276,4 +272,3 @@ void Compare<T>::operator()(const Field&)
 {
     equal = equal && Equal(Field::GetVariable(left), Field::GetVariable(right));
 }
-

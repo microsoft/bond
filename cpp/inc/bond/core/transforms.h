@@ -248,7 +248,7 @@ private:
     typename boost::enable_if<is_basic_type<T> >::type
     Write(const value<T, Reader>& value) const
     {
-        T data;
+        T data = T();
         
         value.Deserialize(data);
         Write(data);

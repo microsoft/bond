@@ -2,6 +2,7 @@
 #include <limits>
 #include <stdint.h>
 #include <bond/core/exception.h>
+#include <boost/core/ignore_unused.hpp>
 
 #include "enumerations_enum.h"
 #include "enumerations_types.h"
@@ -33,12 +34,14 @@ void DisambiguateEnumsWithSameName()
 
     color = Color::Orange;
     color = Yellow;
+    boost::ignore_unused(color);
     assert(color == Yellow);
 
     Fruit fruit;
 
     fruit = Apple;
     fruit = Fruit::Orange;
+    boost::ignore_unused(fruit);
     assert(fruit == Fruit::Orange);
 }
 
@@ -59,6 +62,7 @@ void ConversionToFromEnum()
 {
     std::string name;
     bool result = FromEnum(name, Yellow);
+    boost::ignore_unused(result);
     assert(result);
     assert(name == "Yellow");
 

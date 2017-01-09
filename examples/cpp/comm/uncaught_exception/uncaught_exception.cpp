@@ -10,6 +10,7 @@
 #include <bond/comm/transport/epoxy.h>
 
 #include <future>
+#include <boost/core/ignore_unused.hpp>
 
 using namespace examples::uncaught_exception;
 
@@ -50,6 +51,7 @@ int BOND_CALL main()
     }
     catch (const bond::comm::CommException& ex)
     {
+        boost::ignore_unused(ex);
         // Expect InvalidInvocation when trying to access error payload.
         assert(bond::comm::ErrorCode::INVALID_INVOCATION == ex.error_code);
     }
