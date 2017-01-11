@@ -125,14 +125,30 @@
 
             // These tests may return EndOfStreamException or OutOfMemoryException depending
             // environment -- either is acceptable
-            Assert.Throws(Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(), () => DeserializeBadData<SimpleContainers>());
-            Assert.Throws(Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(), () => DeserializeBadData<Lists>());
-            Assert.Throws(Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(), () => DeserializeBadData<Vectors>());
-            Assert.Throws(Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(), () => DeserializeBadData<Sets>());
-            Assert.Throws(Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(), () => DeserializeBadData<Maps>());
-            Assert.Throws(Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(), () => DeserializeBadData<StructWithBlobs>());
-            Assert.Throws(Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(), () => DeserializeBadData<StructWithBonded>());
-            Assert.Throws(Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(), () => DeserializeBadData<StructWithByteLists>());
+            Assert.Throws(
+                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
+                () => DeserializeBadData<SimpleContainers>());
+            Assert.Throws(
+                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
+                () => DeserializeBadData<Lists>());
+            Assert.Throws(
+                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
+                () => DeserializeBadData<Vectors>());
+            Assert.Throws(
+                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
+                () => DeserializeBadData<Sets>());
+            Assert.Throws(
+                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
+                () => DeserializeBadData<Maps>());
+            Assert.Throws(
+                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
+                () => DeserializeBadData<StructWithBlobs>());
+            Assert.Throws(
+                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
+                () => DeserializeBadData<StructWithBonded>());
+            Assert.Throws(
+                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
+                () => DeserializeBadData<StructWithByteLists>());
         }
 
         [Test]
