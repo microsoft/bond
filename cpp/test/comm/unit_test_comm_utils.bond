@@ -1,0 +1,9 @@
+
+import "unit_test_comm.bond"
+namespace unittest.comm
+
+service Test
+{
+    Result TestMethod1(Params);
+    void TestMethod2();
+};

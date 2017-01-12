@@ -1,0 +1,8 @@
+
+import "unit_test_comm.bond"
+namespace unittest.comm
+
+service SessionService
+{
+    Result GetInstance();
+}

@@ -52,14 +52,11 @@ template <typename WireProtocol>
 using NullTransport = bond::comm::detail::NullTransport<WireProtocol>;
 };
 
-template<template <typename> class TransportTemplate>
-struct TransportTemplateWrap
-{};
 
-typedef
-boost::mpl::list
-    < TransportTemplateWrap<test::EpoxyTransport>
-    , TransportTemplateWrap<test::NullTransport>
-    , TransportTemplateWrap<test::ExampleTransport>
-    >::type TransportList;
-
+template<template <typename> class TestsTemplate, typename Protocol>
+inline void InitializeTests()
+{
+    TestsTemplate<test::EpoxyTransport<Protocol>>::Initialize();
+    TestsTemplate<test::NullTransport<Protocol>>::Initialize();
+    TestsTemplate<test::ExampleTransport<Protocol>>::Initialize();
+}

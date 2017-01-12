@@ -5,6 +5,7 @@
 #include <boost/thread/scoped_thread.hpp>
 
 #include <list>
+#include <thread>
 
 namespace bond { namespace comm
 {
