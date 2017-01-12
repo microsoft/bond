@@ -32,7 +32,15 @@
                                                         $elementType);
                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
                                                         .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example).vvb_item) {
-                                                            (((ExpressionsTest.Base)$Example).vvb).Capacity = $count;
+                                                            .Block(System.Int32 $Convert(Example).vvb_count) {
+                                                                $Convert(Example).vvb_count = $count;
+                                                                .If ($Convert(Example).vvb_count > 65536) {
+                                                                    $Convert(Example).vvb_count = 65536
+                                                                } .Else {
+                                                                    .Default(System.Void)
+                                                                };
+                                                                (((ExpressionsTest.Base)$Example).vvb).Capacity = $Convert(Example).vvb_count
+                                                            };
                                                             .Loop  {
                                                                 .If ($count-- > 0) {
                                                                     .Block() {
@@ -44,7 +52,15 @@
                                                                                 $elementType);
                                                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_UINT64)) {
                                                                                 .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                                                    $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($count);
+                                                                                    .Block(System.Int32 $Convert(Example).vvb_item_count) {
+                                                                                        $Convert(Example).vvb_item_count = $count;
+                                                                                        .If ($Convert(Example).vvb_item_count > 65536) {
+                                                                                            $Convert(Example).vvb_item_count = 65536
+                                                                                        } .Else {
+                                                                                            .Default(System.Void)
+                                                                                        };
+                                                                                        $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                                                    };
                                                                                     .Loop  {
                                                                                         .If ($count-- > 0) {
                                                                                             .Block() {
@@ -61,7 +77,15 @@
                                                                             } .Else {
                                                                                 .If ($elementType == .Constant<Bond.BondDataType>(BT_UINT32)) {
                                                                                     .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                                                        $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($count);
+                                                                                        .Block(System.Int32 $Convert(Example).vvb_item_count) {
+                                                                                            $Convert(Example).vvb_item_count = $count;
+                                                                                            .If ($Convert(Example).vvb_item_count > 65536) {
+                                                                                                $Convert(Example).vvb_item_count = 65536
+                                                                                            } .Else {
+                                                                                                .Default(System.Void)
+                                                                                            };
+                                                                                            $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                                                        };
                                                                                         .Loop  {
                                                                                             .If ($count-- > 0) {
                                                                                                 .Block() {
@@ -78,7 +102,15 @@
                                                                                 } .Else {
                                                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_UINT16)) {
                                                                                         .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                                                            $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($count);
+                                                                                            .Block(System.Int32 $Convert(Example).vvb_item_count) {
+                                                                                                $Convert(Example).vvb_item_count = $count;
+                                                                                                .If ($Convert(Example).vvb_item_count > 65536) {
+                                                                                                    $Convert(Example).vvb_item_count = 65536
+                                                                                                } .Else {
+                                                                                                    .Default(System.Void)
+                                                                                                };
+                                                                                                $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                                                            };
                                                                                             .Loop  {
                                                                                                 .If ($count-- > 0) {
                                                                                                     .Block() {
@@ -95,7 +127,15 @@
                                                                                     } .Else {
                                                                                         .If ($elementType == .Constant<Bond.BondDataType>(BT_UINT8)) {
                                                                                             .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                                                                $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($count);
+                                                                                                .Block(System.Int32 $Convert(Example).vvb_item_count) {
+                                                                                                    $Convert(Example).vvb_item_count = $count;
+                                                                                                    .If ($Convert(Example).vvb_item_count > 65536) {
+                                                                                                        $Convert(Example).vvb_item_count = 65536
+                                                                                                    } .Else {
+                                                                                                        .Default(System.Void)
+                                                                                                    };
+                                                                                                    $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                                                                };
                                                                                                 .Loop  {
                                                                                                     .If ($count-- > 0) {
                                                                                                         .Block() {
@@ -810,7 +850,15 @@
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_INT32)) {
                                                 .Block(System.Int32 $Example._int32Vector_item) {
-                                                    ($Example._int32Vector).Capacity = $count;
+                                                    .Block(System.Int32 $Example._int32Vector_count) {
+                                                        $Example._int32Vector_count = $count;
+                                                        .If ($Example._int32Vector_count > 65536) {
+                                                            $Example._int32Vector_count = 65536
+                                                        } .Else {
+                                                            .Default(System.Void)
+                                                        };
+                                                        ($Example._int32Vector).Capacity = $Example._int32Vector_count
+                                                    };
                                                     .Loop  {
                                                         .If ($count-- > 0) {
                                                             .Block() {
@@ -827,7 +875,15 @@
                                             } .Else {
                                                 .If ($elementType == .Constant<Bond.BondDataType>(BT_INT16)) {
                                                     .Block(System.Int32 $Example._int32Vector_item) {
-                                                        ($Example._int32Vector).Capacity = $count;
+                                                        .Block(System.Int32 $Example._int32Vector_count) {
+                                                            $Example._int32Vector_count = $count;
+                                                            .If ($Example._int32Vector_count > 65536) {
+                                                                $Example._int32Vector_count = 65536
+                                                            } .Else {
+                                                                .Default(System.Void)
+                                                            };
+                                                            ($Example._int32Vector).Capacity = $Example._int32Vector_count
+                                                        };
                                                         .Loop  {
                                                             .If ($count-- > 0) {
                                                                 .Block() {
@@ -844,7 +900,15 @@
                                                 } .Else {
                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
                                                         .Block(System.Int32 $Example._int32Vector_item) {
-                                                            ($Example._int32Vector).Capacity = $count;
+                                                            .Block(System.Int32 $Example._int32Vector_count) {
+                                                                $Example._int32Vector_count = $count;
+                                                                .If ($Example._int32Vector_count > 65536) {
+                                                                    $Example._int32Vector_count = 65536
+                                                                } .Else {
+                                                                    .Default(System.Void)
+                                                                };
+                                                                ($Example._int32Vector).Capacity = $Example._int32Vector_count
+                                                            };
                                                             .Loop  {
                                                                 .If ($count-- > 0) {
                                                                     .Block() {

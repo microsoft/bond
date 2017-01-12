@@ -1,6 +1,56 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+namespace Bond
+{
+    using System;
+
+    public struct DeserializerControls
+    {
+        int maxPreallocatedContainerElements;
+        int maxPreallocatedBlobBytes;
+
+        // Default settings
+        public readonly static DeserializerControls Default;
+
+        // Current active settings
+        public static DeserializerControls Active;
+
+        static DeserializerControls()
+        {
+            Default.MaxPreallocatedContainerElements = 64 * 1024;
+            Default.MaxPreallocatedBlobBytes = 64 * 1024 * 1024;
+            Active = Default;
+        }
+
+        public int MaxPreallocatedContainerElements
+        {
+            get { return maxPreallocatedContainerElements; }
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Value cannot be negative");
+                }
+                maxPreallocatedContainerElements = value;
+            }
+        }
+
+        public int MaxPreallocatedBlobBytes
+        {
+            get { return maxPreallocatedBlobBytes; }
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Value cannot be negative");
+                }
+                maxPreallocatedBlobBytes = value;
+            }
+        }
+    }
+}
+
 namespace Bond.Expressions
 {
     using System;
@@ -227,11 +277,16 @@ namespace Bond.Expressions
                         var index = Expression.Variable(typeof(int), "index");
                         var array = Expression.Variable(typeof(byte[]), "array");
 
-                        beforeLoop = Expression.Block(
-                            Expression.Assign(index, Expression.Constant(0)),
-                            Expression.Assign(array, Expression.NewArrayBounds(typeof(byte), count)));
+                        var cappedCount = Expression.Variable(typeof(int), container + "_count");
+                        beforeLoop = ApplyCountCap(
+                            count,
+                            cappedCount,
+                            DeserializerControls.Active.MaxPreallocatedBlobBytes,
+                            Expression.Block(
+                                Expression.Assign(index, Expression.Constant(0)),
+                                Expression.Assign(array, Expression.NewArrayBounds(typeof(byte), cappedCount))));
 
-                        // If parser didn't provide real item count we may need to resize the array
+                        // If parser didn't provide real element count we may need to resize the array
                         var newSize = Expression.Condition(
                             Expression.GreaterThan(index, Expression.Constant(512)),
                             Expression.Multiply(index, Expression.Constant(2)),
@@ -258,8 +313,12 @@ namespace Bond.Expressions
 
                         if (initialize)
                         {
-                            beforeLoop = 
-                                Expression.Assign(container, newContainer(container.Type, schemaType, count));
+                            ParameterExpression cappedCount = Expression.Variable(typeof(int), container + "_count");
+                            beforeLoop = ApplyCountCap(
+                                count,
+                                cappedCount,
+                                DeserializerControls.Active.MaxPreallocatedContainerElements,
+                                Expression.Assign(container, newContainer(container.Type, schemaType, cappedCount)));
                         }
 
                         if (arrayElemType == typeof(byte))
@@ -328,14 +387,24 @@ namespace Bond.Expressions
 
                         if (initialize)
                         {
-                            beforeLoop = Expression.Assign(container, newContainer(container.Type, schemaType, count));
+                            var cappedCount = Expression.Variable(typeof(int), container + "_count");
+                            beforeLoop = ApplyCountCap(
+                                count,
+                                cappedCount,
+                                DeserializerControls.Active.MaxPreallocatedContainerElements,
+                                Expression.Assign(container, newContainer(container.Type, schemaType, cappedCount)));
                         }
                         else
                         {
                             var capacity = container.Type.GetDeclaredProperty("Capacity", count.Type);
                             if (capacity != null)
                             {
-                                beforeLoop = Expression.Assign(Expression.Property(container, capacity), count);
+                                var cappedCount = Expression.Variable(typeof(int), container + "_count");
+                                beforeLoop = ApplyCountCap(
+                                    count,
+                                    cappedCount,
+                                    DeserializerControls.Active.MaxPreallocatedContainerElements,
+                                    Expression.Assign(Expression.Property(container, capacity), cappedCount));
                             }
                         }
 
@@ -372,8 +441,14 @@ namespace Bond.Expressions
 
                     if (initialize)
                     {
+                        var cappedCount = Expression.Variable(typeof(int), map + "_count");
+
                         // TODO: should we use non-default Comparer
-                        init = Expression.Assign(map, newContainer(map.Type, schemaType, count));
+                        init = ApplyCountCap(
+                            count,
+                            cappedCount,
+                            DeserializerControls.Active.MaxPreallocatedContainerElements,
+                            Expression.Assign(map, newContainer(map.Type, schemaType, cappedCount)));
                     }
 
                     var add = map.Type.GetDeclaredProperty(typeof(IDictionary<,>), "Item", value.Type);
@@ -390,6 +465,22 @@ namespace Bond.Expressions
                         ControlExpression.While(nextKey,
                             addItem));
                 });
+        }
+
+        Expression ApplyCountCap(Expression originalCount, ParameterExpression cappedCount, int maxAllowedCount, Expression expression)
+        {
+            ConstantExpression constantCount = originalCount as ConstantExpression;
+            bool isZeroCount = (constantCount != null) && (constantCount.Value.Equals(0));
+
+            return Expression.Block(
+                new[] { cappedCount },
+                Expression.Assign(cappedCount, originalCount),
+                (isZeroCount
+                    ? (Expression)Expression.Empty()
+                    : Expression.IfThen(
+                        Expression.GreaterThan(cappedCount, Expression.Constant(maxAllowedCount)),
+                        Expression.Assign(cappedCount, Expression.Constant(maxAllowedCount)))),
+                expression);
         }
 
         Expression FieldValue(IParser parser, Expression var, Expression valueType, Type schemaType, bool initialize)
