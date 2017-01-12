@@ -2,11 +2,53 @@ if (MSVC)
     add_bond_test (unit_test_comm
         unit_test_comm.cpp
         unit_test_comm.bond
+        unit_test_comm_async.cpp
+        unit_test_comm_basic.cpp
+        unit_test_comm_core.cpp
+        unit_test_comm_error.cpp
+        unit_test_comm_event.bond
+        unit_test_comm_event.cpp
+        unit_test_comm_forward.cpp
+        unit_test_comm_generic.bond
+        unit_test_comm_generic_type.cpp
+        unit_test_comm_generic_service.cpp
+        unit_test_comm_jumbo.cpp
+        unit_test_comm_layers.cpp
+        unit_test_comm_protocol.cpp
+        unit_test_comm_session.bond
+        unit_test_comm_session.cpp
+        unit_test_comm_timeout.cpp
+        unit_test_comm_unexpected.cpp
+        unit_test_comm_utils.bond
+        unit_test_comm_utils.cpp
+        unit_test_comm_void.bond
+        unit_test_comm_void.cpp
         COMM)
 else()
     add_bond_test (unit_test_comm
         unit_test_comm.cpp
         unit_test_comm.bond
+        unit_test_comm_async.cpp
+        unit_test_comm_basic.cpp
+        unit_test_comm_core.cpp
+        unit_test_comm_error.cpp
+        unit_test_comm_event.bond
+        unit_test_comm_event.cpp
+        unit_test_comm_forward.cpp
+        unit_test_comm_generic.bond
+        unit_test_comm_generic_type.cpp
+        unit_test_comm_generic_service.cpp
+        unit_test_comm_jumbo.cpp
+        unit_test_comm_layers.cpp
+        unit_test_comm_protocol.cpp
+        unit_test_comm_session.bond
+        unit_test_comm_session.cpp
+        unit_test_comm_timeout.cpp
+        unit_test_comm_unexpected.cpp
+        unit_test_comm_utils.bond
+        unit_test_comm_utils.cpp
+        unit_test_comm_void.bond
+        unit_test_comm_void.cpp
         COMM
         BUILD_ONLY)
 endif()

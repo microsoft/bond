@@ -1,0 +1,18 @@
+
+import "unit_test_comm.bond"
+namespace unittest.comm
+
+service VoidService
+{
+    void MethodVoidParams(Params);
+
+    Result MethodResultVoid();
+
+    void MethodVoid();
+
+    void MethodVoidExceptionParams(Params);
+
+    Result MethodResultVoidException();
+
+    void MethodVoidException();
+};
