@@ -1,6 +1,14 @@
 #pragma once
 
+#ifdef __APPLE__
+    // Work-around: 'OSMemoryBarrier' has been explicitly marked deprecated
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <boost/asio.hpp>
+    #pragma GCC diagnostic pop
+#else
+#include <boost/asio.hpp>
+#endif
 
 #include <bond/comm/layers.h>
 #include <bond/comm/address.h>
