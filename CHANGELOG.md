@@ -20,6 +20,8 @@ different versioning scheme, following the Haskell community's
 * The minimum supported version of Boost is now 1.58
 * The `bf` utility now supports multiple payloads.
   [Pull request #288](https://github.com/Microsoft/bond/pull/288)
+* Fixed an issue with aliased enums.
+  [Pull request #288](https://github.com/Microsoft/bond/pull/298)
 
 ### C# ###
 

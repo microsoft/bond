@@ -33,4 +33,27 @@ namespace tests
             aa = new List<List<T>>();
         }
     }
+
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.7.0.0")]
+    public enum EnumToWrap
+    {
+        anEnumValue,
+    }
+
+    [global::Bond.Schema]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.7.0.0")]
+    public partial class WrappingAnEnum
+    {
+        [global::Bond.Id(0)]
+        public EnumToWrap aWrappedEnum { get; set; }
+
+        public WrappingAnEnum()
+            : this("tests.WrappingAnEnum", "WrappingAnEnum")
+        {}
+
+        protected WrappingAnEnum(string fullName, string name)
+        {
+            aWrappedEnum = EnumToWrap.anEnumValue;
+        }
+    }
 } // tests

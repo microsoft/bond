@@ -7,3 +7,15 @@ struct Foo<T>
 {
     0: array10<array<20, T>> aa;
 }
+
+using Wrapper<T> = T;
+
+enum EnumToWrap
+{
+    anEnumValue
+}
+
+struct WrappingAnEnum
+{
+    0: Wrapper<EnumToWrap> aWrappedEnum = anEnumValue;
+}
