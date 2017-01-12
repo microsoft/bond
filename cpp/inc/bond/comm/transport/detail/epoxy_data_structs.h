@@ -35,7 +35,7 @@ struct FrameState
     std::vector<std::pair<FrameletType, blob>> framelets;
 };
 
-
+inline
 std::shared_ptr<std::vector<blob>> MakeConfigFrame(std::allocator<char> allocator)
 {
     OutputBuffer stream(256, static_cast<uint32_t>(256));
