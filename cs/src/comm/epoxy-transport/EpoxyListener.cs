@@ -110,10 +110,11 @@ namespace Bond.Comm.Epoxy
                 // code are handled via StartClientConnectionAsync and LogClientStartResult.
                 try
                 {
-                    // We need a Task<Socket> later on, so we don't directly await this call here.
+                    // We don't directly await this call so that we have a Task<Socket> to pass to
+                    // StartClientConnectionAsync without having to wrap the socket in a dummy task.
                     Task<Socket> socket = listener.AcceptSocketAsync();
-                    // We await here to block this loop until the next connection has come in.
                     await socket;
+
                     logger.Site().Debug("Accepted TCP connection from {0}.", socket.Result.RemoteEndPoint);
 
                     // Disabling CS4014 "Because this call is not awaited,
@@ -135,8 +136,12 @@ namespace Bond.Comm.Epoxy
                 }
                 catch (ObjectDisposedException)
                 {
-                    // Continue on and try to accept the next connection. Though, it is likey that
-                    // the listener has been shutdown, so we're just going to exit the loop anyway.
+                    // listener.AcceptSocketAsync() can throw if the listener has been shutdown. If
+                    // that's the case, we'll exit the loop because the cancellation token will have
+                    // been signaled before the listener was shut down.
+                    //
+                    // Socket.RemoteEndPoint can throw if the socket was closed by the remote party.
+                    // If that's the case, continue on and try to accept the next connection.
                 }
             }
 
@@ -147,9 +152,9 @@ namespace Bond.Comm.Epoxy
         {
             // If this throws, it will have cleaned up before getting here, so we don't need to
             // handle cleanup.
-            EpoxyNetworkStream epoxyStream = await EpoxyNetworkStream.SocketToNetworkStreamAsync(
-                getSocketFunc: () => socketTask,
-                getNetworkStreamFunc: socket => EpoxyNetworkStream.MakeServerStreamAsync(socket, tlsConfig, logger),
+            EpoxyNetworkStream epoxyStream = await EpoxyNetworkStream.MakeAsync(
+                socketFunc: () => socketTask,
+                streamFunc: socket => EpoxyNetworkStream.MakeServerStreamAsync(socket, tlsConfig, logger),
                 timeoutConfig: timeoutConfig,
                 logger: logger);
 

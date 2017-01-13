@@ -286,9 +286,9 @@ namespace Bond.Comm.Epoxy
             try
             {
                 EpoxyNetworkStream epoxyStream =
-                    await EpoxyNetworkStream.SocketToNetworkStreamAsync(
-                        getSocketFunc: () => ConnectClientSocketAsync(endpoint),
-                        getNetworkStreamFunc: socket => EpoxyNetworkStream.MakeClientStreamAsync(endpoint.Host, socket, tlsConfig, logger),
+                    await EpoxyNetworkStream.MakeAsync(
+                        socketFunc: () => ConnectClientSocketAsync(endpoint),
+                        streamFunc: socket => EpoxyNetworkStream.MakeClientStreamAsync(endpoint.Host, socket, tlsConfig, logger),
                         timeoutConfig: timeoutConfig,
                         logger: logger);
 
@@ -406,26 +406,18 @@ namespace Bond.Comm.Epoxy
 
             logger.Site().Debug("Resolved {0} to {1}.", endpoint.Host, ipAddress);
 
-            try
-            {
-                var socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                await Task.Factory.FromAsync(
-                    socket.BeginConnect,
-                    socket.EndConnect,
-                    ipAddress,
-                    endpoint.Port,
-                    state: null);
+            var socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            await Task.Factory.FromAsync(
+                socket.BeginConnect,
+                socket.EndConnect,
+                ipAddress,
+                endpoint.Port,
+                state: null);
 
-                logger.Site().Information(
-                    "Established TCP connection to {0} at {1}:{2}",
-                    endpoint.Host, ipAddress, endpoint.Port);
-                return socket;
-            }
-            catch (SocketException ex)
-            {
-                logger.Site().Error(ex, "Failed to establish TCP connection to {0}", endpoint);
-                throw;
-            }
+            logger.Site().Information(
+                "Established TCP connection to {0} at {1}:{2}",
+                endpoint.Host, ipAddress, endpoint.Port);
+            return socket;
         }
     }
 }

@@ -59,41 +59,37 @@ namespace Bond.Comm.Epoxy
         }
 
         /// <summary>
-        /// Safely creates an EpoxyNetworkStream from a TCP socket, handling cleaning up resources
-        /// when errors are encountered.
+        /// Creates an EpoxyNetworkStream from a TCP socket, handling failure that may occur during
+        /// TCP/TLS connection establishment.
         /// </summary>
         /// <remarks>
-        /// This is a helper function that centralizes error handling and socket shutdown.
+        /// This is a helper function that centralizes error handling on during connection creation.
         /// </remarks>
-        /// <param name="getSocketFunc">A function to invoke to acquire a socket.</param>
-        /// <param name="getNetworkStreamFunc">
+        /// <param name="socketFunc">A function to invoke to acquire a socket.</param>
+        /// <param name="streamFunc">
         /// A function to invoke to wrap a socket in a network stream.
         /// </param>
         /// <param name="timeoutConfig">The timeout config to use for this stream.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>A connected EpoxyNetworkStream.</returns>
-        public static async Task<EpoxyNetworkStream> SocketToNetworkStreamAsync(
-            Func<Task<Socket>> getSocketFunc,
-            Func<Socket, Task<EpoxyNetworkStream>> getNetworkStreamFunc,
+        public static async Task<EpoxyNetworkStream> MakeAsync(
+            Func<Task<Socket>> socketFunc,
+            Func<Socket, Task<EpoxyNetworkStream>> streamFunc,
             EpoxyTransport.TimeoutConfig timeoutConfig,
             Logger logger)
         {
             Socket socket = null;
-            EpoxyNetworkStream epoxyStream = null;
 
             try
             {
-                socket = await getSocketFunc();
+                socket = await socketFunc();
                 ConfigureSocketKeepAlive(socket, timeoutConfig, logger);
 
-                epoxyStream = await getNetworkStreamFunc(socket);
-                socket = null; // epoxyStream now owns the socket
-
-                return epoxyStream;
+                return await streamFunc(socket);
             }
             catch (Exception)
             {
-                ShutdownSocketSafe(socket, epoxyStream, logger);
+                SafeShutdownSocket(socket, logger);
                 throw;
             }
         }
@@ -230,7 +226,7 @@ namespace Bond.Comm.Epoxy
         }
 
         /// <summary>
-        /// Shutdowns the connection.
+        /// Shuts down the connection.
         /// </summary>
         /// <remarks>
         /// Shutdown is idempotent and may be called multiple times.
@@ -369,19 +365,12 @@ namespace Bond.Comm.Epoxy
             }
         }
 
-        static void ShutdownSocketSafe(Socket socket, EpoxyNetworkStream epoxyStream, Logger logger)
+        static void SafeShutdownSocket(Socket socket, Logger logger)
         {
-            if (epoxyStream != null)
-            {
-                epoxyStream.Shutdown();
-                // epoxyStream owns the socket, so we shouldn't try to shutdown the socket
-                socket = null;
-            }
-
             try
             {
-                socket?.Shutdown(SocketShutdown.Both);
-                socket?.Close();
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
             }
             catch (SocketException ex)
             {
