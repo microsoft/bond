@@ -84,3 +84,34 @@ struct GenericBondedAlias<T>
 {
     0: Lazy<T> lazy;
 }
+
+using ConvertedBool = bool;
+using ConvertedInt8 = int8;
+using ConvertedInt16 = int16;
+using ConvertedInt32 = int32;
+using ConvertedInt64 = int64;
+using ConvertedUInt8 = uint8;
+using ConvertedUInt16 = uint16;
+using ConvertedUInt32 = uint32;
+using ConvertedUInt64 = uint64;
+using ConvertedFloat = float;
+using ConvertedDouble = double;
+using ConvertedString = string;
+using ConvertedWString = wstring;
+
+struct ConvertedTypes
+{
+    0: ConvertedBool c_bool;
+    1: ConvertedInt8 c_int8;
+    2: ConvertedInt16 c_int16;
+    3: ConvertedInt32 c_int32;
+    4: ConvertedInt64 c_int64;
+    5: ConvertedUInt8 c_uint8;
+    6: ConvertedUInt16 c_uint16;
+    7: ConvertedUInt32 c_uint32;
+    8: ConvertedUInt64 c_uint64;
+    9: ConvertedFloat c_float;
+    10: ConvertedDouble c_double;
+    11: ConvertedString c_string;
+    12: ConvertedWString c_wstring;
+}

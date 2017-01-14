@@ -191,7 +191,7 @@ namespace Bond
                     switch (schemaField.GetSchemaType().GetBondDataType())
                     {
                         case BondDataType.BT_BOOL:
-                            variant.uint_value = (bool) defaultValue ? 1ul : 0ul;
+                            variant.uint_value = alias ? 0ul : ((bool) defaultValue ? 1ul : 0ul);
                             break;
 
                         case BondDataType.BT_UINT8:
@@ -221,7 +221,7 @@ namespace Bond
                             break;
 
                         case BondDataType.BT_WSTRING:
-                            variant.wstring_value = (string)defaultValue;
+                            variant.wstring_value = alias ? string.Empty : (string)defaultValue;
                             break;
                     }
                 }

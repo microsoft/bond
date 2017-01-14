@@ -3,6 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using Bond;
     using NUnit.Framework;
@@ -107,6 +108,130 @@
         {
             return new ArraySegment<byte>(value);
         }
+
+        #region Box<T> for basic types
+
+        public static bool Convert(Box<bool> value, bool unused)
+        {
+            return value.Value;
+        }
+
+        public static Box<bool> Convert(bool value, Box<bool> unused)
+        {
+            return new Box<bool>(value);
+        }
+
+        public static SByte Convert(Box<SByte> value, SByte unused)
+        {
+            return value.Value;
+        }
+
+        public static Box<SByte> Convert(SByte value, Box<SByte> unused)
+        {
+            return new Box<SByte>(value);
+        }
+
+        public static Int16 Convert(Box<Int16> value, Int16 unused)
+        {
+            return value.Value;
+        }
+
+        public static Box<Int16> Convert(Int16 value, Box<Int16> unused)
+        {
+            return new Box<Int16>(value);
+        }
+
+        public static Int32 Convert(Box<Int32> value, Int32 unused)
+        {
+            return value.Value;
+        }
+
+        public static Box<Int32> Convert(Int32 value, Box<Int32> unused)
+        {
+            return new Box<Int32>(value);
+        }
+
+        public static Int64 Convert(Box<Int64> value, Int64 unused)
+        {
+            return value.Value;
+        }
+
+        public static Box<Int64> Convert(Int64 value, Box<Int64> unused)
+        {
+            return new Box<Int64>(value);
+        }
+
+        public static Byte Convert(Box<Byte> value, Byte unused)
+        {
+            return value.Value;
+        }
+
+        public static Box<Byte> Convert(Byte value, Box<Byte> unused)
+        {
+            return new Box<Byte>(value);
+        }
+
+        public static UInt16 Convert(Box<UInt16> value, UInt16 unused)
+        {
+            return value.Value;
+        }
+
+        public static Box<UInt16> Convert(UInt16 value, Box<UInt16> unused)
+        {
+            return new Box<UInt16>(value);
+        }
+
+        public static UInt32 Convert(Box<UInt32> value, UInt32 unused)
+        {
+            return value.Value;
+        }
+
+        public static Box<UInt32> Convert(UInt32 value, Box<UInt32> unused)
+        {
+            return new Box<UInt32>(value);
+        }
+
+        public static UInt64 Convert(Box<UInt64> value, UInt64 unused)
+        {
+            return value.Value;
+        }
+
+        public static Box<UInt64> Convert(UInt64 value, Box<UInt64> unused)
+        {
+            return new Box<UInt64>(value);
+        }
+
+        public static float Convert(Box<float> value, float unused)
+        {
+            return value.Value;
+        }
+
+        public static Box<float> Convert(float value, Box<float> unused)
+        {
+            return new Box<float>(value);
+        }
+
+        public static double Convert(Box<double> value, double unused)
+        {
+            return value.Value;
+        }
+
+        public static Box<double> Convert(double value, Box<double> unused)
+        {
+            return new Box<double>(value);
+        }
+
+        public static string Convert(Box<string> value, string unused)
+        {
+            return value.Value ?? string.Empty;
+        }
+
+        public static Box<string> Convert(string value, Box<string> unused)
+        {
+            return new Box<string>(string.IsNullOrEmpty(value) ? null : value);
+        }
+
+        #endregion
     }
 
     [TestFixture]
@@ -260,6 +385,31 @@
             }
         }
 
+        [Test]
+        public void AliasesWithConverter()
+        {
+            var converted = new ConvertedTypes();
+            TestTypeAliases(converted);
+
+            converted = new ConvertedTypes
+            {
+                c_bool = true,
+                c_int8 = -8,
+                c_int16 = -16,
+                c_int32 = -32,
+                c_int64 = -64,
+                c_uint8 =  8,
+                c_uint16 = 16,
+                c_uint32 = 32,
+                c_uint64 = 64,
+                c_float = 4.0f,
+                c_double = 8.0,
+                c_string = "string",
+                c_wstring = "wstring"
+            };
+            TestTypeAliases(converted);
+        }
+
         static BlobAlias InitBlobAlias()
         {
             return new BlobAlias
@@ -281,6 +431,82 @@
 
             var to = Clone<T>.From(Clone<U>.From(from));
             Assert.IsTrue(from.IsEqual<T>(to));
+        }
+    }
+
+    public class Box<T> : IEquatable<Box<T>>
+    {
+        public T Value { get; }
+
+        public Box()
+        {
+            Value = default(T);
+        }
+
+        public Box(T value)
+        {
+            Value = value;
+        }
+
+        public static implicit operator Box<T>(T value)
+        {
+            return new Box<T>(value);
+        }
+
+        public static bool operator ==(Box<T> left, Box<T> right)
+        {
+            if (ReferenceEquals(left, right))
+            {
+                return true;
+            }
+
+            if (((object)left == null) || ((object)right == null))
+            {
+                return false;
+            }
+
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Box<T> left, Box<T> right)
+        {
+            return !(left == right);
+        }
+
+        public bool Equals(Box<T> other)
+        {
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if ((object)other == null)
+            {
+                return false;
+            }
+
+            if (Value == null)
+            {
+                return other.Value == null;
+            }
+
+            return Value.Equals(other.Value);
+        }
+
+        public override bool Equals(object other)
+        {
+            var otherBox = other as Box<T>;
+            if (otherBox == null)
+            {
+                return false;
+            }
+
+            return Equals(otherBox);
+        }
+
+        public override int GetHashCode()
+        {
+            return Value?.GetHashCode() ?? 17;
         }
     }
 

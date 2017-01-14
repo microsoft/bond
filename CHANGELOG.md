@@ -13,6 +13,13 @@ different versioning scheme, following the Haskell community's
 
 ## Unreleased ##
 
+* `gbc` & compiler library: TBD (bug fix bump needed)
+* IDL core version: TBD
+* IDL comm version: TBD
+* C++ version: TBD (minor bump needed [Boost dependencies changed])
+* C# NuGet version: TBD (minor bump needed)
+* C# Comm NuGet version: TBD (minor bump needed [dependencies changed])
+
 ### C++ ###
 
 * Fixed compatibility with RapidJSON v1.1.0.
@@ -27,6 +34,8 @@ different versioning scheme, following the Haskell community's
 
 * Added controls to cap pre-allocation during deserialization of containers
   and blobs.
+* Fixed computation of default value for aliased bool and wstring fields.
+  [Issue #300](https://github.com/Microsoft/bond/issue/300)
 
 ### C# Comm ###
 
