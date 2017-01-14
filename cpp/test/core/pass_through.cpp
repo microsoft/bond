@@ -92,11 +92,11 @@ void Transcoding(uint16_t version1 = bond::v1, uint16_t version2 = bond::v1)
 
     // Run-time schema
     {
-        bond::bonded<void> bonded_from(GetBonded<Reader1, Writer1, 
-                                       typename boost::mpl::if_<bond::has_schema<BondedType>, 
-                                                                BondedType, 
+        bond::bonded<void> bonded_from(GetBonded<Reader1, Writer1,
+                                       typename boost::mpl::if_<bond::has_schema<BondedType>,
+                                                                BondedType,
                                                                 From>::type>(from, version1));
-        
+
         bond::bonded<To> bonded_to(GetBonded<Reader2, Writer2, To>(bonded_from, version2));
 
         To to = InitRandom<To>();
@@ -187,7 +187,7 @@ AllTypesTranscoding()
 }
 
 
-// Simple JSON flattens inheritance hierarchy and thus doesn't always supprot transcoding with w/o schema becase 
+// Simple JSON flattens inheritance hierarchy and thus doesn't always supprot transcoding with w/o schema becase
 // ordinal used for fields in JSON when names are not available can collide.
 template <typename Reader1, typename Writer1, typename Reader2, typename Writer2, typename From, typename To>
 typename boost::enable_if_c<bond::uses_static_parser<Reader1>::value || bond::uses_static_parser<Reader2>::value || std::is_same<Reader2, bond::SimpleJsonReader<typename Reader2::Buffer> >::value>::type
@@ -311,7 +311,7 @@ namespace bond
     namespace detail
     {
         // Supress assert on optional fields being set to default values
-        // for OptionalContainers and StructWithDefaults used in 
+        // for OptionalContainers and StructWithDefaults used in
         // DefaultValuesTranscoding test case.
         template <>
         class OptionalDefault<OptionalContainers>
@@ -353,13 +353,13 @@ void DefaultValuesTranscodingTest(T to, uint16_t version1 = bond::v1, uint16_t v
     // which is required for our test untagged protocol. However it works if
     // memory for OutputBuffer is preallocated.
     typename Writer2::Buffer output_buffer(4096);
-    
+
     Factory<Writer2>::Call(output_buffer, version2, boost::bind(
         &bond::bonded<Bonded>::template Serialize<Writer2>, bonded1, _1));
 
     typename Reader2::Buffer input_buffer(output_buffer.GetBuffer());
     Reader2 input = Factory<Reader2>::Create(input_buffer, version2);
-        
+
     bond::Deserialize(input, to);
 
     UT_AssertIsTrue(from == to);
@@ -370,9 +370,9 @@ template <typename Reader1, typename Writer1, typename Reader2, typename Writer2
 TEST_CASE_BEGIN(DefaultValuesTranscoding)
 {
     typedef OptionalContainers T;
-    
-    T init; 
-    
+
+    T init;
+
     if (bond::uses_dynamic_parser<Reader1>::value && !bond::may_omit_fields<Writer2>::value)
     {
         // transcoding from tagged protocol using runtime schema fills-in default values
@@ -391,7 +391,7 @@ template <typename Reader1, typename Writer1, typename Reader2, typename Writer2
 TEST_CASE_BEGIN(OmittedDefaultValuesTranscoding)
 {
     typedef OptionalNothing T;
-    
+
     T init;
 
     DefaultValuesTranscodingTest<Reader1, Writer1, Reader2, Writer2, T>(init);
@@ -406,31 +406,28 @@ void PassThroughTests(const char* name)
 {
     UnitTestSuite suite(name);
 
-#ifndef UNIT_TEST_SUBSET
     AddTestCase<TEST_ID(N),
-        AllBondedSerialize, Reader1, Writer1, Reader2, Writer2, 
+        AllBondedSerialize, Reader1, Writer1, Reader2, Writer2,
         unittest::NestedStruct, unittest::NestedStructBondedView>(suite, "Serialize bonded T");
 
     AddTestCase<TEST_ID(N),
-        AllPassThrough, Reader1, Writer1, Reader2, Writer2, 
+        AllPassThrough, Reader1, Writer1, Reader2, Writer2,
         unittest::NestedWithBase1, unittest::NestedWithBase1BondedBaseView>(suite, "Pass-through base");
 
     AddTestCase<TEST_ID(N),
-        AllPassThrough, Reader1, Writer1, Reader2, Writer2, 
+        AllPassThrough, Reader1, Writer1, Reader2, Writer2,
         unittest::NestedListsStruct, unittest::NestedListsStructPassThrough>(suite, "Pass-through containers");
-    
+
     AddTestCase<TEST_ID(N),
-        AllBondedSerialize, Reader1, Writer1, Reader2, Writer2, 
+        AllBondedSerialize, Reader1, Writer1, Reader2, Writer2,
         unittest::NestedListsStruct, unittest::NestedListsStructBondedView>(suite, "Serialize list of bonded");
-    
+
     AddTestCase<TEST_ID(N),
-        AllTranscoding, Reader1, Writer1, Reader2, Writer2, 
+        AllTranscoding, Reader1, Writer1, Reader2, Writer2,
         unittest::NestedListsStruct, unittest::NestedListsStruct>(suite, "Transcoding containers");
 
-#endif
-
     AddTestCase<TEST_ID(N),
-        AllTranscoding, Reader1, Writer1, Reader2, Writer2, 
+        AllTranscoding, Reader1, Writer1, Reader2, Writer2,
         unittest::NestedWithBase, unittest::NestedWithBase>(suite, "Transcoding with inheritance");
 
     AddTestCase<TEST_ID(N),
@@ -454,7 +451,7 @@ void TranscodingTests(const char* name)
     UnitTestSuite suite(name);
 
     AddTestCase<TEST_ID(N),
-        TranscodingTest, Reader1, Writer1, Reader2, Writer2, 
+        TranscodingTest, Reader1, Writer1, Reader2, Writer2,
         unittest::NestedWithBase, unittest::NestedWithBase>(suite, "Transcoding with inheritance");
 
     AddTestCase<TEST_ID(N),
@@ -544,4 +541,3 @@ bool init_unit_test()
     PassThroughTestsInit();
     return true;
 }
-

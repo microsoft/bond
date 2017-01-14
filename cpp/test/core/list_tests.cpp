@@ -36,19 +36,17 @@ void SimpleListTests(const char* name)
 {
     UnitTestSuite suite(name);
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping1, Reader, Writer, SimpleListsStruct>(suite, "Simple lists");
 
-#ifndef UNIT_TEST_SUBSET
-    AddTestCase<TEST_ID(N),  
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, SimpleListsStruct, SimpleListsStructView>(suite, "Simple lists partial view");
-    
-    AddTestCase<TEST_ID(N), 
+
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping1, Reader, Writer, NestedListsStruct>(suite, "Nested lists");
-    
-    AddTestCase<TEST_ID(N), 
+
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, NestedListsStruct, NestedListsStructView>(suite, "Nested lists partial view");
-#endif
 }
 
 void ListTestsInit()
@@ -87,4 +85,3 @@ bool init_unit_test()
     ListTestsInit();
     return true;
 }
-

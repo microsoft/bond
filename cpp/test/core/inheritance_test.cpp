@@ -18,42 +18,40 @@ void InheritanceTests(const char* name)
 {
     UnitTestSuite suite(name);
 
-#ifndef UNIT_TEST_SUBSET
     // Deserialize the same type as was serialized
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping1, Reader, Writer, StructWithBase>(suite, "Simple struct");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping1, Reader, Writer, NestedWithBase>(suite, "Nested struct");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping1, Reader, Writer, ListWithBase>(suite, "Containers");
 
     // Deserialize a different version of the type that was serialized
     AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, StructWithBase, StructWithBaseView>(suite, "Simple struct, partial view");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, NestedWithBase, NestedWithBaseView>(suite, "Nested struct, partial view");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, ListWithBase, ListWithBaseView>(suite, "Containers, partial view");
 
     // Deserialize base class only
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, StructWithBase, SimpleStruct>(suite, "Simple struct, base view");
-#endif
 
     // Deserialize partial hierarchy
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, StructWithBase, SimpleBase>(suite, "Simple struct, partial view");
 
     // Deserialize base class only via partial schema
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping3, Reader, Writer, StructWithBase, SimpleStruct, SimpleBase>(suite, "Base via partial hierarchy");
 
     // Deserialize as containers of base/partial hierarchy
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, ListWithBase, ListOfBase>(suite, "Containers, partial hierarchy");
 }
 
@@ -94,4 +92,3 @@ bool init_unit_test()
     InheritanceTestsInit();
     return true;
 }
-

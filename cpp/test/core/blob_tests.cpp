@@ -87,7 +87,6 @@ void BlobTests(const char* name)
     AddTestCase<TEST_ID(N),
         AllBindingAndMapping1, Reader, Writer, BondStruct<bond::blob> >(suite, "blob deserialization");
 
-#ifndef UNIT_TEST_SUBSET
     AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, BondStruct<bond::blob>, BondStruct<std::vector<int8_t> > >(suite, "blob-vector interop");
 
@@ -99,7 +98,6 @@ void BlobTests(const char* name)
 
     AddTestCase<TEST_ID(N),
         OutputBufferBlobs, Reader, Writer>(suite, "OutputBuffer blobs");
-#endif
 }
 
 
@@ -139,4 +137,3 @@ bool init_unit_test()
     BlobTestsInit();
     return true;
 }
-
