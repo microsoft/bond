@@ -664,6 +664,14 @@ struct WithSimpleList<T>
     1: required_optional simple_list<T> field;
 };
 
+using ValueWrapper<T> = T;
+
+struct EnumValueWrapper
+{
+    0: Color unwrappedColor = Orange;
+    1: ValueWrapper<Color> wrapperColor = Orange;
+}
+
 struct Blobs
 {
     0: list<blob> blobs;

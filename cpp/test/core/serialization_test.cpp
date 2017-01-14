@@ -249,7 +249,10 @@ void SimpleStructTests(const char* name)
         AllBindingAndMapping2, Reader, Writer, NestedStruct, NestedStructView>(suite, "Nested struct partial view");
 
     AddTestCase<COND_TEST_ID(N, (!bond::uses_dom_parser<Reader>::value)), 
-        Streaming, Reader, Writer, SimpleStruct>(suite, "Record streaming");
+		Streaming, Reader, Writer, SimpleStruct>(suite, "Record streaming");
+	
+ 	AddTestCase<TEST_ID(N),
+ 		SerializeAPIs, Reader, Writer, EnumValueWrapper>(suite, "Struct with alias-wrapped enum");
 #endif
 }
 
