@@ -143,7 +143,7 @@ void NullableTests(T& x, T& y, const S& s1, const L& l1)
 
     UT_AssertIsFalse(nl.empty());
     UT_AssertIsTrue(nl.value() == l);
-    
+
     float f = 3.14f;
     bond::nullable<float> nf(f);
     bond::nullable<bond::nullable<float> > nnf(nf);
@@ -213,13 +213,13 @@ void NullableTests(T& x, T& y, const S& s1, const L& l1)
 TEST_CASE_BEGIN(NullableInterface)
 {
     StructWithNullables x, y;
-    
+
     list<float> l;
     SimpleStruct s;
-    
+
     bond::nullable<list<float> > l1(l);
     bond::nullable<SimpleStruct> s1(s);
-    
+
     NullableTests(x, y, s1, l1);
 }
 TEST_CASE_END
@@ -231,13 +231,13 @@ TEST_CASE_BEGIN(NullableAllocators)
 
     allocator_test::NullableFields x(a1);
     allocator_test::NullableFields y(a1);
-    
+
     list<float, detail::TestAllocator<float> > l(a2);
     allocator_test::SimpleType s(a2);
-    
+
     bond::nullable<list<float, detail::TestAllocator<float> > > l1(l);
     bond::nullable<allocator_test::SimpleType, TestAllocator> s1(s, a2);
-    
+
     NullableTests(x, y, s1, l1);
 
     bond::nullable<std::set<bool, std::less<bool>, detail::TestAllocator<bool> > > n1(std::less<bool>(), a1);
@@ -275,19 +275,17 @@ TEST_CASE_BEGIN(NullableAllocators)
     UT_AssertIsTrue(ns1.nullable_struct.empty());
 }
 TEST_CASE_END
-    
+
 
 template <uint16_t N, typename Reader, typename Writer>
 void BasicTypesNullableTests(const char* name)
 {
     UnitTestSuite suite(name);
 
-#ifndef UNIT_TEST_SUBSET
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         AllBasicTypesNullables, Reader, Writer>(suite, "Nullable types and containers");
-#endif
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         StructNullables, Reader, Writer>(suite, "Nullable of structs");
 }
 
@@ -336,4 +334,3 @@ bool init_unit_test()
     NullableTestsInit();
     return true;
 }
-
