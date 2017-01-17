@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <BuildFramework Condition="'$(Configuration)' == 'Net40'">net40</BuildFramework>
@@ -56,8 +56,8 @@
     <Compile Include="Util.cs" />
     <Compile Include="XmlTests.cs" />
     <BondCodegen Include="Aliases.bond">
-      <Options Condition="'$(TargetFrameworkVersion)' == 'v4.5'">$(BondOptions) --using="Lazy=Lazy&lt;{0}&gt;" --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[] --using="CustomList=UnitTest.Aliases.SomeCustomList&lt;{0}&gt;" --using="ConvertedBool=Box&lt;bool&gt;" --using="ConvertedInt8=Box&lt;System.SByte&gt;" --using="ConvertedInt16=Box&lt;System.Int16&gt;" --using="ConvertedInt32=Box&lt;System.Int32&gt;" --using="ConvertedInt64=Box&lt;System.Int64&gt;" --using="ConvertedUInt8=Box&lt;System.Byte&gt;" --using="ConvertedUInt16=Box&lt;System.UInt16&gt;" --using="ConvertedUInt32=Box&lt;System.UInt32&gt;" --using="ConvertedUInt64=Box&lt;System.UInt64&gt;" --using="ConvertedFloat=Box&lt;float&gt;" --using="ConvertedDouble=Box&lt;double&gt;" --using="ConvertedString=Box&lt;string&gt;" --using="ConvertedWString=Box&lt;string&gt;"</Options>
-      <Options Condition="'$(TargetFrameworkVersion)' == 'v4.0'">$(BondOptions) --using="Lazy=Lazy&lt;{0}&gt;" --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[] --using="CustomList=UnitTest.Aliases.SomeCustomList&lt;{0}&gt;" --using="ConvertedBool=Box&lt;bool&gt;" --using="ConvertedInt8=Box&lt;System.SByte&gt;" --using="ConvertedInt16=Box&lt;System.Int16&gt;" --using="ConvertedInt32=Box&lt;System.Int32&gt;" --using="ConvertedInt64=Box&lt;System.Int64&gt;" --using="ConvertedUInt8=Box&lt;System.Byte&gt;" --using="ConvertedUInt16=Box&lt;System.UInt16&gt;" --using="ConvertedUInt32=Box&lt;System.UInt32&gt;" --using="ConvertedUInt64=Box&lt;System.UInt64&gt;" --using="ConvertedFloat=Box&lt;float&gt;" --using="ConvertedDouble=Box&lt;double&gt;" --using="ConvertedString=Box&lt;string&gt;" --using="ConvertedWString=Box&lt;string&gt;"</Options>
+      <Options Condition="'$(TargetFrameworkVersion)' == 'v4.5'">$(BondOptions) --using="Lazy=Lazy&lt;{0}&gt;" --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[] --using="CustomList=UnitTest.Aliases.SomeCustomList&lt;{0}&gt;"</Options>
+      <Options Condition="'$(TargetFrameworkVersion)' == 'v4.0'">$(BondOptions) --using="Lazy=Lazy&lt;{0}&gt;" --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[] --using="CustomList=UnitTest.Aliases.SomeCustomList&lt;{0}&gt;"</Options>
     </BondCodegen>
     <BondCodegen Include="NamespaceConflict.bond" />
     <BondCodegen Include="NamespaceConflictBond.bond" />
