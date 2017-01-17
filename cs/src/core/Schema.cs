@@ -186,7 +186,13 @@ namespace Bond
                 }
                 else
                 {
-                    var alias = defaultValue.GetType() != schemaField.GetSchemaType();
+                    Type defaultValueType = defaultValue.GetType();
+                    Type schemaFieldType = schemaField.GetSchemaType();
+
+                    if (schemaFieldType == typeof (Tag.wstring))
+                        schemaFieldType = typeof (string);
+
+                    bool alias = defaultValueType != schemaFieldType;
 
                     switch (schemaField.GetSchemaType().GetBondDataType())
                     {
