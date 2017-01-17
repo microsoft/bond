@@ -434,14 +434,9 @@
         }
     }
 
-    public class Box<T> : IEquatable<Box<T>>
+    public struct Box<T>
     {
         public T Value { get; }
-
-        public Box()
-        {
-            Value = default(T);
-        }
 
         public Box(T value)
         {
@@ -455,16 +450,6 @@
 
         public static bool operator ==(Box<T> left, Box<T> right)
         {
-            if (ReferenceEquals(left, right))
-            {
-                return true;
-            }
-
-            if (((object)left == null) || ((object)right == null))
-            {
-                return false;
-            }
-
             return left.Equals(right);
         }
 
@@ -473,41 +458,24 @@
             return !(left == right);
         }
 
-        public bool Equals(Box<T> other)
+
+        // We must provide implementations of operator == and operator != to
+        // use this type in our tests. However, it is a C# compiler error to
+        // implement these operators without overriding Equals and GetHashCode.
+        // However, the default implementation of these methods is sufficient.
+        // Hence, we have these apparently useless overrides.
+        //
+        // ReSharper disable RedundantOverridenMember
+        public override bool Equals(object obj)
         {
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            if ((object)other == null)
-            {
-                return false;
-            }
-
-            if (Value == null)
-            {
-                return other.Value == null;
-            }
-
-            return Value.Equals(other.Value);
-        }
-
-        public override bool Equals(object other)
-        {
-            var otherBox = other as Box<T>;
-            if (otherBox == null)
-            {
-                return false;
-            }
-
-            return Equals(otherBox);
+            return base.Equals(obj);
         }
 
         public override int GetHashCode()
         {
-            return Value?.GetHashCode() ?? 17;
+            return base.GetHashCode();
         }
+        // ReSharper restore RedundantOverridenMember
     }
 
     [Bond.Schema]
