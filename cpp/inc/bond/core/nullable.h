@@ -726,8 +726,8 @@ is_list_container<nullable<T, Allocator, useValue> >
     : true_type {};
 
 
-template <typename T, typename Allocator> struct
-is_nullable<nullable<T, Allocator> >
+template <typename T, typename Allocator, bool useValue> struct
+is_nullable<nullable<T, Allocator, useValue> >
     : true_type {};
 
 } // namespace bond
