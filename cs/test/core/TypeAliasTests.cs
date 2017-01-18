@@ -250,7 +250,7 @@
 
             TestTypeAliases(from);
         }
-        
+
         [Test]
         public void AliasContainer()
         {
@@ -436,7 +436,7 @@
 
     public struct Box<T>
     {
-        public T Value { get; }
+        public T Value;
 
         public Box(T value)
         {
@@ -458,12 +458,13 @@
             return !(left == right);
         }
 
-
         // We must provide implementations of operator == and operator != to
         // use this type in our tests. However, it is a C# compiler error to
         // implement these operators without overriding Equals and GetHashCode.
         // However, the default implementation of these methods is sufficient.
         // Hence, we have these apparently useless overrides.
+        //
+        // The name of the ReSharper warning is not spelled correctly.
         //
         // ReSharper disable RedundantOverridenMember
         public override bool Equals(object obj)
@@ -482,43 +483,43 @@
     public class ConvertedTypes
     {
         [Bond.Id(0), Bond.Type(typeof(bool))]
-        public Box<bool> c_bool = new Box<bool>();
+        public Box<bool> c_bool;
 
         [Bond.Id(1), Bond.Type(typeof(sbyte))]
-        public Box<sbyte> c_int8 = new Box<sbyte>();
+        public Box<sbyte> c_int8;
 
         [Bond.Id(2), Bond.Type(typeof(short))]
-        public Box<short> c_int16 = new Box<short>();
+        public Box<short> c_int16;
 
         [Bond.Id(3), Bond.Type(typeof(int))]
-        public Box<int> c_int32 = new Box<int>();
+        public Box<int> c_int32;
 
         [Bond.Id(4), Bond.Type(typeof(long))]
-        public Box<long> c_int64 = new Box<long>();
+        public Box<long> c_int64;
 
         [Bond.Id(5), Bond.Type(typeof(byte))]
-        public Box<byte> c_uint8 = new Box<byte>();
+        public Box<byte> c_uint8;
 
         [Bond.Id(6), Bond.Type(typeof(ushort))]
-        public Box<ushort> c_uint16 = new Box<ushort>();
+        public Box<ushort> c_uint16;
 
         [Bond.Id(7), Bond.Type(typeof(uint))]
-        public Box<uint> c_uint32 = new Box<uint>();
+        public Box<uint> c_uint32;
 
         [Bond.Id(8), Bond.Type(typeof(ulong))]
-        public Box<ulong> c_uint64 = new Box<ulong>();
+        public Box<ulong> c_uint64;
 
         [Bond.Id(9), Bond.Type(typeof(float))]
-        public Box<float> c_float = new Box<float>();
+        public Box<float> c_float;
 
         [Bond.Id(10), Bond.Type(typeof(double))]
-        public Box<double> c_double = new Box<double>();
+        public Box<double> c_double;
 
         [Bond.Id(11), Bond.Type(typeof(string))]
-        public Box<string> c_string = new Box<string>();
+        public Box<string> c_string;
 
         [Bond.Id(12), Bond.Type(typeof(Bond.Tag.wstring))]
-        public Box<string> c_wstring = new Box<string>();
+        public Box<string> c_wstring;
     }
 
     // An extremely simple example of a custom container implementation.
