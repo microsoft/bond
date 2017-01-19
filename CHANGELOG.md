@@ -29,6 +29,9 @@ different versioning scheme, following the Haskell community's
   [Pull request #288](https://github.com/Microsoft/bond/pull/288)
 * Fixed an issue with aliased enums.
   [Pull request #288](https://github.com/Microsoft/bond/pull/298)
+* Fixed an issue with template parameter deduction in `bond::is_nullable`
+  that occurs with Microsoft Visual C++ 2015 Update 3.
+  [Issue #306](https://github.com/Microsoft/bond/issues/306)
 
 ### C# ###
 
