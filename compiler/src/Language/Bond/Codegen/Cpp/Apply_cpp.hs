@@ -24,6 +24,8 @@ apply_cpp protocols cpp file _imports declarations = ("_apply.cpp", [lt|
 #{CPP.openNamespace cpp}
     #{newlineSepEnd 1 (applyOverloads protocols cpp attr body) declarations}
 #{CPP.closeNamespace cpp}
+
+#{CPP.dummyDefinition}
 |])
   where
     body = [lt|

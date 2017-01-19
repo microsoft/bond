@@ -29,6 +29,8 @@ different versioning scheme, following the Haskell community's
   [Pull request #288](https://github.com/Microsoft/bond/pull/288)
 * Fixed an issue with aliased enums.
   [Pull request #288](https://github.com/Microsoft/bond/pull/298)
+* Generated .cpp files now always include at least one definition with
+  external linkage to help avoid linker warnings about empty object files.
 
 ### C# ###
 

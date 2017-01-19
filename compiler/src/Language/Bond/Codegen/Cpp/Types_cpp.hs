@@ -24,6 +24,8 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 #{CPP.openNamespace cpp}
     #{doubleLineSepEnd 1 statics declarations}
 #{CPP.closeNamespace cpp}
+
+#{CPP.dummyDefinition}
 |])
   where
     -- definitions of Schema statics for non-generic structs

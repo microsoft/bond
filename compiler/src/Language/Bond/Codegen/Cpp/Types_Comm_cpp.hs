@@ -25,6 +25,8 @@ types_comm_cpp cpp file _imports declarations = ("_comm.cpp", [lt|
 #{CPP.openNamespace cpp}
     #{doubleLineSepEnd 1 statics declarations}
 #{CPP.closeNamespace cpp}
+
+#{CPP.dummyDefinition}
 |])
   where
     -- definitions of Schema statics for non-generic services
