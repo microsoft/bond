@@ -132,7 +132,7 @@ namespace Bond.IO.Unsafe
         }
 
         /// <summary>
-        /// Read little-endian encoded single precision ‎IEEE 754 float
+        /// Read little-endian encoded single precision IEEE 754 float
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
         public float ReadFloat()
@@ -148,7 +148,7 @@ namespace Bond.IO.Unsafe
         }
 
         /// <summary>
-        /// Read little-endian encoded double precision ‎IEEE 754 float
+        /// Read little-endian encoded double precision IEEE 754 float
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
         public double ReadDouble()

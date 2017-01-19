@@ -7,7 +7,7 @@ namespace Bond.IO
     using System.Text;
 
     /// <summary>
-    /// Writes primitive data types as binary values in a specific encoding 
+    /// Writes primitive data types as binary values in a specific encoding
     /// </summary>
     public interface IOutputStream
     {
@@ -16,7 +16,7 @@ namespace Bond.IO
         /// </summary>
         /// <exception cref="NotSupportedException"/>
         long Position { get; set; }
-        
+
         /// <summary>
         /// Write 8-bit unsigned integer
         /// </summary>
@@ -38,12 +38,12 @@ namespace Bond.IO
         void WriteUInt64(ulong value);
 
         /// <summary>
-        /// Write little-endian encoded single precision ‎IEEE 754 float
+        /// Write little-endian encoded single precision IEEE 754 float
         /// </summary>
         void WriteFloat(float value);
 
         /// <summary>
-        /// Write little-endian encoded double precision ‎IEEE 754 float
+        /// Write little-endian encoded double precision IEEE 754 float
         /// </summary>
         void WriteDouble(double value);
 

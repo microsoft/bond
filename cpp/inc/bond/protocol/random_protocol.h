@@ -24,7 +24,7 @@ public:
     RandomProtocolEngine()
     {}
 
-    // Variant of Marsaglia’s xorshift generator
+    // Variant of Marsaglia's xorshift generator
     // http://arxiv.org/pdf/1404.0390v1.pdf
     uint64_t Next()
     {

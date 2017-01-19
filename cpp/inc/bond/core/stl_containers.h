@@ -22,19 +22,19 @@ template <typename Key>
 void ElementNotFoundException(const Key& key);
 
 // is_string<std::basic_string<char, T, A> >
-template<typename T, typename A> struct 
+template<typename T, typename A> struct
 is_string<std::basic_string<char, T, A> >
     : true_type {};
 
 
 // is_wstring<std::basic_string<wchar_t, T, A> >
-template<typename T, typename A> struct 
+template<typename T, typename A> struct
 is_wstring<std::basic_string<wchar_t, T, A> >
     : true_type {};
 
 
 // is_string_type
-template <typename T> struct 
+template <typename T> struct
 is_string_type
 {
     typedef typename remove_const<T>::type U;
@@ -45,14 +45,14 @@ is_string_type
 
 
 // is_list_container<std::list<T, A> >
-template <typename T, typename A> struct 
-is_list_container<std::list<T, A> > 
+template <typename T, typename A> struct
+is_list_container<std::list<T, A> >
     : true_type {};
 
 
 // is_list_container<std::vector<T, A> >
-template <typename T, typename A> struct 
-is_list_container<std::vector<T, A> > 
+template <typename T, typename A> struct
+is_list_container<std::vector<T, A> >
     : true_type {};
 
 
@@ -63,28 +63,28 @@ require_modify_element<std::vector<bool, A> >
 
 
 // is_set_container<std::set<T, C, A> >
-template <typename T, typename C, typename A> struct 
+template <typename T, typename C, typename A> struct
 is_set_container<std::set<T, C, A> >
     : true_type {};
 
 
 // is_map_container<std::map<K, T, C, A> >
-template <typename K, typename T, typename C, typename A> struct 
+template <typename K, typename T, typename C, typename A> struct
 is_map_container<std::map<K, T, C, A> >
     : true_type {};
 
 
 // specialize element_type for map becuase map::value_type is pair<const K, T>
-template <typename K, typename T, typename C, typename A> struct 
+template <typename K, typename T, typename C, typename A> struct
 element_type<std::map<K, T, C, A> >
 {
     typedef typename std::pair<K, T> type;
 };
 
 
-// string_data 
+// string_data
 template<typename C, typename T, typename A>
-inline 
+inline
 const C* string_data(const std::basic_string<C, T, A>& str)
 {
     return str.data();
@@ -92,20 +92,20 @@ const C* string_data(const std::basic_string<C, T, A>& str)
 
 
 template<typename C, typename T, typename A>
-inline 
+inline
 C* string_data(std::basic_string<C, T, A>& str)
 {
     // C++11 disallows COW string implementation (see [string.require] 21.4.1)
-    // however it was permitted in C++03. In order to support COW we can’t
+    // however it was permitted in C++03. In order to support COW we can't
     // return data() here.
     static C c;
     return str.size() ? &*str.begin() : &c;
 }
 
 
-// string_length 
+// string_length
 template<typename C, typename T, typename A>
-inline 
+inline
 uint32_t string_length(const std::basic_string<C, T, A>& str)
 {
     return static_cast<uint32_t>(str.length());
@@ -114,7 +114,7 @@ uint32_t string_length(const std::basic_string<C, T, A>& str)
 
 // resize_string
 template<typename C, typename T, typename A>
-inline 
+inline
 void resize_string(std::basic_string<C, T, A>& str, uint32_t size)
 {
     str.resize(size);
@@ -123,7 +123,7 @@ void resize_string(std::basic_string<C, T, A>& str, uint32_t size)
 
 // container_size
 template <typename T>
-inline 
+inline
 uint32_t container_size(const T& list)
 {
     return static_cast<uint32_t>(list.size());
@@ -131,7 +131,7 @@ uint32_t container_size(const T& list)
 
 
 template <typename T, typename Enable = void> struct
-has_key_compare 
+has_key_compare
     : false_type {};
 
 
@@ -142,7 +142,7 @@ has_key_compare<T, typename boost::enable_if<is_class<typename T::key_compare> >
 
 // use_container_allocator_for_elements
 template <typename T, typename Enable = void> struct
-use_container_allocator_for_elements 
+use_container_allocator_for_elements
     : false_type {};
 
 
@@ -150,7 +150,7 @@ use_container_allocator_for_elements
 
 template <typename T> struct
 use_container_allocator_for_elements<T, typename boost::enable_if<
-    is_same<typename T::allocator_type::template rebind<int>::other, 
+    is_same<typename T::allocator_type::template rebind<int>::other,
             typename element_type<T>::type::allocator_type::template rebind<int>::other> >::type>
 {
     static const bool value = !is_same<typename T::allocator_type::template rebind<int>::other,
@@ -160,7 +160,7 @@ use_container_allocator_for_elements<T, typename boost::enable_if<
 template <typename T> struct
 use_container_allocator_for_elements<T, typename boost::enable_if_c<
     has_schema<typename element_type<T>::type>::value
- && !is_same<typename T::allocator_type::template rebind<int>::other, 
+ && !is_same<typename T::allocator_type::template rebind<int>::other,
              std::allocator<int> >::value>::type>
     : true_type {};
 
@@ -205,7 +205,7 @@ make_element(T& container)
 
 // resize_list
 template <typename T>
-inline 
+inline
 typename boost::disable_if<use_container_allocator_for_elements<T> >::type
 resize_list(T& list, uint32_t size)
 {
@@ -214,7 +214,7 @@ resize_list(T& list, uint32_t size)
 
 
 template <typename T>
-inline 
+inline
 typename boost::enable_if<use_container_allocator_for_elements<T> >::type
 resize_list(T& list, uint32_t size)
 {
@@ -226,8 +226,8 @@ resize_list(T& list, uint32_t size)
 // modify_element
 template <typename A, typename F>
 inline
-void modify_element(std::vector<bool, A>&, 
-                    typename std::vector<bool, A>::reference element, 
+void modify_element(std::vector<bool, A>&,
+                    typename std::vector<bool, A>::reference element,
                     F deserialize)
 {
     bool value;
@@ -266,17 +266,17 @@ void clear_map(std::map<K, T, C, A>& map)
 
 // use_map_allocator_for_keys
 template <typename T, typename Enable = void> struct
-use_map_allocator_for_keys 
+use_map_allocator_for_keys
     : false_type {};
 
 
 template <typename T> struct
 use_map_allocator_for_keys
     <T, typename boost::enable_if<
-        is_same<typename T::allocator_type::template rebind<int>::other, 
+        is_same<typename T::allocator_type::template rebind<int>::other,
                 typename element_type<T>::type::first_type::allocator_type::template rebind<int>::other> >::type>
 {
-    static const bool value = !is_same<typename T::allocator_type::template rebind<int>::other, 
+    static const bool value = !is_same<typename T::allocator_type::template rebind<int>::other,
                                        std::allocator<int> >::value;
 };
 
@@ -302,7 +302,7 @@ make_key(T& map)
 
 // use_map_allocator_for_values
 template <typename T, typename Enable = void> struct
-use_map_allocator_for_values 
+use_map_allocator_for_values
     : false_type {};
 
 
@@ -310,17 +310,17 @@ use_map_allocator_for_values
 
 template <typename T> struct
 use_map_allocator_for_values<T, typename boost::enable_if<
-    is_same<typename T::allocator_type::template rebind<int>::other, 
+    is_same<typename T::allocator_type::template rebind<int>::other,
             typename element_type<T>::type::second_type::allocator_type::template rebind<int>::other> >::type>
 {
-    static const bool value = !is_same<typename T::allocator_type::template rebind<int>::other, 
+    static const bool value = !is_same<typename T::allocator_type::template rebind<int>::other,
                                        std::allocator<int> >::value;
 };
 
 template <typename T> struct
 use_map_allocator_for_values<T, typename boost::enable_if_c<
     has_schema<typename element_type<T>::type::second_type>::value
- && !is_same<typename T::allocator_type::template rebind<int>::other, 
+ && !is_same<typename T::allocator_type::template rebind<int>::other,
              std::allocator<int> >::value>::type>
     : true_type {};
 
@@ -328,7 +328,7 @@ use_map_allocator_for_values<T, typename boost::enable_if_c<
 
 template <typename T> struct
 use_map_allocator_for_values<T, typename boost::enable_if_c<
-    std::uses_allocator<typename element_type<T>::type::second_type, 
+    std::uses_allocator<typename element_type<T>::type::second_type,
     typename T::allocator_type>::value>::type>
     : true_type {};
 
@@ -337,7 +337,7 @@ use_map_allocator_for_values<T, typename boost::enable_if_c<
 // make_value
 template <typename T>
 inline
-typename boost::disable_if_c<use_map_allocator_for_values<T>::value, 
+typename boost::disable_if_c<use_map_allocator_for_values<T>::value,
     typename element_type<T>::type::second_type>::type
 make_value(T& /*map*/)
 {
@@ -348,7 +348,7 @@ make_value(T& /*map*/)
 template <typename T>
 inline
 typename boost::enable_if_c<use_map_allocator_for_values<T>::value
-                         && !has_key_compare<typename element_type<T>::type::second_type>::value, 
+                         && !has_key_compare<typename element_type<T>::type::second_type>::value,
     typename element_type<T>::type::second_type>::type
 make_value(T& map)
 {
@@ -359,7 +359,7 @@ make_value(T& map)
 template <typename T>
 inline
 typename boost::enable_if_c<use_map_allocator_for_values<T>::value
-                         && has_key_compare<typename element_type<T>::type::second_type>::value, 
+                         && has_key_compare<typename element_type<T>::type::second_type>::value,
     typename element_type<T>::type::second_type>::type
 make_value(T& map)
 {
@@ -398,12 +398,12 @@ public:
           end(list.end())
     {}
 
-    bool more() const 
+    bool more() const
     {
         return it != end;
     }
 
-    typename T::const_reference 
+    typename T::const_reference
     next()
     {
         return *(it++);
@@ -421,17 +421,17 @@ public:
         : it(list.begin()),
           end(list.end())
     {}
-    
+
     bool more() const
     {
         return it != end;
     }
-    
+
     bool next()
     {
         return *(it++);
     }
-    
+
 private:
     typename std::vector<bool, A>::const_iterator it, end;
 };
@@ -450,7 +450,7 @@ public:
         return it != end;
     }
 
-    typename T::reference 
+    typename T::reference
     next()
     {
         return *(it++);
@@ -468,7 +468,7 @@ std::map<V, K> reverse_map(const std::map<K, V>& map)
 
     for (typename std::map<K, V>::const_iterator it = map.begin(); it != map.end(); ++it)
         reversed[it->second] = it->first;
-    
+
     return reversed;
 }
 

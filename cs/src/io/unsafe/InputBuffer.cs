@@ -11,7 +11,7 @@ namespace Bond.IO.Unsafe
     /// </summary>
     public class InputBuffer : Safe.InputBuffer, ICloneable<InputBuffer>
     {
-        public InputBuffer(byte[] data) 
+        public InputBuffer(byte[] data)
             : base(data, 0, data.Length)
         {}
 
@@ -100,7 +100,7 @@ namespace Bond.IO.Unsafe
         }
 
         /// <summary>
-        /// Read little-endian encoded single precision ‎IEEE 754 float
+        /// Read little-endian encoded single precision IEEE 754 float
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
         public override float ReadFloat()
@@ -120,7 +120,7 @@ namespace Bond.IO.Unsafe
         }
 
         /// <summary>
-        /// Read little-endian encoded double precision ‎IEEE 754 float
+        /// Read little-endian encoded double precision IEEE 754 float
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
         public override double ReadDouble()

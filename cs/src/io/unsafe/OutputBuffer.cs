@@ -56,7 +56,7 @@ namespace Bond.IO.Unsafe
         }
 
         /// <summary>
-        /// Write little-endian encoded single precision ‎IEEE 754 float
+        /// Write little-endian encoded single precision IEEE 754 float
         /// </summary>
         public override void WriteFloat(float value)
         {
@@ -74,7 +74,7 @@ namespace Bond.IO.Unsafe
         }
 
         /// <summary>
-        /// Write little-endian encoded double precision ‎IEEE 754 float
+        /// Write little-endian encoded double precision IEEE 754 float
         /// </summary>
         public override void WriteDouble(double value)
         {

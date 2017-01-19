@@ -122,7 +122,7 @@ namespace Bond.IO.Safe
         }
 
         /// <summary>
-        /// Write little-endian encoded single precision ‎IEEE 754 float
+        /// Write little-endian encoded single precision IEEE 754 float
         /// </summary>
         public virtual void WriteFloat(float value)
         {
@@ -130,7 +130,7 @@ namespace Bond.IO.Safe
         }
 
         /// <summary>
-        /// Write little-endian encoded double precision ‎IEEE 754 float
+        /// Write little-endian encoded double precision IEEE 754 float
         /// </summary>
         public virtual void WriteDouble(double value)
         {
@@ -199,7 +199,7 @@ namespace Bond.IO.Safe
             position = IntegerHelper.EncodeVarUInt64(buffer, value, position);
         }
 
-        
+
         /// <summary>
         /// Write UTF-8 or UTF-16 encoded string
         /// </summary>
