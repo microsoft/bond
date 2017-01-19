@@ -13,12 +13,17 @@ different versioning scheme, following the Haskell community's
 
 ## Unreleased ##
 
-* `gbc` & compiler library: TBD (bug fix bump needed)
+* `gbc` & compiler library: TBD (B version bump needed)
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: TBD (minor bump needed [Boost dependencies changed])
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed [dependencies changed])
+
+### bond compiler library ###
+
+* The C++ Comm .cpp template has been renamed to `comm_cpp` from
+  `types_comm_cpp` to match the file it generates.
 
 ### C++ ###
 
