@@ -36,7 +36,6 @@ module Language.Bond.Codegen.Templates
       -- ** C++
       types_h
     , types_cpp
-    , types_comm_cpp
     , reflection_h
     , enum_h
     , apply_h
@@ -44,6 +43,7 @@ module Language.Bond.Codegen.Templates
     ,  Protocol(..)
       -- ** C++ Comm
     , comm_h
+    , comm_cpp
       -- ** C#
     , FieldMapping(..)
     , StructMapping(..)
@@ -60,8 +60,8 @@ import Language.Bond.Codegen.Cpp.ApplyOverloads
 import Language.Bond.Codegen.Cpp.Enum_h
 import Language.Bond.Codegen.Cpp.Reflection_h
 import Language.Bond.Codegen.Cpp.Types_cpp
-import Language.Bond.Codegen.Cpp.Types_Comm_cpp
 import Language.Bond.Codegen.Cpp.Types_h
+import Language.Bond.Codegen.Cpp.Comm_cpp
 import Language.Bond.Codegen.Cpp.Comm_h
 import Language.Bond.Codegen.Cs.Types_cs
 import Language.Bond.Codegen.Cs.Comm_cs
