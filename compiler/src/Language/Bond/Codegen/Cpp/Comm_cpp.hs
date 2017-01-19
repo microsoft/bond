@@ -3,7 +3,7 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
-module Language.Bond.Codegen.Cpp.Types_Comm_cpp (types_comm_cpp) where
+module Language.Bond.Codegen.Cpp.Comm_cpp (comm_cpp) where
 
 import Data.Monoid
 import Prelude
@@ -14,10 +14,10 @@ import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
--- | Codegen template for generating /base_name/_comm_types.cpp containing
+-- | Codegen template for generating /base_name/_comm.cpp containing
 -- definitions of helper functions and schema metadata static variables.
-types_comm_cpp :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
-types_comm_cpp cpp file _imports declarations = ("_comm.cpp", [lt|
+comm_cpp :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
+comm_cpp cpp file _imports declarations = ("_comm.cpp", [lt|
 #include "#{file}_reflection.h"
 #include "#{file}_comm.h"
 #include <bond/core/exception.h>
@@ -25,6 +25,8 @@ types_comm_cpp cpp file _imports declarations = ("_comm.cpp", [lt|
 #{CPP.openNamespace cpp}
     #{doubleLineSepEnd 1 statics declarations}
 #{CPP.closeNamespace cpp}
+
+#{CPP.dummyDefinition}
 |])
   where
     -- definitions of Schema statics for non-generic services

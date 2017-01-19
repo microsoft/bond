@@ -72,10 +72,10 @@ cppCodegen options@Cpp {..} = do
     concurrentlyFor_ files $ codeGen options typeMapping $
         [ reflection_h
         , types_cpp
-        , types_comm_cpp
         , types_h header enum_header allocator
         , apply_h applyProto apply_attribute
         , apply_cpp applyProto
+        , comm_cpp
         , comm_h
         ] <>
         [ enum_h | enum_header]

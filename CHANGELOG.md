@@ -13,12 +13,17 @@ different versioning scheme, following the Haskell community's
 
 ## Unreleased ##
 
-* `gbc` & compiler library: TBD (bug fix bump needed)
+* `gbc` & compiler library: TBD (B version bump needed)
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: TBD (minor bump needed [Boost dependencies changed])
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed [dependencies changed])
+
+### bond compiler library ###
+
+* The C++ Comm .cpp template has been renamed to `comm_cpp` from
+  `types_comm_cpp`.
 
 ### C++ ###
 
@@ -29,6 +34,8 @@ different versioning scheme, following the Haskell community's
   [Pull request #288](https://github.com/Microsoft/bond/pull/288)
 * Fixed an issue with aliased enums.
   [Pull request #288](https://github.com/Microsoft/bond/pull/298)
+* Generated .cpp files now always include at least one definition with
+  external linkage to help avoid linker warnings about empty object files.
 
 ### C# ###
 

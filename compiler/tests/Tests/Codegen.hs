@@ -67,8 +67,8 @@ verifyCppCommCodegen args baseName =
     testGroup baseName $
         map (verifyFile (processOptions args) baseName cppTypeMapping "")
             [ comm_h
+            , comm_cpp
             , types_cpp
-            , types_comm_cpp
             ]
 
 verifyCsCommCodegen :: [String] -> FilePath -> TestTree
@@ -104,7 +104,7 @@ verifyFiles options baseName =
     templates Cpp {..} =
         [ reflection_h
         , types_cpp
-        , types_comm_cpp
+        , comm_cpp
         , types_h header enum_header allocator
         ]
     templates Cs {..} =

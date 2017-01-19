@@ -20,6 +20,7 @@ module Language.Bond.Codegen.Cpp.Util
     , defaultedMoveCtors
     , rvalueReferences
     , enumDefinition
+    , dummyDefinition
     ) where
 
 import Data.Monoid
@@ -167,3 +168,9 @@ enumDefinition Enum {..} = [lt|enum #{declName}
     value (-2147483648) = [lt| = static_cast<int32_t>(-2147483647-1)|]
     value x = [lt| = static_cast<int32_t>(#{x})|]
 enumDefinition _ = error "enumDefinition: impossible happened."
+
+dummyDefinition :: Text
+dummyDefinition = [lt|namespace {
+    // this is a dummy definition to make sure that this compilation unit is never empty
+    extern bool empty = false;
+}|]
