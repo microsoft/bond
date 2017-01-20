@@ -315,19 +315,24 @@ See also the following example:
 Input and output streams
 ========================
 
-The input and output for binary protocols is provided by `IInputStream` and
-`IOutputStream` interfaces. Bond comes with standard implementations of these
-interfaces for memory buffers and `System.IO.Stream`, and applications can
-provide their own custom implementations.
+The input and output for binary protocols is provided by the
+[`IInputStream`](https://github.com/Microsoft/bond/blob/master/cs/src/core/io/IInputStream.cs)
+and
+[`IOutputStream`](https://github.com/Microsoft/bond/blob/master/cs/src/core/io/IOutputStream.cs)
+interfaces. Bond comes with standard implementations of these interfaces for
+memory buffers and `System.IO.Stream`. Applications can also provide their
+own custom implementations.
 
-The `OutputBuffer` class implements `IOutputStream` interface on top of
-a memory buffer. It comes in two variants. `Bond.IO.Safe.OutputBuffer` uses
-only safe managed code and is included in `Bond.dll` assembly which is
-compatible with Portable Class Library. `Bond.IO.Unsafe.OutputBuffer` uses
-unsafe code to optimize for performance. It is included in `Bond.IO.dll`
-assembly which requires full .NET runtime. Both implementations have identical
-class names and APIs, the only difference is the namespace in which they are
-defined.
+The `OutputBuffer` class implements the `IOutputStream` interface on top of
+a memory buffer. It comes in two variants.
+[`Bond.IO.Safe.OutputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/core/io/safe/OutputBuffer.cs)
+uses only safe managed code and is included in the `Bond.dll` assembly which
+is a Portable Class Library.
+[`Bond.IO.Unsafe.OutputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/io/unsafe/OutputBuffer.cs)
+uses unsafe code to optimize for performance. It is included in the
+`Bond.IO.dll` assembly, which requires a full .NET runtime. Both
+implementations have identical class names and APIs; the only difference is
+the namespace in which they are defined.
 
     // Create an output buffer with initial size of 16KB
     var output = new OutputBuffer(16 * 1024);
@@ -338,22 +343,29 @@ defined.
     // Get the serialized payload form the output buffer
     ArraySegment<byte> data = output.Data;
 
-The `InputBuffer` class implements `IInputStream` interface on top of a memory
-buffer. Like `OutputBuffer` it comes in two flavors, the safe and portable
-`Bond.IO.Safe.OutputBuffer`, and the performance optimized via use of unsafe
-code `Bond.IO.Unsafe.OutputBuffer`.
+The
+[`InputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/core/io/safe/InputBuffer.cs)
+class implements the `IInputStream` interface on top of a memory buffer.
+Like `OutputBuffer` it comes in two flavors, the safe and portable
+[`Bond.IO.Safe.InputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/core/io/safe/InputBuffer.cs),
+and the performance optimized via use of unsafe code
+[`Bond.IO.Unsafe.InputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/io/unsafe/InputBuffer.cs).
 
     // Create an input buffer on top of a byte[]
     var input = new InputBuffer(byteArray);
     var reader = new CompactBinaryReader<InputBuffer>(input);
 
-The `InputStream` and `OutputStream` classes provide implementations of
-`IInputStream` and `IOutputStream` on top of `System.IO.Stream`. These classes
-are included in `Bond.IO.dll` and thus are only available to applications using
-full .NET runtime and allowing unsafe code. `In/OutputStream` can be used with
-any `Stream`, including `MemoryStream`, however aforementioned the
-`In/OutputBuffer` provide significantly better performance and are recommended
-when working with in-memory payloads.
+The
+[`InputStream`](https://github.com/Microsoft/bond/blob/master/cs/src/io/unsafe/InputStream.cs)
+and
+[`OutputStream`](https://github.com/Microsoft/bond/blob/master/cs/src/io/unsafe/OutputStream.cs)
+classes provide implementations of `IInputStream` and `IOutputStream` on top
+of `System.IO.Stream`. These classes are included in `Bond.IO.dll` and thus
+are only available to applications using a full .NET runtime and allowing
+unsafe code. `In/OutputStream` can be used with any `Stream`, including
+`MemoryStream`. However `InputBuffer` and `OutputBuffer` provide
+significantly better performance and are recommended when working with
+in-memory payloads.
 
     using (var stream = new FileStream("example.bin", FileMode.Open))
     {
