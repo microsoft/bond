@@ -114,6 +114,7 @@ add_definitions (-D_ENABLE_ATOMIC_ALIGNMENT_FIX)
 
 cxx_add_compile_options(Clang
     -fPIC
+    -fstrict-aliasing
     --std=c++11
     -Wall
     -Werror
@@ -122,6 +123,7 @@ cxx_add_compile_options(Clang
 
 cxx_add_compile_options(AppleClang
     -fPIC
+    -fstrict-aliasing
     --std=c++11
     -Wall
     -Werror
@@ -130,6 +132,7 @@ cxx_add_compile_options(AppleClang
 
 cxx_add_compile_options(GNU
     -fPIC
+    -fstrict-aliasing
     --std=c++11
     -Wall
     -Werror

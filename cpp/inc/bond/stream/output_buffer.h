@@ -6,7 +6,9 @@
 
 #include <bond/core/blob.h>
 #include <bond/core/containers.h>
+#include <bond/core/traits.h>
 #include <boost/static_assert.hpp>
+#include <cstring>
 
 namespace bond
 {
@@ -19,18 +21,19 @@ struct VariableUnsignedUnchecked
 {
     BOOST_STATIC_ASSERT(N < 10);
 
-    static uint32_t Write(uint8_t* p, T value)
+    static uint32_t Write(char* p, T value)
     {
         uint8_t byte = static_cast<uint8_t>(value);
 
         if (value >>= 7)
         {
-            p[N-1] = byte | 0x80;
+            byte |= 0x80;
+            std::memcpy(p + N - 1, &byte, 1);
             return VariableUnsignedUnchecked<T, N+1>::Write(p, value);
         }
         else
         {
-            p[N-1] = byte;
+            std::memcpy(p + N - 1, &byte, 1);
             return N;
         }
     }
@@ -40,10 +43,11 @@ struct VariableUnsignedUnchecked
 template <>
 struct VariableUnsignedUnchecked<uint64_t, 10>
 {
-    static uint32_t Write(uint8_t* p, uint64_t value)
+    static uint32_t Write(char* p, uint64_t value)
     {
         BOOST_VERIFY(value == 1);
-        p[9] = 1;
+        const uint8_t byte = 1;
+        std::memcpy(p + 9, &byte, 1);
         return 10;
     }
 };
@@ -52,9 +56,10 @@ struct VariableUnsignedUnchecked<uint64_t, 10>
 template <>
 struct VariableUnsignedUnchecked<uint32_t, 5>
 {
-    static uint32_t Write(uint8_t* p, uint32_t value)
+    static uint32_t Write(char* p, uint32_t value)
     {
-        p[4] = static_cast<uint8_t>(value);
+        const uint8_t byte = static_cast<uint8_t>(value);
+        std::memcpy(p + 4, &byte, 1);
         return 5;
     }
 };
@@ -63,9 +68,10 @@ struct VariableUnsignedUnchecked<uint32_t, 5>
 template <>
 struct VariableUnsignedUnchecked<uint16_t, 3>
 {
-    static uint32_t Write(uint8_t* p, uint16_t value)
+    static uint32_t Write(char* p, uint16_t value)
     {
-        p[2] = static_cast<uint8_t>(value);
+        const uint8_t byte = static_cast<uint8_t>(value);
+        std::memcpy(p + 2, &byte, 1);
         return 3;
     }
 };
@@ -110,8 +116,8 @@ public:
     {
         _blobs.reserve(reserveBlobs);
     }
-    
-    
+
+
     /// @brief Construct OutputMemoryStream with the first buffer of the specified
     /// size and a preallocated vector to store additional buffers.
     explicit OutputMemoryStream(uint32_t reserveSize,
@@ -131,23 +137,23 @@ public:
     {
         _blobs.reserve(reserveBlobs);
     }
-    
-    
+
+
     /// @brief Get content of the stream as a vector of memory blobs
     template <typename T>
     void GetBuffers(std::vector<blob, T>& buffers) const
     {
         buffers.reserve(_blobs.size() + 1);
-        
+
         //
         // insert all "ready" blobs
         //
         buffers.assign(_blobs.begin(), _blobs.end());
-        
+
         if (_rangeSize > 0)
         {
             //
-            // attach current array, if not empty, 
+            // attach current array, if not empty,
             // as a last blob
             //
             buffers.push_back(blob(_buffer, _rangeOffset, _rangeSize));
@@ -166,15 +172,16 @@ public:
         return merge(_allocator, merge(_allocator, _blobs.begin(), _blobs.end()), current);
     }
 
-    
+
     template<typename T>
     void Write(const T& value)
     {
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
         //
-        // Performance tweak: for small types don't go into generic Write(),
-        // which results in call to memcpy() and additional memory access.
-        // The direct copy of the value (which is likely on register already)
-        // is faster.
+        // x86/x64 performance tweak: for small types don't go into generic
+        // Write(), which results in call to memcpy() and additional memory
+        // access. The direct copy of the value (which is likely on register
+        // already) is faster.
         //
         if (sizeof(T) + _rangeSize + _rangeOffset <= _bufferSize)
         {
@@ -185,30 +192,39 @@ public:
         {
             Write(&value, sizeof(value));
         }
+#else
+        //
+        // We can't use the trick above on platforms that don't support
+        // unaligned memory access, so fall back to the version of Write
+        // that is implemented with memcpy. memcpy handles the alignment for
+        // us.
+        //
+        Write(&value, sizeof(value));
+#endif
     }
-    
+
 
     void Write(const void* value, uint32_t size)
-    {    
+    {
         uint32_t    sizePart = _bufferSize - _rangeSize - _rangeOffset;
         const char* buffer = static_cast<const char*>(value);
-        
+
         if (sizePart > size)
         {
             sizePart = size;
         }
-        
+
         //
         // copy to the tail of current range
-        ::memcpy(_rangePtr + _rangeSize,
-                 buffer,
-                 sizePart);
+        std::memcpy(_rangePtr + _rangeSize,
+                    buffer,
+                    sizePart);
 
         //
         // increase current range size
         //
         _rangeSize += sizePart;
-        
+
         //
         // if there is more bytes to copy, allocate a new buffer
         //
@@ -221,39 +237,39 @@ public:
             //
             size -= sizePart;
             buffer += sizePart;
-            
+
             //
             // snap current range to internal list of blobs, if not empty
             //
             if (_rangeSize > 0)
             {
                 _blobs.push_back(blob(_buffer, _rangeOffset, _rangeSize));
-            }                
+            }
 
             //
-            // grow buffer by 50% (at least 4096 bytes for initial buffer) 
+            // grow buffer by 50% (at least 4096 bytes for initial buffer)
             // and enough to store left overs of specified buffer
             //
             _bufferSize += _bufferSize ? _bufferSize / 2 : 4096;
             _bufferSize = (std::max)(_bufferSize, size);
-            
+
             _buffer = boost::allocate_shared_noinit<char[]>(_allocator, _bufferSize);
-        
+
             //
             // init range
             //
             _rangeOffset = 0;
             _rangePtr = _buffer.get();
             _rangeSize = size;
-            
+
             //
             // copy to the tail of current range
-            ::memcpy(_rangePtr,
-                     buffer,
-                     size);
+            std::memcpy(_rangePtr,
+                        buffer,
+                        size);
         }
     }
-    
+
     void Write(const blob& buffer)
     {
         if (buffer.size() < _minChainningSize || _blobs.size() >= _maxChainLength)
@@ -264,30 +280,30 @@ public:
 
         //
         // Internal list of blobs must represent valid sequence of bytes
-        
-        // 
+
+        //
         // First snap current buffer range, if it is not empty
         //
         if (_rangeSize > 0)
         {
             _blobs.push_back(blob(_buffer, _rangeOffset, _rangeSize));
-            
+
             _rangeOffset += _rangeSize;
-            _rangePtr += _rangeSize; 
-            
+            _rangePtr += _rangeSize;
+
             //
             // reset range size
             //
             _rangeSize = 0;
         }
-        
+
         //
         // attach specified blob to the end of the list
         //
         _blobs.push_back(buffer);
     }
-    
-    void Flush() 
+
+    void Flush()
     {
         //
         // nop
@@ -299,7 +315,7 @@ public:
     {
         if (sizeof(T) * 8 / 7 + _rangeSize + _rangeOffset < _bufferSize)
         {
-            uint8_t* ptr = reinterpret_cast<uint8_t*>(_rangePtr + _rangeSize);
+            char* ptr = _rangePtr + _rangeSize;
             _rangeSize += output_buffer::VariableUnsignedUnchecked<T, 1>::Write(ptr, value);
         }
         else
@@ -311,16 +327,16 @@ public:
 protected:
     // allocator instance
     A _allocator;
-    
+
     // current buffer
     boost::shared_ptr<char[]> _buffer;
-    
+
     // size of current buffer
     uint32_t _bufferSize;
-    
+
     // size of current buffer range
     uint32_t _rangeSize;
-    
+
     // offset of current buffer range
     uint32_t _rangeOffset;
 
@@ -332,10 +348,10 @@ protected:
 
     // pointer of current buffer range
     char* _rangePtr;
-    
+
     // list of blobs
     std::vector<blob, typename A::template rebind<blob>::other> _blobs;
-    
+
 }; // class OutputMemoryStream
 
 

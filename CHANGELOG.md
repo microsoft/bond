@@ -35,6 +35,10 @@ different versioning scheme, following the Haskell community's
 * Eliminate need for warning suppression on MSVC14 via warning.h in Bond
   itself. warning.h is still in place on MSVC12; furthermore, we don't alter
   warning.h for now as it may be depended upon by application code.
+* Avoid unaligned memory access on non-x86/x64 platforms.
+  [Issue #305](https://github.com/Microsoft/bond/issues/305)
+* Improve compliance with strict-aliasing rules.
+    * Bond now builds on Clang/GCC with `-fstrict-aliasing`.
 
 ## C# ###
 

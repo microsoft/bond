@@ -10,6 +10,8 @@
 #include <bond/stream/output_counter.h>
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/static_assert.hpp>
+#include <cstring>
 
 /*
 
@@ -224,14 +226,18 @@ public:
 
         if (id == (0x07 << 5))
         {
+            // ID is in (0xff, 0xffff] and is in the next two bytes
             _input.Read(id);
         }
         else if (id == (0x06 << 5))
         {
-            _input.Read(reinterpret_cast<uint8_t&>(id));
+            // ID is in (5, 0xff] and is in the next one byte
+            _input.Read(raw);
+            id = static_cast<uint16_t>(raw);
         }
         else
         {
+            // ID is in [0, 5] and was in the byte we already read
             id >>= 5;
         }
     }
@@ -310,7 +316,9 @@ public:
     Read(T& value)
     {
         BOOST_STATIC_ASSERT(sizeof(value) == sizeof(int32_t));
-        Read(*reinterpret_cast<int32_t*>(&value));
+        int32_t raw;
+        Read(raw);
+        std::memcpy(&value, &raw, sizeof(raw));
     }
 
 
