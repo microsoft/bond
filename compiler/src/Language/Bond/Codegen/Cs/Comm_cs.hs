@@ -49,7 +49,7 @@ namespace #{csNamespace}
   where
     csNamespace = sepBy "." toText $ getNamespace cs
 
-    comm s@Service{..} = [lt|#{CS.typeAttributes cs s}interface I#{declName}#{generics}
+    comm s@Service{..} = [lt|#{CS.typeAttributes cs s}public interface I#{declName}#{generics}
     {
         #{doubleLineSep 2 methodDeclaration serviceMethods}
     }
