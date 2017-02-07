@@ -5,8 +5,8 @@
 
 #include <stdint.h>
 
-#define BOND_VERSION 0x0422
-#define BOND_MIN_CODEGEN_VERSION 0x0301
+#define BOND_VERSION 0x0520
+#define BOND_MIN_CODEGEN_VERSION 0x0800
 
 namespace bond
 {
