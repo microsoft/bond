@@ -1,6 +1,3 @@
-
-#define BOND_ENABLE_LOG_HANDLER
-
 #ifdef _MSC_VER
     #pragma warning(disable : 4505) // disable "unreferenced local function has been removed" warning
 #endif
@@ -282,7 +279,8 @@ namespace TestUtils
 }; // namespace CoreTests
 
 
-void init_utils()
+bool init_unit_test()
 {
     TestUtils::Initialize();
+    return true;
 }

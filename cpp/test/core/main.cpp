@@ -14,6 +14,8 @@
     #include <boost/test/unit_test.hpp>
 #endif
 
+#include "../logging.h"
+
 extern bool init_unit_test();
 
 int main(int argc, char* argv[])

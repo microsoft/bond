@@ -1,6 +1,3 @@
-
-#define BOND_ENABLE_LOG_HANDLER
-
 #include <iostream>
 #include <boost/algorithm/string/replace.hpp>
 
@@ -188,7 +185,8 @@ public:
     }
 };
 
-void init_async()
+bool init_unit_test()
 {
     InitializeTests<AsyncTransportTests, bond::comm::FastWireProtocol>();
+    return true;
 }
