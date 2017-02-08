@@ -53,7 +53,7 @@ different versioning scheme, following the Haskell community's
 
 * Resources are now properly cleaned up if failures are encountered when
   establishing client-side Epoxy connections.
-* The generated interfaces for services are now public. There were
+* The generated interfaces for services are now public. They were
   inadvertently internal before.
 
 ## 5.1.0: 2016-11-14 ##
