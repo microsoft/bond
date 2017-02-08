@@ -8,8 +8,8 @@
     #pragma warning(disable : 4505) // disable "unreferenced local function has been removed" warning
 #endif
 
-#include <unit_test_comm_reflection.h>
-#include <unit_test_comm_comm.h>
+#include <comm_test_common_reflection.h>
+#include <comm_test_common_comm.h>
 
 #include "transport_list.h"
 #include <bond/comm/layers.h>
@@ -748,7 +748,7 @@ public:
     }
 };
 
-void init_unit_test_comm_basic()
+void init_basic()
 {
     InitializeTests<BasicTransportTests, bond::comm::FastWireProtocol>();
 }

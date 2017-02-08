@@ -8,8 +8,8 @@
     #pragma warning(disable : 4505) // disable "unreferenced local function has been removed" warning
 #endif
 
-#include <unit_test_comm_reflection.h>
-#include <unit_test_comm_comm.h>
+#include <comm_test_common_reflection.h>
+#include <comm_test_common_comm.h>
 
 #include "transport_list.h"
 #include <bond/comm/layers.h>
@@ -58,41 +58,41 @@ void LogHandler(const char* functionName,
 }
 } } // namespace bond.comm
 
-void init_unit_test_comm_core();
-void init_unit_test_comm_event();
-void init_unit_test_comm_protocol();
-void init_unit_test_comm_utils();
-void init_unit_test_comm_basic();
-void init_unit_test_comm_void();
-void init_unit_test_comm_layers();
-void init_unit_test_comm_jumbo();
-void init_unit_test_comm_session();
-void init_unit_test_comm_timeout();
-void init_unit_test_comm_forward();
-void init_unit_test_comm_generic_type();
-void init_unit_test_comm_generic_service();
-void init_unit_test_comm_error();
-void init_unit_test_comm_async();
-void init_unit_test_comm_unexpected();
+void init_core();
+void init_event();
+void init_protocol();
+void init_utils();
+void init_basic();
+void init_void();
+void init_layers();
+void init_jumbo();
+void init_session();
+void init_timeout();
+void init_forward();
+void init_generic_type();
+void init_generic_service();
+void init_error();
+void init_async();
+void init_unexpected();
 
 bool init_unit_test()
 {
-    init_unit_test_comm_utils();
-    init_unit_test_comm_core();
-    init_unit_test_comm_basic();
-    init_unit_test_comm_void();
-    init_unit_test_comm_layers();
-    init_unit_test_comm_jumbo();
-    init_unit_test_comm_session();
-    init_unit_test_comm_timeout();
-    init_unit_test_comm_forward();
-    init_unit_test_comm_generic_type();
-    init_unit_test_comm_generic_service();
-    init_unit_test_comm_event();
-    init_unit_test_comm_protocol();
-    init_unit_test_comm_error();
-    init_unit_test_comm_async();
-    init_unit_test_comm_unexpected();
+    init_utils();
+    init_core();
+    init_basic();
+    init_void();
+    init_layers();
+    init_jumbo();
+    init_session();
+    init_timeout();
+    init_forward();
+    init_generic_type();
+    init_generic_service();
+    init_event();
+    init_protocol();
+    init_error();
+    init_async();
+    init_unexpected();
 
     return true;
 }

@@ -39,27 +39,27 @@ target_include_directories (comm_test_common PUBLIC
 target_link_libraries (comm_test_common PRIVATE
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
-add_bond_codegen (TARGET comm_test_codegen unit_test_comm.bond COMM)
+add_bond_codegen (TARGET comm_test_codegen comm_test_common.bond COMM)
 
 add_unit_test (unit_test_comm.cpp
-    unit_test_comm_async.cpp
-    unit_test_comm_basic.cpp
-    unit_test_comm_core.cpp
-    unit_test_comm_error.cpp
-    unit_test_comm_event.bond
-    unit_test_comm_event.cpp
-    unit_test_comm_forward.cpp
-    unit_test_comm_generic.bond
-    unit_test_comm_generic_type.cpp
-    unit_test_comm_generic_service.cpp
-    unit_test_comm_jumbo.cpp
-    unit_test_comm_layers.cpp
-    unit_test_comm_protocol.cpp
-    unit_test_comm_session.bond
-    unit_test_comm_session.cpp
-    unit_test_comm_timeout.cpp
-    unit_test_comm_unexpected.cpp
-    unit_test_comm_utils.bond
-    unit_test_comm_utils.cpp
-    unit_test_comm_void.bond
-    unit_test_comm_void.cpp)
+    async.cpp
+    basic.cpp
+    core.cpp
+    error.cpp
+    event.bond
+    event.cpp
+    forward.cpp
+    generic.bond
+    generic_type.cpp
+    generic_service.cpp
+    jumbo.cpp
+    layers.cpp
+    protocol.cpp
+    session.bond
+    session.cpp
+    timeout.cpp
+    unexpected.cpp
+    utils.bond
+    utils.cpp
+    void.bond
+    void.cpp)
