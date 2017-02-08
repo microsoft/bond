@@ -6,9 +6,12 @@ set (BOND_GBC_PATH_DESCRIPTION
 find_program (BOND_GBC_PATH "gbc"
     HINTS ENV BOND_GBC_PATH
     DOC ${BOND_GBC_PATH_DESCRIPTION}
-    # We don't really want to pull gbc from the system path. If someone
-    # wants to do that, they'll need to set BOND_GBC_PATH instead.
-    NO_SYSTEM_ENVIRONMENT_PATH)
+    # We only want to look for gbc if the user explicitly set the
+    # environment variable BOND_GBC_PATH. (If they set the CMake variable
+    # BOND_GBC_PATH explicitly, find_program won't change it, allowing it to
+    # take precedence.) We don't want CMake to go looking elsewhere, so we
+    # turn off all its default search paths.
+    NO_DEFAULT_PATH)
 
 if (BOND_GBC_PATH)
     set (GBC_EXECUTABLE ${BOND_GBC_PATH})
