@@ -1,6 +1,3 @@
-
-#define BOND_ENABLE_LOG_HANDLER
-
 #include <iostream>
 #include <boost/algorithm/string/replace.hpp>
 
@@ -224,7 +221,8 @@ public:
 };
 
 
-void init_generic_type()
+bool init_unit_test()
 {
     InitializeTests<GenericTypeTransportTests, bond::comm::FastWireProtocol>();
+    return true;
 }

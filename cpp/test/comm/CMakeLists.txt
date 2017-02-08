@@ -41,25 +41,19 @@ target_link_libraries (comm_test_common PRIVATE
 
 add_bond_codegen (TARGET comm_test_codegen comm_test_common.bond COMM)
 
-add_unit_test (unit_test_comm.cpp
-    async.cpp
-    basic.cpp
-    core.cpp
-    error.cpp
-    event.bond
-    event.cpp
-    forward.cpp
-    generic.bond
-    generic_type.cpp
-    generic_service.cpp
-    jumbo.cpp
-    layers.cpp
-    protocol.cpp
-    session.bond
-    session.cpp
-    timeout.cpp
-    unexpected.cpp
-    utils.bond
-    utils.cpp
-    void.bond
-    void.cpp)
+add_unit_test (async.cpp)
+add_unit_test (basic.cpp)
+add_unit_test (core.cpp)
+add_unit_test (error.cpp)
+add_unit_test (event.cpp event.bond)
+add_unit_test (forward.cpp)
+add_unit_test (generic_service.cpp generic.bond)
+add_unit_test (generic_type.cpp generic.bond)
+add_unit_test (jumbo.cpp)
+add_unit_test (layers.cpp)
+add_unit_test (protocol.cpp)
+add_unit_test (session.cpp session.bond)
+add_unit_test (timeout.cpp)
+add_unit_test (unexpected.cpp)
+add_unit_test (utils.cpp utils.bond)
+add_unit_test (void.cpp void.bond)

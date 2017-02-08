@@ -3,8 +3,9 @@
 #include <bond/core/bond_types.h>
 #include <bond/comm/message.h>
 
-#include <boost/noncopyable.hpp>
+#include <boost/chrono.hpp>
 #include <boost/mpl/if.hpp>
+#include <boost/noncopyable.hpp>
 
 #include <condition_variable>
 #include <type_traits>

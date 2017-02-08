@@ -14,6 +14,10 @@
     #include <boost/test/unit_test.hpp>
 #endif
 
+#include "../core/unit_test_framework.h"
+#include "../logging.h"
+#include "test_utils_comm.h"
+
 extern bool init_unit_test();
 
 int main(int argc, char* argv[])

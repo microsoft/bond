@@ -1,6 +1,3 @@
-
-#define BOND_ENABLE_LOG_HANDLER
-
 #include <iostream>
 #include <boost/algorithm/string/replace.hpp>
 
@@ -269,7 +266,8 @@ public:
 };
 
 
-void init_layers()
+bool init_unit_test()
 {
     InitializeTests<LayerTransportTests, bond::comm::FastWireProtocol>();
+    return true;
 }
