@@ -4,11 +4,11 @@
 namespace Bond.Comm.Epoxy
 {
     using System;
+    using System.Collections.Generic;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
-    using Bond.Comm.Service;
 
     public class EpoxyTransportBuilder : TransportBuilder<EpoxyTransport>
     {
@@ -136,6 +136,13 @@ namespace Bond.Comm.Epoxy
         readonly Logger logger;
         readonly Metrics metrics;
 
+        readonly ReaderWriterLockSlim shutdownLock;
+        bool isShutdown;
+
+        readonly object collectionsLock;
+        readonly HashSet<EpoxyConnection> connections;
+        readonly HashSet<EpoxyListener> listeners;
+
         public struct Endpoint
         {
             public readonly string Host;
@@ -199,6 +206,13 @@ namespace Bond.Comm.Epoxy
             logger = new Logger(logSink, enableDebugLogs);
             // Metrics sink may be null
             metrics = new Metrics(metricsSink);
+
+            shutdownLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+            isShutdown = false;
+
+            collectionsLock = new object();
+            connections = new HashSet<EpoxyConnection>();
+            listeners = new HashSet<EpoxyListener>();
         }
 
         public override Error GetLayerStack(string uniqueId, out ILayerStack stack)
@@ -292,8 +306,27 @@ namespace Bond.Comm.Epoxy
                         timeoutConfig: timeoutConfig,
                         logger: logger);
 
-                // TODO: keep these in some master collection for shutdown
                 var connection = EpoxyConnection.MakeClientConnection(this, epoxyStream, logger, metrics);
+
+                {
+                    shutdownLock.EnterReadLock();
+                    try
+                    {
+                        if (isShutdown)
+                        {
+                            throw new InvalidOperationException("This EpoxyTransport has been stopped already.");
+                        }
+                        lock (collectionsLock)
+                        {
+                            connections.Add(connection);
+                        }
+                    }
+                    finally
+                    {
+                        shutdownLock.ExitReadLock();
+                    }
+                }
+
                 await connection.StartAsync();
                 return connection;
             }
@@ -316,12 +349,79 @@ namespace Bond.Comm.Epoxy
 
         public EpoxyListener MakeListener(IPEndPoint address)
         {
-            return new EpoxyListener(this, address, serverTlsConfig, timeoutConfig, logger, metrics);
+            var listener = new EpoxyListener(this, address, serverTlsConfig, timeoutConfig, logger, metrics);
+
+            {
+                shutdownLock.EnterReadLock();
+
+                try
+                {
+                    if (isShutdown)
+                    {
+                        throw new InvalidOperationException(
+                            "This EpoxyTransport has been stopped already.");
+                    }
+
+                    lock (collectionsLock)
+                    {
+                        listeners.Add(listener);
+                    }
+                }
+                finally
+                {
+                    shutdownLock.ExitReadLock();
+                }
+            }
+
+            return listener;
         }
 
         public override Task StopAsync()
         {
-            return TaskExt.CompletedTask;
+            try
+            {
+                shutdownLock.EnterWriteLock();
+
+                if (isShutdown)
+                {
+                    return CodegenHelpers.CompletedTask;
+                }
+
+                isShutdown = true;
+            }
+            finally
+            {
+                shutdownLock.ExitWriteLock();
+            }
+
+            HashSet<EpoxyConnection> connectionsToStop;
+            HashSet<EpoxyListener> listenersToStop;
+
+            lock (collectionsLock)
+            {
+                connectionsToStop = new HashSet<EpoxyConnection>(connections);
+                connections.Clear();
+                listenersToStop = new HashSet<EpoxyListener>(listeners);
+                listeners.Clear();
+            }
+
+            int totalStopTasks = checked(connectionsToStop.Count + listenersToStop.Count);
+            var stopTasks = new Task[totalStopTasks];
+            int idx = 0;
+            foreach (var connection in connectionsToStop)
+            {
+                logger.Site().Debug("Stopping connection {0}", connection);
+                stopTasks[idx] = connection.StopAsync();
+                ++idx;
+            }
+            foreach (var listener in listenersToStop)
+            {
+                logger.Site().Debug("Stopping listener {0}", listener);
+                stopTasks[idx] = listener.StopAsync();
+                ++idx;
+            }
+
+            return Task.WhenAll(stopTasks);
         }
 
         public static IPEndPoint ParseStringAddress(string address)

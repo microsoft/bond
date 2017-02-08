@@ -8,7 +8,6 @@ namespace Bond.Comm.Epoxy
     using System.Diagnostics;
     using System.Net;
     using System.Net.Sockets;
-    using System.Security.Authentication;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm.Service;
@@ -87,12 +86,13 @@ namespace Bond.Comm.Epoxy
         {
             // Request that the accept loop stop
             shutdownTokenSource.Cancel();
+
             // Stop listening. This causes the accept loop's wait for an
-            // incomming socket to fail, which then causes the accept loop to
+            // incoming socket to fail, which then causes the accept loop to
             // look at the value of shutdownTokenSource.Token.
             listener.Stop();
 
-            // Wait for the accept loop to exit. Once it has exited, no new
+             // Wait for the accept loop to exit. Once it has exited, no new
             // connections will be accepted, so we can close the outstanding
             // ones.
             await acceptTask;
@@ -112,10 +112,12 @@ namespace Bond.Comm.Epoxy
             int idx = 0;
             foreach (var connection in connectionsToClose)
             {
+                logger.Site().Debug("{0} stopping connection {1}", this, connection);
                 connectionShutdownTasks[idx] = connection.StopAsync();
                 ++idx;
             }
 
+            logger.Site().Debug("Waiting for all connections to stop.");
             await Task.WhenAll(connectionShutdownTasks);
         }
 
