@@ -23,6 +23,8 @@ different versioning scheme, following the Haskell community's
 
 * EpoxyListener's StopAsync() now stops all the outstanding connections that
   it accepted.
+* EpoxyTransport's StopAsync() now stops all the connections and listeners
+  that it created.
 
 ## 5.2.0: 2017-02-07 ##
 
