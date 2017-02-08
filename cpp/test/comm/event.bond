@@ -1,5 +1,4 @@
-
-import "unit_test_comm.bond"
+import "comm_test_common.bond"
 namespace unittest.comm
 
 service EventService

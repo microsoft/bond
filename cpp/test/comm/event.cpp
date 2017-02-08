@@ -8,8 +8,8 @@
     #pragma warning(disable : 4505) // disable "unreferenced local function has been removed" warning
 #endif
 
-#include <unit_test_comm_event_reflection.h>
-#include <unit_test_comm_event_comm.h>
+#include <event_reflection.h>
+#include <event_comm.h>
 
 #include "transport_list.h"
 #include <bond/comm/layers.h>
@@ -155,7 +155,7 @@ public:
 };
 
 
-void init_unit_test_comm_event()
+void init_event()
 {
     InitializeTests<EventTransportTests, bond::comm::FastWireProtocol>();
 }

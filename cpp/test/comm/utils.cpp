@@ -5,8 +5,8 @@
     #pragma warning(disable : 4505) // disable "unreferenced local function has been removed" warning
 #endif
 
-#include <unit_test_comm_utils_reflection.h>
-#include <unit_test_comm_utils_comm.h>
+#include <utils_reflection.h>
+#include <utils_comm.h>
 
 #include <bond/comm/transport.h>
 #include <bond/comm/layers.h>
@@ -282,7 +282,7 @@ namespace TestUtils
 }; // namespace CoreTests
 
 
-void init_unit_test_comm_utils()
+void init_utils()
 {
     TestUtils::Initialize();
 }
