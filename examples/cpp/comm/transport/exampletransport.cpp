@@ -39,7 +39,7 @@ struct ServiceImpl : Service
 
 int main()
 {
-    bond::comm::SocketAddress loopback("127.0.0.1", 25188);
+    bond::comm::SocketAddress loopback("127.0.0.1", EXAMPLE_PORT_1);
     examples::ExampleTransport transport;
 
     auto server = transport.Bind(loopback, boost::make_shared<ServiceImpl>());

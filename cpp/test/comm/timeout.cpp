@@ -166,7 +166,7 @@ class TimeoutTransportTests
     void Server1Service1Timeout1()
     {
         //
-        // publish First_ServiceImpl at port 9000
+        // publish First_ServiceImpl at port TEST_PORT_1
         // connect one First::Proxy instance to it.
         // invoke method.
         //
@@ -174,7 +174,7 @@ class TimeoutTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -213,7 +213,7 @@ class TimeoutTransportTests
     void Server1Service1Timeout2()
     {
         //
-        // publish First_ServiceImpl at port 9000
+        // publish First_ServiceImpl at port TEST_PORT_1
         // connect one First::Proxy instance to it.
         // invoke method.
         //
@@ -221,7 +221,7 @@ class TimeoutTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Timer dispatch threads.

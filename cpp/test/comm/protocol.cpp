@@ -64,7 +64,7 @@ class ProtocolTransportTests
     void Server1Service1Protocol1()
     {
         //
-        // publish First_ServiceImpl at port 9000
+        // publish First_ServiceImpl at port TEST_PORT_1
         // connect one First::Proxy instance to it.
         // invoke method.
         //
@@ -72,7 +72,7 @@ class ProtocolTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -115,7 +115,7 @@ class ProtocolTransportTests
     void Server1Service1Protocol2()
     {
         //
-        // publish First_ServiceImpl at port 9000
+        // publish First_ServiceImpl at port TEST_PORT_1
         // connect one First::Proxy instance to it.
         // invoke method.
         //
@@ -123,7 +123,7 @@ class ProtocolTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -168,7 +168,7 @@ class ProtocolTransportTests
     void Server1Service1Protocol3()
     {
         //
-        // publish First_ServiceImpl at port 9000
+        // publish First_ServiceImpl at port TEST_PORT_1
         // connect one First::Proxy instance to it.
         // invoke method.
         //
@@ -176,7 +176,7 @@ class ProtocolTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         const bond::comm::FastWireProtocol fastWireProtocol;
         const bond::comm::CompactWireProtocol compactWireProtocol;

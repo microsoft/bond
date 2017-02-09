@@ -33,7 +33,7 @@ public:
 
 int BOND_CALL main()
 {
-    bond::comm::SocketAddress loopback("127.0.0.1", 25188);
+    bond::comm::SocketAddress loopback("127.0.0.1", EXAMPLE_PORT_1);
     bond::comm::epoxy::EpoxyTransport transport;
 
     // Setup event confirmation

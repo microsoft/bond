@@ -81,7 +81,7 @@ class GenericTypeTransportTests
     void Server1Service1GenericType1()
     {
         //
-        // publish GenericType_ServiceImpl at port 9000
+        // publish GenericType_ServiceImpl at port TEST_PORT_1
         // connect one GenericType::Proxy instance to it.
         // invoke method with generic response.
         //
@@ -89,7 +89,7 @@ class GenericTypeTransportTests
         //
         // Create service.
         GenericType_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -121,7 +121,7 @@ class GenericTypeTransportTests
     void Server1Service1GenericType2()
     {
         //
-        // publish GenericType_ServiceImpl at port 9000
+        // publish GenericType_ServiceImpl at port TEST_PORT_1
         // connect one GenericType::Proxy instance to it.
         // invoke method with generic request.
         //
@@ -129,7 +129,7 @@ class GenericTypeTransportTests
         //
         // Create service.
         GenericType_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -161,7 +161,7 @@ class GenericTypeTransportTests
     void Server1Service1GenericType3()
     {
         //
-        // publish GenericType_ServiceImpl at port 9000
+        // publish GenericType_ServiceImpl at port TEST_PORT_1
         // connect one GenericType::Proxy instance to it.
         // invoke method with generic request and void response.
         //
@@ -169,7 +169,7 @@ class GenericTypeTransportTests
         //
         // Create service.
         GenericType_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.

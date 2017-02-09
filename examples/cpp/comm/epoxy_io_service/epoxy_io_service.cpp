@@ -30,7 +30,7 @@ int BOND_CALL main()
 {
     auto thread_service = boost::make_shared<bond::comm::ThreadService>();
 
-    bond::comm::SocketAddress loopback("127.0.0.1", 25188);
+    bond::comm::SocketAddress loopback("127.0.0.1", EXAMPLE_PORT_1);
 
     // Construct epoxy transport instance against explicit io_service
     bond::comm::epoxy::EpoxyTransport transport(thread_service);

@@ -127,7 +127,7 @@ class AsyncTransportTests
     void Server1Service1Async1()
     {
         //
-        // publish First_ServiceImpl at port 9000
+        // publish First_ServiceImpl at port TEST_PORT_1
         // connect one First::Proxy instance to it.
         //
         // Invoke method, which execution will be scheduled on server side.
@@ -136,7 +136,7 @@ class AsyncTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.

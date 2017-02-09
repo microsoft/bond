@@ -69,7 +69,7 @@ class EventTransportTests
         //
         // Create service.
         Event_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
 
         bond::comm::ServiceTable table;
@@ -97,7 +97,7 @@ class EventTransportTests
     void Server1Service1Event1()
     {
         //
-        // publish Event_ServiceImpl at port 9000
+        // publish Event_ServiceImpl at port TEST_PORT_1
         // connect one EventService::Proxy instance to it.
         // invoke method.
         //
@@ -105,7 +105,7 @@ class EventTransportTests
         //
         // Create service.
         Event_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.

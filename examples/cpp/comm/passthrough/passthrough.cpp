@@ -52,8 +52,8 @@ class ServiceImpl : public Service
 
 int BOND_CALL main()
 {
-    bond::comm::SocketAddress loopback("127.0.0.1", 25188);
-    bond::comm::SocketAddress intermediate("127.0.0.1", 25189);
+    bond::comm::SocketAddress loopback("127.0.0.1", EXAMPLE_PORT_1);
+    bond::comm::SocketAddress intermediate("127.0.0.1", EXAMPLE_PORT_2);
     bond::comm::epoxy::EpoxyTransport transport;
 
     auto server = transport.Bind(loopback, boost::make_shared<ServiceImpl>());
