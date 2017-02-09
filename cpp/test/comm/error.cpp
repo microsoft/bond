@@ -120,7 +120,7 @@ class ErrorTransportTests
         // Create service.
         First_ServiceImpl firstService;
 
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
 
         //
@@ -176,7 +176,7 @@ class ErrorTransportTests
         // Create service.
         First_ServiceImpl firstService;
 
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
 
         //
@@ -221,7 +221,7 @@ class ErrorTransportTests
         // Create service.
         Second_ServiceImpl secondService;
 
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
 
         //
@@ -266,7 +266,7 @@ class ErrorTransportTests
 
         // Publish First_Service.
         //
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
         bond::comm::Server server = transport.Bind(address, boost::ref(service));
 
         First::Proxy proxy(transport.Connect(address));

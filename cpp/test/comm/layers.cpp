@@ -65,16 +65,16 @@ class LayerTransportTests
     void Server1Service1Layer0()
     {
         //
-        // publish both First_ServiceImpl and Second_ServiceImpl at ports 9000, 9001
-        // connect one pair of First::Proxy and Second::Proxy to 9000 and
-        // another pair to 9001 via independend connections.
+        // publish both First_ServiceImpl and Second_ServiceImpl at ports TEST_PORT_1, TEST_PORT_2
+        // connect one pair of First::Proxy and Second::Proxy to TEST_PORT_1 and
+        // another pair to TEST_PORT_2 via independend connections.
         // invoke methods via all four proxies.
         //
 
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress serverAddress("127.0.0.1", 9000);
+        bond::comm::SocketAddress serverAddress("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -190,16 +190,16 @@ class LayerTransportTests
     void Server1Service1Layer1()
     {
         //
-        // publish both First_ServiceImpl and Second_ServiceImpl at ports 9000, 9001
-        // connect one pair of First::Proxy and Second::Proxy to 9000 and
-        // another pair to 9001 via independend connections.
+        // publish both First_ServiceImpl and Second_ServiceImpl at ports TEST_PORT_1, TEST_PORT_2
+        // connect one pair of First::Proxy and Second::Proxy to TEST_PORT_1 and
+        // another pair to TEST_PORT_2 via independend connections.
         // invoke methods via all four proxies.
         //
 
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress serverAddress("127.0.0.1", 9000);
+        bond::comm::SocketAddress serverAddress("127.0.0.1", TEST_PORT_1);
 
         //
         // Log layer events

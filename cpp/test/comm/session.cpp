@@ -66,7 +66,7 @@ class SessionTransportTests
         //
 
         uint32_t instance = 0;
-        bond::comm::SocketAddress serverAddress("127.0.0.1", 9000);
+        bond::comm::SocketAddress serverAddress("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -121,7 +121,7 @@ class SessionTransportTests
         //
         // Instantiate service tobe shared.
         boost::shared_ptr<Session_ServiceImpl> firstService(new Session_ServiceImpl(instance));
-        bond::comm::SocketAddress serverAddress("127.0.0.1", 9000);
+        bond::comm::SocketAddress serverAddress("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.

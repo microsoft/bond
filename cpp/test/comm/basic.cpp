@@ -90,7 +90,7 @@ class BasicTransportTests
         //
         // Create service.
         First_ServiceImpl service;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -113,7 +113,7 @@ class BasicTransportTests
         // Create service.
         First_ServiceImpl first;
         Second_ServiceImpl second;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         bond::comm::ServiceTable table;
         table.Using(bond::comm::FastWireProtocol())
@@ -141,8 +141,8 @@ class BasicTransportTests
         // Create service.
         //
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress serverAddress1("127.0.0.1", 9000),
-                            serverAddress2("127.0.0.1", 9001);
+        bond::comm::SocketAddress serverAddress1("127.0.0.1", TEST_PORT_1),
+                            serverAddress2("127.0.0.1", TEST_PORT_2);
 
         //
         // Start transport.
@@ -168,7 +168,7 @@ class BasicTransportTests
         //
         Transport transport;
 
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
         auto client = transport.Connect(address);
 
         First::Proxy proxy1(client);
@@ -183,7 +183,7 @@ class BasicTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
 
         //
@@ -211,8 +211,8 @@ class BasicTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress serverAddress1("127.0.0.1", 9000),
-                            serverAddress2("127.0.0.1", 9001);
+        bond::comm::SocketAddress serverAddress1("127.0.0.1", TEST_PORT_1),
+                            serverAddress2("127.0.0.1", TEST_PORT_2);
 
 
         //
@@ -243,8 +243,8 @@ class BasicTransportTests
         First_ServiceImpl firstService;
         boost::shared_ptr<Second_ServiceImpl> secondService(new Second_ServiceImpl());
 
-        bond::comm::SocketAddress serverAddress1("127.0.0.1", 9000),
-                            serverAddress2("127.0.0.1", 9001);
+        bond::comm::SocketAddress serverAddress1("127.0.0.1", TEST_PORT_1),
+                            serverAddress2("127.0.0.1", TEST_PORT_2);
 
 
         bond::comm::ServiceTable table;
@@ -285,8 +285,8 @@ class BasicTransportTests
         First_ServiceImpl firstService;
         boost::shared_ptr<Second_ServiceImpl> secondService(new Second_ServiceImpl());
 
-        bond::comm::SocketAddress serverAddress1("127.0.0.1", 9000),
-                            serverAddress2("127.0.0.1", 9001);
+        bond::comm::SocketAddress serverAddress1("127.0.0.1", TEST_PORT_1),
+                            serverAddress2("127.0.0.1", TEST_PORT_2);
 
 
         bond::comm::ServiceTable table;
@@ -329,7 +329,7 @@ class BasicTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         bond::comm::ServiceTable table;
         table.Register(boost::ref(firstService), bond::comm::FastWireProtocol());
@@ -361,7 +361,7 @@ class BasicTransportTests
     void Server1Service1Send1SocketAddress()
     {
         //
-        // publish First_ServiceImpl at port 9000
+        // publish First_ServiceImpl at port TEST_PORT_1
         // connect one First::Proxy instance to it.
         // invoke method.
         //
@@ -369,7 +369,7 @@ class BasicTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -404,7 +404,7 @@ class BasicTransportTests
     void Server1Service1Send1Reconnect()
     {
         //
-        // publish First_ServiceImpl at port 9000
+        // publish First_ServiceImpl at port TEST_PORT_1
         // connect one First::Proxy instance to it.
         // invoke method, drop service, publish a new one,
         // test proxy instance.
@@ -413,7 +413,7 @@ class BasicTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -464,7 +464,7 @@ class BasicTransportTests
     void Server1Service1Send1UrlAddress()
     {
         //
-        // publish First_ServiceImpl at port 9000
+        // publish First_ServiceImpl at port TEST_PORT_1
         // connect one First::Proxy instance to it.
         // invoke method.
         //
@@ -472,7 +472,7 @@ class BasicTransportTests
         //
         // Create service.
         First_ServiceImpl firstService;
-        bond::UrlAddress address("localhost:9000");
+        bond::UrlAddress address("localhost:TEST_PORT_1");
 
         //
         // Start transport.
@@ -507,9 +507,9 @@ class BasicTransportTests
     void Server2Service1Send1()
     {
         //
-        // publish First_ServiceImpl at ports 9000, 9001
-        // connect one First::Proxy instance to 9000 and
-        // another to 9001 via independend connections.
+        // publish First_ServiceImpl at ports TEST_PORT_1, TEST_PORT_2
+        // connect one First::Proxy instance to TEST_PORT_1 and
+        // another to TEST_PORT_2 via independend connections.
         // invoke methods via both instances.
         //
 
@@ -517,8 +517,8 @@ class BasicTransportTests
         // Create service.
         //
         First_ServiceImpl firstService;
-        bond::comm::SocketAddress serverAddress1("127.0.0.1", 9000),
-                            serverAddress2("127.0.0.1", 9001);
+        bond::comm::SocketAddress serverAddress1("127.0.0.1", TEST_PORT_1),
+                            serverAddress2("127.0.0.1", TEST_PORT_2);
 
 
         //
@@ -557,9 +557,9 @@ class BasicTransportTests
     void Server2Service2Send1()
     {
         //
-        // publish both First_ServiceImpl and Second_ServiceImpl at ports 9000, 9001
-        // connect one pair of First::Proxy and Second::Proxy to 9000 and
-        // another pair to 9001 via independend connections.
+        // publish both First_ServiceImpl and Second_ServiceImpl at ports TEST_PORT_1, TEST_PORT_2
+        // connect one pair of First::Proxy and Second::Proxy to TEST_PORT_1 and
+        // another pair to TEST_PORT_2 via independend connections.
         // invoke methods via all four proxies.
         //
 
@@ -568,8 +568,8 @@ class BasicTransportTests
         First_ServiceImpl firstService;
         boost::shared_ptr<Second_ServiceImpl> secondService(new Second_ServiceImpl());
 
-        bond::comm::SocketAddress serverAddress1("127.0.0.1", 9000),
-                            serverAddress2("127.0.0.1", 9001);
+        bond::comm::SocketAddress serverAddress1("127.0.0.1", TEST_PORT_1),
+                            serverAddress2("127.0.0.1", TEST_PORT_2);
 
 
         bond::comm::ServiceTable table;
@@ -628,8 +628,8 @@ class BasicTransportTests
     void Server2Service2Send2()
     {
         //
-        // publish both First_ServiceImpl and Second_ServiceImpl at ports 9000, 9001
-        // connect First::Proxy and Second::Proxy to port 9000 and to 9001 via four independend connections.
+        // publish both First_ServiceImpl and Second_ServiceImpl at ports TEST_PORT_1, TEST_PORT_2
+        // connect First::Proxy and Second::Proxy to port TEST_PORT_1 and to TEST_PORT_2 via four independend connections.
         // invoke methods via all four proxies.
         //
 
@@ -638,8 +638,8 @@ class BasicTransportTests
         First_ServiceImpl firstService;
         boost::shared_ptr<Second_ServiceImpl> secondService(new Second_ServiceImpl());
 
-        bond::comm::SocketAddress serverAddress1("127.0.0.1", 9000),
-                            serverAddress2("127.0.0.1", 9001);
+        bond::comm::SocketAddress serverAddress1("127.0.0.1", TEST_PORT_1),
+                            serverAddress2("127.0.0.1", TEST_PORT_2);
 
 
         bond::comm::ServiceTable table;

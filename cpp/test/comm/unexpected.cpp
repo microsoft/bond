@@ -180,7 +180,7 @@ class UnexpectedTransportTests
 
         // Publish First_Service.
         //
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
         bond::comm::Server server = transport.Bind(address, boost::ref(service));
 
         First::Proxy proxy(transport.Connect(address));
@@ -205,7 +205,7 @@ class UnexpectedTransportTests
     void Server1Service1DropException1()
     {
         //
-        // publish First_ServiceImpl at port 9000
+        // publish First_ServiceImpl at port TEST_PORT_1
         // connect one First::Proxy instance to it.
         //
         // invoke method, shutdown service while in progress.
@@ -220,7 +220,7 @@ class UnexpectedTransportTests
             //
             // Create service.
             First_ServiceImpl firstService;
-            bond::comm::SocketAddress address("127.0.0.1", 9000);
+            bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
             //
             // Start transport.

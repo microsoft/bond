@@ -124,7 +124,7 @@ namespace TestUtils
 
         TestTransport transport;
 
-        const std::string address = "127.0.0.1:9000";
+        const std::string address = "127.0.0.1:TEST_PORT_1";
         bond::comm::Server server = transport.Bind(address, boost::ref(service));
 
         boost::shared_ptr<TestConnection> connection = boost::make_shared<TestConnection>(transport.m_connection);
@@ -157,7 +157,7 @@ namespace TestUtils
 
         std::string instance;
 
-        const std::string address = "127.0.0.1:9000";
+        const std::string address = "127.0.0.1:TEST_PORT_1";
         bond::comm::Server server = transport.Bind(address,
                                              [&instance, &service](const std::string& session) mutable -> bond::comm::ServiceTable
                                              {
@@ -197,7 +197,7 @@ namespace TestUtils
             bond::comm::LayerTransport<TestTransport, bond::comm::CompactWireProtocol> transport;
 
             //const std::string address = ;
-            bond::comm::Server server = transport.Bind("127.0.0.1:9000", boost::ref(service));
+            bond::comm::Server server = transport.Bind("127.0.0.1:TEST_PORT_1", boost::ref(service));
 
             Test::Proxy proxy(transport.Connect(""));
 
@@ -214,7 +214,7 @@ namespace TestUtils
             bond::comm::LayerTransport<TestTransport, bond::comm::CompactWireProtocol> transport(a);
 
             //const std::string address = ;
-            bond::comm::Server server = transport.Bind("127.0.0.1:9000", boost::ref(service));
+            bond::comm::Server server = transport.Bind("127.0.0.1:TEST_PORT_1", boost::ref(service));
 
             Test::Proxy proxy(transport.Connect(""));
 
@@ -235,7 +235,7 @@ namespace TestUtils
             bond::comm::LayerTransport<TestTransport, bond::comm::CompactWireProtocol> transport(layers);
 
             //const std::string address = ;
-            bond::comm::Server server = transport.Bind("127.0.0.1:9000", boost::ref(service));
+            bond::comm::Server server = transport.Bind("127.0.0.1:TEST_PORT_1", boost::ref(service));
 
             Test::Proxy proxy(transport.Connect(""));
 
@@ -257,7 +257,7 @@ namespace TestUtils
             bond::comm::LayerTransport<TestTransport, bond::comm::CompactWireProtocol> transport(layers, a);
 
             //const std::string address = ;
-            bond::comm::Server server = transport.Bind("127.0.0.1:9000", boost::ref(service));
+            bond::comm::Server server = transport.Bind("127.0.0.1:TEST_PORT_1", boost::ref(service));
 
             Test::Proxy proxy(transport.Connect(""));
 

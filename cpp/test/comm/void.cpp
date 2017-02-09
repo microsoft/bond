@@ -89,7 +89,7 @@ class VoidTransportTests
     void Server1Service1Void1()
     {
         //
-        // publish Void_ServiceImpl at port 9000
+        // publish Void_ServiceImpl at port TEST_PORT_1
         // connect one VoidService::Proxy instance to it.
         // invoke method with void response.
         //
@@ -97,7 +97,7 @@ class VoidTransportTests
         //
         // Create service.
         Void_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -126,7 +126,7 @@ class VoidTransportTests
     void Server1Service1Void2()
     {
         //
-        // publish Void_ServiceImpl at port 9000
+        // publish Void_ServiceImpl at port TEST_PORT_1
         // connect one VoidService::Proxy instance to it.
         // invoke method with void request.
         //
@@ -134,7 +134,7 @@ class VoidTransportTests
         //
         // Create service.
         Void_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -162,7 +162,7 @@ class VoidTransportTests
     void Server1Service1Void3()
     {
         //
-        // publish Void_ServiceImpl at port 9000
+        // publish Void_ServiceImpl at port TEST_PORT_1
         // connect one VoidService::Proxy instance to it.
         // invoke method with void request and void response.
         //
@@ -170,7 +170,7 @@ class VoidTransportTests
         //
         // Create service.
         Void_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -197,7 +197,7 @@ class VoidTransportTests
     void Server1Service1VoidException1()
     {
         //
-        // publish Void_ServiceImpl at port 9000
+        // publish Void_ServiceImpl at port TEST_PORT_1
         // connect one VoidService::Proxy instance to it.
         //
         // invoke method that throws exception
@@ -207,7 +207,7 @@ class VoidTransportTests
         //
         // Create service.
         Void_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -235,7 +235,7 @@ class VoidTransportTests
     void Server1Service1VoidException2()
     {
         //
-        // publish Void_ServiceImpl at port 9000
+        // publish Void_ServiceImpl at port TEST_PORT_1
         // connect one VoidService::Proxy instance to it.
         //
         // invoke method that throws exception
@@ -245,7 +245,7 @@ class VoidTransportTests
         //
         // Create service.
         Void_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.
@@ -273,7 +273,7 @@ class VoidTransportTests
     void Server1Service1VoidException3()
     {
         //
-        // publish Void_ServiceImpl at port 9000
+        // publish Void_ServiceImpl at port TEST_PORT_1
         // connect one VoidService::Proxy instance to it.
         //
         // invoke method that throws exception
@@ -283,7 +283,7 @@ class VoidTransportTests
         //
         // Create service.
         Void_ServiceImpl firstService;
-        bond::comm::SocketAddress address("127.0.0.1", 9000);
+        bond::comm::SocketAddress address("127.0.0.1", TEST_PORT_1);
 
         //
         // Start transport.

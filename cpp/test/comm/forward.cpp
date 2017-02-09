@@ -93,7 +93,7 @@ class ForwardTransportTests
     void Server2Service2Forward1()
     {
         //
-        // publish both First_ServiceImpl and Second_ServiceImpl at ports 9000, 9001
+        // publish both First_ServiceImpl and Second_ServiceImpl at ports TEST_PORT_1, TEST_PORT_2
         // connect Second_ServiceImpl to First_ServiceImpl via First::Proxy and
         // forward requests/responses with contexts. Both legs use fast protocol.
         //
@@ -102,8 +102,8 @@ class ForwardTransportTests
         // Create service.
         First_ServiceImpl firstService;
 
-        bond::comm::SocketAddress serverAddress1("127.0.0.1", 9000),
-                            serverAddress2("127.0.0.1", 9001);
+        bond::comm::SocketAddress serverAddress1("127.0.0.1", TEST_PORT_1),
+                            serverAddress2("127.0.0.1", TEST_PORT_2);
 
         //
         // Start transport.
@@ -135,7 +135,7 @@ class ForwardTransportTests
     void Server2Service2Forward2()
     {
         //
-        // publish both First_ServiceImpl and Second_ServiceImpl at ports 9000, 9001
+        // publish both First_ServiceImpl and Second_ServiceImpl at ports TEST_PORT_1, TEST_PORT_2
         // connect Second_ServiceImpl to First_ServiceImpl via First::Proxy and
         // forward requests/responses with contexts. 1st leg uses compact protocol, the 2nd - fast.
         //
@@ -144,8 +144,8 @@ class ForwardTransportTests
         // Create service.
         First_ServiceImpl firstService;
 
-        bond::comm::SocketAddress serverAddress1("127.0.0.1", 9000),
-                            serverAddress2("127.0.0.1", 9001);
+        bond::comm::SocketAddress serverAddress1("127.0.0.1", TEST_PORT_1),
+                            serverAddress2("127.0.0.1", TEST_PORT_2);
 
         //
         // Start transport.
