@@ -18,7 +18,7 @@ for C++, C#, and Python on Linux, OS X and Windows.
 
 We are also introducing the
 [Bond Communications framework](https://Microsoft.github.io/bond/manual/bond_comm.html)--known
-as Bond Comm. More information about Bond Comm for C# can be found
+as Bond Comm. More information about Bond Comm for C++ can be found
 [below](#bond-comm).
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
