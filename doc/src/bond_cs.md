@@ -7,10 +7,10 @@ Bond is an extensible framework for working with schematized data. It is
 suitable for scenarios ranging from service communications to Big Data storage
 and processing.
 
-Bond defines a rich type system and schema versioning rules which allow
-forward and backward compatibility. The core Bond features include high
-performance serialization/deserialization and a very powerful, generic data
-transform mechanism. The framework is highly extensible via pluggable
+Bond defines a rich type system and [schema evolution rules](#schema-evolution)
+which allow forward and backward compatibility. The core Bond features include
+high performance serialization/deserialization and a very powerful, generic
+data transform mechanism. The framework is highly extensible via pluggable
 serialization protocols, data streams, user defined type aliases and more.
 
 By design Bond is language and platform independent and is currently supported
@@ -260,6 +260,65 @@ particular protocol reader:
 See also the following example:
 
 - `examples/cs/core/marshaling`
+
+Schema evolution
+================
+
+Bond does not use explicit versioning to deal with changes to schemas (and the
+resulting types) over time. Instead, Bond supports certain schema evolution
+operations which allow the producer and consumer of Bond types to evolve
+without lockstep coordination.
+
+The following changes to a schema will never break compatibility across the wire:
+
+- Adding or removing an `optional` or `required_optional` field
+- Changing a field's type between `int32` and `enum`
+- Changing a field's type between `vector<T>` and `list<T>`
+- Changing a field's type between `blob` and `vector<uint8>` or `blob` and
+  `list<uint8>`
+- Changing a field's type between `T` and `bonded<T>`
+- Adding new enumeration constants that don't alter existing constants (beware
+  of implicit reordering)
+
+The following changes to a type are generally safe but require some
+consideration about how the change is rolled out:
+
+- Changing a field between `optional` and `required_optional` or between
+  `required_optional` and `required`. The `required_optional` modifier
+  facilitates a two-step process for changing between `optional` and
+  `required`, but the first step must be completed on both the producer and the
+  consumer sides before the second step can be started on either side.
+- Promoting a field with a numeric type from a smaller size to a larger size
+  (e.g.: `float` to `double`, `uint8` to `uint16`, `uint8` to `uint32`, `int8`
+  to `int16`, etc.). The consumer must get the change before the producer.
+  Note that changing from unsigned to signed or vice versa is *not* compatible
+  (e.g.: `uint8` to `int16`).
+- Promoting from `int8` or `int16` to `enum`. The consumer must get the change
+  before the producer.
+
+These following changes will break wire compatibility and are not recommended:
+
+- Adding or removing `required` fields
+- Incompatible change of field types (any type change *not* covered above); e.g.:
+  `int32` to `string`, `string` to `wstring`
+- Changing of field ordinals
+- Changing of inheritance hierarchy (add/remove/substituting base struct)
+- Changing between `required` and `optional` directly
+- Changing the default value of a field
+- Changing existing enumeration constants in any way (including implicit
+  renumbering)
+
+Some best practices and other considerations to keep in mind:
+
+- When removing a field, comment it out rather than removing it altogether so
+  that the field ordinal is not reused in future edits of the schema
+- When working with untagged protocols like
+  [SimpleBinaryProtocol](#simple-binary), great care must be taken to ensure
+  the same [schema](#runtime-schema) is used when deserializing the payload as
+  was used to serialize it.
+- Caution should be used when changing or reusing field names as this could
+  break text-based protocols like [SimpleJsonProtocol](#simple-json)
+- `required` should be used sparingly and only with careful consideration
 
 Protocols
 =========
