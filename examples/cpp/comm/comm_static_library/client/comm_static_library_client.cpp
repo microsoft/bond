@@ -44,7 +44,7 @@ int main()
     bond::Metadata myMetadata = PingRequest::Schema::GetMetadata();
 
     // Initialize proxy
-    bond::comm::SocketAddress loopback("127.0.0.1", EXAMPLE_PORT_1);
+    bond::comm::SocketAddress loopback("127.0.0.1", TEST_PORT_1);
     bond::comm::epoxy::EpoxyTransport transport;
 
     PingPong::Proxy proxy(transport.Connect(loopback));

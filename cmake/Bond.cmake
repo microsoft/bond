@@ -137,10 +137,9 @@ function (add_bond_test test)
     endif()
     math(EXPR testPort1 "${lastTestPort} + 1")
     math(EXPR testPort2 "${lastTestPort} + 2")
-    target_compile_definitions (${test} PRIVATE -DTEST_PORT_1=${testPort1})
-    target_compile_definitions (${test} PRIVATE -DTEST_PORT_2=${testPort2})
-    target_compile_definitions (${test} PRIVATE -DEXAMPLE_PORT_1=${testPort1})
-    target_compile_definitions (${test} PRIVATE -DEXAMPLE_PORT_2=${testPort2})
+    target_compile_definitions (${test} PRIVATE
+      -DTEST_PORT_1=${testPort1}
+      -DTEST_PORT_2=${testPort2})
     set_property (GLOBAL PROPERTY LAST_TEST_PORT "${testPort2}")
 endfunction()
 

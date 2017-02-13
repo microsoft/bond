@@ -80,7 +80,7 @@ int BOND_CALL main()
 {
     bond::comm::epoxy::EpoxyTransport transport;
 
-    bond::comm::SocketAddress loopback("127.0.0.1", EXAMPLE_PORT_1);
+    bond::comm::SocketAddress loopback("127.0.0.1", TEST_PORT_1);
     auto server = transport.Bind(loopback, boost::make_shared<ServiceImpl>());
 
     Service::Proxy::Using<std::promise> proxy(transport.Connect(loopback));
