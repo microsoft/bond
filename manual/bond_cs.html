@@ -143,6 +143,13 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#serializer">Serializer</a></li>
 <li><a href="#deserializer">Deserializer</a></li>
 <li><a href="#marshaling">Marshaling</a></li>
+<li><a href="#schema-evolution">Schema evolution</a></li>
+<li><a href="#protocols">Protocols</a><ul>
+<li><a href="#compact-binary">Compact Binary</a></li>
+<li><a href="#fast-binary">Fast Binary</a></li>
+<li><a href="#simple-binary">Simple Binary</a></li>
+<li><a href="#simple-json">Simple JSON</a></li>
+</ul></li>
 <li><a href="#transcoder">Transcoder</a></li>
 <li><a href="#input-and-output-streams">Input and output streams</a></li>
 <li><a href="#cloner">Cloner</a></li>
@@ -203,7 +210,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <h1 id="about">About</h1>
 <p>Bond is an extensible framework for working with schematized data. It is suitable for scenarios ranging from service communications to Big Data storage and processing.</p>
-<p>Bond defines a rich type system and schema versioning rules which allow forward and backward compatibility. The core Bond features include high performance serialization/deserialization and a very powerful, generic data transform mechanism. The framework is highly extensible via pluggable serialization protocols, data streams, user defined type aliases and more.</p>
+<p>Bond defines a rich type system and <a href="#schema-evolution">schema evolution rules</a> which allow forward and backward compatibility. The core Bond features include high performance serialization/deserialization and a very powerful, generic data transform mechanism. The framework is highly extensible via pluggable serialization protocols, data streams, user defined type aliases and more.</p>
 <p>By design Bond is language and platform independent and is currently supported for C++, C#, and Python on Linux, OS X and Windows.</p>
 <p>We are also introducing the <a href="https://Microsoft.github.io/bond/manual/bond_comm.html">Bond Communications framework</a>–known as Bond Comm. More information about Bond Comm for C# can be found <a href="#bond-comm">below</a>.</p>
 <p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
@@ -397,6 +404,103 @@ Marshal.<span class="fu">To</span>(writer, src);
 <p>See also the following example:</p>
 <ul>
 <li><code>examples/cs/core/marshaling</code></li>
+</ul>
+<h1 id="schema-evolution">Schema evolution</h1>
+<p>Bond does not use explicit versioning to deal with changes to schemas (and the resulting types) over time. Instead, Bond supports certain schema evolution operations which allow the producer and consumer of Bond types to evolve without lockstep coordination.</p>
+<p>The following changes to a schema will never break compatibility across the wire:</p>
+<ul>
+<li>Adding or removing an <code>optional</code> or <code>required_optional</code> field</li>
+<li>Changing a field’s type between <code>int32</code> and <code>enum</code></li>
+<li>Changing a field’s type between <code>vector&lt;T&gt;</code> and <code>list&lt;T&gt;</code></li>
+<li>Changing a field’s type between <code>blob</code> and <code>vector&lt;uint8&gt;</code> or <code>blob</code> and <code>list&lt;uint8&gt;</code></li>
+<li>Changing a field’s type between <code>T</code> and <code>bonded&lt;T&gt;</code></li>
+<li>Adding new enumeration constants that don’t alter existing constants (beware of implicit reordering)</li>
+</ul>
+<p>The following changes to a type are generally safe but require some consideration about how the change is rolled out:</p>
+<ul>
+<li>Changing a field between <code>optional</code> and <code>required_optional</code> or between <code>required_optional</code> and <code>required</code>. The <code>required_optional</code> modifier facilitates a two-step process for changing between <code>optional</code> and <code>required</code>, but the first step must be completed on both the producer and the consumer sides before the second step can be started on either side.</li>
+<li>Promoting a field with a numeric type from a smaller size to a larger size (e.g.: <code>float</code> to <code>double</code>, <code>uint8</code> to <code>uint16</code>, <code>uint8</code> to <code>uint32</code>, <code>int8</code> to <code>int16</code>, etc.). The consumer must get the change before the producer. Note that changing from unsigned to signed or vice versa is <em>not</em> compatible (e.g.: <code>uint8</code> to <code>int16</code>).</li>
+<li>Promoting from <code>int8</code> or <code>int16</code> to <code>enum</code>. The consumer must get the change before the producer.</li>
+</ul>
+<p>These following changes will break wire compatibility and are not recommended:</p>
+<ul>
+<li>Adding or removing <code>required</code> fields</li>
+<li>Incompatible change of field types (any type change <em>not</em> covered above); e.g.: <code>int32</code> to <code>string</code>, <code>string</code> to <code>wstring</code></li>
+<li>Changing of field ordinals</li>
+<li>Changing of inheritance hierarchy (add/remove/substituting base struct)</li>
+<li>Changing between <code>required</code> and <code>optional</code> directly</li>
+<li>Changing the default value of a field</li>
+<li>Changing existing enumeration constants in any way (including implicit renumbering)</li>
+</ul>
+<p>Some best practices and other considerations to keep in mind:</p>
+<ul>
+<li>When removing a field, comment it out rather than removing it altogether so that the field ordinal is not reused in future edits of the schema</li>
+<li>When working with untagged protocols like <a href="#simple-binary">SimpleBinaryProtocol</a>, great care must be taken to ensure the same <a href="#runtime-schema">schema</a> is used when deserializing the payload as was used to serialize it.</li>
+<li>Caution should be used when changing or reusing field names as this could break text-based protocols like <a href="#simple-json">SimpleJsonProtocol</a></li>
+<li><code>required</code> should be used sparingly and only with careful consideration</li>
+</ul>
+<h1 id="protocols">Protocols</h1>
+<p>Bond protocols are pluggable, allowing application to choose the most appropriate encoding format. Bond supports three kinds of protocols:</p>
+<ul>
+<li><p>Tagged protocols</p>
+<p>Tagged protocols interleave schema metadata within the payload. This makes the payload self-describing, allowing consumers to interpret it even without knowing the schema used by the producer.</p></li>
+<li><p>Untagged protocols</p>
+<p>Untagged protocols serialize only data and thus require that consumers know the payload schema via some out-of-band mechanism. Untagged protocols are often used in storage scenarios because they allow storing a <a href="#runtime-schema">schema</a> once (e.g. in a system table in a database) and thus eliminating metadata overhead from many records using the same schema.</p></li>
+<li><p>DOM-based protocols</p>
+<p>DOM-based protocol parse whole payload into an in-memory Data Object Model which then is queried during deserialization. Typically this kind of protocol is used to implement text based encoding such as JSON or XML.</p></li>
+</ul>
+<h2 id="compact-binary">Compact Binary</h2>
+<p>A binary, tagged protocol using variable integer encoding and compact field header. A good choice, along with <a href="#fast-binary">Fast Binary</a>, for RPC scenarios.</p>
+<p>Implemented in <code>CompactBinaryReader</code> and <code>CompactBinaryWriter</code> classes. Version 2 of Compact Binary adds length prefix for structs. This enables deserialization of <a href="#understanding-bondedt"><code>bonded&lt;T&gt;</code></a> and skipping of unknown struct fields in constant time. The trade-off is double pass encoding, resulting in up to 30% slower serialization performance.</p>
+<p>See also <a href="../reference/cpp/compact__binary_8h_source.html">Compact Binary encoding reference</a>.</p>
+<h2 id="fast-binary">Fast Binary</h2>
+<p>A binary, tagged protocol similar to <a href="#compact-binary">Compact Binary</a> but optimized for deserialization speed rather than payload compactness.</p>
+<p>Implemented in <code>FastBinaryReader</code> and<code>FastBinaryWriter</code> classes.</p>
+<p>See also <a href="../reference/cpp/fast__binary_8h_source.html">Fast Binary encoding reference</a>.</p>
+<h2 id="simple-binary">Simple Binary</h2>
+<p>A binary, untagged protocol which is a good choice for storage scenarios as it offers potential for big saving on payload size. Because Simple is an untagged protocol, it requires that the payload schema is available during deserialization. In typical storage scenario application would store <a href="#runtime-schema">runtime schema</a> and use it during deserialization with <code>BondedVoid</code>. In some specific scenarios when it can be assumed that producer and consumer have exactly the same schema, SimpleProtocol can be used with compile-time schema, providing unparalleled deserialization performance. One example is marshaling objects between processes or between native and managed components.</p>
+<p>Implemented in <code>SimpleBinaryReader</code> and <code>SimpleBinaryWriter</code> classes.</p>
+<p>Version 2 of Simple Protocol uses variable integer encoding for string and container lengths, resulting in more compact payload without measurable performance impact.</p>
+<p>See example: <code>examples/cs/core/untagged_protocols</code>.</p>
+<h2 id="simple-json">Simple JSON</h2>
+<p>The Simple JSON protocol is a simple JSON encoding implemented as a DOM protocol. The output is standard JSON and is a very good choice for interoperating with other systems or generating human readable payload.</p>
+<p>Because the payload doesn’t include field ordinals, there are two caveats when used as a Bond serialization protocol:</p>
+<ul>
+<li>Transcoding from Simple JSON to binary Bond protocols is not supported (transcoding from a binary protocol to Simple JSON is supported if you have the schema).</li>
+<li>Field matching is done by field name rather than ordinal. The implication is that renaming a field (which is considered a bad practice anyways) is a breaking schema change for Simple JSON.</li>
+</ul>
+<p>Simple JSON also flattens the inheritance hierarchy which may lead to name conflicts between fields of base and derived Bond structs. It is possible to resolve such conflicts without the need to actually rename the fields by annotating fields with <code>JsonName</code> attribute, e.g.:</p>
+<div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="kw">struct</span> Base
+{
+    <span class="dv">0</span>: <span class="dt">string</span> foo;
+}
+
+<span class="kw">struct</span> Derived : Base
+{
+    [<span class="fu">JsonName</span>(<span class="st">&quot;DerivedFoo&quot;</span>)]
+    <span class="dv">0</span>: <span class="dt">string</span> foo;
+}</code></pre></td></tr></table></div>
+<p>Note that Simple JSON is not designed to be able to read arbitrary JSON objects. Simple JSON has its own way of encoding Bond objects in JSON that differs from how other libraries would encode the same object. When interoperating with other JSON libraries, be aware of these differences:</p>
+<ul>
+<li>maps are encoded as arrays of key/value pairs not as sub-objects</li>
+<li>the inheritance hierarchy is flattened</li>
+<li>nulls are expressed as empty arrays</li>
+<li>enums are encoded via their numeric value, not their symbolic names</li>
+</ul>
+<p>Implemented in <code>SimpleJsonReader</code> and <code>SimpleJsonWriter</code> classes.</p>
+<p>See examples:</p>
+<ul>
+<li><code>examples/cs/core/simple_json</code></li>
 </ul>
 <h1 id="transcoder">Transcoder</h1>
 <p>The <code>Transcoder</code> class provides API for converting payloads from one protocol into another. Transcoder operates directly on serialized data and doesn’t need to know the C# type representing payload schema.</p>

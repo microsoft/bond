@@ -141,6 +141,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#basic-example">Basic example</a></li>
 <li><a href="#serialization">Serialization</a></li>
 <li><a href="#marshaling">Marshaling</a></li>
+<li><a href="#schema-evolution">Schema evolution</a></li>
 <li><a href="#default-value-of-nothing">Default value of <code>nothing</code></a></li>
 <li><a href="#nullable-types">Nullable types</a></li>
 <li><a href="#runtime-schema">Runtime schema</a></li>
@@ -203,9 +204,9 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <h1 id="about">About</h1>
 <p>Bond is an extensible framework for working with schematized data. It is suitable for scenarios ranging from service communications to Big Data storage and processing.</p>
-<p>Bond defines a rich type system and schema versioning rules which allow forward and backward compatibility. The core Bond features include high performance serialization/deserialization and a very powerful, generic data transform mechanism. The framework is highly extensible via pluggable serialization protocols, data streams, user defined type aliases and more.</p>
+<p>Bond defines a rich type system and <a href="#schema-evolution">schema evolution rules</a> which allow forward and backward compatibility. The core Bond features include high performance serialization/deserialization and a very powerful, generic data transform mechanism. The framework is highly extensible via pluggable serialization protocols, data streams, user defined type aliases and more.</p>
 <p>By design Bond is language and platform independent and is currently supported for C++, C#, and Python on Linux, OS X and Windows.</p>
-<p>We are also introducing the <a href="https://Microsoft.github.io/bond/manual/bond_comm.html">Bond Communications framework</a>–known as Bond Comm. More information about Bond Comm for C# can be found <a href="#bond-comm">below</a>.</p>
+<p>We are also introducing the <a href="https://Microsoft.github.io/bond/manual/bond_comm.html">Bond Communications framework</a>–known as Bond Comm. More information about Bond Comm for C++ can be found <a href="#bond-comm">below</a>.</p>
 <p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
 <h1 id="basic-example">Basic example</h1>
 <p>In Bond data schemas are defined using idl-like <a href="compiler.html#idl-syntax">syntax</a>:</p>
@@ -385,6 +386,40 @@ Deserialize(simple_reader, obj, schema);</code></pre></td></tr></table></div>
 
     Unmarshal(input, dst);</code></pre></td></tr></table></div>
 <p>See example: <code>examples/cpp/core/marshaling</code>.</p>
+<h1 id="schema-evolution">Schema evolution</h1>
+<p>Bond does not use explicit versioning to deal with changes to schemas (and the resulting types) over time. Instead, Bond supports certain schema evolution operations which allow the producer and consumer of Bond types to evolve without lockstep coordination.</p>
+<p>The following changes to a schema will never break compatibility across the wire:</p>
+<ul>
+<li>Adding or removing an <code>optional</code> or <code>required_optional</code> field</li>
+<li>Changing a field’s type between <code>int32</code> and <code>enum</code></li>
+<li>Changing a field’s type between <code>vector&lt;T&gt;</code> and <code>list&lt;T&gt;</code></li>
+<li>Changing a field’s type between <code>blob</code> and <code>vector&lt;uint8&gt;</code> or <code>blob</code> and <code>list&lt;uint8&gt;</code></li>
+<li>Changing a field’s type between <code>T</code> and <code>bonded&lt;T&gt;</code></li>
+<li>Adding new enumeration constants that don’t alter existing constants (beware of implicit reordering)</li>
+</ul>
+<p>The following changes to a type are generally safe but require some consideration about how the change is rolled out:</p>
+<ul>
+<li>Changing a field between <code>optional</code> and <code>required_optional</code> or between <code>required_optional</code> and <code>required</code>. The <code>required_optional</code> modifier facilitates a two-step process for changing between <code>optional</code> and <code>required</code>, but the first step must be completed on both the producer and the consumer sides before the second step can be started on either side.</li>
+<li>Promoting a field with a numeric type from a smaller size to a larger size (e.g.: <code>float</code> to <code>double</code>, <code>uint8</code> to <code>uint16</code>, <code>uint8</code> to <code>uint32</code>, <code>int8</code> to <code>int16</code>, etc.). The consumer must get the change before the producer. Note that changing from unsigned to signed or vice versa is <em>not</em> compatible (e.g.: <code>uint8</code> to <code>int16</code>).</li>
+<li>Promoting from <code>int8</code> or <code>int16</code> to <code>enum</code>. The consumer must get the change before the producer.</li>
+</ul>
+<p>These following changes will break wire compatibility and are not recommended:</p>
+<ul>
+<li>Adding or removing <code>required</code> fields</li>
+<li>Incompatible change of field types (any type change <em>not</em> covered above); e.g.: <code>int32</code> to <code>string</code>, <code>string</code> to <code>wstring</code></li>
+<li>Changing of field ordinals</li>
+<li>Changing of inheritance hierarchy (add/remove/substituting base struct)</li>
+<li>Changing between <code>required</code> and <code>optional</code> directly</li>
+<li>Changing the default value of a field</li>
+<li>Changing existing enumeration constants in any way (including implicit renumbering)</li>
+</ul>
+<p>Some best practices and other considerations to keep in mind:</p>
+<ul>
+<li>When removing a field, comment it out rather than removing it altogether so that the field ordinal is not reused in future edits of the schema</li>
+<li>When working with untagged protocols like <a href="#simple-binary">SimpleBinaryProtocol</a>, great care must be taken to ensure the same <a href="#runtime-schema">schema</a> is used when deserializing the payload as was used to serialize it.</li>
+<li>Caution should be used when changing or reusing field names as this could break text-based protocols like <a href="#simple-json">SimpleJsonProtocol</a></li>
+<li><code>required</code> should be used sparingly and only with careful consideration</li>
+</ul>
 <h1 id="default-value-of-nothing">Default value of <code>nothing</code></h1>
 <p>Fields of a Bond defined struct always have a default value, either explicitly specified in the .bond file, or the implicit system default (<code>false</code> for <code>bool</code>, 0 for arithmetic types, empty for strings/containers and <code>null</code> for <code>nullable&lt;T&gt;</code>). Default values of fields matter because this is what an application will see after deserialization for any optional field that wasn’t present in the payload (e.g. when the payload was created from an older version of the schema). Sometimes it is necessary to distinguish between any of the possible values of a field and absence of a value. To support such scenarios Bond allows fields’ default values to be explicitly set to <code>nothing</code> <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
