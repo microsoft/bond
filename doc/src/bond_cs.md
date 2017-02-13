@@ -261,6 +261,127 @@ See also the following example:
 
 - `examples/cs/core/marshaling`
 
+Protocols
+=========
+
+Bond protocols are pluggable, allowing application to choose the most
+appropriate encoding format. Bond supports three kinds of protocols:
+
+  - Tagged protocols
+
+    Tagged protocols interleave schema metadata within the payload. This makes
+    the payload self-describing, allowing consumers to interpret it even
+    without knowing the schema used by the producer.
+
+  - Untagged protocols
+
+    Untagged protocols serialize only data and thus require that consumers know 
+    the payload schema via some out-of-band mechanism. Untagged protocols are 
+    often used in storage scenarios because they allow storing a 
+    [schema](#runtime-schema) once (e.g. in a system table in a database) and 
+    thus eliminating metadata overhead from many records using the same schema.
+
+  - DOM-based protocols
+
+    DOM-based protocol parse whole payload into an in-memory Data Object Model
+    which then is queried during deserialization. Typically this kind of
+    protocol is used to implement text based encoding such as JSON or XML.
+
+Compact Binary
+--------------
+
+A binary, tagged protocol using variable integer encoding and compact field
+header. A good choice, along with [Fast Binary](#fast-binary), for RPC
+scenarios. 
+
+Implemented in `CompactBinaryReader` and `CompactBinaryWriter` classes.
+Version 2 of Compact Binary adds length prefix for structs. This enables
+deserialization of [`bonded<T>`](#understanding-bondedt) and skipping of
+unknown struct fields in constant time. The trade-off is double pass encoding,
+resulting in up to 30% slower serialization performance. 
+
+See also [Compact Binary encoding reference][compact_binary_format_reference].
+
+Fast Binary
+-----------
+
+A binary, tagged protocol similar to [Compact Binary](#compact-binary) but 
+optimized for deserialization speed rather than payload compactness.
+
+Implemented in `FastBinaryReader` and`FastBinaryWriter` classes. 
+
+See also [Fast Binary encoding reference][fast_binary_format_reference].
+
+Simple Binary
+-------------
+
+A binary, untagged protocol which is a good choice for storage scenarios as it
+offers potential for big saving on payload size. Because Simple is an untagged
+protocol, it requires that the payload schema is available during
+deserialization. In typical storage scenario application would store [runtime
+schema](#runtime-schema) and use it during deserialization with `BondedVoid`.
+In some specific scenarios when it can be assumed that producer and consumer
+have exactly the same schema, SimpleProtocol can be used with compile-time
+schema, providing unparalleled deserialization performance. One example is
+marshaling objects between processes or between native and managed components.
+
+Implemented in `SimpleBinaryReader` and `SimpleBinaryWriter` classes.
+
+Version 2 of Simple Protocol uses variable integer encoding for string and 
+container lengths, resulting in more compact payload without measurable 
+performance impact.
+
+See example: `examples/cs/core/untagged_protocols`.
+
+Simple JSON
+-----------
+
+The Simple JSON protocol is a simple JSON encoding implemented as a DOM
+protocol. The output is standard JSON and is a very good choice for
+interoperating with other systems or generating human readable payload.
+
+Because the payload doesn't include field ordinals, there are two caveats
+when used as a Bond serialization protocol:
+
+- Transcoding from Simple JSON to binary Bond protocols is not supported
+  (transcoding from a binary protocol to Simple JSON is supported if you
+  have the schema).
+- Field matching is done by field name rather than ordinal. The implication
+  is that renaming a field (which is considered a bad practice anyways) is a
+  breaking schema change for Simple JSON.
+
+Simple JSON also flattens the inheritance hierarchy which may lead to name
+conflicts between fields of base and derived Bond structs. It is possible to
+resolve such conflicts without the need to actually rename the fields by
+annotating fields with `JsonName` attribute, e.g.:
+
+    struct Base
+    {
+        0: string foo;
+    }
+
+    struct Derived : Base
+    {
+        [JsonName("DerivedFoo")]
+        0: string foo;
+    }
+
+Note that Simple JSON is not designed to be able to read arbitrary JSON
+objects. Simple JSON has its own way of encoding Bond objects in JSON that
+differs from how other libraries would encode the same object. When
+interoperating with other JSON libraries, be aware of these differences:
+
+- maps are encoded as arrays of key/value pairs not as sub-objects
+- the inheritance hierarchy is flattened
+- nulls are expressed as empty arrays
+- enums are encoded via their numeric value, not their symbolic names
+
+Implemented in `SimpleJsonReader` and `SimpleJsonWriter` classes.
+
+See examples:
+
+- `examples/cs/core/simple_json`
+
 Transcoder
 ==========
 
@@ -1334,3 +1455,10 @@ References
 [bond_cpp]: bond_cpp.html
 [bond_py]: bond_py.html
 [compiler]: compiler.html
+
+[compact_binary_format_reference]: 
+../reference/cpp/compact__binary_8h_source.html
+
+[fast_binary_format_reference]: 
+../reference/cpp/fast__binary_8h_source.html
+
