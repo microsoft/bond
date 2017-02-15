@@ -15,6 +15,7 @@
     <BondImportDirectory Include="..\interfaces" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CleanupCollection.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="EpoxyConnection.cs" />

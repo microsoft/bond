@@ -4,7 +4,6 @@
 namespace Bond.Comm.Epoxy
 {
     using System;
-    using System.Collections.Generic;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
@@ -136,12 +135,8 @@ namespace Bond.Comm.Epoxy
         readonly Logger logger;
         readonly Metrics metrics;
 
-        readonly ReaderWriterLockSlim shutdownLock;
-        bool isShutdown;
-
-        readonly object collectionsLock;
-        readonly HashSet<EpoxyConnection> connections;
-        readonly HashSet<EpoxyListener> listeners;
+        readonly CleanupCollection<EpoxyConnection> connections;
+        readonly CleanupCollection<EpoxyListener> listeners;
 
         public struct Endpoint
         {
@@ -207,12 +202,8 @@ namespace Bond.Comm.Epoxy
             // Metrics sink may be null
             metrics = new Metrics(metricsSink);
 
-            shutdownLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-            isShutdown = false;
-
-            collectionsLock = new object();
-            connections = new HashSet<EpoxyConnection>();
-            listeners = new HashSet<EpoxyListener>();
+            connections = new CleanupCollection<EpoxyConnection>();
+            listeners = new CleanupCollection<EpoxyListener>();
         }
 
         public override Error GetLayerStack(string uniqueId, out ILayerStack stack)
@@ -308,23 +299,21 @@ namespace Bond.Comm.Epoxy
 
                 var connection = EpoxyConnection.MakeClientConnection(this, epoxyStream, logger, metrics);
 
+                try
                 {
-                    shutdownLock.EnterReadLock();
-                    try
-                    {
-                        if (isShutdown)
-                        {
-                            throw new InvalidOperationException("This EpoxyTransport has been stopped already.");
-                        }
-                        lock (collectionsLock)
-                        {
-                            connections.Add(connection);
-                        }
-                    }
-                    finally
-                    {
-                        shutdownLock.ExitReadLock();
-                    }
+                    connections.Add(connection);
+                }
+                catch (InvalidOperationException)
+                {
+                    // TODO
+                    // Handle a race condition: if the transport is shutdown
+                    // after we've created this connection, but before we've
+                    // added it to this collection, we need to clean up this
+                    // connection on its own. However, we haven't started the
+                    // connection yet, so EpoxyConnection.StopAsync() will
+                    // never complete. For now, we're just going to leak this
+                    // connection.
+                    throw new InvalidOperationException("This EpoxyTransport has been stopped already.");
                 }
 
                 await connection.StartAsync();
@@ -351,26 +340,13 @@ namespace Bond.Comm.Epoxy
         {
             var listener = new EpoxyListener(this, address, serverTlsConfig, timeoutConfig, logger, metrics);
 
+            try
             {
-                shutdownLock.EnterReadLock();
-
-                try
-                {
-                    if (isShutdown)
-                    {
-                        throw new InvalidOperationException(
-                            "This EpoxyTransport has been stopped already.");
-                    }
-
-                    lock (collectionsLock)
-                    {
-                        listeners.Add(listener);
-                    }
-                }
-                finally
-                {
-                    shutdownLock.ExitReadLock();
-                }
+                listeners.Add(listener);
+            }
+            catch (InvalidOperationException)
+            {
+                throw new InvalidOperationException("This EpoxyTransport has been stopped already.");
             }
 
             return listener;
@@ -378,50 +354,21 @@ namespace Bond.Comm.Epoxy
 
         public override Task StopAsync()
         {
-            try
-            {
-                shutdownLock.EnterWriteLock();
-
-                if (isShutdown)
-                {
-                    return CodegenHelpers.CompletedTask;
-                }
-
-                isShutdown = true;
-            }
-            finally
-            {
-                shutdownLock.ExitWriteLock();
-            }
-
-            HashSet<EpoxyConnection> connectionsToStop;
-            HashSet<EpoxyListener> listenersToStop;
-
-            lock (collectionsLock)
-            {
-                connectionsToStop = new HashSet<EpoxyConnection>(connections);
-                connections.Clear();
-                listenersToStop = new HashSet<EpoxyListener>(listeners);
-                listeners.Clear();
-            }
-
-            int totalStopTasks = checked(connectionsToStop.Count + listenersToStop.Count);
-            var stopTasks = new Task[totalStopTasks];
-            int idx = 0;
-            foreach (var connection in connectionsToStop)
+            Func<EpoxyConnection, Task> cleanupConnectionFunc = connection =>
             {
                 logger.Site().Debug("Stopping connection {0}", connection);
-                stopTasks[idx] = connection.StopAsync();
-                ++idx;
-            }
-            foreach (var listener in listenersToStop)
+                return connection.StopAsync();
+            };
+
+            Func<EpoxyListener, Task> cleanupListenerFunc = listener =>
             {
                 logger.Site().Debug("Stopping listener {0}", listener);
-                stopTasks[idx] = listener.StopAsync();
-                ++idx;
-            }
+                return listener.StopAsync();
+            };
 
-            return Task.WhenAll(stopTasks);
+            return Task.WhenAll(
+                connections.CleanupAsync(cleanupConnectionFunc),
+                listeners.CleanupAsync(cleanupListenerFunc));
         }
 
         public static IPEndPoint ParseStringAddress(string address)
