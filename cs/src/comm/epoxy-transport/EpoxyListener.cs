@@ -20,8 +20,7 @@ namespace Bond.Comm.Epoxy
         readonly TcpListener listener;
         readonly ServiceHost serviceHost;
 
-        readonly object connectionsLock = new object();
-        readonly HashSet<EpoxyConnection> connections;
+        readonly CleanupCollection<EpoxyConnection> connections;
 
         // used to request that other components start shutting down
         readonly CancellationTokenSource shutdownTokenSource;
@@ -48,7 +47,7 @@ namespace Bond.Comm.Epoxy
 
             listener = new TcpListener(listenEndpoint);
             serviceHost = new ServiceHost(logger);
-            connections = new HashSet<EpoxyConnection>();
+            connections = new CleanupCollection<EpoxyConnection>();
             shutdownTokenSource = new CancellationTokenSource();
 
             ListenEndpoint = listenEndpoint;
@@ -97,28 +96,15 @@ namespace Bond.Comm.Epoxy
             // ones.
             await acceptTask;
 
-            // Collect the connections to stop.
-            HashSet<EpoxyConnection> connectionsToClose;
-            lock (connectionsLock)
-            {
-                connectionsToClose = new HashSet<EpoxyConnection>(connections);
-                connections.Clear();
-            }
-
-            // Stop all outstanding connections. EpoxyConnection shutdown is
-            // idempotent, so it's safe to call even if someone else called
-            // StopAsync.
-            var connectionShutdownTasks = new Task[connectionsToClose.Count];
-            int idx = 0;
-            foreach (var connection in connectionsToClose)
+            // Stop all the outstanding connections.
+            var shutdownTask = connections.CleanupAsync(connection =>
             {
                 logger.Site().Debug("{0} stopping connection {1}", this, connection);
-                connectionShutdownTasks[idx] = connection.StopAsync();
-                ++idx;
-            }
+                return connection.StopAsync();
+            });
 
             logger.Site().Debug("Waiting for all connections to stop.");
-            await Task.WhenAll(connectionShutdownTasks);
+            await shutdownTask;
         }
 
         internal Error InformConnected(EpoxyConnection connection)
@@ -129,11 +115,7 @@ namespace Bond.Comm.Epoxy
 
         internal void InformDisconnected(EpoxyConnection connection, Error error)
         {
-            lock (connectionsLock)
-            {
-                connections.Remove(connection);
-            }
-
+            connections.Remove(connection);
             var args = new DisconnectedEventArgs(connection, error);
             OnDisconnected(args);
         }
@@ -209,10 +191,14 @@ namespace Bond.Comm.Epoxy
                 logger,
                 metrics);
 
-            lock (connectionsLock)
-            {
-                connections.Add(connection);
-            }
+            // TODO
+            // Handle a race condition: if the listener is shutdown after we've
+            // accepted a connection, but before we've added it to this
+            // collection, we need to clean up this connection on its own.
+            // However, we haven't started the connection yet, so
+            // EpoxyConnection.StopAsync() will never complete. For now, we're
+            // just going to leak this connection.
+            connections.Add(connection);
 
             logger.Site().Debug("Setup server-side connection for {0}. Starting Epoxy handshake.", connection.RemoteEndPoint);
             await connection.StartAsync();
