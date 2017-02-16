@@ -14,13 +14,26 @@ namespace UnitTest.Epoxy
 
     public class EpoxyTestBase
     {
-        protected EpoxyListener listener;
+        protected List<EpoxyTransport> transports = new List<EpoxyTransport>();
 
         [TearDown]
         public async void TearDown()
         {
-            var stopAsync = listener?.StopAsync();
-            if (stopAsync != null) await stopAsync;
+            var stopTasks = new Task[transports.Count];
+            int idx = 0;
+
+            foreach (var transport in transports)
+            {
+                stopTasks[idx] = transport.StopAsync();
+                ++idx;
+            }
+            
+            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
+            var stoppedAllTask = Task.WhenAll(stopTasks);
+
+            var completedTask = await Task.WhenAny(timeoutTask, stoppedAllTask);
+
+            Assert.AreNotSame(timeoutTask, completedTask, "Timed out waiting for transports to be shutdown.");
         }
 
         public async Task<TestClientServer<TService>> SetupTestClientServer<TService>(
@@ -32,13 +45,17 @@ namespace UnitTest.Epoxy
             EpoxyTransport serviceTransport = new EpoxyTransportBuilder()
                 .SetLayerStackProvider(serviceLayerStackProvider)
                 .Construct();
-            listener = serviceTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultInsecurePort));
+            transports.Add(serviceTransport);
+
+            var listener = serviceTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultInsecurePort));
             listener.AddService(testService);
             await listener.StartAsync();
 
             EpoxyTransport clientTransport = new EpoxyTransportBuilder()
                 .SetLayerStackProvider(clientLayerStackProvider)
                 .Construct();
+            transports.Add(clientTransport);
+
             EpoxyConnection clientConnection = await clientTransport.ConnectToAsync("epoxy://127.0.0.1");
 
             return new TestClientServer<TService>
