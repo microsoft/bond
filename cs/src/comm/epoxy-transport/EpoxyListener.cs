@@ -4,7 +4,6 @@
 namespace Bond.Comm.Epoxy
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net;
     using System.Net.Sockets;
@@ -191,14 +190,16 @@ namespace Bond.Comm.Epoxy
                 logger,
                 metrics);
 
-            // TODO
-            // Handle a race condition: if the listener is shutdown after we've
-            // accepted a connection, but before we've added it to this
-            // collection, we need to clean up this connection on its own.
-            // However, we haven't started the connection yet, so
-            // EpoxyConnection.StopAsync() will never complete. For now, we're
-            // just going to leak this connection.
-            connections.Add(connection);
+            try
+            {
+                connections.Add(connection);
+            }
+            catch (InvalidOperationException)
+            {
+                logger.Site().Debug("Listener was shutdown while accepting connection from {0}. Connection has been abandoned.", connection.RemoteEndPoint);
+                await connection.StopAsync();
+                throw;
+            }
 
             logger.Site().Debug("Setup server-side connection for {0}. Starting Epoxy handshake.", connection.RemoteEndPoint);
             await connection.StartAsync();

@@ -305,14 +305,7 @@ namespace Bond.Comm.Epoxy
                 }
                 catch (InvalidOperationException)
                 {
-                    // TODO
-                    // Handle a race condition: if the transport is shutdown
-                    // after we've created this connection, but before we've
-                    // added it to this collection, we need to clean up this
-                    // connection on its own. However, we haven't started the
-                    // connection yet, so EpoxyConnection.StopAsync() will
-                    // never complete. For now, we're just going to leak this
-                    // connection.
+                    await connection.StopAsync();
                     throw new InvalidOperationException("This EpoxyTransport has been stopped already.");
                 }
 
