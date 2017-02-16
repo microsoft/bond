@@ -832,8 +832,24 @@ namespace Bond.Comm.Epoxy
         public override Task StopAsync()
         {
             EnsureCorrectState(State.All);
+
             shutdownTokenSource.Cancel();
             networkStream.Shutdown();
+
+            if (state == State.Created)
+            {
+                // If the connection has yet to be started, we cannot rely on
+                // the main loop to advance states, so we just transition to
+                // Disconnected and signal that we've stopped.
+                //
+                // It's OK to directly transition to Disconnected. No one else
+                // is going to call StartAsync() on this connection, as the
+                // thread that is responsible for calling StartAsync() is the
+                // same thread that has decided to abandon the connection
+                // BEFORE calling StartAsync().
+                state = State.Disconnected;
+                stopTask.TrySetResult(true);
+            }
 
             return stopTask.Task;
         }
