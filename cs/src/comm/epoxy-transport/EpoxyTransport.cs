@@ -8,7 +8,6 @@ namespace Bond.Comm.Epoxy
     using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
-    using Bond.Comm.Service;
 
     public class EpoxyTransportBuilder : TransportBuilder<EpoxyTransport>
     {
@@ -136,6 +135,9 @@ namespace Bond.Comm.Epoxy
         readonly Logger logger;
         readonly Metrics metrics;
 
+        readonly CleanupCollection<EpoxyConnection> connections;
+        readonly CleanupCollection<EpoxyListener> listeners;
+
         public struct Endpoint
         {
             public readonly string Host;
@@ -199,6 +201,9 @@ namespace Bond.Comm.Epoxy
             logger = new Logger(logSink, enableDebugLogs);
             // Metrics sink may be null
             metrics = new Metrics(metricsSink);
+
+            connections = new CleanupCollection<EpoxyConnection>();
+            listeners = new CleanupCollection<EpoxyListener>();
         }
 
         public override Error GetLayerStack(string uniqueId, out ILayerStack stack)
@@ -292,8 +297,18 @@ namespace Bond.Comm.Epoxy
                         timeoutConfig: timeoutConfig,
                         logger: logger);
 
-                // TODO: keep these in some master collection for shutdown
                 var connection = EpoxyConnection.MakeClientConnection(this, epoxyStream, logger, metrics);
+
+                try
+                {
+                    connections.Add(connection);
+                }
+                catch (InvalidOperationException)
+                {
+                    await connection.StopAsync();
+                    throw new InvalidOperationException("This EpoxyTransport has been stopped already.");
+                }
+
                 await connection.StartAsync();
                 return connection;
             }
@@ -316,12 +331,37 @@ namespace Bond.Comm.Epoxy
 
         public EpoxyListener MakeListener(IPEndPoint address)
         {
-            return new EpoxyListener(this, address, serverTlsConfig, timeoutConfig, logger, metrics);
+            var listener = new EpoxyListener(this, address, serverTlsConfig, timeoutConfig, logger, metrics);
+
+            try
+            {
+                listeners.Add(listener);
+            }
+            catch (InvalidOperationException)
+            {
+                throw new InvalidOperationException("This EpoxyTransport has been stopped already.");
+            }
+
+            return listener;
         }
 
         public override Task StopAsync()
         {
-            return TaskExt.CompletedTask;
+            Func<EpoxyConnection, Task> cleanupConnectionFunc = connection =>
+            {
+                logger.Site().Debug("Stopping connection {0}", connection);
+                return connection.StopAsync();
+            };
+
+            Func<EpoxyListener, Task> cleanupListenerFunc = listener =>
+            {
+                logger.Site().Debug("Stopping listener {0}", listener);
+                return listener.StopAsync();
+            };
+
+            return Task.WhenAll(
+                connections.CleanupAsync(cleanupConnectionFunc),
+                listeners.CleanupAsync(cleanupListenerFunc));
         }
 
         public static IPEndPoint ParseStringAddress(string address)

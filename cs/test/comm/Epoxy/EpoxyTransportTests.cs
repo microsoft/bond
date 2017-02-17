@@ -4,6 +4,7 @@
 namespace UnitTest.Epoxy
 {
     using System;
+    using System.Diagnostics;
     using System.Net;
     using System.Net.Security;
     using System.Security.Authentication;
@@ -198,7 +199,9 @@ namespace UnitTest.Epoxy
         public void Builder_Construct_NoArgs_Succeeds()
         {
             var builder = new EpoxyTransportBuilder();
-            Assert.NotNull(builder.Construct());
+            EpoxyTransport result = builder.Construct();
+            Assert.NotNull(result);
+            transports.Add(result);
         }
 
         [Test]
@@ -213,9 +216,6 @@ namespace UnitTest.Epoxy
             Assert.IsNull(response.Error);
 
             Assert.AreEqual(1, testClientServer.Service.RespondWithEmpty_CallCount);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -230,9 +230,6 @@ namespace UnitTest.Epoxy
 
             var error = response.Error.Deserialize<Error>();
             Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -248,9 +245,6 @@ namespace UnitTest.Epoxy
             var error = response.Error.Deserialize<Error>();
             Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.That(error.message, Is.StringContaining(Errors.InternalErrorMessage));
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -259,12 +253,12 @@ namespace UnitTest.Epoxy
             await SetupTestClientServer<DummyTestService>();
 
             var clientTransport = new EpoxyTransportBuilder().SetResolver(ResolveEverythingToLocalhost).Construct();
+            transports.Add(clientTransport);
             EpoxyConnection clientConnection = await clientTransport.ConnectToAsync("epoxy://resolve-this-to-localhost/");
             var proxy = new DummyTestProxy<EpoxyConnection>(clientConnection);
 
             await AssertRequestResponseWorksAsync(proxy);
 
-            await clientTransport.StopAsync();
         }
 
         [Test]
@@ -281,9 +275,6 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(1, testClientServer.Service.RequestCount);
             Assert.AreEqual(0, testClientServer.Service.EventCount);
             Assert.AreEqual(request.int_value, testClientServer.Service.LastRequestReceived.int_value);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -301,9 +292,6 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(0, testClientServer.Service.RequestCount);
             Assert.AreEqual(1, testClientServer.Service.EventCount);
             Assert.AreEqual(theEvent.int_value, testClientServer.Service.LastEventReceived.int_value);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
          }
 
         [Test]
@@ -315,9 +303,6 @@ namespace UnitTest.Epoxy
 
             await AssertRequestResponseWorksAsync(proxy);
             Assert.AreEqual(1, testClientServer.Service.RequestCount);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
          }
 
         [Test]
@@ -344,9 +329,6 @@ namespace UnitTest.Epoxy
 
             Assert.AreEqual(1, testClientServer.Service.RequestCount);
             Assert.AreEqual(request.int_value, testClientServer.Service.LastRequestReceived.int_value);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -374,9 +356,6 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(2, serverLayerProvider.Layers.Count);
             Assert.AreEqual("Client1SendClient1Receive", clientLayerProvider.Layers[1].State);
             Assert.AreEqual("Server1ReceiveServer1Send", serverLayerProvider.Layers[1].State);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -406,9 +385,6 @@ namespace UnitTest.Epoxy
 
             Assert.AreEqual(1, testClientServer.Service.RequestCount);
             Assert.AreEqual(request.int_value, testClientServer.Service.LastRequestReceived.int_value);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -442,9 +418,6 @@ namespace UnitTest.Epoxy
 
             Assert.AreEqual(1, testClientServer.Service.EventCount);
             Assert.AreEqual(theEvent.int_value, testClientServer.Service.LastEventReceived.int_value);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -477,9 +450,6 @@ namespace UnitTest.Epoxy
 
             Assert.AreEqual(1, testClientServer.Service.EventCount);
             Assert.AreEqual(theEvent.int_value, testClientServer.Service.LastEventReceived.int_value);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -524,9 +494,6 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(2, serverLayerProvider.Layers.Count);
             Assert.AreEqual("Client1Send", clientLayerProvider.Layers[1].State);
             Assert.AreEqual("Server1Receive", serverLayerProvider.Layers[1].State);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -546,9 +513,6 @@ namespace UnitTest.Epoxy
             Error error = response.Error.Deserialize();
             Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.AreEqual(TestLayerStackProvider_Fails.InternalDetails, error.message);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -568,9 +532,6 @@ namespace UnitTest.Epoxy
             Error error = response.Error.Deserialize();
             Assert.AreEqual((int)ErrorCode.INTERNAL_SERVER_ERROR, error.error_code);
             Assert.AreEqual(Errors.InternalErrorMessage, error.message);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -607,9 +568,6 @@ namespace UnitTest.Epoxy
             Assert.AreEqual(0, testClientServer.Service.RequestCount);
             Assert.AreEqual(1, testClientServer.Service.EventCount);
             Assert.AreEqual(theEvent.int_value, testClientServer.Service.LastEventReceived.int_value);
-
-            await testClientServer.ServiceTransport.StopAsync();
-            await testClientServer.ClientTransport.StopAsync();
         }
 
         [Test]
@@ -627,7 +585,8 @@ namespace UnitTest.Epoxy
         public async Task IPv6Listener_RequestReply_PayloadResponse()
         {
             var transport = new EpoxyTransportBuilder().Construct();
-            listener = transport.MakeListener(new IPEndPoint(IPAddress.IPv6Loopback, EpoxyTransport.DefaultInsecurePort));
+            transports.Add(transport);
+            var listener = transport.MakeListener(new IPEndPoint(IPAddress.IPv6Loopback, EpoxyTransport.DefaultInsecurePort));
             listener.AddService(new DummyTestService());
             await listener.StartAsync();
 
@@ -638,8 +597,6 @@ namespace UnitTest.Epoxy
             IMessage<Dummy> response = await proxy.ReqRspMethodAsync(request);
             Assert.IsFalse(response.IsError);
             Assert.AreEqual(101, response.Payload.Deserialize().int_value);
-
-            await transport.StopAsync();
         }
 
         [Test]
@@ -648,7 +605,8 @@ namespace UnitTest.Epoxy
             var serverTlsConfig = new EpoxyServerTlsConfig(testServerCert, checkCertificateRevocation: false);
 
             var serverTransport = new EpoxyTransportBuilder().SetServerTlsConfig(serverTlsConfig).Construct();
-            listener = serverTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
+            transports.Add(serverTransport);
+            var listener = serverTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
             listener.AddService(new DummyTestService());
             await listener.StartAsync();
 
@@ -660,14 +618,12 @@ namespace UnitTest.Epoxy
                 .SetResolver(ResolveEverythingToLocalhost)
                 .SetClientTlsConfig(clientTlsConfig)
                 .Construct();
+            transports.Add(clientTransport);
             EpoxyConnection clientConnection = await clientTransport.ConnectToAsync("epoxys://bond-test-server1");
 
             var proxy = new DummyTestProxy<EpoxyConnection>(clientConnection);
 
             await AssertRequestResponseWorksAsync(proxy);
-
-            await clientTransport.StopAsync();
-            await serverTransport.StopAsync();
         }
 
         [Test]
@@ -675,8 +631,11 @@ namespace UnitTest.Epoxy
         {
             var serverTlsConfig = new EpoxyServerTlsConfig(testServerCert, checkCertificateRevocation: false);
 
-            var serverTransport = new EpoxyTransportBuilder().SetServerTlsConfig(serverTlsConfig).Construct();
-            listener = serverTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
+            var serverTransport =
+                new EpoxyTransportBuilder().SetServerTlsConfig(serverTlsConfig)
+                    .Construct();
+            transports.Add(serverTransport);
+            var listener = serverTransport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
             listener.AddService(new DummyTestService());
             await listener.StartAsync();
 
@@ -693,11 +652,9 @@ namespace UnitTest.Epoxy
                 .SetResolver(ResolveEverythingToLocalhost)
                 .SetClientTlsConfig(clientTlsConfig)
                 .Construct();
+            transports.Add(clientTransport);
 
             Assert.Throws<AuthenticationException>(async () => await clientTransport.ConnectToAsync("epoxys://bond-test-server1"));
-
-            await clientTransport.StopAsync();
-            await serverTransport.StopAsync();
         }
 
         [Test]
@@ -720,8 +677,9 @@ namespace UnitTest.Epoxy
                 .SetServerTlsConfig(serverTlsConfig)
                 .SetClientTlsConfig(clientTlsConfig)
                 .Construct();
+            transports.Add(transport);
 
-            listener = transport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
+            var listener = transport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
             listener.AddService(new DummyTestService());
             await listener.StartAsync();
 
@@ -730,8 +688,6 @@ namespace UnitTest.Epoxy
             var proxy = new DummyTestProxy<EpoxyConnection>(clientConnection);
 
             await AssertRequestResponseWorksAsync(proxy);
-
-            await transport.StopAsync();
         }
 
         [Test]
@@ -753,8 +709,9 @@ namespace UnitTest.Epoxy
                 .SetServerTlsConfig(serverTlsConfig)
                 .SetClientTlsConfig(clientTlsConfig)
                 .Construct();
+            transports.Add(transport);
 
-            listener = transport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
+            var listener = transport.MakeListener(new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort));
             listener.AddService(new DummyTestService());
             await listener.StartAsync();
 
@@ -778,10 +735,6 @@ namespace UnitTest.Epoxy
             catch (Exception ex)
             {
                 Assert.Fail("Unexpected exception of type {0}: {1}", ex.GetType(), ex);
-            }
-            finally
-            {
-                await transport.StopAsync();
             }
         }
 

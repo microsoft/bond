@@ -4,11 +4,9 @@
 namespace Bond.Comm.Epoxy
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net;
     using System.Net.Sockets;
-    using System.Security.Authentication;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond.Comm.Service;
@@ -21,8 +19,7 @@ namespace Bond.Comm.Epoxy
         readonly TcpListener listener;
         readonly ServiceHost serviceHost;
 
-        readonly object connectionsLock = new object();
-        readonly HashSet<EpoxyConnection> connections;
+        readonly CleanupCollection<EpoxyConnection> connections;
 
         // used to request that other components start shutting down
         readonly CancellationTokenSource shutdownTokenSource;
@@ -49,7 +46,7 @@ namespace Bond.Comm.Epoxy
 
             listener = new TcpListener(listenEndpoint);
             serviceHost = new ServiceHost(logger);
-            connections = new HashSet<EpoxyConnection>();
+            connections = new CleanupCollection<EpoxyConnection>();
             shutdownTokenSource = new CancellationTokenSource();
 
             ListenEndpoint = listenEndpoint;
@@ -83,21 +80,42 @@ namespace Bond.Comm.Epoxy
             return TaskExt.CompletedTask;
         }
 
-        public override Task StopAsync()
+        public override async Task StopAsync()
         {
+            // Request that the accept loop stop
             shutdownTokenSource.Cancel();
+
+            // Stop listening. This causes the accept loop's wait for an
+            // incoming socket to fail, which then causes the accept loop to
+            // look at the value of shutdownTokenSource.Token.
             listener.Stop();
 
-            return acceptTask;
+             // Wait for the accept loop to exit. Once it has exited, no new
+            // connections will be accepted, so we can close the outstanding
+            // ones.
+            await acceptTask;
+
+            // Stop all the outstanding connections.
+            var shutdownTask = connections.CleanupAsync(connection =>
+            {
+                logger.Site().Debug("{0} stopping connection {1}", this, connection);
+                return connection.StopAsync();
+            });
+
+            logger.Site().Debug("Waiting for all connections to stop.");
+            await shutdownTask;
         }
 
-        internal Error InvokeOnConnected(ConnectedEventArgs args)
+        internal Error InformConnected(EpoxyConnection connection)
         {
+            var args = new ConnectedEventArgs(connection);
             return OnConnected(args);
         }
 
-        internal void InvokeOnDisconnected(DisconnectedEventArgs args)
+        internal void InformDisconnected(EpoxyConnection connection, Error error)
         {
+            connections.Remove(connection);
+            var args = new DisconnectedEventArgs(connection, error);
             OnDisconnected(args);
         }
 
@@ -172,9 +190,15 @@ namespace Bond.Comm.Epoxy
                 logger,
                 metrics);
 
-            lock (connectionsLock)
+            try
             {
                 connections.Add(connection);
+            }
+            catch (InvalidOperationException)
+            {
+                logger.Site().Debug("Listener was shutdown while accepting connection from {0}. Connection has been abandoned.", connection.RemoteEndPoint);
+                await connection.StopAsync();
+                throw;
             }
 
             logger.Site().Debug("Setup server-side connection for {0}. Starting Epoxy handshake.", connection.RemoteEndPoint);
