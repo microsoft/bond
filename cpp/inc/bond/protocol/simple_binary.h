@@ -79,7 +79,7 @@ public:
 
     // Read for basic types
     template <typename T>
-    typename boost::disable_if<is_string_type<T> >::type
+    typename boost::disable_if_c<is_string_type<T>::value || is_type_alias<T>::value >::type
     Read(T& var)
     {
         _input.Read(var);
@@ -98,6 +98,17 @@ public:
     }
 
 
+    // Read for type alias
+    template <typename T>
+    typename boost::enable_if<is_type_alias<T> >::type
+    Read(T& value)
+    {
+        typename aliased_type<T>::type x;
+        Read(x);
+        set_aliased_value(value, x);
+    }
+
+
     // Read for blob
     void Read(blob& var, uint32_t size)
     {
@@ -107,7 +118,7 @@ public:
 
     // Skip for basic types
     template <typename T>
-    typename boost::disable_if<is_string_type<T> >::type
+    typename boost::disable_if_c<is_string_type<T>::value || is_type_alias<T>::value >::type
     Skip()
     {
         _input.Skip(sizeof(T));
@@ -127,6 +138,15 @@ public:
 
         ReadSize(length);
         _input.Skip(length * sizeof(typename detail::string_char_int_type<T>::type));
+    }
+
+
+    // Read for type alias
+    template <typename T>
+    typename boost::enable_if<is_type_alias<T> >::type
+    Skip()
+    {
+        Skip<typename aliased_type<T>::type>();
     }
 
 
@@ -288,6 +308,16 @@ public:
         WriteSize(length);
         detail::WriteStringData(_output, value, length);
     }
+
+
+    // Write for type alias
+    template <typename T>
+    typename boost::enable_if<is_type_alias<T> >::type
+    Write(T& value)
+    {
+        Write(get_aliased_value(value));
+    }
+
 
     // Write for blob
     void Write(const blob& value)
