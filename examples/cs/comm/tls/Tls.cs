@@ -13,7 +13,8 @@ namespace Bond.Examples.Tls
 
     public static class Tls
     {
-        static readonly IPEndPoint serviceEndpoint = new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort);
+        static readonly IPEndPoint serviceEndpointIpv4 = new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultSecurePort);
+        static readonly IPEndPoint serviceEndpointIpv6 = new IPEndPoint(IPAddress.IPv6Loopback, EpoxyTransport.DefaultSecurePort);
 
         public static void Main(string[] args)
         {
@@ -63,15 +64,28 @@ namespace Bond.Examples.Tls
                 .FirstOrDefault(certificate => certificate.FriendlyName.Equals(friendlyname, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        static Task StartServiceListenersAsync(EpoxyTransport transport)
+        {
+            // On some systems, "localhost" resolves to an IPv4 address, while
+            // on others it resolves to an IPv6 address. To make this work on
+            // both kinds of systems, we create a listener for both loopback
+            // addresses.
+            var service = new SimpleService();
+            EpoxyListener listenerIpv4 = transport.MakeListener(serviceEndpointIpv4);
+            listenerIpv4.AddService(service);
+            EpoxyListener listenerIpv6 = transport.MakeListener(serviceEndpointIpv6);
+            listenerIpv6.AddService(service);
+
+            return Task.WhenAll(listenerIpv4.StartAsync(), listenerIpv6.StartAsync());
+        }
+
         static async Task MainAsync(X509Certificate2 serverCertificate)
         {
             var tlsConfig = new EpoxyServerTlsConfig(serverCertificate);
 
             EpoxyTransport transport = new EpoxyTransportBuilder().SetServerTlsConfig(tlsConfig).Construct();
 
-            EpoxyListener listener = transport.MakeListener(serviceEndpoint);
-            listener.AddService(new SimpleService());
-            await listener.StartAsync();
+            await StartServiceListenersAsync(transport);
 
             var connection = await transport.ConnectToAsync("epoxys://localhost");
             var proxy = new SimpleProxy<EpoxyConnection>(connection);
