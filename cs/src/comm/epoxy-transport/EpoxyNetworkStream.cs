@@ -369,8 +369,8 @@ namespace Bond.Comm.Epoxy
         {
             try
             {
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
+                socket?.Shutdown(SocketShutdown.Both);
+                socket?.Close();
             }
             catch (SocketException ex)
             {
