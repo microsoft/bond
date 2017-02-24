@@ -25,6 +25,7 @@ module Language.Bond.Codegen.TypeMapping
     , cppCustomAllocTypeMapping
     , csTypeMapping
     , csCollectionInterfacesTypeMapping
+    , javaTypeMapping
       -- * Alias mapping
       --
       -- | <https://microsoft.github.io/bond/manual/compiler.html#type-aliases Type aliases>
@@ -211,6 +212,18 @@ csAnnotatedTypeMapping = TypeMapping
     csAnnotatedTypeMapping
     csAnnotatedTypeMapping
     csAnnotatedTypeMapping
+
+-- | The default Java type name mapping.
+javaTypeMapping :: TypeMapping
+javaTypeMapping = TypeMapping
+    (Just Java)
+    ""
+    "."
+    javaType
+    id
+    javaTypeMapping
+    javaTypeMapping
+    javaTypeMapping
 
 infixr 6 <<>>
 
@@ -451,3 +464,48 @@ csTypeAnnotation m t@(BT_UserDefined a@Alias {..} args)
 csTypeAnnotation _ (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> commaSepTypeNames args)
 csTypeAnnotation m t = m t
 
+-- Java type mapping
+-- FIXME: Java has no unsigned types!
+javaBox :: Type -> TypeNameBuilder
+javaBox BT_Int8 = pure "Byte"
+javaBox BT_Int16 = pure "Short"
+javaBox BT_Int32 = pure "Integer"
+javaBox BT_Int64 = pure "Long"
+javaBox BT_UInt8 = pure "Short"
+javaBox BT_UInt16 = pure "Int"
+javaBox BT_UInt32 = pure "Long"
+javaBox BT_UInt64 = pure "BigInteger"
+javaBox BT_Float = pure "Float"
+javaBox BT_Double = pure "Double"
+javaBox BT_Bool = pure "Boolean"
+javaBox BT_Blob = pure "ArrayList<byte>"
+javaBox bt = javaType bt
+
+javaType :: Type -> TypeNameBuilder
+javaType BT_Int8 = pure "byte"
+javaType BT_Int16 = pure "short"
+javaType BT_Int32 = pure "int"
+javaType BT_Int64 = pure "long"
+javaType BT_UInt8 = pure "short"
+javaType BT_UInt16 = pure "int"
+javaType BT_UInt32 = pure "long"
+javaType BT_UInt64 = pure "BigInteger"
+javaType BT_Float = pure "float"
+javaType BT_Double = pure "double"
+javaType BT_Bool = pure "boolean"
+javaType BT_String = pure "String"
+javaType BT_WString = pure "String"
+javaType BT_MetaName = pure "String"
+javaType BT_MetaFullName = pure "String"
+javaType BT_Blob = pure "byte[]"
+javaType (BT_IntTypeArg x) = pureText x
+javaType (BT_Maybe type_) = javaType (BT_Nullable type_)
+javaType (BT_Nullable element) = javaBox element
+javaType (BT_List element) = "LinkedList<" <>> elementTypeName element <<> ">"
+javaType (BT_Vector element) = "ArrayList<" <>> elementTypeName element <<> ">"
+javaType (BT_Set element) = "HashSet<" <>> elementTypeName element <<> ">"
+javaType (BT_Map key value) = "HashMap<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> ">"
+javaType (BT_Bonded type_) = "global::Bond.IBonded<" <>> typeName type_ <<> ">"
+javaType (BT_TypeParam param) = pureText $ paramName param
+javaType (BT_UserDefined a@Alias {} args) = aliasTypeName a args
+javaType (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> localWith (const javaTypeMapping) (commaSepTypeNames args))

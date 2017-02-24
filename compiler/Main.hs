@@ -34,6 +34,7 @@ main = do
     case options of
         Cpp {..}    -> cppCodegen options
         Cs {..}     -> csCodegen options
+        Java {..}   -> javaCodegen options
         Schema {..} -> writeSchema options
         _           -> print options
 
@@ -124,5 +125,41 @@ codeGen options typeMapping templates file = do
         let (suffix, code) = template mappingContext baseName imports declarations
         let fileName = baseName ++ suffix
         createDirectoryIfMissing True outputDir
-        let content = if (no_banner options) then code else (commonHeader "//" fileName <> code)
+        let { content =
+            if (no_banner options)
+            then code
+            else (commonHeader "//" file fileName <> code)
+        }
         L.writeFile (outputDir </> fileName) content
+
+-- Java's class-per-file and package-as-path requirements make it difficult to
+-- share code with languages where we can just emit bondfile_types.foo.
+javaCodegen :: Options -> IO ()
+javaCodegen Java {..} = do
+    let typeMapping = javaTypeMapping
+
+    aliasMapping <- parseAliasMappings using
+    namespaceMapping <- parseNamespaceMappings namespace
+
+    concurrentlyFor_ files $ \bondFile -> do
+        (Bond imports namespaces declarations) <- parseFile import_dir bondFile
+        let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
+
+        forM_ declarations $ \declaration -> do
+            let javaNamespace = getDeclNamespace mappingContext declaration
+            let { packageDir = output_dir </> case javaNamespace of
+                x:xs -> foldl (</>) x xs
+                []   -> error "declaration " ++ declName declaration ++  " has no namespace"
+            }
+            let javaFile = declName declaration ++ ".java"
+
+            let code = class_java mappingContext imports declaration
+            let { content =
+                if no_banner
+                then code
+                else (commonHeader "//" bondFile javaFile <> code)
+            }
+
+            createDirectoryIfMissing True packageDir
+            L.writeFile (packageDir </> javaFile) content
+javaCodegen _ = error "javaCodegen: impossible happened."

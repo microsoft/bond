@@ -60,6 +60,9 @@ source_group ("Language\\Bond\\Codegen\\Cpp" FILES ${language_bond_codegen_cpp})
 file (GLOB language_bond_codegen_cs "src/Language/Bond/Codegen/Cs/*.hs")
 source_group ("Language\\Bond\\Codegen\\Cs" FILES ${language_bond_codegen_cs})
 
+file (GLOB language_bond_codegen_java "src/Language/Bond/Codegen/Java/*.hs")
+source_group ("Language\\Bond\\Codegen\\Java" FILES ${language_bond_codegen_java})
+
 set (sources
     bond.cabal
     Main.hs
@@ -69,7 +72,8 @@ set (sources
     ${language_bond_syntax}
     ${language_bond_codegen}
     ${language_bond_codegen_cpp}
-    ${language_bond_codegen_cs})
+    ${language_bond_codegen_cs}
+    ${language_bond_codegen_java})
 
 file (GLOB tests "tests/Tests/*.hs")
 source_group ("Tests" FILES ${tests})

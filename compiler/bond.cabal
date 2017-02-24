@@ -71,6 +71,8 @@ library
                     Language.Bond.Codegen.Cpp.ApplyOverloads
                     Language.Bond.Codegen.Cpp.Util
                     Language.Bond.Codegen.Cs.Util
+                    Language.Bond.Codegen.Java.Class_java
+                    Language.Bond.Codegen.Java.Util
                     Language.Bond.Lexer
                     Language.Bond.Syntax.Internal
                     Paths_bond
