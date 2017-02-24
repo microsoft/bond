@@ -864,7 +864,7 @@ private:
                 // There is existing send in-progress, enqueue this frame
                 //
                 auto l = lock(m_queue);
-                l->emplace_back(0, std::move(buffers));
+                l->emplace_back(id, std::move(buffers));
 
                 //
                 // Try to start send if previous send finished by this time
