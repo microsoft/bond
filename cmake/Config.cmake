@@ -133,6 +133,10 @@ set (BOND_LIBRARIES_ONLY
     "FALSE"
     CACHE BOOL "If TRUE, then only build the Bond library files, skipping any tools. gbc will still be built if it cannot be found, however, as gbc is needed to build the libraries.")
 
+set (BOND_LIBRARIES_INSTALL_CPP
+    "FALSE"
+    CACHE BOOL "If TRUE, the generated .cpp files for the Bond libraries will be installed under src/ as part of the INSTALL target.")
+
 set (BOND_CORE_ONLY
     "FALSE"
     CACHE BOOL "If TRUE, then only build the Bond Core")
