@@ -9,8 +9,24 @@
     [TestFixture]
     public class StreamTests
     {
+
+        // Restore the default settings at the start and end of each test
+        [SetUp]
+        [TearDown]
+        public void RestoreDefaults()
+        {
+            InputStream.ActiveAllocationChunk = InputStream.DefaultAllocationChunk;
+        }
+
         [Test]
         public void StreamPositionLengthTest()
+        {
+            StreamPositionLengthTestImpl();
+            InputStream.ActiveAllocationChunk = 8;
+            StreamPositionLengthTestImpl();
+        }
+
+        internal void StreamPositionLengthTestImpl()
         {
             const int _50MB = 50*1024*1024;
 
@@ -63,6 +79,15 @@
         [Test]
         public void StreamBufferReuseTest()
         {
+            StreamBufferReuseTestImpl();
+            InputStream.ActiveAllocationChunk = 8;
+            StreamBufferReuseTestImpl();
+            InputStream.ActiveAllocationChunk = 2;
+            StreamBufferReuseTestImpl();
+        }
+
+        internal void StreamBufferReuseTestImpl()
+        {
             var buffer = new byte[5 * 1024];
             
             for (var i = 0; i < buffer.Length; ++i)
@@ -88,7 +113,14 @@
         delegate void IntTest<T>(T value);
 
         [Test]
-        public void Varint()
+        public void VarintTest()
+        {
+            VarintTestImpl();
+            InputStream.ActiveAllocationChunk = 8;
+            VarintTestImpl();
+        }
+
+        internal void VarintTestImpl()
         {
             IntTest<ushort> test16 = (value) =>
             {
