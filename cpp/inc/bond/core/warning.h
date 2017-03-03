@@ -23,14 +23,5 @@
 // C4482: nonstandard extension used: enum 'enum' used in qualified name
 #pragma warning(disable: 4482)
 
-// C4456: declaration of 'symbol' hides previous local declaration
-#pragma warning(disable: 4456)
-
-// C4458: declaration of 'symbol' hides class member
-#pragma warning(disable: 4458)
-
-// C4458: declaration of 'symbol' hides global declaration
-#pragma warning(disable: 4459)
-
 // C4512: assignment operator could not be generated
 #pragma warning(disable: 4512)

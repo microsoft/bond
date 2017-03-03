@@ -48,29 +48,33 @@ template <typename T, typename Reader, typename Writer>
 TEST_CASE_BEGIN(StreamDeserializationTest)
 {
     const int count = 10;
-
     T from[count];
-    
-    // Serialize random objects
-    typename Writer::Buffer output;
-    Writer writer(output);
 
-    for (int i = count; i--;)
+    typename Writer::Buffer output;
+
+    // Serialize random objects
     {
-        from[i] = InitRandom<T>();
-        Serialize(from[i], writer);
+        Writer writer(output);
+
+        for (int i = count; i--;)
+        {
+            from[i] = InitRandom<T>();
+            Serialize(from[i], writer);
+        }
     }
 
     // Deserialize the objects
-    Reader reader(output.GetBuffer());
-    bond::bonded<T, Reader&> stream(reader);
-    
-    for (int i = count; i--;)
     {
-        T record = InitRandom<T>();
-    
-        stream.Deserialize(record);
-        UT_AssertIsTrue(Equal(from[i], record));
+        Reader reader(output.GetBuffer());
+        bond::bonded<T, Reader&> stream(reader);
+
+        for (int i = count; i--;)
+        {
+            T record = InitRandom<T>();
+
+            stream.Deserialize(record);
+            UT_AssertIsTrue(Equal(from[i], record));
+        }
     }
 
     // Deserialize the first object twice
@@ -83,7 +87,7 @@ TEST_CASE_BEGIN(StreamDeserializationTest)
         Deserialize(reader, r1);
         Deserialize(reader, r2);
         UT_AssertIsTrue(Equal(r1, r2));
-    
+
         bond::bonded<T> bonded(reader);
         r1 = InitRandom<T>();
         r2 = InitRandom<T>();
@@ -101,7 +105,7 @@ void StreamTranscoding(uint16_t version = bond::v1)
     const int count = 10;
 
     Record records[count];
-    
+
     // Serialize random objects using protocol 1
     typename Writer1::Buffer output1;
     Writer1 writer1(output1);
@@ -125,15 +129,15 @@ void StreamTranscoding(uint16_t version = bond::v1)
         bond::bonded<Intermediate, Reader1&>(reader1).Deserialize(record);
         Serialize(record, writer2);
     }
-    
+
     // Deserialize the objects from protocol 2
     Reader2 reader2(output2.GetBuffer(), version);
     bond::bonded<Record, Reader2&> stream(reader2);
-    
+
     for (int i = count; i--;)
     {
         Record record = InitRandom<Record>();
-    
+
         stream.Deserialize(record);
         UT_AssertIsTrue(Equal(records[i], record));
     }
@@ -146,51 +150,51 @@ TEST_CASE_BEGIN(StreamTranscodingTest)
     StreamTranscoding<
         StructWithBase,
         SimpleStruct,
-        Reader, 
-        Writer, 
-        bond::CompactBinaryReader<bond::InputBuffer>, 
+        Reader,
+        Writer,
+        bond::CompactBinaryReader<bond::InputBuffer>,
         bond::CompactBinaryWriter<bond::OutputBuffer>
     >(bond::v1);
 
     StreamTranscoding<
         StructWithBase,
         SimpleStruct,
-        Reader, 
-        Writer, 
-        bond::CompactBinaryReader<bond::InputBuffer>, 
+        Reader,
+        Writer,
+        bond::CompactBinaryReader<bond::InputBuffer>,
         bond::CompactBinaryWriter<bond::OutputBuffer>
     >(bond::v2);
 
     StreamTranscoding<
         NestedStruct,
         NestedStructBondedView,
-        Reader, 
-        Writer, 
-        bond::CompactBinaryReader<bond::InputBuffer>, 
+        Reader,
+        Writer,
+        bond::CompactBinaryReader<bond::InputBuffer>,
         bond::CompactBinaryWriter<bond::OutputBuffer>
     >(bond::v1);
 
     StreamTranscoding<
         NestedStruct,
         NestedStructBondedView,
-        Reader, 
-        Writer, 
-        bond::CompactBinaryReader<bond::InputBuffer>, 
+        Reader,
+        Writer,
+        bond::CompactBinaryReader<bond::InputBuffer>,
         bond::CompactBinaryWriter<bond::OutputBuffer>
     >(bond::v2);
 }
 TEST_CASE_END
-        
+
 
 template <uint16_t N, typename Reader, typename Writer>
 void StringTests(const char* name)
 {
     UnitTestSuite suite(name);
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         StringRoundtripTest, Reader, Writer>(suite, "Roundtrip string/wstring");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         StreamDeserializationTest, NestedStruct, Reader, Writer>(suite, "Stream deserialization test");
 }
 
@@ -210,4 +214,3 @@ bool init_unit_test()
     JSONTest::Initialize();
     return true;
 }
-

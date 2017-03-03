@@ -9,7 +9,7 @@ namespace bond
 {
 namespace python
 {
-            
+
 // Indexing suite for std::set
 
 template <typename T, bool NoProxy, typename DerivedPolicies>
@@ -18,20 +18,20 @@ class set_indexing_suite;
 namespace detail
 {
     template <typename T, bool NoProxy>
-    class final_set_derived_policies 
+    class final_set_derived_policies
         : public bond::python::set_indexing_suite<
-            T, 
-            NoProxy, 
-            final_set_derived_policies<T, NoProxy> > 
+            T,
+            NoProxy,
+            final_set_derived_policies<T, NoProxy> >
     {};
 }
 
 template <
-    typename T, 
+    typename T,
     bool NoProxy = false,
     typename DerivedPolicies = detail::final_set_derived_policies<T, NoProxy>
 >
-class set_indexing_suite 
+class set_indexing_suite
     : public list_indexing_suite<T, NoProxy, DerivedPolicies>
 {
     typedef list_indexing_suite<T, NoProxy, DerivedPolicies> base;
@@ -41,7 +41,7 @@ public:
     typedef typename base::key_type key_type;
 
     template <class Class>
-    static void 
+    static void
     extension_def(Class& class_)
     {
         class_
@@ -58,19 +58,19 @@ public:
         return set.find(key) != set.end();
     }
 
-    static void 
+    static void
     add(T& set, data_type const& v)
     {
         set.insert(v);
     }
 
-    static void 
+    static void
     discard(T& set, data_type const& v)
     {
         set.erase(v);
     }
 
-    static void 
+    static void
     remove(T& set, data_type const& v)
     {
         if (!set.erase(v))
@@ -79,7 +79,7 @@ public:
             boost::python::throw_error_already_set();
         }
     }
-    
+
     static void
     clear(T& set)
     {
@@ -93,20 +93,20 @@ public:
         return data_type();
     }
 
-    static void 
+    static void
     set_item(T&, index_type, data_type const&)
     {
         not_supported();
     }
 
-    static void 
+    static void
     set_slice(T&, index_type, index_type, data_type const&)
     {
         not_supported();
     }
 
     template <typename Iter>
-    static void 
+    static void
     set_slice(T&, index_type, index_type, Iter, Iter)
     {
         not_supported();
@@ -119,11 +119,11 @@ private:
     {
         using namespace boost::python;
 
-        extract<data_type&> elem(v);
-        
-        if (elem.check())
+        extract<data_type&> elemRef(v);
+
+        if (elemRef.check())
         {
-            fn(set, elem());
+            fn(set, elemRef());
         }
         else
         {
@@ -140,7 +140,7 @@ private:
             }
         }
     }
-    
+
     static void
     not_supported()
     {
@@ -148,7 +148,7 @@ private:
         boost::python::throw_error_already_set();
     }
 };
-       
+
 } // namespace python
 
 } // namespace bond

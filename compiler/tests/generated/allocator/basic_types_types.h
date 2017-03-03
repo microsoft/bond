@@ -54,11 +54,11 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
-        BasicTypes(const BasicTypes& other) = default;
+        BasicTypes(const BasicTypes&) = default;
 #endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        BasicTypes(BasicTypes&& other) = default;
+        BasicTypes(BasicTypes&&) = default;
 #elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
         BasicTypes(BasicTypes&& other)
           : _bool(std::move(other._bool)),
@@ -100,7 +100,7 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
-        BasicTypes& operator=(const BasicTypes& other) = default;
+        BasicTypes& operator=(const BasicTypes&) = default;
 #endif
 
         bool operator==(const BasicTypes& other) const

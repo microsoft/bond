@@ -22,14 +22,18 @@ TEST_CASE_BEGIN(Streaming)
     InitRandom(from1);
     InitRandom(from2);
 
-    typename Writer::Buffer buffer;
-    Writer writer(buffer);
+    bond::blob data;
 
-    // Serialize 2 records
-    bond::Serialize(from1, writer);
-    bond::Serialize(from2, writer);
+    {
+        typename Writer::Buffer buffer;
+        Writer writer(buffer);
 
-    bond::blob data = buffer.GetBuffer();
+        // Serialize 2 records
+        bond::Serialize(from1, writer);
+        bond::Serialize(from2, writer);
+
+        data = buffer.GetBuffer();
+    }
 
     {
         Reader reader(data);

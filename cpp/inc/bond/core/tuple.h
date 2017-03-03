@@ -30,7 +30,7 @@ struct schema<std::tuple<T...>>
 
         static Metadata GetMetadata()
         {
-            Metadata metadata = reflection::MetadataInit(
+            Metadata m = reflection::MetadataInit(
                 "tuple", "bond.tuple", reflection::Attributes());
 
             std::string params;
@@ -38,10 +38,10 @@ struct schema<std::tuple<T...>>
             boost::mpl::for_each<typename detail::param_list<T...>::type>(
                 detail::TypeListBuilder(params));
 
-            metadata.name += "<" + params + ">";
-            metadata.qualified_name += "<" + params + ">";
+            m.name += "<" + params + ">";
+            m.qualified_name += "<" + params + ">";
 
-            return metadata;
+            return m;
         }
     };
 };
