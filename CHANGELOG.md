@@ -57,6 +57,10 @@ different versioning scheme, following the Haskell community's
   that occurs with Microsoft Visual C++ 2015 Update 3.
   [Issue #306](https://github.com/Microsoft/bond/issues/306)
 
+### C++ Comm ###
+* Fixed a multiply-defined symbol linker error for
+  `bond::comm::epoxy::detail::MakeConfigFrame`.
+
 ### C# ###
 
 * Added controls to cap pre-allocation during deserialization of containers
