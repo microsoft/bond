@@ -288,12 +288,12 @@ bond::Metadata MetadataInit(const nothing&, const char* name, bond::Modifier mod
 
 // Metadata initializer for structs
 inline
-bond::Metadata MetadataInit(const char* name, const char* qualified_name, const Attributes& attributes)
+bond::Metadata MetadataInit(const char* name, const char* qual_name, const Attributes& attributes)
 {
     bond::Metadata metadata;
 
     metadata.name = name;
-    metadata.qualified_name = qualified_name;
+    metadata.qualified_name = qual_name;
     metadata.attributes = attributes;
 
     return metadata;
@@ -302,9 +302,9 @@ bond::Metadata MetadataInit(const char* name, const char* qualified_name, const 
 
 // Metadata initializer for generic structs
 template <typename Params>
-bond::Metadata MetadataInit(const char* name, const char* qualified_name, const Attributes& attributes)
+bond::Metadata MetadataInit(const char* name, const char* qual_name, const Attributes& attributes)
 {
-    bond::Metadata metadata = MetadataInit(name, qualified_name, attributes);
+    bond::Metadata metadata = MetadataInit(name, qual_name, attributes);
 
     std::string params;
 

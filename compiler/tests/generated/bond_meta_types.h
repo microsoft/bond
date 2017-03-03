@@ -75,10 +75,10 @@ namespace bondmeta
         struct Schema;
 
     protected:
-        void InitMetadata(const char* name, const char* qualified_name)
+        void InitMetadata(const char*name0, const char*qual_name)
         {
-            this->name = name;
-            this->full_name = qualified_name;
+            this->name = name0;
+            this->full_name = qual_name;
         }
     };
 

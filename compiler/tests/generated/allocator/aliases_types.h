@@ -31,11 +31,11 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
-        Foo(const Foo& other) = default;
+        Foo(const Foo&) = default;
 #endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        Foo(Foo&& other) = default;
+        Foo(Foo&&) = default;
 #elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
         Foo(Foo&& other)
           : aa(std::move(other.aa))
@@ -52,7 +52,7 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
-        Foo& operator=(const Foo& other) = default;
+        Foo& operator=(const Foo&) = default;
 #endif
 
         bool operator==(const Foo& other) const
@@ -173,11 +173,11 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
-        WrappingAnEnum(const WrappingAnEnum& other) = default;
+        WrappingAnEnum(const WrappingAnEnum&) = default;
 #endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        WrappingAnEnum(WrappingAnEnum&& other) = default;
+        WrappingAnEnum(WrappingAnEnum&&) = default;
 #elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
         WrappingAnEnum(WrappingAnEnum&& other)
           : aWrappedEnum(std::move(other.aWrappedEnum))
@@ -194,7 +194,7 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
-        WrappingAnEnum& operator=(const WrappingAnEnum& other) = default;
+        WrappingAnEnum& operator=(const WrappingAnEnum&) = default;
 #endif
 
         bool operator==(const WrappingAnEnum& other) const

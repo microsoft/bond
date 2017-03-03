@@ -136,13 +136,13 @@ public:
 
     bool ReadVersion()
     {
-        uint16_t magic, version;
+        uint16_t magic_value, version_value;
 
-        _input.Read(magic);
-        _input.Read(version);
+        _input.Read(magic_value);
+        _input.Read(version_value);
 
-        return magic == FastBinaryReader::magic
-            && version <= FastBinaryReader::version;
+        return magic_value == FastBinaryReader::magic
+            && version_value <= FastBinaryReader::version;
     }
 
 

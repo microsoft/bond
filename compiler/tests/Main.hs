@@ -6,6 +6,7 @@ import Test.Tasty.QuickCheck
 import Test.Tasty.HUnit (testCase)
 import Tests.Syntax
 import Tests.Codegen
+import Tests.Codegen.Util(utilTestGroup)
 
 tests :: TestTree
 tests = testGroup "Compiler tests"
@@ -54,7 +55,8 @@ tests = testGroup "Compiler tests"
         , testCase "Out of range" $ failBadSyntax "Should fail, out of range for int16" "int_out_of_range"
         ]
     , testGroup "Codegen"
-        [ testGroup "C++"
+        [ utilTestGroup,
+          testGroup "C++"
             [ verifyCppCodegen "attributes"
             , verifyCppCodegen "basic_types"
             , verifyCppCodegen "bond_meta"

@@ -104,11 +104,11 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
-        Foo(const Foo& other) = default;
+        Foo(const Foo&) = default;
 #endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        Foo(Foo&& other) = default;
+        Foo(Foo&&) = default;
 #elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
         Foo(Foo&& other)
           : f(std::move(other.f))
@@ -125,7 +125,7 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
-        Foo& operator=(const Foo& other) = default;
+        Foo& operator=(const Foo&) = default;
 #endif
 
         bool operator==(const Foo& other) const

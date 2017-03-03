@@ -11,8 +11,8 @@ Maintainer  : adamsap@microsoft.com
 Stability   : provisional
 Portability : portable
 
-Helper functions for creating common text structures useful in code generation.
-These functions operate on 'Text' objects.
+Helper functions for creating common structures useful in code generation.
+These functions often operate on 'Text' objects.
 -}
 
 module Language.Bond.Codegen.Util
@@ -23,6 +23,7 @@ module Language.Bond.Codegen.Util
     , newlineBeginSep
     , doubleLineSep
     , doubleLineSepEnd
+    , uniqueName
     ) where
 
 import Data.Int (Int64)
@@ -31,7 +32,7 @@ import Prelude
 import Data.Text.Lazy (Text, justifyRight)
 import Text.Shakespeare.Text
 import Paths_bond (version)
-import Data.Version (showVersion) 
+import Data.Version (showVersion)
 import Language.Bond.Util
 
 instance ToText Word16 where
@@ -59,7 +60,7 @@ doubleLine n = [lt|
 
 #{indent n}|]
 
-newlineSep, commaLineSep, newlineSepEnd, newlineBeginSep, doubleLineSep, doubleLineSepEnd 
+newlineSep, commaLineSep, newlineSepEnd, newlineBeginSep, doubleLineSep, doubleLineSepEnd
     :: Int64 -> (a -> Text) -> [a] -> Text
 
 -- | Separates elements of a list with new lines. Starts new lines at the
@@ -102,3 +103,12 @@ commonHeader c file = [lt|
 #{c}------------------------------------------------------------------------------
 |]
 
+-- | Given an intended name and a list of already taken names, returns a
+-- unique name. Assumes that it's legal to appen digits to the end of the
+-- intended name.
+uniqueName :: String -> [String] -> String
+uniqueName baseName taken = go baseName (0::Integer)
+  where go name counter
+          | not (name `elem` taken) = name
+          | otherwise = go newName (counter + 1)
+                        where newName = baseName ++ (show counter)

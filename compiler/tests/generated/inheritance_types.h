@@ -31,11 +31,11 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
-        Base(const Base& other) = default;
+        Base(const Base&) = default;
 #endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        Base(Base&& other) = default;
+        Base(Base&&) = default;
 #elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
         Base(Base&& other)
           : x(std::move(other.x))
@@ -46,7 +46,7 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
-        Base& operator=(const Base& other) = default;
+        Base& operator=(const Base&) = default;
 #endif
 
         bool operator==(const Base& other) const
@@ -93,11 +93,11 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
-        Foo(const Foo& other) = default;
+        Foo(const Foo&) = default;
 #endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        Foo(Foo&& other) = default;
+        Foo(Foo&&) = default;
 #elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
         Foo(Foo&& other)
           : ::tests::Base(std::move(other)),
@@ -109,7 +109,7 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
-        Foo& operator=(const Foo& other) = default;
+        Foo& operator=(const Foo&) = default;
 #endif
 
         bool operator==(const Foo& other) const
@@ -134,9 +134,9 @@ namespace tests
         struct Schema;
 
     protected:
-        void InitMetadata(const char* name, const char* qualified_name)
+        void InitMetadata(const char*name, const char*qual_name)
         {
-            ::tests::Base::InitMetadata(name, qualified_name);
+            ::tests::Base::InitMetadata(name, qual_name);
         }
     };
 
