@@ -4,6 +4,7 @@
 #include <bond/comm/transport.h>
 #include <bond/comm/packet_apply.h>
 #include <bond/comm/packet_reflection.h>
+#include <bond/comm/layers_dispatcher.h>
 
 #include <bond/protocol/compact_binary.h>
 #include <bond/stream/output_buffer.h>
@@ -34,10 +35,12 @@ template <typename Address,
           typename ConnectionContext = typename boost::call_traits<Address>::param_type>
 class PacketTransport
     : public Transport<Address, WireProtocol, ConnectionContext>
+	// added support for implementing extra ILayerService methods (for future use)
+	, public LayerProvider< Address >
 {
 public:
 
-    //
+  //
     // Interface of connection handler (either on client or server endpoint).
     //
     // Implementation is provided by network core.
@@ -155,7 +158,7 @@ public:
 
 protected:
 
-    //
+	//
     // Interface of custom network service to be implemented.
     //
 
@@ -189,17 +192,24 @@ protected:
 
     boost::shared_ptr<IService> ConnectTo(const Address& address) override
     {
-        boost::shared_ptr<ConnectionSink> handler =
-            boost::make_shared<ConnectionSink>(address);
+		boost::shared_ptr<ConnectionSink> handler =
+			boost::make_shared<ConnectionSink>(address);
 
-        boost::shared_ptr<INetworkConnection> connection =
-            StartClientConnection(address, handler);
+		boost::shared_ptr<INetworkConnection> connection =
+			StartClientConnection(address, handler);
 
-        handler->SetConnection(connection);
+		handler->SetConnection(connection);
 
-        return boost::make_shared<Connection>(handler,
-                                              connection,
-                                              address);
+		boost::shared_ptr<Connection> conn = boost::make_shared<Connection>(handler,
+			connection,
+			address);
+
+		// in fact: provide Connection object to LayerTransport::v2::Processor object
+		boost::shared_ptr<ILayerService> service = CreateLayerClientService(address, conn);
+		// gives the ability to call layers methods from ConnectionSink object
+		handler->SetLayerService(service);
+
+		return service;
     }
 
     
@@ -207,22 +217,29 @@ protected:
         const Address& address,
         const std::function<boost::shared_ptr<IService>(const Address&, ConnectionContext)>& sessionFactory) override
     {
-        return boost::make_shared<Server>(*this,
-                                          address,
-                                          sessionFactory);
+		// wraps the call to LayerTransport::_factory object.
+		// Created ILayerService object will delegated to ServerConnectionSink object of server
+		// giving the ability to call layers methods from ConnectionSink & ServerConnectionSink object
+		return boost::make_shared<Server>(*this,
+			address,
+			[sessionFactory, this](const Address& addr, ConnectionContext context)
+			{
+				return this->CreateLayerServerService(addr, sessionFactory(addr, context));
+			});
     }
 
+protected:
 
-    //
-    // Default ctor.
-    //
-    PacketTransport() = default;
+	//
+	// Default ctor.
+	//
+	PacketTransport() = default;
 
 
     explicit
     PacketTransport(const WireProtocol& wireProtocol)
-        : Transport<Address, WireProtocol, ConnectionContext>(wireProtocol)
-    {}
+		: Transport<Address, WireProtocol, ConnectionContext>(wireProtocol)
+	{}
 
 private:
 
@@ -681,11 +698,14 @@ private:
         boost::weak_ptr<INetworkConnection> m_connection;
 
         //
-        // Default service instance.
+        // Wrapped default service instance for server.
         //
-        boost::shared_ptr<IService> m_service;
+        boost::shared_ptr<ILayerService> m_service;
 
-    public:
+		// Wrapped default service instance for client.
+		boost::weak_ptr<ILayerService> m_client_service;
+
+	public:
 
         ConnectionSink(const Address& address)
             : m_conversationEnum(0)
@@ -735,6 +755,11 @@ private:
         {
             m_connection = connection;
         }
+
+		void SetLayerService(const boost::weak_ptr<ILayerService>& service)
+		{
+			m_client_service = service;
+		}
     };
 
 
@@ -857,7 +882,7 @@ private:
 
         ServerConnectionSink(const boost::weak_ptr<INetworkConnection>& connection,
                              const Address& address,
-                             const boost::shared_ptr<IService>& service,
+                             const boost::shared_ptr<ILayerService>& service,
                              const boost::shared_ptr<Connections>& connections)
             : ConnectionSink(address),
               m_connections(connections)
@@ -886,7 +911,8 @@ private:
                     lock(*m_connections)->insert(connection);
                 }
 
-                const boost::shared_ptr<IService> service = m_sessionFactory(address, context);
+				// in fact: delegates LayerTransport::v2::Processor object to ServerConnectionSink
+                const boost::shared_ptr<ILayerService> service = m_sessionFactory(address, context);
                 return boost::make_shared<ServerConnectionSink>(connection,
                                                                 address,
                                                                 service,
@@ -897,11 +923,11 @@ private:
 
             boost::shared_ptr<Connections> m_connections;
 
-            std::function<boost::shared_ptr<IService> (const Address&, ConnectionContext)> m_sessionFactory;
+            std::function<boost::shared_ptr<ILayerService> (const Address&, ConnectionContext)> m_sessionFactory;
 
         public:
             ServerSink(const Address& address,
-                       const std::function<boost::shared_ptr<IService> (const Address&, ConnectionContext)>& sessionFactory,
+                       const std::function<boost::shared_ptr<ILayerService> (const Address&, ConnectionContext)>& sessionFactory,
                        const boost::shared_ptr<Connections>& connections)
                 : m_address(address)
                 , m_connections(connections)
@@ -913,7 +939,7 @@ private:
 
         Server(PacketTransport& transportCore,
                const Address& address,
-               const std::function<boost::shared_ptr<IService> (const Address&, ConnectionContext)>& sessionFactory)
+               const std::function<boost::shared_ptr<ILayerService> (const Address&, ConnectionContext)>& sessionFactory)
             : m_connections(boost::make_shared<Connections>())
         {
             boost::shared_ptr<ServerSink> serverHandler =

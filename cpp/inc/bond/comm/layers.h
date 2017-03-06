@@ -3,6 +3,7 @@
 
 #include <bond/comm/detail/logging.h>
 #include <bond/comm/services.h>
+#include <bond/comm/layers_dispatcher.h>
 
 namespace bond { namespace comm
 	{
@@ -96,6 +97,84 @@ namespace bond { namespace comm
 			: public BaseTransport
 			, public LayerProtocol
 		{
+		protected:
+
+			//
+			// Class utility for spliting implementation of methods LayerTransport::ConnectTo and LayerTransport::BindTo
+			// Different behavior for transports inherited from LayerProvider and thereafter providing support of extended methods of ILayerService
+			//
+
+			// Not-inherited from LayerProvider. Uses original implementation of this methods
+			template <typename Transport, bool support_layers = std::is_base_of<LayerProvider<Address>, Transport>::value >
+			struct LayerServiceType {
+
+				template<typename Address, typename WireProtocol>
+				static inline
+					boost::shared_ptr<IService>
+					ConnectTo(const Address& address
+						, std::function<boost::shared_ptr<ILayerService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)> &factory
+						, const WireProtocol& protocol, LayerTransport<BaseTransport, LayerProtocol> *transport
+						, boost::shared_ptr<IService>(LayerTransport<BaseTransport, LayerProtocol>::*mthd)(const Address &))
+				{
+					return factory(true, protocol, address, (transport->*mthd)(address));
+				}
+
+
+				template<typename Address, typename WireProtocol, typename ConnectionContext>
+				static inline
+					boost::shared_ptr<void>
+					BindTo(const Address& address,
+						const std::function<boost::shared_ptr<IService>(const Address&, ConnectionContext)>& tableFactory
+						, std::function<boost::shared_ptr<ILayerService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)> &factory
+						, const WireProtocol& protocol, LayerTransport<BaseTransport, LayerProtocol> *transport
+						, boost::shared_ptr<void>(LayerTransport<BaseTransport, LayerProtocol>::*mthd)(const Address &, const std::function<boost::shared_ptr<IService>(const Address&, ConnectionContext)>&))
+				{
+					return (transport->*mthd)(
+						address,
+						[tableFactory, protocol, factory](const Address& remoteAddress, ConnectionContext context) {
+						return factory(false, protocol, remoteAddress, tableFactory(remoteAddress, context));
+					});
+				}
+			};
+
+			// Inherited from LayerProvider. Uses original implementation of this methods
+			template <typename Transport>
+			struct LayerServiceType<Transport, true> {
+
+				template<typename Address, typename WireProtocol >
+				static inline
+					boost::shared_ptr<IService>
+					ConnectTo(const Address& address
+						, std::function<boost::shared_ptr<ILayerService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)> &factory
+						, const WireProtocol& protocol, LayerTransport<BaseTransport, LayerProtocol> *transport
+						, boost::shared_ptr<IService>(LayerTransport<BaseTransport, LayerProtocol>::*mthd)(const Address &))
+				{
+					// provides ILayerTransport::_factory to client part of transport object
+					transport->SetLayerServiceClientFunc( [protocol, factory](const Address& remoteAddress, const boost::shared_ptr<IService>& serv) {
+						return factory(true, protocol, remoteAddress, serv);
+					});
+					return (transport->*mthd)(address);
+				}
+
+				template<typename Address, typename WireProtocol, typename ConnectionContext>
+				static inline
+					boost::shared_ptr<void>
+					BindTo(const Address& address,
+						const std::function<boost::shared_ptr<IService>(const Address&, ConnectionContext)>& tableFactory
+						, std::function<boost::shared_ptr<ILayerService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)> &factory
+						, const WireProtocol& protocol, LayerTransport<BaseTransport, LayerProtocol> *transport
+						, boost::shared_ptr<void>(LayerTransport<BaseTransport, LayerProtocol>::*mthd)(const Address &, const std::function<boost::shared_ptr<IService>(const Address&, ConnectionContext)>&))
+				{
+					// provides ILayerTransport::_factory to server part of transport object
+					transport->SetLayerServiceServerFunc([protocol, factory](const Address& remoteAddress, const boost::shared_ptr<IService>& serv) {
+						return factory(false, protocol, remoteAddress, serv);
+					});
+					return (transport->*mthd)(address, [tableFactory](const Address& remoteAddress, ConnectionContext context) {
+						return tableFactory(remoteAddress, context);
+					});
+				}
+			};
+
 		public:
 
 			typedef typename BaseTransport::WireProtocol WireProtocol;
@@ -122,61 +201,71 @@ namespace bond { namespace comm
 		protected:
 
 			boost::shared_ptr<IService>
+				ConnectToImpl(const Address& address)
+			{
+				return BaseTransport::ConnectTo(address);
+			}
+				
+			boost::shared_ptr<IService>
 				ConnectTo(const Address& address) override
 			{
-				return _factory(true, *this, address, BaseTransport::ConnectTo(address));
+				// Determines the LayerProvider inheritance of current transport
+				return LayerServiceType<BaseTransport>::ConnectTo(address, _factory, static_cast<const WireProtocol &>(*this), this, &LayerTransport::ConnectToImpl);
 			}
 
 
 			boost::shared_ptr<void>
+				BindToImpl(const Address& address,
+					const std::function<boost::shared_ptr<IService>(const Address&, ConnectionContext)>& tableFactory)
+			{
+				return BaseTransport::BindTo(address, tableFactory);
+			}
+				
+			boost::shared_ptr<void>
 				BindTo(const Address& address,
 					const std::function<boost::shared_ptr<IService>(const Address&, ConnectionContext)>& tableFactory) override
 			{
-				const WireProtocol& protocol = *this;
-				const auto& factory = _factory;
-				return BaseTransport::BindTo(
-					address,
-					[tableFactory, protocol, factory](const Address& remoteAddress, ConnectionContext context) {
-					return factory(false, protocol, remoteAddress, tableFactory(remoteAddress, context));
-				});
+				// Determines the LayerProvider inheritance of current transport
+				return LayerServiceType<BaseTransport>::BindTo(address, tableFactory, _factory
+					, static_cast<const WireProtocol &>(*this), this, &LayerTransport::BindToImpl);
 			}
 
 		private:
 
 			static
-				std::function<boost::shared_ptr<IService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)>
+				std::function<boost::shared_ptr<ILayerService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)>
 				CreateNullFactory()
 			{
 				return [](bool, const WireProtocol&, const Address&, const boost::shared_ptr<IService>& service) {
-					return service;
+					return boost::make_shared<LayerServiceStub>(service);
 				};
 			}
 			template <typename Data, typename... Layers>
 			static
-				std::function<boost::shared_ptr<IService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)>
+				std::function<boost::shared_ptr<ILayerService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)>
 				CreateFactory(const LayerStack<Data, Layers...>& layerStack)
 			{
 				return
 					[layerStack](bool onConnect, const WireProtocol& protocol, const Address& address, const boost::shared_ptr<IService>& service) {
 					return onConnect
-						? boost::shared_ptr<IService>(boost::make_shared<Processor<Outgoing, Data, LayerStack<Data, Layers...>>>(address, service, layerStack, protocol))
-						: boost::shared_ptr<IService>(boost::make_shared<Processor<Incoming, Data, LayerStack<Data, Layers...>>>(address, service, layerStack, protocol));
+						? boost::shared_ptr<ILayerService>(boost::make_shared<Processor<Outgoing, Data, LayerStack<Data, Layers...>, ILayerService>>(address, service, layerStack, protocol))
+						: boost::shared_ptr<ILayerService>(boost::make_shared<Processor<Incoming, Data, LayerStack<Data, Layers...>, ILayerService>>(address, service, layerStack, protocol));
 				};
 			}
-
 		protected:
 
-			// ctor receiving initilized factory from child class
+			// ctor receiving initialized factory from child class
 			template <typename... Args>
 			explicit
-				LayerTransport(std::function<boost::shared_ptr<IService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)> __factory, Args&&... args)
+				LayerTransport(std::function<boost::shared_ptr<ILayerService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)> __factory, Args&&... args)
 				: BaseTransport(std::forward<Args>(args)...)
 				, _factory(__factory)
 			{}
 
-			template <typename Policy, typename LayerData, typename LayerStack>
+			// typename ServiceType - needed for inheritance redirection in v2::TransportLauer::Processor
+			template <typename Policy, typename LayerData, typename LayerStack, typename ServiceType = IService>
 			struct Processor
-				: public IService
+				: public ServiceType
 				, public LayerStack
 				, public Policy
 			{
@@ -336,31 +425,12 @@ namespace bond { namespace comm
 			};
 
 
-			std::function<boost::shared_ptr<IService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)> _factory;
+			std::function<boost::shared_ptr<ILayerService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)> _factory;
 		}; // class LayerTransport
 
 		// Additional namespace added to maintain compability with previous versions of tests / examples / software
 		namespace v2
 		{
-			// base class for a layer intercepting OnSend message
-			template< typename LayerData >
-			struct OnSendLayerService
-			{
-				virtual void OnSend(bond::comm::MessageType message_type,
-					const std::string&  service_name,
-					const std::string&  method_name,
-					LayerData& layer_data) = 0;
-			};
-
-			// base class for a layer intercepting OnReceive message
-			template< typename LayerData >
-			struct OnReceiveLayerService
-			{
-				virtual void OnReceive(bond::comm::MessageType  message_type,
-					const std::string&  service_name,
-					const std::string&  method_name,
-					LayerData& layer_data) = 0;
-			};
 
 			template <typename Data, typename... Layers>
 			class LayerStack;
@@ -475,27 +545,27 @@ namespace bond { namespace comm
 
 				template <typename Data, typename... Layers>
 				static
-					std::function<boost::shared_ptr<IService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)>
+					std::function<boost::shared_ptr<ILayerService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)>
 					CreateFactory(const LayerStack<Data, Layers...>& layerStack)
 				{
 					return
 						[layerStack](bool onConnect, const WireProtocol& protocol, const Address& address, const boost::shared_ptr<IService>& service) {
 						return onConnect
-							? boost::shared_ptr<IService>(boost::make_shared<Processor<Outgoing, Data, LayerStack<Data, Layers...>>>(address, service, layerStack, protocol))
-							: boost::shared_ptr<IService>(boost::make_shared<Processor<Incoming, Data, LayerStack<Data, Layers...>>>(address, service, layerStack, protocol));
+							? boost::shared_ptr<ILayerService>(boost::make_shared<Processor<Outgoing, Data, LayerStack<Data, Layers...>>>(address, service, layerStack, protocol))
+							: boost::shared_ptr<ILayerService>(boost::make_shared<Processor<Incoming, Data, LayerStack<Data, Layers...>>>(address, service, layerStack, protocol));
 					};
 				}
 
 				// implementation of a child of bond::comm::LayerTransport::Processor
 				// added for future use: adding new injection points
 				template <typename Policy, typename LayerData, typename LayerStack>
-				struct Processor : public bond::comm::LayerTransport<BaseTransport, LayerProtocol>::Processor<Policy, LayerData, LayerStack>
+				struct Processor : public bond::comm::LayerTransport<BaseTransport, LayerProtocol>::Processor<Policy, LayerData, LayerStack, ILayerService>
 				{
 					Processor(const Address& address,
 						const boost::shared_ptr<IService>& service,
 						const LayerStack& layerStack,
 						const WireProtocol& protocol)
-						: bond::comm::LayerTransport<BaseTransport, LayerProtocol>::Processor<Policy, LayerData, LayerStack>( address, service, layerStack, protocol)
+						: bond::comm::LayerTransport<BaseTransport, LayerProtocol>::Processor<Policy, LayerData, LayerStack, ILayerService>( address, service, layerStack, protocol)
 					{}
 
 				};
