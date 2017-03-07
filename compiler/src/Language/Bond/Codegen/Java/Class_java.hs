@@ -27,8 +27,7 @@ class_java :: MappingContext -> [Import] -> Declaration -> Text
 class_java java _ declaration = [lt|
 package #{javaPackage};
 
-import com.microsoft.bond.annotations.*;
-import com.microsoft.bond.types.*;
+import #{javaPackage}.*;
 
 #{typeDefinition declaration}
 |]
@@ -47,7 +46,6 @@ import com.microsoft.bond.types.*;
 
     -- struct -> Java class
     typeDefinition s@Struct {..} = [lt|
-#{typeAttributes s}
 #{struct} #{declName}#{params}#{maybe interface baseClass structBase} {
     #{doubleLineSep 1 publicField structFields}
 }|]
@@ -65,14 +63,14 @@ import com.microsoft.bond.types.*;
         javaDefault = Java.defaultValue java
 
         -- FIXME: nullable<int32> -> Integer?
-        publicField f@Field {..} = [lt|#{publicFieldAttributes f} public #{javaType fieldType} #{fieldName} #{optional initializerValue $ javaDefault f};|]
+        publicField f@Field {..} = [lt|public #{javaType fieldType} #{fieldName} #{optional initializerValue $ javaDefault f};|]
 
         initializerValue x = [lt|= #{x}|]
 
 
 
     -- enum -> Java enum
-    typeDefinition e@Enum {..} = [lt|#{Java.typeAttributes java e}
+    typeDefinition e@Enum {..} = [lt|
 public enum #{declName} {
     #{commaLineSep 1 constant enumConstantsWithInt};
 
