@@ -33,19 +33,13 @@ import #{javaPackage}.*;
 |]
   where
     javaType = getTypeName java
-
     javaPackage = sepBy "." toText $ getNamespace java
-
     struct = [lt|public class|]
-
-    typeAttributes s = Java.typeAttributes java s
-
-    publicFieldAttributes f = Java.publicFieldAttributes java f
 
 
 
     -- struct -> Java class
-    typeDefinition s@Struct {..} = [lt|
+    typeDefinition Struct {..} = [lt|
 #{struct} #{declName}#{params}#{maybe interface baseClass structBase} {
     #{doubleLineSep 1 publicField structFields}
 }|]
@@ -70,7 +64,7 @@ import #{javaPackage}.*;
 
 
     -- enum -> Java enum
-    typeDefinition e@Enum {..} = [lt|
+    typeDefinition Enum {..} = [lt|
 public enum #{declName} {
     #{commaLineSep 1 constant enumConstantsWithInt};
 

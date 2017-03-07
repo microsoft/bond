@@ -4,66 +4,16 @@
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
 module Language.Bond.Codegen.Java.Util
-    ( typeAttributes
-    , publicFieldAttributes
-    , schemaAttributes
-    , defaultValue
+    ( defaultValue
     ) where
 
-import Data.Int (Int64)
-import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
-import Paths_bond (version)
-import Data.Version (showVersion)
 import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.Util
 import Language.Bond.Codegen.TypeMapping
-import Language.Bond.Codegen.Util
-
-publicFieldAttributes :: MappingContext -> Field -> Text
-publicFieldAttributes java Field {..} =
-    schemaAttributes 2 fieldAttributes
- <> [lt|@BondFieldId(#{fieldOrdinal})#{typeAttribute}#{modifierAttribute fieldType fieldModifier}|]
-        where
-            annotatedType = getAnnotatedTypeName java fieldType
-            propertyType = getTypeName java fieldType
-            typeAttribute = if annotatedType /= propertyType
-                then [lt| #{annotatedType}|]
-                else mempty
-            modifierAttribute BT_MetaName _ = [lt| @BondRequiredOptional|]
-            modifierAttribute BT_MetaFullName _ = [lt| @BondRequiredOptional|]
-            modifierAttribute _ Required = [lt| @BondRequired|]
-            modifierAttribute _ RequiredOptional = [lt| @BondRequiredOptional|]
-            modifierAttribute _ _ = mempty
-
--- class/struct/interface attributes
-typeAttributes :: MappingContext -> Declaration -> Text
-typeAttributes java s@Struct {..} = optionalTypeAttributes java s <> [lt|
-@BondSchema |] <> generatedCodeAttr
-typeAttributes java e@Enum {..} = optionalTypeAttributes java e <> [lt|
-@BondSchema |] <> generatedCodeAttr
-typeAttributes _ Service {..} = "Java:typeAttributes: Service is not supported yet."
-typeAttributes _ _ = error "Java:typeAttributes: impossible happened."
-
-generatedCodeAttr :: Text
-generatedCodeAttr = [lt|
-@BondGeneratedCode("gbc", "#{showVersion version}")|]
-
-idl :: MappingContext
-idl = MappingContext idlTypeMapping [] [] []
-
-optionalTypeAttributes :: MappingContext -> Declaration -> Text
-optionalTypeAttributes _ decl =
-    schemaAttributes 1 (declAttributes decl)
-
--- Attributes defined by the user in the schema
-schemaAttributes :: Int64 -> [Attribute] -> Text
-schemaAttributes indent = newlineSepEnd indent schemaAttribute
-  where
-    schemaAttribute Attribute {..} =
-        [lt| @BondAttribute("#{getQualifiedName idl attrName}", "#{attrValue}")|]
+import Language.Bond.Codegen.Util()
 
 defaultValue :: MappingContext -> Field -> Maybe Text
 defaultValue java Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
