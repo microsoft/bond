@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.microsoft.bond.protocol.UnsignedHelperTests" tests="10" skipped="0" failures="0" errors="0" timestamp="2017-05-17T00:45:10" hostname="pike" time="0.007">
+  <properties/>
+  <testcase name="asUnsignedShort_Byte" classname="com.microsoft.bond.protocol.UnsignedHelperTests" time="0.001"/>
+  <testcase name="asUnsignedBigInt_Short" classname="com.microsoft.bond.protocol.UnsignedHelperTests" time="0.001"/>
+  <testcase name="asUnsignedLong_Byte" classname="com.microsoft.bond.protocol.UnsignedHelperTests" time="0.0"/>
+  <testcase name="asUnsignedInt_Short" classname="com.microsoft.bond.protocol.UnsignedHelperTests" time="0.001"/>
+  <testcase name="asUnsignedBigInt_Byte" classname="com.microsoft.bond.protocol.UnsignedHelperTests" time="0.0"/>
+  <testcase name="asUnsignedBigInt_Long" classname="com.microsoft.bond.protocol.UnsignedHelperTests" time="0.002"/>
+  <testcase name="asUnsignedInt_Byte" classname="com.microsoft.bond.protocol.UnsignedHelperTests" time="0.0"/>
+  <testcase name="asUnsignedLong_Short" classname="com.microsoft.bond.protocol.UnsignedHelperTests" time="0.0"/>
+  <testcase name="asUnsignedBigInt_Int" classname="com.microsoft.bond.protocol.UnsignedHelperTests" time="0.0"/>
+  <testcase name="asUnsignedLong_Int" classname="com.microsoft.bond.protocol.UnsignedHelperTests" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

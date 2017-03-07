@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.microsoft.bond.protocol.ZigzagHelperTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2017-05-17T00:45:10" hostname="pike" time="0.002">
+  <properties/>
+  <testcase name="testZigzag32Encoding" classname="com.microsoft.bond.protocol.ZigzagHelperTest" time="0.001"/>
+  <testcase name="testZigzag64Encoding" classname="com.microsoft.bond.protocol.ZigzagHelperTest" time="0.0"/>
+  <testcase name="testZigzag16Encoding" classname="com.microsoft.bond.protocol.ZigzagHelperTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
