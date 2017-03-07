@@ -27,6 +27,14 @@ class_java :: MappingContext -> [Import] -> Declaration -> Text
 class_java java _ declaration = [lt|
 package #{javaPackage};
 
+// Standard imports used by Bond.
+import java.math.BigInteger;
+import java.util.*;
+
+// Bond lib imports.
+import com.microsoft.bond.*;
+
+// Imports for other generated code.
 import #{javaPackage}.*;
 
 #{typeDefinition declaration}
@@ -44,16 +52,9 @@ import #{javaPackage}.*;
     #{doubleLineSep 1 publicField structFields}
 }|]
       where
-        interface = mempty
-
-        -- FIXME: Not clear whether this is necessary in Java.
-        params = angles $ sepBy ", " paramNameAsJavaObject declParams
-
-        paramNameAsJavaObject :: TypeParam -> String
-        paramNameAsJavaObject tp = paramName tp ++ " extends Object"
-
+        interface = [lt| implements BondSerializable|]
+        params = angles $ sepBy ", " paramName declParams
         baseClass x = [lt| extends #{javaType x}()|]
-
         javaDefault = Java.defaultValue java
 
         -- FIXME: nullable<int32> -> Integer?

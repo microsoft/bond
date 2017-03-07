@@ -1,0 +1,50 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root
+// for full license information.
+
+
+buildscript {
+    ext.kotlin_version = '1.0.6'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.6'
+    }
+}
+
+apply plugin: 'kotlin'
+
+version = '5.0.0'
+sourceCompatibility = 1.6
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.6'
+    testCompile 'junit:junit:4.12'
+}
+
+def gbcOutputPath = "$buildDir/generated-src"
+def gbcOutputDir = file("$gbcOutputPath")
+
+allprojects {
+    task coreCodegen(type:Exec) {
+        commandLine '../build/compiler/build/gbc/gbc', 'java',
+            '../idl/bond/core/bond.bond',
+            '../idl/bond/core/bond_const.bond',
+            '--output', "$gbcOutputPath"
+    }
+    compileJava.dependsOn coreCodegen
+}
+
+
+sourceSets {
+    main {
+        java {
+            srcDirs += gbcOutputDir
+        }
+    }
+}

@@ -35,7 +35,7 @@ defaultValue java Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
     implicitDefault BT_UInt8 = Just [lt|0|]
     implicitDefault BT_UInt16 = Just [lt|0|]
     implicitDefault BT_UInt32 = Just [lt|0|]
-    implicitDefault BT_UInt64 = Just [lt|0|]
+    implicitDefault BT_UInt64 = Just [lt|BigInteger.ZERO|]
     implicitDefault BT_Float = Just [lt|0.0f|]
     implicitDefault BT_Double = Just [lt|0.0|]
     implicitDefault BT_String = Just [lt|""|]
