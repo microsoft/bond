@@ -27,6 +27,11 @@
               BOND_VS_NUM: 14
               BOND_ARCH: 32
               BOND_BOOST: 60
+            - BOND_BUILD: Python
+              BOND_VS: "Visual Studio 14 2015"
+              BOND_VS_NUM: 14
+              BOND_ARCH: 64
+              BOND_BOOST: 63
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
