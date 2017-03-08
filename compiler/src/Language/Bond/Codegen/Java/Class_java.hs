@@ -34,18 +34,16 @@ import java.util.*;
 import com.microsoft.bond.*;
 
 // Imports for other generated code.
-import #{javaPackage}.*;
 
 #{typeDefinition declaration}
 |]
   where
     javaType = getTypeName java
     javaPackage = sepBy "." toText $ getNamespace java
-    struct = [lt|public class|]
 
     -- struct -> Java class
     typeDefinition Struct {..} = [lt|
-#{struct} #{declName}#{params}#{maybe interface baseClass structBase} {
+public class #{declName}#{params}#{maybe interface baseClass structBase} {
     #{doubleLineSep 1 publicField structFields}
 }|]
       where
