@@ -83,12 +83,13 @@ cppCodegen options@Cpp {..} = do
     applyProto = map snd $ filter (enabled apply) protocols
     enabled a p = null a || fst p `elem` a
     protocols =
-        [ (Compact, Protocol " ::bond::CompactBinaryReader< ::bond::InputBuffer>"
-                             " ::bond::CompactBinaryWriter< ::bond::OutputBuffer>")
-        , (Fast,    Protocol " ::bond::FastBinaryReader< ::bond::InputBuffer>"
-                             " ::bond::FastBinaryWriter< ::bond::OutputBuffer>")
-        , (Simple,  Protocol " ::bond::SimpleBinaryReader< ::bond::InputBuffer>"
-                             " ::bond::SimpleBinaryWriter< ::bond::OutputBuffer>")
+        [ (Compact, ProtocolReader " ::bond::CompactBinaryReader< ::bond::InputBuffer>")
+        , (Compact, ProtocolWriter " ::bond::CompactBinaryWriter< ::bond::OutputBuffer>")
+        , (Compact, ProtocolWriter " ::bond::CompactBinaryWriter< ::bond::OutputCounter>")
+        , (Fast,    ProtocolReader " ::bond::FastBinaryReader< ::bond::InputBuffer>")
+        , (Fast,    ProtocolWriter " ::bond::FastBinaryWriter< ::bond::OutputBuffer>")
+        , (Simple,  ProtocolReader " ::bond::SimpleBinaryReader< ::bond::InputBuffer>")
+        , (Simple,  ProtocolWriter " ::bond::SimpleBinaryWriter< ::bond::OutputBuffer>")
         ]
 cppCodegen _ = error "cppCodegen: impossible happened."
 

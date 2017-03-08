@@ -16,10 +16,8 @@ import Language.Bond.Codegen.Util
 -- | Protocol data type is used to specify what protocols the @Apply@ function
 -- overloads should be generated for.
 data Protocol =
-    Protocol
-    { protocolReader :: String -- ^ Name of the class implementing the protocol reader.
-    , protocolWriter :: String -- ^ Name of the class implementing the protocol writer.
-    }
+    ProtocolReader String | -- ^ Name of the class implementing the protocol reader.
+    ProtocolWriter String   -- ^ Name of the class implementing the protocol writer.
 
 
 -- Apply overloads
@@ -35,34 +33,40 @@ applyOverloads protocols cpp attr body s@Struct {..} | null declParams = [lt|
 
     #{attr}bool Apply(const ::bond::InitSchemaDef& transform,
                const #{qualifiedName}& value)#{body}
+
+    #{attr}bool Apply(const ::bond::Null& transform,
+               const ::bond::bonded< #{qualifiedName}, ::bond::SimpleBinaryReader< ::bond::InputBuffer>&>& value)#{body}
     #{newlineSep 1 applyOverloads' protocols}|]
   where
     qualifiedName = getDeclTypeName cpp s
 
-    applyOverloads' p = [lt|#{deserialization p}
-    #{serialization serializer p}
-    #{serialization marshaler p}|]
+    applyOverloads' p = [lt|#{deserialization p}#{newlineSep 1 (serialization p) serializingTransforms}|]
 
-    serializer = "Serializer" :: String
-    marshaler = "Marshaler" :: String
+    serializingTransforms =
+        [ [lt|Serializer|]
+        , [lt|Marshaler|]
+        ]
 
-    deserialization Protocol {..} = [lt|
+    deserialization (ProtocolWriter _) = mempty
+    deserialization (ProtocolReader protocolReader) = [lt|
     #{attr}bool Apply(const ::bond::To< #{qualifiedName}>& transform,
                const ::bond::bonded< #{qualifiedName}, #{protocolReader}&>& value)#{body}
 
     #{attr}bool Apply(const ::bond::To< #{qualifiedName}>& transform,
                const ::bond::bonded<void, #{protocolReader}&>& value)#{body}|]
 
-    serialization transform Protocol {..} = [lt|
+    serialization (ProtocolReader _) _ = mempty
+    serialization (ProtocolWriter protocolWriter) transform = [lt|
     #{attr}bool Apply(const ::bond::#{transform}<#{protocolWriter} >& transform,
                const #{qualifiedName}& value)#{body}
 
     #{attr}bool Apply(const ::bond::#{transform}<#{protocolWriter} >& transform,
                const ::bond::bonded< #{qualifiedName}>& value)#{body}
-    #{newlineSep 1 (transcoding transform) protocols}|]
+    #{newlineSep 1 transcoding protocols}|]
       where
-        transcoding transform' Protocol {protocolReader = fromReader} = [lt|
-    #{attr}bool Apply(const ::bond::#{transform'}<#{protocolWriter} >& transform,
-               const ::bond::bonded< #{qualifiedName}, #{fromReader}&>& value)#{body}|]
+        transcoding (ProtocolWriter _) = mempty
+        transcoding (ProtocolReader protocolReader) = [lt|
+    #{attr}bool Apply(const ::bond::#{transform}<#{protocolWriter} >& transform,
+               const ::bond::bonded< #{qualifiedName}, #{protocolReader}&>& value)#{body}|]
 
 applyOverloads _ _ _ _ _ = mempty

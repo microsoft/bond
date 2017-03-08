@@ -12,16 +12,25 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased ##
-* `gbc` & compiler library: TBD (minor bump needed)
+* `gbc` & compiler library: TBD (major bump needed)
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: TBD (minor bump needed)
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed)
 
-### `gbc` & compiler library ###
+### `gbc` and Bond compiler library ###
 
 * C++ codegen ensures that parameter names do not shadow field names.
+* When generating C++ apply files, there are now explicit `bond::Apply<>`
+  instantiations for `CompactBinaryWriter<OutputCounter>` and
+  `SimpleBinaryWriter<Null>` writers.
+  [Pull request #373](https://github.com/Microsoft/bond/pull/373)
+    * **Breaking change (Haskell library):**
+      `Language.Bond.Codegen.Cpp.ApplyOverloads.Protocol` is now a union of
+      `ProtocolReader` and `ProtocolWriter` to permit mixing and matching of
+      reader/writer protocols without having to explicitly compute the full
+      cross product.
 
 ### C++ ###
 
@@ -39,6 +48,10 @@ different versioning scheme, following the Haskell community's
   [Issue #305](https://github.com/Microsoft/bond/issues/305)
 * Improve compliance with strict-aliasing rules.
     * Bond now builds on Clang/GCC with `-fstrict-aliasing`.
+* When generating C++ apply files, there are now explicit `bond::Apply<>`
+  instantiations for `CompactBinaryWriter<OutputCounter>` and
+  `SimpleBinaryWriter<Null>` writers.
+  [Pull request #373](https://github.com/Microsoft/bond/pull/373)
 
 ## C# ###
 

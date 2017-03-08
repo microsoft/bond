@@ -21,6 +21,12 @@ namespace tests
     {
         return ::bond::Apply<>(transform, value);
     }
+
+    bool Apply(const ::bond::Null& transform,
+               const ::bond::bonded< ::tests::BasicTypes, ::bond::SimpleBinaryReader< ::bond::InputBuffer>&>& value)
+    {
+        return ::bond::Apply<>(transform, value);
+    }
     
     bool Apply(const ::bond::To< ::tests::BasicTypes>& transform,
                const ::bond::bonded< ::tests::BasicTypes, bond::CompactBinaryReader<bond::InputBuffer>&>& value)
@@ -89,6 +95,66 @@ namespace tests
     }
     
     bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputBuffer> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::SimpleBinaryReader<bond::InputBuffer>&>& value)
+    {
+        return ::bond::Apply<>(transform, value);
+    }
+    
+    bool Apply(const ::bond::Serializer<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::tests::BasicTypes& value)
+    {
+        return ::bond::Apply<>(transform, value);
+    }
+
+    bool Apply(const ::bond::Serializer<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes>& value)
+    {
+        return ::bond::Apply<>(transform, value);
+    }
+    
+    bool Apply(const ::bond::Serializer<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::CompactBinaryReader<bond::InputBuffer>&>& value)
+    {
+        return ::bond::Apply<>(transform, value);
+    }
+    
+    bool Apply(const ::bond::Serializer<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::FastBinaryReader<bond::InputBuffer>&>& value)
+    {
+        return ::bond::Apply<>(transform, value);
+    }
+    
+    bool Apply(const ::bond::Serializer<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::SimpleBinaryReader<bond::InputBuffer>&>& value)
+    {
+        return ::bond::Apply<>(transform, value);
+    }
+    
+    bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::tests::BasicTypes& value)
+    {
+        return ::bond::Apply<>(transform, value);
+    }
+
+    bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes>& value)
+    {
+        return ::bond::Apply<>(transform, value);
+    }
+    
+    bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::CompactBinaryReader<bond::InputBuffer>&>& value)
+    {
+        return ::bond::Apply<>(transform, value);
+    }
+    
+    bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::FastBinaryReader<bond::InputBuffer>&>& value)
+    {
+        return ::bond::Apply<>(transform, value);
+    }
+    
+    bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
                const ::bond::bonded< ::tests::BasicTypes, bond::SimpleBinaryReader<bond::InputBuffer>&>& value)
     {
         return ::bond::Apply<>(transform, value);
