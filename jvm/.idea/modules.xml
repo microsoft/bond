@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/bond.iml" filepath="$PROJECT_DIR$/.idea/modules/bond.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bond_main.iml" filepath="$PROJECT_DIR$/.idea/modules/bond_main.iml" group="bond" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bond_test.iml" filepath="$PROJECT_DIR$/.idea/modules/bond_test.iml" group="bond" />
     </modules>
   </component>
 </project>

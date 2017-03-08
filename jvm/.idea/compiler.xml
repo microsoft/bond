@@ -11,9 +11,5 @@
       <entry name="!?*.kt" />
       <entry name="!?*.clj" />
     </wildcardResourcePatterns>
-    <bytecodeTargetLevel>
-      <module name="bond_main" target="1.6" />
-      <module name="bond_test" target="1.6" />
-    </bytecodeTargetLevel>
   </component>
 </project>
