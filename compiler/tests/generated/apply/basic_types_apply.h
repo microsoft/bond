@@ -21,6 +21,10 @@ namespace tests
     DllExport
     bool Apply(const ::bond::InitSchemaDef& transform,
                const ::tests::BasicTypes& value);
+
+    DllExport
+    bool Apply(const ::bond::Null& transform,
+               const ::bond::bonded< ::tests::BasicTypes, ::bond::SimpleBinaryReader< ::bond::InputBuffer>&>& value);
     
     DllExport
     bool Apply(const ::bond::To< ::tests::BasicTypes>& transform,
@@ -68,6 +72,46 @@ namespace tests
     
     DllExport
     bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputBuffer> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::SimpleBinaryReader<bond::InputBuffer>&>& value);
+    
+    DllExport
+    bool Apply(const ::bond::Serializer<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::tests::BasicTypes& value);
+
+    DllExport
+    bool Apply(const ::bond::Serializer<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes>& value);
+    
+    DllExport
+    bool Apply(const ::bond::Serializer<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::CompactBinaryReader<bond::InputBuffer>&>& value);
+    
+    DllExport
+    bool Apply(const ::bond::Serializer<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::FastBinaryReader<bond::InputBuffer>&>& value);
+    
+    DllExport
+    bool Apply(const ::bond::Serializer<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::SimpleBinaryReader<bond::InputBuffer>&>& value);
+    
+    DllExport
+    bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::tests::BasicTypes& value);
+
+    DllExport
+    bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes>& value);
+    
+    DllExport
+    bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::CompactBinaryReader<bond::InputBuffer>&>& value);
+    
+    DllExport
+    bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
+               const ::bond::bonded< ::tests::BasicTypes, bond::FastBinaryReader<bond::InputBuffer>&>& value);
+    
+    DllExport
+    bool Apply(const ::bond::Marshaler<bond::CompactBinaryWriter<bond::OutputCounter> >& transform,
                const ::bond::bonded< ::tests::BasicTypes, bond::SimpleBinaryReader<bond::InputBuffer>&>& value);
     
     DllExport

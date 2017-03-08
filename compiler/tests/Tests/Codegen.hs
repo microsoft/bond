@@ -55,12 +55,13 @@ verifyApplyCodegen args baseName =
         , apply_cpp protocols
         ]
     protocols =
-        [ Protocol "bond::CompactBinaryReader<bond::InputBuffer>"
-                   "bond::CompactBinaryWriter<bond::OutputBuffer>"
-        , Protocol "bond::FastBinaryReader<bond::InputBuffer>"
-                   "bond::FastBinaryWriter<bond::OutputBuffer>"
-        , Protocol "bond::SimpleBinaryReader<bond::InputBuffer>"
-                   "bond::SimpleBinaryWriter<bond::OutputBuffer>"
+        [ ProtocolReader "bond::CompactBinaryReader<bond::InputBuffer>"
+        , ProtocolWriter "bond::CompactBinaryWriter<bond::OutputBuffer>"
+        , ProtocolWriter "bond::CompactBinaryWriter<bond::OutputCounter>"
+        , ProtocolReader "bond::FastBinaryReader<bond::InputBuffer>"
+        , ProtocolWriter "bond::FastBinaryWriter<bond::OutputBuffer>"
+        , ProtocolReader "bond::SimpleBinaryReader<bond::InputBuffer>"
+        , ProtocolWriter "bond::SimpleBinaryWriter<bond::OutputBuffer>"
         ]
 
 verifyExportsCodegen :: [String] -> FilePath -> TestTree
