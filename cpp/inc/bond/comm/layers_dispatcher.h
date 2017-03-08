@@ -2,6 +2,7 @@
 #pragma once
 
 #include "services.h"
+#include <boost/weak_ptr.hpp>
 
 namespace bond { namespace comm
 {
@@ -14,6 +15,9 @@ namespace bond { namespace comm
 // It will give transports the ability to implement arbitrary number of interception points
 struct ILayerService : public IService
 {
+	enum EConnectionStatus { ConnClosed, ConnDropped, ConnEstablished };
+
+	virtual void OnConnStateChanged(EConnectionStatus status, bool &reconnect) = 0;
 };
 
 //
@@ -22,14 +26,23 @@ struct ILayerService : public IService
 //
 struct LayerServiceStub : public ILayerService
 {
-private:
-	boost::shared_ptr< IService > service;
+protected:
+	boost::weak_ptr< IService > service;
 public:
-	LayerServiceStub(const boost::shared_ptr< IService > &_service)
+	LayerServiceStub(const boost::weak_ptr< IService > &_service)
 		: service(_service)
 	{}
-	inline void Notify(Event& event) override { service->Notify(event); }
-	inline void Invoke(Request& request, const ResponseCallback& callback) override { service->Invoke(request, callback); }
+	inline void Notify(Event& event) override
+	{
+		if (auto serv = service.lock())
+			serv->Notify(event);
+	}
+	inline void Invoke(Request& request, const ResponseCallback& callback) override
+	{
+		if (auto serv = service.lock())
+			serv->Invoke(request, callback);
+	}
+	inline void OnConnStateChanged(EConnectionStatus, bool &) override {}
 };
 
 //
@@ -56,13 +69,28 @@ public:
 	{
 		m_server_factory = ls_factory;
 	}
-	boost::shared_ptr<ILayerService> CreateLayerClientService(const Address& address, const boost::shared_ptr<IService>& serv)
+	//
+	// Provides the correct sequence of objects destructure
+	//
+	struct ClientGarbageCollector : public ILayerService
 	{
-		return m_client_factory(address, serv);
+		boost::shared_ptr<IService> service;
+		boost::shared_ptr<ILayerService> layers_serv;
+		ClientGarbageCollector(const boost::shared_ptr<ILayerService> &_layers_serv, const boost::shared_ptr<IService> &serv)
+			: layers_serv(_layers_serv), service(serv)
+		{}
+		boost::shared_ptr<ILayerService> GetLayersService() { return layers_serv; }
+		inline void Notify(Event& event) override { layers_serv->Notify(event); }
+		inline void Invoke(Request& request, const ResponseCallback& callback) override { layers_serv->Invoke(request, callback); }
+		inline void OnConnStateChanged(EConnectionStatus status, bool &reconnect) override { layers_serv->OnConnStateChanged(status, reconnect); }
+	};
+	boost::shared_ptr<ClientGarbageCollector> CreateLayerClientService(const Address& address, const boost::shared_ptr<IService>& serv)
+	{
+		return boost::make_shared< ClientGarbageCollector >(m_client_factory(address, serv), serv);
 	}
 	boost::shared_ptr<ILayerService> CreateLayerServerService(const Address& address, const boost::shared_ptr<IService>& serv)
 	{
-		return m_server_factory(address, serv);
+		return boost::make_shared< ClientGarbageCollector >(m_server_factory(address, serv), serv);
 	}
 };
 
@@ -87,6 +115,13 @@ namespace v2
 			const std::string&  service_name,
 			const std::string&  method_name,
 			LayerData& layer_data) = 0;
+	};
+
+	// base class for a layer intercepting OnConnStateChanged message
+	struct OnConnStateChangedLayerService
+	{
+		// reconnect flag is meaningful only on ConnDropped state for client
+		virtual void OnConnStateChanged(ILayerService::EConnectionStatus status, bool &reconnect) = 0;
 	};
 
 } // namespace bond.comm.v2

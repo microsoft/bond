@@ -205,7 +205,7 @@ namespace bond { namespace comm
 			{
 				return BaseTransport::ConnectTo(address);
 			}
-				
+
 			boost::shared_ptr<IService>
 				ConnectTo(const Address& address) override
 			{
@@ -220,7 +220,7 @@ namespace bond { namespace comm
 			{
 				return BaseTransport::BindTo(address, tableFactory);
 			}
-				
+
 			boost::shared_ptr<void>
 				BindTo(const Address& address,
 					const std::function<boost::shared_ptr<IService>(const Address&, ConnectionContext)>& tableFactory) override
@@ -293,16 +293,19 @@ namespace bond { namespace comm
 						data,
 						request.layers);
 
-					_service->Invoke(
-						request,
-						[policy, layerStack, callback](Response& response) mutable {
-						LayerData data;
-						policy.OnResponse(layerStack,
-							data,
-							response.layers);
+					if (auto serv = _service.lock())
+					{
+						serv->Invoke(
+							request,
+							[policy, layerStack, callback](Response& response) mutable {
+							LayerData data;
+							policy.OnResponse(layerStack,
+								data,
+								response.layers);
 
-						callback(response);
-					});
+							callback(response);
+						});
+					}
 				}
 
 
@@ -319,11 +322,15 @@ namespace bond { namespace comm
 						data,
 						event.layers);
 
-					_service->Notify(event);
+					if (auto serv = _service.lock())
+						serv->Notify(event);
 				}
 
 
-				boost::shared_ptr<IService> _service;
+				void OnConnStateChanged(ILayerService::EConnectionStatus, bool &) override {}
+
+
+				boost::weak_ptr<IService> _service;
 
 				Address _address;
 			};
@@ -428,7 +435,7 @@ namespace bond { namespace comm
 			std::function<boost::shared_ptr<ILayerService>(bool onConnect, const WireProtocol&, const Address&, const boost::shared_ptr<IService>&)> _factory;
 		}; // class LayerTransport
 
-		// Additional namespace added to maintain compability with previous versions of tests / examples / software
+		// Additional namespace added to maintain compatibility with previous versions of tests / examples / software
 		namespace v2
 		{
 
@@ -568,6 +575,14 @@ namespace bond { namespace comm
 						: bond::comm::LayerTransport<BaseTransport, LayerProtocol>::Processor<Policy, LayerData, LayerStack, ILayerService>( address, service, layerStack, protocol)
 					{}
 
+					void OnConnStateChanged(ILayerService::EConnectionStatus status, bool &reconnect) override
+					{
+						LayerStack layerStack(static_cast<const LayerStack&>(*this));
+						layerStack.Unwind< OnConnStateChangedLayerService >(&OnConnStateChangedLayerService::OnConnStateChanged, true, std::forward<ILayerService::EConnectionStatus>(status), reconnect);
+					}
+
+					~Processor()
+					{}
 				};
 
 

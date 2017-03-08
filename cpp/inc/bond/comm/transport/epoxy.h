@@ -27,7 +27,7 @@
 #include <thread>
 
 namespace bond { namespace comm
-	{ 
+	{
 	namespace epoxy { namespace detail
 			{
 				//
@@ -193,7 +193,7 @@ namespace bond { namespace comm
 								}
 
 								BOOST_VERIFY(m_sending.exchange(false));
-							} 
+							}
 							while (!lock(m_queue)->empty() && !m_sending.exchange(true));
 						}
 
@@ -226,6 +226,8 @@ namespace bond { namespace comm
 									{
 										DoHandshake();
 									}
+
+									m_handler->ConnectionEstablished();
 
 									return true;
 								}
@@ -827,7 +829,7 @@ namespace bond { namespace comm
 						}
 
 						//
-						// Trigger connect of client connection 
+						// Trigger connect of client connection
 						//
 						void Connect()
 						{
@@ -1095,6 +1097,12 @@ namespace bond { namespace comm
 						{
 							m_connection->Send(conversation_id, std::move(packet));
 						}
+
+						void Connect() override
+						{
+							m_connection->Connect();
+						}
+
 					};
 
 					// Implement PacketTransport

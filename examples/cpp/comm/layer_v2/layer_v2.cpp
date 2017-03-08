@@ -13,9 +13,9 @@
 #include <future>
 
 // Include GUID prerequisites
-#include <boost/uuid/uuid.hpp>            
-#include <boost/uuid/uuid_generators.hpp> 
-#include <boost/uuid/uuid_io.hpp>         
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 using namespace examples::layer;
 
@@ -148,5 +148,3 @@ int BOND_CALL main()
 
   return 0;
 }
-
-

@@ -82,7 +82,12 @@ public:
         void PacketSent(bool success,
                         uint64_t conversation_id) = 0;
 
-        virtual ~INetworkConnectionSink()
+		//
+		// Method shall be invoked when connection is successfully established (after handshake received).
+		//
+		virtual void ConnectionEstablished() = 0;
+
+		virtual ~INetworkConnectionSink()
         {}
     };
 
@@ -101,7 +106,12 @@ public:
         void Send(uint64_t conversation_id,
                   Packet packet) = 0;
 
-        //
+		// Used for reconnection on connection dropped
+		// Empty implementation provided for compatibility with existing derived classes
+		virtual
+		void Connect() {}
+
+		//
         // Custom network connection dtor shall release all resources
         // and gracefully close any network connections associated.
         //
@@ -193,7 +203,7 @@ protected:
     boost::shared_ptr<IService> ConnectTo(const Address& address) override
     {
 		boost::shared_ptr<ConnectionSink> handler =
-			boost::make_shared<ConnectionSink>(address);
+			boost::make_shared<ConnectionSink>(address, true);
 
 		boost::shared_ptr<INetworkConnection> connection =
 			StartClientConnection(address, handler);
@@ -205,9 +215,9 @@ protected:
 			address);
 
 		// in fact: provide Connection object to LayerTransport::v2::Processor object
-		boost::shared_ptr<ILayerService> service = CreateLayerClientService(address, conn);
+		boost::shared_ptr<LayerProvider::ClientGarbageCollector> service = CreateLayerClientService(address, conn);
 		// gives the ability to call layers methods from ConnectionSink object
-		handler->SetLayerService(service);
+		handler->SetLayerService(service->GetLayersService());
 
 		return service;
     }
@@ -473,7 +483,10 @@ private:
                      "ConnectionSink",
                      "Connection to " << m_address << " was closed, " <<
                      listeners.size() << " requests aborted");
-        }
+
+			bool fake = false;
+			m_service->OnConnStateChanged(ILayerService::ConnClosed, fake);
+		}
 
 
         //
@@ -518,6 +531,14 @@ private:
                      "ConnectionSink",
                      "Connection to " << m_address << " is dropped. " <<
                      listeners.size() << " outstanding requests are aborted")
+
+			bool reconnect = false;
+			m_service->OnConnStateChanged(ILayerService::ConnDropped, reconnect);
+			if (m_isClient && reconnect)
+			{
+				if (boost::shared_ptr<INetworkConnection> connection = m_connection.lock())
+					connection->Connect();
+			}
         }
 
         //
@@ -672,6 +693,12 @@ private:
             }
         }
 
+		void ConnectionEstablished()
+		{
+			bool fake = false;
+			m_service->OnConnStateChanged(ILayerService::ConnEstablished, fake);
+		}
+
         //
         // Set of transmitted conversations.
         //
@@ -702,14 +729,14 @@ private:
         //
         boost::shared_ptr<ILayerService> m_service;
 
-		// Wrapped default service instance for client.
-		boost::weak_ptr<ILayerService> m_client_service;
+		const bool m_isClient;
 
 	public:
 
-        ConnectionSink(const Address& address)
+        ConnectionSink(const Address& address, bool isClient)
             : m_conversationEnum(0)
             , m_address(address)
+			, m_isClient( isClient )
         {}
 
 
@@ -756,9 +783,9 @@ private:
             m_connection = connection;
         }
 
-		void SetLayerService(const boost::weak_ptr<ILayerService>& service)
+		void SetLayerService(const boost::shared_ptr<ILayerService>& service)
 		{
-			m_client_service = service;
+			m_service = service;
 		}
     };
 
@@ -884,7 +911,7 @@ private:
                              const Address& address,
                              const boost::shared_ptr<ILayerService>& service,
                              const boost::shared_ptr<Connections>& connections)
-            : ConnectionSink(address),
+            : ConnectionSink(address, false),
               m_connections(connections)
         {
             this->SetConnection(connection);
