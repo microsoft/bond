@@ -9,7 +9,6 @@ module Language.Bond.Codegen.Java.Class_java
     , JavaFieldMapping(..)
     ) where
 
-import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
@@ -22,7 +21,7 @@ import qualified Language.Bond.Codegen.Java.Util as Java
 -- field -> public field
 data JavaFieldMapping = JavaPublicFields deriving Eq
 
--- Template for struct -> Java class and enum -> Java enum.
+-- Template for struct -> Java class.
 class_java :: MappingContext -> [Import] -> Declaration -> Text
 class_java java _ declaration = [lt|
 package #{javaPackage};
@@ -44,8 +43,6 @@ import #{javaPackage}.*;
     javaPackage = sepBy "." toText $ getNamespace java
     struct = [lt|public class|]
 
-
-
     -- struct -> Java class
     typeDefinition Struct {..} = [lt|
 #{struct} #{declName}#{params}#{maybe interface baseClass structBase} {
@@ -62,33 +59,4 @@ import #{javaPackage}.*;
 
         initializerValue x = [lt|= #{x}|]
 
-
-
-    -- enum -> Java enum
-    typeDefinition Enum {..} = [lt|
-public enum #{declName} {
-    #{commaLineSep 1 constant enumConstantsWithInt};
-
-    private int value;
-
-    private #{declName}(int value) { this.value = value; }
-}|]
-      where
-        -- constant
-        constant Constant {..} = let value x = [lt|(#{x})|] in
-            [lt|#{constantName}#{optional value constantValue}|]
-
-        -- Process constants to make sure all values can be converted
-        -- to integer.
-        enumConstantsWithInt = fixEnumWithInt 0 enumConstants []
-
-        fixEnumWithInt :: Int -> [Constant] -> [Constant] -> [Constant]
-        fixEnumWithInt _ [] result = reverse result
-        fixEnumWithInt nextInt (h:r) result = case constantValue h of
-          Just n -> fixEnumWithInt (n + 1) r (h:result)
-          _ -> fixEnumWithInt (nextInt + 1) r ((Constant (constantName h) (Just nextInt)):result)
-
-
-
-    -- Bond _ -> nothing
     typeDefinition _ = mempty

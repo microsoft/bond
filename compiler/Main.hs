@@ -12,7 +12,8 @@ import Prelude
 import Control.Concurrent.Async
 import GHC.Conc (getNumProcessors, setNumCapabilities)
 import Data.Text.Lazy (Text)
-import qualified Data.Text.Lazy.IO as L
+import qualified Data.Text.Lazy as LT
+import qualified Data.Text.Lazy.IO as LTIO
 import Data.Aeson (encode)
 import qualified Data.ByteString.Lazy as BL
 import Language.Bond.Syntax.Types (Bond(..), Declaration(..), Import, Type(..))
@@ -130,7 +131,7 @@ codeGen options typeMapping templates file = do
             then code
             else (commonHeader "//" file fileName <> code)
         }
-        L.writeFile (outputDir </> fileName) content
+        LTIO.writeFile (outputDir </> fileName) content
 
 -- Java's class-per-file and package-as-path requirements make it difficult to
 -- share code with languages where we can just emit bondfile_types.foo.
@@ -153,13 +154,21 @@ javaCodegen Java {..} = do
             }
             let javaFile = declName declaration ++ ".java"
 
-            let code = class_java mappingContext imports declaration
-            let { content =
-                if no_banner
-                then code
-                else (commonHeader "//" bondFile javaFile <> code)
+            let { code = case declaration of
+                Struct {} -> class_java mappingContext imports declaration
+                Enum {}   -> enum_java mappingContext declaration
+                _         -> mempty
             }
 
-            createDirectoryIfMissing True packageDir
-            L.writeFile (packageDir </> javaFile) content
+            if LT.null code
+                then return ()
+                else do
+                    let { content =
+                        if no_banner
+                        then code
+                        else (commonHeader "//" bondFile javaFile <> code)
+                    }
+
+                    createDirectoryIfMissing True packageDir
+                    LTIO.writeFile (packageDir </> javaFile) content
 javaCodegen _ = error "javaCodegen: impossible happened."

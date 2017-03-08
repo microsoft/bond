@@ -55,6 +55,7 @@ module Language.Bond.Codegen.Templates
       -- ** Java
     , JavaFieldMapping(..)
     , class_java
+    , enum_java
     )
     where
 
@@ -71,6 +72,7 @@ import Language.Bond.Codegen.Cs.Types_cs
 import Language.Bond.Codegen.Cs.Comm_cs
 import Language.Bond.Codegen.Cs.Grpc_cs
 import Language.Bond.Codegen.Java.Class_java
+import Language.Bond.Codegen.Java.Enum_java
 -- redundant imports for haddock
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Syntax.Types
