@@ -71,11 +71,11 @@
 
             # choco install updated the path, so re-read them from the registry and reset $env:path
 
-            $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
-
             $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 
-            $env:Path = "$userPath;$machinePath"
+            $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
+
+            $env:Path = "$machinePath;$userPath"
 
             cabal update
 
@@ -85,11 +85,11 @@
 
                 choco install doxygen.install -y
 
-                $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
-
                 $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 
-                $env:Path = "$userPath;$machinePath"
+                $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
+
+                $env:Path = "$machinePath;$userPath"
 
             }
 
