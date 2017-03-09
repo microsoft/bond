@@ -10,7 +10,7 @@ class FastBinaryWriter<out O : DataOutputStream>(val output: O, val version: Sho
     val Magic = ProtocolType.FAST_PROTOCOL
 
     override fun writeVersion() {
-        output.writeShort(Magic.ordinal)
+        output.writeShort(Magic.value)
         output.writeShort(version.toInt())
     }
 
@@ -19,15 +19,16 @@ class FastBinaryWriter<out O : DataOutputStream>(val output: O, val version: Sho
     override fun writeBaseBegin(metadata: Metadata) {}
 
     override fun writeStructEnd() {
-        output.writeByte(BondDataType.BT_STOP.ordinal)
+        BondDataType.BT_UNAVAILABLE.value
+        output.writeByte(BondDataType.BT_STOP.value)
     }
 
     override fun writeBaseEnd() {
-        output.writeByte(BondDataType.BT_STOP_BASE.ordinal)
+        output.writeByte(BondDataType.BT_STOP_BASE.value)
     }
 
     override fun writeFieldBegin(type: BondDataType, id: Int, metadata: Metadata) {
-        output.writeByte(type.ordinal)
+        output.writeByte(type.value)
         output.writeShort(id)
     }
 
@@ -36,13 +37,13 @@ class FastBinaryWriter<out O : DataOutputStream>(val output: O, val version: Sho
     override fun writeFieldOmitted(type: BondDataType, id: Int, metadata: Metadata) {}
 
     override fun writeContainerBegin(count: Int, elementType: BondDataType) {
-        output.writeByte(elementType.ordinal)
+        output.writeByte(elementType.value)
         output.writeInt(count)
     }
 
     override fun writeContainerBegin(count: Int, keyType: BondDataType, valueType: BondDataType) {
-        output.writeByte(keyType.ordinal)
-        output.writeByte(valueType.ordinal)
+        output.writeByte(keyType.value)
+        output.writeByte(valueType.value)
         output.writeInt(count)
     }
 

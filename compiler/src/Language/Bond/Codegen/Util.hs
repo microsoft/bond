@@ -24,6 +24,7 @@ module Language.Bond.Codegen.Util
     , doubleLineSep
     , doubleLineSepEnd
     , uniqueName
+    , indent
     ) where
 
 import Data.Int (Int64)

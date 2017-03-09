@@ -30,7 +30,7 @@ package #{javaPackage};
 public enum #{declName} {
     #{commaLineSep 1 constant enumConstantsWithInt};
 
-    private int value;
+    public int value;
 
     #{declName}(int value) { this.value = value; }
 }|]

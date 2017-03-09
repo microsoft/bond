@@ -59,7 +59,7 @@ public interface BondSerializable {
      * @param writer {@link ProtocolWriter} for serialized data.
      * @throws IOException If there are any problems using the Protocol.
      */
-//    void write(ProtocolWriter writer) throws IOException;
+    void write(ProtocolWriter writer) throws IOException;
 
     /**
      * Serializes Bond structure as a nested field, value or base.
