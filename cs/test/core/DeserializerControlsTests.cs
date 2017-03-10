@@ -8,6 +8,7 @@
     using Bond.IO.Unsafe;
     using Bond.Protocols;
     using NUnit.Framework;
+    using NUnit.Framework.Constraints;
 
     [TestFixture]
     public class DeserializerControlsTests
@@ -20,22 +21,68 @@
         // Data for a simple valid blob
         static readonly byte[] blobData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 };
 
-        static T DeserializeBadData<T>()
-        {
-            // Untagged protocol used to trigger errors more easily
-            var reader = new SimpleBinaryReader<InputBuffer>(new InputBuffer(badData));
-            return new Deserializer<SimpleBinaryReader<InputBuffer>>(typeof(T)).Deserialize<T>(reader);
-        }
-
         // Restore the default settings at the start and end of each test
         [SetUp]
         [TearDown]
         public void RestoreDefaults()
         {
             DeserializerControls.Active = DeserializerControls.Default;
+            InputStream.ActiveAllocationChunk = InputStream.DefaultAllocationChunk;
         }
 
-        void RoundtripObject<T>(T obj)
+        delegate T CreationDelegate<T>(byte[] data);
+
+        InputBuffer InputBufferCreator(byte[] data)
+        {
+            return new InputBuffer(data);
+        }
+
+        InputStream InputStreamCreator(byte[] data)
+        {
+            return new InputStream(new MemoryStream(data));
+        }
+
+        static T DeserializeBadDataHelper<T, U>(CreationDelegate<U> creator) where U : Bond.IO.IInputStream, Bond.IO.ICloneable<U>
+        {
+            // Untagged protocol used to trigger errors more easily
+            var reader = new SimpleBinaryReader<U>(creator(badData));
+            return new Deserializer<SimpleBinaryReader<U>>(typeof(T)).Deserialize<T>(reader);
+        }
+
+        delegate Constraint ConstraintDelegate();
+
+        Constraint ExceptionDelegate<T>()
+        {
+            return Is.InstanceOf<T>();
+        }
+
+        Constraint ExceptionDelegate<T, U>()
+        {
+            return Is.InstanceOf<T>().Or.InstanceOf<U>();
+        }
+
+        void DeserializeBadDataTestImpl(ConstraintDelegate constraint)
+        {
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<SimpleContainers, InputBuffer>(InputBufferCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<Lists, InputBuffer>(InputBufferCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<Vectors, InputBuffer>(InputBufferCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<Sets, InputBuffer>(InputBufferCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<Maps, InputBuffer>(InputBufferCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<StructWithBlobs, InputBuffer>(InputBufferCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<StructWithBonded, InputBuffer>(InputBufferCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<StructWithByteLists, InputBuffer>(InputBufferCreator));
+
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<SimpleContainers, InputStream>(InputStreamCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<Lists, InputStream>(InputStreamCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<Vectors, InputStream>(InputStreamCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<Sets, InputStream>(InputStreamCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<Maps, InputStream>(InputStreamCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<StructWithBlobs, InputStream>(InputStreamCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<StructWithBonded, InputStream>(InputStreamCreator));
+            Assert.Throws(constraint(), () => DeserializeBadDataHelper<StructWithByteLists, InputStream>(InputStreamCreator));
+        }
+
+        void RoundtripObjectBuffer<T>(T obj)
         {
             // SimpleBinary
             {
@@ -78,6 +125,35 @@
             }
         }
 
+        void RoundtripObjectStream<T>(T obj)
+        {
+            // SimpleBinary
+            {
+                var output = new OutputBuffer();
+                var writer = new SimpleBinaryWriter<OutputBuffer>(output);
+                Serialize.To(writer, obj);
+
+                var input = new InputStream(new MemoryStream(output.buffer));
+                var reader = new SimpleBinaryReader<InputStream>(input);
+                T obj2 = Deserialize<T>.From(reader);
+
+                Assert.True(Comparer.Equal<T>(obj, obj2));
+            }
+
+            // CompactBinary
+            {
+                var output = new OutputBuffer();
+                var writer = new CompactBinaryWriter<OutputBuffer>(output);
+                Serialize.To(writer, obj);
+
+                var input = new InputStream(new MemoryStream(output.buffer));
+                var reader = new CompactBinaryReader<InputStream>(input);
+                T obj2 = new Deserializer<CompactBinaryReader<InputStream>>(typeof(T)).Deserialize<T>(reader);
+
+                Assert.True(Comparer.Equal<T>(obj, obj2));
+            }
+        }
+
         void RoundtripTests()
         {
             var containers = new SimpleContainers();
@@ -87,14 +163,16 @@
                 containers.numbers.Add(i, i.ToString());
             }
 
-            RoundtripObject<SimpleContainers>(containers);
+            RoundtripObjectBuffer<SimpleContainers>(containers);
+            RoundtripObjectStream<SimpleContainers>(containers);
 
             var blobs = new StructWithBlobs();
             blobs.b = new ArraySegment<byte>(blobData, 0, 30);
             blobs.lb.Add(new ArraySegment<byte>(blobData, 0, 30));
             blobs.lb.Add(new ArraySegment<byte>(blobData, 1, 30));
 
-            RoundtripObject<StructWithBlobs>(blobs);
+            RoundtripObjectBuffer<StructWithBlobs>(blobs);
+            RoundtripObjectStream<StructWithBlobs>(blobs);
         }
 
         [Test]
@@ -107,48 +185,20 @@
         [Test]
         public void DeserializerControls_InvalidData()
         {
+            // This first pass MUST return EndOfStreamException
             DeserializerControls.Active.MaxPreallocatedContainerElements = 20;
             DeserializerControls.Active.MaxPreallocatedBlobBytes = 20;
+            InputStream.ActiveAllocationChunk = 20;
 
-            // These tests MUST return EndOfStreamException
-            Assert.Throws<EndOfStreamException>(() => DeserializeBadData<SimpleContainers>());
-            Assert.Throws<EndOfStreamException>(() => DeserializeBadData<Lists>());
-            Assert.Throws<EndOfStreamException>(() => DeserializeBadData<Vectors>());
-            Assert.Throws<EndOfStreamException>(() => DeserializeBadData<Sets>());
-            Assert.Throws<EndOfStreamException>(() => DeserializeBadData<Maps>());
-            Assert.Throws<EndOfStreamException>(() => DeserializeBadData<StructWithBlobs>());
-            Assert.Throws<EndOfStreamException>(() => DeserializeBadData<StructWithBonded>());
-            Assert.Throws<EndOfStreamException>(() => DeserializeBadData<StructWithByteLists>());
+            DeserializeBadDataTestImpl(ExceptionDelegate<EndOfStreamException>);
 
+            // This second pass may return EndOfStreamException or OutOfMemoryException depending
+            // environment -- either is acceptable
             DeserializerControls.Active.MaxPreallocatedContainerElements = Int32.MaxValue;
             DeserializerControls.Active.MaxPreallocatedBlobBytes = Int32.MaxValue;
+            InputStream.ActiveAllocationChunk = Int32.MaxValue;
 
-            // These tests may return EndOfStreamException or OutOfMemoryException depending
-            // environment -- either is acceptable
-            Assert.Throws(
-                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
-                () => DeserializeBadData<SimpleContainers>());
-            Assert.Throws(
-                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
-                () => DeserializeBadData<Lists>());
-            Assert.Throws(
-                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
-                () => DeserializeBadData<Vectors>());
-            Assert.Throws(
-                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
-                () => DeserializeBadData<Sets>());
-            Assert.Throws(
-                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
-                () => DeserializeBadData<Maps>());
-            Assert.Throws(
-                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
-                () => DeserializeBadData<StructWithBlobs>());
-            Assert.Throws(
-                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
-                () => DeserializeBadData<StructWithBonded>());
-            Assert.Throws(
-                Is.InstanceOf<EndOfStreamException>().Or.InstanceOf<OutOfMemoryException>(),
-                () => DeserializeBadData<StructWithByteLists>());
+            DeserializeBadDataTestImpl(ExceptionDelegate<EndOfStreamException, OutOfMemoryException>);
         }
 
         [Test]

@@ -16,8 +16,13 @@ different versioning scheme, following the Haskell community's
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: TBD
-* C# NuGet version: TBD
+* C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed)
+
+## C# ###
+
+* Added controls to cap incremental allocation between reads in
+  `Bond.IO.Unsafe.InputStream`.
 
 ### C# Comm ###
 
