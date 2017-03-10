@@ -128,8 +128,6 @@
 
                 cd build
 
-                Wait-Process -name boost
-
                 cmake "-DBoost_ADDITIONAL_VERSIONS=1.${env:BOND_BOOST}.0" $cmakeFlags -G $cmakeGenerator ..
 
             }
