@@ -269,7 +269,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 }</code></pre></div>
 <h2 id="generic-struct">Generic struct</h2>
 <p>Generic structs are parameterized with one or more type parameters which can be used within the struct definition in any place where a concrete type could be used (e.g. base struct, field type, container element type, parameter of a generic struct).</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> Example&lt;T1, T2&gt; : T1
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> Example&lt;T1, T2&gt; : T<span class="dv">1</span>
 {
     <span class="dv">0</span>: T1 field;
     <span class="dv">1</span>: list&lt;T2&gt; list;

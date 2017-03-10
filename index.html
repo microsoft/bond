@@ -255,7 +255,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <span class="kw">set</span> <span class="va">PreferredToolArchitecture=</span>x64
 <span class="fu">cmake</span> -G <span class="st">&quot;Visual Studio 14 2015 Win64&quot;</span> ..</code></pre></div>
 <p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed. (The Bond unit tests are too big to build with 32-bit tools.) This variable works for Visual Studio 2013 or 2015. For Visual Studio 2012 set the following environment variable instead:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="va">_IsNativeEnvironment=</span>true</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="ex">_IsNativeEnvironment</span>=true</code></pre></div>
 <p>Instead of <code>cmake</code> you can also use <code>cmake-gui</code> and specify configuration settings in the UI. This configuration step has to be performed only once. From then on you can use the generated solution <code>build\bond.sln</code> from Visual Studio or build from command line using <code>cmake</code>:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> --build . --target
 <span class="fu">cmake</span> --build . --target INSTALL</code></pre></div>

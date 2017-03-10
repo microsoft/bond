@@ -1271,15 +1271,15 @@ Field(<span class="dt">uint16_t</span>, <span class="at">const</span> bond::Meta
 10
 11
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
-is_set_container
+i<span class="va">s_set_container</span>
     : <span class="bu">std::</span>false_type {};
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
-is_map_container
+i<span class="va">s_map_container</span>
     : <span class="bu">std::</span>false_type {};
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
-is_list_container
+i<span class="va">s_list_container</span>
     : <span class="bu">std::</span>false_type {};</code></pre></td></tr></table></div>
 <p>For example the following specialization would allow Bond to treat <code>std::array</code> as a list type:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -1442,11 +1442,11 @@ T&amp; mapped_at(M&amp; map, <span class="at">const</span> K&amp; key);</code></
 6
 7
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
-is_string
+i<span class="va">s_string</span>
     : <span class="bu">std::</span>false_type {};
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt; <span class="kw">struct</span>
-is_wstring
+i<span class="va">s_wstring</span>
     : <span class="bu">std::</span>false_type {};</code></pre></td></tr></table></div>
 <p>For example the following specialization would allow Bond to treat <code>boost::string_ref</code> as a string type:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -1705,7 +1705,7 @@ bond::CompactBinaryWriter&lt;Output&gt; writer(output);</code></pre></td></tr></
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">set _IsNativeEnvironment=<span class="kw">true</span></code></pre></td></tr></table></div>
 <p>For Visual Studio 2013:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">set PreferredToolArchitecture=x64</code></pre></td></tr></table></div>
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">set PreferredToolArchitecture=x<span class="dv">64</span></code></pre></td></tr></table></div>
 <p>Link-time code generation can also lead to egregiously long link times. It is strongly recommended to disable it for projects using Bond. Link-time code generation does not improve runtime performance for Bond APIs and in many cases it actually degrades it. If application code <em>must</em> be built with LTCG enabled, we recommend using a separate static schema library as described above, and disabling LTCG when building the library.</p>
 <p>See example: <code>examples/cpp/core/static_library</code>.</p>
 <h1 id="bond-comm">Bond Comm</h1>
