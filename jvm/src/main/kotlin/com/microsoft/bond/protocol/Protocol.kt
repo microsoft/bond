@@ -13,22 +13,22 @@ interface ProtocolWriter {
      */
     fun writeVersion()
 
-    fun writeStructBegin(metadata: Metadata)
+    fun writeStructBegin(metadata: Metadata?)
 
-    fun writeBaseBegin(metadata: Metadata)
+    fun writeBaseBegin(metadata: Metadata?)
 
     fun writeStructEnd()
 
     fun writeBaseEnd()
 
-    fun writeFieldBegin(type: BondDataType, id: Int, metadata: Metadata)
+    fun writeFieldBegin(type: BondDataType, id: Int, metadata: Metadata?)
 
     fun writeFieldEnd()
 
     /**
      * Indicate that a field was omitted because it was set to its default value.
      */
-    fun writeFieldOmitted(type: BondDataType, id: Int, metadata: Metadata)
+    fun writeFieldOmitted(type: BondDataType, id: Int, metadata: Metadata?)
 
     /**
      * Start writing a list or set container.
