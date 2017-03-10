@@ -458,8 +458,12 @@ inline void register_builtin_converters()
             true
             >();
 
-        // Allows extraction of share_ptr<char> from python string object
+        // Allows extraction of shared_ptr<char> from python string object
+#if BOOST_VERSION >= 106300
+        converter::shared_ptr_from_python<char, boost::shared_ptr>();
+#else
         converter::shared_ptr_from_python<char>();
+#endif
 
         registered = true;
     }
