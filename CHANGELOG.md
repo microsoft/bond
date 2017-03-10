@@ -15,9 +15,13 @@ different versioning scheme, following the Haskell community's
 * `gbc` & compiler library: TBD
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD
+* C++ version: TBD (bugfix bump needed)
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed)
+
+### C++ ###
+
+* Fix Python shared_ptr converter build break with Boost 1.63.
 
 ## C# ###
 
