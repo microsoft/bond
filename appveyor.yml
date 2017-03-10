@@ -69,19 +69,29 @@
 
             choco install haskellplatform -version 2014.2.0.0 -y
 
-            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+            # choco install updated the path, so re-read them from the registry and reset $env:path
+
+            $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+
+            $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
+
+            $env:Path = "$machinePath;$userPath"
 
             cabal update
 
             if ($env:BOND_BUILD -eq "Doc") {
 
-                cabal install -j pandoc --constraint='mtl<=2.1.3.1'
+                choco install pandoc --version 1.19.2  -y
 
                 choco install doxygen.install -y
 
-            }
+                $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 
-            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+                $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
+
+                $env:Path = "$machinePath;$userPath"
+
+            }
 
     cache:
         - cs\packages -> cs\test\core\packages.config
