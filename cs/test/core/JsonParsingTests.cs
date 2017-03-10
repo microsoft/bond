@@ -703,5 +703,25 @@ World", target._str);
             var target = deserializer.Deserialize<T>(reader);
             return target;
         }
+
+        [Test]
+        public void JsonParsing_DateAsStringInStreamConstructor()
+        {
+            string timestamp = "2017-03-07T04:47:50.1145227Z";
+            string json = $"{{\"timestamp\":\"{timestamp}\"}}";
+
+            DateAsString target;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                TextWriter tw = new StreamWriter(ms);
+                tw.Write(json);
+                tw.Flush();
+                ms.Seek(0, SeekOrigin.Begin);
+
+                var reader = new SimpleJsonReader(ms);
+                target = Deserialize<DateAsString>.From(new SimpleJsonReader(ms));
+            }
+            Assert.AreEqual(timestamp, target.timestamp);
+        }
     }
 }
