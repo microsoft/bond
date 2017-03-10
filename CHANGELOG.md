@@ -22,7 +22,7 @@ different versioning scheme, following the Haskell community's
 ## C# ###
 
 * Added controls to cap incremental allocation between reads in
-  IO.UnsafeInputStream.
+  Bond.IO.Unsafe.InputStream.
 
 ### C# Comm ###
 

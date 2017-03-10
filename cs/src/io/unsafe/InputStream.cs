@@ -11,9 +11,6 @@ namespace Bond.IO.Unsafe
     /// </summary>
     public class InputStream : InputBuffer, ICloneable<InputStream>
     {
-        readonly Stream stream;
-        readonly int bufferLength;
-
         // Default setting for maximum incremental allocation chunk size before reading from stream
         public const int DefaultAllocationChunk = 128 * 1024 * 1024;
 
@@ -31,12 +28,15 @@ namespace Bond.IO.Unsafe
             }
         }
 
+        static int activeAllocationChunk;
+
+        readonly Stream stream;
+        readonly int bufferLength;
+
         static InputStream()
         {
             ActiveAllocationChunk = DefaultAllocationChunk;
         }
-
-        static int activeAllocationChunk;
 
         // When we read more data from the stream we can override existing buffer
         // only if it hasn't been exposed via ReadBytes or Clone. Otherwise a new

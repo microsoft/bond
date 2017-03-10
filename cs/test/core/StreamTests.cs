@@ -113,14 +113,14 @@
         delegate void IntTest<T>(T value);
 
         [Test]
-        public void VarintTest()
+        public void VarIntTest()
         {
-            VarintTestImpl();
+            VarIntTestImpl();
             InputStream.ActiveAllocationChunk = 8;
-            VarintTestImpl();
+            VarIntTestImpl();
         }
 
-        internal void VarintTestImpl()
+        internal void VarIntTestImpl()
         {
             IntTest<ushort> test16 = (value) =>
             {
