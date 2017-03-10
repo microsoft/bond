@@ -133,10 +133,10 @@ namespace detail
         static SchemaDef NewSchemaDef()
         {
             // SchemaDef for unknown types: struct with no fields
-            SchemaDef schema;
-            schema.root.id = BT_STRUCT;
-            schema.structs.resize(1);
-            return schema;
+            SchemaDef s;
+            s.root.id = BT_STRUCT;
+            s.structs.resize(1);
+            return s;
         }
 
     private:

@@ -79,6 +79,7 @@ test-suite gbc-tests
   hs-source-dirs:   tests, .
   main-is:          Main.hs
   other-modules:    Tests.Codegen
+                    Tests.Codegen.Util
                     Tests.Syntax
   ghc-options:      -threaded -Wall
   build-depends:    bond,

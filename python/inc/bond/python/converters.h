@@ -6,7 +6,7 @@
 #if defined(_MSC_VER)
 // Disable warnings in boost::python
 #   pragma warning (push)
-#   pragma warning (disable : 4512 4127 4244 4100 4121 4267)
+#   pragma warning (disable : 4100 4121 4127 4244 4267 4456 4459 4512)
 
 #   if _MSC_VER < 1800
 #       define HAVE_ROUND
@@ -171,11 +171,11 @@ bool map_insert(Map& map, const Key& key, const boost::python::object& obj)
     using namespace boost::python;
     typedef typename Map::value_type value_type;
 
-    extract<const typename value_type::second_type&> value(obj);
+    extract<const typename value_type::second_type&> valueRef(obj);
 
-    if (value.check())
+    if (valueRef.check())
     {
-        map.insert(std::make_pair(key(), value()));
+        map.insert(std::make_pair(key(), valueRef()));
         return true;
     }
     else
@@ -217,11 +217,11 @@ extend_map(Map& map, const boost::python::object& obj)
             stl_input_iterator<object>()
             ))
     {
-        extract<const typename value_type::first_type&> key(k);
+        extract<const typename value_type::first_type&> keyRef(k);
 
-        if (key.check())
+        if (keyRef.check())
         {
-            if (map_insert(map, key, dict.get(k)))
+            if (map_insert(map, keyRef, dict.get(k)))
             {
                 continue;
             }
@@ -281,11 +281,11 @@ extend_set(T& set, const boost::python::object& obj)
             stl_input_iterator<object>()
             ))
     {
-        extract<data_type const&> x(elem);
+        extract<data_type const&> xRef(elem);
 
-        if (x.check())
+        if (xRef.check())
         {
-            set.insert(x());
+            set.insert(xRef());
         }
         else
         {
@@ -405,11 +405,11 @@ struct nullable_maybe_converter
 
     static void extract(T& dst, const boost::python::object& src)
     {
-        boost::python::extract<const typename T::value_type&> value(src);
+        boost::python::extract<const typename T::value_type&> valueRef(src);
 
-        if (value.check())
+        if (valueRef.check())
         {
-            dst = T(static_cast<const typename T::value_type&>(value));
+            dst = T(static_cast<const typename T::value_type&>(valueRef));
             return;
         }
         else

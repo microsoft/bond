@@ -128,9 +128,9 @@ namespace std
             return true#{optional baseEqual structBase}#{newlineBeginSep 4 fieldEqual structFields};
         }
 
-        bool operator!=(const #{declName}& other) const
+        bool operator!=(const #{declName}& #{otherParamName}) const
         {
-            return !(*this == other);
+            return !(*this == #{otherParamName});
         }
 
         void swap(#{declName}&#{otherParam})
@@ -144,15 +144,19 @@ namespace std
         #{initMetadata}
     };
 
-    #{template}inline void swap(#{qualifiedClassName}& left, #{qualifiedClassName}& right)
+    #{template}inline void swap(#{qualifiedClassName}& #{leftParamName}, #{qualifiedClassName}& #{rightParamName})
     {
-        left.swap(right);
+        #{leftParamName}.swap(#{rightParamName});
     }|]
       where
         template = CPP.template s
         qualifiedClassName = CPP.qualifiedClassName cpp s
 
-        otherParam = if hasOnlyMetaFields then mempty else [lt| other|]
+        fieldNames :: [String]
+        fieldNames = foldMapStructFields (return . fieldName) s
+
+        otherParamName = uniqueName "other" fieldNames
+        otherParam = if hasOnlyMetaFields then mempty else ' ':otherParamName
         hasOnlyMetaFields = not (any (not . getAny . metaField) structFields) && isNothing structBase
         hasMetaFields = getAny $ foldMapStructFields metaField s
 
@@ -248,16 +252,16 @@ namespace std
             -- default OK when there are no meta fields
             implicitlyDeclared = CPP.ifndef CPP.defaultedFunctions [lt|
         // Compiler generated copy ctor OK
-        #{declName}(const #{declName}& other) = default;|]
+        #{declName}(const #{declName}&) = default;|]
 
             -- define ctor to initialize meta fields
-            define = [lt|#{declName}(const #{declName}& other)#{initList}#{ctorBody}|]
+            define = [lt|#{declName}(const #{declName}& #{otherParamName})#{initList}#{ctorBody}|]
               where
                 initList = initializeList
                     (optional baseCopy structBase)
                     (commaLineSep 3 fieldCopy structFields)
-                baseCopy b = [lt|#{cppType b}(other)|]
-                fieldCopy Field {..} = [lt|#{fieldName}(other.#{fieldName}#{getAllocator fieldType})|]
+                baseCopy b = [lt|#{cppType b}(#{otherParamName})|]
+                fieldCopy Field {..} = [lt|#{fieldName}(#{otherParamName}.#{fieldName}#{getAllocator fieldType})|]
                 getAllocator BT_MetaName = [lt|.get_allocator()|]
                 getAllocator BT_MetaFullName =  [lt|.get_allocator()|]
                 getAllocator _ = mempty
@@ -277,7 +281,7 @@ namespace std
 #endif|]
           where
             -- default OK when there are no meta fields
-            implicit = [lt|#{declName}(#{declName}&& other) = default;|]
+            implicit = [lt|#{declName}(#{declName}&&) = default;|]
 
             -- define ctor to perform member-by-member move and--if
             -- needed--initialize meta fields
@@ -285,9 +289,9 @@ namespace std
             initList = initializeList
                 (optional baseMove structBase)
                 (commaLineSep 3 fieldMove structFields)
-            baseMove b = [lt|#{cppType b}(std::move(other))|]
-            fieldMove Field {..} = [lt|#{fieldName}(std::move(other.#{fieldName}))|]
-            param = if initList == mempty then mempty else [lt| other|]
+            baseMove b = [lt|#{cppType b}(std::move(#{otherParamName}))|]
+            fieldMove Field {..} = [lt|#{fieldName}(std::move(#{otherParamName}.#{fieldName}))|]
+            param = if initList == mempty then mempty else ' ':otherParamName
 
         -- operator=
         assignmentOp = if hasMetaFields then define else implicitlyDeclared
@@ -295,12 +299,12 @@ namespace std
             -- default OK when there are no meta fields
             implicitlyDeclared = CPP.ifndef CPP.defaultedFunctions [lt|
         // Compiler generated operator= OK
-        #{declName}& operator=(const #{declName}& other) = default;|]
+        #{declName}& operator=(const #{declName}&) = default;|]
 
             -- define operator= using swap
-            define = [lt|#{declName}& operator=(const #{declName}& other)
+            define = [lt|#{declName}& operator=(const #{declName}& #{otherParamName})
         {
-            #{declName}(other).swap(*this);
+            #{declName}(#{otherParamName}).swap(*this);
             return *this;
         }|]
 
@@ -308,17 +312,20 @@ namespace std
         {#{newlineBeginSep 3 id [baseInit, nameInit, qualifiedInit]}
         }|]
           where
-            nameParam = if baseInit == mempty && nameInit == mempty then mempty else [lt| name|]
-            qualifiedNameParam = if baseInit == mempty && qualifiedInit == mempty then mempty else [lt| qualified_name|]
-            baseInit = optional (\b -> [lt|#{cppType b}::InitMetadata(name, qualified_name);|]) structBase
+            nameParam = if baseInit == mempty && nameInit == mempty then mempty else uniqueName "name" fieldNames
+            qualifiedNameParam = if baseInit == mempty && qualifiedInit == mempty then mempty else uniqueName "qual_name" fieldNames
+            baseInit = optional (\b -> [lt|#{cppType b}::InitMetadata(#{nameParam}, #{qualifiedNameParam});|]) structBase
             nameInit = newlineSep 3 init' structFields
               where
-                init' Field {fieldType = BT_MetaName, ..} = [lt|this->#{fieldName} = name;|]
+                init' Field {fieldType = BT_MetaName, ..} = [lt|this->#{fieldName} = #{nameParam};|]
                 init' _ = mempty
             qualifiedInit = newlineSep 3 init' structFields
               where
-                init' Field {fieldType = BT_MetaFullName, ..} = [lt|this->#{fieldName} = qualified_name;|]
+                init' Field {fieldType = BT_MetaFullName, ..} = [lt|this->#{fieldName} = #{qualifiedNameParam};|]
                 init' _ = mempty
+
+        leftParamName = uniqueName "left" fieldNames
+        rightParamName = uniqueName "right" fieldNames
 
     -- enum definition and helpers
     typeDeclaration e@Enum {..} = [lt|

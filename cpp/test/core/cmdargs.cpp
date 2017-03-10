@@ -21,7 +21,7 @@ typedef boost::mpl::push_front
 typedef boost::mpl::list
     <
         EnumType
-    > 
+    >
     EnumTypes;
 
 
@@ -81,25 +81,25 @@ struct CmdArg : boost::noncopyable
 
         options = bond::cmd::GetArgs<T>(argc(), argv());
     }
-    
+
     // Single param
     template <typename T>
     void Add(const std::string& param, const T& value)
     {
         Add(param + ToString(value));
     }
-    
+
     template <typename T>
     void AddRaw(const std::string& param, const T& value)
     {
         _Add(param + ToString(value));
     }
-    
+
     // Comma-separated list
     template <typename T>
     void Add(std::string param, const std::list<T>& value)
     {
-        BOOST_FOREACH(const T& item, value)
+        for (const auto& item : value)
         {
             param += ToString(item) + ",";
         }
@@ -118,15 +118,15 @@ struct CmdArg : boost::noncopyable
 
         if (space > quote)
             space = std::string::npos;
-        
+
         _Add(param.substr(0, space));
-        
+
         if (space != std::string::npos)
             _Add(param.substr(space + 1));
     }
 
 private:
-    int argc() const 
+    int argc() const
     {
         return static_cast<int>(params.size());
     }
@@ -230,7 +230,7 @@ struct SingleParam
         //  --field=1
         //  --field:Value3
         //  -f 0
-        BOOST_FOREACH(std::string param, ParameterVariants)
+        for (const auto& param : ParameterVariants)
         {
             CmdArg data(variant);
             Option<T> options;
@@ -247,7 +247,7 @@ struct SingleParam
         // Flags, e.g.:
         //  --field
         //  -f
-        BOOST_FOREACH(std::string flag, FlagVariants)
+        for (const auto& flag : FlagVariants)
         {
             CmdArg data(variant);
             Option<bool> options;
@@ -259,7 +259,7 @@ struct SingleParam
         }
     }
 
-    
+
     void TestNaked(const bool&, int)
     {
         // naked bool not supported
@@ -290,7 +290,7 @@ struct ParamList
     {
         T input = boost::lexical_cast<T>(1);
 
-        for (int i = 0; i <= 4; ++i) 
+        for (int i = 0; i <= 4; ++i)
             Test(input, i);
     }
 
@@ -303,14 +303,14 @@ struct ParamList
     void Test(const T&, int variant)
     {
         list<T> input;
-        
+
         input.push_back(boost::lexical_cast<T>(0));
         input.push_back(boost::lexical_cast<T>(1));
         input.push_back(boost::lexical_cast<T>(2));
-        
+
         // Flags - list item per param, e.g.:
         //  -f 0 -f 1 -f 2
-        BOOST_FOREACH(std::string param, ParameterVariants)
+        for (std::string param : ParameterVariants)
         {
             if (param == "-xf ")
                 continue;
@@ -318,11 +318,11 @@ struct ParamList
             CmdArg data(variant);
             Option<list<T> > options;
 
-            BOOST_FOREACH(const T& item, input)
+            for (const auto& item : input)
             {
                 data.Add(param, item);
             }
-        
+
             data.Get(options);
 
             UT_AssertIsTrue(input == options.field);
@@ -336,11 +336,11 @@ struct ParamList
             CmdArg data(variant);
             Naked<list<T> > naked;
 
-            BOOST_FOREACH(const T& item, input)
+            for (const auto& item : input)
             {
                 data.Add("", item);
             }
-        
+
             data.Get(naked);
 
             UT_AssertIsTrue(input == naked.field);
@@ -352,7 +352,7 @@ struct ParamList
         SingleParam single;
 
         single.Test(input, variant);
-        
+
         // variant 0 not supported for naked list because they are greedy
         if (variant != 0)
             single.TestNaked(input, variant);
@@ -380,7 +380,7 @@ TEST_CASE_BEGIN(ListTests)
     boost::mpl::for_each<EnumTypes>(ParamList());
 
     // list tokenizer
-    BOOST_FOREACH(std::string param, ParameterVariants)
+    for (const auto& param : ParameterVariants)
     {
         {
             Option<std::vector<std::string> > options;
@@ -423,11 +423,11 @@ TEST_CASE_END
 
 TEST_CASE_BEGIN(SpecialTests)
 {
-    BOOST_FOREACH(std::string param, ParameterVariants)
+    for (const auto& param : ParameterVariants)
     {
-        BOOST_FOREACH(std::string value, SpecialStrings)
+        for (std::string value: SpecialStrings)
         {
-            for (int variant = 0; variant <= 4; ++variant) 
+            for (int variant = 0; variant <= 4; ++variant)
             {
                 {
                     CmdArg data(variant);
@@ -470,7 +470,7 @@ TEST_CASE_END
 
 TEST_CASE_BEGIN(FailureTests)
 {
-    BOOST_FOREACH(std::string param, Failures)
+    for (const auto& param : Failures)
     {
         // invalid types, unexpected arguments, invalind enum
         CmdArg data;
@@ -479,11 +479,11 @@ TEST_CASE_BEGIN(FailureTests)
         data.Add("naked");
         data.Add("--need=required");
         data.Add(param);
-        
+
         UT_AssertThrows(data.Get(options), std::exception);
     }
 
-    BOOST_FOREACH(std::string value, SpecialStrings)
+    for (const auto& value : SpecialStrings)
     {
         // special string as unexpected command line argument
         CmdArg data;
@@ -492,7 +492,7 @@ TEST_CASE_BEGIN(FailureTests)
         data.Add("naked");
         data.Add("--need=required");
         data.Add("", value);
-               
+
         UT_AssertThrows(data.Get(options), std::exception);
     }
 
@@ -539,7 +539,7 @@ TEST_CASE_BEGIN(UsageTests)
     std::ostringstream actual;
     Usage options;
     Apply(bond::cmd::detail::Usage("example.exe", actual), options);
-    
+
     UT_AssertAreEqual(expected, actual.str());
 }
 TEST_CASE_END
@@ -563,4 +563,3 @@ bool init_unit_test()
     CmdArgs::Initialize();
     return true;
 }
-

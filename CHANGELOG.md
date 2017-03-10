@@ -12,12 +12,18 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased ##
-* `gbc` & compiler library: TBD
+* `gbc` & compiler library: TBD (minor bump needed)
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD
+* C++ version: TBD (major bump needed)
 * C# NuGet version: TBD
 * C# Comm NuGet version: TBD (minor bump needed)
+
+### C++ ###
+* **Breaking change:** Suppression of MSVC name shadowing warnings is no
+  longed needed, and Bond's warning.h header no longed supresses C4456,
+  C4458, or C4459. This may cause these warnings to now be triggered on
+  other code.
 
 ### C# Comm ###
 
