@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Text;
     using Bond;
     using Bond.Protocols;
     using Newtonsoft.Json;
@@ -711,16 +712,8 @@ World", target._str);
             string json = $"{{\"timestamp\":\"{timestamp}\"}}";
 
             DateAsString target;
-            using (MemoryStream ms = new MemoryStream())
-            {
-                TextWriter tw = new StreamWriter(ms);
-                tw.Write(json);
-                tw.Flush();
-                ms.Seek(0, SeekOrigin.Begin);
-
-                var reader = new SimpleJsonReader(ms);
-                target = Deserialize<DateAsString>.From(new SimpleJsonReader(ms));
-            }
+            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
+            target = Deserialize<DateAsString>.From(new SimpleJsonReader(ms));
             Assert.AreEqual(timestamp, target.timestamp);
         }
     }
