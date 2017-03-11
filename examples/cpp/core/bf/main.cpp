@@ -1,11 +1,40 @@
-#include <iostream>
-#include "input_file.h"
 #include "cmd_arg_reflection.h"
+#include "err.h"
+#include "input_file.h"
 #include <bond/core/cmdargs.h>
-#include <bond/stream/stdio_output_stream.h>
 #include <bond/protocol/simple_json_writer.h>
+#include <bond/stream/stdio_output_stream.h>
+#include <errno.h>
+#include <iostream>
+#include <stdio.h>
 
 using namespace bf;
+
+FILE* OpenFile(const std::string& path, const char* mode)
+{
+    FILE* file;
+
+#ifdef _MSC_VER
+    // Under the compiler settings we use with MSVC, fopen is not considered
+    // "secure", so we use the "secure" variant.
+    errno_t err = fopen_s(&file, path.c_str(), mode);
+    if (err != 0)
+    {
+        BOND_THROW(bond::StreamException, "Error " << ErrorString(err) << " opening file " << path);
+    }
+
+#else
+
+    file = fopen(path.c_str(), mode);
+    if (file == nullptr)
+    {
+        BOND_THROW(bond::StreamException, "Error " << ErrorString(errno) << " opening file " << path);
+    }
+
+#endif
+
+    return file;
+}
 
 inline bool IsValidType(bond::BondDataType type)
 {
@@ -144,9 +173,13 @@ bool TranscodeFrom(Reader reader, const Options& options)
     FILE* file;
 
     if (options.output == "stdout")
+    {
         file = stdout;
+    }
     else
-        file = fopen(options.output.c_str(), "wb");
+    {
+        file = OpenFile(options.output.c_str(), "wb");
+    }
 
     bond::StdioOutputStream out(file);
 
@@ -271,4 +304,3 @@ int main(int argc, char** argv)
 
     return 1;
 }
-
