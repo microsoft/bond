@@ -15,13 +15,18 @@ different versioning scheme, following the Haskell community's
 * `gbc` & compiler library: TBD
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD (bugfix bump needed)
+* C++ version: TBD (minor bump needed)
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed)
 
 ### C++ ###
 
 * Fix Python shared_ptr converter build break with Boost 1.63.
+* Improve compliance with
+  [Microsoft's SDL](https://www.microsoft.com/en-us/sdl/).
+    * Bond now builds on MSVC with
+      [`_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES`](https://msdn.microsoft.com/en-us/library/ms175759.aspx)
+      instead of `_CTR_SECURE_NO_WARNINGS`.
 
 ## C# ###
 
