@@ -23,6 +23,8 @@ different versioning scheme, following the Haskell community's
 
 * Added controls to cap incremental allocation between reads in
   `Bond.IO.Unsafe.InputStream`.
+* Extended bug parsing JSON when a string value is a date.
+  [Pull request #358](https://github.com/Microsoft/bond/pull/358)
 
 ### C# Comm ###
 
