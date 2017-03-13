@@ -15,8 +15,7 @@ different versioning scheme, following the Haskell community's
 * `gbc` & compiler library: TBD (minor bump needed)
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD (major bump needed)
->>>>>>> [c++] Avoid name shadowing warnings
+* C++ version: TBD (minor bump needed)
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed)
 
@@ -33,10 +32,9 @@ different versioning scheme, following the Haskell community's
       [`_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES`](https://msdn.microsoft.com/en-us/library/ms175759.aspx)
       instead of `_CTR_SECURE_NO_WARNINGS`.
     * Bond builds on MSVC with SDL recommended warnings enabled.
-* **Breaking change:** Suppression of MSVC name shadowing warnings is no
-  longed needed, and Bond's warning.h header no longer supresses C4456,
-  C4458, or C4459. This may cause these warnings to now be triggered on
-  other code.
+* Eliminate need for warning suppression on MSVC14 via warning.h in Bond
+  itself. warning.h is still in place on MSVC12; furthermore, we don't alter
+  warning.h for now as it may be depended upon by application code.
 
 ## C# ###
 

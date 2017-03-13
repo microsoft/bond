@@ -15,7 +15,15 @@ void Merging(Payload payload, const T& obj, uint16_t version = bond::v1, bool me
     {
         T to;
         
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4127) // C4127: conditional expression is constant
+#endif
         if (boost::mpl::count_if<typename T::Schema::fields, is_optional_field<_> >::value == 0)
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
         {
             to = InitRandom<T>();
             Fixup(to);
@@ -31,7 +39,14 @@ void Merging(Payload payload, const T& obj, uint16_t version = bond::v1, bool me
     {
         Payload to;
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4127) // C4127: conditional expression is constant
+#endif
         if (boost::mpl::count_if<typename Payload::Schema::fields, is_optional_field<_> >::value == 0)
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
         {
             to = InitRandom<Payload>();
             Fixup(to);

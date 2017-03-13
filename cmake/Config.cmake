@@ -21,8 +21,10 @@ endif()
 if (MSVC)
     # MSVC needs this because of how template-heavy our code is.
     add_compile_options (/bigobj)
-    # inject disabling of some MSVC warnings
-    add_compile_options (/FIbond/core/warning.h)
+    # inject disabling of some MSVC warnings for versions prior to MSVC14
+    if (MSVC_VERSION LESS 1900)
+        add_compile_options (/FIbond/core/warning.h)
+    endif()
     # turn up warning level
     add_compile_options (/W4 /WX /sdl)
     # Enable SDL recommended warnings that aren't enabled by /W4
