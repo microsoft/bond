@@ -22,34 +22,34 @@ namespace tests
         public: struct var
         {
             // o
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
                 bool,
                 &Foo::o,
                 &s_o_metadata
-            > o;
+            > {}  o;
         
             // r
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::required_field_modifier,
                 Foo,
                 int16_t,
                 &Foo::r,
                 &s_r_metadata
-            > r;
+            > {}  r;
         
             // ro
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::required_optional_field_modifier,
                 Foo,
                 double,
                 &Foo::ro,
                 &s_ro_metadata
-            > ro;
+            > {}  ro;
         };
 
         private: typedef boost::mpl::list<> fields0;
