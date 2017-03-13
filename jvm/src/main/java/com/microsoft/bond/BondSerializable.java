@@ -10,7 +10,6 @@ import java.io.InputStream;
  * Enables serialization of Bond classes.
  */
 public interface BondSerializable {
-
     /**
      * Resets object to the default value.
      */

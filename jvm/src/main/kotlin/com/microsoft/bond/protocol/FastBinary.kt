@@ -21,7 +21,6 @@ class FastBinaryWriter<out O : OutputStream>(val output: O, val version: Short =
     override fun writeBaseBegin(metadata: Metadata?) {}
 
     override fun writeStructEnd() {
-        BondDataType.BT_UNAVAILABLE.value
         dataOutput.writeByte(BondDataType.BT_STOP.value)
     }
 
