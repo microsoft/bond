@@ -122,6 +122,15 @@
 
             }
 
+            if ($env:BOND_BUILD -eq "Python" -Or $env:BOND_BUILD -eq "C++") {
+
+                # Make sure we have Python27-64 before any other version
+                if ($env:BOND_ARCH -eq 64) {
+                    $env:Path = "C:\Python27-x64\scripts;C:\Python27-x64\;${env:Path}"
+                }
+
+            }
+
             if ($env:BOND_BUILD -eq "Python") {
 
                 mkdir build
@@ -139,11 +148,6 @@
                 mkdir build
 
                 cd build
-
-                # Make sure we have Python27-64 before any other version; Python path per https://www.appveyor.com/docs/installed-software#python
-                if ($env:BOND_ARCH -eq 64) {
-                    $env:Path = "C:\Python27-x64\scripts;C:\Python27-x64\;${env:Path}"
-                }
 
                 cmake $cmakeFlags -G $cmakeGenerator ..
 
