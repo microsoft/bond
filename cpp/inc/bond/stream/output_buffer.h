@@ -80,6 +80,7 @@ public:
     /// @brief Construct OutputMemoryStream using specified allocator instance
     explicit OutputMemoryStream(const A& allocator = A())
         : _allocator(allocator),
+          _buffer(),
           _bufferSize(0),
           _rangeSize(0),
           _rangeOffset(0),
@@ -98,12 +99,12 @@ public:
                                 uint32_t minChanningSize = 32,
                                 uint32_t maxChainLength = (uint32_t)-1)
         : _allocator(allocator),
+          _buffer(buffer),
           _bufferSize(size),
           _rangeSize(0),
           _rangeOffset(0),
           _minChainningSize(minChanningSize),
           _maxChainLength(maxChainLength),
-          _buffer(buffer),
           _rangePtr(_buffer.get()),
           _blobs(allocator)
     {
