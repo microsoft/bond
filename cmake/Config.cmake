@@ -25,6 +25,10 @@ if (MSVC)
     add_compile_options (/FIbond/core/warning.h)
     # turn up warning level
     add_compile_options (/W4 /WX /sdl)
+    # Enable SDL recommended warnings that aren't enabled by /W4
+    # 4242: 'identifier': conversion from 'type1' to 'type2', possible loss of data
+    # 4302: 'conversion': truncation from 'type1' to 'type2'
+    add_compile_options (/we4242 /we4302)
     # use secure CRT functions via template overloads to avoid polluting
     # Bond with MSVC CRT-specific code too much. More details at
     # https://msdn.microsoft.com/en-us/library/ms175759.aspx
