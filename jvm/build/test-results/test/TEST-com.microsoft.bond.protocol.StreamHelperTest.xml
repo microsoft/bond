@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.microsoft.bond.protocol.StreamHelperTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2017-05-17T00:45:10" hostname="pike" time="0.003">
-  <properties/>
-  <testcase name="readBytes" classname="com.microsoft.bond.protocol.StreamHelperTest" time="0.002"/>
-  <testcase name="readByte" classname="com.microsoft.bond.protocol.StreamHelperTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

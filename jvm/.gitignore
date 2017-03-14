@@ -1,4 +1,4 @@
-build/
-.idea/workspace.xml
-.idea/libraries
 .gradle/
+.idea/libraries
+.idea/workspace.xml
+build/

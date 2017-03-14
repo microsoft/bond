@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.microsoft.bond.protocol.VarUIntHelperTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2017-05-17T00:45:10" hostname="pike" time="0.028">
-  <properties/>
-  <testcase name="testVarUInt32Encoding" classname="com.microsoft.bond.protocol.VarUIntHelperTest" time="0.004"/>
-  <testcase name="testVarUInt64Encoding" classname="com.microsoft.bond.protocol.VarUIntHelperTest" time="0.022"/>
-  <testcase name="testVarUInt16Encoding" classname="com.microsoft.bond.protocol.VarUIntHelperTest" time="0.0"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
