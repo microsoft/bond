@@ -3,17 +3,16 @@ package com.microsoft.bond.protocol
 import com.microsoft.bond.BondDataType
 import com.microsoft.bond.Metadata
 import com.microsoft.bond.ProtocolType
-import java.io.DataOutputStream
-import java.io.OutputStream
+import com.microsoft.bond.stream.BondOutputStream
 import java.math.BigInteger
+import java.nio.charset.Charset
 
-class FastBinaryWriter<out O : OutputStream>(val output: O, val version: Short = 1): ProtocolWriter {
+class FastBinaryWriter<out O : BondOutputStream>(val output: O, val version: Short = 1): ProtocolWriter {
     val Magic = ProtocolType.FAST_PROTOCOL
-    val dataOutput = DataOutputStream(output)
 
     override fun writeVersion() {
-        dataOutput.writeShort(Magic.value)
-        dataOutput.writeShort(version.toInt())
+        output.writeInt16(Magic.value.toShort())
+        output.writeInt16(version)
     }
 
     override fun writeStructBegin(metadata: Metadata?) {}
@@ -21,16 +20,16 @@ class FastBinaryWriter<out O : OutputStream>(val output: O, val version: Short =
     override fun writeBaseBegin(metadata: Metadata?) {}
 
     override fun writeStructEnd() {
-        dataOutput.writeByte(BondDataType.BT_STOP.value)
+        output.writeInt8(BondDataType.BT_STOP.value.toByte())
     }
 
     override fun writeBaseEnd() {
-        dataOutput.writeByte(BondDataType.BT_STOP_BASE.value)
+        output.writeInt8(BondDataType.BT_STOP_BASE.value.toByte())
     }
 
     override fun writeFieldBegin(type: BondDataType, id: Int, metadata: Metadata?) {
-        dataOutput.writeByte(type.value)
-        dataOutput.writeShort(id)
+        output.writeInt8(type.value.toByte())
+        output.writeInt16(id.toShort())
     }
 
     override fun writeFieldEnd() {}
@@ -38,79 +37,72 @@ class FastBinaryWriter<out O : OutputStream>(val output: O, val version: Short =
     override fun writeFieldOmitted(type: BondDataType, id: Int, metadata: Metadata?) {}
 
     override fun writeContainerBegin(count: Int, elementType: BondDataType) {
-        dataOutput.writeByte(elementType.value)
-        dataOutput.writeInt(count)
+        output.writeInt8(elementType.value.toByte())
+        output.writeInt32(count)
     }
 
     override fun writeContainerBegin(count: Int, keyType: BondDataType, valueType: BondDataType) {
-        dataOutput.writeByte(keyType.value)
-        dataOutput.writeByte(valueType.value)
-        dataOutput.writeInt(count)
+        output.writeInt8(keyType.value.toByte())
+        output.writeInt8(valueType.value.toByte())
+        output.writeInt32(count)
     }
 
     override fun writeContainerEnd() {}
 
     override fun writeInt8(value: Byte) {
-        dataOutput.writeByte(value.toInt())
+        output.writeInt8(value)
     }
 
     override fun writeInt16(value: Short) {
-        dataOutput.writeShort(value.toInt())
+        output.writeInt16(value)
     }
 
     override fun writeInt32(value: Int) {
-        dataOutput.writeInt(value)
+        output.writeInt32(value)
     }
 
     override fun writeInt64(value: Long) {
-        dataOutput.writeLong(value)
+        output.writeInt64(value)
     }
 
     override fun writeUInt8(value: Short) {
-        dataOutput.writeByte(value.toInt())
+        output.writeInt8(value.toByte())
     }
 
     override fun writeUInt16(value: Int) {
-        dataOutput.writeShort(value)
+        output.writeInt16(value.toShort())
     }
 
     override fun writeUInt32(value: Long) {
-        dataOutput.writeInt(value.toInt())
+        output.writeInt32(value.toInt())
     }
 
     override fun writeUInt64(value: BigInteger) {
-        dataOutput.writeLong(value.toLong())
+        output.writeInt64(value.toLong())
     }
 
     override fun writeFloat(value: Float) {
-        dataOutput.writeFloat(value)
+        output.writeFloat(value)
     }
 
     override fun writeDouble(value: Double) {
-        dataOutput.writeDouble(value)
+        output.writeDouble(value)
     }
 
     override fun writeBytes(value: ByteArray) {
-        dataOutput.write(value)
+        output.writeBytes(value)
     }
 
     override fun writeBool(value: Boolean) {
-        dataOutput.writeByte(if (value) 1 else 0)
+        output.writeBool(value)
     }
 
     override fun writeString(value: String) {
-        dataOutput.writeInt(value.length)
-        if (value.isNotEmpty()) {
-            val bytes = value.toByteArray(Charsets.UTF_8)
-            dataOutput.write(bytes)
-        }
+        // FIXME: Make sure this generates null bytes and not \u0000.
+        output.writeString(value, Charset.forName("UTF-8"))
     }
 
     override fun writeWString(value: String) {
-        dataOutput.writeInt(value.length)
-        if (value.isNotEmpty()) {
-            val bytes = value.toByteArray(Charsets.UTF_16LE)
-            dataOutput.write(bytes)
-        }
+        output.writeString(value, Charset.forName("UTF-16LE"))
     }
 }
