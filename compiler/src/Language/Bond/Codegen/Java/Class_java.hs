@@ -48,7 +48,7 @@ import com.microsoft.bond.protocol.*;
 public class #{declName}#{params}#{maybe interface baseClass structBase} {
     #{doubleLineSep 1 publicField structFields}
 
-#{write_ProtocolWriter declaration}
+#{marshal_ProtocolWriter declaration}
 }|]
             where
                 interface = [lt| implements BondSerializable|]
@@ -63,10 +63,10 @@ public class #{declName}#{params}#{maybe interface baseClass structBase} {
 
         typeDefinition _ = mempty
 
-write_ProtocolWriter :: Declaration -> Text
-write_ProtocolWriter declaration = [lt|
+marshal_ProtocolWriter :: Declaration -> Text
+marshal_ProtocolWriter declaration = [lt|
     @Override
-    public void write(ProtocolWriter writer) throws IOException {
+    public void marshal(ProtocolWriter writer) throws IOException {
         writer.writeVersion();
 
 // FIXME: Where is my metadata?

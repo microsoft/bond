@@ -7,7 +7,7 @@ import java.io.DataOutputStream
 import java.io.OutputStream
 import java.math.BigInteger
 
-class FastBinaryWriter<out O : OutputStream>(val output: O, val version: Short = 1) : ProtocolWriter {
+class FastBinaryWriter<out O : OutputStream>(val output: O, val version: Short = 1): ProtocolWriter {
     val Magic = ProtocolType.FAST_PROTOCOL
     val dataOutput = DataOutputStream(output)
 
