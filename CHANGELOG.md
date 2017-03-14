@@ -27,6 +27,7 @@ different versioning scheme, following the Haskell community's
     * Bond now builds on MSVC with
       [`_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES`](https://msdn.microsoft.com/en-us/library/ms175759.aspx)
       instead of `_CTR_SECURE_NO_WARNINGS`.
+    * Bond builds on MSVC with SDL recommended warnings enabled.
 
 ## C# ###
 

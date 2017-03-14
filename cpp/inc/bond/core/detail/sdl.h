@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include <boost/assert.hpp>
+#include <boost/core/ignore_unused.hpp>
 #include <iterator>
 
 namespace bond { namespace detail
@@ -38,10 +40,13 @@ stdext::checked_array_iterator<Iterator> make_checked_array_iterator(
 template<class Iterator> inline
 Iterator make_checked_array_iterator(
     Iterator array,
-    size_t /* size */,
-    size_t /* index */ = 0)
+    size_t size,
+    size_t index  = 0)
 {
-    return array;
+    boost::ignore_unused(size);
+    BOOST_ASSERT(index <= size);
+
+    return array + index;
 }
 
 #endif
