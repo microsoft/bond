@@ -4,11 +4,13 @@ import com.microsoft.bond.BondDataType
 import com.microsoft.bond.Metadata
 import com.microsoft.bond.ProtocolType
 import com.microsoft.bond.stream.BondOutputStream
+import java.io.OutputStream
 import java.math.BigInteger
 import java.nio.charset.Charset
 
-class FastBinaryWriter<out O : BondOutputStream>(val output: O, val version: Short = 1): ProtocolWriter {
+class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short = 1): ProtocolWriter {
     val Magic = ProtocolType.FAST_PROTOCOL
+    private val output = BondOutputStream(stream)
 
     override fun writeVersion() {
         output.writeInt16(Magic.value.toShort())
