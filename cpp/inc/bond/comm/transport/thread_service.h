@@ -6,10 +6,15 @@
     // Work-around: 'OSMemoryBarrier' has been explicitly marked deprecated
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#include <boost/asio.hpp>
+    #include <boost/asio.hpp>
     #pragma GCC diagnostic pop
+#elif defined (_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable: 4242) // C4242: 'identifier' : conversion from 'type1' to 'type2', possible loss of data
+    #include <boost/asio.hpp>
+    #pragma warning(pop)
 #else
-#include <boost/asio.hpp>
+    #include <boost/asio.hpp>
 #endif
 
 #include <boost/scoped_ptr.hpp>

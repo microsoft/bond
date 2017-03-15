@@ -1,8 +1,10 @@
 #pragma once
 
-#include <fstream>
-#include <bond/core/exception.h>
+#include "err.h"
 #include <bond/core/blob.h>
+#include <bond/core/exception.h>
+#include <fstream>
+#include <string>
 
 class InputFile
 {
@@ -20,10 +22,10 @@ public:
         }
         else
         {
-            BOND_THROW(bond::StreamException, "Error " << std::strerror(errno) << " opening file " << name);
+            BOND_THROW(bond::StreamException, "Error " << ErrorString(errno) << " opening file " << name);
         }
     }
-        
+
     // Copy ctor opens a new stream in order to keep independent file pointer.
     InputFile(const InputFile& that)
         : file(that.name, std::ios::binary),
@@ -36,7 +38,7 @@ public:
         }
         else
         {
-            BOND_THROW(bond::StreamException, "Error " << std::strerror(errno) << " opening file " << that.name);
+            BOND_THROW(bond::StreamException, "Error " << ErrorString(errno) << " opening file " << that.name);
         }
     }
 
@@ -52,12 +54,12 @@ public:
     {
         Read(&value, sizeof(T));
     }
-    
+
     void Read(void *buffer, uint32_t size)
     {
         file.read(static_cast<char*>(buffer), size);
     }
-    
+
     void Read(bond::blob& blob, uint32_t size)
     {
         boost::shared_ptr<char[]> buffer = boost::make_shared_noinit<char[]>(size);
@@ -65,14 +67,13 @@ public:
         Read(buffer.get(), size);
         blob.assign(buffer, 0, size);
     }
-    
-    void Skip(uint32_t size) 
+
+    void Skip(uint32_t size)
     {
         file.seekg(size, std::ios::cur);
     }
-    
+
 private:
     mutable std::ifstream file;
     std::string name;
 };
-

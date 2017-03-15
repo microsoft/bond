@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "sdl.h"
 #include "tags.h"
 
 namespace bond
@@ -186,8 +187,14 @@ typename boost::enable_if<is_string<T> >::type
 VariantGet(const bond::Variant& variant, T& var)
 {
     BOOST_ASSERT(!variant.nothing);
-    resize_string(var, static_cast<uint32_t>(variant.string_value.size()));
-    variant.string_value.copy(string_data(var), variant.string_value.size());
+
+    const size_t size = variant.string_value.size();
+    resize_string(var, static_cast<uint32_t>(size));
+
+    std::copy(
+        variant.string_value.begin(),
+        variant.string_value.end(),
+        detail::make_checked_array_iterator(string_data(var), size));
 }
 
 
@@ -197,8 +204,14 @@ typename boost::enable_if<is_wstring<T> >::type
 VariantGet(const bond::Variant& variant, T& var)
 {
     BOOST_ASSERT(!variant.nothing);
-    resize_string(var, static_cast<uint32_t>(variant.wstring_value.size()));
-    variant.wstring_value.copy(string_data(var), variant.wstring_value.size());
+
+    const size_t size = variant.wstring_value.size();
+    resize_string(var, static_cast<uint32_t>(size));
+
+    std::copy(
+        variant.wstring_value.begin(),
+        variant.wstring_value.end(),
+        detail::make_checked_array_iterator(string_data(var), size));
 }
 
 
