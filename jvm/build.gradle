@@ -38,7 +38,7 @@ allprojects {
             '../idl/bond/core/bond_const.bond',
             '--output', "$gbcOutputPath"
     }
-    compileJava.dependsOn coreCodegen
+    compileKotlin.dependsOn coreCodegen
 }
 
 sourceSets {
