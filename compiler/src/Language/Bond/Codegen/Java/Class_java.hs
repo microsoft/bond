@@ -47,8 +47,8 @@ import com.microsoft.bond.protocol.*;
         typeDefinition Struct {..} = [lt|
 public class #{declName}#{params}#{maybe interface baseClass structBase} {
     #{doubleLineSep 1 publicField structFields}
-
-#{marshal_ProtocolWriter declaration}
+#{serialize_ProtocolWriter declaration}
+#{marshal_ProtocolWriter}
 }|]
             where
                 interface = [lt| implements BondSerializable|]
@@ -63,12 +63,11 @@ public class #{declName}#{params}#{maybe interface baseClass structBase} {
 
         typeDefinition _ = mempty
 
-marshal_ProtocolWriter :: Declaration -> Text
-marshal_ProtocolWriter declaration = [lt|
-    @Override
-    public void marshal(ProtocolWriter writer) throws IOException {
-        writer.writeVersion();
 
+serialize_ProtocolWriter :: Declaration -> Text
+serialize_ProtocolWriter declaration = [lt|
+    @Override
+    public void serialize(ProtocolWriter writer) throws IOException {
 // FIXME: Where is my metadata?
         writer.writeStructBegin(null);
         #{newlineSepEnd 2 writeField fields}
@@ -115,3 +114,12 @@ marshal_ProtocolWriter declaration = [lt|
                     BT_WString -> [lt|writer.writeWString(this.#{fieldName});|]
                     BT_Blob    -> [lt|writer.writeBytes(this.#{fieldName});|]
                     _          -> [lt|// FIXME: Not implemented.|]
+
+
+marshal_ProtocolWriter :: Text
+marshal_ProtocolWriter = [lt|
+    @Override
+    public void marshal(ProtocolWriter writer) throws IOException {
+        writer.writeVersion();
+        serialize(writer);
+    }|]
