@@ -52,6 +52,12 @@ concurrentlyFor_ :: [a] -> (a -> IO b) -> IO ()
 concurrentlyFor_ = (void .) . flip mapConcurrently
 
 
+createDir :: FilePath -> IO ()
+createDir path = do
+    -- recursive = True
+    createDirectoryIfMissing True path
+
+
 writeSchema :: Options -> IO()
 writeSchema Schema {..} =
     concurrentlyFor_ files $ \file -> do
@@ -125,7 +131,7 @@ codeGen options typeMapping templates file = do
     forM_ templates $ \template -> do
         let (suffix, code) = template mappingContext baseName imports declarations
         let fileName = baseName ++ suffix
-        createDirectoryIfMissing True outputDir
+        createDir outputDir
         let { content =
             if (no_banner options)
             then code
@@ -137,38 +143,34 @@ codeGen options typeMapping templates file = do
 -- share code with languages where we can just emit bondfile_types.foo.
 javaCodegen :: Options -> IO ()
 javaCodegen Java {..} = do
-    let typeMapping = javaTypeMapping
-
-    aliasMapping <- parseAliasMappings using
     namespaceMapping <- parseNamespaceMappings namespace
 
     concurrentlyFor_ files $ \bondFile -> do
         (Bond imports namespaces declarations) <- parseFile import_dir bondFile
-        let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
+        -- AliasMappings not implemented.
+        let mappingContext = MappingContext javaTypeMapping [] namespaceMapping namespaces
 
         forM_ declarations $ \declaration -> do
             let javaNamespace = getDeclNamespace mappingContext declaration
-            let { packageDir = output_dir </> case javaNamespace of
-                x:xs -> foldl (</>) x xs
-                []   -> error "declaration " ++ declName declaration ++  " has no namespace"
-            }
+            let packageDir =
+                  output_dir </> case javaNamespace of
+                    x:xs -> foldl (</>) x xs
+                    []   -> error "declaration " ++ declName declaration ++  " has no namespace"
             let javaFile = declName declaration ++ ".java"
 
-            let { code = case declaration of
-                Struct {} -> class_java mappingContext imports declaration
-                Enum {}   -> enum_java mappingContext declaration
-                _         -> mempty
-            }
+            let code = case declaration of
+                  Struct {} -> class_java mappingContext imports declaration
+                  Enum {}   -> enum_java mappingContext declaration
+                  _         -> mempty
 
             if LT.null code
                 then return ()
                 else do
-                    let { content =
-                        if no_banner
-                        then code
-                        else (commonHeader "//" bondFile javaFile <> code)
-                    }
+                    let content =
+                          if no_banner
+                          then code
+                          else (commonHeader "//" bondFile javaFile <> code)
 
-                    createDirectoryIfMissing True packageDir
+                    createDir packageDir
                     LTIO.writeFile (packageDir </> javaFile) content
 javaCodegen _ = error "javaCodegen: impossible happened."
