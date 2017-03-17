@@ -12,6 +12,7 @@ var dir_b3409870a31a0e1ca764f3404df0070c =
     [ "once.h", "once_8h_source.html", null ],
     [ "pass_through.h", "pass__through_8h_source.html", null ],
     [ "protocol_visitors.h", "protocol__visitors_8h_source.html", null ],
+    [ "sdl.h", "sdl_8h_source.html", null ],
     [ "string_stream.h", "string__stream_8h_source.html", null ],
     [ "tags.h", "tags_8h_source.html", null ],
     [ "tuple_fields.h", "tuple__fields_8h_source.html", null ],
