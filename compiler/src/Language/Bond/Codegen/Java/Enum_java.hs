@@ -16,7 +16,7 @@ import Language.Bond.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 
--- Template for enum -> Java enum.
+-- Template for enum -> Java enum-like class.
 enum_java :: MappingContext -> Declaration -> Text
 enum_java java declaration = [lt|
 package #{javaPackage};
@@ -27,17 +27,17 @@ package #{javaPackage};
     javaPackage = sepBy "." toText $ getNamespace java
 
     typeDefinition Enum {..} = [lt|
-public enum #{declName} {
-    #{commaLineSep 1 constant enumConstantsWithInt};
+public class #{declName} {
+    #{newlineSep 1 constant enumConstantsWithInt}
 
-    public int value;
+    public final int value;
 
     #{declName}(int value) { this.value = value; }
 }|]
       where
         -- constant
-        constant Constant {..} = let value x = [lt|(#{x})|] in
-            [lt|#{constantName}#{optional value constantValue}|]
+        constant Constant {..} = let value x = [lt|#{x}|] in
+            [lt|public static final #{declName} #{constantName} = new #{declName}(#{optional value constantValue});|]
 
         -- Process constants to make sure all values can be converted
         -- to integer.
