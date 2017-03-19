@@ -36,15 +36,15 @@ defaultValue java Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
     implicitDefault BT_UInt8 = Just [lt|0|]
     implicitDefault BT_UInt16 = Just [lt|0|]
     implicitDefault BT_UInt32 = Just [lt|0|]
-    implicitDefault BT_UInt64 = Just [lt|BigInteger.ZERO|]
+    implicitDefault BT_UInt64 = Just [lt|java.math.BigInteger.ZERO|]
     implicitDefault BT_Float = Just [lt|0.0f|]
     implicitDefault BT_Double = Just [lt|0.0|]
     implicitDefault BT_String = Just [lt|""|]
     implicitDefault BT_WString = Just [lt|""|]
-    implicitDefault (BT_List _) = Just [lt|new LinkedList()|]
-    implicitDefault (BT_Set _) = Just [lt|new HashSet()|]
-    implicitDefault (BT_Map _ _) = Just [lt|new HashMap()|]
-    implicitDefault (BT_Vector _) = Just [lt|new ArrayList()|]
+    implicitDefault (BT_List _) = Just [lt|new java.util.LinkedList()|]
+    implicitDefault (BT_Set _) = Just [lt|new java.util.HashSet()|]
+    implicitDefault (BT_Map _ _) = Just [lt|new java.util.HashMap()|]
+    implicitDefault (BT_Vector _) = Just [lt|new java.util.ArrayList()|]
     implicitDefault t@(BT_UserDefined a@Alias {..} args)
         | customAliasMapping java a = newInstance t
         | otherwise = implicitDefault $ resolveAlias a args

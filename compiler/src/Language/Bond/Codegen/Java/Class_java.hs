@@ -26,17 +26,6 @@ class_java :: MappingContext -> [Import] -> Declaration -> Text
 class_java java _ declaration = [lt|
 package #{javaPackage};
 
-// Standard imports used by Bond.
-import java.math.BigInteger;
-import java.util.*;
-import java.io.IOException;
-
-// Bond lib imports.
-import com.microsoft.bond.*;
-import com.microsoft.bond.protocol.*;
-
-// Imports for other generated code.
-
 #{typeDefinition declaration}
 |]
     where
@@ -52,7 +41,7 @@ public class #{declName}#{params}#{maybe interface baseClass structBase} {
 #{marshal_ProtocolWriter}
 }|]
             where
-                interface = [lt| implements BondSerializable|]
+                interface = [lt| implements com.microsoft.bond.BondSerializable|]
                 params = angles $ sepBy ", " paramName declParams
                 baseClass x = [lt| extends #{javaType x}()|]
                 javaDefault = Java.defaultValue java
@@ -68,7 +57,7 @@ public class #{declName}#{params}#{maybe interface baseClass structBase} {
 serialize_ProtocolWriter :: Declaration -> Text
 serialize_ProtocolWriter declaration = [lt|
     @Override
-    public void serialize(ProtocolWriter writer) throws IOException {
+    public void serialize(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
 // FIXME: Where is my metadata?
         writer.writeStructBegin(null);
         #{newlineSepEnd 2 writeField fields}
@@ -120,7 +109,7 @@ serialize_ProtocolWriter declaration = [lt|
 marshal_ProtocolWriter :: Text
 marshal_ProtocolWriter = [lt|
     @Override
-    public void marshal(ProtocolWriter writer) throws IOException {
+    public void marshal(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
         writer.writeVersion();
         serialize(writer);
     }|]
