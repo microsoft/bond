@@ -15,6 +15,7 @@ import Language.Bond.Syntax.Types
 import Language.Bond.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
+import qualified Language.Bond.Codegen.Java.Util as Java
 
 -- Template for enum -> Java enum-like class.
 enum_java :: MappingContext -> Declaration -> Text
@@ -27,6 +28,7 @@ package #{javaPackage};
     javaPackage = sepBy "." toText $ getNamespace java
 
     typeDefinition Enum {..} = [lt|
+#{Java.generatedClassAnnotations}
 public class #{declName} {
     #{newlineSep 1 constant enumConstantsWithInt}
 

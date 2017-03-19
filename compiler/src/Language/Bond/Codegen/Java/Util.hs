@@ -5,6 +5,7 @@
 
 module Language.Bond.Codegen.Java.Util
     ( defaultValue
+    , generatedClassAnnotations
     ) where
 
 import Prelude
@@ -78,3 +79,7 @@ defaultValue java Field {fieldDefault = (Just def), ..} = explicitDefault def
         strLiteral _ _ = error "Java:Str:defaultValue/floatLiteral: impossible happened."
     explicitDefault DefaultNothing = Just [lt|null|]
     explicitDefault (DefaultEnum x) = Just [lt|#{getTypeName java fieldType}.#{x}|]
+
+
+generatedClassAnnotations :: Text
+generatedClassAnnotations = [lt|@javax.annotation.Generated("gbc")|]

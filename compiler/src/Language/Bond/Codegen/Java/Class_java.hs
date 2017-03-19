@@ -45,6 +45,7 @@ import com.microsoft.bond.protocol.*;
 
         -- struct -> Java class
         typeDefinition Struct {..} = [lt|
+#{Java.generatedClassAnnotations}
 public class #{declName}#{params}#{maybe interface baseClass structBase} {
     #{doubleLineSep 1 publicField structFields}
 #{serialize_ProtocolWriter declaration}
