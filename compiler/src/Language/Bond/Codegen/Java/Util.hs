@@ -59,11 +59,11 @@ defaultValue java Field {fieldDefault = (Just def), ..} = explicitDefault def
         intLiteral BT_Int8 value = [lt|#{value}|]
         intLiteral BT_Int16 value = [lt|#{value}|]
         intLiteral BT_Int32 value = [lt|#{value}|]
-        intLiteral BT_Int64 value = [lt|#{value}|]
+        intLiteral BT_Int64 value = [lt|#{value}L|]
         intLiteral BT_UInt8 value = [lt|#{value}|]
         intLiteral BT_UInt16 value = [lt|#{value}|]
         intLiteral BT_UInt32 value = [lt|#{value}|]
-        intLiteral BT_UInt64 value = [lt|#{value}|]
+        intLiteral BT_UInt64 value = [lt|new java.math.BigInteger("#{value}")|]
         intLiteral _ _ = error "Java:Int:defaultValue/floatLiteral: impossible happened."
     explicitDefault (DefaultFloat x) = Just $ floatLiteral fieldType x
       where
