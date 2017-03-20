@@ -1,12 +1,17 @@
-package com.microsoft.bond.stream
+package com.microsoft.bond.protocol
 
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.charset.Charset
 
-class BondOutputStream<out T : OutputStream>(private val stream: T) {
-    var position: Long = 0
+class BinaryStreamWriter<out T : OutputStream>(private val stream: T) {
+    companion object {
+        private val UTF8 = Charset.forName("UTF-8")
+        private val UTF16LE = Charset.forName("UTF-16LE")
+    }
+
+    private var position: Long = 0
     // Reusable buffer for primitive types.
     private var primitiveBuffer: ByteBuffer = ByteBuffer.allocate(8)
 
@@ -71,12 +76,18 @@ class BondOutputStream<out T : OutputStream>(private val stream: T) {
         writeInt8(if (value) 1 else 0)
     }
 
-    fun writeString(value: String, charset: Charset) {
-        val encoded = value.toByteArray(charset)
+    fun writeString(value: String) {
+        // FIXME: Make sure this generates null bytes and not \u0000.
+        val encoded = value.toByteArray(UTF8)
         writeBytes(encoded)
     }
 
-    fun clone(): BondOutputStream<T> {
+    fun writeWString(value: String) {
+        val encoded = value.toByteArray(UTF16LE)
+        writeBytes(encoded)
+    }
+
+    fun clone(): BinaryStreamWriter<T> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
