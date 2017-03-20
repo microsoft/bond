@@ -7,7 +7,7 @@ var searchData=
   ['set_5fnothing',['set_nothing',['../classbond_1_1maybe.html#a03e4f849de5742066d18eb8e44a50ed5',1,'bond::maybe']]],
   ['set_5fvalue',['set_value',['../classbond_1_1maybe.html#a0b9cdd4646fb4697a43898c0b93122f3',1,'bond::maybe']]],
   ['simplebinaryreader',['SimpleBinaryReader',['../classbond_1_1_simple_binary_reader.html',1,'bond']]],
-  ['simplebinaryreader',['SimpleBinaryReader',['../classbond_1_1_simple_binary_reader.html#a06cfc8591d9a256c4363645e2f254209',1,'bond::SimpleBinaryReader::SimpleBinaryReader(typename boost::call_traits&lt; Buffer &gt;::param_type input, uint16_t version=default_version&lt; SimpleBinaryReader &gt;::value)'],['../classbond_1_1_simple_binary_reader.html#a033f9addabb4b411b0fd9f079861d3a0',1,'bond::SimpleBinaryReader::SimpleBinaryReader(const SimpleBinaryReader &amp;that) BOND_NOEXCEPT']]],
+  ['simplebinaryreader',['SimpleBinaryReader',['../classbond_1_1_simple_binary_reader.html#a51a8eb47075f1c1d83bd765b30444c75',1,'bond::SimpleBinaryReader::SimpleBinaryReader(typename boost::call_traits&lt; Buffer &gt;::param_type input, uint16_t version_value=default_version&lt; SimpleBinaryReader &gt;::value)'],['../classbond_1_1_simple_binary_reader.html#a033f9addabb4b411b0fd9f079861d3a0',1,'bond::SimpleBinaryReader::SimpleBinaryReader(const SimpleBinaryReader &amp;that) BOND_NOEXCEPT']]],
   ['simplebinarywriter',['SimpleBinaryWriter',['../classbond_1_1_simple_binary_writer.html',1,'bond']]],
   ['simplebinarywriter',['SimpleBinaryWriter',['../classbond_1_1_simple_binary_writer.html#ab062ddf6a65772e93ec1bc972c804b30',1,'bond::SimpleBinaryWriter']]],
   ['simplejsonreader',['SimpleJsonReader',['../classbond_1_1_simple_json_reader.html',1,'bond']]],
