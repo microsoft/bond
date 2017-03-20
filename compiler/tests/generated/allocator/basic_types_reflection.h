@@ -173,23 +173,23 @@ namespace tests
             > _blob;
         };
 
-        private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::_blob>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, var::_float>::type fields2;
-        private: typedef boost::mpl::push_front<fields2, var::_double>::type fields3;
-        private: typedef boost::mpl::push_front<fields3, var::_int64>::type fields4;
-        private: typedef boost::mpl::push_front<fields4, var::_int32>::type fields5;
-        private: typedef boost::mpl::push_front<fields5, var::_int16>::type fields6;
-        private: typedef boost::mpl::push_front<fields6, var::_int8>::type fields7;
-        private: typedef boost::mpl::push_front<fields7, var::_uint8>::type fields8;
-        private: typedef boost::mpl::push_front<fields8, var::_uint32>::type fields9;
-        private: typedef boost::mpl::push_front<fields9, var::_uint16>::type fields10;
-        private: typedef boost::mpl::push_front<fields10, var::_uint64>::type fields11;
-        private: typedef boost::mpl::push_front<fields11, var::_wstr>::type fields12;
-        private: typedef boost::mpl::push_front<fields12, var::_str>::type fields13;
-        private: typedef boost::mpl::push_front<fields13, var::_bool>::type fields14;
+        private: typedef ::bond::mpl::nil fields0;
+        public: struct fields1 { typedef fields0 tail; typedef var::_blob field; };
+        public: struct fields2 { typedef fields1 tail; typedef var::_float field; };
+        public: struct fields3 { typedef fields2 tail; typedef var::_double field; };
+        public: struct fields4 { typedef fields3 tail; typedef var::_int64 field; };
+        public: struct fields5 { typedef fields4 tail; typedef var::_int32 field; };
+        public: struct fields6 { typedef fields5 tail; typedef var::_int16 field; };
+        public: struct fields7 { typedef fields6 tail; typedef var::_int8 field; };
+        public: struct fields8 { typedef fields7 tail; typedef var::_uint8 field; };
+        public: struct fields9 { typedef fields8 tail; typedef var::_uint32 field; };
+        public: struct fields10 { typedef fields9 tail; typedef var::_uint16 field; };
+        public: struct fields11 { typedef fields10 tail; typedef var::_uint64 field; };
+        public: struct fields12 { typedef fields11 tail; typedef var::_wstr field; };
+        public: struct fields13 { typedef fields12 tail; typedef var::_str field; };
+        public: struct fields14 { typedef fields13 tail; typedef var::_bool field; };
 
-        public: typedef fields14::type fields;
+        public: typedef fields14 fields;
         
         
         static ::bond::Metadata GetMetadata()

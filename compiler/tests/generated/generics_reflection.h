@@ -42,11 +42,11 @@ namespace tests
             > n;
         };
 
-        private: typedef boost::mpl::list<> fields0;
-        private: typedef typename boost::mpl::push_front<fields0, typename var::n>::type fields1;
-        private: typedef typename boost::mpl::push_front<fields1, typename var::t2>::type fields2;
+        private: typedef ::bond::mpl::nil fields0;
+        public: struct fields1 { typedef fields0 tail; typedef typename var::n field; };
+        public: struct fields2 { typedef fields1 tail; typedef typename var::t2 field; };
 
-        public: typedef typename fields2::type fields;
+        public: typedef fields2 fields;
         
         Schema()
         {

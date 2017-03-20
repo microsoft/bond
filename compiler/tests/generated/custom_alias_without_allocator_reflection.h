@@ -140,20 +140,20 @@ namespace test
             > st1;
         };
 
-        private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::st1>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, var::m1>::type fields2;
-        private: typedef boost::mpl::push_front<fields2, var::s1>::type fields3;
-        private: typedef boost::mpl::push_front<fields3, var::v1>::type fields4;
-        private: typedef boost::mpl::push_front<fields4, var::l1>::type fields5;
-        private: typedef boost::mpl::push_front<fields5, var::d>::type fields6;
-        private: typedef boost::mpl::push_front<fields6, var::st>::type fields7;
-        private: typedef boost::mpl::push_front<fields7, var::m>::type fields8;
-        private: typedef boost::mpl::push_front<fields8, var::s>::type fields9;
-        private: typedef boost::mpl::push_front<fields9, var::v>::type fields10;
-        private: typedef boost::mpl::push_front<fields10, var::l>::type fields11;
+        private: typedef ::bond::mpl::nil fields0;
+        public: struct fields1 { typedef fields0 tail; typedef var::st1 field; };
+        public: struct fields2 { typedef fields1 tail; typedef var::m1 field; };
+        public: struct fields3 { typedef fields2 tail; typedef var::s1 field; };
+        public: struct fields4 { typedef fields3 tail; typedef var::v1 field; };
+        public: struct fields5 { typedef fields4 tail; typedef var::l1 field; };
+        public: struct fields6 { typedef fields5 tail; typedef var::d field; };
+        public: struct fields7 { typedef fields6 tail; typedef var::st field; };
+        public: struct fields8 { typedef fields7 tail; typedef var::m field; };
+        public: struct fields9 { typedef fields8 tail; typedef var::s field; };
+        public: struct fields10 { typedef fields9 tail; typedef var::v field; };
+        public: struct fields11 { typedef fields10 tail; typedef var::l field; };
 
-        public: typedef fields11::type fields;
+        public: typedef fields11 fields;
         
         
         static ::bond::Metadata GetMetadata()

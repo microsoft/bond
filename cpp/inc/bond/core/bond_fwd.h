@@ -41,9 +41,12 @@ template <typename Reader>
 class DOMParser;
 
 template <typename T>
-class RequiredFieldValiadator;
+class RequiredFieldValidator;
 
-template <typename T, typename Validator = RequiredFieldValiadator<T> >
+template <typename T>
+using RequiredFieldValiadator = RequiredFieldValidator<T>;
+
+template <typename T, typename Validator = RequiredFieldValidator<T> >
 class To;
 
 template <typename T, typename Enable = void> struct 

@@ -236,7 +236,7 @@ class schema_fields_visitor
     template <class classT>
     void visit(classT& c) const
     {
-        boost::mpl::for_each<typename T::Schema::fields>(def_readwrite_property<classT>(c));
+        bond::mpl::for_each<typename T::Schema::fields>(def_readwrite_property<classT>(c));
     }
 };
 

@@ -19,10 +19,10 @@ namespace tests
         public: struct var
         {};
 
-        private: typedef boost::mpl::list<> fields0;
+        private: typedef ::bond::mpl::nil fields0;
         
 
-        public: typedef fields0::type fields;
+        public: typedef fields0 fields;
         
         
         static ::bond::Metadata GetMetadata()
@@ -124,16 +124,16 @@ namespace tests
             > m;
         };
 
-        private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::m>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, var::bfoo>::type fields2;
-        private: typedef boost::mpl::push_front<fields2, var::msws>::type fields3;
-        private: typedef boost::mpl::push_front<fields3, var::nf>::type fields4;
-        private: typedef boost::mpl::push_front<fields4, var::vb>::type fields5;
-        private: typedef boost::mpl::push_front<fields5, var::sb>::type fields6;
-        private: typedef boost::mpl::push_front<fields6, var::li8>::type fields7;
+        private: typedef ::bond::mpl::nil fields0;
+        public: struct fields1 { typedef fields0 tail; typedef var::m field; };
+        public: struct fields2 { typedef fields1 tail; typedef var::bfoo field; };
+        public: struct fields3 { typedef fields2 tail; typedef var::msws field; };
+        public: struct fields4 { typedef fields3 tail; typedef var::nf field; };
+        public: struct fields5 { typedef fields4 tail; typedef var::vb field; };
+        public: struct fields6 { typedef fields5 tail; typedef var::sb field; };
+        public: struct fields7 { typedef fields6 tail; typedef var::li8 field; };
 
-        public: typedef fields7::type fields;
+        public: typedef fields7 fields;
         
         
         static ::bond::Metadata GetMetadata()

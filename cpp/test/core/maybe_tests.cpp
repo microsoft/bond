@@ -1,6 +1,7 @@
 #include "precompiled.h"
 #include "maybe_tests.h"
 
+
 void ConstInterface(const bond::maybe<int8_t>& x)
 {
     bond::maybe<int8_t> z;

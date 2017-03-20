@@ -101,7 +101,7 @@ protected:
 
         detail::StructEnd(_input, true);
 
-        static_cast<Parser*>(this)->SkipFields(typename boost::mpl::begin<typename T::fields>::type());
+        static_cast<Parser*>(this)->SkipFields(typename T::fields());
 
         return result;
     }
@@ -116,7 +116,7 @@ protected:
         // and then we read to the transform the fields of the top level struct.
         transform.Begin(T::metadata);
         ReadBase(base_class<T>(), transform);
-        bool result = static_cast<Parser*>(this)->ReadFields(typename boost::mpl::begin<typename T::fields>::type(), transform);
+        bool result = static_cast<Parser*>(this)->ReadFields(typename T::fields(), transform);
         transform.End();
         return result;
     }

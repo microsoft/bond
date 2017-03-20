@@ -50,10 +50,11 @@ tuple_fields;
 template <typename Tuple, uint16_t id, typename T, typename ...Rest> struct
 tuple_fields<Tuple, id, T, Rest...>
 {
-    typedef typename boost::mpl::push_front<
-        typename tuple_fields<Tuple, id + 1, Rest...>::type,
-        tuple_field<Tuple, id, T>
-    >::type type;
+    typedef struct {
+        typedef tuple_field<Tuple, id, T> field;
+
+        typedef typename tuple_fields<Tuple, id + 1, Rest...>::type tail;
+    } type;
 };
 
 template <typename Tuple, uint16_t id, typename ...Rest> struct
@@ -64,7 +65,7 @@ tuple_fields<Tuple, id, const ignore_t&, Rest...>
 template <typename Tuple, uint16_t id> struct
 tuple_fields<Tuple, id>
 {
-    typedef typename boost::mpl::list<>::type type;
+    typedef typename mpl::nil type;
 };
 
 

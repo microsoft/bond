@@ -19,7 +19,7 @@ void Merging(Payload payload, const T& obj, uint16_t version = bond::v1, bool me
 #pragma warning(push)
 #pragma warning(disable: 4127) // C4127: conditional expression is constant
 #endif
-        if (boost::mpl::count_if<typename T::Schema::fields, is_optional_field<_> >::value == 0)
+        if (bond::mpl::count_if<typename T::Schema::fields, is_optional_field>::value == 0)
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -43,7 +43,7 @@ void Merging(Payload payload, const T& obj, uint16_t version = bond::v1, bool me
 #pragma warning(push)
 #pragma warning(disable: 4127) // C4127: conditional expression is constant
 #endif
-        if (boost::mpl::count_if<typename Payload::Schema::fields, is_optional_field<_> >::value == 0)
+        if (bond::mpl::count_if<typename Payload::Schema::fields, is_optional_field>::value == 0)
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
