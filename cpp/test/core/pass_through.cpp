@@ -373,7 +373,14 @@ TEST_CASE_BEGIN(DefaultValuesTranscoding)
 
     T init;
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4127) // C4127: conditional expression is constant
+#endif
     if (bond::uses_dynamic_parser<Reader1>::value && !bond::may_omit_fields<Writer2>::value)
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
     {
         // transcoding from tagged protocol using runtime schema fills-in default values
         // so we can use random object as initial value of 'to'.

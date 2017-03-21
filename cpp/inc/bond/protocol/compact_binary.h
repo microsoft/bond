@@ -149,9 +149,9 @@ public:
 
     /// @brief Construct from input buffer/stream containing serialized data.
     CompactBinaryReader(typename boost::call_traits<Buffer>::param_type input,
-                        uint16_t version = default_version<CompactBinaryReader>::value)
+                        uint16_t version_value = default_version<CompactBinaryReader>::value)
         : _input(input),
-          _version(version)
+          _version(version_value)
     {
         BOOST_ASSERT(protocol_has_multiple_versions<CompactBinaryReader>::value
             ? _version <= CompactBinaryReader::version
@@ -186,12 +186,12 @@ public:
 
     bool ReadVersion()
     {
-        uint16_t magic;
+        uint16_t magic_value;
 
-        _input.Read(magic);
+        _input.Read(magic_value);
         _input.Read(_version);
 
-        return magic == CompactBinaryReader::magic
+        return magic_value == CompactBinaryReader::magic
             && (protocol_has_multiple_versions<CompactBinaryReader>::value
                 ? _version <= CompactBinaryReader::version
                 : _version == default_version<CompactBinaryReader>::value);

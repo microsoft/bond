@@ -379,8 +379,15 @@ void Binding(const From& from, uint16_t version = bond::v1)
         bond::bonded<BondedType> bonded(GetBonded<Reader, Writer, BondedType>(from, version));
 
         To to;
-        
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4127) // C4127: conditional expression is constant
+#endif
         if (boost::mpl::count_if<typename From::Schema::fields, is_optional_field<_> >::value == 0)
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
         {
             to = InitRandom<To>();
             Fixup(to);
@@ -396,8 +403,15 @@ void Binding(const From& from, uint16_t version = bond::v1)
         bond::bonded<void> bonded(GetBonded<Reader, Writer, BondedType>(from, version));
 
         To to;
-        
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4127) // C4127: conditional expression is constant
+#endif
         if (boost::mpl::count_if<typename From::Schema::fields, is_optional_field<_> >::value == 0)
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
         {
             to = InitRandom<To>();
             Fixup(to);

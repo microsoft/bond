@@ -111,7 +111,14 @@ public:
     template <typename T>
     void Deserialize(bonded<T>& var) const
     {
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4127) // C4127: conditional expression is constant
+#endif
         if (uses_marshaled_bonded<Reader>::value && _schema.GetType().bonded_type)
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
         {
             bonded<T> tmp;
             _SelectProtocolAndApply(boost::ref(tmp));
@@ -148,7 +155,14 @@ private:
     template <typename Transform>
     bool _Apply(const Transform& transform) const
     {
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4127) // C4127: conditional expression is constant
+#endif
         if (uses_marshaled_bonded<Reader>::value && _schema.GetType().bonded_type)
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
         {
             return _SelectProtocolAndApply(transform);
         }

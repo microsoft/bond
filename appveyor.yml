@@ -27,6 +27,11 @@
               BOND_VS_NUM: 14
               BOND_ARCH: 32
               BOND_BOOST: 60
+            - BOND_BUILD: Python
+              BOND_VS: "Visual Studio 14 2015"
+              BOND_VS_NUM: 14
+              BOND_ARCH: 64
+              BOND_BOOST: 63
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
@@ -69,19 +74,29 @@
 
             choco install haskellplatform -version 2014.2.0.0 -y
 
-            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+            # choco install updated the path, so re-read them from the registry and reset $env:path
+
+            $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+
+            $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
+
+            $env:Path = "$machinePath;$userPath"
 
             cabal update
 
             if ($env:BOND_BUILD -eq "Doc") {
 
-                cabal install -j pandoc --constraint='mtl<=2.1.3.1'
+                choco install pandoc --version 1.19.2  -y
 
                 choco install doxygen.install -y
 
-            }
+                $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 
-            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+                $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
+
+                $env:Path = "$machinePath;$userPath"
+
+            }
 
     cache:
         - cs\packages -> cs\test\core\packages.config
@@ -107,13 +122,20 @@
 
             }
 
+            if ($env:BOND_BUILD -eq "Python" -Or $env:BOND_BUILD -eq "C++") {
+
+                # Make sure we have Python27-64 before any other version
+                if ($env:BOND_ARCH -eq 64) {
+                    $env:Path = "C:\Python27-x64\scripts;C:\Python27-x64\;${env:Path}"
+                }
+
+            }
+
             if ($env:BOND_BUILD -eq "Python") {
 
                 mkdir build
 
                 cd build
-
-                Wait-Process -name boost
 
                 cmake "-DBoost_ADDITIONAL_VERSIONS=1.${env:BOND_BOOST}.0" $cmakeFlags -G $cmakeGenerator ..
 
@@ -126,11 +148,6 @@
                 mkdir build
 
                 cd build
-
-                # Make sure we have Python27-64 before any other version; Python path per https://www.appveyor.com/docs/installed-software#python
-                if ($env:BOND_ARCH -eq 64) {
-                    $env:Path = "C:\Python27-x64\scripts;C:\Python27-x64\;${env:Path}"
-                }
 
                 cmake $cmakeFlags -G $cmakeGenerator ..
 

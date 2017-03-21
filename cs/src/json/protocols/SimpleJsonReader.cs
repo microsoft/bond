@@ -29,6 +29,8 @@ namespace Bond.Protocols
         public SimpleJsonReader(Stream stream)
         {
             reader = new JsonTextReader(new StreamReader(stream));
+            reader.DateParseHandling = DateParseHandling.None;
+            reader.FloatParseHandling = FloatParseHandling.Double;
             eof = false;
         }
 

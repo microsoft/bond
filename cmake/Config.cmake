@@ -19,9 +19,22 @@ if (BOND_GBC_PATH)
 endif()
 
 if (MSVC)
-    # disable MSVC warnings
-    add_compile_options (/bigobj /FIbond/core/warning.h /W4 /WX)
-    add_definitions (-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
+    # MSVC needs this because of how template-heavy our code is.
+    add_compile_options (/bigobj)
+    # inject disabling of some MSVC warnings for versions prior to MSVC14
+    if (MSVC_VERSION LESS 1900)
+        add_compile_options (/FIbond/core/warning.h)
+    endif()
+    # turn up warning level
+    add_compile_options (/W4 /WX /sdl)
+    # Enable SDL recommended warnings that aren't enabled by /W4
+    # 4242: 'identifier': conversion from 'type1' to 'type2', possible loss of data
+    # 4302: 'conversion': truncation from 'type1' to 'type2'
+    add_compile_options (/we4242 /we4302)
+    # use secure CRT functions via template overloads to avoid polluting
+    # Bond with MSVC CRT-specific code too much. More details at
+    # https://msdn.microsoft.com/en-us/library/ms175759.aspx
+    add_definitions (-D_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1 -D_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1)
     set (Boost_USE_STATIC_LIBS ON)
 endif (MSVC)
 
@@ -132,6 +145,10 @@ include_directories (
 set (BOND_LIBRARIES_ONLY
     "FALSE"
     CACHE BOOL "If TRUE, then only build the Bond library files, skipping any tools. gbc will still be built if it cannot be found, however, as gbc is needed to build the libraries.")
+
+set (BOND_LIBRARIES_INSTALL_CPP
+    "FALSE"
+    CACHE BOOL "If TRUE, the generated .cpp files for the Bond libraries will be installed under src/ as part of the INSTALL target.")
 
 set (BOND_CORE_ONLY
     "FALSE"

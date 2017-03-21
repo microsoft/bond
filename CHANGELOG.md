@@ -1,7 +1,7 @@
 # Bond Changelog #
 
-Notable changes--especially new features and breaking changes--are recorded
-here.
+Notable changes--especially new features and **breaking changes**--are
+recorded here.
 
 Bond's version numbers follow [Semantic Versioning](http://semver.org/).
 Each release is tagged with a Git tag. The
@@ -12,12 +12,36 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased ##
-* `gbc` & compiler library: TBD
+* `gbc` & compiler library: TBD (minor bump needed)
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD
-* C# NuGet version: TBD
+* C++ version: TBD (minor bump needed)
+* C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed)
+
+### `gbc` & compiler library ###
+
+* C++ codegen ensures that parameter names do not shadow field names.
+
+### C++ ###
+
+* Fix Python shared_ptr converter build break with Boost 1.63.
+* Improve compliance with
+  [Microsoft's SDL](https://www.microsoft.com/en-us/sdl/).
+    * Bond now builds on MSVC with
+      [`_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES`](https://msdn.microsoft.com/en-us/library/ms175759.aspx)
+      instead of `_CTR_SECURE_NO_WARNINGS`.
+    * Bond builds on MSVC with SDL recommended warnings enabled.
+* Eliminate need for warning suppression on MSVC14 via warning.h in Bond
+  itself. warning.h is still in place on MSVC12; furthermore, we don't alter
+  warning.h for now as it may be depended upon by application code.
+
+## C# ###
+
+* Added controls to cap incremental allocation between reads in
+  `Bond.IO.Unsafe.InputStream`.
+* Extended bug parsing JSON when a string value is a date.
+  [Pull request #358](https://github.com/Microsoft/bond/pull/358)
 
 ### C# Comm ###
 
@@ -37,8 +61,8 @@ different versioning scheme, following the Haskell community's
 
 ### `gbc` and Bond compiler library ###
 
-* The C++ Comm .cpp template has been renamed to `comm_cpp` from
-  `types_comm_cpp` to match the file it generates.
+* **Breaking change:** The C++ Comm .cpp template has been renamed to
+  `comm_cpp` from `types_comm_cpp` to match the file it generates.
 * Add export-attribute option for C++ and make apply-attribute a
   deprecated synonym for export-attribute
 * Fix C++ Comm build problems when services are shared via DLL.
@@ -56,6 +80,10 @@ different versioning scheme, following the Haskell community's
 * Fixed an issue with template parameter deduction in `bond::is_nullable`
   that occurs with Microsoft Visual C++ 2015 Update 3.
   [Issue #306](https://github.com/Microsoft/bond/issues/306)
+
+### C++ Comm ###
+* Fixed a multiply-defined symbol linker error for
+  `bond::comm::epoxy::detail::MakeConfigFrame`.
 
 ### C# ###
 
@@ -82,10 +110,10 @@ different versioning scheme, following the Haskell community's
 
 ### `gbc` and Bond compiler library ###
 
+* **Breaking change:** The Haskell utility functions `structName` and
+  `structParams` were renamed to `className` and `classParams` (in the
+  `Language.Bond.Codegen.Cpp.Util` module).
 * Added initial support for generating C++ Comm services and proxies.
-* The Haskell utility functions `structName` and `structParams` were renamed
-  to `className` and `classParams` (in the `Language.Bond.Codegen.Cpp.Util`
-  module).
 
 ### C++ Comm ###
 * The initial C++ Comm code has been merged in, but there is still work left
@@ -139,24 +167,30 @@ different versioning scheme, following the Haskell community's
 * C# NuGet version: 5.0.0
 * C# Comm NuGet version: 0.7.0
 
+### IDL core ###
+* **Breaking change:** `bond.TypeDef.list_sub_type` field removed, as it was
+  breaking some consumers of serialized SchemaDef. We plan to restore this
+  field in the future.
+  [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
+
 ### IDL comm ###
 * Update IDL to conform to naming conventions.
 * Adjust IDL for changes made to Epoxy internals
 
 ### C++ ###
+* **Breaking change:** Runtime SchemaDef `list_sub_type` field removed, as
+  it was breaking some consumers of serialized SchemaDef. We plan to restore
+  this field in the future.
+  [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
 * Generated enum types now have a `FromEnum` method that can be used to
   convert from an enum value to a string. Now generated enum types have all
   four of `ToEnum`, `FromEnum`, `ToString`, and `FromString`. (The `...Enum`
   variants return false on failure, while the `...String` variants throw.)
-* Runtime SchemaDef `list_sub_type` field removed, as it was breaking some
-  consumers of serialized SchemaDef. We plan to restore this field in the
-  future.
-  [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
 
 ### C# ###
-* Runtime SchemaDef `list_sub_type` field removed, as it was breaking some
-  consumers of serialized SchemaDef. We plan to restore this field in the
-  future.
+* **Breaking change:** Runtime SchemaDef `list_sub_type` field removed, as
+  it was breaking some consumers of serialized SchemaDef. We plan to restore
+  this field in the future.
   [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
 * The Bond.Runtime NuGet package no longer artificially limits
   Newtonsoft.Json to versions before 10.
@@ -181,12 +215,12 @@ different versioning scheme, following the Haskell community's
 
 ### `gbc` and Bond compiler library ###
 
+* **Breaking change:** Runtime SchemaDef now includes information about
+  whether BT_LIST fields are nullable or blobs.
+  [Issue #161](https://github.com/Microsoft/bond/issues/161)
 * User-defined `TypeMapping`s can now be created. This makes is easier to
   implement code generation for new languages. [Pull request
   #172](https://github.com/Microsoft/bond/pull/172)
-* Runtime SchemaDef now includes information about whether BT_LIST fields
-  are nullable or blobs.
-  [Issue #161](https://github.com/Microsoft/bond/issues/161)
 * Validate default value type mistmatches.
   [Issue #72](https://github.com/Microsoft/bond/issues/72)
   [Issue #128](https://github.com/Microsoft/bond/issues/128)

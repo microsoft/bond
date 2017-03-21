@@ -715,3 +715,8 @@ struct WithConflictingMeta
     2: string fullName = "Bar";
     3: bond_meta::full_name meta;
 }
+
+struct DateAsString
+{
+	0: string timestamp;
+}

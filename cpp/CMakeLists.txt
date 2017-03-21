@@ -141,4 +141,11 @@ if (NOT BOND_CORE_ONLY)
     install (DIRECTORY ${BOND_IDL}/bond/comm DESTINATION include/bond)
 endif()
 
+if (BOND_LIBRARIES_INSTALL_CPP)
+  install (
+    DIRECTORY ${BOND_GENERATED}/bond/
+    DESTINATION src/bond/generated
+    FILES_MATCHING PATTERN "*.cpp")
+endif()
+
 add_subdirectory (test)

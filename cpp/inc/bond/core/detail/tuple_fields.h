@@ -31,9 +31,9 @@ struct tuple_field
 
     static Metadata GetMetadata()
     {
-        Metadata metadata;
-        metadata.name = "item" + std::to_string(id);
-        return metadata;
+        Metadata m;
+        m.name = "item" + std::to_string(id);
+        return m;
     }
 };
 

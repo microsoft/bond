@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "exception.h"
@@ -7,7 +6,16 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/asio/ip/address.hpp>
-#include <boost/asio/ip/tcp.hpp>
+
+#ifdef _MSC_VER
+    #pragma warning(push)
+    #pragma warning(disable: 4242) // C4242: 'identifier' : conversion from 'type1' to 'type2', possible loss of data
+    #include <boost/asio/ip/tcp.hpp>
+    #pragma warning(pop)
+#else
+    #include <boost/asio/ip/tcp.hpp>
+#endif
+
 #include <boost/lexical_cast.hpp>
 
 
@@ -16,7 +24,7 @@ namespace bond { namespace comm
 //
 // Wrapper of endpoint socket address information.
 //
-class SocketAddress 
+class SocketAddress
     : public boost::asio::ip::tcp::endpoint
 {
 public:

@@ -31,11 +31,11 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
-        Foo(const Foo& other) = default;
+        Foo(const Foo&) = default;
 #endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        Foo(Foo&& other) = default;
+        Foo(Foo&&) = default;
 #elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
         Foo(Foo&&)
         {
@@ -50,7 +50,7 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
-        Foo& operator=(const Foo& other) = default;
+        Foo& operator=(const Foo&) = default;
 #endif
 
         bool operator==(const Foo&) const
@@ -101,11 +101,11 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
-        ComplexTypes(const ComplexTypes& other) = default;
+        ComplexTypes(const ComplexTypes&) = default;
 #endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        ComplexTypes(ComplexTypes&& other) = default;
+        ComplexTypes(ComplexTypes&&) = default;
 #elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
         ComplexTypes(ComplexTypes&& other)
           : li8(std::move(other.li8)),
@@ -133,7 +133,7 @@ namespace tests
         
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
-        ComplexTypes& operator=(const ComplexTypes& other) = default;
+        ComplexTypes& operator=(const ComplexTypes&) = default;
 #endif
 
         bool operator==(const ComplexTypes& other) const
