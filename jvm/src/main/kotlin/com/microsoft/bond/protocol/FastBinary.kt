@@ -98,12 +98,12 @@ class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short =
     }
 
     override fun writeString(value: String) {
-        writer.writeInt32(value.length)
+        writer.writeVarInt32(value.length)
         writer.writeString(value)
     }
 
     override fun writeWString(value: String) {
-        writer.writeInt32(value.length)
+        writer.writeVarInt32(value.length)
         writer.writeWString(value)
     }
 }

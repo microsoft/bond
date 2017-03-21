@@ -14,6 +14,7 @@ class BinaryStreamWriter<out T : OutputStream>(private val stream: T) {
     private var position: Long = 0
     // Reusable buffer for primitive types.
     private var primitiveBuffer: ByteBuffer = ByteBuffer.allocate(8)
+    private val varIntResult = VarIntHelper.Result()
 
     init {
         primitiveBuffer.order(ByteOrder.LITTLE_ENDIAN)
@@ -44,15 +45,18 @@ class BinaryStreamWriter<out T : OutputStream>(private val stream: T) {
     }
 
     fun writeVarInt16(value: Short) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        VarIntHelper.encodeVarInt16(value, varIntResult)
+        stream.write(varIntResult.data, 0, varIntResult.length)
     }
 
     fun writeVarInt32(value: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        VarIntHelper.encodeVarInt32(value, varIntResult)
+        stream.write(varIntResult.data, 0, varIntResult.length)
     }
 
     fun writeVarInt64(value: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        VarIntHelper.encodeVarInt64(value, varIntResult)
+        stream.write(varIntResult.data, 0, varIntResult.length)
     }
 
     fun writeFloat(value: Float) {
