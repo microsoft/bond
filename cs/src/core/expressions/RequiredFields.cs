@@ -7,14 +7,14 @@ namespace Bond.Expressions
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     internal static class RequiredFields
     {
         static readonly ConstructorInfo ctor =  typeof(Bitmap).GetConstructor(typeof(int));
-        static readonly PropertyInfo isAnySet = BondReflection.PropertyInfoOf((Bitmap b) => b.IsAnySet);
-        static readonly PropertyInfo firstSet = BondReflection.PropertyInfoOf((Bitmap b) => b.FirstSet);
-        static readonly MethodInfo reset =      BondReflection.MethodInfoOf((Bitmap bitmap) => bitmap.Reset(default(int), default(long)));
+        static readonly PropertyInfo isAnySet = Reflection.PropertyInfoOf((Bitmap b) => b.IsAnySet);
+        static readonly PropertyInfo firstSet = Reflection.PropertyInfoOf((Bitmap b) => b.FirstSet);
+        static readonly MethodInfo reset =      Reflection.MethodInfoOf((Bitmap bitmap) => bitmap.Reset(default(int), default(long)));
 
         public static ParameterExpression Variable(string name)
         {

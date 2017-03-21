@@ -11,7 +11,7 @@
     using Bond.Expressions;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     internal static class DebugViewHelper
     {

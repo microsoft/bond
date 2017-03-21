@@ -4,7 +4,7 @@
 namespace Bond.Expressions
 {
     using System.Linq.Expressions;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     internal static class DataExpression
     {

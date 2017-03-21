@@ -5,7 +5,7 @@ namespace Bond
 {
     using System;
     using System.Reflection;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     internal class Property : ISchemaField
     {

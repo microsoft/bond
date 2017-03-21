@@ -17,6 +17,7 @@
     <Compile Include="Blob.cs" />
     <Compile Include="Bond.cs" />
     <Compile Include="Bonded.cs" />
+    <Compile Include="BondReflection.cs" />
     <Compile Include="Clone.cs" />
     <Compile Include="Comparer.cs" />
     <Compile Include="Deserializer.cs" />
@@ -72,7 +73,7 @@
     <Compile Include="protocols\SimpleXmlReader.cs" />
     <Compile Include="protocols\SimpleXmlWriter.cs" />
     <Compile Include="protocols\XmlMetadata.cs" />
-    <Compile Include="BondReflection.cs" />
+    <Compile Include="Reflection.cs" />
     <Compile Include="RuntimeSchema.cs" />
     <Compile Include="Schema.cs" />
     <Compile Include="Serializer.cs" />

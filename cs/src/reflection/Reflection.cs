@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Bond.Reflection
+namespace Bond.Internal.Reflection
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
 
-    internal static class Reflection
+    internal static class ReflectionExtensions
     {
         #region PCL compatibility
 

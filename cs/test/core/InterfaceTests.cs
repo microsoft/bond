@@ -11,7 +11,7 @@
     using Bond.IO;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     [TestFixture]
     public class InterfaceTests

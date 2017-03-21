@@ -40,8 +40,20 @@ different versioning scheme, following the Haskell community's
 
 * Added controls to cap incremental allocation between reads in
   `Bond.IO.Unsafe.InputStream`.
-* Extended bug parsing JSON when a string value is a date.
+* Extended fix for bug parsing JSON when a string value is a date.
   [Pull request #358](https://github.com/Microsoft/bond/pull/358)
+* Bond C# 5.1.0 accidentally broke backward compability by renaming
+  `Bond.Reflection` to `Bond.BondReflection`. This has been fixed:
+  `Bond.BondReflection` was unrenamed back to `Bond.Reflection`, and a shim
+  `Bond.BondReflection` type now redirects all calls to their original names
+  to minimize further breakage.
+  [Issue #369](https://github.com/Microsoft/bond/issues/369)
+    * Code that started using `Bond.BondReflection` by name will encounter
+      warning CS0618 indicating use of an obselete method/type. To fix this,
+      use the original name `Bond.Reflection`. This warning can be
+      suppressed if needed. However...
+    * ...the shim type `Bond.BondReflection` will be removed during or after
+      the next major release of C# Bond.
 
 ### C# Comm ###
 

@@ -9,14 +9,14 @@ namespace Bond.Expressions.Xml
 
     public class XmlReader<R> where R : IXmlReader
     {
-        static readonly MethodInfo read = BondReflection.MethodInfoOf((IXmlReader r) => r.Read());
-        static readonly MethodInfo skip = BondReflection.MethodInfoOf((IXmlReader r) => r.Skip());
-        static readonly PropertyInfo eof = BondReflection.PropertyInfoOf((IXmlReader r) => r.EOF);
-        static readonly PropertyInfo nodeType = BondReflection.PropertyInfoOf((IXmlReader r) => r.NodeType);
-        static readonly PropertyInfo localName = BondReflection.PropertyInfoOf((IXmlReader r) => r.LocalName);
-        static readonly PropertyInfo namespaceUri = BondReflection.PropertyInfoOf((IXmlReader r) => r.NamespaceURI);
-        static readonly PropertyInfo isEmptyElement = BondReflection.PropertyInfoOf((IXmlReader r) => r.IsEmptyElement);
-        static readonly PropertyInfo value = BondReflection.PropertyInfoOf((IXmlReader r) => r.Value);
+        static readonly MethodInfo read = Reflection.MethodInfoOf((IXmlReader r) => r.Read());
+        static readonly MethodInfo skip = Reflection.MethodInfoOf((IXmlReader r) => r.Skip());
+        static readonly PropertyInfo eof = Reflection.PropertyInfoOf((IXmlReader r) => r.EOF);
+        static readonly PropertyInfo nodeType = Reflection.PropertyInfoOf((IXmlReader r) => r.NodeType);
+        static readonly PropertyInfo localName = Reflection.PropertyInfoOf((IXmlReader r) => r.LocalName);
+        static readonly PropertyInfo namespaceUri = Reflection.PropertyInfoOf((IXmlReader r) => r.NamespaceURI);
+        static readonly PropertyInfo isEmptyElement = Reflection.PropertyInfoOf((IXmlReader r) => r.IsEmptyElement);
+        static readonly PropertyInfo value = Reflection.PropertyInfoOf((IXmlReader r) => r.Value);
 
         readonly ParameterExpression reader = Expression.Parameter(typeof(R), "reader");
 

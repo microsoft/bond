@@ -10,7 +10,7 @@ namespace Bond
     using System.Reflection;
     using Bond.Expressions;
     using Bond.IO;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     public static class Deserialize
     {
