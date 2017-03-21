@@ -10,14 +10,15 @@
 
 using namespace bf;
 
-FILE* OpenFile(const std::string& path, const char* mode)
+FILE* OpenFile(const char* path, const char* mode)
 {
     FILE* file;
 
 #ifdef _MSC_VER
+
     // Under the compiler settings we use with MSVC, fopen is not considered
     // "secure", so we use the "secure" variant.
-    errno_t err = fopen_s(&file, path.c_str(), mode);
+    errno_t err = fopen_s(&file, path, mode);
     if (err != 0)
     {
         BOND_THROW(bond::StreamException, "Error " << ErrorString(err) << " opening file " << path);
@@ -25,7 +26,7 @@ FILE* OpenFile(const std::string& path, const char* mode)
 
 #else
 
-    file = fopen(path.c_str(), mode);
+    file = fopen(path, mode);
     if (file == nullptr)
     {
         BOND_THROW(bond::StreamException, "Error " << ErrorString(errno) << " opening file " << path);
