@@ -81,7 +81,6 @@ class BinaryStreamWriter<out T : OutputStream>(private val stream: T) {
     }
 
     fun writeString(value: String) {
-        // FIXME: Make sure this generates null bytes and not \u0000.
         val encoded = value.toByteArray(UTF8)
         writeBytes(encoded)
     }
