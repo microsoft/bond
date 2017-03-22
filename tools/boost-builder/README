@@ -1,0 +1,17 @@
+This directory contains the source for a docker container that will create
+binaries of a number of boost versions for Ubuntu 14.04 (Trusty Tahr). These
+binaries are useful for regression testing across those boost releases.
+
+To create the binaries, start in the directory containing this README.
+
+Make the docker image:
+$ docker build -t boost-builder .
+
+Run the image:
+$ docker run -v `pwd`/out:/boosts -t boost-builder
+
+The build takes about fifteen minutes on a quad-core 3.3 GHz Xeon. When it
+finishes, there will be a set of .tar.xz archives in out/. Each archive is
+meant to be unzipped from your root directory and will put, e.g., boost 1.63.0
+in /opt/boost_1_63_0. Multiple archives can be safely extracted into one
+filesystem.
