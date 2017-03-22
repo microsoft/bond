@@ -273,10 +273,10 @@ use_map_allocator_for_keys
 template <typename T> struct
 use_map_allocator_for_keys
     <T, typename boost::enable_if<
-        is_same<typename T::allocator_type::template rebind<int>::other,
-                typename element_type<T>::type::first_type::allocator_type::template rebind<int>::other> >::type>
+        is_same<typename rebind_allocator<typename T::allocator_type, int>::type,
+                typename rebind_allocator<typename element_type<T>::type::first_type::allocator_type, int>::type> >::type>
 {
-    static const bool value = !is_same<typename T::allocator_type::template rebind<int>::other,
+    static const bool value = !is_same<typename rebind_allocator<typename T::allocator_type, int>::type,
                                        std::allocator<int> >::value;
 };
 

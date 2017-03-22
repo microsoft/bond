@@ -16,6 +16,10 @@
 #   define BOND_TYPE_TRAITS_NAMESPACE ::boost
 #endif
 
+#ifndef BOND_NO_CXX11_ALLOCATOR
+#include <memory>
+#endif
+
 namespace bond
 {
 
@@ -149,6 +153,16 @@ uses_marshaled_bonded;
 template <typename T> struct
 is_type_alias
     : is_object<typename aliased_type<T>::type> {};
+
+
+template<typename A, typename T>
+struct rebind_allocator {
+#ifndef BOND_NO_CXX11_ALLOCATOR
+    typedef typename std::allocator_traits<A>::template rebind_alloc<T> type;
+#else
+    typedef typename A::template rebind<T>::other type;
+#endif
+};
 
 
 } // namespace bond
