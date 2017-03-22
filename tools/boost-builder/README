@@ -15,3 +15,6 @@ finishes, there will be a set of .tar.xz archives in out/. Each archive is
 meant to be unzipped from your root directory and will put, e.g., boost 1.63.0
 in /opt/boost_1_63_0. Multiple archives can be safely extracted into one
 filesystem.
+
+To make the binaries available for the existing travis setup, see
+upload_boosts.zsh in this directory.
