@@ -165,4 +165,13 @@ struct rebind_allocator {
 };
 
 
+template<typename A>
+struct is_default_allocator
+    : false_type { };
+
+template<typename T>
+struct is_default_allocator<std::allocator<T> >
+    : true_type { };
+
+
 } // namespace bond

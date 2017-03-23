@@ -153,15 +153,13 @@ use_container_allocator_for_elements<T, typename boost::enable_if<
     is_same<typename T::allocator_type::template rebind<int>::other,
             typename element_type<T>::type::allocator_type::template rebind<int>::other> >::type>
 {
-    static const bool value = !is_same<typename T::allocator_type::template rebind<int>::other,
-                                       std::allocator<int> >::value;
+    static const bool value = !is_default_allocator<typename T::allocator_type>::value;
 };
 
 template <typename T> struct
 use_container_allocator_for_elements<T, typename boost::enable_if_c<
     has_schema<typename element_type<T>::type>::value
- && !is_same<typename T::allocator_type::template rebind<int>::other,
-             std::allocator<int> >::value>::type>
+ && !is_default_allocator<typename T::allocator_type>::value>::type>
     : true_type {};
 
 #else
@@ -276,8 +274,7 @@ use_map_allocator_for_keys
         is_same<typename rebind_allocator<typename T::allocator_type, int>::type,
                 typename rebind_allocator<typename element_type<T>::type::first_type::allocator_type, int>::type> >::type>
 {
-    static const bool value = !is_same<typename rebind_allocator<typename T::allocator_type, int>::type,
-                                       std::allocator<int> >::value;
+    static const bool value = !is_default_allocator<typename T::allocator_type>::value;
 };
 
 
@@ -313,15 +310,13 @@ use_map_allocator_for_values<T, typename boost::enable_if<
     is_same<typename T::allocator_type::template rebind<int>::other,
             typename element_type<T>::type::second_type::allocator_type::template rebind<int>::other> >::type>
 {
-    static const bool value = !is_same<typename T::allocator_type::template rebind<int>::other,
-                                       std::allocator<int> >::value;
+    static const bool value = !is_default_allocator<typename T::allocator_type>::value;
 };
 
 template <typename T> struct
 use_map_allocator_for_values<T, typename boost::enable_if_c<
     has_schema<typename element_type<T>::type::second_type>::value
- && !is_same<typename T::allocator_type::template rebind<int>::other,
-             std::allocator<int> >::value>::type>
+ && !is_default_allocator<typename T::allocator_type>::value>::type>
     : true_type {};
 
 #else
