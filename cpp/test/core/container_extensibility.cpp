@@ -123,8 +123,8 @@ TEST_CASE_BEGIN(MultiIndexTest)
                 SimpleStructView, 
                 boost::multi_index::indexed_by<
                     boost::multi_index::sequenced<>,
-                    ordered_non_unique_field<SimpleStructView::Schema::var::m_str>,
-                    ordered_non_unique_field<SimpleStructView::Schema::var::m_uint64>
+                    ordered_non_unique_field<SimpleStructView::Schema::var::m_str, get_field_template<SimpleStructView::Schema::var::m_str>::type>,
+                    ordered_non_unique_field<SimpleStructView::Schema::var::m_uint64, get_field_template<SimpleStructView::Schema::var::m_uint64>::type>
                 >
             >
         > Custom;
