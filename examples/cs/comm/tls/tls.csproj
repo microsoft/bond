@@ -34,7 +34,9 @@
   <ItemGroup>
     <Compile Include="Tls.cs" />
     <Compile Include="SimpleService.cs" />
-    <BondCodegen Include="SimpleService.bond" />
+    <BondCodegen Include="SimpleService.bond">
+      <Options>--comm</Options>
+    </BondCodegen>
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\SimpleService_types.cs" Condition="False" />
     <!-- End Resharper Workaround -->

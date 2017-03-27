@@ -1,5 +1,9 @@
 % Bond Epoxy transport wire format
 
+**IMPORTANT NOTE: Bond Comm and Epoxy are deprecated. We recommend using
+[Bond-over-gRPC](bond_over_grpc.html) for communication. This documentation
+is retained for transitional purposes.**
+
 # Epoxy transport wire format #
 
 This documents the [Bond Epoxy transport](bond_comm_epoxy.html) wire format.
