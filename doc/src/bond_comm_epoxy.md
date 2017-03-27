@@ -1,5 +1,9 @@
 % Bond Epoxy transport
 
+**IMPORTANT NOTE: Bond Comm and Epoxy are deprecated. We recommend using
+[Bond-over-gRPC](bond_over_grpc.html) for communication. This documentation
+is retained for transitional purposes.**
+
 # About #
 
 The Bond Epoxy transport is a Bond

@@ -22,6 +22,7 @@ different versioning scheme, following the Haskell community's
 ### `gbc` & compiler library ###
 
 * C++ codegen ensures that parameter names do not shadow field names.
+* Add flags to pick and choose which C# files to codegen (structs, gRPC and comm).
 
 ### C++ ###
 
@@ -42,6 +43,7 @@ different versioning scheme, following the Haskell community's
 
 ## C# ###
 
+* Added gRPC integration
 * Added controls to cap incremental allocation between reads in
   `Bond.IO.Unsafe.InputStream`.
 * Extended bug parsing JSON when a string value is a date.
@@ -49,6 +51,7 @@ different versioning scheme, following the Haskell community's
 
 ### C# Comm ###
 
+* C# Comm now deprecated, use Bond-over-gRPC.
 * EpoxyListener's StopAsync() now stops all the outstanding connections that
   it accepted.
 * EpoxyTransport's StopAsync() now stops all the connections and listeners

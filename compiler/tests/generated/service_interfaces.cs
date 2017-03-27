@@ -22,9 +22,13 @@ namespace tests
 
         void foo12Async(global::Bond.Comm.IMessage<global::Bond.Void> param);
 
+        void foo12_implAsync(global::Bond.Comm.IMessage<global::Bond.Void> param);
+
         void foo13Async(global::Bond.Comm.IMessage<BasicTypes> param);
 
         void foo14Async(global::Bond.Comm.IMessage<dummy> param);
+
+        void foo15Async(global::Bond.Comm.IMessage<global::tests2.OtherBasicTypes> param);
 
         global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo21Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct);
 

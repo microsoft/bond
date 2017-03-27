@@ -50,6 +50,9 @@ data Options
         , fields :: Bool
         , jobs :: Maybe Int
         , no_banner :: Bool
+        , structs_enabled :: Bool
+        , comm_enabled :: Bool
+        , grpc_enabled :: Bool
         }
     | Schema
         { files :: [FilePath]
@@ -83,6 +86,9 @@ cs = Cs
     { collection_interfaces = def &= name "c" &= help "Use interfaces rather than concrete collection types"
     , readonly_properties = def &= name "r" &= help "Generate private property setters"
     , fields = def &= name "f" &= help "Generate public fields rather than properties"
+    , structs_enabled = True &= explicit &= name "structs" &= help "Generate C# types for Bond structs and enums (true by default, use \"--structs=false\" to disable)"
+    , comm_enabled = False &= explicit &= name "comm" &= help "Generate C# services and proxies for Bond Comm"
+    , grpc_enabled = False &= explicit &= name "grpc" &= help "Generate C# services and proxies for gRPC"
     } &=
     name "c#" &=
     help "Generate C# code"

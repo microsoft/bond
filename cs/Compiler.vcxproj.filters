@@ -83,6 +83,9 @@
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Util.hs">
       <Filter>Bond\Codegen\Cs</Filter>
     </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Grpc_cs.hs">
+      <Filter>Bond\Codegen\Cs</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Bond">

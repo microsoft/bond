@@ -4,6 +4,7 @@
 #include "service_types.h"
 #include <bond/core/reflection.h>
 #include "basic_types_reflection.h"
+#include "namespace_basic_types_reflection.h"
 
 namespace tests
 {

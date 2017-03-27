@@ -16,12 +16,10 @@ serialization protocols, data streams, user defined type aliases and more.
 By design Bond is language and platform independent and is currently supported 
 for C++, C#, and Python on Linux, OS X and Windows.
 
-We are also introducing the
-[Bond Communications framework](https://Microsoft.github.io/bond/manual/bond_comm.html)--known
-as Bond Comm. More information about Bond Comm for C++ can be found
-[below](#bond-comm).
+Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond
 
-Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
+**IMPORTANT NOTE: Bond Comm is deprecated. We recommend using
+[Bond-over-gRPC](bond_over_grpc.html) for communication.**
 
 Basic example
 =============
@@ -1773,6 +1771,10 @@ assertion mechanism to detect it.
 Bond Comm
 =========
 
+**IMPORTANT NOTE: Bond Comm is deprecated. We recommend using
+[Bond-over-gRPC](bond_over_grpc.html) for communication. This documentation
+is retained for transitional purposes.**
+
 The [Bond Communications framework](bond_comm.html) in C++ makes it easy and
 efficent to construct services and hook clients up to those services. Built
 on top of the Bond serialization framework, Bond Comm aims for the same
@@ -1844,6 +1846,9 @@ References
 [Bond Comm overview][bond_comm]
 ----------------------------
 
+[Bond-over-gRPC overview][bond_over_grpc]
+----------------------------
+
 [API_reference]: ../reference/cpp/index.html
 
 [compiler]: compiler.html
@@ -1853,6 +1858,8 @@ References
 [bond_cs]: bond_cs.html
 
 [bond_comm]: bond_comm.html
+
+[bond_over_grpc]: bond_over_grpc.html
 
 [serializing_transform_ref]: 
 ../reference/cpp/structbond_1_1_serializing_transform.html

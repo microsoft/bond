@@ -11,16 +11,12 @@ data. It supports cross-language serialization/deserialization and powerful
 generic mechanisms for efficiently manipulating data. Bond is broadly used at
 Microsoft in high scale services.
 
-We are also introducing the
-[Bond Communications framework](https://Microsoft.github.io/bond/manual/bond_comm.html)--known
-as Bond Comm--which allows for remote process communication. This framework is the successor
-to an internal framework that is used by several large services inside
-Microsoft. We have now released versions of Bond Comm for C# and C++. Consult
-the [C# manual](https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm)
-and the [C++ manual](https://Microsoft.github.io/bond/manual/bond_cpp.html#bond-comm)
-for more details on Bond Comm's usage and capabilities. Note that the wire format should be
-considered firm at this point but the APIs and implementation are still evolving so Bond Comm is
-still considered "pre-1.0".
+**IMPORTANT NOTE: The [Bond Communications framework](https://Microsoft.github.io/bond/manual/bond_comm.html)
+-- known as Bond Comm -- is deprecated. We recommend using
+[Bond-over-gRPC](https://Microsoft.github.io/bond/manual/bond_over_grpc.html) for communication.
+The [Bond Comm C# manual](https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm)
+and the [Bond Comm C++ manual](https://Microsoft.github.io/bond/manual/bond_cpp.html#bond-comm)
+are preserved for transition purposes.**
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
