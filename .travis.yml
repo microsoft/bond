@@ -63,7 +63,7 @@ before_install:
     - if [ "$BOND_LANG" == "cs" ]; then travis_retry nuget install NUnit.Runners -version 2.6.4; fi
     - export PATH=/opt/cabal/1.22/bin:/opt/ghc/${BOND_GHC_VERSION#?}/bin:$PATH
     - cabal update
-    - cabal install happy
+    - cabal install happy Cabal
 
 before_script:
     # restore nuget packages for solution
