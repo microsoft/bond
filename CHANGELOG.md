@@ -19,6 +19,12 @@ different versioning scheme, following the Haskell community's
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed)
 
+### `gbc` and Bond compiler library ###
+
+* **Breaking change:** Split Haskell Protocol data type, pair: {protocolReader, protocolWriter} into explicit
+  ProtocolReader and ProtocolWriter types (in `Language.Bond.Codegen.Cpp.ApplyOverloads` module).
+* Add explicit bond::Apply<> instantiation for CompactBinaryWriter<OutputCounter> and SimpleBinaryWriter<Null> writers.
+
 ### `gbc` & compiler library ###
 
 * C++ codegen ensures that parameter names do not shadow field names.
