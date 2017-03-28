@@ -92,9 +92,6 @@ struct FieldTemplate
     /// @brief Static data member describing field metadata
     static const Metadata& metadata;
 
-    /// @brief Static data member representing the field pointer
-    static constexpr field_pointer field = field_ptr;
-
     /// @brief Static data member equal to the field ordinal
     BOND_STATIC_CONSTEXPR uint16_t id = field_id;
 
@@ -102,14 +99,14 @@ struct FieldTemplate
     static
     const value_type& GetVariable(const struct_type& object)
     {
-        return object.*field;
+        return object.*field_ptr;
     }
 
     /// @brief Static method returning reference to the field value for a particular object
     static
     value_type& GetVariable(struct_type& object)
     {
-        return object.*field;
+        return object.*field_ptr;
     }
 
     BOOST_STATIC_ASSERT(field_id != invalid_field_id);

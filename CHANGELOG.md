@@ -45,7 +45,9 @@ get a compiler error. To fix, remove the `<Writer>` part:
 
 ### `gbc` and Bond compiler library ###
 
-* Remove FieldTemplate details from field reflection type.
+* C++ codegen generates field reflection, that uses an explicit type 
+  derrived from reflection::FieldTemplate. This hides FieldTemplate 
+  details and, as result, shortens symbol names.
 * C++ codegen ensures that parameter names do not shadow field names.
 * When generating C++ apply files, there are now explicit `bond::Apply<>`
   instantiations for `CompactBinaryWriter<OutputCounter>` and
