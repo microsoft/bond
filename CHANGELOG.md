@@ -52,6 +52,11 @@ different versioning scheme, following the Haskell community's
   instantiations for `CompactBinaryWriter<OutputCounter>` and
   `SimpleBinaryWriter<Null>` writers.
   [Pull request #373](https://github.com/Microsoft/bond/pull/373)
+* Improve C++ allocator support
+  [Issue #379](https://github.com/Microsoft/bond/issues/379)
+  [Pull request #380](https://github.com/Microsoft/bond/pull/380)
+    * Support C++11 and above allocator model for rebind
+    * Simplify detection of the default allocator
 
 ## C# ###
 

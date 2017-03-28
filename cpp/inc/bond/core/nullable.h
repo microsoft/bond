@@ -320,14 +320,11 @@ public:
     typedef Allocator   allocator_type;
 
 private:
-    #ifndef BOND_NO_CXX11_ALLOCATOR
-    typedef typename std::allocator_traits<allocator_type>::
-        template rebind_alloc<value_type> rebind_alloc;
+    typedef typename detail::rebind_allocator<allocator_type, value_type>::type rebind_alloc;
 
+#ifndef BOND_NO_CXX11_ALLOCATOR
     typedef typename std::allocator_traits<rebind_alloc>::pointer real_pointer;
 #else
-    typedef typename allocator_type::template rebind<value_type>::other rebind_alloc;
-
     typedef pointer real_pointer;
 #endif
 

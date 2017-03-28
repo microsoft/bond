@@ -350,7 +350,7 @@ protected:
     char* _rangePtr;
 
     // list of blobs
-    std::vector<blob, typename A::template rebind<blob>::other> _blobs;
+    std::vector<blob, typename detail::rebind_allocator<A, blob>::type> _blobs;
 
 }; // class OutputMemoryStream
 

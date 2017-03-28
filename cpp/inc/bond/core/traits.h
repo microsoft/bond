@@ -16,6 +16,10 @@
 #   define BOND_TYPE_TRAITS_NAMESPACE ::boost
 #endif
 
+#ifndef BOND_NO_CXX11_ALLOCATOR
+#include <memory>
+#endif
+
 namespace bond
 {
 
@@ -150,5 +154,27 @@ template <typename T> struct
 is_type_alias
     : is_object<typename aliased_type<T>::type> {};
 
+namespace detail
+{
+
+template<typename A, typename T>
+struct rebind_allocator {
+#ifndef BOND_NO_CXX11_ALLOCATOR
+    typedef typename std::allocator_traits<A>::template rebind_alloc<T> type;
+#else
+    typedef typename A::template rebind<T>::other type;
+#endif
+};
+
+
+template<typename A>
+struct is_default_allocator
+    : false_type { };
+
+template<typename T>
+struct is_default_allocator<std::allocator<T> >
+    : true_type { };
+
+} // namespace detail
 
 } // namespace bond
