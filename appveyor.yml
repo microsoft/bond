@@ -21,41 +21,8 @@
         BOND_TOKEN:
             secure: 30K3L1s8erWFnnS/Iyb2LP7kiGZBr/GzA24Y82mCsGMBjzSUyk7uV7MvZ3NepNvB
         matrix:
-            - BOND_BUILD: Doc
-            - BOND_BUILD: Python
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 32
-              BOND_BOOST: 60
-            - BOND_BUILD: Python
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 64
-              BOND_BOOST: 63
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 64
-              BOND_BOOST: 60
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
-              BOND_CONFIG: Debug
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 12 2013"
-              BOND_VS_NUM: 12
-              BOND_ARCH: 32
-              BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_CORE_ONLY=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 12 2013"
-              BOND_VS_NUM: 12
-              BOND_ARCH: 64
-              BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
-            - BOND_BUILD: C#
-              BOND_OUTPUT: Fields
-              BOND_CONFIG: Fields
-            - BOND_BUILD: "C# .NET Core"
               BOND_CONFIG: Debug
 
     install:
@@ -238,10 +205,7 @@
 
             if ($env:BOND_BUILD -eq "C#") {
 
-                nunit-console-x86 /framework:net-4.0 /labels "cs\test\core\bin\debug\net40\${env:BOND_OUTPUT}\Bond.UnitTest.dll" cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
-                if (-not $?) { throw "tests failed" }
-
-                nunit-console-x86 /framework:net-4.5 /labels "cs\test\core\bin\debug\net45\${env:BOND_OUTPUT}\Bond.UnitTest.dll" cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+                cs\comm\grpc_pingpong\bin\Debug\pingpong.exe
                 if (-not $?) { throw "tests failed" }
 
                 # We need to investigate why these tests are failing in AppVeyor, but not locally.

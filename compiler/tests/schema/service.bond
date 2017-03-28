@@ -1,4 +1,5 @@
 import "basic_types.bond"
+import "namespace_basic_types.bond"
 
 namespace tests
 
@@ -14,8 +15,10 @@ service Foo
 {
     nothing foo11();
     nothing foo12(void);
+    nothing foo12_impl(void);
     nothing foo13(BasicTypes);
     nothing foo14(bar);
+    nothing foo15(tests2.OtherBasicTypes);
 
     void foo21();
     void foo22(void);

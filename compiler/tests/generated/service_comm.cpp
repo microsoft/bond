@@ -16,11 +16,17 @@ namespace tests
     const ::bond::Metadata Foo::Schema::s_foo12_metadata
         = ::bond::reflection::MetadataInit("foo12");
     
+    const ::bond::Metadata Foo::Schema::s_foo12_impl_metadata
+        = ::bond::reflection::MetadataInit("foo12_impl");
+    
     const ::bond::Metadata Foo::Schema::s_foo13_metadata
         = ::bond::reflection::MetadataInit("foo13");
     
     const ::bond::Metadata Foo::Schema::s_foo14_metadata
         = ::bond::reflection::MetadataInit("foo14");
+    
+    const ::bond::Metadata Foo::Schema::s_foo15_metadata
+        = ::bond::reflection::MetadataInit("foo15");
     
     const ::bond::Metadata Foo::Schema::s_foo21_metadata
         = ::bond::reflection::MetadataInit("foo21");

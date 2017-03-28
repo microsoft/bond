@@ -93,6 +93,7 @@ verifyCsCommCodegen args baseName =
             [ comm_interface_cs
             , comm_proxy_cs
             , comm_service_cs
+            , grpc_cs
             , types_cs Class (fieldMapping (processOptions args))
             ]
   where

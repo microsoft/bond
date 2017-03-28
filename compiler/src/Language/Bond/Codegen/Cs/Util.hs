@@ -11,6 +11,7 @@ module Language.Bond.Codegen.Cs.Util
     , defaultValue
     , disableCscWarnings
     , disableReSharperWarnings
+    , generatedCodeAttr
     ) where
 
 import Data.Int (Int64)

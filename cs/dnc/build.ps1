@@ -144,6 +144,7 @@ try
     $script:to_publish = (
         @{'source'='attributes'; 'files'='Bond.Attributes.*'},
         @{'source'='core'; 'files'='Bond.*'},
+        @{'source'='grpc'; 'files'='Bond.Grpc.*'},
         @{'source'='io'; 'files'='Bond.IO.*'},
         @{'source'='json'; 'files'='Bond.JSON.*'},
         @{'source'='reflection'; 'files'='Bond.Reflection.*'}
