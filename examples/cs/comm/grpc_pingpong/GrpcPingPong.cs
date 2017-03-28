@@ -46,7 +46,7 @@ namespace Examples.GrpcPingPong
             Shutdown();
 
             Console.WriteLine("\n\n\nDone with all requests. Press enter to exit.");
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
         private static void Shutdown()
@@ -77,10 +77,12 @@ namespace Examples.GrpcPingPong
 
         private static async Task DoPingPong(PingPong<PingRequest>.PingPongClient client, int requestNum, string payload, UInt16 delay)
         {
+            /*
             var request = new PingRequest { Payload = payload, DelayMilliseconds = delay };
             IMessage<PingResponse> response = await client.PingAsync(request);
 
             Console.WriteLine($"Request #{requestNum} response: \"{response.Payload.Deserialize().Payload}\". Delay: {delay}");
+            */
         }
 
         private static async Task DoDoublePing(DoublePing.DoublePingClient client, int requestNum, string payload, UInt16 delay)
@@ -89,7 +91,7 @@ namespace Examples.GrpcPingPong
 
             try
             {
-                IMessage<PingResponse> responseUltra = await client.PingUltraAsync(request);
+                //IMessage<PingResponse> responseUltra = await client.PingUltraAsync(request);
             }
             catch (RpcException e)
             {
@@ -104,7 +106,7 @@ namespace Examples.GrpcPingPong
             Console.WriteLine($"Request #{requestNum} response: \"{responsePingNoPayload.Payload.Deserialize().Payload}\".");
 
             await client.PingVoidAsync();
-            client.PongNoResponseAsync(request);
+            //client.PongNoResponseAsync(request);
         }
     }
 }
