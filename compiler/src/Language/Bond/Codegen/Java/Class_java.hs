@@ -10,7 +10,7 @@ module Language.Bond.Codegen.Java.Class_java
     ) where
 
 import Prelude
-import Data.Text.Lazy (Text)
+import Data.Text.Lazy (Text, pack)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
 import Language.Bond.Util
@@ -71,23 +71,23 @@ serialize_ProtocolWriter declaration = [lt|
         #{fieldValue}
         writer.writeFieldEnd();|]
             where
-                fieldTypeName = case fieldType of
-                    BT_Int8    -> [lt|BondDataType.BT_INT8|]
-                    BT_Int16   -> [lt|BondDataType.BT_INT16|]
-                    BT_Int32   -> [lt|BondDataType.BT_INT32|]
-                    BT_Int64   -> [lt|BondDataType.BT_INT64|]
-                    BT_UInt8   -> [lt|BondDataType.BT_UINT8|]
-                    BT_UInt16  -> [lt|BondDataType.BT_UINT16|]
-                    BT_UInt32  -> [lt|BondDataType.BT_UINT32|]
-                    BT_UInt64  -> [lt|BondDataType.BT_UINT64|]
-                    BT_Float   -> [lt|BondDataType.BT_FLOAT|]
-                    BT_Double  -> [lt|BondDataType.BT_DOUBLE|]
-                    BT_Bool    -> [lt|BondDataType.BT_BOOL|]
-                    BT_String  -> [lt|BondDataType.BT_STRING|]
-                    BT_WString -> [lt|BondDataType.BT_WSTRING|]
-                    BT_Blob    -> [lt|BondDataType.BT_BLOB|]
+                fieldTypeName = pack $ "com.microsoft.bond.BondDataType." ++ case fieldType of
+                    BT_Int8    -> "BT_INT8"
+                    BT_Int16   -> "BT_INT16"
+                    BT_Int32   -> "BT_INT32"
+                    BT_Int64   -> "BT_INT64"
+                    BT_UInt8   -> "BT_UINT8"
+                    BT_UInt16  -> "BT_UINT16"
+                    BT_UInt32  -> "BT_UINT32"
+                    BT_UInt64  -> "BT_UINT64"
+                    BT_Float   -> "BT_FLOAT"
+                    BT_Double  -> "BT_DOUBLE"
+                    BT_Bool    -> "BT_BOOL"
+                    BT_String  -> "BT_STRING"
+                    BT_WString -> "BT_WSTRING"
+                    BT_Blob    -> "BT_BLOB"
                     -- FIXME: Totally broken, but builds.
-                    _          -> [lt|BondDataType.BT_UNAVAILABLE|]
+                    _          -> "BT_UNAVAILABLE"
                 fieldValue = case fieldType of
                     BT_Int8    -> [lt|writer.writeInt8(this.#{fieldName});|]
                     BT_Int16   -> [lt|writer.writeInt16(this.#{fieldName});|]
