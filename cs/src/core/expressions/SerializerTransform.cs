@@ -9,7 +9,7 @@ namespace Bond.Expressions
     using System.Linq;
     using System.Linq.Expressions;
     using Bond.Protocols;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     public abstract class SerializerGenerator<R, W> : ISerializerGenerator<R, W>
     {

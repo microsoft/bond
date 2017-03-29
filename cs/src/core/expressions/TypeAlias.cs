@@ -7,7 +7,7 @@ namespace Bond.Expressions
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     internal class TypeAlias
     {

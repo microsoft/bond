@@ -9,49 +9,49 @@ namespace Bond.Expressions
     using System.Linq.Expressions;
     using System.Reflection;
     using Bond.Protocols;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     internal class UntaggedReader<R>
     {
-        static readonly MethodInfo unmarshalBonded = BondReflection.MethodInfoOf(() => Unmarshal.From(default(ArraySegment<byte>)));
-        static readonly MethodInfo fieldOmitted    = GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadFieldOmitted()));
-        static readonly MethodInfo containerBegin =  GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadContainerBegin()));
-        static readonly MethodInfo containerEnd =    GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadContainerEnd()));
-        static readonly MethodInfo readBytes =       GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadBytes(default(int))));
-        static readonly MethodInfo skipBytes =       GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipBytes(default(int))));
+        static readonly MethodInfo unmarshalBonded = Reflection.MethodInfoOf(() => Unmarshal.From(default(ArraySegment<byte>)));
+        static readonly MethodInfo fieldOmitted    = GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadFieldOmitted()));
+        static readonly MethodInfo containerBegin =  GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadContainerBegin()));
+        static readonly MethodInfo containerEnd =    GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadContainerEnd()));
+        static readonly MethodInfo readBytes =       GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadBytes(default(int))));
+        static readonly MethodInfo skipBytes =       GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipBytes(default(int))));
 
         static readonly Dictionary<BondDataType, MethodInfo> read = new Dictionary<BondDataType, MethodInfo>
             {
-                { BondDataType.BT_BOOL,    GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadBool())) },
-                { BondDataType.BT_UINT8,   GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadUInt8())) },
-                { BondDataType.BT_UINT16,  GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadUInt16())) },
-                { BondDataType.BT_UINT32,  GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadUInt32())) },
-                { BondDataType.BT_UINT64,  GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadUInt64())) },
-                { BondDataType.BT_FLOAT,   GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadFloat())) },
-                { BondDataType.BT_DOUBLE,  GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadDouble())) },
-                { BondDataType.BT_STRING,  GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadString())) },
-                { BondDataType.BT_INT8,    GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadInt8())) },
-                { BondDataType.BT_INT16,   GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadInt16())) },
-                { BondDataType.BT_INT32,   GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadInt32())) },
-                { BondDataType.BT_INT64,   GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadInt64())) },
-                { BondDataType.BT_WSTRING, GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadWString())) }
+                { BondDataType.BT_BOOL,    GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadBool())) },
+                { BondDataType.BT_UINT8,   GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadUInt8())) },
+                { BondDataType.BT_UINT16,  GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadUInt16())) },
+                { BondDataType.BT_UINT32,  GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadUInt32())) },
+                { BondDataType.BT_UINT64,  GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadUInt64())) },
+                { BondDataType.BT_FLOAT,   GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadFloat())) },
+                { BondDataType.BT_DOUBLE,  GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadDouble())) },
+                { BondDataType.BT_STRING,  GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadString())) },
+                { BondDataType.BT_INT8,    GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadInt8())) },
+                { BondDataType.BT_INT16,   GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadInt16())) },
+                { BondDataType.BT_INT32,   GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadInt32())) },
+                { BondDataType.BT_INT64,   GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadInt64())) },
+                { BondDataType.BT_WSTRING, GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.ReadWString())) }
             };
 
         static readonly Dictionary<BondDataType, MethodInfo> skip = new Dictionary<BondDataType, MethodInfo>
             {
-                { BondDataType.BT_BOOL,    GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipBool())) },
-                { BondDataType.BT_UINT8,   GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipUInt8())) },
-                { BondDataType.BT_UINT16,  GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipUInt16())) },
-                { BondDataType.BT_UINT32,  GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipUInt32())) },
-                { BondDataType.BT_UINT64,  GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipUInt64())) },
-                { BondDataType.BT_FLOAT,   GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipFloat())) },
-                { BondDataType.BT_DOUBLE,  GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipDouble())) },
-                { BondDataType.BT_STRING,  GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipString())) },
-                { BondDataType.BT_INT8,    GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipInt8())) },
-                { BondDataType.BT_INT16,   GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipInt16())) },
-                { BondDataType.BT_INT32,   GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipInt32())) },
-                { BondDataType.BT_INT64,   GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipInt64())) },
-                { BondDataType.BT_WSTRING, GetMethod(BondReflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipWString())) }
+                { BondDataType.BT_BOOL,    GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipBool())) },
+                { BondDataType.BT_UINT8,   GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipUInt8())) },
+                { BondDataType.BT_UINT16,  GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipUInt16())) },
+                { BondDataType.BT_UINT32,  GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipUInt32())) },
+                { BondDataType.BT_UINT64,  GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipUInt64())) },
+                { BondDataType.BT_FLOAT,   GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipFloat())) },
+                { BondDataType.BT_DOUBLE,  GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipDouble())) },
+                { BondDataType.BT_STRING,  GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipString())) },
+                { BondDataType.BT_INT8,    GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipInt8())) },
+                { BondDataType.BT_INT16,   GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipInt16())) },
+                { BondDataType.BT_INT32,   GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipInt32())) },
+                { BondDataType.BT_INT64,   GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipInt64())) },
+                { BondDataType.BT_WSTRING, GetMethod(Reflection.MethodInfoOf((IUntaggedProtocolReader reader) => reader.SkipWString())) }
             };
 
         static MethodInfo GetMethod(MethodInfo method)

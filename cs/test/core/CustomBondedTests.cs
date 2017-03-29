@@ -12,7 +12,7 @@ namespace UnitTest
     using Bond.IO;
     using Bond.IO.Unsafe;
     using Bond.Protocols;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
     using NUnit.Framework;
 
     [TestFixture]
@@ -290,7 +290,7 @@ namespace UnitTest
                     {
                         var arg = arguments[0]; // CustomBondedVoid<R>
 #if NETCOREAPP1_0
-                        Type[] genericArgs = Bond.Reflection.Reflection45.GetGenericArguments(type);
+                        Type[] genericArgs = Bond.Internal.Reflection.Reflection45.GetGenericArguments(type);
 #else
                         Type[] genericArgs = type.GetGenericArguments();
 #endif
