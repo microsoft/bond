@@ -149,46 +149,40 @@ namespace tests
 
         public abstract class FooBase
         {
-            public abstract void foo11(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
+            public abstract global::System.Threading.Tasks.Task foo11(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
 
-            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo11_impl(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context){
-                foo11(request, context);
-                return System.Threading.Tasks.Task.FromResult(global::Bond.Grpc.Message.Void);
+            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo11_impl(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context) {
+                return global::Bond.Grpc.Internal.NothingCallHandler.Handle(foo11, request, context);
             }
 
-            public abstract void foo12(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
+            public abstract global::System.Threading.Tasks.Task foo12(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
 
-            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo12_impl0(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context){
-                foo12(request, context);
-                return System.Threading.Tasks.Task.FromResult(global::Bond.Grpc.Message.Void);
+            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo12_impl0(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context) {
+                return global::Bond.Grpc.Internal.NothingCallHandler.Handle(foo12, request, context);
             }
 
-            public abstract void foo12_impl(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
+            public abstract global::System.Threading.Tasks.Task foo12_impl(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
 
-            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo12_impl_impl(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context){
-                foo12_impl(request, context);
-                return System.Threading.Tasks.Task.FromResult(global::Bond.Grpc.Message.Void);
+            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo12_impl_impl(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context) {
+                return global::Bond.Grpc.Internal.NothingCallHandler.Handle(foo12_impl, request, context);
             }
 
-            public abstract void foo13(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.ServerCallContext context);
+            public abstract global::System.Threading.Tasks.Task foo13(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.ServerCallContext context);
 
-            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo13_impl(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.ServerCallContext context){
-                foo13(request, context);
-                return System.Threading.Tasks.Task.FromResult(global::Bond.Grpc.Message.Void);
+            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo13_impl(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.ServerCallContext context) {
+                return global::Bond.Grpc.Internal.NothingCallHandler.Handle(foo13, request, context);
             }
 
-            public abstract void foo14(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.ServerCallContext context);
+            public abstract global::System.Threading.Tasks.Task foo14(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.ServerCallContext context);
 
-            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo14_impl(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.ServerCallContext context){
-                foo14(request, context);
-                return System.Threading.Tasks.Task.FromResult(global::Bond.Grpc.Message.Void);
+            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo14_impl(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.ServerCallContext context) {
+                return global::Bond.Grpc.Internal.NothingCallHandler.Handle(foo14, request, context);
             }
 
-            public abstract void foo15(global::Bond.Grpc.IMessage<global::tests2.OtherBasicTypes> request, global::Grpc.Core.ServerCallContext context);
+            public abstract global::System.Threading.Tasks.Task foo15(global::Bond.Grpc.IMessage<global::tests2.OtherBasicTypes> request, global::Grpc.Core.ServerCallContext context);
 
-            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo15_impl(global::Bond.Grpc.IMessage<global::tests2.OtherBasicTypes> request, global::Grpc.Core.ServerCallContext context){
-                foo15(request, context);
-                return System.Threading.Tasks.Task.FromResult(global::Bond.Grpc.Message.Void);
+            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo15_impl(global::Bond.Grpc.IMessage<global::tests2.OtherBasicTypes> request, global::Grpc.Core.ServerCallContext context) {
+                return global::Bond.Grpc.Internal.NothingCallHandler.Handle(foo15, request, context);
             }
 
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo21(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
@@ -238,7 +232,7 @@ namespace tests
 
             public virtual void foo11Async(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
             {
-                global::Bond.Grpc.NothingCallInvoker.NothingCall(CallInvoker, Method_foo11, null, options, request);
+                global::Bond.Grpc.Internal.NothingCallInvoker.NothingCall(CallInvoker, Method_foo11, null, options, request);
             }
 
             public virtual void foo12Async(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
@@ -249,7 +243,7 @@ namespace tests
 
             public virtual void foo12Async(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
             {
-                global::Bond.Grpc.NothingCallInvoker.NothingCall(CallInvoker, Method_foo12, null, options, request);
+                global::Bond.Grpc.Internal.NothingCallInvoker.NothingCall(CallInvoker, Method_foo12, null, options, request);
             }
 
             public virtual void foo12_implAsync(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
@@ -260,7 +254,7 @@ namespace tests
 
             public virtual void foo12_implAsync(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
             {
-                global::Bond.Grpc.NothingCallInvoker.NothingCall(CallInvoker, Method_foo12_impl, null, options, request);
+                global::Bond.Grpc.Internal.NothingCallInvoker.NothingCall(CallInvoker, Method_foo12_impl, null, options, request);
             }
 
             public virtual void foo13Async(BasicTypes request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
@@ -271,7 +265,7 @@ namespace tests
 
             public virtual void foo13Async(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.CallOptions options)
             {
-                global::Bond.Grpc.NothingCallInvoker.NothingCall(CallInvoker, Method_foo13, null, options, request);
+                global::Bond.Grpc.Internal.NothingCallInvoker.NothingCall(CallInvoker, Method_foo13, null, options, request);
             }
 
             public virtual void foo14Async(dummy request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
@@ -282,7 +276,7 @@ namespace tests
 
             public virtual void foo14Async(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.CallOptions options)
             {
-                global::Bond.Grpc.NothingCallInvoker.NothingCall(CallInvoker, Method_foo14, null, options, request);
+                global::Bond.Grpc.Internal.NothingCallInvoker.NothingCall(CallInvoker, Method_foo14, null, options, request);
             }
 
             public virtual void foo15Async(global::tests2.OtherBasicTypes request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
@@ -293,7 +287,7 @@ namespace tests
 
             public virtual void foo15Async(global::Bond.Grpc.IMessage<global::tests2.OtherBasicTypes> request, global::Grpc.Core.CallOptions options)
             {
-                global::Bond.Grpc.NothingCallInvoker.NothingCall(CallInvoker, Method_foo15, null, options, request);
+                global::Bond.Grpc.Internal.NothingCallInvoker.NothingCall(CallInvoker, Method_foo15, null, options, request);
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> foo21Async(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))

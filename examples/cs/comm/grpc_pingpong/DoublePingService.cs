@@ -34,7 +34,7 @@ namespace Examples.GrpcPingPong
             return Message.From(response);
         }
 
-        public override async void PingNoResponse(IMessage<PingRequest> param, ServerCallContext context)
+        public override async Task PingNoResponse(IMessage<PingRequest> param, ServerCallContext context)
         {
             PingRequest request = param.Payload.Deserialize();
 

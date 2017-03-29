@@ -105,11 +105,10 @@ namespace #{csNamespace}
 
         serverBaseMethods Function{..} = [lt|public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<#{getMessageTypeName methodResult}>> #{methodName}(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.ServerCallContext context);|]
 
-        serverBaseMethods Event{..} = [lt|public abstract void #{methodName}(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.ServerCallContext context);
+        serverBaseMethods Event{..} = [lt|public abstract global::System.Threading.Tasks.Task #{methodName}(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.ServerCallContext context);
 
-            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<#{getMessageTypeName Nothing}>> #{uniqImplName methodName}(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.ServerCallContext context){
-                #{methodName}(request, context);
-                return System.Threading.Tasks.Task.FromResult(global::Bond.Grpc.Message.Void);
+            internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<#{getMessageTypeName Nothing}>> #{uniqImplName methodName}(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.ServerCallContext context) {
+                return global::Bond.Grpc.Internal.NothingCallHandler.Handle(#{methodName}, request, context);
             }|]
 
         firstParam Nothing = mempty
@@ -137,7 +136,7 @@ namespace #{csNamespace}
 
             public virtual void #{methodName}Async(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.CallOptions options)
             {
-                global::Bond.Grpc.NothingCallInvoker.NothingCall(CallInvoker, Method_#{methodName}, null, options, request);
+                global::Bond.Grpc.Internal.NothingCallInvoker.NothingCall(CallInvoker, Method_#{methodName}, null, options, request);
             }|]
 
         serviceMethodBuilder Function{..} = [lt|.AddMethod(Method_#{methodName}, serviceImpl.#{methodName})|]
