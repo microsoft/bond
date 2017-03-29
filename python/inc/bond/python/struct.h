@@ -26,14 +26,14 @@ public:
         : c(c)
     {}
 
-    template <typename Field>
-    void operator()(const Field&) const
+    template <uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::*field_ptr, const bond::Metadata* metadata_ptr>
+    void operator()(const bond::reflection::FieldTemplate<field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr>&) const
     {
         // Define read-write property
-        add_property(Field::metadata.name, Field::field);
+        add_property(metadata_ptr->name, field_ptr);
 
         // Define field type
-        def_type<typename Field::value_type>();
+        def_type<FieldType>();
     }
 
 private:
