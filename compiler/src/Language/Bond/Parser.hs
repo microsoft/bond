@@ -65,7 +65,7 @@ parseBond ::
  -> String                              -- ^ content of a schema file to parse
  -> FilePath                            -- ^ path of the file being parsed, used to resolve relative import paths
  -> ImportResolver                      -- ^ function to resolve and load imported files
- -> IO (Either ParseError Bond)         -- ^ function returns 'Bond' which represents the parsed abstract syntax tree 
+ -> IO (Either ParseError Bond)         -- ^ function returns 'Bond' which represents the parsed abstract syntax tree
                                         --   or 'ParserError' if parsing failed
 parseBond s c f r = runReaderT (runParserT bond (Symbols [] []) s c) (Environment [] [] f r)
 
@@ -240,8 +240,9 @@ struct = do
             [] -> return fields'
             Field {..}:_ -> fail $ "Duplicate definition of the field with ordinal " ++ show fieldOrdinal ++
                 " and name " ++ show fieldName
-      where
-        findDuplicatesBy accessor xs = deleteFirstsBy ((==) `on` accessor) xs (nubBy ((==) `on` accessor) xs)
+
+findDuplicatesBy :: (Eq b) => (a -> b) -> [a] -> [a]
+findDuplicatesBy accessor xs = deleteFirstsBy ((==) `on` accessor) xs (nubBy ((==) `on` accessor) xs)
 
 manySortedBy :: (a -> a -> Ordering) -> ParsecT s u m a -> ParsecT s u m [a]
 manySortedBy = manyAccum . insertBy
@@ -410,7 +411,13 @@ service = do
     local (with params) $ Service namespaces attr name params <$> methods <* optional semi
   where
     with params e = e { currentParams = params }
-    methods = braces $ semiEnd (try event <|> try function)
+    methods = unique $ braces $ semiEnd (try event <|> try function)
+    unique p = do
+        methods' <- p
+        case findDuplicatesBy methodName methods' of
+            [] -> return methods'
+            Function {..}:_ -> fail $ "Duplicate definition of the function with name " ++ show methodName
+            Event {..}:_ -> fail $ "Duplicate definition of the event with name " ++ show methodName
 
 function :: Parser Method
 function = Function <$> attributes <*> payload <*> identifier <*> input
