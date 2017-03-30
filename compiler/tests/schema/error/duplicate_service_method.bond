@@ -1,0 +1,12 @@
+namespace tests
+
+struct dummy {
+    0: int32 count;
+}
+
+// Invalid service definition with two methods with the same name
+service Foo
+{
+    void bar(dummy);
+    nothing bar();
+}

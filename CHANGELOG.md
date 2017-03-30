@@ -31,7 +31,10 @@ different versioning scheme, following the Haskell community's
       `ProtocolReader` and `ProtocolWriter` to permit mixing and matching of
       reader/writer protocols without having to explicitly compute the full
       cross product.
-* Add gbc flags to pick which C# files to generate (structs, gRPC, and comm).
+* Add gbc flags to pick which C# files to generate (structs, gRPC, and
+  comm).
+* gbc ensures that method names are unique within a service.
+  [Issue #381](https://github.com/Microsoft/bond/issues/381)
 
 ### C++ ###
 
