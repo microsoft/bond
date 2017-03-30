@@ -65,7 +65,7 @@ parseBond ::
  -> String                              -- ^ content of a schema file to parse
  -> FilePath                            -- ^ path of the file being parsed, used to resolve relative import paths
  -> ImportResolver                      -- ^ function to resolve and load imported files
- -> IO (Either ParseError Bond)         -- ^ function returns 'Bond' which represents the parsed abstract syntax tree 
+ -> IO (Either ParseError Bond)         -- ^ function returns 'Bond' which represents the parsed abstract syntax tree
                                         --   or 'ParserError' if parsing failed
 parseBond s c f r = runReaderT (runParserT bond (Symbols [] []) s c) (Environment [] [] f r)
 
@@ -240,11 +240,6 @@ struct = do
             [] -> return fields'
             Field {..}:_ -> fail $ "Duplicate definition of the field with ordinal " ++ show fieldOrdinal ++
                 " and name " ++ show fieldName
-      where
-        findDuplicatesBy accessor xs = deleteFirstsBy ((==) `on` accessor) xs (nubBy ((==) `on` accessor) xs)
-
-manySortedBy :: (a -> a -> Ordering) -> ParsecT s u m a -> ParsecT s u m [a]
-manySortedBy = manyAccum . insertBy
 
 -- field definition parser
 field :: Parser Field
@@ -282,36 +277,6 @@ field = do
                                         then Right $ Field a o m t n d
                                         else Left "Invalid default value for field"
 
--- default type validator (type checking, out-of-range, enforce default type)
-validDefaultType :: Type -> Maybe Default -> Bool
-validDefaultType (BT_UserDefined a@Alias {} args) d = validDefaultType (resolveAlias a args) d
-validDefaultType _ Nothing = True
-validDefaultType bondType (Just defaultValue) = validDefaultType' bondType defaultValue
-  where validDefaultType' :: Type -> Default -> Bool
-        validDefaultType' BT_Int8    (DefaultInteger i) = isInBounds i (0::Int8)
-        validDefaultType' BT_Int16   (DefaultInteger i) = isInBounds i (0::Int16)
-        validDefaultType' BT_Int32   (DefaultInteger i) = isInBounds i (0::Int32)
-        validDefaultType' BT_Int64   (DefaultInteger i) = isInBounds i (0::Int64)
-        validDefaultType' BT_UInt8   (DefaultInteger i) = isInBounds i (0::Word8)
-        validDefaultType' BT_UInt16  (DefaultInteger i) = isInBounds i (0::Word16)
-        validDefaultType' BT_UInt32  (DefaultInteger i) = isInBounds i (0::Word32)
-        validDefaultType' BT_UInt64  (DefaultInteger i) = isInBounds i (0::Word64)
-        validDefaultType' BT_Float   (DefaultFloat _)   = True
-        validDefaultType' BT_Float   (DefaultInteger _) = True
-        validDefaultType' BT_Double  (DefaultFloat _)   = True
-        validDefaultType' BT_Double  (DefaultInteger _) = True
-        validDefaultType' BT_Bool    (DefaultBool _)    = True
-        validDefaultType' BT_String  (DefaultString _)  = True
-        validDefaultType' BT_WString (DefaultString _)  = True
-        validDefaultType' (BT_UserDefined Enum {} _) (DefaultEnum _) = True
-        validDefaultType' (BT_TypeParam {}) _           = True
-        validDefaultType' _ _                           = False
-
--- checks whether an Integer is within the bounds of some other Integral and Bounded type.
--- The value of the second paramater is never used: only its type is used.
-isInBounds :: forall a. (Integral a, Bounded a) => Integer -> a -> Bool
-isInBounds value _ = value >= (toInteger (minBound :: a)) && value <= (toInteger (maxBound :: a))
-
 -- enum definition parser
 enum :: Parser Declaration
 enum = Enum <$> asks currentNamespaces <*> attributes <*> name <*> consts <* optional semi <?> "enum definition"
@@ -338,7 +303,6 @@ basicType =
     <|> keyword "string" *> pure BT_String
     <|> keyword "bool" *> pure BT_Bool
 
-
 -- containers parser
 complexType :: Parser Type
 complexType =
@@ -353,7 +317,6 @@ complexType =
     keyType = try (basicType <|> checkUserType isValidKeyType) <?> "scalar, string or enum"
     userStruct = try (checkUserType isStruct) <?> "user defined struct"
     isValidKeyType t = isScalar t || isString t
-
 
 -- parser for user defined type (struct, enum, alias or type parameter)
 userType :: Parser Type
@@ -389,7 +352,6 @@ userSymbol = do
     isParam [name] = (name ==) . paramName
     isParam _      = const False
 
-
 -- type parser
 type_ :: Parser Type
 type_ = basicType <|> complexType <|> userType
@@ -410,7 +372,13 @@ service = do
     local (with params) $ Service namespaces attr name params <$> methods <* optional semi
   where
     with params e = e { currentParams = params }
-    methods = braces $ semiEnd (try event <|> try function)
+    methods = unique $ braces $ semiEnd (try event <|> try function)
+    unique p = do
+        methods' <- p
+        case findDuplicatesBy methodName methods' of
+            [] -> return methods'
+            Function {..}:_ -> fail $ "Duplicate definition of the function with name " ++ show methodName
+            Event {..}:_ -> fail $ "Duplicate definition of the event with name " ++ show methodName
 
 function :: Parser Method
 function = Function <$> attributes <*> payload <*> identifier <*> input
@@ -431,6 +399,8 @@ payload = void_ <|> liftM Just userStruct
     void_ = keyword "void" *> pure Nothing
     userStruct = try (checkUserType isStruct) <?> "user defined struct"
 
+-- helper methods
+
 checkUserType :: (Type -> Bool) -> Parser Type
 checkUserType check = do
     t <- userType
@@ -439,4 +409,40 @@ checkUserType check = do
     valid t = case t of
         BT_TypeParam _ -> True
         _ -> check t
+
+findDuplicatesBy :: (Eq b) => (a -> b) -> [a] -> [a]
+findDuplicatesBy accessor xs = deleteFirstsBy ((==) `on` accessor) xs (nubBy ((==) `on` accessor) xs)
+
+manySortedBy :: (a -> a -> Ordering) -> ParsecT s u m a -> ParsecT s u m [a]
+manySortedBy = manyAccum . insertBy
+
+-- default type validator (type checking, out-of-range, enforce default type)
+validDefaultType :: Type -> Maybe Default -> Bool
+validDefaultType (BT_UserDefined a@Alias {} args) d = validDefaultType (resolveAlias a args) d
+validDefaultType _ Nothing = True
+validDefaultType bondType (Just defaultValue) = validDefaultType' bondType defaultValue
+  where validDefaultType' :: Type -> Default -> Bool
+        validDefaultType' BT_Int8    (DefaultInteger i) = isInBounds i (0::Int8)
+        validDefaultType' BT_Int16   (DefaultInteger i) = isInBounds i (0::Int16)
+        validDefaultType' BT_Int32   (DefaultInteger i) = isInBounds i (0::Int32)
+        validDefaultType' BT_Int64   (DefaultInteger i) = isInBounds i (0::Int64)
+        validDefaultType' BT_UInt8   (DefaultInteger i) = isInBounds i (0::Word8)
+        validDefaultType' BT_UInt16  (DefaultInteger i) = isInBounds i (0::Word16)
+        validDefaultType' BT_UInt32  (DefaultInteger i) = isInBounds i (0::Word32)
+        validDefaultType' BT_UInt64  (DefaultInteger i) = isInBounds i (0::Word64)
+        validDefaultType' BT_Float   (DefaultFloat _)   = True
+        validDefaultType' BT_Float   (DefaultInteger _) = True
+        validDefaultType' BT_Double  (DefaultFloat _)   = True
+        validDefaultType' BT_Double  (DefaultInteger _) = True
+        validDefaultType' BT_Bool    (DefaultBool _)    = True
+        validDefaultType' BT_String  (DefaultString _)  = True
+        validDefaultType' BT_WString (DefaultString _)  = True
+        validDefaultType' (BT_UserDefined Enum {} _) (DefaultEnum _) = True
+        validDefaultType' (BT_TypeParam {}) _           = True
+        validDefaultType' _ _                           = False
+
+-- checks whether an Integer is within the bounds of some other Integral and Bounded type.
+-- The value of the second paramater is never used: only its type is used.
+isInBounds :: forall a. (Integral a, Bounded a) => Integer -> a -> Bool
+isInBounds value _ = value >= (toInteger (minBound :: a)) && value <= (toInteger (maxBound :: a))
 

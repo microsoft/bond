@@ -53,6 +53,7 @@ tests = testGroup "Compiler tests"
         , testCase "Enum no default value" $ failBadSyntax "Should fail when an enum field has no default value" "enum_no_default"
         , testCase "Alias default value" $ failBadSyntax "Should fail when underlying default value is of the wrong type" "aliases_default"
         , testCase "Out of range" $ failBadSyntax "Should fail, out of range for int16" "int_out_of_range"
+        , testCase "Duplicate method definition in service" $ failBadSyntax "Should fail, method name should be unique" "duplicate_service_method"
         ]
     , testGroup "Codegen"
         [ utilTestGroup,
