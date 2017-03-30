@@ -37,7 +37,7 @@ package #{javaPackage};
 #{Java.generatedClassAnnotations}
 public class #{declName}#{params}#{maybe interface baseClass structBase} {
     #{doubleLineSep 1 publicField structFields}
-#{serialize_ProtocolWriter declaration}
+#{serialize_ProtocolWriter java declaration}
 #{marshal_ProtocolWriter}
 }|]
             where
@@ -54,8 +54,8 @@ public class #{declName}#{params}#{maybe interface baseClass structBase} {
         typeDefinition _ = mempty
 
 
-serialize_ProtocolWriter :: Declaration -> Text
-serialize_ProtocolWriter declaration = [lt|
+serialize_ProtocolWriter :: MappingContext -> Declaration -> Text
+serialize_ProtocolWriter java declaration = [lt|
     @Override
     public void serialize(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
 // FIXME: Where is my metadata?
@@ -67,44 +67,62 @@ serialize_ProtocolWriter declaration = [lt|
         fields = structFields declaration
         writeField Field {..} = [lt|
 // FIXME: Where is my metadata?
-        writer.writeFieldBegin(#{fieldTypeName}, #{fieldOrdinal}, null);
-        #{fieldValue}
+        writer.writeFieldBegin(#{fieldTypeName fieldType}, #{fieldOrdinal}, null);
+        #{writeFieldValue java fieldType fieldName}
         writer.writeFieldEnd();|]
-            where
-                fieldTypeName = pack $ "com.microsoft.bond.BondDataType." ++ case fieldType of
-                    BT_Int8    -> "BT_INT8"
-                    BT_Int16   -> "BT_INT16"
-                    BT_Int32   -> "BT_INT32"
-                    BT_Int64   -> "BT_INT64"
-                    BT_UInt8   -> "BT_UINT8"
-                    BT_UInt16  -> "BT_UINT16"
-                    BT_UInt32  -> "BT_UINT32"
-                    BT_UInt64  -> "BT_UINT64"
-                    BT_Float   -> "BT_FLOAT"
-                    BT_Double  -> "BT_DOUBLE"
-                    BT_Bool    -> "BT_BOOL"
-                    BT_String  -> "BT_STRING"
-                    BT_WString -> "BT_WSTRING"
-                    BT_Blob    -> "BT_BLOB"
-                    -- FIXME: Totally broken, but builds.
-                    _          -> "BT_UNAVAILABLE"
-                fieldValue = case fieldType of
-                    BT_Int8    -> [lt|writer.writeInt8(this.#{fieldName});|]
-                    BT_Int16   -> [lt|writer.writeInt16(this.#{fieldName});|]
-                    BT_Int32   -> [lt|writer.writeInt32(this.#{fieldName});|]
-                    BT_Int64   -> [lt|writer.writeInt64(this.#{fieldName});|]
-                    BT_UInt8   -> [lt|writer.writeUInt8(this.#{fieldName});|]
-                    BT_UInt16  -> [lt|writer.writeUInt16(this.#{fieldName});|]
-                    BT_UInt32  -> [lt|writer.writeUInt32(this.#{fieldName});|]
-                    BT_UInt64  -> [lt|writer.writeUInt64(this.#{fieldName});|]
-                    BT_Float   -> [lt|writer.writeFloat(this.#{fieldName});|]
-                    BT_Double  -> [lt|writer.writeDouble(this.#{fieldName});|]
-                    BT_Bool    -> [lt|writer.writeBool(this.#{fieldName});|]
-                    BT_String  -> [lt|writer.writeString(this.#{fieldName});|]
-                    BT_WString -> [lt|writer.writeWString(this.#{fieldName});|]
-                    BT_Blob    -> [lt|writer.writeBytes(this.#{fieldName});|]
-                    _          -> [lt|// FIXME: Not implemented.|]
 
+fieldTypeName :: Type -> Text
+fieldTypeName fieldType = pack $ "com.microsoft.bond.BondDataType." ++ case fieldType of
+    BT_Int8     -> "BT_INT8"
+    BT_Int16    -> "BT_INT16"
+    BT_Int32    -> "BT_INT32"
+    BT_Int64    -> "BT_INT64"
+    BT_UInt8    -> "BT_UINT8"
+    BT_UInt16   -> "BT_UINT16"
+    BT_UInt32   -> "BT_UINT32"
+    BT_UInt64   -> "BT_UINT64"
+    BT_Float    -> "BT_FLOAT"
+    BT_Double   -> "BT_DOUBLE"
+    BT_Bool     -> "BT_BOOL"
+    BT_String   -> "BT_STRING"
+    BT_WString  -> "BT_WSTRING"
+    BT_Blob     -> "BT_BLOB"
+    BT_List _   -> "BT_LIST"
+    BT_Vector _ -> "BT_LIST"
+    BT_Set _    -> "BT_SET"
+    -- FIXME: Totally broken, but builds.
+    _           -> "BT_UNAVAILABLE"
+
+writeFieldValue :: MappingContext -> Type -> String -> Text
+writeFieldValue java fieldType fieldName = writeValue java fieldType ("this." ++ fieldName)
+
+writeValue :: MappingContext -> Type -> String -> Text
+writeValue java fieldType varName = case fieldType of
+    BT_Int8     -> [lt|writer.writeInt8(#{varName});|]
+    BT_Int16    -> [lt|writer.writeInt16(#{varName});|]
+    BT_Int32    -> [lt|writer.writeInt32(#{varName});|]
+    BT_Int64    -> [lt|writer.writeInt64(#{varName});|]
+    BT_UInt8    -> [lt|writer.writeUInt8(#{varName});|]
+    BT_UInt16   -> [lt|writer.writeUInt16(#{varName});|]
+    BT_UInt32   -> [lt|writer.writeUInt32(#{varName});|]
+    BT_UInt64   -> [lt|writer.writeUInt64(#{varName});|]
+    BT_Float    -> [lt|writer.writeFloat(#{varName});|]
+    BT_Double   -> [lt|writer.writeDouble(#{varName});|]
+    BT_Bool     -> [lt|writer.writeBool(#{varName});|]
+    BT_String   -> [lt|writer.writeString(#{varName});|]
+    BT_WString  -> [lt|writer.writeWString(#{varName});|]
+    BT_Blob     -> [lt|writer.writeBytes(#{varName});|]
+    BT_List e   -> writeContainer java e varName
+    BT_Vector e -> writeContainer java e varName
+    BT_Set e    -> writeContainer java e varName
+    _           -> [lt|// FIXME: Not implemented.|]
+
+writeContainer :: MappingContext -> Type -> String -> Text
+writeContainer java elemType fieldName = [lt|writer.writeContainerBegin(#{fieldName}.size(), #{fieldTypeName elemType});
+        for (#{getTypeName java elemType} e : #{fieldName}) {
+            #{writeValue java elemType "e"}
+        }
+        writer.writeContainerEnd();|]
 
 marshal_ProtocolWriter :: Text
 marshal_ProtocolWriter = [lt|

@@ -38,13 +38,13 @@ class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short =
 
     override fun writeContainerBegin(count: Int, elementType: BondDataType) {
         writer.writeInt8(elementType.value.toByte())
-        writer.writeInt32(count)
+        writer.writeVarInt32(count)
     }
 
     override fun writeContainerBegin(count: Int, keyType: BondDataType, valueType: BondDataType) {
         writer.writeInt8(keyType.value.toByte())
         writer.writeInt8(valueType.value.toByte())
-        writer.writeInt32(count)
+        writer.writeVarInt32(count)
     }
 
     override fun writeContainerEnd() {}

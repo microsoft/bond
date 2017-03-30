@@ -14,4 +14,7 @@ struct OneOfEverything {
     10: bool bl;
     11: string str;
     12: wstring wstr;
+    13: list<int8> l_i;
+    14: vector<float> v_f;
+    15: set<uint32> s_ui;
 }
