@@ -53,6 +53,20 @@ namespace tests
                 param);
         }
 
+        public void foo12_implAsync()
+        {
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
+            foo12_implAsync(message);
+        }
+
+        public void foo12_implAsync(global::Bond.Comm.IMessage<global::Bond.Void> param)
+        {
+            m_connection.FireEventAsync<global::Bond.Void>(
+                "tests.Foo",
+                "foo12_impl",
+                param);
+        }
+
         public void foo13Async(BasicTypes param)
         {
             var message = new global::Bond.Comm.Message<BasicTypes>(param);
@@ -78,6 +92,20 @@ namespace tests
             m_connection.FireEventAsync<dummy>(
                 "tests.Foo",
                 "foo14",
+                param);
+        }
+
+        public void foo15Async(global::tests2.OtherBasicTypes param)
+        {
+            var message = new global::Bond.Comm.Message<global::tests2.OtherBasicTypes>(param);
+            foo15Async(message);
+        }
+
+        public void foo15Async(global::Bond.Comm.IMessage<global::tests2.OtherBasicTypes> param)
+        {
+            m_connection.FireEventAsync<global::tests2.OtherBasicTypes>(
+                "tests.Foo",
+                "foo15",
                 param);
         }
 

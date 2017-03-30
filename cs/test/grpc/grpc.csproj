@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
+  <PropertyGroup>
+    <ProjectGuid>{D5F087E7-1EE9-4AEB-83AF-5F234C69B867}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UnitTest</RootNamespace>
+    <AssemblyName>Bond.Grpc.UnitTest</AssemblyName>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <DependentOutputPath>$(OutputPath)</DependentOutputPath>
+    <DontBuildNet40>true</DontBuildNet40>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IntermediateOutputPath>$(IntermediateOutputPath)\Properties\</IntermediateOutputPath>
+    <OutputPath>$(OutputPath)\Properties\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Fields' ">
+    <IntermediateOutputPath>$(IntermediateOutputPath)\Fields\</IntermediateOutputPath>
+    <OutputPath>$(OutputPath)\Fields\</OutputPath>
+    <BondOptions>--fields --collection-interfaces</BondOptions>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="MarshallerTests.cs" />
+    <Compile Include="MessageTests.cs" />
+    <Compile Include="NothingCallsTests.cs" />
+    <Compile Include="Schemas.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Grpc.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d754f35622e28bad, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Grpc.Core.1.1.0\lib\net45\Grpc.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NUnit.VisualStudio.TestAdapter" Condition="'$(OS)' != 'Unix'">
+      <HintPath>..\..\packages\NUnitTestAdapter.2.0.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Interactive.Async, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Interactive.Async.3.1.1\lib\net45\System.Interactive.Async.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Bond.Attributes">
+      <HintPath>..\..\src\attributes\$(DependentOutputPath)\Bond.Attributes.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond">
+      <HintPath>..\..\src\core\$(DependentOutputPath)\Bond.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.Reflection">
+      <HintPath>..\..\src\reflection\$(DependentOutputPath)\Bond.Reflection.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.IO">
+      <HintPath>..\..\src\io\$(DependentOutputPath)\Bond.IO.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\grpc\grpc.csproj">
+      <Project>{af03bae6-2470-4e1b-a683-3ebdcdc595fa}</Project>
+      <Name>grpc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\core\Core.csproj">
+      <Project>{ff056b62-225a-47bc-b177-550fadda4b41}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
+  <Import Project="..\..\packages\Grpc.Core.1.1.0\build\net45\Grpc.Core.targets" Condition="Exists('..\..\packages\Grpc.Core.1.1.0\build\net45\Grpc.Core.targets')" />
+</Project>

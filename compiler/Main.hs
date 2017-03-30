@@ -95,14 +95,21 @@ cppCodegen _ = error "cppCodegen: impossible happened."
 
 csCodegen :: Options -> IO()
 csCodegen options@Cs {..} = do
-    let fieldMapping = if readonly_properties
+    concurrentlyFor_ files $ codeGen options typeMapping templates
+  where
+    typeMapping = if collection_interfaces
+            then csCollectionInterfacesTypeMapping
+            else csTypeMapping
+    fieldMapping = if readonly_properties
             then ReadOnlyProperties
             else if fields
                  then PublicFields
                  else Properties
-    let typeMapping = if collection_interfaces then csCollectionInterfacesTypeMapping else csTypeMapping
-    let templates = [ comm_interface_cs , comm_proxy_cs , comm_service_cs , types_cs Class fieldMapping ]
-    concurrentlyFor_ files $ codeGen options typeMapping templates
+    templates = concat $ map snd $ filter fst codegen_templates
+    codegen_templates = [ (structs_enabled, [types_cs Class fieldMapping])
+                        , (comm_enabled, [comm_interface_cs, comm_proxy_cs, comm_service_cs])
+                        , (grpc_enabled, [grpc_cs])
+                        ]
 csCodegen _ = error "csCodegen: impossible happened."
 
 codeGen :: Options -> TypeMapping -> [Template] -> FilePath -> IO ()

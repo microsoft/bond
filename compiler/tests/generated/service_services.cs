@@ -24,8 +24,10 @@ namespace tests
             {
                 yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo11", Callback = foo11Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.Event};
                 yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo12", Callback = foo12Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.Event};
+                yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo12_impl", Callback = foo12_implAsync_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.Event};
                 yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo13", Callback = foo13Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.Event};
                 yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo14", Callback = foo14Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.Event};
+                yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo15", Callback = foo15Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.Event};
                 yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo21", Callback = foo21Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.RequestResponse};
                 yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo22", Callback = foo22Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.RequestResponse};
                 yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="tests.Foo.foo23", Callback = foo23Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.RequestResponse};
@@ -45,9 +47,13 @@ namespace tests
 
         public abstract void foo12Async(global::Bond.Comm.IMessage<global::Bond.Void> param);
 
+        public abstract void foo12_implAsync(global::Bond.Comm.IMessage<global::Bond.Void> param);
+
         public abstract void foo13Async(global::Bond.Comm.IMessage<BasicTypes> param);
 
         public abstract void foo14Async(global::Bond.Comm.IMessage<dummy> param);
+
+        public abstract void foo15Async(global::Bond.Comm.IMessage<global::tests2.OtherBasicTypes> param);
 
         public abstract global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> foo21Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct);
 
@@ -85,6 +91,12 @@ namespace tests
             return global::Bond.Comm.CodegenHelpers.CompletedTask;
         }
 
+        private global::System.Threading.Tasks.Task foo12_implAsync_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
+        {
+            foo12_implAsync(param.Convert<global::Bond.Void>());
+            return global::Bond.Comm.CodegenHelpers.CompletedTask;
+        }
+
         private global::System.Threading.Tasks.Task foo13Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
         {
             foo13Async(param.Convert<BasicTypes>());
@@ -94,6 +106,12 @@ namespace tests
         private global::System.Threading.Tasks.Task foo14Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
         {
             foo14Async(param.Convert<dummy>());
+            return global::Bond.Comm.CodegenHelpers.CompletedTask;
+        }
+
+        private global::System.Threading.Tasks.Task foo15Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
+        {
+            foo15Async(param.Convert<global::tests2.OtherBasicTypes>());
             return global::Bond.Comm.CodegenHelpers.CompletedTask;
         }
 

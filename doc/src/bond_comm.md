@@ -1,5 +1,9 @@
 % Bond Communications
 
+**IMPORTANT NOTE: Bond Comm is deprecated. We recommend using
+[Bond-over-gRPC](bond_over_grpc.html) for communication. This documentation
+is retained for transitional purposes.**
+
 # About #
 
 The Bond Communications framework allows clients and services to exchange

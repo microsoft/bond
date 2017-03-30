@@ -132,11 +132,26 @@ try
     }
 
     # Due to a bug in the way 'dotnet build' resolves project references, we
-    # need to list out attributes and reflection first so that they get built
-    # before any of the other projects.
+    # need to list out the projects in the order that they need to be build.
+    # Otherwise, dotnet tried to build projects before their dependencies
+    # are built.
     #
     # See also: https://github.com/dotnet/cli/issues/2639
-    dotnet build --configuration $script:dotnet_cfg '.\src\attributes\project.json' '.\src\reflection\project.json' '**\project.json'
+    dotnet build --configuration $script:dotnet_cfg `
+      '.\src\attributes\project.json' `
+      '.\src\reflection\project.json' `
+      '.\src\core\project.json' `
+      '.\src\io\project.json' `
+      '.\src\json\project.json' `
+      '.\src\grpc\project.json' `
+      '.\test\core.tests\project.json' `
+      '.\test\internal.tests\project.json' `
+      '.\test\expressions.tests\project.json' `
+      '.\test\grpc.tests\project.json' `
+      '.\test\compat\compat.core.tests\project.json' `
+      '.\test\codegen\no-warnings.tests\project.json' `
+      '**\project.json'
+
     if (-not $?) {
         throw ".NET Core build failed."
     }
@@ -144,6 +159,7 @@ try
     $script:to_publish = (
         @{'source'='attributes'; 'files'='Bond.Attributes.*'},
         @{'source'='core'; 'files'='Bond.*'},
+        @{'source'='grpc'; 'files'='Bond.Grpc.*'},
         @{'source'='io'; 'files'='Bond.IO.*'},
         @{'source'='json'; 'files'='Bond.JSON.*'},
         @{'source'='reflection'; 'files'='Bond.Reflection.*'}

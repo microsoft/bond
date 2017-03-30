@@ -1,5 +1,9 @@
 % Bond Simple In Memory (SimpleInMem) transport
 
+**IMPORTANT NOTE: Bond Comm and SimpleInMem are deprecated. We recommend
+using [Bond-over-gRPC](bond_over_grpc.html) for communication. This documentation
+is retained for transitional purposes.**
+
 # About #
 
 The Bond SimpleInMem transport is a Bond

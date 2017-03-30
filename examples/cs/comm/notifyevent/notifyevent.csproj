@@ -34,7 +34,9 @@
   <ItemGroup>
     <Compile Include="NotifyEvent.cs" />
     <Compile Include="NotifyEventService.cs" />
-    <BondCodegen Include="notify.bond" />
+    <BondCodegen Include="notify.bond">
+      <Options>--comm</Options>
+    </BondCodegen>
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\notify_types.cs" Condition="False" />
     <!-- End Resharper Workaround -->

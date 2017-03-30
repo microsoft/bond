@@ -14,14 +14,12 @@ data transform mechanism. The framework is highly extensible via pluggable
 serialization protocols, data streams, user defined type aliases and more.
 
 By design Bond is language and platform independent and is currently supported
-for C++, C#, and Python on Linux, OS X and Windows.
-
-We are also introducing the
-[Bond Communications framework](https://Microsoft.github.io/bond/manual/bond_comm.html)--known
-as Bond Comm. More information about Bond Comm for C# can be found
-[below](#bond-comm).
+for C++, C#, and Python on Linux, OS X and Windows.     
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
+
+**IMPORTANT NOTE: Bond Comm is deprecated. We recommend using
+[Bond-over-gRPC](bond_over_grpc.html) for communication.**
 
 Basic example
 =============
@@ -1406,6 +1404,10 @@ the version of the assembly that targets a lower version of the framework.
 Bond Comm
 =========
 
+**IMPORTANT NOTE: Bond Comm is deprecated. We recommend using
+[Bond-over-gRPC](bond_over_grpc.html) for communication. This documentation
+is retained for transitional purposes.**
+
 The [Bond Communications framework](bond_comm.html) in C# makes it easy and
 efficent to construct services and hook clients up to those services. Built
 on top of the Bond serialization framework, Bond Comm aims for the same
@@ -1466,10 +1468,6 @@ See the following examples:
 - `examples/cs/comm/logging`
 - `examples/cs/comm/metrics`
 
-### Roadmap ###
-
-We have a [brief roadmap](bond_comm_roadmap.html) for Bond Comm.
-
 ### Comm NuGet Packages ###
 
 Bond Comm is split into a number of NuGet packages to allow for granular
@@ -1510,6 +1508,10 @@ References
 [Bond Comm overview][bond_comm]
 ----------------------------
 
+[Bond-over-gRPC overview][bond_over_grpc]
+----------------------------
+
+[bond_over_grpc]: bond_over_grpc.html
 [bond_comm]: bond_comm.html
 [bond_cpp]: bond_cpp.html
 [bond_py]: bond_py.html
