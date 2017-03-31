@@ -313,7 +313,13 @@ private:
             else if (Head::id >= id && type != bond::BT_STOP && type != bond::BT_STOP_BASE)
             {
                 // Unknown field or non-exact type match
-                UnknownFieldOrTypeMismatch(Head(), id, type, transform);
+                UnknownFieldOrTypeMismatch(
+                    Head::id, 
+                    is_basic_type<typename Head::field_type>::value, 
+                    Head::metadata, 
+                    id, 
+                    type, 
+                    transform);
             }
             else
             {
@@ -383,35 +389,27 @@ private:
     // This function is called only when payload has unknown field id or type is not
     // matching exactly. This relativly rare so we don't inline the function to help 
     // the compiler to optimize the common path. 
-    template <typename T, typename Transform>
+    template <typename Transform>
     BOND_NO_INLINE
-    typename boost::enable_if<is_basic_type<typename T::field_type>, bool>::type
-    UnknownFieldOrTypeMismatch(const T&, uint16_t id, BondDataType type, const Transform& transform)
+    bool
+    UnknownFieldOrTypeMismatch(uint16_t expected_id, bool is_basic_type, const Metadata& metadata, uint16_t id, BondDataType type, const Transform& transform)
     {
-        if (id == T::id &&
+        if (id == expected_id &&
+            is_basic_type &&
             type != bond::BT_LIST &&
             type != bond::BT_SET &&
             type != bond::BT_MAP &&
             type != bond::BT_STRUCT)
         {
-            return detail::BasicTypeField(T::id, T::metadata, type, transform, _input);
+            return detail::BasicTypeField(expected_id, metadata, type, transform, _input);
         }
         else
         {
             return UnknownField(id, type, transform);
         }
     }
-    
-    
-    template <typename T, typename Transform>
-    BOND_NO_INLINE
-    typename boost::disable_if<is_basic_type<typename T::field_type>, bool>::type
-    UnknownFieldOrTypeMismatch(const T&, uint16_t id, BondDataType type, const Transform& transform)
-    {
-        return UnknownField(id, type, transform);
-    }
-    
-        
+
+
     // use runtime schema
     template <typename Transform>
     bool

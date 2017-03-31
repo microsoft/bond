@@ -61,6 +61,7 @@ different versioning scheme, following the Haskell community's
   [Pull request #380](https://github.com/Microsoft/bond/pull/380)
     * Support C++11 and above allocator model for rebind
     * Simplify detection of the default allocator
+* Remove per-field instantiation of DynamicParser<>::UnknownFieldOrTypeMismatch method.
 
 ## C# ###
 
