@@ -77,9 +77,9 @@ script:
     - if [ "$FLAVOR" == "cs" ]; then xbuild /p:Configuration=Debug cs/cs.sln; fi
     - if [ "$FLAVOR" == "cs" ]; then xbuild /p:Configuration=Fields cs/cs.sln; fi
     - if [ "$FLAVOR" == "cs" ]; then mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll; fi
-    - if [ "$FLAVOR" == "cpp" ]; then cmake -DBOND_CORE_ONLY:bool=true ..; fi
+    - if [ "$FLAVOR" == "cpp" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_CORE_ONLY=TRUE ..; fi
     - if [ "$FLAVOR" == "cpp" ]; then make --jobs 2 check; fi
-    - if [ "$FLAVOR" == "cpp-comm" ]; then cmake -DBOND_SKIP_CORE_TESTS:bool=true ..; fi
+    - if [ "$FLAVOR" == "cpp-comm" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE ..; fi
     - if [ "$FLAVOR" == "cpp-comm" ]; then make --jobs 2 check; fi
     - if [ "$FLAVOR" == "hs" ]; then cmake ..; fi
     - if [ "$FLAVOR" == "hs" ]; then make gbc-tests; fi
