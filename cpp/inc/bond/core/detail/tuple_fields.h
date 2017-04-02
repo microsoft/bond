@@ -19,12 +19,12 @@ struct tuple_field
     static const Metadata metadata;
     static const uint16_t id = Id;
 
-    static const T& GetVariable(const struct_type& obj)
+    static const value_type& GetVariable(const struct_type& obj)
     {
         return std::get<id>(obj);
     }
 
-    static T& GetVariable(struct_type& obj)
+    static value_type& GetVariable(struct_type& obj)
     {
         return std::get<id>(obj);
     }
