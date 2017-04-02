@@ -35,7 +35,7 @@ protected:
     }
 
     template <typename T, typename Transform>
-    typename boost::disable_if<is_fast_path_field<T, Transform>, bool>::type
+    typename boost::disable_if<is_fast_path_type<typename T::struct_type, Transform>, bool>::type
     OmittedField(const T&, const Transform& transform)
     {
         return transform.OmittedField(T::id, T::metadata, get_type_id<typename T::field_type>::value);
@@ -43,7 +43,7 @@ protected:
 
 
     template <typename T, typename Transform>
-    typename boost::enable_if<is_fast_path_field<T, Transform>, bool>::type
+    typename boost::enable_if<is_fast_path_type<typename T::struct_type, Transform>, bool>::type
     OmittedField(const T& field, const Transform& transform)
     {
         return transform.OmittedField(field);
@@ -138,7 +138,7 @@ private:
 
     template <typename T, typename Transform>
     typename boost::enable_if_c<detail::is_reader<Input>::value && !is_nested_field<T>::value
-                             && !is_fast_path_field<T, Transform>::value, bool>::type
+                             && !is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T&, const Transform& transform)
     {
         return transform.Field(T::id, T::metadata, value<typename T::field_type, Input>(_input));
@@ -147,7 +147,7 @@ private:
 
     template <typename T, typename Transform>
     typename boost::enable_if_c<detail::is_reader<Input>::value && !is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
+                             && is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T& field, const Transform& transform)
     {
         return transform.Field(field, value<typename T::field_type, Input>(_input));
@@ -156,7 +156,7 @@ private:
 
     template <typename T, typename Transform>
     typename boost::enable_if_c<detail::is_reader<Input>::value && is_nested_field<T>::value
-                             && !is_fast_path_field<T, Transform>::value, bool>::type
+                             && !is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T&, const Transform& transform)
     {
         return transform.Field(T::id, T::metadata, bonded<typename T::field_type, Input>(_input));
@@ -165,7 +165,7 @@ private:
 
     template <typename T, typename Transform>
     typename boost::enable_if_c<detail::is_reader<Input>::value && is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
+                             && is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T& field, const Transform& transform)
     {
         return transform.Field(field, bonded<typename T::field_type, Input>(_input));
@@ -352,7 +352,7 @@ private:
  
     template <typename T, typename Transform>
     typename boost::enable_if_c<is_nested_field<T>::value
-                            && !is_fast_path_field<T, Transform>::value, bool>::type
+                            && !is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T&, const Transform& transform)
     {
         return transform.Field(T::id, T::metadata, bonded<typename T::field_type, Input>(_input));
@@ -361,7 +361,7 @@ private:
 
     template <typename T, typename Transform>
     typename boost::enable_if_c<is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
+                             && is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T& field, const Transform& transform)
     {
         return transform.Field(field, bonded<typename T::field_type, Input>(_input));
@@ -370,7 +370,7 @@ private:
 
     template <typename T, typename Transform>
     typename boost::enable_if_c<!is_nested_field<T>::value
-                             && !is_fast_path_field<T, Transform>::value, bool>::type
+                             && !is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T&, const Transform& transform)
     {
         return transform.Field(T::id, T::metadata, value<typename T::field_type, Input>(_input));
@@ -379,7 +379,7 @@ private:
 
     template <typename T, typename Transform>
     typename boost::enable_if_c<!is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
+                             && is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T& field, const Transform& transform)
     {
         return transform.Field(field, value<typename T::field_type, Input>(_input));
@@ -585,7 +585,7 @@ private:
 
     template <typename T, typename Transform>
     typename boost::enable_if_c<is_nested_field<T>::value
-                            && !is_fast_path_field<T, Transform>::value, bool>::type
+                            && !is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T&, const Transform& transform, Input input)
     {
         return transform.Field(T::id, T::metadata, bonded<typename T::field_type, Input>(input));
@@ -594,7 +594,7 @@ private:
 
     template <typename T, typename Transform>
     typename boost::enable_if_c<is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
+                             && is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T& field, const Transform& transform, Input input)
     {
         return transform.Field(field, bonded<typename T::field_type, Input>(input));
@@ -603,7 +603,7 @@ private:
 
     template <typename T, typename Transform>
     typename boost::enable_if_c<!is_nested_field<T>::value
-                             && !is_fast_path_field<T, Transform>::value, bool>::type
+                             && !is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T&, const Transform& transform, Input input)
     {
         return transform.Field(T::id, T::metadata, value<typename T::field_type, Input>(input));
@@ -612,7 +612,7 @@ private:
 
     template <typename T, typename Transform>
     typename boost::enable_if_c<!is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
+                             && is_fast_path_type<typename T::struct_type, Transform>::value, bool>::type
     NextField(const T& field, const Transform& transform, Input input)
     {
         return transform.Field(field, value<typename T::field_type, Input>(input));
