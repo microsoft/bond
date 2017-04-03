@@ -70,7 +70,7 @@ get_field_template
 };
 
 
-template <typename T, typename U>
+template <typename T, typename U = typename get_field_template<T>::type>
 struct ordered_non_unique_field;
 
 
