@@ -20,6 +20,8 @@ enum_h :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text
 enum_h cpp _file _imports declarations = ("_enum.h", [lt|
 #pragma once
 
+#include <stdint.h>
+
 #{CPP.openNamespace cpp}
 namespace _bond_enumerators
 {
