@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include "scalar_interface.h"
+#include "bond_fwd.h"
 #include <boost/type_traits/has_nothrow_copy.hpp>
 #include <boost/utility/enable_if.hpp>
 
@@ -142,6 +143,16 @@ get_protocol_writer<Reader<I>, OutputStream>
 
 template <typename T, T> struct
 check_method
+    : true_type {};
+
+
+template <typename T> struct
+is_bonded
+    : false_type {};
+
+
+template <typename T, typename Reader> struct
+is_bonded<bonded<T, Reader> >
     : true_type {};
 
 
