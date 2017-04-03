@@ -15,7 +15,7 @@ different versioning scheme, following the Haskell community's
 * `gbc` & compiler library: TBD (major bump needed)
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD (minor bump needed)
+* C++ version: TBD (major bump needed)
 * C# NuGet version: TBD (minor bump needed)
 * C# Comm NuGet version: TBD (minor bump needed)
 
@@ -38,6 +38,11 @@ different versioning scheme, following the Haskell community's
 
 ### C++ ###
 
+* **Breaking change** A C++11 compiler is now required. The minimum
+  supported C++ compiler versions are now:
+    * Clang 3.4 or newer
+    * GNU C++ 4.7 or newer
+    * Microsoft Visual C++ 2013 or newer
 * Fix Python shared_ptr converter build break with Boost 1.63.
 * Improve compliance with
   [Microsoft's SDL](https://www.microsoft.com/en-us/sdl/).

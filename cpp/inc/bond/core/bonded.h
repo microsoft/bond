@@ -16,10 +16,9 @@ namespace bond
 
 template <typename T, typename Reader, typename Unused = void> struct
 is_marshaled_bonded
-{
-    static const bool value = uses_marshaled_bonded<Reader, Unused>::value
-                           && is_bonded<T>::value;
-};
+    : std::integral_constant<bool,
+        uses_marshaled_bonded<Reader, Unused>::value
+        && is_bonded<T>::value> {};
 
 
 template <typename T, typename Buffer, typename Transform>
