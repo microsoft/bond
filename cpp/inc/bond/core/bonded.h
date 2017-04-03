@@ -14,16 +14,6 @@ namespace bond
 {
 
 
-template <typename T> struct
-is_bonded
-    : false_type {};
-
-
-template <typename T, typename Reader> struct
-is_bonded<bonded<T, Reader> >
-    : true_type {};
-
-
 template <typename T, typename Reader, typename Unused = void> struct
 is_marshaled_bonded
 {
