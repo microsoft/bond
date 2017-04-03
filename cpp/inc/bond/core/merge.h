@@ -67,10 +67,10 @@ public:
     }
 
     
-    template <typename FieldT>
-    bool OmittedField(const FieldT&) const
+    template <typename FieldType>
+    bool OmittedField(uint16_t id, const Metadata& metadata, BondDataType, const FieldType& (*accessor)(const T&)) const
     {
-        return this->Field(FieldT::id, FieldT::metadata, FieldT::GetVariable(_var));
+        return this->Field(id, metadata, accessor(_var));
     }
 
 
