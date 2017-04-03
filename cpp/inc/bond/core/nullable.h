@@ -20,14 +20,13 @@ namespace detail
 
 template <typename T> struct
 use_value
-{
-    static const bool value = is_list_container<T>::value
-                           || is_set_container<T>::value
-                           || is_map_container<T>::value
-                           || is_string<T>::value
-                           || is_wstring<T>::value
-                           || !is_class<T>::value;
-};
+    : std::integral_constant<bool,
+        is_list_container<T>::value
+        || is_set_container<T>::value
+        || is_map_container<T>::value
+        || is_string<T>::value
+        || is_wstring<T>::value
+        || !is_class<T>::value> {};
 
 template<typename T, typename E = void> struct
 has_compare
