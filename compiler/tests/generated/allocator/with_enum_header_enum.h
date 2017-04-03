@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 namespace tests
 {
 namespace _bond_enumerators
