@@ -19,10 +19,23 @@ class UntaggedProtocolReader
 public:
     typedef bond::StaticParser<UntaggedProtocolReader&> Parser;
     typedef UntaggedProtocolWriter<Buffer>              Writer;
-    
+
+    static const uint16_t magic = 0xFFFF;
+
     UntaggedProtocolReader(typename boost::call_traits<Buffer>::param_type input)
         : bond::SimpleBinaryReader<Buffer>(input)
     {}
+
+    bool ReadVersion()
+    {
+        uint16_t temp_magic;
+
+        this->_input.Read(temp_magic);
+        this->_input.Read(this->_version);
+
+        return temp_magic == UntaggedProtocolReader::magic
+            && this->_version <= UntaggedProtocolReader::version;
+    }
 
     using bond::SimpleBinaryReader<Buffer>::Skip;
 
@@ -73,7 +86,6 @@ private:
     std::stack<Bitmap> _stack;
 };
 
-
 template <typename Buffer>
 class UntaggedProtocolWriter
     : public bond::SimpleBinaryWriter<Buffer>
@@ -84,6 +96,12 @@ public:
     UntaggedProtocolWriter(Buffer& output)
         : bond::SimpleBinaryWriter<Buffer>(output)
     {}
+
+    void WriteVersion()
+    {
+        this->_output.Write(Reader::magic);
+        this->_output.Write(this->_version);
+    }
 
     void WriteStructBegin(const bond::Metadata& /*metadata*/, bool /*base*/)
     {
@@ -110,7 +128,7 @@ public:
     {
         SetFieldBit(false);
     }
-    
+
     // WriteFieldOmitted
     void WriteFieldOmitted(bond::BondDataType /*type*/, uint16_t /*id*/, const bond::Metadata& /*metadata*/)
     {
