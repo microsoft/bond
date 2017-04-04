@@ -369,6 +369,7 @@ private:
             // Apply<U>(To<U>(obj), input, protocol);
             bond::detail::NextProtocol<U>(
                 typename Protocols<InputBuffer>::begin(),
+                typename Protocols<InputBuffer>::end(),
                 input,
                 To<U>(obj),
                 protocol);
