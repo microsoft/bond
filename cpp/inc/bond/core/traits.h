@@ -129,14 +129,19 @@ enable_protocol_versions
 
 
 // get_protocol_writer
-template <typename Reader, typename OutputStream> struct
+template <typename Reader, typename Output> struct
 get_protocol_writer;
 
-
-template <template <typename T> class Reader, typename I, typename OutputStream> struct
-get_protocol_writer<Reader<I>, OutputStream>
+template <template <typename T> class Reader, typename I, typename Output> struct
+get_protocol_writer<Reader<I>, Output>
 {
-    typedef typename Reader<OutputStream>::Writer type;
+    typedef typename Reader<Output>::Writer type;
+};
+
+template <template <typename T, typename U> class Reader, typename Input, typename MarshaledBondedProtocols, typename Output> struct
+get_protocol_writer<Reader<Input, MarshaledBondedProtocols>, Output>
+{
+    typedef typename Reader<Output, MarshaledBondedProtocols>::Writer type;
 };
 
 
