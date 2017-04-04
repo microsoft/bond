@@ -9,6 +9,7 @@
 #include <boost/mpl/list.hpp>
 #include <boost/mpl/push_front.hpp>
 #include <boost/mpl/copy_if.hpp>
+#include <boost/mpl/contains.hpp>
 
 #include "customize.h"
 #include "detail/odr.h"
@@ -185,7 +186,7 @@ struct ProtocolReader
         : value(x)
     {}
     
-    template <typename Reader>
+    template <typename Reader, typename boost::enable_if<boost::mpl::contains<typename Protocols<Buffer>::all, Reader> >::type* = nullptr>
     ProtocolReader(const Reader& reader)
         : value(reader)
     {}
