@@ -20,9 +20,22 @@ namespace unit_test
         typedef bond::DynamicParser<TestReader&> Parser;
         typedef TestWriter<Buffer>               Writer;
 
+        static const uint16_t magic = 0xEEEE;
+
         TestReader(typename boost::call_traits<Buffer>::param_type input)
             : bond::CompactBinaryReader<Buffer>(input)
         {}
+
+        bool ReadVersion()
+        {
+            uint16_t temp_magic;
+
+            this->_input.Read(temp_magic);
+            this->_input.Read(this->_version);
+
+            return temp_magic == TestReader::magic
+                && this->_version <= TestReader::version;
+        }
 
         bool operator==(const TestReader& rhs) const
         {
@@ -44,10 +57,17 @@ namespace unit_test
     {
     public:
         typedef bond::DynamicParser<TestWriter&> Parser;
+        typedef TestReader<Buffer>               Reader;
 
         TestWriter(Buffer& output)
             : bond::CompactBinaryWriter<Buffer>(output)
         {}
+
+        void WriteVersion()
+        {
+            this->_output.Write(Reader::magic);
+            this->_output.Write(this->_version);
+        }
 
         void WriteStructBegin(const bond::Metadata& /*metadata*/, bool /*base*/)
         {}
@@ -66,7 +86,7 @@ namespace bond
             typedef typename boost::mpl::push_front<
                 T, unit_test::TestReader<InputBuffer>
             >::type type1;
- 
+
             typedef typename boost::mpl::push_front<
                 type1, UntaggedProtocolReader<InputBuffer>
             >::type type;
