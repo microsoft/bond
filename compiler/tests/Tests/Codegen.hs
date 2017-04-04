@@ -123,7 +123,8 @@ verifyFiles options baseName =
         , types_cpp
         , comm_cpp
         , types_h header enum_header allocator
-        ]
+        ] <>
+        [ enum_h | enum_header]
     templates Cs {..} =
         [ types_cs Class $ fieldMapping options
         ]
