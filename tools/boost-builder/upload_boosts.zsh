@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-set -ex
+set -eux
 
 # Define AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_KEY in this file.
 source ~/.azure/bondboostbinaries.sh
