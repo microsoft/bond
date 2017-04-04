@@ -7,8 +7,8 @@
 #include <boost/variant.hpp>
 #include <boost/ref.hpp>
 #include <boost/mpl/list.hpp>
-#include <boost/mpl/push_front.hpp>
-#include <boost/mpl/copy_if.hpp>
+#include <boost/mpl/insert_range.hpp>
+#include <boost/mpl/filter_view.hpp>
 #include <boost/mpl/contains.hpp>
 
 #include "customize.h"
@@ -159,13 +159,12 @@ struct Protocols
     >::type built_in;
 
     typedef typename customize<protocols>::modify<built_in>::type all;
-    
-    typedef typename boost::mpl::copy_if<
-        all, 
-        is_protocol_enabled<_>, 
-        boost::mpl::front_inserter<boost::mpl::list<> > >::type type;
+
+    typedef typename boost::mpl::filter_view<all, is_protocol_enabled<_> >::type type;
 
     typedef typename boost::mpl::begin<type>::type begin;
+
+    typedef typename boost::mpl::end<type>::type end;
 };
 
 
@@ -201,9 +200,10 @@ struct ProtocolReader
     }
     
     typename boost::make_variant_over<
-        typename boost::mpl::push_front<
-            typename Protocols<Buffer>::all, 
-            ValueReader
+        typename boost::mpl::insert_range<
+            boost::mpl::list<ValueReader>::type,
+            boost::mpl::end<boost::mpl::list<ValueReader>::type>::type,
+            typename Protocols<Buffer>::all
         >::type
     >::type value;
 };
