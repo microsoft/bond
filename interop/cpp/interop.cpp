@@ -56,6 +56,30 @@ int main(int argc, char ** argv) {
         printf("ooe.bl: %s\n", ooe.bl ? "true" : "false");
         printf("ooe.str: %s\n", ooe.str.c_str());
         printf("ooe.wstr: %S\n", ooe.wstr.c_str());
+        printf("ooe.l_b:\n");
+        for (std::list<int8_t>::iterator i = ooe.l_b.begin();
+             i != ooe.l_b.end();
+             i++) {
+            printf("\t%d\n", *i);
+        }
+        printf("ooe.v_f:\n");
+        for (std::vector<float>::iterator i = ooe.v_f.begin();
+             i != ooe.v_f.end();
+             i++) {
+            printf("\t%f\n", *i);
+        }
+        printf("ooe.s_ui:\n");
+        for (std::set<uint32_t>::iterator i = ooe.s_ui.begin();
+             i != ooe.s_ui.end();
+             i++) {
+            printf("\t%u\n", *i);
+        }
+        printf("ooe.m_i_str:\n");
+        for (std::map<int32_t, std::string>::iterator i = ooe.m_i_str.begin();
+             i != ooe.m_i_str.end();
+             i++) {
+            printf("\t%d -> %s\n", i->first, i->second.c_str());
+        }
     } else {
         OneOfEverything ooe;
         ooe.b = 3;

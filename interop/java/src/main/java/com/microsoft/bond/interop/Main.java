@@ -39,11 +39,21 @@ public class Main {
             ooe.us = 32768;
             ooe.ui = 2147483648L;
             ooe.ul = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE);
-            ooe.f = 3.3f;
-            ooe.d = 3.3;
+            ooe.f = .5f;
+            ooe.d = .5;
             ooe.bl = true;
             ooe.str = "three\0";
             ooe.wstr = "threeeee";
+            ooe.l_b.add((byte) 3);
+            ooe.l_b.add((byte) 33);
+            ooe.v_f.add(.5f);
+            ooe.v_f.add(.75f);
+            ooe.s_ui.add((long) 3);
+            ooe.s_ui.add((long) 33);
+            ooe.s_ui.add((long) 333);
+            ooe.m_i_str.put(1, "one");
+            ooe.m_i_str.put(2, "two");
+            ooe.m_i_str.put(3, "three");
 
             FileOutputStream fos = new FileOutputStream(fpath);
             ooe.marshal(new FastBinaryWriter<>(fos, (short) 1));

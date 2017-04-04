@@ -90,6 +90,7 @@ fieldTypeName fieldType = pack $ "com.microsoft.bond.BondDataType." ++ case fiel
     BT_List _   -> "BT_LIST"
     BT_Vector _ -> "BT_LIST"
     BT_Set _    -> "BT_SET"
+    BT_Map _ _  -> "BT_MAP"
     -- FIXME: Totally broken, but builds.
     _           -> "BT_UNAVAILABLE"
 
@@ -112,17 +113,28 @@ writeValue java fieldType varName = case fieldType of
     BT_String   -> [lt|writer.writeString(#{varName});|]
     BT_WString  -> [lt|writer.writeWString(#{varName});|]
     BT_Blob     -> [lt|writer.writeBytes(#{varName});|]
-    BT_List e   -> writeContainer java e varName
-    BT_Vector e -> writeContainer java e varName
-    BT_Set e    -> writeContainer java e varName
+    BT_List e   -> writeSequence java e varName
+    BT_Vector e -> writeSequence java e varName
+    BT_Set e    -> writeSequence java e varName
+    BT_Map k v  -> writeMap java k v varName
     _           -> [lt|// FIXME: Not implemented.|]
 
-writeContainer :: MappingContext -> Type -> String -> Text
-writeContainer java elemType fieldName = [lt|writer.writeContainerBegin(#{fieldName}.size(), #{fieldTypeName elemType});
+
+writeSequence :: MappingContext -> Type -> String -> Text
+writeSequence java elemType fieldName = [lt|writer.writeContainerBegin(#{fieldName}.size(), #{fieldTypeName elemType});
         for (#{getTypeName java elemType} e : #{fieldName}) {
             #{writeValue java elemType "e"}
         }
         writer.writeContainerEnd();|]
+
+writeMap :: MappingContext -> Type -> Type -> String -> Text
+writeMap java keyType valueType fieldName = [lt|writer.writeContainerBegin(#{fieldName}.size(), #{fieldTypeName keyType}, #{fieldTypeName valueType});
+        for (java.util.Map.Entry<#{getTypeName javaBoxed keyType}, #{getTypeName javaBoxed valueType}> e : #{fieldName}.entrySet()) {
+            #{writeValue java keyType "e.getKey()"}
+            #{writeValue java valueType "e.getValue()"}
+        }
+        writer.writeContainerEnd();|]
+    where javaBoxed = java { typeMapping = javaBoxedTypeMapping }
 
 marshal_ProtocolWriter :: Text
 marshal_ProtocolWriter = [lt|

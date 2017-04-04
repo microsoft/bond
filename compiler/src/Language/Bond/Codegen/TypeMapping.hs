@@ -26,6 +26,7 @@ module Language.Bond.Codegen.TypeMapping
     , csTypeMapping
     , csCollectionInterfacesTypeMapping
     , javaTypeMapping
+    , javaBoxedTypeMapping
       -- * Alias mapping
       --
       -- | <https://microsoft.github.io/bond/manual/compiler.html#type-aliases Type aliases>
@@ -220,6 +221,18 @@ javaTypeMapping = TypeMapping
     ""
     "."
     javaType
+    id
+    javaTypeMapping
+    javaTypeMapping
+    javaTypeMapping
+
+-- | Java type mapping that boxes all primitives.
+javaBoxedTypeMapping :: TypeMapping
+javaBoxedTypeMapping = TypeMapping
+    (Just Java)
+    ""
+    "."
+    javaBoxedType
     id
     javaTypeMapping
     javaTypeMapping
@@ -508,3 +521,17 @@ javaType (BT_TypeParam param) = pureText $ paramName param
 javaType (BT_UserDefined Alias {} _) = error "Java codegen does not support aliases"
 javaType (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> localWith (const javaTypeMapping) (commaSepTypeNames args))
 javaType (BT_Bonded _) = error "Java codegen does not support Bonded"
+
+javaBoxedType :: Type -> TypeNameBuilder
+javaBoxedType t@BT_Int8 = javaBox t
+javaBoxedType t@BT_Int16 = javaBox t
+javaBoxedType t@BT_Int32 = javaBox t
+javaBoxedType t@BT_Int64 = javaBox t
+javaBoxedType t@BT_UInt8 = javaBox t
+javaBoxedType t@BT_UInt16 = javaBox t
+javaBoxedType t@BT_UInt32 = javaBox t
+javaBoxedType t@BT_Float = javaBox t
+javaBoxedType t@BT_Double = javaBox t
+javaBoxedType t@BT_Bool = javaBox t
+javaBoxedType t@BT_Blob = javaBox t
+javaBoxedType t = javaType t
