@@ -52,12 +52,12 @@ namespace tests
             > ro;
         };
 
-        private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::ro>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, var::r>::type fields2;
-        private: typedef boost::mpl::push_front<fields2, var::o>::type fields3;
+        private: typedef ::bond::mpl::nil fields0;
+        public: struct fields1 { typedef fields0 tail; typedef var::ro field; };
+        public: struct fields2 { typedef fields1 tail; typedef var::r field; };
+        public: struct fields3 { typedef fields2 tail; typedef var::o field; };
 
-        public: typedef fields3::type fields;
+        public: typedef fields3 fields;
         
         
         static ::bond::Metadata GetMetadata()

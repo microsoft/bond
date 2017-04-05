@@ -61,7 +61,7 @@ typename boost::enable_if<bond::has_schema<T>, bool>::type
 Equal(const T& left, const T& right)
 {
     bool equal = true;
-    boost::mpl::for_each<typename T::Schema::fields>(Compare<T>(left, right, equal));
+    bond::mpl::for_each<typename T::Schema::fields>(Compare<T>(left, right, equal));
     return equal;
 }
 

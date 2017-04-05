@@ -31,10 +31,10 @@ namespace tests
             > aa;
         };
 
-        private: typedef boost::mpl::list<> fields0;
-        private: typedef typename boost::mpl::push_front<fields0, typename var::aa>::type fields1;
+        private: typedef ::bond::mpl::nil fields0;
+        public: struct fields1 { typedef fields0 tail; typedef typename var::aa field; };
 
-        public: typedef typename fields1::type fields;
+        public: typedef fields1 fields;
         
         Schema()
         {
@@ -83,10 +83,10 @@ namespace tests
             > aWrappedEnum;
         };
 
-        private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::aWrappedEnum>::type fields1;
+        private: typedef ::bond::mpl::nil fields0;
+        public: struct fields1 { typedef fields0 tail; typedef var::aWrappedEnum field; };
 
-        public: typedef fields1::type fields;
+        public: typedef fields1 fields;
         
         
         static ::bond::Metadata GetMetadata()

@@ -24,7 +24,7 @@ class ParserCommon
 protected:
     template <typename Transform>
     bool
-    ReadFields(const boost::mpl::l_iter<boost::mpl::l_end>&, const Transform&)
+    ReadFields(const ::bond::mpl::nil&, const Transform&)
     {
         return false;
     }
@@ -124,7 +124,7 @@ private:
     bool
     ReadFields(const Fields&, const Transform& transform)
     {
-        typedef typename boost::mpl::deref<Fields>::type Head;
+        typedef typename Fields::field Head;
 
         if (detail::ReadFieldOmitted(_input))
             OmittedField(Head(), transform);
@@ -132,7 +132,7 @@ private:
             if (bool done = NextField(Head(), transform))
                 return done;
         
-        return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
+        return ReadFields(typename Fields::tail(), transform);
     }
 
 
@@ -301,7 +301,7 @@ private:
     void
     ReadFields(const Fields&, uint16_t& id, BondDataType& type, const Transform& transform)
     {
-        typedef typename boost::mpl::deref<Fields>::type Head;
+        typedef typename Fields::field Head;
 
         for (;;)
         {
@@ -332,7 +332,7 @@ private:
 
             if (Head::id < id || type == bond::BT_STOP || type == bond::BT_STOP_BASE)
             {
-                NextSchemaField: return ReadFields(typename boost::mpl::next<Fields>::type(), id, type, transform);
+                NextSchemaField: return ReadFields(typename Fields::tail(), id, type, transform);
             }
         }
     }
@@ -340,7 +340,7 @@ private:
 
     template <typename Transform>
     void
-    ReadFields(const boost::mpl::l_iter<boost::mpl::l_end>&, uint16_t& id, BondDataType& type, const Transform& transform)
+    ReadFields(const mpl::nil&, uint16_t& id, BondDataType& type, const Transform& transform)
     {
         for (; type != bond::BT_STOP && type != bond::BT_STOP_BASE;
                _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
@@ -561,7 +561,7 @@ private:
     template <typename Fields, typename Transform>
     bool ReadFields(const Fields&, const Transform& transform)
     {
-        typedef typename boost::mpl::deref<Fields>::type Head;
+        typedef typename Fields::field Head;
 
         if (const typename Reader::Field* field = _input.FindField(
                 Head::id,  
@@ -573,11 +573,11 @@ private:
             NextField(Head(), transform, input);
         }
         
-        return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
+        return ReadFields(typename Fields::tail(), transform);
     }
 
     template <typename Transform>
-    bool ReadFields(const boost::mpl::l_iter<boost::mpl::l_end>&, const Transform&)
+    bool ReadFields(const mpl::nil&, const Transform&)
     {
         return false;
     }

@@ -19,7 +19,7 @@ public:
         : _var(var),
           _default(true)
     {
-        boost::mpl::for_each<typename schema<T>::type::fields>(boost::ref(*this));
+        bond::mpl::for_each<typename schema<T>::type::fields>(boost::ref(*this));
     }
 
     operator bool()

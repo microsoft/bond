@@ -30,10 +30,10 @@ namespace tests
             > f;
         };
 
-        private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::f>::type fields1;
+        private: typedef ::bond::mpl::nil fields0;
+        public: struct fields1 { typedef fields0 tail; typedef var::f field; };
 
-        public: typedef fields1::type fields;
+        public: typedef fields1 fields;
         
         
         static ::bond::Metadata GetMetadata()

@@ -43,11 +43,11 @@ namespace bondmeta
             > name;
         };
 
-        private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::name>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, var::full_name>::type fields2;
+        private: typedef ::bond::mpl::nil fields0;
+        public: struct fields1 { typedef fields0 tail; typedef var::name field; };
+        public: struct fields2 { typedef fields1 tail; typedef var::full_name field; };
 
-        public: typedef fields2::type fields;
+        public: typedef fields2 fields;
         
         
         static ::bond::Metadata GetMetadata()

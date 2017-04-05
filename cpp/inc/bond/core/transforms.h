@@ -333,7 +333,7 @@ Marshaler<Writer> MarshalTo(Writer& output)
 
 
 template <typename T>
-class RequiredFieldValiadator
+class RequiredFieldValidator
 {
 protected:
     void Begin() const
@@ -383,7 +383,7 @@ private:
 };
 
 template <typename T>
-void RequiredFieldValiadator<T>::MissingFieldException() const
+void RequiredFieldValidator<T>::MissingFieldException() const
 {
     BOND_THROW(CoreException,
           "De-serialization failed: required field " << _required <<
@@ -437,7 +437,7 @@ protected:
     }
 
     template <typename X>
-    bool AssignToField(const boost::mpl::l_iter<boost::mpl::l_end>&, uint16_t /*id*/, const X& /*value*/) const
+    bool AssignToField(const mpl::nil&, uint16_t /*id*/, const X& /*value*/) const
     {
         return false;
     }
@@ -492,21 +492,21 @@ public:
     template <typename Reader, typename X>
     bool Field(uint16_t id, const Metadata& /*metadata*/, const bonded<X, Reader>& value) const
     {
-        return AssignToField(typename boost::mpl::begin<typename nested_fields<T>::type>::type(), id, value);
+        return AssignToField(typename nested_fields<typename schema<T>::type::fields>::fields(), id, value);
     }
 
 
     template <typename Reader, typename X>
     bool Field(uint16_t id, const Metadata& /*metadata*/, const value<X, Reader>& value) const
     {
-        return AssignToField(typename boost::mpl::begin<typename matching_fields<T, X>::type>::type(), id, value);
+        return AssignToField(typename matching_fields<typename schema<T>::type::fields, X>::fields(), id, value);
     }
 
 
     template <typename Reader>
     bool Field(uint16_t id, const Metadata& /*metadata*/, const value<void, Reader>& value) const
     {
-        return AssignToField(typename boost::mpl::begin<typename container_fields<T>::type>::type(), id, value);
+        return AssignToField(typename container_fields<typename schema<T>::type::fields>::fields(), id, value);
     }
 
 
@@ -529,7 +529,7 @@ private:
     template <typename Fields, typename X>
     bool AssignToField(const Fields&, uint16_t id, const X& value) const
     {
-        typedef typename boost::mpl::deref<Fields>::type Head;
+        typedef typename Fields::field Head;
 
         if (id == Head::id)
         {
@@ -539,7 +539,7 @@ private:
         }
         else
         {
-            return AssignToField(typename boost::mpl::next<Fields>::type(), id, value);
+            return AssignToField(typename Fields::tail(), id, value);
         }
     }
 
@@ -630,7 +630,7 @@ protected:
     template <typename V, typename X>
     bool AssignToNested(V& var, const PathView& ids, const X& value) const
     {
-        return AssignToNested(typename boost::mpl::begin<typename struct_fields<V>::type>::type(), var, ids, value);
+        return AssignToNested(typename struct_fields<typename schema<V>::type::fields>::fields(), var, ids, value);
     }
 
 
@@ -651,16 +651,16 @@ protected:
     template <typename Nested, typename V, typename X>
     bool AssignToNested(const Nested&, V& var, const PathView& ids, const X& value) const
     {
-        typedef typename boost::mpl::deref<Nested>::type Head;
+        typedef typename Nested::field Head;
 
         if (*ids.current == Head::id)
             return Assign(Head::GetVariable(var), PathView(ids.path, ids.current + 1), value);
         else
-            return AssignToNested(typename boost::mpl::next<Nested>::type(), var, ids, value);
+            return AssignToNested(typename Nested::tail(), var, ids, value);
     }
 
     template <typename V, typename X>
-    bool AssignToNested(const boost::mpl::l_iter<boost::mpl::l_end>&, V& /*var*/, const PathView& /*ids*/, const X& /*value*/) const
+    bool AssignToNested(const mpl::nil&, V& /*var*/, const PathView& /*ids*/, const X& /*value*/) const
     {
         return false;
     }
@@ -672,28 +672,28 @@ protected:
     template <typename Reader, typename V, typename X>
     bool AssignToField(V& var, uint16_t id, const bonded<X, Reader>& value) const
     {
-        return AssignToField(typename boost::mpl::begin<typename nested_fields<V>::type>::type(), var, id, value);
+        return AssignToField(typename nested_fields<typename schema<V>::type::fields>::fields(), var, id, value);
     }
 
     
     template <typename Reader, typename V, typename X>
     bool AssignToField(V& var, uint16_t id, const value<X, Reader>& value) const
     {
-        return AssignToField(typename boost::mpl::begin<typename matching_fields<V, X>::type>::type(), var, id, value);
+        return AssignToField(typename matching_fields<typename schema<V>::type::fields, X>::fields(), var, id, value);
     }
 
 
     template <typename Reader, typename V>
     bool AssignToField(V& var, uint16_t id, const value<void, Reader>& value) const
     {
-        return AssignToField(typename boost::mpl::begin<typename container_fields<V>::type>::type(), var, id, value);
+        return AssignToField(typename container_fields<typename schema<V>::type::fields>::fields(), var, id, value);
     }
 
     
     template <typename Fields, typename V, typename X>
     bool AssignToField(const Fields&, V& var, uint16_t id, const X& value) const
     {
-        typedef typename boost::mpl::deref<Fields>::type Head;
+        typedef typename Fields::field Head;
 
         if (id == Head::id)
         {
@@ -702,13 +702,13 @@ protected:
         }
         else
         {
-            return AssignToField(typename boost::mpl::next<Fields>::type(), var, id, value);
+            return AssignToField(typename Fields::tail(), var, id, value);
         }
     }
 
     
     template <typename V, typename X>
-    bool AssignToField(const boost::mpl::l_iter<boost::mpl::l_end>&, V& /*var*/, uint16_t /*id*/, const X& /*value*/) const
+    bool AssignToField(const mpl::nil&, V& /*var*/, uint16_t /*id*/, const X& /*value*/) const
     {
         return false;
     }

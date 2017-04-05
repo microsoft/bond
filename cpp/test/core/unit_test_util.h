@@ -384,7 +384,7 @@ void Binding(const From& from, uint16_t version = bond::v1)
 #pragma warning(push)
 #pragma warning(disable: 4127) // C4127: conditional expression is constant
 #endif
-        if (boost::mpl::count_if<typename From::Schema::fields, is_optional_field<_> >::value == 0)
+        if (bond::mpl::count_if<typename From::Schema::fields, is_optional_field>::value == 0)
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -408,7 +408,7 @@ void Binding(const From& from, uint16_t version = bond::v1)
 #pragma warning(push)
 #pragma warning(disable: 4127) // C4127: conditional expression is constant
 #endif
-        if (boost::mpl::count_if<typename From::Schema::fields, is_optional_field<_> >::value == 0)
+        if (bond::mpl::count_if<typename From::Schema::fields, is_optional_field>::value == 0)
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -464,7 +464,7 @@ void Mapping(const From& from, uint16_t version = bond::v1)
 
         To to;
         
-        if (boost::mpl::count_if<From::Schema::fields, is_optional_field<_> >::value == 0)
+        if (bond::mpl::count_if<From::Schema::fields, is_optional_field>::value == 0)
         {
             to = InitRandom<To>();
             Fixup(to);
@@ -481,7 +481,7 @@ void Mapping(const From& from, uint16_t version = bond::v1)
 
         To to;
         
-        if (boost::mpl::count_if<From::Schema::fields, is_optional_field<_> >::value == 0)
+        if (bond::mpl::count_if<From::Schema::fields, is_optional_field>::value == 0)
         {
             to = InitRandom<To>();
             Fixup(to);

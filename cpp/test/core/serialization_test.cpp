@@ -80,7 +80,7 @@ TEST_CASE_END
 template <typename T> struct
 untagged_payload_size
 {
-    static const unsigned value = (boost::mpl::size<typename T::Schema::fields>::value + 7) / 8
+    static const unsigned value = (bond::mpl::count<typename T::Schema::fields>::value + 7) / 8
                                 + untagged_payload_size<typename T::Schema::base>::value;
 };
 

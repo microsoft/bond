@@ -276,7 +276,8 @@ TEST_CASE_BEGIN(EnsureUnknownSeqIDLType)
     {
         // we test on the type's Schema instead of SchemaDef because--for
         // now--the list sub type is not present in TypeDef.
-        boost::mpl::for_each<StructWithDefaults::Schema::fields>(NoSubTypeAsserter());
+        bond::mpl::for_each<StructWithDefaults::Schema::fields>(
+            static_cast<const NoSubTypeAsserter&>(NoSubTypeAsserter()));
     }
 }
 TEST_CASE_END

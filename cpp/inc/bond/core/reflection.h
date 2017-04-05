@@ -5,11 +5,9 @@
 
 #include <boost/static_assert.hpp>
 #include <boost/mpl/transform.hpp>
-#include <boost/mpl/find_if.hpp>
 #include <boost/mpl/for_each.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/mpl/push_front.hpp>
-#include <boost/mpl/copy_if.hpp>
 #include <boost/assign.hpp>
 #include <boost/assign/list_of.hpp>
 
@@ -326,31 +324,78 @@ bond::Metadata MetadataInit(const char* name, const char* qual_name, const Attri
 
 const reflection::nothing nothing = {};
 
-template <typename T, typename Iter> struct
-field_id
+namespace mpl
 {
-    static const uint16_t value = boost::mpl::deref<Iter>::type::id;
-};
+
+struct nil {};
+
 
 template <typename T> struct
-field_id<T, typename boost::mpl::end<T>::type>
+for_each
 {
-    static const uint16_t value = invalid_field_id;
+    template <typename F>
+    for_each(F f)
+    {
+        typedef typename T::field field;
+        typedef typename T::tail tail;
+
+        boost::unwrap_ref(f)(field());
+        for_each<tail>(std::forward<F>(f));
+    }
 };
+
+
+template <> struct
+for_each<nil>
+{
+    template <typename F>
+    for_each(F) {}
+};
+
+
+template <typename T> struct
+count
+{
+    static const size_t value = 1 + count<typename T::tail>::value;
+};
+
+
+template <> struct
+count<nil>
+{
+    static const size_t value = 0;
+};
+
+
+template <typename T, template <typename> class F> struct
+count_if
+{
+    static const size_t value = F<typename T::field>::value ? 1 : 0
+        + count_if<typename T::tail, F>::value;
+};
+
+
+template <template <typename> class F> struct
+count_if<nil, F>
+{
+    static const size_t value = 0;
+};
+
+} // namespace mpl
 
 template <typename T, uint16_t minId = 0> struct
 next_required_field
 {
-private:
-    template <typename Field> struct
-    is_next_required
-    {
-        static const bool value = Field::id >= minId
-                               && is_same<typename Field::field_modifier, typename reflection::required_field_modifier>::value;
-    };
+    static const uint16_t value = (T::field::id >= minId && is_same<typename T::field::field_modifier, typename reflection::required_field_modifier>::value)
+        ? T::field::id
+        : next_required_field<typename T::tail, minId>::value;
+};
 
-public:
-    static const uint16_t value = field_id<T, typename boost::mpl::find_if<T, is_next_required<_> >::type>::value;
+
+template <uint16_t minId> struct
+next_required_field<mpl::nil, minId>
+{
+    static const uint16_t value = invalid_field_id;
 };
 
 
@@ -407,7 +452,7 @@ schema<Unknown, Unused>
     struct type
     {
         typedef no_base base;
-        typedef boost::mpl::list<>::type fields;
+        typedef mpl::nil fields;
         static const Metadata metadata;
 
         type()
@@ -707,40 +752,117 @@ is_basic_type<std::pair<T1, T2> >
 
 template <typename T, typename X, typename Enable = void> struct
 matching_fields
-    : boost::mpl::copy_if<typename schema<T>::type::fields,
-                          is_matching_basic_field<X, _>,
-                          boost::mpl::front_inserter<boost::mpl::list<> > >
 {
+    typedef typename matching_fields<typename T::tail, X>::fields fields;
+};
+
+
+template <typename X> struct
+matching_fields<mpl::nil, X>
+{
+    typedef mpl::nil fields;
+};
+
+
+template <typename T, typename X> struct
+matching_fields<T, X, typename boost::enable_if_c<!is_container<X>::value && is_matching_basic_field<X, typename T::field>::value >::type>
+{
+    typedef struct 
+    {
+        typedef typename T::field field;
+        typedef typename matching_fields<typename T::tail, X>::fields tail;
+    } fields;
+
     BOOST_STATIC_ASSERT((is_basic_type<X>::value));
 };
 
 
 template <typename T, typename X> struct
-matching_fields<T, X, typename boost::enable_if<is_container<X> >::type>
-    : boost::mpl::copy_if<typename schema<T>::type::fields,
-                          is_matching_container_field<X, _>,
-                          boost::mpl::front_inserter<boost::mpl::list<> > > {};
+matching_fields<T, X, typename boost::enable_if<is_matching_container_field<X, typename T::field> >::type>
+{
+    typedef struct 
+    {
+        typedef typename T::field field;
+        typedef typename matching_fields<typename T::tail, X>::fields tail;
+    } fields;
+
+    BOOST_STATIC_ASSERT((is_container<X>::value));
+};
 
 
-template <typename T> struct
+template <typename T, typename Enable = void> struct
 nested_fields
-    : boost::mpl::copy_if<typename schema<T>::type::fields,
-                          is_nested_field<_>,
-                          boost::mpl::front_inserter<boost::mpl::list<> > > {};
+{
+    typedef typename nested_fields<typename T::tail>::fields fields;
+};
+
+
+template <> struct
+nested_fields<mpl::nil>
+{
+    typedef mpl::nil fields;
+};
 
 
 template <typename T> struct
+nested_fields<T, typename boost::enable_if<is_nested_field<typename T::field> >::type>
+{
+    typedef struct
+    {
+        typedef typename T::field field;
+        typedef typename nested_fields<typename T::tail>::fields tail;        
+    } fields;
+};
+
+
+template <typename T, typename Enable = void> struct
 struct_fields
-    : boost::mpl::copy_if<typename schema<T>::type::fields,
-                          is_struct_field<_>,
-                          boost::mpl::front_inserter<boost::mpl::list<> > > {};
+{
+    typedef typename struct_fields<typename T::tail>::fields fields;
+};
+
+
+template <> struct
+struct_fields<mpl::nil>
+{
+    typedef mpl::nil fields;
+};
 
 
 template <typename T> struct
+struct_fields<T, typename boost::enable_if<is_struct_field<typename T::field> >::type>
+{
+    typedef struct
+    {
+        typedef typename T::field field;
+        typedef typename struct_fields<typename T::tail>::fields tail;
+    } fields;
+};
+
+
+template <typename T, typename Enable = void> struct
 container_fields
-    : boost::mpl::copy_if<typename schema<T>::type::fields,
-                          is_container_field<_>,
-                          boost::mpl::front_inserter<boost::mpl::list<> > > {};
+{
+    typedef typename container_fields<typename T::tail>::fields fields;
+};
+
+
+template <> struct
+container_fields<mpl::nil>
+{
+    typedef mpl::nil fields;
+};
+
+
+template <typename T> struct
+container_fields<T, typename boost::enable_if<is_container_field<typename T::field> >::type>
+{
+    typedef struct
+    {
+        typedef typename T::field field;
+        typedef typename container_fields<typename T::tail>::fields tail;
+    } fields;
+};
 
 
 template <typename T> struct

@@ -35,6 +35,7 @@ different versioning scheme, following the Haskell community's
   comm).
 * gbc ensures that method names are unique within a service.
   [Issue #381](https://github.com/Microsoft/bond/issues/381)
+* C++ codegen generate custom linked list instead of mpl::list for fields.
 
 ### C++ ###
 
@@ -62,6 +63,8 @@ different versioning scheme, following the Haskell community's
     * Support C++11 and above allocator model for rebind
     * Simplify detection of the default allocator
 * Remove per-field instantiation of DynamicParser<>::UnknownFieldOrTypeMismatch method.
+* Substitute boost::mpl::list for fields with custom linked list.
+* Fix typo in RequiredFieldValidator.
 
 ## C# ###
 
