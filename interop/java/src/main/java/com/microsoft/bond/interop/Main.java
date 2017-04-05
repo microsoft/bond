@@ -42,18 +42,20 @@ public class Main {
             ooe.f = .5f;
             ooe.d = .5;
             ooe.bl = true;
-            ooe.str = "three\0";
+            ooe.str = "three";
             ooe.wstr = "threeeee";
             ooe.l_b.add((byte) 3);
             ooe.l_b.add((byte) 33);
-            ooe.v_f.add(.5f);
-            ooe.v_f.add(.75f);
+            ooe.v_s.add((short) 3);
+            ooe.v_s.add((short) 33);
             ooe.s_ui.add((long) 3);
             ooe.s_ui.add((long) 33);
             ooe.s_ui.add((long) 333);
             ooe.m_i_str.put(1, "one");
             ooe.m_i_str.put(2, "two");
             ooe.m_i_str.put(3, "three");
+            ooe.m_i_str.put(4, "four");
+            ooe.m_i_str.put(5, "five");
             ooe.e = SomeEnum.B;
             ooe.oos.str = "one of something, anyway";
 

@@ -63,10 +63,10 @@ int main(int argc, char ** argv) {
             printf("\t%d\n", *i);
         }
         printf("ooe.v_f:\n");
-        for (std::vector<float>::iterator i = ooe.v_f.begin();
-             i != ooe.v_f.end();
+        for (std::vector<int16_t>::iterator i = ooe.v_s.begin();
+             i != ooe.v_s.end();
              i++) {
-            printf("\t%f\n", *i);
+            printf("\t%d\n", *i);
         }
         printf("ooe.s_ui:\n");
         for (std::set<uint32_t>::iterator i = ooe.s_ui.begin();
@@ -94,17 +94,23 @@ int main(int argc, char ** argv) {
         // 9223372036854775808, in hex, to avoid a warning.
         ooe.ul = 0x8000000000000000;
         ooe.f = .5;
-        ooe.d = .75;
+        ooe.d = .5;
         ooe.bl = true;
         ooe.str = "three";
         ooe.wstr = L"threeeee";
         ooe.l_b.push_back(3);
         ooe.l_b.push_back(33);
-        ooe.v_f.push_back(0.5);
-        ooe.v_f.push_back(0.75);
+        ooe.v_s.push_back(3);
+        ooe.v_s.push_back(33);
+        ooe.s_ui.insert(3);
+        ooe.s_ui.insert(33);
+        ooe.s_ui.insert(333);
         ooe.m_i_str.emplace(1, "one");
         ooe.m_i_str.emplace(2, "two");
         ooe.m_i_str.emplace(3, "three");
+        ooe.m_i_str.emplace(4, "four");
+        ooe.m_i_str.emplace(5, "five");
+        ooe.e = com::microsoft::bond::interop::_bond_enumerators::SomeEnum::B;
         ooe.oos.str = "one of something, anyway";
 
         FILE* d = fopen(fpath, "wb");
