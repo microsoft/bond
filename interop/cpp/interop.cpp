@@ -80,6 +80,8 @@ int main(int argc, char ** argv) {
              i++) {
             printf("\t%d -> %s\n", i->first, i->second.c_str());
         }
+        printf("ooe.e: %u\n", ooe.e);
+        printf("ooe.oos.str: %s\n", ooe.oos.str.c_str());
     } else {
         OneOfEverything ooe;
         ooe.b = 3;
@@ -91,11 +93,19 @@ int main(int argc, char ** argv) {
         ooe.ui = 2147483648;
         // 9223372036854775808, in hex, to avoid a warning.
         ooe.ul = 0x8000000000000000;
-        ooe.f = 3.3;
-        ooe.d = 3.3;
+        ooe.f = .5;
+        ooe.d = .75;
         ooe.bl = true;
         ooe.str = "three";
         ooe.wstr = L"threeeee";
+        ooe.l_b.push_back(3);
+        ooe.l_b.push_back(33);
+        ooe.v_f.push_back(0.5);
+        ooe.v_f.push_back(0.75);
+        ooe.m_i_str.emplace(1, "one");
+        ooe.m_i_str.emplace(2, "two");
+        ooe.m_i_str.emplace(3, "three");
+        ooe.oos.str = "one of something, anyway";
 
         FILE* d = fopen(fpath, "wb");
         bond::StdioOutputStream output(d);

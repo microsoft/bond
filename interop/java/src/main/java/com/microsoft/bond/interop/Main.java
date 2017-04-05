@@ -54,6 +54,8 @@ public class Main {
             ooe.m_i_str.put(1, "one");
             ooe.m_i_str.put(2, "two");
             ooe.m_i_str.put(3, "three");
+            ooe.e = SomeEnum.B;
+            ooe.oos.str = "one of something, anyway";
 
             FileOutputStream fos = new FileOutputStream(fpath);
             ooe.marshal(new FastBinaryWriter<>(fos, (short) 1));

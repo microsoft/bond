@@ -1,5 +1,11 @@
 namespace com.microsoft.bond.interop;
 
+enum SomeEnum { A, B, C }
+
+struct OneOfSomething {
+    0: string str;
+}
+
 struct OneOfEverything {
      0: int8 b;
      1: int16 s;
@@ -18,4 +24,6 @@ struct OneOfEverything {
     14: vector<float> v_f;
     15: set<uint32> s_ui;
     16: map<int32, string> m_i_str;
+    17: SomeEnum e = A;
+    18: OneOfSomething oos;
 }
