@@ -13,9 +13,9 @@ interface ProtocolWriter {
      */
     fun writeVersion()
 
-    fun writeStructBegin(metadata: Metadata?)
+    fun writeStructBegin(metadata: Metadata)
 
-    fun writeBaseBegin(metadata: Metadata?)
+    fun writeBaseBegin(metadata: Metadata)
 
     fun writeStructEnd()
 

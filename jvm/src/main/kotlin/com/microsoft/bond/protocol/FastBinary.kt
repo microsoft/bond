@@ -15,9 +15,9 @@ class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short =
         writer.writeInt16(version)
     }
 
-    override fun writeStructBegin(metadata: Metadata?) {}
+    override fun writeStructBegin(metadata: Metadata) {}
 
-    override fun writeBaseBegin(metadata: Metadata?) {}
+    override fun writeBaseBegin(metadata: Metadata) {}
 
     override fun writeStructEnd() {
         writer.writeInt8(BondDataType.BT_STOP.value.toByte())

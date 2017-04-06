@@ -7,6 +7,8 @@
 module Language.Bond.Codegen.Java.SerializationMethods
     ( marshal_ProtocolWriter
     , serialize_ProtocolWriter
+    , fieldTypeName
+    , structDefMember
     ) where
 
 import Prelude
@@ -16,6 +18,8 @@ import Language.Bond.Syntax.Types
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 
+structDefMember :: Text
+structDefMember = pack "STRUCT_DEF"
 
 marshal_ProtocolWriter :: Text
 marshal_ProtocolWriter = [lt|
@@ -25,13 +29,11 @@ marshal_ProtocolWriter = [lt|
         serialize(writer);
     }|]
 
-
 serialize_ProtocolWriter :: MappingContext -> Declaration -> Text
 serialize_ProtocolWriter java declaration = [lt|
     @Override
     public void serialize(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-// FIXME: Where is my metadata?
-        writer.writeStructBegin(null);
+        writer.writeStructBegin(#{structDefMember}.metadata);
         #{newlineSepEnd 2 writeField fields}
         writer.writeStructEnd();
     }|]
@@ -42,7 +44,6 @@ serialize_ProtocolWriter java declaration = [lt|
         writer.writeFieldBegin(#{fieldTypeName fieldType}, #{fieldOrdinal}, null);
         #{writeFieldValue java fieldType fieldName}
         writer.writeFieldEnd();|]
-
 
 fieldTypeName :: Type -> Text
 fieldTypeName fieldType = pack $ "com.microsoft.bond.BondDataType." ++ case fieldType of
@@ -69,10 +70,8 @@ fieldTypeName fieldType = pack $ "com.microsoft.bond.BondDataType." ++ case fiel
     -- FIXME: Marker for unsupported types that compiles.
     _                        -> "BT_UNAVAILABLE"
 
-
 writeFieldValue :: MappingContext -> Type -> String -> Text
 writeFieldValue java fieldType fieldName = writeValue java fieldType ("this." ++ fieldName)
-
 
 writeValue :: MappingContext -> Type -> String -> Text
 writeValue java fieldType varName = case fieldType of
@@ -99,14 +98,12 @@ writeValue java fieldType varName = case fieldType of
     BT_UserDefined _ _       -> [lt|#{varName}.serialize(writer);|]
     _                        -> [lt|// FIXME: Not implemented.|]
 
-
 writeSequence :: MappingContext -> Type -> String -> Text
 writeSequence java elemType fieldName = [lt|writer.writeContainerBegin(#{fieldName}.size(), #{fieldTypeName elemType});
         for (#{getTypeName java elemType} e : #{fieldName}) {
             #{writeValue java elemType "e"}
         }
         writer.writeContainerEnd();|]
-
 
 writeMap :: MappingContext -> Type -> Type -> String -> Text
 writeMap java keyType valueType fieldName = [lt|writer.writeContainerBegin(#{fieldName}.size(), #{fieldTypeName keyType}, #{fieldTypeName valueType});

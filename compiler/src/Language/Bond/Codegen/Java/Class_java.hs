@@ -16,6 +16,7 @@ import Language.Bond.Syntax.Types
 import Language.Bond.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
+import Language.Bond.Codegen.Java.Schema
 import Language.Bond.Codegen.Java.SerializationMethods
 import qualified Language.Bond.Codegen.Java.Util as Java
 
@@ -40,6 +41,7 @@ public class #{declName}#{params}#{maybe interface baseClass structBase} {
     #{doubleLineSep 1 publicField structFields}
 #{serialize_ProtocolWriter java declaration}
 #{marshal_ProtocolWriter}
+#{schema java declaration}
 }|]
             where
                 interface = [lt| implements com.microsoft.bond.BondSerializable|]
