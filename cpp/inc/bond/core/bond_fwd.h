@@ -49,7 +49,7 @@ class To;
 template <typename T, typename Enable = void> struct 
 schema_for_passthrough;
 
-template<typename T> struct 
+template<typename T, typename Enable = void> struct
 get_type_id;
 
 template <typename T> struct 

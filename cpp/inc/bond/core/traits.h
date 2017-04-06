@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include "scalar_interface.h"
+#include "bond_fwd.h"
 #include <boost/type_traits/has_nothrow_copy.hpp>
 #include <boost/utility/enable_if.hpp>
 
@@ -56,20 +57,18 @@ struct is_nothrow_copy_constructible : boost::has_nothrow_copy_constructor<T> {}
 // is_signed_int
 template <typename T> struct
 is_signed_int
-{
-    static const bool value = is_signed<T>::value
-                          && !is_floating_point<T>::value
-                          && !is_enum<T>::value;
-};
+    : std::integral_constant<bool,
+        is_signed<T>::value
+        && !is_floating_point<T>::value
+        && !is_enum<T>::value> {};
 
 
 // is_signed_int_or_enum
 template <typename T> struct
 is_signed_int_or_enum
-{
-    static const bool value = is_signed_int<T>::value
-                           || is_enum<T>::value;
-};
+    : std::integral_constant<bool,
+        is_signed_int<T>::value
+        || is_enum<T>::value> {};
 
 
 // schema
@@ -142,6 +141,16 @@ get_protocol_writer<Reader<I>, OutputStream>
 
 template <typename T, T> struct
 check_method
+    : true_type {};
+
+
+template <typename T> struct
+is_bonded
+    : false_type {};
+
+
+template <typename T, typename Reader> struct
+is_bonded<bonded<T, Reader> >
     : true_type {};
 
 

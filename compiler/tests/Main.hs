@@ -72,6 +72,11 @@ tests = testGroup "Compiler tests"
             , verifyCppCodegen "maybe_blob"
             , verifyCodegen
                 [ "c++"
+                , "--enum-header"
+                ]
+                "with_enum_header"
+            , verifyCodegen
+                [ "c++"
                 , "--allocator=arena"
                 ]
                 "alias_with_allocator"

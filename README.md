@@ -40,10 +40,10 @@ git clone --recursive https://github.com/Microsoft/bond.git
 ```
 
 In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and
-cabal-install 1.18+) and Boost (1.58+). The core Bond C++ library can be used
-with C++03 compilers, although Bond Comm, Python support, unit tests and various
-examples require some C++11 features. (Note: Boost 1.59 may not work with
-Bond Comm due to some bugs in that version of the Boost ASIO library).
+cabal-install 1.18+) and Boost (1.58+). Bond's C++ library requires some
+C++11 features (currently limited to those supported bv Visual C++ 2013).
+(Note: Boost 1.59 may not work with Bond Comm due to some bugs in that
+version of the Boost ASIO library).
 
 Following are specific instructions for building on various platforms.
 
