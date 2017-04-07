@@ -7,7 +7,13 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/asio/ip/address.hpp>
 
-#ifdef _MSC_VER
+#if defined (__APPLE__)
+    // Work-around: 'OSMemoryBarrier' has been explicitly marked deprecated
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    #include <boost/asio/ip/tcp.hpp>
+    #pragma GCC diagnostic pop
+#elif defined (_MSC_VER)
     #pragma warning(push)
     #pragma warning(disable: 4242) // C4242: 'identifier' : conversion from 'type1' to 'type2', possible loss of data
     #include <boost/asio/ip/tcp.hpp>
