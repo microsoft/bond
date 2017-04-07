@@ -1,4 +1,5 @@
 #include <bond/core/bond_version.h>
+#include <bond/stream/output_counter.h>
 
 namespace bond
 {
@@ -121,12 +122,32 @@ TEST_CASE_BEGIN(MetaTests)
 TEST_CASE_END
 
 
+template <typename Reader, typename Writer>
+TEST_CASE_BEGIN(OutputCounterTests)
+{
+    auto x = InitRandom<unittest::NestedStructBondedView>();
+
+    typename Writer::Buffer buffer;
+    Writer writer(buffer);
+    bond::Serialize(x, writer);
+
+    bond::OutputCounter counter;
+    typename bond::get_protocol_writer<Reader, bond::OutputCounter>::type counter_writer(counter);
+    bond::Serialize(x, counter_writer);
+
+    UT_AssertIsTrue(buffer.GetBuffer().size() == counter.GetCount());
+}
+TEST_CASE_END
+
+
 template <uint16_t N, typename Reader, typename Writer>
 void BasicTests(const char* name)
 {
     UnitTestSuite suite(name);
-    
+
     AddTestCase<TEST_ID(N), MetaTests, Reader, Writer>(suite, "Meta tests");
+
+    AddTestCase<TEST_ID(N), OutputCounterTests, Reader, Writer>(suite, "OutputCounter tests");
 }
 
 
