@@ -160,7 +160,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <h2 id="dependencies">Dependencies</h2>
 <p>The Bond repository uses Git submodules and should be cloned with the <code>--recursive</code> flag:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> clone --recursive https://github.com/Microsoft/bond.git</code></pre></div>
-<p>In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and cabal-install 1.18+) and Boost (1.58+). The core Bond C++ library can be used with C++03 compilers, although Bond Comm, Python support, unit tests and various examples require some C++11 features. (Note: Boost 1.59 may not work with Bond Comm due to some bugs in that version of the Boost ASIO library).</p>
+<p>In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and cabal-install 1.18+) and Boost (1.58+). Bond’s C++ library requires some C++11 features (currently limited to those supported bv Visual C++ 2013). (Note: Boost 1.59 may not work with Bond Comm due to some bugs in that version of the Boost ASIO library).</p>
 <p>Following are specific instructions for building on various platforms.</p>
 <h3 id="linux">Linux</h3>
 <p>Bond can be built with Clang (3.4+) or GNU C++ (4.7+). We recommend the latest version of Clang as it’s much faster with template-heavy code like Bond.</p>
@@ -254,8 +254,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <span class="bu">cd</span> build
 <span class="kw">set</span> <span class="va">PreferredToolArchitecture=</span>x64
 <span class="fu">cmake</span> -G <span class="st">&quot;Visual Studio 14 2015 Win64&quot;</span> ..</code></pre></div>
-<p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed. (The Bond unit tests are too big to build with 32-bit tools.) This variable works for Visual Studio 2013 or 2015. For Visual Studio 2012 set the following environment variable instead:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="ex">_IsNativeEnvironment</span>=true</code></pre></div>
+<p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed. (The Bond unit tests are too big to build with 32-bit tools.)</p>
 <p>Instead of <code>cmake</code> you can also use <code>cmake-gui</code> and specify configuration settings in the UI. This configuration step has to be performed only once. From then on you can use the generated solution <code>build\bond.sln</code> from Visual Studio or build from command line using <code>cmake</code>:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> --build . --target
 <span class="fu">cmake</span> --build . --target INSTALL</code></pre></div>
