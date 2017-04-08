@@ -10,6 +10,7 @@
 namespace bond
 {
 
+class blob;
 class InputBuffer;
 class RuntimeSchema;
 

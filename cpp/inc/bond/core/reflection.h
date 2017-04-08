@@ -14,7 +14,7 @@
 #include <boost/assign/list_of.hpp>
 
 #include <bond/core/bond_types.h>
-#include "bonded.h"
+#include "bond_fwd.h"
 #include "detail/metadata.h"
 #include <functional>
 
