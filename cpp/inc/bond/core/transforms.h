@@ -24,6 +24,14 @@ namespace bond
 // indicating that the transform has completed and the parser may exit.
 
 
+namespace detail
+{
+    template <typename T, typename Schema, typename Transform>
+    class _Parser;
+
+} // namespace detail
+
+
 //
 // Serializer writes input using provided protocol writer. 
 // When the input is comming from parsing a struct, applying this transform is  

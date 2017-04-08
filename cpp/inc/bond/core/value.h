@@ -6,6 +6,7 @@
 #include <boost/static_assert.hpp>
 
 #include "config.h"
+#include "protocol.h"
 #include "schema.h"
 
 namespace bond
