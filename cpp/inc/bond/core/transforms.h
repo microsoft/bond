@@ -377,7 +377,7 @@ protected:
     {}
 
 private:
-    void MissingFieldException() const;
+    BOND_NORETURN void MissingFieldException() const;
     
     mutable uint16_t _required;
 };
