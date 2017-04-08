@@ -108,6 +108,20 @@ public:
     {
         return _value == rhs._value;
     }
+
+    /// @brief Access to underlying buffer
+    typename boost::call_traits<Buffer>::const_reference
+    GetBuffer() const
+    {
+        return _input;
+    }
+
+    /// @brief Access to underlying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _input;
+    }
     
 private:
     rapidjson::Value::ConstMemberIterator MemberBegin() const
