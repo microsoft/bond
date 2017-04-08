@@ -134,6 +134,14 @@ public:
     }
 
 
+    /// @brief Access to underlaying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _input;
+    }
+
+
     bool ReadVersion()
     {
         uint16_t magic_value, version_value;
@@ -382,6 +390,13 @@ public:
     FastBinaryWriter(Buffer& buffer)
         : _output(buffer)
     {
+    }
+
+    /// @brief Access to underlaying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _output;
     }
 
     void WriteVersion()

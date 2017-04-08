@@ -186,6 +186,14 @@ public:
     }
 
 
+    /// @brief Access to underlaying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _input;
+    }
+
+
     bool ReadVersion()
     {
         uint16_t magic_value;
@@ -552,6 +560,14 @@ public:
         : _output(output),
           _version(pass1._version)
     {}
+
+
+    /// @brief Access to underlaying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _output;
+    }
 
 
     bool NeedPass0()

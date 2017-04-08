@@ -65,6 +65,14 @@ public:
     }
 
 
+    /// @brief Access to underlaying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _input;
+    }
+
+
     bool ReadVersion()
     {
         uint16_t magic_value;
@@ -226,6 +234,13 @@ public:
           _version(version)
     {
         BOOST_ASSERT(_version <= Reader::version);
+    }
+
+    /// @brief Access to underlaying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _output;
     }
 
     void WriteVersion()
