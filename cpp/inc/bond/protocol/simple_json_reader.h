@@ -109,7 +109,7 @@ public:
         return _value == rhs._value;
     }
 
-    /// @brief Access to underlaying buffer
+    /// @brief Access to underlying buffer
     typename boost::call_traits<Buffer>::reference
     GetBuffer()
     {

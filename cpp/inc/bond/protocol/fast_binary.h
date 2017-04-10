@@ -126,7 +126,7 @@ public:
     }
 
 
-    /// @brief Access to underlaying buffer
+    /// @brief Access to underlying buffer
     typename boost::call_traits<Buffer>::const_reference
     GetBuffer() const
     {
@@ -134,7 +134,7 @@ public:
     }
 
 
-    /// @brief Access to underlaying buffer
+    /// @brief Access to underlying buffer
     typename boost::call_traits<Buffer>::reference
     GetBuffer()
     {
@@ -392,7 +392,7 @@ public:
     {
     }
 
-    /// @brief Access to underlaying buffer
+    /// @brief Access to underlying buffer
     typename boost::call_traits<Buffer>::reference
     GetBuffer()
     {
