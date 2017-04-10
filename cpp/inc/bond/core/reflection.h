@@ -37,7 +37,7 @@ remove_maybe<maybe<T> >
 };
 
 
-static const uint16_t invalid_field_id = 0xffff;
+BOND_STATIC_CONSTEXPR uint16_t invalid_field_id = 0xffff;
 
 
 /** namespace bond::reflection */
@@ -96,7 +96,7 @@ struct FieldTemplate
     static const field_pointer field;
 
     /// @brief Static data member equal to the field ordinal
-    static const uint16_t id = field_id;
+    BOND_STATIC_CONSTEXPR uint16_t id = field_id;
 
     /// @brief Static method returning const reference to the field value for a particular object
     static
@@ -337,7 +337,7 @@ private:
             && std::is_same<typename Field::field_modifier, typename reflection::required_field_modifier>::value> {};
 
 public:
-    static const uint16_t value = field_id<T, typename boost::mpl::find_if<T, is_next_required<_> >::type>::value;
+    BOND_STATIC_CONSTEXPR uint16_t value = field_id<T, typename boost::mpl::find_if<T, is_next_required<_> >::type>::value;
 };
 
 
@@ -833,19 +833,18 @@ get_type_id
     : get_type_id<typename aliased_type<T>::type> {};
 
 
-template <typename T> struct
+template <typename T, typename Enable = void> struct
 get_list_sub_type_id
-{
-    typedef typename remove_const<T>::type U;
+    : std::integral_constant<ListSubType, NO_SUBTYPE> {};
 
-    static const ListSubType value =
-        is_nullable<U>::value       ? NULLABLE_SUBTYPE :
-        is_blob<U>::value           ? BLOB_SUBTYPE     :
-                                      NO_SUBTYPE;
-};
+template <typename T> struct
+get_list_sub_type_id<T, typename boost::enable_if<is_nullable<typename remove_const<T>::type> >::type>
+    : std::integral_constant<ListSubType, NULLABLE_SUBTYPE> {};
 
-template <typename T>
-const ListSubType get_list_sub_type_id<T>::value;
+template <typename T> struct
+get_list_sub_type_id<T, typename boost::enable_if<is_blob<typename remove_const<T>::type> >::type>
+    : std::integral_constant<ListSubType, BLOB_SUBTYPE> {};
+
 
 class PrimitiveTypes
 {

@@ -101,8 +101,8 @@ public:
     typedef DynamicParser<FastBinaryReader&>   Parser;
     typedef FastBinaryWriter<Buffer>           Writer;
 
-    static const uint16_t magic; // = FAST_PROTOCOL
-    static const uint16_t version; // = v1
+    BOND_STATIC_CONSTEXPR uint16_t magic = FAST_PROTOCOL;
+    BOND_STATIC_CONSTEXPR uint16_t version = v1;
 
     /// @brief Construct from input buffer/stream containing serialized data.
     FastBinaryReader(typename boost::call_traits<Buffer>::param_type buffer)
@@ -363,10 +363,10 @@ protected:
 };
 
 template <typename Buffer>
-const uint16_t FastBinaryReader<Buffer>::magic = FAST_PROTOCOL;
+BOND_CONSTEXPR_OR_CONST uint16_t FastBinaryReader<Buffer>::magic;
 
 template <typename Buffer>
-const uint16_t FastBinaryReader<Buffer>::version = v1;
+BOND_CONSTEXPR_OR_CONST uint16_t FastBinaryReader<Buffer>::version;
 
 
 /// @brief Writer for Fast Binary protocol

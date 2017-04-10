@@ -26,8 +26,8 @@ public:
     typedef StaticParser<SimpleBinaryReader&> Parser;
     typedef SimpleBinaryWriter<Buffer>        Writer;
 
-    static const uint16_t magic; // = SIMPLE_PROTOCOL
-    static const uint16_t version = v2;
+    BOND_STATIC_CONSTEXPR uint16_t magic = SIMPLE_PROTOCOL;
+    BOND_STATIC_CONSTEXPR uint16_t version = v2;
 
 
     /// @brief Construct from input buffer/stream containing serialized data.
@@ -207,7 +207,7 @@ protected:
 
 
 template <typename Buffer>
-const uint16_t SimpleBinaryReader<Buffer>::magic = SIMPLE_PROTOCOL;
+BOND_CONSTEXPR_OR_CONST uint16_t SimpleBinaryReader<Buffer>::magic;
 
 
 /// @brief Writer for Simple Binary protocol

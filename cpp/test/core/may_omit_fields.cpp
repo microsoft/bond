@@ -17,18 +17,14 @@ public:
 namespace bond
 {
     // Override optional field omitting for CompactBinary and FastBinary
-    template <> struct 
+    template <> struct
     may_omit_fields<CompactBinaryWriter<MyOutputBuffer> >
-    {
-        static const bool value = false;
-    };
+        : std::false_type {};
 
 
     template <> struct 
     may_omit_fields<FastBinaryWriter<MyOutputBuffer> >
-    {
-        static const bool value = false;
-    };
+        : std::false_type {};
 }
 
 
