@@ -110,6 +110,13 @@ public:
     }
 
     /// @brief Access to underlying buffer
+    typename boost::call_traits<Buffer>::const_reference
+    GetBuffer() const
+    {
+        return _input;
+    }
+
+    /// @brief Access to underlying buffer
     typename boost::call_traits<Buffer>::reference
     GetBuffer()
     {
