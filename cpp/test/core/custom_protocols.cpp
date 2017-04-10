@@ -5,7 +5,7 @@ namespace bond
     // Enable TestReader in this file
     template <typename Buffer> struct 
     is_protocol_enabled<unit_test::TestReader<Buffer> >
-        : std::true_type{};
+        : std::true_type {};
 }
 
 

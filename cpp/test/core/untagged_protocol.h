@@ -20,7 +20,7 @@ public:
     typedef bond::StaticParser<UntaggedProtocolReader&> Parser;
     typedef UntaggedProtocolWriter<Buffer>              Writer;
 
-    static const uint16_t magic = 0xFFFF;
+    BOND_STATIC_CONSTEXPR uint16_t magic = 0xFFFF;
 
     UntaggedProtocolReader(typename boost::call_traits<Buffer>::param_type input)
         : bond::SimpleBinaryReader<Buffer>(input)
