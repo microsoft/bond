@@ -316,9 +316,12 @@ public:
 };
 
 
+namespace detail
+{
+
 template <typename Writer, typename T, typename Reader>
 bool inline
-Apply(const Marshaler<Writer>& marshaler, const bonded<T, Reader>& bonded)
+ApplyTransform(const Marshaler<Writer>& marshaler, const bonded<T, Reader>& bonded)
 {
     return marshaler.Marshal(bonded);
 }
@@ -326,10 +329,12 @@ Apply(const Marshaler<Writer>& marshaler, const bonded<T, Reader>& bonded)
 
 template <typename Writer, typename T>
 bool inline 
-Apply(const Marshaler<Writer>& marshaler, const T& value)
+ApplyTransform(const Marshaler<Writer>& marshaler, const T& value)
 {
     return marshaler.Marshal(value);
 }
+
+} // namespace detail
 
 
 // MarshalTo
