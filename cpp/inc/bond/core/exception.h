@@ -47,7 +47,7 @@ struct CoreException
 };
 
 
-inline void MergerContainerException(uint32_t payload, uint32_t obj)
+BOND_NORETURN inline void MergerContainerException(uint32_t payload, uint32_t obj)
 {
     BOND_THROW(CoreException,
           "Merge failed: container mismatch, length in the payload: "
@@ -56,21 +56,21 @@ inline void MergerContainerException(uint32_t payload, uint32_t obj)
 
 
 template <typename Key>
-inline void ElementNotFoundException(const Key& key)
+BOND_NORETURN inline void ElementNotFoundException(const Key& key)
 {
     BOND_THROW(CoreException,
           "Map element not found: key: " << key);
 }
 
 
-inline void UnknownProtocolException()
+BOND_NORETURN inline void UnknownProtocolException()
 {
     BOND_THROW(CoreException,
           "Unmarshaling failed: unsupported protocol"); 
 }
 
 
-inline void UnknownProtocolException(uint16_t magic)
+BOND_NORETURN inline void UnknownProtocolException(uint16_t magic)
 {
     BOND_THROW(CoreException,
           "Unsupported protocol: " 
@@ -78,28 +78,28 @@ inline void UnknownProtocolException(uint16_t magic)
 }
 
 
-inline void NothingException()
+BOND_NORETURN inline void NothingException()
 {
     BOND_THROW(CoreException,
           "Field value is 'nothing'");
 }
 
 
-inline void InvalidEnumValueException(const char* value, const char* enum_)
+BOND_NORETURN inline void InvalidEnumValueException(const char* value, const char* enum_)
 {
     BOND_THROW(bond::CoreException, 
         "Unexpected value " << value << " for enum " << enum_);
 }
 
 
-inline void InvalidEnumValueException(int32_t value, const char* enum_)
+BOND_NORETURN inline void InvalidEnumValueException(int32_t value, const char* enum_)
 {
     BOND_THROW(bond::CoreException, 
         "Unexpected value " << value << " for enum " << enum_);
 }
 
 
-inline void RapidJsonException(const char* error, size_t offset)
+BOND_NORETURN inline void RapidJsonException(const char* error, size_t offset)
 {
     BOND_THROW(CoreException,
         "JSON parser error: " << error << " at offset " << offset);
@@ -124,6 +124,7 @@ struct SchemaValidateException
 };
 
 
+BOND_NORETURN
 inline void StructBaseDifferentException(const StructDef& src,
                                          const StructDef& dst)
 {
@@ -133,6 +134,7 @@ inline void StructBaseDifferentException(const StructDef& src,
 }
 
 
+BOND_NORETURN
 inline void RequiredFieldMissingException(const StructDef& s_dst,
                                           const FieldDef& f_dst)
 {
@@ -142,6 +144,7 @@ inline void RequiredFieldMissingException(const StructDef& s_dst,
 }
 
 
+BOND_NORETURN
 inline void OptionalToRequiredException(const StructDef& s_src,
                                         const StructDef& s_dst,
                                         const FieldDef& f_src,
@@ -154,6 +157,7 @@ inline void OptionalToRequiredException(const StructDef& s_src,
 }
 
 
+BOND_NORETURN
 inline void FieldTypeIncompatibleException(const StructDef& s_src,
                                            const StructDef& s_dst,
                                            const FieldDef& f_src,
@@ -166,7 +170,7 @@ inline void FieldTypeIncompatibleException(const StructDef& s_src,
 }
 
 
-inline void UnknownSchemaDefException(uint16_t id)
+BOND_NORETURN inline void UnknownSchemaDefException(uint16_t id)
 {
     BOND_THROW(SchemaValidateException, 
         "Failed to validate schema compatibility; "
