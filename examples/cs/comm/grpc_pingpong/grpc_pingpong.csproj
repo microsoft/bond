@@ -29,9 +29,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bond.IO">
-      <HintPath>..\..\..\..\cs\bin\debug\net45\Bond.IO.dll</HintPath>
-    </Reference>
     <Reference Include="Grpc.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d754f35622e28bad, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\cs\packages\Grpc.Core.1.1.0\lib\net45\Grpc.Core.dll</HintPath>
     </Reference>
@@ -59,6 +56,9 @@
     </Reference>
     <Reference Include="Bond">
       <HintPath>$(BOND_BINARY_PATH)\net45\Bond.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.IO">
+      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.IO.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
