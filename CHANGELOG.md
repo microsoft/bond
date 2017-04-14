@@ -26,6 +26,10 @@ different versioning scheme, following the Haskell community's
     * Clang 3.4 or newer
     * GNU C++ 4.7 or newer
     * Microsoft Visual C++ 2013 or newer
+* The `bond::Apply` now has a uniform signature. Users who were calling
+  the overload for `Marshaler<Writer>` transform and were _mistakenly_
+  passing `Writer` explicitly (i.e. `bond::Apply<Writer>(marshaler, value)`)
+  they will get a compile error. To fix, please remove the `<Writer>` part.
 
 ## 5.3.0: 2017-04-12 ##
 * `gbc` & compiler library: 0.9.0.0
