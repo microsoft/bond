@@ -18,8 +18,8 @@ namespace bond
     template <typename BufferT>
     class CompactBinaryReader;
 
-    BOND_STATIC_CONSTEXPR uint16_t v1 = 0x0001;
-    BOND_STATIC_CONSTEXPR uint16_t v2 = 0x0002;
+    BOND_CONSTEXPR_OR_CONST uint16_t v1 = 0x0001;
+    BOND_CONSTEXPR_OR_CONST uint16_t v2 = 0x0002;
 
     template <typename T> struct
     default_version

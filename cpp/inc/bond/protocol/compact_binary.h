@@ -502,8 +502,8 @@ protected:
                                   const CompactBinaryWriter<Output>&);
 };
 
-template <typename Buffer>
-BOND_CONSTEXPR_OR_CONST uint16_t CompactBinaryReader<Buffer>::magic;
+template <typename BufferT>
+BOND_CONSTEXPR_OR_CONST uint16_t CompactBinaryReader<BufferT>::magic;
 
 
 class OutputCounter;
