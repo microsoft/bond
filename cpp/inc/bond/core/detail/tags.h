@@ -35,13 +35,7 @@ struct modifying_transform_tag
 struct Transform
     : detail::nonassignable
 {
-    bool OmittedField(uint16_t /*id*/, const Metadata& /*metadata*/, BondDataType /*type*/) const
-    {
-        return false;
-    }
-
-    template <typename Field>
-    bool OmittedField(const Field&) const
+    bool OmittedField(uint16_t /*id*/, const Metadata& /*metadata*/, BondDataType /*type*/, ...) const
     {
         return false;
     }

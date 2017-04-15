@@ -292,7 +292,7 @@ public:
         return false;
     }
 
-    bool OmittedField(uint16_t id, const Metadata& metadata, BondDataType type) const
+    bool OmittedField(uint16_t id, const Metadata& metadata, BondDataType type...) const
     {
         if (_output._all_fields && !metadata.default_value.nothing)
         {

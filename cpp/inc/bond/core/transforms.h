@@ -126,7 +126,7 @@ public:
 
 
     // omitted field
-    bool OmittedField(uint16_t id, const Metadata& metadata, BondDataType type) const
+    bool OmittedField(uint16_t id, const Metadata& metadata, BondDataType type...) const
     {
         detail::WriteFieldOmitted(_output, type, id, metadata);
         return false;

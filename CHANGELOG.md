@@ -78,6 +78,9 @@ different versioning scheme, following the Haskell community's
     * Support C++11 and above allocator model for rebind
     * Simplify detection of the default allocator
 * Remove per-field instantiation of DynamicParser<>::UnknownFieldOrTypeMismatch method.
+* Replace `is_fast_path_field` with `is_fast_path_type`.
+* Fix `tuple_field::GetVariable()` return type.
+* Remove unnecessary `ParserCommon<>::OmittedField()` instances. 
 
 ## C# ###
 

@@ -427,13 +427,13 @@ is_container
 
 
 template <typename Field, typename Transform, typename Enable = void> struct
-is_fast_path_field
+is_fast_path_type
     : false_type {};
 
 
-template <typename Field, typename Transform> struct
-is_fast_path_field<Field, Transform, typename boost::enable_if<is_same<typename Field::struct_type,
-                                                                       typename Transform::FastPathType> >::type>
+template <typename T, typename Transform> struct
+is_fast_path_type<T, Transform, typename boost::enable_if<is_same<T,
+                                                                  typename Transform::FastPathType> >::type>
      : true_type {};
 
 
