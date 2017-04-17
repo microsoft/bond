@@ -5,9 +5,7 @@ namespace bond
     // Use Simple Protocol v2 by default
     template <typename Buffer> struct
     default_version<SimpleBinaryReader<Buffer> >
-    {
-        static const uint16_t value = 2;
-    };
+        : std::integral_constant<uint16_t, 2> {};
 };
 
 

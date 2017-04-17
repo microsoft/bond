@@ -146,8 +146,8 @@ public:
     typedef DynamicParser<CompactBinaryReader&> Parser;
     typedef CompactBinaryWriter<Buffer>         Writer;
 
-    static const uint16_t magic; // = COMPACT_PROTOCOL
-    static const uint16_t version = v2;
+    BOND_STATIC_CONSTEXPR uint16_t magic = COMPACT_PROTOCOL;
+    BOND_STATIC_CONSTEXPR uint16_t version = v2;
 
     /// @brief Construct from input buffer/stream containing serialized data.
     CompactBinaryReader(typename boost::call_traits<Buffer>::param_type input,
@@ -510,8 +510,8 @@ protected:
                                   const CompactBinaryWriter<Output>&);
 };
 
-template <typename Buffer>
-const uint16_t CompactBinaryReader<Buffer>::magic = COMPACT_PROTOCOL;
+template <typename BufferT>
+BOND_CONSTEXPR_OR_CONST uint16_t CompactBinaryReader<BufferT>::magic;
 
 
 class OutputCounter;

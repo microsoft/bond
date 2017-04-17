@@ -567,7 +567,7 @@ struct Mapping
     Mappings fields;
 };
 
-static const uint16_t mapping_base = invalid_field_id;
+BOND_STATIC_CONSTEXPR uint16_t mapping_base = invalid_field_id;
 
 //
 // MapTo<T> maps the input fields onto an instance of a static bond type T,

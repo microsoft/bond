@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include "config.h"
 #include <stdint.h>
+#include <type_traits>
 
 #define BOND_VERSION 0x0520
 #define BOND_MIN_CODEGEN_VERSION 0x0800
@@ -16,12 +18,10 @@ namespace bond
     template <typename BufferT>
     class CompactBinaryReader;
 
-    static const uint16_t v1 = 0x0001;
-    static const uint16_t v2 = 0x0002;
+    BOND_CONSTEXPR_OR_CONST uint16_t v1 = 0x0001;
+    BOND_CONSTEXPR_OR_CONST uint16_t v2 = 0x0002;
 
     template <typename T> struct
     default_version
-    {
-        static const uint16_t value = v1;
-    };
+        : std::integral_constant<uint16_t, v1> {};
 }
