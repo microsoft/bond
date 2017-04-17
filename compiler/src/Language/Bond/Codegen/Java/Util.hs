@@ -4,17 +4,44 @@
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
 module Language.Bond.Codegen.Java.Util
-    ( defaultValue
+    ( fieldTypeName
+    , defaultValue
     , generatedClassAnnotations
     ) where
 
 import Prelude
-import Data.Text.Lazy (Text)
+import Data.Text.Lazy (Text, pack)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util()
+
+fieldTypeName :: Type -> Text
+fieldTypeName fieldType = pack $ "com.microsoft.bond.BondDataType." ++ case fieldType of
+    BT_Int8                  -> "BT_INT8"
+    BT_Int16                 -> "BT_INT16"
+    BT_Int32                 -> "BT_INT32"
+    BT_Int64                 -> "BT_INT64"
+    BT_UInt8                 -> "BT_UINT8"
+    BT_UInt16                -> "BT_UINT16"
+    BT_UInt32                -> "BT_UINT32"
+    BT_UInt64                -> "BT_UINT64"
+    BT_Float                 -> "BT_FLOAT"
+    BT_Double                -> "BT_DOUBLE"
+    BT_Bool                  -> "BT_BOOL"
+    BT_String                -> "BT_STRING"
+    BT_WString               -> "BT_WSTRING"
+    BT_Blob                  -> "BT_BLOB"
+    BT_Nullable _            -> "BT_LIST"
+    BT_List _                -> "BT_LIST"
+    BT_Vector _              -> "BT_LIST"
+    BT_Set _                 -> "BT_SET"
+    BT_Map _ _               -> "BT_MAP"
+    BT_UserDefined Enum {} _ -> "BT_INT32"
+    BT_UserDefined _ _       -> "BT_STRUCT"
+    -- FIXME: Marker for unsupported types that compiles.
+    _                        -> "BT_UNAVAILABLE"
 
 defaultValue :: MappingContext -> Field -> Maybe Text
 defaultValue java Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
@@ -79,7 +106,6 @@ defaultValue java Field {fieldDefault = (Just def), ..} = explicitDefault def
         strLiteral _ _ = error "Java:Str:defaultValue/floatLiteral: impossible happened."
     explicitDefault DefaultNothing = Just [lt|null|]
     explicitDefault (DefaultEnum x) = Just [lt|#{getTypeName java fieldType}.#{x}|]
-
 
 generatedClassAnnotations :: Text
 generatedClassAnnotations = [lt|@javax.annotation.Generated("gbc")|]

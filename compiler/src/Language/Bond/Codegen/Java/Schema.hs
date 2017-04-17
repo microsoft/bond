@@ -10,25 +10,28 @@ module Language.Bond.Codegen.Java.Schema
 
 import Prelude
 import Data.List (intercalate)
-import Data.Text.Lazy (Text, pack)
+import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Internal (showQualifiedName)
 import Language.Bond.Syntax.Types
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
-import Language.Bond.Codegen.Java.SerializationMethods
+import Language.Bond.Codegen.Java.StaticFields
+import Language.Bond.Codegen.Java.Util
 
 schema :: MappingContext -> Declaration -> Text
 schema java decl@Struct {..} = [lt|
+    // TODO: SchemaDef
     public static final com.microsoft.bond.StructDef #{structDefMember} = new com.microsoft.bond.StructDef();
+    #{newlineSep 1 fieldDefMemberDecl structFields}
 
     static {
         #{structDefMember}.metadata.name = "#{declName}";
         #{structDefMember}.metadata.qualified_name = "#{qualifiedName}";
+        #{structDefMember}.metadata.modifier = com.microsoft.bond.Modifier.Optional;
         #{newlineSep 2 (initAttr structDefMember) declAttributes}
-        // TODO: .metadata.modifier - what should this be for a struct?
         // TODO: .base_def
-        #{doubleLineSep 2 (fieldDef java) structFields}
+        #{doubleLineSep 2 initFieldDef structFields}
     }|]
     where
         qualifiedName = intercalate "." $ getDeclNamespace java decl ++ [declName]
@@ -42,25 +45,32 @@ initAttr target Attribute {..} =
         name = showQualifiedName attrName
         value = attrValue
 
-fieldDef :: MappingContext -> Field -> Text
-fieldDef java field@Field {..} =
-    [lt|final com.microsoft.bond.FieldDef #{fieldDefLocal} = new com.microsoft.bond.FieldDef();
-        #{fieldDefMetadata}.name = "#{fieldName}";
-        // TODO: Do fields have qualified_names?
-        #{newlineSep 2 (initAttr $ pack fieldDefMetadata) fieldAttributes}
-        #{fieldDefLocal}.id = #{fieldOrdinal};
-        #{fieldTypeDef field fieldDefLocal}
-        #{structDefMember}.fields.add(#{fieldDefLocal});|]
-    where
-        fieldDefLocal = fieldName ++ "FieldDef"
-        fieldDefMetadata = fieldDefLocal ++ ".metadata"
+fieldDefMemberDecl :: Field -> Text
+fieldDefMemberDecl field@Field {..} =
+    [lt|private static final com.microsoft.bond.FieldDef #{fieldDefMember field} = new com.microsoft.bond.FieldDef();|]
 
-fieldTypeDef :: Field -> String -> Text
-fieldTypeDef Field {..} fieldDefLocal =
-    [lt|#{fieldDefLocal}.type.id = #{typeName};
+initFieldDef :: Field -> Text
+initFieldDef field@Field {..} =
+    [lt|#{fieldDefMetadata}.name = "#{fieldName}";
+        #{fieldDefMetadata}.qualified_name = "";
+        #{newlineSep 2 (initAttr fieldDefMetadata) fieldAttributes}
+        #{fieldDefRef}.id = #{fieldOrdinal};
+        #{fieldDefRef}.type.id = #{fieldTypeName fieldType};
         // TODO: .type.struct_def
         // TODO: .type.element
         // TODO: .type.key
-        // TODO: .type.bonded|]
+        #{structDefMember}.fields.add(#{fieldDefRef});|]
     where
-        typeName = fieldTypeName fieldType
+        fieldDefRef = fieldDefMember field
+        fieldDefMetadata = [lt|#{fieldDefRef}.metadata|]
+
+-- TODO: Completely wrong. Need singleton typedefs for primitives and complex
+-- ones for structs.
+--elementKeyFieldDef :: Field -> Text -> Text
+--elementKeyFieldDef Field {..} fieldDefRef =
+--    case fieldType of
+--        BT_List e    -> [lt|#{fieldDefRef}.type.element = #{fieldTypeName e};|]
+--        BT_Vector e  -> [lt|#{fieldDefRef}.type.element = #{fieldTypeName e};|]
+--        BT_Set e     -> [lt|#{fieldDefRef}.type.element = #{fieldTypeName e};|]
+--        BT_Map k v   -> [lt|#{fieldDefRef}.type.element = #{fieldTypeName v};|]
+--        _            -> mempty
