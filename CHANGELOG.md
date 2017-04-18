@@ -31,6 +31,9 @@ the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
 `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
 get a compiler error. To fix, remove the `<Writer>` part:
 `bond::Apply(marshaler, value)`.
+* Fixed a bug that caused serialization using
+  `CompactBinaryWriter<OutputCounter>` (to get the expected length of
+  serializing with compact binary) to produced bogus results.
 * Fixed [custom streams](https://microsoft.github.io/bond/manual/bond_cpp.html#custom-streams) support which was broken for some scenarios.
   **Breaking change** Users who are implementing custom streams are now required
   to implement `CreateInputBuffer`, `CreateOutputBuffer` and `GetBufferRange`

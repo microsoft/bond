@@ -514,7 +514,15 @@ template <typename BufferT>
 BOND_CONSTEXPR_OR_CONST uint16_t CompactBinaryReader<BufferT>::magic;
 
 
-class OutputCounter;
+class CompactBinaryCounter
+{
+    template <typename Buffer>
+    friend class CompactBinaryWriter;
+
+private:
+    struct type : OutputCounter // Must be a new type and not an alias.
+    {};
+};
 
 
 /// @brief Writer for Compact Binary Protocol
@@ -536,10 +544,12 @@ class CompactBinaryWriter
         CompactBinaryWriter* writer;
     };
 
+    using Counter = CompactBinaryCounter::type;
+
 public:
-    typedef BufferT                             Buffer;
-    typedef CompactBinaryReader<Buffer>         Reader;
-    typedef CompactBinaryWriter<OutputCounter>  Pass0;
+    typedef BufferT                         Buffer;
+    typedef CompactBinaryReader<Buffer>     Reader;
+    typedef CompactBinaryWriter<Counter>    Pass0;
 
 
     /// @brief Construct from output buffer/stream.
@@ -555,7 +565,7 @@ public:
     }
 
     template<typename T>
-    CompactBinaryWriter(OutputCounter& output,
+    CompactBinaryWriter(Counter& output,
                         const CompactBinaryWriter<T>& pass1)
         : _output(output),
           _version(pass1._version)
@@ -749,13 +759,13 @@ protected:
     template <typename Buffer>
     friend class CompactBinaryWriter;
 
-    void LengthBegin(OutputCounter& counter)
+    void LengthBegin(Counter& counter)
     {
         _stack.push(_lengths.size());
         _lengths.push(counter.GetCount());
     }
 
-    void LengthEnd(OutputCounter& counter)
+    void LengthEnd(Counter& counter)
     {
         uint32_t& length = _lengths[_stack.pop()];
 
