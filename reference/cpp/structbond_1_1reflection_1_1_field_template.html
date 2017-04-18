@@ -92,6 +92,7 @@ $(document).ready(function(){initNavTree('structbond_1_1reflection_1_1_field_tem
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="structbond_1_1reflection_1_1_field_template-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -129,6 +130,12 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:a61f075b758d3a9fdefaffc36e21a0734"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static method returning reference to the field value for a particular object.  <a href="#a61f075b758d3a9fdefaffc36e21a0734">More...</a><br /></td></tr>
 <tr class="separator:a61f075b758d3a9fdefaffc36e21a0734"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:aca3cbd1efd5a34e2208d965ed9602d8e"><td class="memItemLeft" align="right" valign="top">BOND_STATIC_CONSTEXPR uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#aca3cbd1efd5a34e2208d965ed9602d8e">id</a> = field_id</td></tr>
+<tr class="memdesc:aca3cbd1efd5a34e2208d965ed9602d8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static data member equal to the field ordinal.  <a href="#aca3cbd1efd5a34e2208d965ed9602d8e">More...</a><br /></td></tr>
+<tr class="separator:aca3cbd1efd5a34e2208d965ed9602d8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:aef3425067490554d13260a0fbd6277fe"><td class="memItemLeft" align="right" valign="top">static const Metadata &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#aef3425067490554d13260a0fbd6277fe">metadata</a> = *metadata_ptr</td></tr>
@@ -137,9 +144,6 @@ Static Public Attributes</h2></td></tr>
 <tr class="memitem:a32f61cd5d3d0fc4d70988458c2780b46"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structbond_1_1reflection_1_1_field_template.html#aae709b2554b797f5209f8f394284bf1d">field_pointer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a32f61cd5d3d0fc4d70988458c2780b46">field</a> = field_ptr</td></tr>
 <tr class="memdesc:a32f61cd5d3d0fc4d70988458c2780b46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static data member representing the field pointer.  <a href="#a32f61cd5d3d0fc4d70988458c2780b46">More...</a><br /></td></tr>
 <tr class="separator:a32f61cd5d3d0fc4d70988458c2780b46"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ff5e53e60cc1ff3e6c0267c4f7faa8e"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1reflection_1_1_field_template.html#a4ff5e53e60cc1ff3e6c0267c4f7faa8e">id</a> = field_id</td></tr>
-<tr class="memdesc:a4ff5e53e60cc1ff3e6c0267c4f7faa8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static data member equal to the field ordinal.  <a href="#a4ff5e53e60cc1ff3e6c0267c4f7faa8e">More...</a><br /></td></tr>
-<tr class="separator:a4ff5e53e60cc1ff3e6c0267c4f7faa8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt;<br />
@@ -314,24 +318,16 @@ template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename F
 
 </div>
 </div>
-<a class="anchor" id="a4ff5e53e60cc1ff3e6c0267c4f7faa8e"></a>
+<a class="anchor" id="aca3cbd1efd5a34e2208d965ed9602d8e"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::* field_ptr, const bond::Metadata * metadata_ptr&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const uint16_t <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::id = field_id</td>
+          <td class="memname">BOND_STATIC_CONSTEXPR uint16_t <a class="el" href="structbond_1_1reflection_1_1_field_template.html">bond::reflection::FieldTemplate</a>&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;::id = field_id</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Static data member equal to the field ordinal. </p>
