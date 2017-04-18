@@ -18,17 +18,13 @@ void PassThrough(bonded<T, Reader&>& value, Reader& reader, Writer& writer)
 {
     BOOST_STATIC_ASSERT((is_protocol_same<Reader, Writer>::value));
 
-    blob before = GetCurrentBuffer(reader.GetBuffer());
+    auto before = GetCurrentBuffer(reader.GetBuffer());
 
     value.Skip();
 
-    blob after = GetCurrentBuffer(reader.GetBuffer());
+    auto after = GetCurrentBuffer(reader.GetBuffer());
 
-    blob data;
-
-    data.assign(before, 0, before.length() - after.length());
-
-    WriteRawBlob(writer, data);
+    writer.GetBuffer().Write(GetBufferRange(before, after));
 }
 
 }

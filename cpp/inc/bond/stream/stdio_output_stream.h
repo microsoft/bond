@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <bond/core/blob.h>
+#include "output_buffer.h"
 
 namespace bond
 {
@@ -35,6 +36,16 @@ public:
 
 protected:
     FILE* _file;
+
+    // Returns default OutputBuffer since the StdioOutputStream is not capable
+    // of holding a memory buffer.
+    friend OutputBuffer CreateOutputBuffer(const StdioOutputStream& other);
 };
+
+
+inline OutputBuffer CreateOutputBuffer(const StdioOutputStream& /*other*/)
+{
+    return OutputBuffer();
+}
 
 }

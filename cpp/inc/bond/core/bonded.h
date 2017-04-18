@@ -248,7 +248,7 @@ private:
     bool _SelectProtocolAndApply(const Transform& transform) const
     {
         _skip = false;
-        InputBuffer input(detail::ReadBlob(_data));
+        auto input = CreateInputBuffer(_data.GetBuffer(), detail::ReadBlob(_data));
         return SelectProtocolAndApply<typename remove_bonded<T>::type>(input, transform).second;
     }
 

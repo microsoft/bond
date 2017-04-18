@@ -89,6 +89,10 @@ struct VariableUnsignedUnchecked<uint64_t, 56>
 class InputBuffer
 {
 public:
+#if defined(_MSC_VER) && _MSC_VER < 1900
+    using range_type = bond::blob;
+#endif
+
     /// @brief Default constructor
     InputBuffer()
         : _pointer()
@@ -232,11 +236,24 @@ protected:
     uint32_t    _pointer;
 
     friend blob GetCurrentBuffer(const InputBuffer& input);
+
+    // Creates a new input buffer based on existing one. The result does not
+    // need to be the same type. The input blob is determined by what GetBufferRange
+    // returns for the given input buffer. The function is used in the places
+    // where new input buffer needs to be constructed with similar and/or compatible
+    // properties as the original one (e.g. while deserializing bonded<T> for
+    // untagged protocols).
+    friend InputBuffer CreateInputBuffer(const InputBuffer& other, const blob& blob);
 };
 
 inline blob GetCurrentBuffer(const InputBuffer& input)
 {
     return input._blob.range(input._pointer);
+}
+
+inline InputBuffer CreateInputBuffer(const InputBuffer& /*other*/, const blob& blob)
+{
+    return InputBuffer(blob);
 }
 
 } // namespace bond

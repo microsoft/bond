@@ -14,10 +14,9 @@ class blob;
 class InputBuffer;
 class RuntimeSchema;
 
-template <typename Buffer>
 struct ProtocolReader;
 
-template <typename T, typename Reader = ProtocolReader<InputBuffer> >
+template <typename T, typename Reader = ProtocolReader>
 class bonded;
 
 template <typename Reader>

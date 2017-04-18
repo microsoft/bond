@@ -76,6 +76,14 @@
 #define BOND_NO_CXX11_ALLOCATOR
 #endif
 
+#if defined(BOOST_NO_CXX14_RETURN_TYPE_DEDUCTION)
+#define BOND_NO_CXX14_RETURN_TYPE_DEDUCTION
+#endif
+
+#if defined(BOOST_NO_CXX14_GENERIC_LAMBDAS)
+#define BOND_NO_CXX14_GENERIC_LAMBDAS
+#endif
+
 #ifdef _MSC_VER
 #define BOND_CALL       __cdecl
 #define BOND_NO_INLINE  __declspec(noinline)

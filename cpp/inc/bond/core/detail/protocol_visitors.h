@@ -51,23 +51,23 @@ public:
         return false;
     }
 
-    template <template <typename U> class Reader, typename Writer>
+    template <typename Reader, typename Writer>
     static
-    typename boost::enable_if_c<is_protocol_same<Reader<InputBuffer>, Writer>::value
-                             && protocol_has_multiple_versions<Reader<InputBuffer> >::value, bool>::type
-    Apply(const Serializer<Writer>& transform, Reader<InputBuffer>& reader, const Schema& schema, bool base)
+    typename boost::enable_if_c<is_protocol_same<Reader, Writer>::value
+                             && protocol_has_multiple_versions<Reader>::value, bool>::type
+    Apply(const Serializer<Writer>& transform, Reader& reader, const Schema& schema, bool base)
     {
         if (is_protocol_version_same(reader, transform._output))
             return FastPassThrough(reader, transform._output, schema);
         else
-            return typename Reader<InputBuffer>::Parser(reader, base).Apply(transform, schema);
+            return typename Reader::Parser(reader, base).Apply(transform, schema);
     }
 
-    template <template <typename U> class Reader, typename Writer>
+    template <typename Reader, typename Writer>
     static
-    typename boost::enable_if_c<is_protocol_same<Reader<InputBuffer>, Writer>::value
-                             && !protocol_has_multiple_versions<Reader<InputBuffer> >::value, bool>::type
-    Apply(const Serializer<Writer>& transform, Reader<InputBuffer>& reader, const Schema& schema, bool base)
+    typename boost::enable_if_c<is_protocol_same<Reader, Writer>::value
+                             && !protocol_has_multiple_versions<Reader>::value, bool>::type
+    Apply(const Serializer<Writer>& transform, Reader& reader, const Schema& schema, bool base)
     {
         BOOST_VERIFY(!base);
         // Triggering the following assert means that bond::enable_protocol_versions trait is 
@@ -172,15 +172,15 @@ BOND_NO_INLINE void Skip(Reader& reader, const T& bonded, const std::nothrow_t&)
 }
 
 
-template <typename T, typename Buffer>
-inline void Skip(ProtocolReader<Buffer>& /*reader*/, const T& /*bonded*/)
+template <typename T>
+inline void Skip(ProtocolReader& /*reader*/, const T& /*bonded*/)
 {
     // Not skipping for outer structures
 }
 
 
-template <typename T, typename Buffer>
-inline void Skip(ProtocolReader<Buffer>& /*reader*/, const T& /*bonded*/, const std::nothrow_t&)
+template <typename T>
+inline void Skip(ProtocolReader& /*reader*/, const T& /*bonded*/, const std::nothrow_t&)
 {
     // Not skipping for outer structures
 }
@@ -193,8 +193,8 @@ inline bool Parse(const Transform& transform, Reader& reader, const Schema& sche
     return Parser<T, Schema, Transform>::Apply(transform, reader, schema, base);
 }
 
-template <typename T, typename Transform, typename Buffer, typename Schema>
-inline bool Parse(const Transform& transform, ProtocolReader<Buffer> reader, const Schema& schema, const RuntimeSchema* runtime_schema, bool base)
+template <typename T, typename Transform, typename Schema>
+inline bool Parse(const Transform& transform, ProtocolReader reader, const Schema& schema, const RuntimeSchema* runtime_schema, bool base)
 {
     BOOST_VERIFY(!base);
     
@@ -215,29 +215,29 @@ inline bool Parse(const Transform& transform, ProtocolReader<Buffer> reader, con
 }
 
 
-// Visitor which updates in-situ bonded<T> playload by merging it with an object.
+// Visitor which updates in-situ bonded<T> payload by merging it with an object.
 template <typename T, typename Buffer>
 class InsituMerge
     : public boost::static_visitor<>,
       boost::noncopyable
 {
 public:
-    InsituMerge(const T& var, ProtocolReader<Buffer>& reader)
+    InsituMerge(const T& var, ProtocolReader& reader)
         : _var(var),
           _reader(reader)
     {}
 
     
-    template <template <typename U> class Reader>
-    typename boost::enable_if<is_protocol_enabled<typename remove_const<Reader<Buffer> >::type> >::type
-    operator()(Reader<Buffer>& reader) const
+    template <typename Reader>
+    typename boost::enable_if<is_protocol_enabled<typename remove_const<Reader>::type> >::type
+    operator()(Reader& reader) const
     {
-        OutputBuffer merged;
-        typename Reader<OutputBuffer>::Writer writer(merged);
+        Buffer merged;
+        typename get_protocol_writer<Reader, Buffer>::type writer(merged);
         
         Merge(_var, reader, writer);
 
-        _reader = Reader<Buffer>(merged.GetBuffer());
+        _reader = Reader(merged.GetBuffer());
     }
 
     template <typename Reader>
@@ -257,12 +257,12 @@ public:
     
 private:
     const T& _var;
-    ProtocolReader<Buffer>& _reader;
+    ProtocolReader& _reader;
 };
 
 
-template <typename T, typename Buffer>
-inline void Merge(const T& var, ProtocolReader<Buffer>& reader)
+template <typename Buffer = OutputBuffer, typename T>
+inline void Merge(const T& var, ProtocolReader& reader)
 {
     boost::apply_visitor(InsituMerge<T, Buffer>(var, reader), reader.value);
 }
