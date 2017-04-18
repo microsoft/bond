@@ -11,7 +11,6 @@ import Language.Bond.Syntax.Types
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 import Language.Bond.Codegen.Cpp.ApplyOverloads
-import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- | Codegen template for generating /base_name/_apply.cpp containing
 -- definitions of the @Apply@ function overloads for the specified protocols.
@@ -21,15 +20,13 @@ apply_cpp protocols cpp file _imports declarations = ("_apply.cpp", [lt|
 #include "#{file}_apply.h"
 #include "#{file}_reflection.h"
 
-#{CPP.openNamespace cpp}
-    #{newlineSepEnd 1 (applyOverloads protocols cpp attr body) declarations}
-#{CPP.closeNamespace cpp}
+namespace bond
+{
+    #{newlineSepEnd 1 (applyOverloads protocols cpp attr extern) declarations}
+} // namespace bond
 |])
   where
-    body = [lt|
-    {
-        return ::bond::Apply<>(transform, value);
-    }|]
-
     attr = [lt||]
+
+    extern = [lt|template|]
 

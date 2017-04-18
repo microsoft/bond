@@ -78,13 +78,13 @@ ApplyTransform(const Transform& transform, const T& value)
 
 
 template <typename Transform, typename T>
-bool inline Apply(const Transform& transform, T& value)
+bool Apply(const Transform& transform, T& value)
 {
     return detail::ApplyTransform(transform, value);
 }
 
 template <typename Transform, typename T>
-bool inline Apply(const Transform& transform, const T& value)
+bool Apply(const Transform& transform, const T& value)
 {
     return detail::ApplyTransform(transform, value);
 }
