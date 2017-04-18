@@ -31,6 +31,9 @@ the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
 `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
 get a compiler error. To fix, remove the `<Writer>` part:
 `bond::Apply(marshaler, value)`.
+* Fixed a bug that caused serialization using
+  `CompactBinaryWriter<OutputCounter>` (to get the expected length of
+  serializing with compact binary) to produced bogus results.
 
 ## 5.3.0: 2017-04-12 ##
 * `gbc` & compiler library: 0.9.0.0
