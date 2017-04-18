@@ -12,6 +12,18 @@
 
 namespace bond
 {
+namespace detail
+{
+
+template <typename Transform, typename T, typename Reader>
+typename boost::disable_if<need_double_pass<Transform>, bool>::type inline
+ApplyTransform(const Transform& transform, const bonded<T, Reader>& bonded);
+
+template <typename Transform, typename T, typename Reader>
+typename boost::enable_if<need_double_pass<Transform>, bool>::type inline
+ApplyTransform(const Transform& transform, const bonded<T, Reader>& bonded);
+
+} // namespace detail
 
 
 template <typename T, typename Reader, typename Unused = void> struct
@@ -216,11 +228,11 @@ public:
 
     template <typename Transform, typename U, typename ReaderT>
     friend typename boost::disable_if<detail::need_double_pass<Transform>, bool>::type inline
-    Apply(const Transform& transform, const bonded<U, ReaderT>& bonded);
+    detail::ApplyTransform(const Transform& transform, const bonded<U, ReaderT>& bonded);
 
     template <typename Transform, typename U, typename ReaderT>
     friend typename boost::enable_if<detail::need_double_pass<Transform>, bool>::type inline
-    Apply(const Transform& transform, const bonded<U, ReaderT>& bonded);
+    detail::ApplyTransform(const Transform& transform, const bonded<U, ReaderT>& bonded);
 
     template <typename U, typename ReaderT>
     friend class bonded;
