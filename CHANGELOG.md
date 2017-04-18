@@ -35,6 +35,9 @@ the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
 `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
 get a compiler error. To fix, remove the `<Writer>` part:
 `bond::Apply(marshaler, value)`.
+* Fixed a bug that caused serialization using
+  `CompactBinaryWriter<OutputCounter>` (to get the expected length of
+  serializing with compact binary) to produced bogus results.
 * **Breaking change** Generated *_apply.h/.cpp files now contain [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
   of `bond::Apply` instead of overload implementations.
 
