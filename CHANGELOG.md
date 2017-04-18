@@ -19,6 +19,10 @@ different versioning scheme, following the Haskell community's
 * C# NuGet version: TBD
 * C# Comm NuGet version: TBD
 
+### `gbc` and Bond compiler library ###
+
+* C++ codegen now generates [extern templates](http://en.cppreference.com/w/cpp/language/function_template) of `bond::Apply` instead of overloads.
+
 ### C++ ###
 
 * **Breaking change** A C++11 compiler is now required. The minimum
@@ -31,7 +35,8 @@ the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
 `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
 get a compiler error. To fix, remove the `<Writer>` part:
 `bond::Apply(marshaler, value)`.
-* C++ codegen now generates [extern templates](http://en.cppreference.com/w/cpp/language/function_template) of `bond::Apply` instead of overloads.
+* **Breaking change** Generated *_apply.h/.cpp files now contain [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
+  of `bond::Apply` instead of overload implementations.
 
 ## 5.3.0: 2017-04-12 ##
 * `gbc` & compiler library: 0.9.0.0

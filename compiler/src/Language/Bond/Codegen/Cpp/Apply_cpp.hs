@@ -28,5 +28,5 @@ namespace bond
   where
     attr = [lt||]
 
-    extern = [lt|template|]
+    extern = [lt||]
 
