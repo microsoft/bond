@@ -7,9 +7,7 @@ namespace bond
     // version. In this program Simple Protocol will default to version 2.
     template <typename Buffer> struct
     default_version<SimpleBinaryReader<Buffer> >
-    {
-        static const uint16_t value = v2;
-    };
+        : std::integral_constant<uint16_t, v2> {};
 }
 
 #include "protocol_versions_reflection.h"

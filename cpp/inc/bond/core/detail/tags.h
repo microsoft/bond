@@ -14,7 +14,7 @@ struct qualified_name_tag
 {};
 
 
-static const qualified_name_tag qualified_name = {};
+BOND_STATIC_CONSTEXPR qualified_name_tag qualified_name = {};
 
 
 // A serializing transform accepts fields of a structure

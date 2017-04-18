@@ -25,8 +25,8 @@ public:
     typedef SimpleJsonWriter<Buffer>        Writer;
     typedef rapidjson::Value                Field;
 
-    static const uint16_t magic; // = SIMPLE_JSON_PROTOCOL;
-    static const uint16_t version = 0x0001;
+    BOND_STATIC_CONSTEXPR uint16_t magic = SIMPLE_JSON_PROTOCOL;
+    BOND_STATIC_CONSTEXPR uint16_t version = 0x0001;
 
     /// @brief Construct from input buffer/stream containing serialized data.
     SimpleJsonReader(typename boost::call_traits<Buffer>::param_type input)
@@ -185,7 +185,7 @@ private:
 
 
 template <typename Buffer>
-const uint16_t SimpleJsonReader<Buffer>::magic = SIMPLE_JSON_PROTOCOL;
+BOND_CONSTEXPR_OR_CONST uint16_t SimpleJsonReader<Buffer>::magic;
 
 // Disable fast pass-through optimization for Simple JSON
 template <typename Input, typename Output> struct

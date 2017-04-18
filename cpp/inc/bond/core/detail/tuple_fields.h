@@ -17,14 +17,14 @@ struct tuple_field
     typedef reflection::optional_field_modifier field_modifier;
 
     static const Metadata metadata;
-    static const uint16_t id = Id;
+    BOND_STATIC_CONSTEXPR uint16_t id = Id;
 
-    static const value_type& GetVariable(const struct_type& obj)
+    static BOND_CONSTEXPR const value_type& GetVariable(const struct_type& obj)
     {
         return std::get<id>(obj);
     }
 
-    static value_type& GetVariable(struct_type& obj)
+    static BOND_CONSTEXPR value_type& GetVariable(struct_type& obj)
     {
         return std::get<id>(obj);
     }

@@ -32,7 +32,7 @@ namespace unit_test
         typedef bond::DynamicParser<TestReader&> Parser;
         typedef TestWriter<Buffer>               Writer;
 
-        static const uint16_t magic = 0xEEEE;
+        BOND_STATIC_CONSTEXPR uint16_t magic = 0xEEEE;
 
         TestReader(typename boost::call_traits<Buffer>::param_type input)
             : bond::CompactBinaryReader<Buffer>(input)
@@ -163,10 +163,10 @@ namespace bond
 namespace bond
 {
     template <typename Buffer> struct 
-    is_protocol_enabled<UntaggedProtocolReader<Buffer>>
+    is_protocol_enabled<UntaggedProtocolReader<Buffer> >
         : std::true_type {};
 
     template <typename Buffer> struct 
-    is_protocol_enabled<unit_test::TestReader<Buffer>>
+    is_protocol_enabled<unit_test::TestReader<Buffer> >
         : std::true_type {};
 }
