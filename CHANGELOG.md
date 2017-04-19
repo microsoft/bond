@@ -26,6 +26,22 @@ different versioning scheme, following the Haskell community's
     * Clang 3.4 or newer
     * GNU C++ 4.7 or newer
     * Microsoft Visual C++ 2013 or newer
+* **Breaking change** Users who are implementing custom streams are now
+  required to provide the free functions `CreateInputBuffer`,
+  `CreateOutputBuffer` and `GetBufferRange`, depending on which scenarios
+  are used (there will be a corresponding compilation error for each case).
+    * Users who were _mistakenly_ calling `bond::Merge<T>` with explicit an
+      template argument will get a compilation error. To fix, remove
+      the `<T>` part.
+    * In addition, users of MSVC12 are required to define a `range_type`
+      typedef as a return type of corresponding `GetBufferRange` inside
+      their custom input buffer implementation.
+    * Please see
+      [InputBuffer](https://github.com/Microsoft/bond/blob/master/cpp/inc/bond/stream/input_buffer.h),
+      [OutputBuffer](https://github.com/Microsoft/bond/blob/master/cpp/inc/bond/stream/output_buffer.h),
+      and
+      [the bf example](https://github.com/Microsoft/bond/tree/master/examples/cpp/core/bf)
+      for more details.
 * The `bond::Apply` function now has a uniform signature. Call sites for
 the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
 `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
@@ -34,16 +50,9 @@ get a compiler error. To fix, remove the `<Writer>` part:
 * Fixed a bug that caused serialization using
   `CompactBinaryWriter<OutputCounter>` (to get the expected length of
   serializing with compact binary) to produced bogus results.
-* Fixed [custom streams](https://microsoft.github.io/bond/manual/bond_cpp.html#custom-streams) support which was broken for some scenarios.
-  **Breaking change** Users who are implementing custom streams are now required
-  to implement `CreateInputBuffer`, `CreateOutputBuffer` and `GetBufferRange`
-  functions, depending on which scenarios are used (there will be a corresponding
-  compilation error for each case). In addition, users of MSVC12 are required to
-  define a `range_type` typedef as a return type of corresponding `GetBufferRange`
-  inside their custom input buffer implementation. Please, see [InputBuffer](https://github.com/Microsoft/bond/blob/master/cpp/inc/bond/stream/input_buffer.h),
-  [OutputBuffer](https://github.com/Microsoft/bond/blob/master/cpp/inc/bond/stream/output_buffer.h) and [bf](https://github.com/Microsoft/bond/tree/master/examples/cpp/core/bf) example for more details.
-  Users who were _mistakenly_ calling `bond::Merge<T>` with explicit template
-  argument will get a compilation error. To fix, please remove the `<T>` part.
+* Fixed
+  [custom streams](https://microsoft.github.io/bond/manual/bond_cpp.html#custom-streams)
+  support which was broken for some scenarios.
 
 ## 5.3.0: 2017-04-12 ##
 * `gbc` & compiler library: 0.9.0.0

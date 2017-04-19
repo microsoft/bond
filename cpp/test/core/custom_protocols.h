@@ -3,9 +3,11 @@
 #include <bond/core/customize.h>
 #include <bond/protocol/compact_binary.h>
 #include <bond/stream/input_buffer.h>
-#include "untagged_protocol.h"
-#include <boost/mpl/list.hpp>
+
 #include <boost/mpl/joint_view.hpp>
+#include <boost/mpl/list.hpp>
+
+#include "untagged_protocol.h"
 
 namespace unit_test
 {

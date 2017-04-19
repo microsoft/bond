@@ -17,13 +17,13 @@ public:
     StdioOutputStream(FILE* file)
         : _file(file)
     {}
-    
+
     template<typename T>
     void Write(const T& value)
     {
         Write(&value, sizeof(value));
     }
-    
+
     void Write(const blob& buffer)
     {
         Write(buffer.data(), buffer.length());
@@ -37,7 +37,7 @@ public:
 protected:
     FILE* _file;
 
-    // Returns default OutputBuffer since the StdioOutputStream is not capable
+    // Returns a default OutputBuffer since StdioOutputStream is not capable
     // of holding a memory buffer.
     friend OutputBuffer CreateOutputBuffer(const StdioOutputStream& other);
 };

@@ -20,7 +20,7 @@ auto ReadBlob(Reader& reader)
 {
     uint32_t size;
     reader.Read(size);
-    
+
     auto before = GetCurrentBuffer(reader.GetBuffer());
     reader.GetBuffer().Skip(size);
     auto after = GetCurrentBuffer(reader.GetBuffer());

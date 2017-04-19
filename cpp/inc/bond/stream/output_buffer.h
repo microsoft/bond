@@ -353,11 +353,11 @@ protected:
     std::vector<blob, typename detail::rebind_allocator<A, blob>::type> _blobs;
 
 
-    // Creates a new output buffer based on existing one. The result does not
-    // need to be the same type. The function is used in the places where new
-    // output buffer needs to be constructed with similar and/or compatible
-    // properties as the original one (e.g. while serializing bonded<T> for
-    // untagged protocols).
+    // Creates a new output buffer based on an existing one. The result does
+    // not need to be the same type. The function is used in the places
+    // where a new output buffer needs to be constructed with similar and/or
+    // compatible properties as the original one (e.g. while serializing
+    // bonded<T> for untagged protocols).
     friend OutputMemoryStream CreateOutputBuffer(const OutputMemoryStream& other)
     {
         return OutputMemoryStream(
