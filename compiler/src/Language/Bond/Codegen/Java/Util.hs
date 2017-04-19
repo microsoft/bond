@@ -6,10 +6,12 @@
 module Language.Bond.Codegen.Java.Util
     ( fieldTypeName
     , defaultValue
+    , qualifiedName
     , generatedClassAnnotations
     ) where
 
 import Prelude
+import Data.List (intercalate)
 import Data.Text.Lazy (Text, pack)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
@@ -106,6 +108,10 @@ defaultValue java Field {fieldDefault = (Just def), ..} = explicitDefault def
         strLiteral _ _ = error "Java:Str:defaultValue/floatLiteral: impossible happened."
     explicitDefault DefaultNothing = Just [lt|null|]
     explicitDefault (DefaultEnum x) = Just [lt|#{getTypeName java fieldType}.#{x}|]
+
+qualifiedName :: MappingContext -> Declaration -> String
+qualifiedName java s@Struct {..}  = intercalate "." $ getDeclNamespace java s ++ [declName]
+qualifiedName _ _ = error "invalid declaration type for qualifiedName"
 
 generatedClassAnnotations :: Text
 generatedClassAnnotations = [lt|@javax.annotation.Generated("gbc")|]

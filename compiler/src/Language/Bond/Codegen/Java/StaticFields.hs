@@ -5,7 +5,7 @@
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
 module Language.Bond.Codegen.Java.StaticFields
-    ( structDefMember
+    ( schemaDefMember
     , fieldDefMember
     ) where
 
@@ -13,8 +13,8 @@ import Data.Text.Lazy (Text, pack)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
 
-structDefMember :: Text
-structDefMember = pack "STRUCT_DEF"
+schemaDefMember :: Text
+schemaDefMember = pack "SCHEMA"
 
 fieldDefMember :: Field -> Text
 fieldDefMember Field {..} = [lt|#{fieldName}_FIELD_DEF|]

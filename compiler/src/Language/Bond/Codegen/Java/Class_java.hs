@@ -39,9 +39,9 @@ package #{javaPackage};
 #{Java.generatedClassAnnotations}
 public class #{declName}#{params}#{maybe interface baseClass structBase} {
     #{doubleLineSep 1 publicField structFields}
+#{schema java declaration}
 #{serialize_ProtocolWriter java declaration}
 #{marshal_ProtocolWriter}
-#{schema java declaration}
 }|]
             where
                 interface = [lt| implements com.microsoft.bond.BondSerializable|]
