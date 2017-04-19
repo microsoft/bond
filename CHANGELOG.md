@@ -21,7 +21,9 @@ different versioning scheme, following the Haskell community's
 
 ### `gbc` and Bond compiler library ###
 
-* C++ codegen now generates [extern templates](http://en.cppreference.com/w/cpp/language/function_template) of `bond::Apply` instead of overloads.
+* C++ codegen now generates
+  [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
+  of `bond::Apply` instead of overloads.
 
 ### C++ ###
 
@@ -30,6 +32,9 @@ different versioning scheme, following the Haskell community's
     * Clang 3.4 or newer
     * GNU C++ 4.7 or newer
     * Microsoft Visual C++ 2013 or newer
+* **Breaking change** The generated apply.h/.cpp files now contain
+  [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
+  of `bond::Apply` instead of overload implementations.
 * The `bond::Apply` function now has a uniform signature. Call sites for
 the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
 `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
@@ -38,8 +43,6 @@ get a compiler error. To fix, remove the `<Writer>` part:
 * Fixed a bug that caused serialization using
   `CompactBinaryWriter<OutputCounter>` (to get the expected length of
   serializing with compact binary) to produced bogus results.
-* **Breaking change** Generated *_apply.h/.cpp files now contain [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
-  of `bond::Apply` instead of overload implementations.
 
 ## 5.3.0: 2017-04-12 ##
 * `gbc` & compiler library: 0.9.0.0
