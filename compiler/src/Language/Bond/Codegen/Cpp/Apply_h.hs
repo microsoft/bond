@@ -40,5 +40,5 @@ namespace bond
     export_attr = optional (\a -> [lt|#{a}
     |]) export_attribute
 
-    extern = [lt|extern |]
+    extern = "extern "
 

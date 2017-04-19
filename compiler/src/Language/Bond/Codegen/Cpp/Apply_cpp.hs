@@ -26,7 +26,6 @@ namespace bond
 } // namespace bond
 |])
   where
-    attr = [lt||]
-
-    extern = [lt||]
+    attr = ""
+    extern = ""
 

@@ -34,7 +34,8 @@ different versioning scheme, following the Haskell community's
     * Microsoft Visual C++ 2013 or newer
 * **Breaking change** The generated apply.h/.cpp files now contain
   [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
-  of `bond::Apply` instead of overload implementations.
+  of `bond::Apply` instead of overload implementations. Calls to bare `Apply`
+  or `TypeNamespace::Apply` must be changed to `bond::Apply`.
 * The `bond::Apply` function now has a uniform signature. Call sites for
 the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
 `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
