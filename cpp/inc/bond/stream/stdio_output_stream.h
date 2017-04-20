@@ -36,13 +36,11 @@ public:
 
 protected:
     FILE* _file;
-
-    // Returns a default OutputBuffer since StdioOutputStream is not capable
-    // of holding a memory buffer.
-    friend OutputBuffer CreateOutputBuffer(const StdioOutputStream& other);
 };
 
 
+// Returns a default OutputBuffer since StdioOutputStream is not capable
+// of holding a memory buffer.
 inline OutputBuffer CreateOutputBuffer(const StdioOutputStream& /*other*/)
 {
     return OutputBuffer();

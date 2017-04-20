@@ -4,7 +4,7 @@
 #pragma once
 
 #include <bond/core/traits.h>
-#include <bond/core/blob.h>
+#include <bond/stream/stream_interface.h>
 
 namespace bond
 {

@@ -108,9 +108,11 @@ private:
     uint32_t _count;
 };
 
+
 inline OutputCounter CreateOutputBuffer(const OutputCounter& /*other*/)
 {
-    return {};
+    return OutputCounter();
 }
+
 
 } // namespace bond

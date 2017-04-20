@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <bond/stream/output_buffer.h>
+#include <bond/stream/stream_interface.h>
 
 namespace bond
 {

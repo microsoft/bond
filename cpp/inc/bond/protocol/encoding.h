@@ -118,18 +118,6 @@ ReadVariableUnsigned(Buffer& input, T& value)
 }
 
 
-// Returns an object that represents a buffer range. The input arguments are
-// determined by what the GetCurrentBuffer returns for the given input buffer
-// implementation (i.e. not necessarily a blob). The GetBufferRange may return
-// a type different from blob as long as it is understood by the corresponding
-// output buffer associated with the writer (i.e. there is an overloaded Write
-// function that accepts it).
-inline blob GetBufferRange(const blob& begin, const blob& end)
-{
-    return begin.range(0, begin.length() - end.length());
-}
-
-
 // ZigZag encoding
 template<typename T>
 inline

@@ -171,6 +171,7 @@ struct Protocols
 template <typename InputBuffer>
 struct FilteredProtocols
 {
+private:
     template <typename Reader, typename Enable = void> struct
     check_buffer
         : std::false_type {};
@@ -179,6 +180,7 @@ struct FilteredProtocols
     check_buffer<Reader, typename boost::enable_if<std::is_same<typename Reader::Buffer, InputBuffer> >::type>
         : std::true_type {};
 
+public:
     typedef typename boost::mpl::filter_view<Protocols::type, check_buffer<_> >::type type;
 
     typedef typename boost::mpl::begin<type>::type begin;
