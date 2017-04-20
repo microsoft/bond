@@ -9,16 +9,6 @@
 
 #include "untagged_protocol.h"
 
-namespace unit_test
-{
-    class CustomInputBuffer;
-}
-
-namespace bond
-{
-    blob GetCurrentBuffer(const unit_test::CustomInputBuffer& input);
-
-} // namespace bond
 
 namespace unit_test
 {
@@ -126,7 +116,11 @@ namespace unit_test
         }
 
     private:
-        friend bond::blob bond::GetCurrentBuffer(const CustomInputBuffer& input);
+        friend bond::blob GetCurrentBuffer(const CustomInputBuffer& input)
+        {
+            return GetCurrentBuffer(input._buffer);
+        }
+
 
         bond::InputBuffer _buffer;
     };
@@ -134,11 +128,6 @@ namespace unit_test
 
 namespace bond
 {
-    inline blob GetCurrentBuffer(const unit_test::CustomInputBuffer& input)
-    {
-        return GetCurrentBuffer(input._buffer);
-    }
-
     // Add TestReader to the list of protocols used by Bond
     template <> struct
     customize<protocols>
