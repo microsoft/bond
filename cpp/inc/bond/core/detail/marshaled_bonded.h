@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <bond/stream/output_buffer.h>
+#include <bond/stream/stream_interface.h>
 
 namespace bond
 {
@@ -11,28 +11,35 @@ namespace detail
 {
 
 template <typename Reader>
-blob ReadBlob(Reader& reader)
+auto ReadBlob(Reader& reader)
+#if defined(_MSC_VER) && _MSC_VER < 1900
+    -> typename std::remove_reference<typename Reader::Buffer>::type::range_type
+#elif defined(BOND_NO_CXX14_RETURN_TYPE_DEDUCTION)
+    -> decltype(GetBufferRange(GetCurrentBuffer(reader.GetBuffer()), GetCurrentBuffer(reader.GetBuffer())))
+#endif
 {
     uint32_t size;
-    blob buffer;
-
     reader.Read(size);
-    reader.Read(buffer, size);
-    return buffer;
+
+    auto before = GetCurrentBuffer(reader.GetBuffer());
+    reader.GetBuffer().Skip(size);
+    auto after = GetCurrentBuffer(reader.GetBuffer());
+
+    return GetBufferRange(before, after);
 }
 
 
 template <typename T, typename Writer>
 void MarshalToBlob(const T& obj, Writer& writer)
 {
-    OutputBuffer output;
-    CompactBinaryWriter<OutputBuffer> cbw(output);
+    auto output = CreateOutputBuffer(writer.GetBuffer());
+    CompactBinaryWriter<decltype(output)> cbw(output);
 
     Marshal(obj, cbw);
-    blob data = output.GetBuffer();
+    auto data = std::move(output).GetBuffer();
 
-    writer.Write(data.size());
-    writer.Write(data);
+    writer.Write(static_cast<uint32_t>(data.size()));
+    writer.GetBuffer().Write(data);
 }
 
 

@@ -2,9 +2,13 @@
 
 #include <bond/core/customize.h>
 #include <bond/protocol/compact_binary.h>
-#include "untagged_protocol.h"
+#include <bond/stream/input_buffer.h>
+
+#include <boost/mpl/joint_view.hpp>
 #include <boost/mpl/list.hpp>
-#include <boost/mpl/push_front.hpp>
+
+#include "untagged_protocol.h"
+
 
 namespace unit_test
 {
@@ -72,6 +76,54 @@ namespace unit_test
         void WriteStructBegin(const bond::Metadata& /*metadata*/, bool /*base*/)
         {}
     };
+
+    class CustomInputBuffer
+    {
+    public:
+        CustomInputBuffer(const bond::blob& blob)
+            : _buffer{ blob }
+        {}
+
+        bool operator==(const CustomInputBuffer& rhs) const
+        {
+            return _buffer == rhs._buffer;
+        }
+
+        template <typename T>
+        void Read(T& value)
+        {
+            _buffer.Read(value);
+        }
+
+        void Read(void *buffer, uint32_t size)
+        {
+            _buffer.Read(buffer, size);
+        }
+
+        void Read(bond::blob& blob, uint32_t size)
+        {
+            _buffer.Read(blob, size);
+        }
+
+        void Skip(uint32_t size)
+        {
+            _buffer.Skip(size);
+        }
+
+        bool IsEof() const
+        {
+            return _buffer.IsEof();
+        }
+
+    private:
+        friend bond::blob GetCurrentBuffer(const CustomInputBuffer& input)
+        {
+            return GetCurrentBuffer(input._buffer);
+        }
+
+
+        bond::InputBuffer _buffer;
+    };
 }
 
 namespace bond
@@ -83,12 +135,13 @@ namespace bond
         template <typename T> struct
         modify
         {
-            typedef typename boost::mpl::push_front<
-                T, unit_test::TestReader<InputBuffer>
-            >::type type1;
-
-            typedef typename boost::mpl::push_front<
-                type1, UntaggedProtocolReader<InputBuffer>
+             typedef typename boost::mpl::joint_view<
+                boost::mpl::list<
+                    unit_test::TestReader<InputBuffer>,
+                    unit_test::TestReader<unit_test::CustomInputBuffer>,
+                    UntaggedProtocolReader<InputBuffer>
+                >::type,
+                T
             >::type type;
         };
     };
@@ -100,8 +153,11 @@ namespace bond
 
 namespace bond
 {
-    // Enable UntaggedProtocolReader in this file
     template <typename Buffer> struct 
     is_protocol_enabled<UntaggedProtocolReader<Buffer> >
+        : std::true_type {};
+
+    template <typename Buffer> struct 
+    is_protocol_enabled<unit_test::TestReader<Buffer> >
         : std::true_type {};
 }

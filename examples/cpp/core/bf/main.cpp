@@ -144,11 +144,11 @@ void TranscodeFromTo(Reader& reader, Writer& writer, const Options& options)
     if (!options.schema.empty() && !options.schema.front().empty())
     {
         bond::SchemaDef schema(LoadSchema(options.schema.front()));
-        bond::bonded<void, typename bond::ProtocolReader<typename Reader::Buffer> >(reader, bond::RuntimeSchema(schema)).Serialize(writer);
+        bond::bonded<void, bond::ProtocolReader>(reader, bond::RuntimeSchema(schema)).Serialize(writer);
     }
     else
     {
-        bond::bonded<UnknownSchema, typename bond::ProtocolReader<typename Reader::Buffer> >(reader).Serialize(writer);
+        bond::bonded<UnknownSchema, bond::ProtocolReader>(reader).Serialize(writer);
     }
 }
 

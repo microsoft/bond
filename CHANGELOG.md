@@ -19,6 +19,12 @@ different versioning scheme, following the Haskell community's
 * C# NuGet version: TBD
 * C# Comm NuGet version: TBD
 
+### `gbc` and Bond compiler library ###
+
+* C++ codegen now generates
+  [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
+  of `bond::Apply` instead of overloads.
+
 ### C++ ###
 
 * **Breaking change** A C++11 compiler is now required. The minimum
@@ -26,6 +32,26 @@ different versioning scheme, following the Haskell community's
     * Clang 3.4 or newer
     * GNU C++ 4.7 or newer
     * Microsoft Visual C++ 2013 or newer
+* **Breaking change** The generated apply.h/.cpp files now contain
+  [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
+  of `bond::Apply` instead of overload implementations. Calls to bare `Apply`
+  or `TypeNamespace::Apply` must be changed to `bond::Apply`.
+* **Breaking change** Users who are implementing custom streams are now
+  required to provide the free functions `CreateInputBuffer`,
+  `CreateOutputBuffer` and `GetBufferRange`, depending on which scenarios
+  are used (there will be a corresponding compilation error for each case).
+    * Users who were _mistakenly_ calling `bond::Merge<T>` with explicit an
+      template argument will get a compilation error. To fix, remove the
+      `<T>` part.
+    * In addition, users of MSVC12 are required to define a `range_type`
+      typedef as a return type of corresponding `GetBufferRange` inside
+      their custom input buffer implementation.
+    * Please see
+      [InputBuffer](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-9260b18a00d12a6102a69b9fffd7e33f),
+      [OutputBuffer](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-1f15d4c92f87d4bd41f705b20cce80ad),
+      and
+      [the bf example](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-bdda0f39d99280d4858b4453906eea17)
+      for more details.
 * The `bond::Apply` function now has a uniform signature. Call sites for
 the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
 `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
@@ -34,6 +60,9 @@ get a compiler error. To fix, remove the `<Writer>` part:
 * Fixed a bug that caused serialization using
   `CompactBinaryWriter<OutputCounter>` (to get the expected length of
   serializing with compact binary) to produced bogus results.
+* Fixed
+  [custom streams](https://microsoft.github.io/bond/manual/bond_cpp.html#custom-streams)
+  support which was broken for some scenarios.
 * For Visual C++ 2017 compability, RapidJSON v1.0.0 or newer is now
   required. The RapidJSON submodule that Bond uses by default has been
   updated to v1.0.0.

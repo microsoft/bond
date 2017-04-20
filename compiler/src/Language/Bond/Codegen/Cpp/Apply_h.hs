@@ -14,7 +14,6 @@ import Language.Bond.Util
 import Language.Bond.Codegen.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Cpp.ApplyOverloads
-import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- | Codegen template for generating /base_name/_apply.h containing declarations of
 -- <https://microsoft.github.io/bond/manual/bond_cpp.html#optimizing-build-time Apply>
@@ -30,15 +29,15 @@ apply_h protocols export_attribute cpp file imports declarations = ("_apply.h", 
 #include <bond/stream/output_buffer.h>
 #{newlineSep 0 includeImport imports}
 
-#{CPP.openNamespace cpp}
-    #{newlineSepEnd 1 (applyOverloads protocols cpp export_attr semi) declarations}
-#{CPP.closeNamespace cpp}
+namespace bond
+{
+    #{newlineSepEnd 1 (applyOverloads protocols cpp export_attr extern) declarations}
+} // namespace bond
 |])
   where
     includeImport (Import path) = [lt|#include "#{dropExtension path}_apply.h"|]
 
-    export_attr = optional (\a -> [lt|#{a}
-    |]) export_attribute
+    export_attr = optional (\a -> [lt|#{a}|]) export_attribute
 
-    semi = [lt|;|]
+    extern = "extern "
 
