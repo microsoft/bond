@@ -92,6 +92,9 @@ struct FieldTemplate
     /// @brief Static data member describing field metadata
     static const Metadata& metadata;
 
+    /// @brief Static data member representing the field pointer
+    static const field_pointer field;
+
     /// @brief Static data member equal to the field ordinal
     BOND_STATIC_CONSTEXPR uint16_t id = field_id;
 
@@ -122,6 +125,18 @@ template <
     const Metadata* metadata_ptr>
 const bond::Metadata&
     FieldTemplate<field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr>::metadata = *metadata_ptr;
+
+template
+<
+    uint16_t field_id,
+    typename ModifierTag,
+    typename Struct,
+    typename FieldType,
+    FieldType Struct::*field_ptr,
+    const Metadata* metadata_ptr
+>
+const typename FieldTemplate<field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr>::field_pointer
+    FieldTemplate<field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr>::field = field_ptr;
 
 
 template <typename Service, typename Input, typename Result> struct
