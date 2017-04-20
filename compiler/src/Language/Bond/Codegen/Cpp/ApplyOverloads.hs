@@ -28,16 +28,16 @@ applyOverloads protocols cpp attr extern s@Struct {..} | null declParams = [lt|
     // transforms for #{declName}.
     //
 
-    #{extern}template
-    #{attr}bool Apply(const ::bond::To< #{qualifiedName}>& transform,
+    #{extern}template #{attr}
+    bool Apply(const ::bond::To< #{qualifiedName}>& transform,
                const ::bond::bonded< #{qualifiedName}>& value);
 
-    #{extern}template
-    #{attr}bool Apply(const ::bond::InitSchemaDef& transform,
+    #{extern}template #{attr}
+    bool Apply(const ::bond::InitSchemaDef& transform,
                const #{qualifiedName}& value);
 
-    #{extern}template
-    #{attr}bool Apply(const ::bond::Null& transform,
+    #{extern}template #{attr}
+    bool Apply(const ::bond::Null& transform,
                const ::bond::bonded< #{qualifiedName}, ::bond::SimpleBinaryReader< ::bond::InputBuffer>&>& value);
     #{newlineSep 1 applyOverloads' protocols}|]
   where
@@ -52,29 +52,29 @@ applyOverloads protocols cpp attr extern s@Struct {..} | null declParams = [lt|
 
     deserialization (ProtocolWriter _) = mempty
     deserialization (ProtocolReader protocolReader) = [lt|
-    #{extern}template
-    #{attr}bool Apply(const ::bond::To< #{qualifiedName}>& transform,
+    #{extern}template #{attr}
+    bool Apply(const ::bond::To< #{qualifiedName}>& transform,
                const ::bond::bonded< #{qualifiedName}, #{protocolReader}&>& value);
 
-    #{extern}template
-    #{attr}bool Apply(const ::bond::To< #{qualifiedName}>& transform,
+    #{extern}template #{attr}
+    bool Apply(const ::bond::To< #{qualifiedName}>& transform,
                const ::bond::bonded<void, #{protocolReader}&>& value);|]
 
     serialization (ProtocolReader _) _ = mempty
     serialization (ProtocolWriter protocolWriter) transform = [lt|
-    #{extern}template
-    #{attr}bool Apply(const ::bond::#{transform}<#{protocolWriter} >& transform,
+    #{extern}template #{attr}
+    bool Apply(const ::bond::#{transform}<#{protocolWriter} >& transform,
                const #{qualifiedName}& value);
 
-    #{extern}template
-    #{attr}bool Apply(const ::bond::#{transform}<#{protocolWriter} >& transform,
+    #{extern}template #{attr}
+    bool Apply(const ::bond::#{transform}<#{protocolWriter} >& transform,
                const ::bond::bonded< #{qualifiedName}>& value);
     #{newlineSep 1 transcoding protocols}|]
       where
         transcoding (ProtocolWriter _) = mempty
         transcoding (ProtocolReader protocolReader) = [lt|
-    #{extern}template
-    #{attr}bool Apply(const ::bond::#{transform}<#{protocolWriter} >& transform,
+    #{extern}template #{attr}
+    bool Apply(const ::bond::#{transform}<#{protocolWriter} >& transform,
                const ::bond::bonded< #{qualifiedName}, #{protocolReader}&>& value);|]
 
 applyOverloads _ _ _ _ _ = mempty

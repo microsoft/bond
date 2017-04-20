@@ -37,8 +37,7 @@ namespace bond
   where
     includeImport (Import path) = [lt|#include "#{dropExtension path}_apply.h"|]
 
-    export_attr = optional (\a -> [lt|#{a}
-    |]) export_attribute
+    export_attr = optional (\a -> [lt|#{a}|]) export_attribute
 
     extern = "extern "
 
