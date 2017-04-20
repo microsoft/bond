@@ -47,10 +47,10 @@ different versioning scheme, following the Haskell community's
       typedef as a return type of corresponding `GetBufferRange` inside
       their custom input buffer implementation.
     * Please see
-      [InputBuffer](https://github.com/Microsoft/bond/blob/master/cpp/inc/bond/stream/input_buffer.h),
-      [OutputBuffer](https://github.com/Microsoft/bond/blob/master/cpp/inc/bond/stream/output_buffer.h),
+      [InputBuffer](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-9260b18a00d12a6102a69b9fffd7e33f),
+      [OutputBuffer](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-1f15d4c92f87d4bd41f705b20cce80ad),
       and
-      [the bf example](https://github.com/Microsoft/bond/tree/master/examples/cpp/core/bf)
+      [the bf example](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-bdda0f39d99280d4858b4453906eea17)
       for more details.
 * The `bond::Apply` function now has a uniform signature. Call sites for
 the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
