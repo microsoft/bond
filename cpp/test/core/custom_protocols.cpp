@@ -1,14 +1,4 @@
 #include "custom_protocols.h"
-
-namespace bond
-{
-    // Enable TestReader in this file
-    template <typename Buffer> struct 
-    is_protocol_enabled<unit_test::TestReader<Buffer> >
-        : std::true_type {};
-}
-
-
 #include "precompiled.h"
 #include "serialization_test.h"
 
@@ -23,6 +13,16 @@ void CustomProtocolsTests(const char* name)
 }
 
 
+template <uint16_t N, typename Reader, typename Writer>
+void CustomInputBufferTests(const char* name)
+{
+    UnitTestSuite suite(name);
+
+    AddTestCase<TEST_ID(N),
+        AllBindingAndMapping2, Reader, Writer, NestedStruct1, NestedStruct1OptionalBondedView>(suite, "Optional bonded field");
+}
+
+
 void CustomProtocolsTestsInit()
 {
     TEST_COMPACT_BINARY_PROTOCOL(
@@ -30,6 +30,11 @@ void CustomProtocolsTestsInit()
             0x2102,
             unit_test::TestReader<bond::InputBuffer>,
             unit_test::TestWriter<bond::OutputBuffer> >("Custom protocol TestReader");
+
+        CustomInputBufferTests<
+            0x2103,
+            unit_test::TestReader<unit_test::CustomInputBuffer>,
+            unit_test::TestWriter<bond::OutputBuffer> >("Custom protocol TestReader using CustomInputBuffer");
     );
 }
 

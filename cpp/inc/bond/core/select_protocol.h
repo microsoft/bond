@@ -52,7 +52,7 @@ inline std::pair<ProtocolType, bool> NextProtocol(
     {
         return std::make_pair(
             static_cast<ProtocolType>(Reader::magic), 
-            Apply(transform, bonded<T, ProtocolReader<Buffer> >(reader)));
+            Apply(transform, bonded<T, ProtocolReader>(reader)));
     }
     else
     {
@@ -91,7 +91,7 @@ inline std::pair<ProtocolType, bool> NextProtocol(
     {
         return std::make_pair(
             static_cast<ProtocolType>(Reader::magic), 
-            Apply(transform, bonded<void, ProtocolReader<Buffer> >(reader, schema)));
+            Apply(transform, bonded<void, ProtocolReader>(reader, schema)));
     }
     else
     {
@@ -196,8 +196,10 @@ inline bool NextProtocol(
 
     if (Reader::magic == protocol)
     {
-        typename Reader::Writer writer(output);
-        return Apply(Transform<typename Reader::Writer>(writer), value);
+        typedef typename get_protocol_writer<Reader, Buffer>::type Writer;
+
+        Writer writer(output);
+        return Apply(Transform<Writer>(writer), value);
     }
     else
     {
@@ -220,7 +222,7 @@ inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
     Buffer& input,
     const Transform& transform)
 {
-    return detail::NextProtocol<T>(typename Protocols<Buffer>::begin(), typename Protocols<Buffer>::end(), input, transform);
+    return detail::NextProtocol<T>(typename FilteredProtocols<Buffer>::begin(), typename FilteredProtocols<Buffer>::end(), input, transform);
 }
 
 
@@ -231,7 +233,7 @@ inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
     Buffer& input,
     const Transform& transform)
 {
-    return detail::NextProtocol(typename Protocols<Buffer>::begin(), typename Protocols<Buffer>::end(), schema, input, transform);
+    return detail::NextProtocol(typename FilteredProtocols<Buffer>::begin(), typename FilteredProtocols<Buffer>::end(), schema, input, transform);
 }
 
 
@@ -244,8 +246,8 @@ inline bool Apply(
     uint16_t protocol)
 {
     return detail::NextProtocol<T>(
-        typename Protocols<Buffer>::begin(),
-        typename Protocols<Buffer>::end(),
+        typename FilteredProtocols<Buffer>::begin(),
+        typename FilteredProtocols<Buffer>::end(),
         input,
         transform,
         protocol
@@ -262,8 +264,8 @@ inline bool Apply(
     uint16_t protocol)
 {
     return detail::NextProtocol(
-        typename Protocols<Buffer>::begin(),
-        typename Protocols<Buffer>::end(),
+        typename FilteredProtocols<Buffer>::begin(),
+        typename FilteredProtocols<Buffer>::end(),
         schema,
         input,
         transform,
@@ -277,8 +279,8 @@ template <template <typename Writer> class Transform, typename Buffer, typename 
 inline bool Apply(const T& value, Buffer& output, uint16_t protocol)
 {
     return detail::NextProtocol<Transform>(
-        typename Protocols<Buffer>::begin(),
-        typename Protocols<Buffer>::end(),
+        Protocols::begin(),
+        Protocols::end(),
         value,
         output,
         protocol);

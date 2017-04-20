@@ -352,6 +352,17 @@ protected:
     // list of blobs
     std::vector<blob, typename detail::rebind_allocator<A, blob>::type> _blobs;
 
+
+    friend OutputMemoryStream CreateOutputBuffer(const OutputMemoryStream& other)
+    {
+        return OutputMemoryStream(
+            other._bufferSize,
+            static_cast<uint32_t>(other._blobs.capacity()),
+            other._allocator,
+            other._minChainningSize,
+            other._maxChainLength);
+    }
+
 }; // class OutputMemoryStream
 
 

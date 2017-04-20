@@ -368,8 +368,8 @@ private:
             // A workaround for GCC 4.8 which doesn't resolve the Apply overload below properly.
             // Apply<U>(To<U>(obj), input, protocol);
             bond::detail::NextProtocol<U>(
-                typename Protocols<InputBuffer>::begin(),
-                typename Protocols<InputBuffer>::end(),
+                typename FilteredProtocols<InputBuffer>::begin(),
+                typename FilteredProtocols<InputBuffer>::end(),
                 input,
                 To<U>(obj),
                 protocol);
