@@ -14,7 +14,8 @@ namespace detail
 {
 
 template <typename T>
-using always_false = std::false_type;
+struct always_false
+    : std::false_type {};
 
 } // namespace detail
 
