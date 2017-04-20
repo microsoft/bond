@@ -1,6 +1,5 @@
 #include "precompiled.h"
 #include "apply_tests.h"
-#include "apply_test_apply.h"
 #include "apply_test_reflection.h"
 
 void Init(unittest::apply::Struct& obj)
