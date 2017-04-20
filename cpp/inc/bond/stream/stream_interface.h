@@ -5,10 +5,19 @@
 
 #include <bond/core/blob.h>
 #include <boost/static_assert.hpp>
+#include <type_traits>
 
 
 namespace bond
 {
+namespace detail
+{
+
+template <typename T>
+using always_false = std::false_type;
+
+} // namespace detail
+
 
 //
 // input stream concept
@@ -48,7 +57,7 @@ public:
 template <typename InputBuffer>
 inline blob GetCurrentBuffer(const InputBuffer& /*input*/)
 {
-    BOOST_STATIC_ASSERT_MSG(false, "GetCurrentBuffer is undefined.");
+    BOOST_STATIC_ASSERT_MSG(detail::always_false<InputBuffer>::value, "GetCurrentBuffer is undefined.");
 }
 
 
@@ -61,7 +70,7 @@ inline blob GetCurrentBuffer(const InputBuffer& /*input*/)
 template <typename Blob>
 inline Blob GetBufferRange(const Blob& /*begin*/, const Blob& /*end*/)
 {
-    BOOST_STATIC_ASSERT_MSG(false, "GetBufferRange is undefined.");
+    BOOST_STATIC_ASSERT_MSG(detail::always_false<Blob>::value, "GetBufferRange is undefined.");
 }
 
 
@@ -99,7 +108,7 @@ public:
 template <typename OutputBuffer>
 inline OutputBuffer CreateOutputBuffer(const OutputBuffer& /*other*/)
 {
-    BOOST_STATIC_ASSERT_MSG(false, "CreateOutputBuffer is undefined.");
+    BOOST_STATIC_ASSERT_MSG(detail::always_false<OutputBuffer>::value, "CreateOutputBuffer is undefined.");
 }
 
 
