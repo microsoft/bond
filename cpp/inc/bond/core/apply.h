@@ -78,13 +78,15 @@ ApplyTransform(const Transform& transform, const T& value)
 
 
 template <typename Transform, typename T>
-bool Apply(const Transform& transform, T& value)
+typename boost::enable_if<is_modifying_transform<Transform>, bool>::type
+Apply(const Transform& transform, T& value)
 {
     return detail::ApplyTransform(transform, value);
 }
 
 template <typename Transform, typename T>
-bool Apply(const Transform& transform, const T& value)
+typename boost::disable_if<is_modifying_transform<Transform>, bool>::type
+Apply(const Transform& transform, const T& value)
 {
     return detail::ApplyTransform(transform, value);
 }

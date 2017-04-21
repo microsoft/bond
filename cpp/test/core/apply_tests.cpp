@@ -1,6 +1,6 @@
 #include "precompiled.h"
 #include "apply_tests.h"
-#include "apply_test_reflection.h"
+#include "apply_test_apply.h"   // The _reflection.h should not be included.
 
 void Init(unittest::apply::Struct& obj)
 {
