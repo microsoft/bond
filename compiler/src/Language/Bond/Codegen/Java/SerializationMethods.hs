@@ -41,14 +41,15 @@ serialize_ProtocolWriter java declaration = [lt|
         fields = structFields declaration
         writeField field@Field {..} = [lt|
         writer.writeFieldBegin(#{fieldTypeName fieldType}, #{fieldOrdinal}, #{fieldDefMember field}.metadata);
-        #{writeFieldValue java fieldType fieldName}
+        #{writeFieldValue java fieldType fieldName 0}
         writer.writeFieldEnd();|]
 
-writeFieldValue :: MappingContext -> Type -> String -> Text
-writeFieldValue java fieldType fieldName = writeValue java fieldType ("this." ++ fieldName)
+writeFieldValue :: MappingContext -> Type -> String -> Int -> Text
+writeFieldValue java fieldType fieldName depth =
+    writeValue java fieldType ("this." ++ fieldName) depth
 
-writeValue :: MappingContext -> Type -> String -> Text
-writeValue java fieldType varName = case fieldType of
+writeValue :: MappingContext -> Type -> String -> Int -> Text
+writeValue java fieldType varName depth = case fieldType of
     BT_Int8                  -> [lt|writer.writeInt8(#{varName});|]
     BT_Int16                 -> [lt|writer.writeInt16(#{varName});|]
     BT_Int32                 -> [lt|writer.writeInt32(#{varName});|]
@@ -63,38 +64,46 @@ writeValue java fieldType varName = case fieldType of
     BT_String                -> [lt|writer.writeString(#{varName});|]
     BT_WString               -> [lt|writer.writeWString(#{varName});|]
     BT_Blob                  -> [lt|writer.writeBytes(#{varName});|]
-    BT_Nullable e            -> writeNullable java e varName
-    BT_List e                -> writeSequence java e varName
-    BT_Vector e              -> writeSequence java e varName
-    BT_Set e                 -> writeSequence java e varName
-    BT_Map k v               -> writeMap java k v varName
+    BT_Nullable e            -> writeNullable java e varName depth
+    BT_List e                -> writeSequence java e varName depth
+    BT_Vector e              -> writeSequence java e varName depth
+    BT_Set e                 -> writeSequence java e varName depth
+    BT_Map k v               -> writeMap java k v varName depth
     BT_UserDefined Enum {} _ -> [lt|writer.writeInt32(#{varName}.value);|]
     -- FIXME: Recursive types will cause infinite recursion.
     BT_UserDefined _ _       -> [lt|#{varName}.serialize(writer);|]
     _                        -> [lt|// FIXME: Not implemented.|]
 
-writeNullable :: MappingContext -> Type -> String -> Text
-writeNullable java elemType fieldName =
+writeNullable :: MappingContext -> Type -> String -> Int -> Text
+writeNullable java elemType fieldName depth =
     [lt|if (#{fieldName} == null) {
             writer.writeContainerBegin(0, #{fieldTypeName elemType});
         } else {
             writer.writeContainerBegin(1, #{fieldTypeName elemType});
-            #{writeValue java elemType fieldName}
+            #{writeValue java elemType fieldName (depth + 1)}
         }
         writer.writeContainerEnd();|]
 
-writeSequence :: MappingContext -> Type -> String -> Text
-writeSequence java elemType fieldName = [lt|writer.writeContainerBegin(#{fieldName}.size(), #{fieldTypeName elemType});
-        for (#{getTypeName java elemType} e : #{fieldName}) {
-            #{writeValue java elemType "e"}
+writeSequence :: MappingContext -> Type -> String -> Int -> Text
+writeSequence java elemType fieldName depth =
+    [lt|writer.writeContainerBegin(#{fieldName}.size(), #{fieldTypeName elemType});
+        for (#{getTypeName java elemType} #{iterLocal} : #{fieldName}) {
+            #{writeValue java elemType iterLocal (depth + 1)}
         }
         writer.writeContainerEnd();|]
+    where
+        iterLocal = "e" ++ show depth
 
-writeMap :: MappingContext -> Type -> Type -> String -> Text
-writeMap java keyType valueType fieldName = [lt|writer.writeContainerBegin(#{fieldName}.size(), #{fieldTypeName keyType}, #{fieldTypeName valueType});
-        for (java.util.Map.Entry<#{getTypeName javaBoxed keyType}, #{getTypeName javaBoxed valueType}> e : #{fieldName}.entrySet()) {
-            #{writeValue java keyType "e.getKey()"}
-            #{writeValue java valueType "e.getValue()"}
+writeMap :: MappingContext -> Type -> Type -> String -> Int -> Text
+writeMap java keyType valueType fieldName depth =
+    [lt|writer.writeContainerBegin(#{fieldName}.size(), #{fieldTypeName keyType}, #{fieldTypeName valueType});
+        for (java.util.Map.Entry<#{getTypeName javaBoxed keyType}, #{getTypeName javaBoxed valueType}> #{iterLocal} : #{fieldName}.entrySet()) {
+            #{writeValue java keyType iterLocalKey (depth + 1)}
+            #{writeValue java valueType iterLocalValue (depth + 1)}
         }
         writer.writeContainerEnd();|]
-    where javaBoxed = java { typeMapping = javaBoxedTypeMapping }
+    where
+        javaBoxed = java { typeMapping = javaBoxedTypeMapping }
+        iterLocal = "e" ++ show depth
+        iterLocalKey = iterLocal ++ ".getKey()"
+        iterLocalValue = iterLocal ++ ".getValue()"

@@ -85,6 +85,7 @@ initFieldDef :: MappingContext -> Text -> String -> Field -> Text
 initFieldDef java structDefRef structClassName field@Field {..} =
     [lt|#{fieldDefMetadata}.name = "#{fieldName}";
         #{fieldDefMetadata}.qualified_name = "";
+        // TODO: .metadata.qualifier
         #{newlineSep 2 (initAttr fieldDefMetadata) fieldAttributes}
         #{fieldDefRef}.id = #{fieldOrdinal};
         #{initTypeDef java fieldType fieldDefTypeDefRef structClassName}
