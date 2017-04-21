@@ -1,6 +1,7 @@
 #include "precompiled.h"
 #include "apply_tests.h"
-#include "apply_test_apply.h"   // The _reflection.h should not be included.
+#include "apply_test_apply.h"   // Note that we don't want to include apply_test_reflection.h so that
+                                // we only see pre-generated Apply overloads.
 
 void Init(unittest::apply::Struct& obj)
 {
