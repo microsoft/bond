@@ -1,11 +1,15 @@
 cmake_minimum_required (VERSION 3.1)
-project (bond)
 
+project (bond)
 cmake_policy (SET CMP0022 NEW)
 
 set (CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cmake-modules)
+
+# We need to include third-party CMake modules before we configure our own
+# settings so that we don't apply our settings to third-party code.
+include (ThirdParty)
 
 enable_testing()
 
@@ -34,6 +38,7 @@ add_subdirectory (cpp)
 add_subfolder (doc "doc")
 add_python_subdirectory (python)
 add_subdirectory (examples)
+
 
 install (DIRECTORY
     cpp/inc/bond

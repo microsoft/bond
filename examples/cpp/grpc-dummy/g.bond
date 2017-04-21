@@ -1,0 +1,11 @@
+namespace g;
+
+struct Box
+{
+    0: string sf;
+}
+
+service Greeter
+{
+    Box SayHello(Box);
+}
