@@ -6,6 +6,7 @@
 
 module Language.Bond.Codegen.Java.StaticFields
     ( schemaDefMember
+    , structDefMember
     , fieldDefMember
     ) where
 
@@ -15,6 +16,9 @@ import Language.Bond.Syntax.Types
 
 schemaDefMember :: Text
 schemaDefMember = pack "SCHEMA"
+
+structDefMember :: Text
+structDefMember = pack "STRUCT_DEF"
 
 fieldDefMember :: Field -> Text
 fieldDefMember Field {..} = [lt|#{fieldName}_FIELD_DEF|]

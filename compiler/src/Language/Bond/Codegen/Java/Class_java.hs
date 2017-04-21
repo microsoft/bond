@@ -38,8 +38,9 @@ package #{javaPackage};
         typeDefinition Struct {..} = [lt|
 #{Java.generatedClassAnnotations}
 public class #{declName}#{params}#{maybe interface baseClass structBase} {
+#{schemaMembers declaration}
     #{doubleLineSep 1 publicField structFields}
-#{schema java declaration}
+#{schemaStatic java declaration}
 #{serialize_ProtocolWriter java declaration}
 #{marshal_ProtocolWriter}
 }|]

@@ -31,6 +31,8 @@ serialize_ProtocolWriter :: MappingContext -> Declaration -> Text
 serialize_ProtocolWriter java declaration = [lt|
     @Override
     public void serialize(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
+        initSchema();
+
         writer.writeStructBegin(#{schemaDefMember}.structs.get(0).metadata);
         #{newlineSepEnd 2 writeField fields}
         writer.writeStructEnd();
