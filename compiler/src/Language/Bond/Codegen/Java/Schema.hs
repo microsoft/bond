@@ -87,18 +87,17 @@ initFieldDef java structDefRef structClassName field@Field {..} =
         #{fieldDefMetadata}.qualified_name = "";
         #{newlineSep 2 (initAttr fieldDefMetadata) fieldAttributes}
         #{fieldDefRef}.id = #{fieldOrdinal};
-        #{initTypeDef java fieldType fieldDefTypeDefRef structClassName field}
+        #{initTypeDef java fieldType fieldDefTypeDefRef structClassName}
         #{structDefRef}.fields.add(#{fieldDefRef});|]
     where
         fieldDefRef = fieldDefMember field
         fieldDefTypeDefRef = [lt|#{fieldDefRef}.type|]
         fieldDefMetadata = [lt|#{fieldDefRef}.metadata|]
 
-initTypeDef :: MappingContext -> Type -> Text -> String -> Field -> Text
-initTypeDef java (BT_UserDefined decl@Struct {} _) typeDefRef structClassName Field {..} =
-    [lt|#{typeDefRef}.id = #{fieldTypeName fieldType};
+initTypeDef :: MappingContext -> Type -> Text -> String -> Text
+initTypeDef java t@(BT_UserDefined decl@Struct {..} _) typeDefRef structClassName =
+    [lt|#{typeDefRef}.id = #{fieldTypeName t};
         try {
-            //Class<#{fieldClassName}> #{fieldClassLocal} = #{structClassName}.class.getDeclaredField("#{fieldName}").get(new #{structClassName}()).getClass();
             Class<#{fieldClassName}> #{fieldClassLocal} = #{fieldClassName}.class;
             com.microsoft.bond.StructDef #{fieldStructDefLocal} = (com.microsoft.bond.StructDef) (#{fieldClassLocal}.getDeclaredField("#{structDefMember}").get(null));
             #{typeDefRef}.struct_def = com.microsoft.bond.schema.SchemaUtils.add(#{schemaDefMember}, #{fieldStructDefLocal}, #{fieldClassLocal});
@@ -108,25 +107,37 @@ initTypeDef java (BT_UserDefined decl@Struct {} _) typeDefRef structClassName Fi
             throw new RuntimeException(iae);
         }
         // TODO: .type.element
-        // TODO: .type.key|]
+        // TODO: .type.key
+        #{typeDefRef}.bonded_type = false;|]
     where
-        fieldClassLocal = fieldName ++ "StructClass"
-        fieldStructDefLocal = fieldName ++ "StructDef"
+        fieldClassLocal = declName ++ "StructClass"
+        fieldStructDefLocal = declName ++ "StructDef"
         fieldClassName = qualifiedName java decl
 
-initTypeDef _ _ typeDefRef _ Field {..} =
-    [lt|#{typeDefRef}.id = #{fieldTypeName fieldType};
+initTypeDef java t typeDefRef _ =
+    [lt|#{typeDefRef}.id = #{fieldTypeName t};
         #{typeDefRef}.struct_def = 0;
-        // TODO: .type.element
-        // TODO: .type.key|]
+        #{elementTypeDef java t elementTypeDefRef "unusedElement"}
+        #{keyTypeDef java t keyTypeDefRef "unusedKey"}
+        #{typeDefRef}.bonded_type = false;|]
+    where
+        elementTypeDefRef = [lt|#{typeDefRef}.element|]
+        keyTypeDefRef = [lt|#{typeDefRef}.key|]
 
--- TODO: Completely wrong. Need singleton typedefs for primitives and complex
--- ones for structs.
---elementKeyFieldDef :: Field -> Text -> Text
---elementKeyFieldDef Field {..} fieldDefRef =
---    case fieldType of
---        BT_List e    -> [lt|#{fieldDefRef}.type.element = #{fieldTypeName e};|]
---        BT_Vector e  -> [lt|#{fieldDefRef}.type.element = #{fieldTypeName e};|]
---        BT_Set e     -> [lt|#{fieldDefRef}.type.element = #{fieldTypeName e};|]
---        BT_Map k v   -> [lt|#{fieldDefRef}.type.element = #{fieldTypeName v};|]
---        _            -> mempty
+elementTypeDef :: MappingContext -> Type -> Text -> String -> Text
+elementTypeDef java (BT_List e) typeDefRef structClassName =
+    [lt|#{typeDefRef} = new com.microsoft.bond.TypeDef();
+        #{initTypeDef java e typeDefRef structClassName}|]
+-- Every other type with an element is the same as BT_List.
+elementTypeDef j (BT_Maybe e) t s = elementTypeDef j (BT_List e) t s
+elementTypeDef j (BT_Vector e) t s = elementTypeDef j (BT_List e) t s
+elementTypeDef j (BT_Nullable e) t s = elementTypeDef j (BT_List e) t s
+elementTypeDef j (BT_Set e) t s = elementTypeDef j (BT_List e) t s
+elementTypeDef j (BT_Map _ v) t s = elementTypeDef j (BT_List v) t s
+elementTypeDef _ _ typeDefRef _ = [lt|#{typeDefRef} = null;|]
+
+keyTypeDef :: MappingContext -> Type -> Text -> String -> Text
+keyTypeDef java (BT_Map k _) typeDefRef structClassName =
+    [lt|#{typeDefRef} = new com.microsoft.bond.TypeDef();
+        #{initTypeDef java k typeDefRef structClassName}|]
+keyTypeDef _ _ typeDefRef _ = [lt|#{typeDefRef} = null;|]

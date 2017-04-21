@@ -39,6 +39,7 @@ package #{javaPackage};
 #{Java.generatedClassAnnotations}
 public class #{declName}#{params}#{maybe interface baseClass structBase} {
 #{schema java declaration}
+
     #{doubleLineSep 1 publicField structFields}
 #{serialize_ProtocolWriter java declaration}
 #{marshal_ProtocolWriter}
