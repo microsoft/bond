@@ -5,8 +5,7 @@
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
 module Language.Bond.Codegen.Java.Schema
-    ( schemaMembers
-    , schemaStatic
+    ( schema
     ) where
 
 import Prelude
@@ -19,14 +18,8 @@ import Language.Bond.Codegen.Util
 import Language.Bond.Codegen.Java.StaticFields
 import Language.Bond.Codegen.Java.Util
 
-schemaMembers :: Declaration -> Text
-schemaMembers Struct {..} = [lt|
-|]
-
-schemaMembers _ = error "java: Can only generate static schema for struct decls."
-
-schemaStatic :: MappingContext -> Declaration -> Text
-schemaStatic java decl@Struct {..} = [lt|
+schema :: MappingContext -> Declaration -> Text
+schema java decl@Struct {..} = [lt|
     #{schemaDefMemberDecl}
     #{structDefMemberDecl}
     #{newlineSep 1 fieldDefMemberDecl structFields}
@@ -67,7 +60,7 @@ schemaStatic java decl@Struct {..} = [lt|
         structDefRef = structDefMember
         schemaInitField = pack "schemaInitialized"
 
-schemaStatic _ _ = error "java: Can only generate static schema for struct decls."
+schema _ _ = error "java: Can only generate static schema for struct decls."
 
 initAttr :: Text -> Attribute -> Text
 initAttr target Attribute {..} =
