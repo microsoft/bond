@@ -77,16 +77,14 @@ ApplyTransform(const Transform& transform, const T& value)
 } // namespace detail
 
 
-template <typename Transform, typename T>
-typename boost::enable_if<is_modifying_transform<Transform>, bool>::type
-Apply(const Transform& transform, T& value)
+template <typename Transform, typename T, typename boost::enable_if<is_modifying_transform<Transform> >::type* = nullptr>
+bool Apply(const Transform& transform, T& value)
 {
     return detail::ApplyTransform(transform, value);
 }
 
 template <typename Transform, typename T>
-typename boost::disable_if<is_modifying_transform<Transform>, bool>::type
-Apply(const Transform& transform, const T& value)
+bool Apply(const Transform& transform, const T& value)
 {
     return detail::ApplyTransform(transform, value);
 }
