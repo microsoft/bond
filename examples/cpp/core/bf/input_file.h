@@ -51,6 +51,16 @@ public:
         }
     }
 
+#if defined(_MSC_VER) && _MSC_VER < 1900
+    InputFile& operator=(const InputFile& that)
+    {
+        InputFile temp(that);
+        file = std::move(temp.file);
+        name = std::move(temp.name);
+        return *this;
+    }
+#endif
+
     bool operator==(const InputFile& that) const
     {
         return this == &that;
