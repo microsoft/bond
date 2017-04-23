@@ -6,12 +6,11 @@
 namespace bond
 {
 
-template <typename BufferT>
+template <typename BufferT, typename MarshaledBondedProtocolsT>
 template <typename T>
-inline void SimpleBinaryReader<BufferT>::Skip(const bonded<T, SimpleBinaryReader&>& bonded)
+inline void SimpleBinaryReader<BufferT, MarshaledBondedProtocolsT>::Skip(const bonded<T, SimpleBinaryReader&>& bonded)
 {
-    // Skip the structure field-by-field by applying Null transform
-    Apply(Null(), bonded);
+    detail::Skip(bonded);
 }
 
 

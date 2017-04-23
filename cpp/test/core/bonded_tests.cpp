@@ -9,12 +9,12 @@ void BondedVoid(const bond::bonded<void>& bonded, const T& expected)
 
     bonded.Deserialize(value);
 
-    UT_AssertIsTrue(Equal(expected, value));
+    UT_Equal(expected, value);
 
     CopyAndMove(value);
 
     auto value2 = bonded.Deserialize<T>();
-    UT_AssertIsTrue(Equal(expected, value2));
+    UT_Equal(expected, value2);
 }
 
 
@@ -25,12 +25,12 @@ void BondedTyped(const bond::bonded<T>& bonded, const T& expected)
 
     bonded.Deserialize(value);
 
-    UT_AssertIsTrue(Equal(expected, value));
+    UT_Equal(expected, value);
 
     CopyAndMove(value);
 
     auto value2 = bonded.Deserialize();
-    UT_AssertIsTrue(Equal(expected, value2));
+    UT_Equal(expected, value2);
 }
 
 
@@ -41,10 +41,10 @@ void BondedCast(const bond::bonded<T1>& bonded, const T2& expected)
 
     bonded.Deserialize(value);
 
-    UT_AssertIsTrue(Equal(expected, value));
+    UT_Equal(expected, value);
 
     auto value2 = bonded.template Deserialize<T2>();
-    UT_AssertIsTrue(Equal(expected, value2));
+    UT_Equal(expected, value2);
 }
 
 
@@ -103,14 +103,14 @@ TEST_CASE_BEGIN(BondedConstructors)
 
             simple.m_int8++;
 
-            UT_AssertIsTrue(from == from2);
+            UT_Compare(from, from2);
 
             NestedStruct1 to, to2;
 
             SerializeDeserialize<Reader, Writer>(from, to);
             SerializeDeserialize<Reader, Writer>(from2, to2, Reader::version);
 
-            UT_AssertIsTrue(simple != original);
+            UT_NegateCompare(simple, original);
             UT_Equal(to.s, original);
             UT_Equal(to, to2);
         }
@@ -124,14 +124,14 @@ TEST_CASE_BEGIN(BondedConstructors)
 
             simple.m_int8++;
 
-            UT_AssertIsTrue(from == from2);
+            UT_Compare(from, from2);
 
             NestedStruct1 to, to2;
 
             SerializeDeserialize<Reader, Writer>(from, to);
             SerializeDeserialize<Reader, Writer>(from2, to2, Reader::version);
 
-            UT_AssertIsTrue(simple != original);
+            UT_NegateCompare(simple, original);
             UT_Equal(to.s, simple);
             UT_Equal(to, to2);
         }
@@ -147,15 +147,15 @@ TEST_CASE_BEGIN(BondedConstructors)
             simple.m_int8++;
             simple_ptr->m_int16++;
 
-            UT_AssertIsTrue(from == from2);
+            UT_Compare(from, from2);
 
             NestedStruct1 to, to2;
 
             SerializeDeserialize<Reader, Writer>(from, to);
             SerializeDeserialize<Reader, Writer>(from2, to2, Reader::version);
 
-            UT_AssertIsTrue(*simple_ptr != original);
-            UT_AssertIsTrue(*simple_ptr != simple);
+            UT_NegateCompare(*simple_ptr, original);
+            UT_NegateCompare(*simple_ptr, simple);
             UT_Equal(to.s, *simple_ptr);
             UT_Equal(to, to2);
         }
@@ -199,7 +199,7 @@ TEST_CASE_BEGIN(BondedConstructors)
 
         from2 = from;
 
-        UT_AssertIsTrue(from == from2);
+        UT_Compare(from, from2);
 
         NestedWithBase1BaseView to, to2;
 
@@ -261,13 +261,13 @@ TEST_CASE_BEGIN(MarshaledBonded)
         From to;
         UT_AssertIsTrue(bond::Validate(bond::GetRuntimeSchema<From>(), bond::GetRuntimeSchema<From>()));
         bond::Deserialize(reader, to);
-        UT_AssertIsTrue(Equal(from, to));
+        UT_Equal(from, to);
     }
 
     {
         From to;
         bond::Deserialize(reader, to, bond::GetRuntimeSchema<From>());
-        UT_AssertIsTrue(Equal(from, to));
+        UT_Equal(from, to);
     }
 
     // 1.b. Deserialize To
@@ -275,7 +275,7 @@ TEST_CASE_BEGIN(MarshaledBonded)
         To to;
         UT_AssertIsFalse(bond::Validate(bond::GetRuntimeSchema<From>(), bond::GetRuntimeSchema<To>()));
         bond::Deserialize(reader, to, bond::GetRuntimeSchema<From>());
-        UT_AssertIsTrue(Equal(from.field, to.field));
+        UT_Equal(from.field, to.field);
     }
 }
 TEST_CASE_END
@@ -299,13 +299,13 @@ TEST_CASE_BEGIN(MarshaledBondedDerived)
         To to;
         UT_AssertIsTrue(bond::Validate(bond::GetRuntimeSchema<From>(), bond::GetRuntimeSchema<To>()));
         bond::Deserialize(reader, to);
-        UT_AssertIsTrue(Equal(t2, to.field));
+        UT_Equal(t2, to.field);
     }
 
     {
         To to;
         bond::Deserialize(reader, to, bond::GetRuntimeSchema<From>());
-        UT_AssertIsTrue(Equal(t2, to.field));
+        UT_Equal(t2, to.field);
     }
 
     // 1.b. Deserialize T2
@@ -315,7 +315,7 @@ TEST_CASE_BEGIN(MarshaledBondedDerived)
         // to deserialize into instance of T2 directly instead of going via bonded<T2>
         UT_AssertIsFalse(bond::Validate(bond::GetRuntimeSchema<To>(), bond::GetRuntimeSchema<To2>()));
         bond::Deserialize(reader, to, bond::GetRuntimeSchema<To>());
-        UT_AssertIsTrue(Equal(t2, to.field));
+        UT_Equal(t2, to.field);
     }
 }
 TEST_CASE_END

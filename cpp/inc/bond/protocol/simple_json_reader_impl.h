@@ -37,7 +37,7 @@ SimpleJsonReader<BufferT>::FindField(uint16_t id, const Metadata& metadata, Bond
 }
 
 // deserialize std::vector<bool>
-template <typename A, typename T, typename Buffer>
+template <typename Protocols, typename A, typename T, typename Buffer>
 inline void DeserializeContainer(std::vector<bool, A>& var, const T& /*element*/, SimpleJsonReader<Buffer>& reader)
 {
     rapidjson::Value::ConstValueIterator it = reader.ArrayBegin();
@@ -51,7 +51,7 @@ inline void DeserializeContainer(std::vector<bool, A>& var, const T& /*element*/
 
 
 // deserialize blob
-template <typename T, typename Buffer>
+template <typename Protocols, typename T, typename Buffer>
 inline void DeserializeContainer(blob& var, const T& /*element*/, SimpleJsonReader<Buffer>& reader)
 {
     if (uint32_t size = reader.ArraySize())
@@ -71,7 +71,7 @@ inline void DeserializeContainer(blob& var, const T& /*element*/, SimpleJsonRead
 
 
 // deserialize list
-template <typename X, typename T, typename Buffer>
+template <typename Protocols, typename X, typename T, typename Buffer>
 inline typename boost::enable_if<is_list_container<X> >::type
 DeserializeContainer(X& var, const T& element, SimpleJsonReader<Buffer>& reader)
 {
@@ -87,12 +87,12 @@ DeserializeContainer(X& var, const T& element, SimpleJsonReader<Buffer>& reader)
         if (type.ComplexTypeMatch(*it))
         {
             SimpleJsonReader<Buffer> input(reader, *it);
-            DeserializeElement(var, items.next(), detail::MakeValue(input, element));
+            DeserializeElement<Protocols>(var, items.next(), detail::MakeValue(input, element));
         }
         else if (type.BasicTypeMatch(*it))
         {
             SimpleJsonReader<Buffer> input(reader, *it);
-            DeserializeElement(var, items.next(), value<typename element_type<X>::type, SimpleJsonReader<Buffer>&>(input));
+            DeserializeElement<Protocols>(var, items.next(), value<typename element_type<X>::type, SimpleJsonReader<Buffer>&>(input));
         }
         else
         {
@@ -103,7 +103,7 @@ DeserializeContainer(X& var, const T& element, SimpleJsonReader<Buffer>& reader)
 
 
 // deserialize set
-template <typename X, typename T, typename Buffer>
+template <typename Protocols, typename X, typename T, typename Buffer>
 inline typename boost::enable_if<is_set_container<X> >::type
 DeserializeContainer(X& var, const T& element, SimpleJsonReader<Buffer>& reader)
 {
@@ -126,7 +126,7 @@ DeserializeContainer(X& var, const T& element, SimpleJsonReader<Buffer>& reader)
 
 
 // deserialize map
-template <typename X, typename T, typename Buffer>
+template <typename Protocols, typename X, typename T, typename Buffer>
 inline typename boost::enable_if<is_map_container<X> >::type
 DeserializeMap(X& var, BondDataType keyType, const T& element, SimpleJsonReader<Buffer>& reader)
 {
@@ -154,7 +154,7 @@ DeserializeMap(X& var, BondDataType keyType, const T& element, SimpleJsonReader<
         SimpleJsonReader<Buffer> input(reader, *++it);
 
         if (value_type.ComplexTypeMatch(*it))
-            detail::MakeValue(input, element).Deserialize(mapped_at(var, key));
+            detail::MakeValue(input, element).template Deserialize<Protocols>(mapped_at(var, key));
         else
             value<typename element_type<X>::type::second_type, SimpleJsonReader<Buffer>&>(input).Deserialize(mapped_at(var, key));
     }

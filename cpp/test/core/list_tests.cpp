@@ -1,35 +1,33 @@
 #include "precompiled.h"
 #include "serialization_test.h"
 
-namespace unittest
-{
 
-bool operator==(const SimpleListsStruct& left, const SimpleListsStructView& right)
+template <typename Protocols>
+bool Compare(const SimpleListsStruct& left, const SimpleListsStructView& right)
 {
-    return left.l_bool == right.l_bool
-        && left.l_int64 == right.l_int64
-        && left.l_float == right.l_float
-        && left.l_string == right.l_string
-        && left.v_int16 == right.v_int16
-        && Equal(left.v_double, right.v_double)
-        && left.v_string == right.v_string
-        && left.s_uint64 == right.s_uint64
-        && left.s_string == right.s_string
-        && left.m_int8_string == right.m_int8_string
-        && left.m_string_bool == right.m_string_bool;
+    return Compare<Protocols>(left.l_bool, right.l_bool)
+        && Compare<Protocols>(left.l_int64, right.l_int64)
+        && Compare<Protocols>(left.l_float, right.l_float)
+        && Compare<Protocols>(left.l_string, right.l_string)
+        && Compare<Protocols>(left.v_int16, right.v_int16)
+        && Equal<Protocols>(left.v_double, right.v_double)
+        && Compare<Protocols>(left.v_string, right.v_string)
+        && Compare<Protocols>(left.s_uint64, right.s_uint64)
+        && Compare<Protocols>(left.s_string, right.s_string)
+        && Compare<Protocols>(left.m_int8_string, right.m_int8_string)
+        && Compare<Protocols>(left.m_string_bool, right.m_string_bool);
 }
 
-
-bool operator==(const NestedListsStruct& left, const NestedListsStructView& right)
+template <typename Protocols>
+bool Compare(const NestedListsStruct& left, const NestedListsStructView& right)
 {
-    return Equal(left.SLS, right.SLS)
-        && Equal(left.vlSLS, right.vlSLS)
-        && Equal(left.vvNS, right.vvNS)
-        && left.lsb == right.lsb
-        && Equal(left.vmds, right.vmds);
+    return Equal<Protocols>(left.SLS, right.SLS)
+        && Equal<Protocols>(left.vlSLS, right.vlSLS)
+        && Equal<Protocols>(left.vvNS, right.vvNS)
+        && Compare<Protocols>(left.lsb, right.lsb)
+        && Equal<Protocols>(left.vmds, right.vmds);
 }
 
-} // namespace unittest
 
 template <uint16_t N, typename Reader, typename Writer>
 void SimpleListTests(const char* name)

@@ -52,6 +52,10 @@ different versioning scheme, following the Haskell community's
       and
       [the bf example](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-bdda0f39d99280d4858b4453906eea17)
       for more details.
+* **Breaking change** The `bond::customize<protocols>` is removed. All the
+  public API-s that require a protocol list (e.g. `bond::Marshal`) are now
+  accepting an extra template argument `Protocols` which is defaulted to
+  `bond::BuiltInProtocols`. For more details please see [the bf example](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-bdda0f39d99280d4858b4453906eea17).
 * The `bond::Apply` function now has a uniform signature. Call sites for
 the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
 `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now

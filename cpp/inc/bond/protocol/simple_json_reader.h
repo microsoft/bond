@@ -152,21 +152,21 @@ private:
     template <typename Input>
     friend struct base_input;
 
-    template <typename A, typename T, typename Buffer>
+    template <typename Protocols, typename A, typename T, typename Buffer>
     friend void DeserializeContainer(std::vector<bool, A>&, const T&, SimpleJsonReader<Buffer>&);
 
-    template <typename T, typename Buffer>
+    template <typename Protocols, typename T, typename Buffer>
     friend void DeserializeContainer(blob&, const T&, SimpleJsonReader<Buffer>&);
 
-    template <typename X, typename T, typename Buffer>
+    template <typename Protocols, typename X, typename T, typename Buffer>
     friend typename boost::enable_if<is_list_container<X> >::type
     DeserializeContainer(X&, const T&, SimpleJsonReader<Buffer>&);
 
-    template <typename X, typename T, typename Buffer>
+    template <typename Protocols, typename X, typename T, typename Buffer>
     friend typename boost::enable_if<is_set_container<X> >::type
     DeserializeContainer(X&, const T&, SimpleJsonReader<Buffer>&);
 
-    template <typename X, typename T, typename Buffer>
+    template <typename Protocols, typename X, typename T, typename Buffer>
     friend typename boost::enable_if<is_map_container<X> >::type
     DeserializeMap(X&, BondDataType, const T&, SimpleJsonReader<Buffer>&);
 

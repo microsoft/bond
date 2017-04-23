@@ -240,18 +240,19 @@ protected:
     {
         return input._blob.range(input._pointer);
     }
-
-    friend InputBuffer CreateInputBuffer(const InputBuffer& /*other*/, const blob& blob)
-    {
-        return InputBuffer(blob);
-    }
 };
 
+
+inline InputBuffer CreateInputBuffer(const InputBuffer& /*other*/, const blob& blob)
+{
+    return InputBuffer(blob);
+}
 
 inline blob GetBufferRange(const blob& begin, const blob& end)
 {
     return begin.range(0, begin.length() - end.length());
 }
 
+BOND_DEFINE_BUFFER_MAGIC(InputBuffer, 0x4249 /*IB*/);
 
 } // namespace bond

@@ -8,6 +8,7 @@
 #include "bond_fwd.h"
 #include <boost/type_traits/has_nothrow_copy.hpp>
 #include <boost/utility/enable_if.hpp>
+#include <boost/static_assert.hpp>
 
 #ifndef BOND_NO_CXX11_HDR_TYPE_TRAITS
 #   include <type_traits>
@@ -99,9 +100,15 @@ is_protocol_same
     : false_type {};
 
 
-template <template <typename T> class Reader, typename I, template <typename T> class Writer, typename O> struct
-is_protocol_same<Reader<I>, Writer<O> >
-    : is_same<typename Reader<O>::Writer, Writer<O> > {};
+template <template <typename T> class Reader, typename Input, template <typename T> class Writer, typename Output> struct
+is_protocol_same<Reader<Input>, Writer<Output> >
+    : is_same<typename Reader<Output>::Writer, Writer<Output> > {};
+
+
+template <template <typename T, typename U> class Reader, typename Input, typename MarshaledBondedProtocols, template <typename T> class Writer, typename Output> struct
+is_protocol_same<Reader<Input, MarshaledBondedProtocols>, Writer<Output> >
+    : is_same<typename Reader<Output, MarshaledBondedProtocols>::Writer, Writer<Output> > {};
+
 
 // For protocols that have multiple versions, specialize this template...
 template <typename Reader> struct
@@ -167,6 +174,40 @@ uses_marshaled_bonded;
 template <typename T> struct
 is_type_alias
     : is_object<typename aliased_type<T>::type> {};
+
+
+// is_reader
+template <typename Input, typename T = void, typename Enable = void> struct
+is_reader
+    : false_type {};
+
+template <typename Input, typename T> struct
+is_reader<Input&, T>
+    : is_reader<Input, T> {};
+
+template <typename Input, typename T> struct
+is_reader<Input, T, typename boost::enable_if<is_class<typename Input::Parser> >::type>
+    : true_type {};
+
+
+template <typename T> struct
+buffer_magic
+{
+    BOOST_STATIC_ASSERT_MSG(!is_same<T, T>::value, "Undefined buffer.");
+};
+
+template <typename T> struct
+buffer_magic<T&>
+    : buffer_magic<T> {};
+
+
+template <uint16_t Id> struct
+unique_buffer_magic_check;
+
+#define BOND_DEFINE_BUFFER_MAGIC(Buffer, Id) \
+    template <> struct unique_buffer_magic_check<Id> {}; \
+    template <> struct buffer_magic<Buffer> : std::integral_constant<uint16_t, Id> {}
+
 
 namespace detail
 {

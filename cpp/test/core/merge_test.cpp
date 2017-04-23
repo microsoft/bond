@@ -6,10 +6,171 @@
 #include "serialization_test.h"
 
 
-template <typename Reader, typename Writer, typename Payload, typename T>
-void Merging(Payload payload, const T& obj, uint16_t version = bond::v1, bool mergeByDeserialize = true)
+template <typename Reader, typename Writer, typename Protocols = bond::BuiltInProtocols, typename Payload, typename T>
+void Merging(Payload payload, const T& obj, uint16_t version = bond::v1, bool mergeByDeserialize = true);
+
+
+template <typename Reader, typename Writer, typename Payload, typename T, typename Protocols = bond::BuiltInProtocols>
+void MergingRandom()
 {
-    Reader merged = Merge<Reader, Writer>(payload, obj, version);
+    // random values
+    for (uint32_t i = 0; i < c_iterations; ++i)
+    {
+        Merging<Reader, Writer, Protocols>(InitRandom<Payload, Protocols>(), InitRandom<T, Protocols>());
+        Merging<Reader, Writer, Protocols>(InitRandom<Payload, Protocols>(), InitRandom<T, Protocols>(), Reader::version);
+    }
+}
+
+
+template <typename Reader, typename Writer, typename Payload, typename T, typename Protocols = bond::BuiltInProtocols>
+void AllMerging()
+{
+    // default value
+    Merging<Reader, Writer, Protocols>(Payload(), T());
+    Merging<Reader, Writer, Protocols>(Payload(), T(), Reader::version);
+    Merging<Reader, Writer, Protocols>(InitRandom<Payload, Protocols>(), T());
+    Merging<Reader, Writer, Protocols>(InitRandom<Payload, Protocols>(), T(), Reader::version);
+    Merging<Reader, Writer, Protocols>(Payload(), InitRandom<T, Protocols>());
+    Merging<Reader, Writer, Protocols>(Payload(), InitRandom<T, Protocols>(), Reader::version);
+    
+    // random values
+    MergingRandom<Reader, Writer, Payload, T, Protocols>();
+}
+
+
+namespace unittest
+{
+
+template <typename Protocols, typename T1, typename T2>
+typename boost::enable_if<bond::is_container<T1>, bool>::type 
+MergedEqual(const T1& payload, const T1& merged, const T2& obj);
+
+template <typename Protocols, typename T1, typename T2>
+typename boost::disable_if<bond::is_container<T1>, bool>::type 
+MergedEqual(const T1&, const T1&, const T2&)
+{
+    return false;
+}
+
+template <typename Protocols, typename P, typename T1, typename T2, typename T3, typename T4>
+bool MergedEqual(bond::const_enumerator<P>&, const P& map, const std::pair<T1, T2>& p1, const std::pair<T3, T4>& p2)
+{
+    if (!Equal<Protocols>(p1.first, p2.first))
+        return false;
+
+    if (map.end() != map.find(p1.first))
+        return MergedEqual<Protocols>(map.find(p1.first)->second, p1.second, p2.second);
+    else
+        return MergedEqual<Protocols>(typename bond::element_type<P>::type::second_type(), p1.second, p2.second);
+}
+
+
+template <typename Protocols, typename P, typename T1, typename T2>
+bool MergedEqual(bond::const_enumerator<P>& items, const P&, const T1& i1, const T2& i2)
+{
+    if (items.more())
+        return MergedEqual<Protocols>(items.next(), i1, i2);
+    else
+        return MergedEqual<Protocols>(typename bond::element_type<P>::type(), i1, i2);
+}
+
+template <typename Protocols, typename T1, typename T2>
+typename boost::enable_if<bond::is_container<T1>, bool>::type 
+MergedEqual(const T1& payload, const T1& merged, const T2& obj)
+{
+    if (container_size(obj) != container_size(merged))
+        return false;
+
+    bond::const_enumerator<T1> payload_items(payload);
+    bond::const_enumerator<T1> merged_items(merged);
+    bond::const_enumerator<T2> obj_items(obj);
+
+    while (merged_items.more())
+        if (!MergedEqual<Protocols>(payload_items, payload, merged_items.next(), obj_items.next()))
+            return false;
+
+    return true;
+}
+
+template <typename Protocols>
+bool MergedEqual(const SimpleListsStruct& payload, const SimpleListsStruct& merged, const SimpleListsStructView& obj)
+{
+    return Compare<Protocols>(merged.l_bool, obj.l_bool)
+        && Compare<Protocols>(merged.l_int64, obj.l_int64)
+        && Compare<Protocols>(merged.l_float, obj.l_float)
+        && Compare<Protocols>(merged.l_string, obj.l_string)
+        && Compare<Protocols>(merged.v_int16, obj.v_int16)
+        && Compare<Protocols>(merged.v_double, obj.v_double)
+        && Compare<Protocols>(merged.v_string, obj.v_string)
+        && Compare<Protocols>(merged.s_uint64, obj.s_uint64)
+        && Compare<Protocols>(merged.s_string, obj.s_string)
+        && Compare<Protocols>(merged.m_int8_string, obj.m_int8_string)
+        && Compare<Protocols>(merged.m_string_bool, obj.m_string_bool)
+
+        && Compare<Protocols>(merged.l_uint32, payload.l_uint32)
+        && Compare<Protocols>(merged.l_int16, payload.l_int16)
+        && Compare<Protocols>(merged.v_bool, payload.v_bool)
+        && Compare<Protocols>(merged.v_uint8, payload.v_uint8)
+        && Compare<Protocols>(merged.v_int64, payload.v_int64)
+        && Compare<Protocols>(merged.s_bool, payload.s_bool)
+        && Compare<Protocols>(merged.s_float, payload.s_float)
+        && Compare<Protocols>(merged.m_float_uint16, payload.m_float_uint16);
+}
+
+template <typename Protocols>
+bool MergedEqual(const NestedStruct& payload, const NestedStruct& merged, const NestedStructView& obj)
+{
+    return Compare<Protocols>(merged.m_int8, obj.m_int8)
+        && Compare<Protocols>(merged.n1, obj.n1)
+        && Compare<Protocols>(merged.m_int16, obj.m_int16)
+
+        && Compare<Protocols>(merged.n3, payload.n3)
+        && Compare<Protocols>(merged.m_bool, payload.m_bool)
+        && Compare<Protocols>(merged.n2, payload.n2)
+        && Compare<Protocols>(merged.m_int32, payload.m_int32)
+        && Compare<Protocols>(merged.m_int64, payload.m_int64)
+        && Compare<Protocols>(merged.m_uint8, payload.m_uint8)
+        && Compare<Protocols>(merged.m_uint16, payload.m_uint16)
+        && Compare<Protocols>(merged.m_uint32, payload.m_uint32)
+        && Compare<Protocols>(merged.m_uint64, payload.m_uint64)
+        && Compare<Protocols>(merged.m_double, payload.m_double)
+        && Compare<Protocols>(merged.m_float, payload.m_float)
+        && Compare<Protocols>(merged.m_enum1, payload.m_enum1)
+        && Compare<Protocols>(merged.m_str, payload.m_str);
+}
+
+template <typename Protocols>
+bool MergedEqual(const NestedMaps& payload, const NestedMaps& merged, const NestedMapsView& obj)
+{
+    return Equal<Protocols>(payload.m64ls, merged.m64ls)
+
+        && MergedEqual<Protocols>(payload.msSLS, merged.msSLS, obj.msSLS)
+        && MergedEqual<Protocols>(payload.m32lNS, merged.m32lNS, obj.m32lNS);
+}
+
+template <typename Protocols>
+bool MergedEqual(const NestedListsStruct& payload, const NestedListsStruct& merged, const NestedListsView& obj)
+{
+    return Equal<Protocols>(payload.ll8, merged.ll8)
+        && Equal<Protocols>(payload.lvls, merged.lvls)
+        && Equal<Protocols>(payload.SLS, merged.SLS)
+        && Equal<Protocols>(payload.vf, merged.vf)
+        && Equal<Protocols>(payload.vss, merged.vss)
+        && Equal<Protocols>(payload.lsb, merged.lsb)
+        && Equal<Protocols>(payload.m64ls, merged.m64ls)
+        && Equal<Protocols>(payload.vmds, merged.vmds)
+
+        && MergedEqual<Protocols>(payload.lSLS, merged.lSLS, obj.lSLS)
+        && MergedEqual<Protocols>(payload.vlSLS, merged.vlSLS, obj.vlSLS)
+        && MergedEqual<Protocols>(payload.vvNS, merged.vvNS, obj.vvNS);
+}
+
+} // namespace unittest
+
+template <typename Reader, typename Writer, typename Protocols, typename Payload, typename T>
+void Merging(Payload payload, const T& obj, uint16_t version, bool mergeByDeserialize)
+{
+    Reader merged = Merge<Reader, Writer, Protocols>(payload, obj, version);
 
     // Deserialize merged into T and compare against obj
     {
@@ -25,13 +186,13 @@ void Merging(Payload payload, const T& obj, uint16_t version = bond::v1, bool me
 #endif
 
         {
-            to = InitRandom<T>();
+            to = InitRandom<T, Protocols>();
             Fixup(to);
         }
 
-        Deserialize(merged, to);
+        bond::Deserialize<Protocols>(merged, to);
 
-        UT_AssertIsTrue(Equal(obj, to));
+        UT_Equal_P(obj, to, Protocols);
     }
 
     // Deserialize merged into Payload and compare against combination of the 
@@ -48,183 +209,26 @@ void Merging(Payload payload, const T& obj, uint16_t version = bond::v1, bool me
 #pragma warning(pop)
 #endif
         {
-            to = InitRandom<Payload>();
+            to = InitRandom<Payload, Protocols>();
             Fixup(to);
         }
         
-        Deserialize(merged, to);
+        bond::Deserialize<Protocols>(merged, to);
 
         if (mergeByDeserialize)
         {
             // Will fail an assert without
             // #define BOND_UNIT_TEST_ONLY_PERMIT_OBJECT_REUSE
-            Deserialize(Serialize<Reader, Writer>(obj, version), payload);
+            bond::Deserialize<Protocols>(Serialize<Reader, Writer, Protocols>(obj, version), payload);
 
-            UT_AssertIsTrue(Equal(payload, to));
+            UT_Equal_P(payload, to, Protocols);
         }
         else
         {
-            UT_AssertIsTrue(MergedEqual(payload, to, obj));
+            UT_AssertIsTrue(unittest::MergedEqual<Protocols>(payload, to, obj));
         }
     }
 }
-
-
-template <typename Reader, typename Writer, typename Payload, typename T>
-void MergingRandom()
-{
-    // random values
-    for (uint32_t i = 0; i < c_iterations; ++i)
-    {
-        Merging<Reader, Writer>(InitRandom<Payload>(), InitRandom<T>());
-        Merging<Reader, Writer>(InitRandom<Payload>(), InitRandom<T>(), Reader::version);
-    }
-}
-
-
-template <typename Reader, typename Writer, typename Payload, typename T>
-void AllMerging()
-{
-    // default value
-    Merging<Reader, Writer>(Payload(), T());
-    Merging<Reader, Writer>(Payload(), T(), Reader::version);
-    Merging<Reader, Writer>(InitRandom<Payload>(), T());
-    Merging<Reader, Writer>(InitRandom<Payload>(), T(), Reader::version);
-    Merging<Reader, Writer>(Payload(), InitRandom<T>());
-    Merging<Reader, Writer>(Payload(), InitRandom<T>(), Reader::version);
-    
-    // random values
-    MergingRandom<Reader, Writer, Payload, T>();
-}
-
-
-namespace unittest
-{
-
-template <typename T1, typename T2>
-typename boost::enable_if<bond::is_container<T1>, bool>::type 
-MergedEqual(const T1& payload, const T1& merged, const T2& obj);
-
-template <typename T1, typename T2>
-typename boost::disable_if<bond::is_container<T1>, bool>::type 
-MergedEqual(const T1&, const T1&, const T2&)
-{
-    return false;
-}
-
-template <typename P, typename T1, typename T2, typename T3, typename T4>
-bool MergedEqual(bond::const_enumerator<P>&, const P& map, const std::pair<T1, T2>& p1, const std::pair<T3, T4>& p2)
-{
-    if (!Equal(p1.first, p2.first))
-        return false;
-
-    if (map.end() != map.find(p1.first))
-        return MergedEqual(map.find(p1.first)->second, p1.second, p2.second);
-    else
-        return MergedEqual(typename bond::element_type<P>::type::second_type(), p1.second, p2.second);
-}
-
-
-template <typename P, typename T1, typename T2>
-bool MergedEqual(bond::const_enumerator<P>& items, const P&, const T1& i1, const T2& i2)
-{
-    if (items.more())
-        return MergedEqual(items.next(), i1, i2);
-    else
-        return MergedEqual(typename bond::element_type<P>::type(), i1, i2);
-}
-
-template <typename T1, typename T2>
-typename boost::enable_if<bond::is_container<T1>, bool>::type 
-MergedEqual(const T1& payload, const T1& merged, const T2& obj)
-{
-    if (container_size(obj) != container_size(merged))
-        return false;
-
-    bond::const_enumerator<T1> payload_items(payload);
-    bond::const_enumerator<T1> merged_items(merged);
-    bond::const_enumerator<T2> obj_items(obj);
-
-    while (merged_items.more())
-        if (!MergedEqual(payload_items, payload, merged_items.next(), obj_items.next()))
-            return false;
-
-    return true;
-}
-
-bool MergedEqual(const SimpleListsStruct& payload, const SimpleListsStruct& merged, const SimpleListsStructView& obj)
-{
-    return merged.l_bool == obj.l_bool
-        && merged.l_int64 == obj.l_int64
-        && merged.l_float == obj.l_float
-        && merged.l_string == obj.l_string
-        && merged.v_int16 == obj.v_int16
-        && merged.v_double == obj.v_double
-        && merged.v_string == obj.v_string
-        && merged.s_uint64 == obj.s_uint64
-        && merged.s_string == obj.s_string
-        && merged.m_int8_string == obj.m_int8_string
-        && merged.m_string_bool == obj.m_string_bool
-
-        && merged.l_uint32 == payload.l_uint32
-        && merged.l_int16 == payload.l_int16
-        && merged.v_bool == payload.v_bool
-        && merged.v_uint8 == payload.v_uint8
-        && merged.v_int64 == payload.v_int64
-        && merged.s_bool == payload.s_bool
-        && merged.s_float == payload.s_float
-        && merged.m_float_uint16 == payload.m_float_uint16;
-}
-
-
-bool MergedEqual(const NestedStruct& payload, const NestedStruct& merged, const NestedStructView& obj)
-{
-    return merged.m_int8 == obj.m_int8
-        && merged.n1 == obj.n1
-        && merged.m_int16 == obj.m_int16
-
-        && merged.n3 == payload.n3
-        && merged.m_bool == payload.m_bool
-        && merged.n2 == payload.n2
-        && merged.m_int32 == payload.m_int32
-        && merged.m_int64 == payload.m_int64
-        && merged.m_uint8 == payload.m_uint8
-        && merged.m_uint16 == payload.m_uint16
-        && merged.m_uint32 == payload.m_uint32
-        && merged.m_uint64 == payload.m_uint64
-        && merged.m_double == payload.m_double
-        && merged.m_float == payload.m_float
-        && merged.m_enum1 == payload.m_enum1
-        && merged.m_str == payload.m_str;
-}
-
-
-bool MergedEqual(const NestedMaps& payload, const NestedMaps& merged, const NestedMapsView& obj)
-{
-    return Equal(payload.m64ls, merged.m64ls)
-
-        && MergedEqual(payload.msSLS, merged.msSLS, obj.msSLS)
-        && MergedEqual(payload.m32lNS, merged.m32lNS, obj.m32lNS);
-}
-
-
-bool MergedEqual(const NestedListsStruct& payload, const NestedListsStruct& merged, const NestedListsView& obj)
-{
-    return Equal(payload.ll8, merged.ll8)
-        && Equal(payload.lvls, merged.lvls)
-        && Equal(payload.SLS, merged.SLS)
-        && Equal(payload.vf, merged.vf)
-        && Equal(payload.vss, merged.vss)
-        && Equal(payload.lsb, merged.lsb)
-        && Equal(payload.m64ls, merged.m64ls)
-        && Equal(payload.vmds, merged.vmds)
-
-        && MergedEqual(payload.lSLS, merged.lSLS, obj.lSLS)
-        && MergedEqual(payload.vlSLS, merged.vlSLS, obj.vlSLS)
-        && MergedEqual(payload.vvNS, merged.vvNS, obj.vvNS);
-}
-
-} // namespace unittest
 
 
 class ModifyContainers

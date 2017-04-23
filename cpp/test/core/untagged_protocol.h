@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bond/core/null.h>
+#include <bond/core/detail/protocol_visitors.h>
 #include <bond/protocol/simple_binary.h>
 
 #include <stack>
@@ -12,9 +13,9 @@
 template <typename Buffer>
 class UntaggedProtocolWriter;
 
-template <typename Buffer>
+template <typename Buffer, typename MarshaledBondedProtocols = bond::Protocols<bond::CompactBinaryReader<Buffer> > >
 class UntaggedProtocolReader
-    : public bond::SimpleBinaryReader<Buffer>
+    : public bond::SimpleBinaryReader<Buffer, MarshaledBondedProtocols>
 {
 public:
     typedef bond::StaticParser<UntaggedProtocolReader&> Parser;
@@ -23,7 +24,7 @@ public:
     BOND_STATIC_CONSTEXPR uint16_t magic = 0xFFFF;
 
     UntaggedProtocolReader(typename boost::call_traits<Buffer>::param_type input)
-        : bond::SimpleBinaryReader<Buffer>(input)
+        : bond::SimpleBinaryReader<Buffer, MarshaledBondedProtocols>(input)
     {}
 
     bool ReadVersion()
@@ -37,13 +38,12 @@ public:
             && this->_version <= UntaggedProtocolReader::version;
     }
 
-    using bond::SimpleBinaryReader<Buffer>::Skip;
+    using bond::SimpleBinaryReader<Buffer, MarshaledBondedProtocols>::Skip;
 
     template <typename T>
     void Skip(const bond::bonded<T, UntaggedProtocolReader&>& bonded)
     {
-        // Skip the structure field-by-field by applying Null transform
-        Apply(bond::Null(), bonded);
+        bond::detail::Skip(bonded);
     }
 
     // ReadStructBegin

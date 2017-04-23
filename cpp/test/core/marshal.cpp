@@ -9,16 +9,16 @@ void MarshalingTest(uint16_t version = bond::v1)
     typename Writer::Buffer output_buffer;
     
     Factory<Writer>::Call(output_buffer, version, boost::bind(
-        bond::Marshal<T, Writer>, from, _1));
+        bond::Marshal<bond::BuiltInProtocols, T, Writer>, from, _1));
     
     T to;
     bond::InputBuffer input(output_buffer.GetBuffer());
     
     bond::Unmarshal(input, to);
-    UT_AssertIsTrue(from == to);
+    UT_Compare(from, to);
 
     auto to2 = bond::Unmarshal<T>(input);
-    UT_AssertIsTrue(from == to2);
+    UT_Compare(from, to2);
 }
 
 
@@ -38,7 +38,7 @@ void TranscodingTest(uint16_t version = bond::v1)
     typename Writer::Buffer output_buffer;
 
     Factory<Writer>::Call(output_buffer, version, boost::bind(
-        bond::Marshal<T, Writer>, from, _1));
+        bond::Marshal<bond::BuiltInProtocols, T, Writer>, from, _1));
     
     // Trans-marshal to Simple Protocol using runtime schema
     bond::OutputBuffer simple_buffer;
@@ -58,7 +58,7 @@ void TranscodingTest(uint16_t version = bond::v1)
         {
             bond::InputBuffer input(simple_buffer.GetBuffer());
 	    Factory<Writer>::Call(writer_buffer, version, boost::bind(
-                 bond::SelectProtocolAndApply<T, bond::InputBuffer, bond::Marshaler<Writer> >, input, boost::bind(bond::MarshalTo<Writer>, _1)));
+                 bond::SelectProtocolAndApply<T, bond::BuiltInProtocols, bond::InputBuffer, bond::Marshaler<Writer> >, input, boost::bind(bond::MarshalTo<bond::BuiltInProtocols, Writer>, _1)));
         }
 
         T to;
@@ -66,7 +66,7 @@ void TranscodingTest(uint16_t version = bond::v1)
         bond::InputBuffer input(writer_buffer.GetBuffer());
         Unmarshal(input, to);
 
-        UT_AssertIsTrue(from == to);
+        UT_Compare(from, to);
     }
 
     {
@@ -76,7 +76,7 @@ void TranscodingTest(uint16_t version = bond::v1)
         {
             bond::InputBuffer input(simple_buffer.GetBuffer());
 	    Factory<Writer>::Call(writer_buffer, version, boost::bind(
-                 bond::SelectProtocolAndApply<bond::InputBuffer, bond::Marshaler<Writer> >, bond::GetRuntimeSchema<T>(), input, boost::bind(bond::MarshalTo<Writer>, _1)));
+                 bond::SelectProtocolAndApply<bond::BuiltInProtocols, bond::InputBuffer, bond::Marshaler<Writer> >, bond::GetRuntimeSchema<T>(), input, boost::bind(bond::MarshalTo<bond::BuiltInProtocols, Writer>, _1)));
         }
 
         T to;
@@ -84,7 +84,7 @@ void TranscodingTest(uint16_t version = bond::v1)
         bond::InputBuffer input(writer_buffer.GetBuffer());
         Unmarshal(input, to);
 
-        UT_AssertIsTrue(from == to);
+        UT_Compare(from, to);
     }
 }
 
@@ -118,7 +118,7 @@ TEST_CASE_BEGIN(MapTo)
         bond::InputBuffer input(output_buffer.GetBuffer());
         bond::SelectProtocolAndApply<From>(input, bond::MapTo<To>(to, mappings));
 
-        UT_AssertIsTrue(from == to);
+        UT_Compare(from, to);
     }
     
     // Mapping with runtime time schema
@@ -128,7 +128,7 @@ TEST_CASE_BEGIN(MapTo)
         bond::InputBuffer input(output_buffer.GetBuffer());
         bond::SelectProtocolAndApply(bond::GetRuntimeSchema<From>(), input, bond::MapTo<To>(to, mappings));
 
-        UT_AssertIsTrue(from == to);
+        UT_Compare(from, to);
     }
 }
 TEST_CASE_END

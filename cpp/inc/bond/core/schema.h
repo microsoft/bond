@@ -65,17 +65,17 @@ inline BondDataType RuntimeSchema::GetTypeId() const
 }
 
 
-template <typename Writer>
+template <typename Protocols = BuiltInProtocols, typename Writer>
 inline void Serialize(const RuntimeSchema& schema, Writer& output)
 {
-    Apply(SerializeTo(output), schema.GetSchema());
+    Apply<Protocols>(SerializeTo<Protocols>(output), schema.GetSchema());
 }
 
 
-template <typename Writer>
+template <typename Protocols = BuiltInProtocols, typename Writer>
 inline void Marshal(const RuntimeSchema& schema, Writer& output)
 {
-    Apply(MarshalTo(output), schema.GetSchema());
+    Apply<Protocols>(MarshalTo<Protocols>(output), schema.GetSchema());
 }
 
 class InitSchemaDef;
