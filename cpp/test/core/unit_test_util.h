@@ -617,8 +617,6 @@ AllBindingAndMapping()
 
 // Unit test wrappers for AllBindingAndMapping
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-
 template <typename Reader, typename Writer, typename T, typename Protocols = bond::BuiltInProtocols>
 TEST_CASE_BEGIN(AllBindingAndMapping1)
 {
@@ -639,49 +637,3 @@ TEST_CASE_BEGIN(AllBindingAndMapping3)
     AllBindingAndMapping<Reader, Writer, From, To, BondedType, Protocols>();
 }
 TEST_CASE_END
-
-#else
-
-template <typename Reader, typename Writer, typename T>
-TEST_CASE_BEGIN(AllBindingAndMapping1)
-{
-    AllBindingAndMapping<Reader, Writer, T, bond::BuiltInProtocols>();
-}
-TEST_CASE_END
-
-template <typename Reader, typename Writer, typename T, typename Protocols>
-TEST_CASE_BEGIN(AllBindingAndMapping1_CustomProtocols)
-{
-    AllBindingAndMapping<Reader, Writer, T, Protocols>();
-}
-TEST_CASE_END
-
-template <typename Reader, typename Writer, typename From, typename To>
-TEST_CASE_BEGIN(AllBindingAndMapping2)
-{
-    AllBindingAndMapping<Reader, Writer, From, To, bond::BuiltInProtocols>();
-}
-TEST_CASE_END
-
-template <typename Reader, typename Writer, typename From, typename To, typename Protocols>
-TEST_CASE_BEGIN(AllBindingAndMapping2_CustomProtocols)
-{
-    AllBindingAndMapping<Reader, Writer, From, To, Protocols>();
-}
-TEST_CASE_END
-
-template <typename Reader, typename Writer, typename From, typename To, typename BondedType>
-TEST_CASE_BEGIN(AllBindingAndMapping3)
-{
-    AllBindingAndMapping<Reader, Writer, From, To, BondedType, bond::BuiltInProtocols>();
-}
-TEST_CASE_END
-
-template <typename Reader, typename Writer, typename From, typename To, typename BondedType, typename Protocols>
-TEST_CASE_BEGIN(AllBindingAndMapping3_CustomProtocols)
-{
-    AllBindingAndMapping<Reader, Writer, From, To, BondedType, Protocols>();
-}
-TEST_CASE_END
-
-#endif
