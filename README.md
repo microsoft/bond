@@ -170,7 +170,7 @@ cmake .. \
 
 ### Windows
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&branch=master)](https://ci.appveyor.com/project/sapek/bond/branch/master)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&branch=master)](https://ci.appveyor.com/project/MicrosoftBond/bond/branch/master)
 
 Install the following tools:
 
