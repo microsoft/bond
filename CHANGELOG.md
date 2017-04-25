@@ -91,6 +91,7 @@ get a compiler error. To fix, remove the `<Writer>` part:
 
 ### `gbc` and Bond compiler library ###
 
+* C++ codegen hides FieldTemplate details, shortening symbol names.
 * C++ codegen ensures that parameter names do not shadow field names.
 * When generating C++ apply files, there are now explicit `bond::Apply<>`
   instantiations for `CompactBinaryWriter<OutputCounter>` and

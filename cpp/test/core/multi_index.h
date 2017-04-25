@@ -58,32 +58,28 @@ namespace bond
     };
 }
 
+
+template <typename T> struct
+get_field_template
+{
+    template <uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::*field_ptr, const bond::Metadata* metadata_ptr>
+    static bond::reflection::FieldTemplate<field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr> helper(
+        const bond::reflection::FieldTemplate<field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr>&);
     
-// Help to define multi_index::ordered_non_unique index for field in Bond structure
-template <typename T>
+    typedef decltype(helper(T())) type;
+};
+
+
+template <typename T, typename U = typename get_field_template<T>::type>
 struct ordered_non_unique_field;
-    
-template <
-    uint16_t id,
-    typename modifierTag,
-    typename structType,
-    typename fieldType,
-    fieldType structType::*fieldAddr,
-    const bond::Metadata* metadata
->
-struct ordered_non_unique_field<
-    bond::reflection::FieldTemplate<
-        id, 
-        modifierTag, 
-        structType, 
-        fieldType, 
-        fieldAddr, 
-        metadata
-    >
->   : boost::multi_index::ordered_non_unique<
+
+
+template <typename T, uint16_t field_id, typename ModifierTag, typename Struct, typename FieldType, FieldType Struct::*field_ptr, const bond::Metadata* metadata_ptr>
+struct ordered_non_unique_field<T, bond::reflection::FieldTemplate<field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr> >
+    : boost::multi_index::ordered_non_unique<
         boost::multi_index::tag<
-            bond::reflection::FieldTemplate<id, modifierTag, structType, fieldType, fieldAddr, metadata> 
+            T 
         >,
-        boost::multi_index::member<structType, fieldType, fieldAddr>
+        boost::multi_index::member<Struct, FieldType, field_ptr>
         >
 {};
