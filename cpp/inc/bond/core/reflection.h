@@ -102,14 +102,14 @@ struct FieldTemplate
     static
     const value_type& GetVariable(const struct_type& object)
     {
-        return object.*field;
+        return object.*field_ptr;
     }
 
     /// @brief Static method returning reference to the field value for a particular object
     static
     value_type& GetVariable(struct_type& object)
     {
-        return object.*field;
+        return object.*field_ptr;
     }
 
     BOOST_STATIC_ASSERT(field_id != invalid_field_id);

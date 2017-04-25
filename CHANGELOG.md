@@ -24,6 +24,7 @@ different versioning scheme, following the Haskell community's
 * C++ codegen now generates
   [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
   of `bond::Apply` instead of overloads.
+* C++ codegen hides FieldTemplate details, shortening symbol names.
 
 ### C++ ###
 
@@ -66,6 +67,7 @@ get a compiler error. To fix, remove the `<Writer>` part:
 * For Visual C++ 2017 compability, RapidJSON v1.0.0 or newer is now
   required. The RapidJSON submodule that Bond uses by default has been
   updated to v1.0.0.
+* C++ codegen hides FieldTemplate details, shortening symbol names.
 
 ## 5.3.1: 2017-04-25 ##
 

@@ -21,14 +21,14 @@ namespace tests
         public: struct var
         {
             // aa
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo<T>,
                 std::vector<std::vector<T> >,
                 &Foo<T>::aa,
                 &s_aa_metadata
-            > aa;
+            > {}  aa;
         };
 
         private: typedef boost::mpl::list<> fields0;
@@ -73,14 +73,14 @@ namespace tests
         public: struct var
         {
             // aWrappedEnum
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 WrappingAnEnum,
                 ::tests::EnumToWrap,
                 &WrappingAnEnum::aWrappedEnum,
                 &s_aWrappedEnum_metadata
-            > aWrappedEnum;
+            > {}  aWrappedEnum;
         };
 
         private: typedef boost::mpl::list<> fields0;

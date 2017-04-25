@@ -54,74 +54,74 @@ namespace tests
         public: struct var
         {
             // li8
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::list<int8_t, typename arena::rebind<int8_t>::other>,
                 &ComplexTypes::li8,
                 &s_li8_metadata
-            > li8;
+            > {}  li8;
         
             // sb
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::set<bool, std::less<bool>, typename arena::rebind<bool>::other>,
                 &ComplexTypes::sb,
                 &s_sb_metadata
-            > sb;
+            > {}  sb;
         
             // vb
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::vector< ::bond::blob, typename arena::rebind< ::bond::blob>::other>,
                 &ComplexTypes::vb,
                 &s_vb_metadata
-            > vb;
+            > {}  vb;
         
             // nf
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 ::bond::nullable<float>,
                 &ComplexTypes::nf,
                 &s_nf_metadata
-            > nf;
+            > {}  nf;
         
             // msws
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 4,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other>, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other> > >::other>,
                 &ComplexTypes::msws,
                 &s_msws_metadata
-            > msws;
+            > {}  msws;
         
             // bfoo
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 5,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 ::bond::bonded< ::tests::Foo>,
                 &ComplexTypes::bfoo,
                 &s_bfoo_metadata
-            > bfoo;
+            > {}  bfoo;
         
             // m
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 6,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::map<double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other>, typename arena::rebind<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other> >::other>, std::less<double>, typename arena::rebind<std::pair<const double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other>, typename arena::rebind<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other> >::other> > >::other>,
                 &ComplexTypes::m,
                 &s_m_metadata
-            > m;
+            > {}  m;
         };
 
         private: typedef boost::mpl::list<> fields0;
