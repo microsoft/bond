@@ -67,7 +67,21 @@ get a compiler error. To fix, remove the `<Writer>` part:
   required. The RapidJSON submodule that Bond uses by default has been
   updated to v1.0.0.
 
+## 5.3.1: 2017-04-25 ##
+
+* `gbc` & compiler library: 0.9.0.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 5.3.0
+* C# NuGet version: 5.3.1
+* C# Comm NuGet version: 0.11.1
+
+### C# ###
+
+* Cleaned up documentation comments.
+
 ## 5.3.0: 2017-04-12 ##
+
 * `gbc` & compiler library: 0.9.0.0
 * IDL core version: 2.0
 * IDL comm version: 1.2
