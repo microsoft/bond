@@ -1,3 +1,13 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+/*
+ * This header implements bond::detail::any class which provides similar functionality to
+ * the boost::any which (1) uses user-defined CTTI instead of a built-in RTTI and (2) uses
+ * user-defined storage size for small object optimization.
+ */
+
+
 #pragma once
 
 #include "mpl.h"

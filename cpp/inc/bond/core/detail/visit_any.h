@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 #pragma once
 
 #include "mpl.h"
@@ -90,14 +93,14 @@ struct try_visit_any
     Any& _x;
 };
 
-template <typename T>
-struct visitor_result
+template <typename T> struct
+visitor_result
 {
     using type = boost::optional<T>;
 };
 
-template <>
-struct visitor_result<void>
+template <> struct
+visitor_result<void>
 {
     using type = bool;
 };

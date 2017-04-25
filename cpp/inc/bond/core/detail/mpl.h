@@ -1,6 +1,15 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+/*
+ * This header provides a faster alternative to some of the facilities provided by boost::mpl.
+ */
+
+
 #pragma once
 
 #include <boost/static_assert.hpp>
+#include <initializer_list>
 #include <type_traits>
 
 
@@ -10,51 +19,48 @@ namespace bond
 namespace detail {namespace mpl
 {
 
-template <typename T>
-struct identity
+template <typename T> struct
+identity
 {
     using type = T;
 };
 
 
 /// @brief Represents a type list.
-template <typename... T>
-struct list
-{};
+template <typename... T> struct
+list {};
 
 
 /// @brief Appends the given list of types or a single pack of list<> to the end.
-template <typename List, typename... T>
-struct append;
+template <typename List, typename... T> struct
+append;
 
 template <typename List, typename... T>
 using append_t = typename append<List, T...>::type;
 
-template <typename List, typename... T>
-struct append : append<List, list<T...> >
-{};
+template <typename List, typename... T> struct
+append
+    : append<List, list<T...> > {};
 
-template <typename... T, typename... U>
-struct append<list<T...>, list<U...> > : identity<list<T..., U...> >
-{};
+template <typename... T, typename... U> struct
+append<list<T...>, list<U...> >
+    : identity<list<T..., U...> > {};
 
 
 /// @brief Filters the given type list with the provided predicate.
-template <typename List, template <typename> class C>
-struct filter;
+template <typename List, template <typename> class C> struct
+filter;
 
 template <typename List, template <typename> class C>
 using filter_t = typename filter<List, C>::type;
 
-template <template <typename> class C>
-struct filter<list<>, C> : identity<list<> >
-{};
+template <template <typename> class C> struct
+filter<list<>, C>
+    : identity<list<> > {};
 
-template <typename T, typename... U, template <typename> class C>
-struct filter<list<T, U...>, C> : append<
-    typename std::conditional<C<T>::value, list<T>, list<> >::type,
-    filter_t<list<U...>, C> >
-{};
+template <typename T, typename... U, template <typename> class C> struct
+filter<list<T, U...>, C>
+    : append< typename std::conditional<C<T>::value, list<T>, list<> >::type, filter_t<list<U...>, C> > {};
 
 
 template <typename F, typename... T>
