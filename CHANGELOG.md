@@ -67,6 +67,9 @@ get a compiler error. To fix, remove the `<Writer>` part:
 * Fixed
   [custom streams](https://microsoft.github.io/bond/manual/bond_cpp.html#custom-streams)
   support which was broken for some scenarios.
+* For Visual C++ 2017 compability, RapidJSON v1.0.0 or newer is now
+  required. The RapidJSON submodule that Bond uses by default has been
+  updated to v1.0.0.
 
 ## 5.3.0: 2017-04-12 ##
 * `gbc` & compiler library: 0.9.0.0
