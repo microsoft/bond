@@ -77,7 +77,7 @@ ApplyTransform(const Transform& transform, const T& value)
 } // namespace detail
 
 
-template <typename Transform, typename T>
+template <typename Transform, typename T, typename boost::enable_if<is_modifying_transform<Transform> >::type* = nullptr>
 bool Apply(const Transform& transform, T& value)
 {
     return detail::ApplyTransform(transform, value);
