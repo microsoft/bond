@@ -85,7 +85,7 @@ cppCodegen options@Cpp {..} = do
     protocols =
         [ (Compact, ProtocolReader " ::bond::CompactBinaryReader< ::bond::InputBuffer>")
         , (Compact, ProtocolWriter " ::bond::CompactBinaryWriter< ::bond::OutputBuffer>")
-        , (Compact, ProtocolWriter " ::bond::CompactBinaryWriter< ::bond::OutputCounter>")
+        , (Compact, ProtocolWriter " ::bond::CompactBinaryWriter< ::bond::CompactBinaryCounter::type>")
         , (Fast,    ProtocolReader " ::bond::FastBinaryReader< ::bond::InputBuffer>")
         , (Fast,    ProtocolWriter " ::bond::FastBinaryWriter< ::bond::OutputBuffer>")
         , (Simple,  ProtocolReader " ::bond::SimpleBinaryReader< ::bond::InputBuffer>")
