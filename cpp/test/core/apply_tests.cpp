@@ -85,11 +85,11 @@ void Apply(uint16_t version = bond::v1)
 template <typename Reader, typename Writer, typename X>
 void SimpleApply(uint16_t version = bond::v1)
 {
-    X obj, obj2;
+    X obj;
 
     Init(obj);
 
-    Writer::Buffer output;
+    typename Writer::Buffer output;
     Factory<Writer>::Call(output, version, boost::bind(
         CallApply<bond::Serializer<Writer>, X>, boost::bind(bond::SerializeTo<Writer>, _1), obj));
 }
