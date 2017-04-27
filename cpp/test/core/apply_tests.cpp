@@ -91,7 +91,7 @@ void SimpleApply(uint16_t version = bond::v1)
 
     typename Writer::Buffer output;
     Factory<Writer>::Call(output, version, boost::bind(
-        CallApply<bond::Serializer<Writer>, X>, boost::bind(bond::SerializeTo<Writer>, _1), obj));
+        CallApply<bond::Serializer<Writer>, X>, boost::bind(bond::SerializeTo<bond::BuiltInProtocols, Writer>, _1), obj));
 }
 
 

@@ -12,7 +12,6 @@
 #include "detail/marshaled_bonded.h"
 
 
-
 namespace bond
 {
 namespace detail
