@@ -30,114 +30,114 @@ namespace test
         public: struct var
         {
             // l
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 std::list<bool, typename arena::rebind<bool>::other>,
                 &foo::l,
                 &s_l_metadata
-            > l;
+            > {}  l;
         
             // v
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 std::vector<bool, typename arena::rebind<bool>::other>,
                 &foo::v,
                 &s_v_metadata
-            > v;
+            > {}  v;
         
             // s
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 std::set<bool, std::less<bool>, typename arena::rebind<bool>::other>,
                 &foo::s,
                 &s_s_metadata
-            > s;
+            > {}  s;
         
             // m
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other>,
                 &foo::m,
                 &s_m_metadata
-            > m;
+            > {}  m;
         
             // st
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 4,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>,
                 &foo::st,
                 &s_st_metadata
-            > st;
+            > {}  st;
         
             // d
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 5,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>,
                 &foo::d,
                 &s_d_metadata
-            > d;
+            > {}  d;
         
             // l1
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 10,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe<std::list<bool, typename arena::rebind<bool>::other> >,
                 &foo::l1,
                 &s_l1_metadata
-            > l1;
+            > {}  l1;
         
             // v1
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 11,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe<std::vector<bool, typename arena::rebind<bool>::other> >,
                 &foo::v1,
                 &s_v1_metadata
-            > v1;
+            > {}  v1;
         
             // s1
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 12,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe<std::set<bool, std::less<bool>, typename arena::rebind<bool>::other> >,
                 &foo::s1,
                 &s_s1_metadata
-            > s1;
+            > {}  s1;
         
             // m1
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 13,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> >,
                 &foo::m1,
                 &s_m1_metadata
-            > m1;
+            > {}  m1;
         
             // st1
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 14,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >,
                 &foo::st1,
                 &s_st1_metadata
-            > st1;
+            > {}  st1;
         };
 
         private: typedef boost::mpl::list<> fields0;
@@ -180,24 +180,24 @@ namespace test
         public: struct var
         {
             // f
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 withFoo,
                 ::test::foo,
                 &withFoo::f,
                 &s_f_metadata
-            > f;
+            > {}  f;
         
             // f1
-            typedef ::bond::reflection::FieldTemplate<
+            typedef struct : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 withFoo,
                 ::test::foo,
                 &withFoo::f1,
                 &s_f1_metadata
-            > f1;
+            > {}  f1;
         };
 
         private: typedef boost::mpl::list<> fields0;
