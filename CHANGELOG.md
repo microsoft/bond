@@ -516,6 +516,22 @@ get a compiler error. To fix, remove the `<Writer>` part:
   [Issue #114](https://github.com/Microsoft/bond/issues/114).
 * Fix for SimpleXmlParser not handling XML declarations. [Issue #112](https://github.com/Microsoft/bond/issues/82)
 
+## Breaking changes between 3.x and 4.x ##
+
+Bond C# had the following breaking changes introduced in 4.x compared to the
+3.x versions:
+
+* The
+  [Bond.Core.CSharp NuGet package](https://www.nuget.org/packages/Bond.Core.CSharp/)
+  was introduced so that not all uses of Bond depend on Json.NET. The
+  [Bond.Runtime.CSharp package](https://www.nuget.org/packages/Bond.Runtime.CSharp/)
+  still depends on Json.NET and also depends on Bond.Core.CSharp. The
+  primary package remains Bond.CSharp.
+* `CompactBinaryReader<InputStream>` now
+  [explicitly implements](https://docs.microsoft.com/en-us/dotnet/articles/csharp/programming-guide/interfaces/explicit-interface-implementation)
+  `ICloneable<CompactBinaryReader<InputStream>>` instead of implicitly.
+  `FastBinaryReader` and `SimpleBinaryReader` were likewise changed.
+
 ## Earlier release ##
 
 These sections need to be written. In the meantime, consult the
