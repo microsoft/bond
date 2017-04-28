@@ -7,6 +7,7 @@
 module Language.Bond.Codegen.Java.SerializationMethods
     ( marshal_ProtocolWriter
     , serialize_ProtocolWriter
+    , deserialize_ProtocolWriter
     , fieldTypeName
     ) where
 
@@ -19,6 +20,9 @@ import Language.Bond.Codegen.Util
 import Language.Bond.Codegen.Java.StaticFields
 import Language.Bond.Codegen.Java.Util
 
+--
+-- serialization
+--
 marshal_ProtocolWriter :: Text
 marshal_ProtocolWriter = [lt|
     @Override
@@ -107,3 +111,14 @@ writeMap java keyType valueType fieldName depth =
         iterLocal = "e" ++ show depth
         iterLocalKey = iterLocal ++ ".getKey()"
         iterLocalValue = iterLocal ++ ".getValue()"
+
+--
+-- deserialization
+--
+deserialize_ProtocolWriter :: MappingContext -> Declaration -> Text
+deserialize_ProtocolWriter java declaration = [lt|
+    @Override
+    public void deserialize(com.microsoft.bond.protocol.TaggedProtocolReader reader) throws java.io.IOException {
+        initSchema();
+    }
+|]

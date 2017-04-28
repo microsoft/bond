@@ -14,7 +14,7 @@ class BinaryStreamWriter<out T : OutputStream>(private val stream: T) {
     private var position: Long = 0
     // Reusable buffer for primitive types.
     private var primitiveBuffer: ByteBuffer = ByteBuffer.allocate(8)
-    private val varIntResult = VarIntHelper.Result()
+    private val varIntResult = VarIntHelper.EncodeResult()
 
     init {
         primitiveBuffer.order(ByteOrder.LITTLE_ENDIAN)

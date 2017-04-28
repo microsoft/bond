@@ -42,6 +42,7 @@ public class #{declName}#{params}#{maybe interface baseClass structBase} {
 
     #{doubleLineSep 1 publicField structFields}
 #{serialize_ProtocolWriter java declaration}
+#{deserialize_ProtocolWriter java declaration}
 #{marshal_ProtocolWriter}
 }|]
             where

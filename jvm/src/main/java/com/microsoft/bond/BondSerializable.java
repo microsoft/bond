@@ -1,6 +1,8 @@
 package com.microsoft.bond;
 
+import com.microsoft.bond.exception.EndOfStreamException;
 import com.microsoft.bond.protocol.ProtocolWriter;
+import com.microsoft.bond.protocol.TaggedProtocolReader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,10 +19,10 @@ public interface BondSerializable {
 
     /**
      * Deserializes Bond structure.
-     * @param reader {@link ProtocolReader} with serialized data.
+     * @param reader {@link TaggedProtocolReader} with serialized data.
      * @throws IOException If there are any problems using the Protocol.
      */
-    //void read(ProtocolReader reader) throws IOException;
+    void deserialize(TaggedProtocolReader reader) throws IOException, EndOfStreamException;
 
     /**
      * Deserializes Bond structure.

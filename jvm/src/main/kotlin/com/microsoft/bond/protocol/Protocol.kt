@@ -80,3 +80,65 @@ interface TwoPassProtocolWriter : ProtocolWriter {
      */
     fun getFirstPassWriter(): ProtocolWriter
 }
+
+/**
+ * Reads a serialized payload.
+ */
+interface TaggedProtocolReader {
+    data class ReadFieldResult(var type: BondDataType, var id: Int)
+    data class ReadContainerResult(var count: Int, var element: BondDataType, var key: BondDataType?)
+
+    fun readStructBegin()
+
+    fun readBaseBegin()
+
+    fun readStructEnd()
+
+    fun readBaseEnd()
+
+    fun readFieldBegin(result: ReadFieldResult)
+
+    fun readFieldEnd()
+
+    /**
+     * Start reading a list or set container.
+     */
+    fun readListBegin(readContainerResult: ReadContainerResult)
+
+    /**
+     * Start reading a map container.
+     */
+    fun readMapBegin(readContainerResult: ReadContainerResult)
+
+    fun readContainerEnd()
+
+    fun skip(type: BondDataType)
+
+    fun readInt8(): Byte
+
+    fun readInt16(): Short
+
+    fun readInt32(): Int
+
+    fun readInt64(): Long
+
+    fun readUInt8(): Short
+
+    fun readUInt16(): Int
+
+    fun readUInt32(): Long
+
+    fun readUInt64(): BigInteger
+
+    fun readFloat(): Float
+
+    fun readDouble(): Double
+
+    fun readBytes(): ByteArray
+
+    fun readBool(): Boolean
+
+    fun readString(): String
+
+    fun readWString(): String
+}

@@ -3,6 +3,7 @@ package com.microsoft.bond.protocol
 import com.microsoft.bond.BondDataType
 import com.microsoft.bond.Metadata
 import com.microsoft.bond.ProtocolType
+import java.io.InputStream
 import java.io.OutputStream
 import java.math.BigInteger
 
@@ -105,5 +106,95 @@ class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short =
     override fun writeWString(value: String) {
         writer.writeVarInt32(value.length)
         writer.writeWString(value)
+    }
+}
+
+class FastBinaryReader<out S : InputStream>(val stream: S, val version: Short = 1): TaggedProtocolReader {
+    override fun readStructBegin() {}
+
+    override fun readBaseBegin() {}
+
+    override fun readStructEnd() {}
+
+    override fun readBaseEnd() {}
+
+    override fun readFieldBegin(result: TaggedProtocolReader.ReadFieldResult) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readFieldEnd() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readListBegin(readContainerResult: TaggedProtocolReader.ReadContainerResult) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readMapBegin(readContainerResult: TaggedProtocolReader.ReadContainerResult) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readContainerEnd() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun skip(type: BondDataType) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readInt8(): Byte {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readInt16(): Short {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readInt32(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readInt64(): Long {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readUInt8(): Short {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readUInt16(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readUInt32(): Long {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readUInt64(): BigInteger {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readFloat(): Float {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readDouble(): Double {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readBytes(): ByteArray {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readBool(): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readString(): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun readWString(): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
