@@ -32,23 +32,28 @@ public class VarIntHelper {
      * @param result output argument - will contain the varint encoding of value
      */
     public static void encodeVarInt16(short value, EncodeResult result) {
-        int unsignedValue = value & 0xFFFF;
         result.length = 0;
 
         // byte 0
-        if (unsignedValue >= 0x80)
+        if (value >= 0x80 || value < 0)
         {
-            result.data[result.length++] = (byte)(unsignedValue | 0x80);
-            unsignedValue >>>= 7;
+            result.data[result.length++] = (byte)(value | 0x80);
+            // Shifting a short casts up to int, then back down to short. The
+            // result is that logically right-shifting a negative short gives a
+            // negative result. This can be fixed by masking out all but the 9
+            // bits we still need to look at.
+            value = (short) ((value >>> 7) & 0x1FF);
             // byte 1
-            if (unsignedValue >= 0x80)
+            if (value >= 0x80)
             {
-                result.data[result.length++] = (byte)(unsignedValue | 0x80);
-                unsignedValue >>>= 7;
+                result.data[result.length++] = (byte)(value | 0x80);
+                // See comment above. Mask out all but the 2 bits we still need
+                // to look at.
+                value = (short) ((value >>> 7) & 0x3);
             }
         }
         // byte 2
-        result.data[result.length++] = (byte)unsignedValue;
+        result.data[result.length++] = (byte)value;
     }
 
     /**
@@ -56,35 +61,34 @@ public class VarIntHelper {
      */
     public static void encodeVarInt32(int value, EncodeResult result)
     {
-        long unsignedValue = value & 0xFFFFFF;
         result.length = 0;
 
         // byte 0
-        if (unsignedValue >= 0x80)
+        if (value >= 0x80 || value < 0)
         {
-            result.data[result.length++] = (byte)(unsignedValue | 0x80);
-            unsignedValue >>>= 7;
+            result.data[result.length++] = (byte)(value | 0x80);
+            value >>>= 7;
             // byte 1
-            if (unsignedValue >= 0x80)
+            if (value >= 0x80)
             {
-                result.data[result.length++] = (byte)(unsignedValue | 0x80);
-                unsignedValue >>>= 7;
+                result.data[result.length++] = (byte)(value | 0x80);
+                value >>>= 7;
                 // byte 2
-                if (unsignedValue >= 0x80)
+                if (value >= 0x80)
                 {
-                    result.data[result.length++] = (byte)(unsignedValue | 0x80);
-                    unsignedValue >>>= 7;
+                    result.data[result.length++] = (byte)(value | 0x80);
+                    value >>>= 7;
                     // byte 3
-                    if (unsignedValue >= 0x80)
+                    if (value >= 0x80)
                     {
-                        result.data[result.length++] = (byte)(unsignedValue | 0x80);
-                        unsignedValue >>>= 7;
+                        result.data[result.length++] = (byte)(value | 0x80);
+                        value >>>= 7;
                     }
                 }
             }
         }
         // last byte
-        result.data[result.length++] = (byte)unsignedValue;
+        result.data[result.length++] = (byte)value;
     }
 
     /**
@@ -95,7 +99,7 @@ public class VarIntHelper {
         result.length = 0;
 
         // byte 0
-        if (value >= 0x80) {
+        if (value >= 0x80 || value < 0L) {
             result.data[result.length++] = (byte) (value | 0x80);
             value >>>= 7;
             // byte 1
@@ -206,7 +210,7 @@ public class VarIntHelper {
             }
         }
         decodeResult.length = i - index;
-        decodeResult.value = (int) result;
+        decodeResult.value = result;
     }
 
     /**
