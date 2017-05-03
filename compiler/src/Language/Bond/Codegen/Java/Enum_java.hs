@@ -34,7 +34,18 @@ public class #{declName} {
 
     public final int value;
 
-    #{declName}(int value) { this.value = value; }
+    public #{declName}(int value) { this.value = value; }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof #{declName})) { return false; }
+        return this.value == ((#{declName}) other).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.value;
+    }
 }|]
       where
         -- constant

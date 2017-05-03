@@ -86,7 +86,7 @@ interface TwoPassProtocolWriter : ProtocolWriter {
  */
 interface TaggedProtocolReader {
     data class ReadFieldResult(var type: BondDataType, var id: Int)
-    data class ReadContainerResult(var count: Int, var element: BondDataType, var key: BondDataType?)
+    data class ReadContainerResult(var count: Long, var element: BondDataType, var key: BondDataType?)
 
     fun readStructBegin()
 

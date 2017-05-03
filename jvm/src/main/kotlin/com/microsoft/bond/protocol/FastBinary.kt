@@ -110,6 +110,12 @@ class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short =
 }
 
 class FastBinaryReader<out S : InputStream>(val stream: S, val version: Short = 1): TaggedProtocolReader {
+    private val reader = BinaryStreamReader(stream)
+
+    private fun readType(): BondDataType {
+        return BondDataType(reader.readInt8().toInt())
+    }
+
     override fun readStructBegin() {}
 
     override fun readBaseBegin() {}
@@ -119,55 +125,56 @@ class FastBinaryReader<out S : InputStream>(val stream: S, val version: Short = 
     override fun readBaseEnd() {}
 
     override fun readFieldBegin(result: TaggedProtocolReader.ReadFieldResult) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        result.type = readType()
+        if (result.type != BondDataType.BT_STOP && result.type != BondDataType.BT_STOP_BASE) {
+            result.id = UnsignedHelper.asUnsignedInt(reader.readInt16())
+        } else {
+            result.id = 0
+        }
     }
 
-    override fun readFieldEnd() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun readFieldEnd() {}
 
     override fun readListBegin(readContainerResult: TaggedProtocolReader.ReadContainerResult) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        readContainerResult.key = null
+        readContainerResult.element = readType()
+        readContainerResult.count = UnsignedHelper.asUnsignedLong(reader.readVarInt32())
     }
 
     override fun readMapBegin(readContainerResult: TaggedProtocolReader.ReadContainerResult) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        readContainerResult.key = readType()
+        readContainerResult.element = readType()
+        readContainerResult.count = UnsignedHelper.asUnsignedLong(reader.readVarInt32())
     }
 
-    override fun readContainerEnd() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun skip(type: BondDataType) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun readContainerEnd() {}
 
     override fun readInt8(): Byte {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return reader.readInt8()
     }
 
     override fun readInt16(): Short {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return reader.readInt16()
     }
 
     override fun readInt32(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return reader.readInt32()
     }
 
     override fun readInt64(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return reader.readInt64()
     }
 
     override fun readUInt8(): Short {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return UnsignedHelper.asUnsignedShort(readInt8())
     }
 
     override fun readUInt16(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return UnsignedHelper.asUnsignedInt(readInt16())
     }
 
     override fun readUInt32(): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return UnsignedHelper.asUnsignedLong(readInt32())
     }
 
     override fun readUInt64(): BigInteger {
@@ -195,6 +202,10 @@ class FastBinaryReader<out S : InputStream>(val stream: S, val version: Short = 
     }
 
     override fun readWString(): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun skip(type: BondDataType) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
