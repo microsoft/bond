@@ -87,9 +87,12 @@
                      string, wstring        | count | characters |
                                             '-------'------------'
 
-                           count            variable encoded uint32 count of 1-byte or 2-byte characters
+                           count            variable encoded uint32 count of 1-byte (for
+                                            string) or 2-byte (for wstring) Unicode code
+                                            units
 
-                           characters       1-byte or 2-byte characters
+                           characters       1-byte UTF-8 code units (for string) or 2-byte
+                                            UTF-16LE code units (for wstring)
 
 
                                             .-------.-------.-------.
