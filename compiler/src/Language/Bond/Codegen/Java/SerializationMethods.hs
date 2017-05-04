@@ -7,6 +7,7 @@
 module Language.Bond.Codegen.Java.SerializationMethods
     ( marshal_ProtocolWriter
     , serialize_ProtocolWriter
+    , deserializationHelperMembers
     , deserialize_ProtocolWriter
     , fieldTypeName
     ) where
@@ -115,10 +116,116 @@ writeMap java keyType valueType fieldName depth =
 --
 -- deserialization
 --
+readFieldResultMember :: String
+readFieldResultMember = "__readFieldResult"
+
+readContainerResultMember :: String
+readContainerResultMember = "__readContainerResult"
+
+deserializationHelperMembers :: Text
+deserializationHelperMembers = [lt|
+    private final #{readFieldResultType} #{readFieldResultMember} = new #{readFieldResultType}();
+    private final #{readContainerResultType} #{readContainerResultMember} = new #{readContainerResultType}();|]
+    where
+        readFieldResultType =
+            [lt|com.microsoft.bond.protocol.TaggedProtocolReader.ReadFieldResult|]
+        readContainerResultType =
+            [lt|com.microsoft.bond.protocol.TaggedProtocolReader.ReadContainerResult|]
+
 deserialize_ProtocolWriter :: MappingContext -> Declaration -> Text
 deserialize_ProtocolWriter java declaration = [lt|
     @Override
     public void deserialize(com.microsoft.bond.protocol.TaggedProtocolReader reader) throws java.io.IOException {
         initSchema();
-    }
-|]
+
+        reader.readStructBegin();
+        #{newlineSepEnd 2 readField fields}
+        reader.readStructEnd();
+    }|]
+    where
+        fields = structFields declaration
+        -- TODO: Check that field id and type are as expected.
+        readField field@Field {..} = [lt|
+        reader.readFieldBegin(this.#{readFieldResultMember});
+        #{readFieldValue java fieldType fieldName 0}
+        reader.readFieldEnd();|]
+
+readFieldValue :: MappingContext -> Type -> String -> Int -> Text
+readFieldValue java fieldType fieldName depth =
+    readValue java fieldType ("this." ++ fieldName) depth
+
+readValue :: MappingContext -> Type -> String -> Int -> Text
+readValue java fieldType varName depth = case fieldType of
+    BT_Int8                  -> [lt|#{varName} = reader.readInt8();|]
+    BT_Int16                 -> [lt|#{varName} = reader.readInt16();|]
+    BT_Int32                 -> [lt|#{varName} = reader.readInt32();|]
+    BT_Int64                 -> [lt|#{varName} = reader.readInt64();|]
+    BT_UInt8                 -> [lt|#{varName} = reader.readUInt8();|]
+    BT_UInt16                -> [lt|#{varName} = reader.readUInt16();|]
+    BT_UInt32                -> [lt|#{varName} = reader.readUInt32();|]
+    BT_UInt64                -> [lt|#{varName} = reader.readUInt64();|]
+    BT_Float                 -> [lt|#{varName} = reader.readFloat();|]
+    BT_Double                -> [lt|#{varName} = reader.readDouble();|]
+    BT_Bool                  -> [lt|#{varName} = reader.readBool();|]
+    BT_String                -> [lt|#{varName} = reader.readString();|]
+    BT_WString               -> [lt|#{varName} = reader.readWString();|]
+    BT_Blob                  -> [lt|#{varName} = reader.readBytes();|]
+    BT_Nullable e            -> readNullable java e varName depth
+    BT_List e                -> readSequence java e varName depth
+    BT_Vector e              -> readSequence java e varName depth
+    BT_Set e                 -> readSequence java e varName depth
+    BT_Map k v               -> readMap java k v varName depth
+    BT_UserDefined Enum {} _ ->
+        [lt|#{varName} = new #{getTypeName java fieldType}(reader.readInt32());|]
+    -- FIXME: Recursive types will cause infinite recursion.
+    BT_UserDefined _ _       ->
+        [lt|#{varName} = new #{getTypeName java fieldType}(); #{varName}.deserialize(reader);|]
+    _                        -> [lt|// FIXME: Not implemented.|]
+
+readNullable :: MappingContext -> Type -> String -> Int -> Text
+readNullable java elemType fieldName depth =
+    -- TODO: What if .count > 1?
+    [lt|reader.readListBegin(this.#{readContainerResultMember});
+        if (this.#{readContainerResultMember}.count == 0) {
+            #{fieldName} = null;
+        } else {
+            #{readValue java elemType fieldName (depth + 1)}
+        }
+        reader.readContainerEnd();|]
+
+readSequence :: MappingContext -> Type -> String -> Int -> Text
+readSequence java elemType fieldName depth =
+    [lt|reader.readListBegin(this.#{readContainerResultMember});
+        {
+            long #{countLocal} = this.#{readContainerResultMember}.count;
+            for (long #{iN} = 0; #{iN} < #{countLocal}; #{iN}++) {
+                #{getTypeName java elemType} #{elemLocal};
+                #{readValue java elemType elemLocal (depth + 1)}
+                #{fieldName}.add(#{elemLocal});
+            }
+        }
+        reader.readContainerEnd();|]
+    where
+        iN = "i" ++ show depth
+        countLocal = "count" ++ show depth
+        elemLocal = "e" ++ show depth
+
+readMap :: MappingContext -> Type -> Type -> String -> Int -> Text
+readMap java keyType valueType fieldName depth =
+    [lt|reader.readListBegin(#{readContainerResultMember});
+        {
+            long #{countLocal} = #{readContainerResultMember}.count;
+            for (long #{iN} = 0; #{iN} < #{countLocal}; #{iN}++) {
+                #{getTypeName java keyType} #{keyLocal};
+                #{getTypeName java valueType} #{valueLocal};
+                #{readValue java keyType keyLocal (depth + 1)}
+                #{readValue java valueType valueLocal (depth + 1)}
+                #{fieldName}.put(#{keyLocal}, #{valueLocal});
+            }
+        }
+        reader.readContainerEnd();|]
+    where
+        iN = "i" ++ show depth
+        countLocal = "count" ++ show depth
+        keyLocal = "k" ++ show depth
+        valueLocal = "v" ++ show depth

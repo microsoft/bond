@@ -13,7 +13,7 @@ public class VarIntHelper {
      * currently encoded value. All encode/decode varint functions take one of these as an argument
      * to reduce garbage generation.
      */
-    public static class EncodeResult {
+    public static final class EncodeResult {
         public final byte[] data = new byte[VarInt64MaxBytes];
         public int length;
     }
@@ -23,7 +23,7 @@ public class VarIntHelper {
      * encode/decode varint functions take one of these as an argument to reduce garbage
      * generation.
      */
-    public static class DecodeResult {
+    public static final class DecodeResult {
         public long value;
         public int length;
     }
