@@ -2,7 +2,6 @@ package com.microsoft.bond.protocol
 
 import com.microsoft.bond.BondDataType
 import com.microsoft.bond.Metadata
-import java.math.BigInteger
 
 /**
  * Writes a serialized payload.
@@ -50,13 +49,13 @@ interface ProtocolWriter {
 
     fun writeInt64(value: Long)
 
-    fun writeUInt8(value: Short)
+    fun writeUInt8(value: Byte)
 
-    fun writeUInt16(value: Int)
+    fun writeUInt16(value: Short)
 
-    fun writeUInt32(value: Long)
+    fun writeUInt32(value: Int)
 
-    fun writeUInt64(value: BigInteger)
+    fun writeUInt64(value: Long)
 
     fun writeFloat(value: Float)
 

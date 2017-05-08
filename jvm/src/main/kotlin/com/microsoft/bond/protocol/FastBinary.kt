@@ -5,7 +5,6 @@ import com.microsoft.bond.Metadata
 import com.microsoft.bond.ProtocolType
 import java.io.InputStream
 import java.io.OutputStream
-import java.math.BigInteger
 
 class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short = 1): ProtocolWriter {
     val Magic = ProtocolType.FAST_PROTOCOL
@@ -66,20 +65,20 @@ class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short =
         writer.writeInt64(value)
     }
 
-    override fun writeUInt8(value: Short) {
-        writer.writeInt8(value.toByte())
+    override fun writeUInt8(value: Byte) {
+        writer.writeInt8(value)
     }
 
-    override fun writeUInt16(value: Int) {
-        writer.writeInt16(value.toShort())
+    override fun writeUInt16(value: Short) {
+        writer.writeInt16(value)
     }
 
-    override fun writeUInt32(value: Long) {
-        writer.writeInt32(value.toInt())
+    override fun writeUInt32(value: Int) {
+        writer.writeInt32(value)
     }
 
-    override fun writeUInt64(value: BigInteger) {
-        writer.writeInt64(value.toLong())
+    override fun writeUInt64(value: Long) {
+        writer.writeInt64(value)
     }
 
     override fun writeFloat(value: Float) {
@@ -165,28 +164,28 @@ class FastBinaryReader<out S : InputStream>(val stream: S, val version: Short = 
         return reader.readInt64()
     }
 
-    override fun readUInt8(): Short {
-        return UnsignedHelper.asUnsignedShort(readInt8())
+    override fun readUInt8(): Byte {
+        return readInt8()
     }
 
-    override fun readUInt16(): Int {
-        return UnsignedHelper.asUnsignedInt(readInt16())
+    override fun readUInt16(): Short {
+        return readInt16()
     }
 
-    override fun readUInt32(): Long {
-        return UnsignedHelper.asUnsignedLong(readInt32())
+    override fun readUInt32(): Int {
+        return readInt32()
     }
 
-    override fun readUInt64(): BigInteger {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun readUInt64(): Long {
+        return readInt64()
     }
 
     override fun readFloat(): Float {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return reader.readFloat()
     }
 
     override fun readDouble(): Double {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return reader.readDouble()
     }
 
     override fun readBytes(): ByteArray {

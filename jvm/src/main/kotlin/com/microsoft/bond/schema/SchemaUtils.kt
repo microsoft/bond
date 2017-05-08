@@ -13,17 +13,17 @@ object SchemaUtils {
      * @return the index of the new or existing StructDef in that list.
      */
     @JvmStatic
-    fun <T> add(schema: SchemaDef, structDef: StructDef, clazz: Class<T>): Int {
+    fun <T> add(schema: SchemaDef, structDef: StructDef, clazz: Class<T>): Short {
         val structName = structDef.metadata.qualified_name
         for ((i, s) in (0..schema.structs.size).zip(schema.structs)) {
             if (structName == s.metadata.qualified_name) {
-                return i
+                return i.toShort()
             }
         }
 
         val newStructDef = cloneStructDef(structDef, schema, clazz)
         schema.structs.add(newStructDef)
-        return schema.structs.size - 1
+        return (schema.structs.size - 1).toShort()
     }
 
     /**

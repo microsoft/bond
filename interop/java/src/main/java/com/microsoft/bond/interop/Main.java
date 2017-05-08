@@ -35,10 +35,10 @@ public class Main {
             ooe.s = 333;
             ooe.i = 333333;
             ooe.l = 33333333333L;
-            ooe.ub = 128;
-            ooe.us = 32768;
-            ooe.ui = 2147483648L;
-            ooe.ul = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE);
+            ooe.ub = (byte) 128;
+            ooe.us = (short) 32768;
+            ooe.ui = (int) 2147483648L;
+            ooe.ul = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE).longValue();
             ooe.f = .5f;
             ooe.d = .5;
             ooe.bl = true;
@@ -48,9 +48,9 @@ public class Main {
             ooe.l_b.add((byte) 33);
             ooe.v_s.add((short) 3);
             ooe.v_s.add((short) 33);
-            ooe.s_ui.add((long) 3);
-            ooe.s_ui.add((long) 33);
-            ooe.s_ui.add((long) 333);
+            ooe.s_ui.add(3);
+            ooe.s_ui.add(33);
+            ooe.s_ui.add(333);
             ooe.m_i_str.put(1, "one");
             ooe.m_i_str.put(2, "two");
             ooe.m_i_str.put(3, "three");

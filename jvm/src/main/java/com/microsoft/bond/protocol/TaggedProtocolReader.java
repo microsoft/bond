@@ -2,8 +2,6 @@ package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
 
-import java.math.BigInteger;
-
 /**
  * Reads a serialized payload.
  */
@@ -51,13 +49,13 @@ public interface TaggedProtocolReader {
 
     long readInt64();
 
-    short readUInt8();
+    byte readUInt8();
 
-    int readUInt16();
+    short readUInt16();
 
-    long readUInt32();
+    int readUInt32();
 
-    BigInteger readUInt64();
+    long readUInt64();
 
     float readFloat();
 
