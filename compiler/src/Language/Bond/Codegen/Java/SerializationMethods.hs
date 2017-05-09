@@ -68,7 +68,7 @@ writeValue java fieldType varName depth = case fieldType of
     BT_Bool                  -> [lt|writer.writeBool(#{varName});|]
     BT_String                -> [lt|writer.writeString(#{varName});|]
     BT_WString               -> [lt|writer.writeWString(#{varName});|]
-    BT_Blob                  -> [lt|writer.writeBytes(#{varName});|]
+    BT_Blob                  -> writeBlob varName
     BT_Nullable e            -> writeNullable java e varName depth
     BT_List e                -> writeSequence java e varName depth
     BT_Vector e              -> writeSequence java e varName depth
@@ -78,6 +78,12 @@ writeValue java fieldType varName depth = case fieldType of
     -- FIXME: Recursive types will cause infinite recursion.
     BT_UserDefined _ _       -> [lt|#{varName}.serialize(writer);|]
     _                        -> [lt|// FIXME: Not implemented.|]
+
+writeBlob :: String -> Text
+writeBlob fieldName =
+    [lt|writer.writeContainerBegin(#{fieldName}.length, #{fieldTypeName BT_Int8});
+        writer.writeBytes(#{fieldName});
+        writer.writeContainerEnd();|]
 
 writeNullable :: MappingContext -> Type -> String -> Int -> Text
 writeNullable java elemType fieldName depth =
@@ -169,7 +175,7 @@ readValue java fieldType varName depth = case fieldType of
     BT_Bool                  -> [lt|#{varName} = reader.readBool();|]
     BT_String                -> [lt|#{varName} = reader.readString();|]
     BT_WString               -> [lt|#{varName} = reader.readWString();|]
-    BT_Blob                  -> [lt|#{varName} = reader.readBytes();|]
+    BT_Blob                  -> readBlob varName
     BT_Nullable e            -> readNullable java e varName depth
     BT_List e                -> readSequence java e varName depth
     BT_Vector e              -> readSequence java e varName depth
@@ -181,6 +187,12 @@ readValue java fieldType varName depth = case fieldType of
     BT_UserDefined _ _       ->
         [lt|#{varName} = new #{getTypeName java fieldType}(); #{varName}.deserialize(reader);|]
     _                        -> [lt|// FIXME: Not implemented.|]
+
+readBlob :: String -> Text
+readBlob fieldName =
+    [lt|reader.readListBegin(this.#{readContainerResultMember});
+        #{fieldName} = reader.readBytes(#{readContainerResultMember}.count);
+        reader.readContainerEnd();|]
 
 readNullable :: MappingContext -> Type -> String -> Int -> Text
 readNullable java elemType fieldName depth =
@@ -212,7 +224,7 @@ readSequence java elemType fieldName depth =
 
 readMap :: MappingContext -> Type -> Type -> String -> Int -> Text
 readMap java keyType valueType fieldName depth =
-    [lt|reader.readListBegin(#{readContainerResultMember});
+    [lt|reader.readMapBegin(#{readContainerResultMember});
         {
             long #{countLocal} = #{readContainerResultMember}.count;
             for (long #{iN} = 0; #{iN} < #{countLocal}; #{iN}++) {

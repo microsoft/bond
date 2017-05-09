@@ -1,7 +1,5 @@
 package com.microsoft.bond.protocol;
 
-import com.sun.deploy.util.StringUtils;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -27,27 +25,27 @@ final class BinaryStreamWriter {
     }
 
     void writeInt16(short value) throws IOException {
-        this.endiannessConversionByteBuffer.putShort(value);
+        this.endiannessConversionByteBuffer.putShort(0, value);
         this.outputStream.write(this.endiannessConversionByteBuffer.array(), 0, 2);
     }
 
     void writeInt32(int value) throws IOException {
-        this.endiannessConversionByteBuffer.putInt(value);
+        this.endiannessConversionByteBuffer.putInt(0, value);
         this.outputStream.write(this.endiannessConversionByteBuffer.array(), 0, 4);
     }
 
     void writeInt64(long value) throws IOException {
-        this.endiannessConversionByteBuffer.putLong(value);
+        this.endiannessConversionByteBuffer.putLong(0, value);
         this.outputStream.write(this.endiannessConversionByteBuffer.array(), 0, 8);
     }
 
     void writeFloat(float value) throws IOException {
-        this.endiannessConversionByteBuffer.putFloat(value);
+        this.endiannessConversionByteBuffer.putFloat(0, value);
         this.outputStream.write(this.endiannessConversionByteBuffer.array(), 0, 4);
     }
 
     void writeDouble(double value) throws IOException {
-        this.endiannessConversionByteBuffer.putDouble(value);
+        this.endiannessConversionByteBuffer.putDouble(0, value);
         this.outputStream.write(this.endiannessConversionByteBuffer.array(), 0, 8);
     }
 

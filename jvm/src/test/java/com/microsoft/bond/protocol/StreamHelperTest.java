@@ -1,6 +1,5 @@
 package com.microsoft.bond.protocol;
 
-import com.sun.xml.internal.ws.util.StreamUtils;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -8,7 +7,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class StreamHelperTest {
 

@@ -2,6 +2,8 @@ package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
 
+import java.io.IOException;
+
 /**
  * Reads from serialized payload encoded using a tagged protocol.
  */
@@ -47,138 +49,139 @@ public interface TaggedProtocolReader {
     /**
      * Start reading a struct.
      */
-    void readStructBegin();
+    void readStructBegin() throws IOException;
 
     /**
      * Start reading a base of a struct.
      */
-    void readBaseBegin();
+    void readBaseBegin() throws IOException;
 
     /**
      * End reading a struct.
      */
-    void readStructEnd();
+    void readStructEnd() throws IOException;
 
     /**
      * End reading a base of a struct.
      */
-    void readBaseEnd();
+    void readBaseEnd() throws IOException;
 
     /**
      * Start reading a field.
      * @param result contains the result
      */
-    void readFieldBegin(ReadFieldResult result);
+    void readFieldBegin(ReadFieldResult result) throws IOException;
 
     /**
      * End reading a field.
      */
-    void readFieldEnd();
+    void readFieldEnd() throws IOException;
 
     /**
      * Start reading a list or set container.
      * @param readContainerResult contains the result
      */
-    void readListBegin(ReadContainerResult readContainerResult);
+    void readListBegin(ReadContainerResult readContainerResult) throws IOException;
 
     /**
      * Start reading a map container.
      * @param readContainerResult contains the result
      */
-    void readMapBegin(ReadContainerResult readContainerResult);
+    void readMapBegin(ReadContainerResult readContainerResult) throws IOException;
 
     /**
      * End reading a container.
      */
-    void readContainerEnd();
+    void readContainerEnd() throws IOException;
 
     /**
      * Skip a value of specified type.
      * @param type the type
      */
-    void skip(BondDataType type);
+    void skip(BondDataType type) throws IOException;
 
     /**
      * Read an int8.
      * @return the value
      */
-    byte readInt8();
+    byte readInt8() throws IOException;
 
     /**
      * Read an int16.
      * @return the value
      */
-    short readInt16();
+    short readInt16() throws IOException;
 
     /**
      * Read an int32.
      * @return the value
      */
-    int readInt32();
+    int readInt32() throws IOException;
 
     /**
      * Read an int64.
      * @return the value
      */
-    long readInt64();
+    long readInt64() throws IOException;
 
     /**
      * Read an uint8.
      * @return the value
      */
-    byte readUInt8();
+    byte readUInt8() throws IOException;
 
     /**
      * Read an uint16.
      * @return the value
      */
-    short readUInt16();
+    short readUInt16() throws IOException;
 
     /**
      * Read an uint32.
      * @return the value
      */
-    int readUInt32();
+    int readUInt32() throws IOException;
 
     /**
      * Read an uint64.
      * @return the value
      */
-    long readUInt64();
+    long readUInt64() throws IOException;
 
     /**
      * Read a float.
      * @return the value
      */
-    float readFloat();
+    float readFloat() throws IOException;
 
     /**
      * Read a double.
      * @return the value
      */
-    double readDouble();
+    double readDouble() throws IOException;
 
     /**
      * Read an array of bytes verbatim.
+     * @param count
      * @return the value
      */
-    byte[] readBytes();
+    byte[] readBytes(int count) throws IOException;
 
     /**
      * Read a bool.
      * @return the value
      */
-    boolean readBool();
+    boolean readBool() throws IOException;
 
     /**
      * Read a string.
      * @return the value
      */
-    String readString();
+    String readString() throws IOException;
 
     /**
      * Read a wstring.
      * @return the value
      */
-    String readWString();
+    String readWString() throws IOException;
 }

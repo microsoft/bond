@@ -26,4 +26,7 @@ struct OneOfEverything {
     16: map<int32, string> m_i_str;
     17: SomeEnum e = A;
     18: OneOfSomething oos;
+    19: blob blorb;
+    20: nullable<int32> n_null;
+    21: nullable<int32> n_not_null;
 }

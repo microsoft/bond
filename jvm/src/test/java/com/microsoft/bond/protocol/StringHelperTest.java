@@ -1,9 +1,9 @@
 package com.microsoft.bond.protocol;
 
 import org.junit.Test;
-import sun.nio.cs.SingleByte;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class StringHelperTest {
 

@@ -46,11 +46,11 @@ int main(int argc, char ** argv) {
         printf("ooe.b: %d\n", ooe.b);
         printf("ooe.s: %d\n", ooe.s);
         printf("ooe.i: %d\n", ooe.i);
-        printf("ooe.l: %ld\n", ooe.l);
+        printf("ooe.l: %lld\n", ooe.l);
         printf("ooe.ub: %u\n", ooe.ub);
         printf("ooe.us: %u\n", ooe.us);
         printf("ooe.ui: %u\n", ooe.ui);
-        printf("ooe.ul: %lu\n", ooe.ul);
+        printf("ooe.ul: %llu\n", ooe.ul);
         printf("ooe.f: %f\n", ooe.f);
         printf("ooe.d: %f\n", ooe.d);
         printf("ooe.bl: %s\n", ooe.bl ? "true" : "false");
@@ -112,6 +112,10 @@ int main(int argc, char ** argv) {
         ooe.m_i_str.emplace(5, "five");
         ooe.e = com::microsoft::bond::interop::_bond_enumerators::SomeEnum::B;
         ooe.oos.str = "one of something, anyway";
+        unsigned char blorb_bytes[]{1, 2, 3, 4, 5};
+        ooe.blorb.assign(blorb_bytes, sizeof(blorb_bytes));
+        ooe.n_null = bond::nullable<int32_t>();
+        ooe.n_not_null = bond::nullable<int32_t>(5);
 
         FILE* d = fopen(fpath, "wb");
         bond::StdioOutputStream output(d);

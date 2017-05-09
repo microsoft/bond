@@ -3,7 +3,6 @@ package com.microsoft.bond.protocol
 import com.microsoft.bond.BondDataType
 import com.microsoft.bond.Metadata
 import com.microsoft.bond.ProtocolType
-import java.io.InputStream
 import java.io.OutputStream
 
 class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short = 1): ProtocolWriter {
@@ -100,115 +99,14 @@ class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short =
     }
 
     override fun writeString(value: String) {
-        writer.writeVarUInt32(value.length)
-        // class is being removed (ported to Java) in a parallel change so commenting this out
-        //writer.writeString(value)
+        val bytes = StringHelper.encodeString(value)
+        writer.writeVarUInt32(bytes.size)
+        writer.writeBytes(bytes)
     }
 
     override fun writeWString(value: String) {
-        writer.writeVarUInt32(value.length)
-        // class is being removed (ported to Java) in a parallel change so commenting this out
-        //writer.writeWString(value)
-    }
-}
-
-class FastBinaryReader<out S : InputStream>(val stream: S, val version: Short = 1): TaggedProtocolReader {
-    private val reader = BinaryStreamReader(stream)
-
-    private fun readType(): BondDataType {
-        return BondDataType(reader.readInt8().toInt())
-    }
-
-    override fun readStructBegin() {}
-
-    override fun readBaseBegin() {}
-
-    override fun readStructEnd() {}
-
-    override fun readBaseEnd() {}
-
-    override fun readFieldBegin(result: TaggedProtocolReader.ReadFieldResult) {
-        result.type = readType()
-        if (result.type != BondDataType.BT_STOP && result.type != BondDataType.BT_STOP_BASE) {
-            result.id = UnsignedHelper.asUnsignedInt(reader.readInt16())
-        } else {
-            result.id = 0
-        }
-    }
-
-    override fun readFieldEnd() {}
-
-    override fun readListBegin(readContainerResult: TaggedProtocolReader.ReadContainerResult) {
-        readContainerResult.keyType = null
-        readContainerResult.elementType = readType()
-        readContainerResult.count = reader.readVarUInt32();
-    }
-
-    override fun readMapBegin(readContainerResult: TaggedProtocolReader.ReadContainerResult) {
-        readContainerResult.keyType = readType()
-        readContainerResult.elementType = readType()
-        readContainerResult.count = reader.readVarUInt32();
-    }
-
-    override fun readContainerEnd() {}
-
-    override fun readInt8(): Byte {
-        return reader.readInt8()
-    }
-
-    override fun readInt16(): Short {
-        return reader.readInt16()
-    }
-
-    override fun readInt32(): Int {
-        return reader.readInt32()
-    }
-
-    override fun readInt64(): Long {
-        return reader.readInt64()
-    }
-
-    override fun readUInt8(): Byte {
-        return readInt8()
-    }
-
-    override fun readUInt16(): Short {
-        return readInt16()
-    }
-
-    override fun readUInt32(): Int {
-        return readInt32()
-    }
-
-    override fun readUInt64(): Long {
-        return readInt64()
-    }
-
-    override fun readFloat(): Float {
-        return reader.readFloat()
-    }
-
-    override fun readDouble(): Double {
-        return reader.readDouble()
-    }
-
-    override fun readBytes(): ByteArray {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun readBool(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun readString(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun readWString(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun skip(type: BondDataType) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val bytes = StringHelper.encodeWString(value)
+        writer.writeVarUInt32(bytes.size / 2)
+        writer.writeBytes(bytes)
     }
 }

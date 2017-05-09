@@ -34,7 +34,7 @@ fieldTypeName fieldType = pack $ "com.microsoft.bond.BondDataType." ++ case fiel
     BT_Bool                  -> "BT_BOOL"
     BT_String                -> "BT_STRING"
     BT_WString               -> "BT_WSTRING"
-    BT_Blob                  -> "BT_BLOB"
+    BT_Blob                  -> "BT_LIST"
     BT_Nullable _            -> "BT_LIST"
     BT_List _                -> "BT_LIST"
     BT_Vector _              -> "BT_LIST"
@@ -56,7 +56,7 @@ defaultValue java Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
     -- any suggestions.
     implicitDefault (BT_TypeParam _) = Just [lt|null|]
     implicitDefault (BT_Nullable _) = Just[lt|null|]
-    implicitDefault t@BT_Blob = newInstance t
+    implicitDefault BT_Blob = Just [lt|new byte[0]|]
     implicitDefault BT_Bool = Just [lt|false|]
     implicitDefault BT_Int8 = Just [lt|0|]
     implicitDefault BT_Int16 = Just [lt|0|]
