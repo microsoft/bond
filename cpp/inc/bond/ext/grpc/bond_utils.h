@@ -11,6 +11,8 @@
 #include <grpc++/impl/codegen/status_code_enum.h>
 #include <grpc/impl/codegen/byte_buffer_reader.h>
 #include <grpc/impl/codegen/slice.h>
+#include <grpc/support/log.h>
+
 #include <cstdint>
 #include <cstdlib>
 
@@ -52,32 +54,42 @@ class SerializationTraits<bond::comm::message<T>, typename std::enable_if<bond::
       return Status(StatusCode::INTERNAL, "No payload");
     }
 
+    const size_t bufferSize = grpc_byte_buffer_length(buffer);
+
+    boost::shared_ptr<char []> buff = boost::make_shared_noinit<char []>(bufferSize);
+
+    // TODO: exception safety of reader, s, buffer
     grpc_byte_buffer_reader reader;
-    grpc_byte_buffer_reader_init(&reader, buffer);
+    if (!grpc_byte_buffer_reader_init(&reader, buffer))
+    {
+        return Status(StatusCode::INTERNAL, "Failed to init buffer reader");
+    }
 
-    grpc_slice slice = grpc_byte_buffer_reader_readall(&reader);
+    char* dest = buff.get();
 
-    boost::shared_ptr<char []> buff = boost::make_shared_noinit<char []>(GRPC_SLICE_LENGTH(slice));
-    std::memcpy(buff.get(), GRPC_SLICE_START_PTR(slice), GRPC_SLICE_LENGTH(slice));
+    grpc_slice s;
+    while (grpc_byte_buffer_reader_next(&reader, &s) != 0)
+    {
+        std::memcpy(dest, GRPC_SLICE_START_PTR(s), GRPC_SLICE_LENGTH(s));
+        dest += GRPC_SLICE_LENGTH(s);
+    }
 
-    // TODO: figure out ref counting for bytebuffer
-    bond::blob data = bond::blob(buff, GPR_SLICE_LENGTH(slice));
+    GPR_ASSERT(dest == buff.get() + bufferSize);
+
+    grpc_slice_unref(s);
+    grpc_byte_buffer_reader_destroy(&reader);
+    grpc_byte_buffer_destroy(buffer);
+
+    // TODO: create a Bond input stream over grpc_byte_buffer to avoid
+    // having to make this copy into a blob.
+    bond::blob data = bond::blob(buff, bufferSize);
     bond::CompactBinaryReader<bond::InputBuffer> cbreader(data);
     bond::bonded<T> payload(cbreader);
 
     *msg = bond::comm::message<T>(payload);
-
-
-    // TODO: exception safety
-    grpc_slice_unref(slice);
-
-    grpc_byte_buffer_reader_destroy(&reader);
-
-    grpc_byte_buffer_destroy(buffer);
 
     return Status::OK;
   }
 };
 
 }  // namespace grpc
-
