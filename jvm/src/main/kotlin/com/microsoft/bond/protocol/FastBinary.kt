@@ -38,13 +38,13 @@ class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short =
 
     override fun writeContainerBegin(count: Int, elementType: BondDataType) {
         writer.writeInt8(elementType.value.toByte())
-        writer.writeVarInt32(count)
+        writer.writeVarUInt32(count)
     }
 
     override fun writeContainerBegin(count: Int, keyType: BondDataType, valueType: BondDataType) {
         writer.writeInt8(keyType.value.toByte())
         writer.writeInt8(valueType.value.toByte())
-        writer.writeVarInt32(count)
+        writer.writeVarUInt32(count)
     }
 
     override fun writeContainerEnd() {}
@@ -98,12 +98,12 @@ class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short =
     }
 
     override fun writeString(value: String) {
-        writer.writeVarInt32(value.length)
+        writer.writeVarUInt32(value.length)
         writer.writeString(value)
     }
 
     override fun writeWString(value: String) {
-        writer.writeVarInt32(value.length)
+        writer.writeVarUInt32(value.length)
         writer.writeWString(value)
     }
 }
@@ -135,15 +135,15 @@ class FastBinaryReader<out S : InputStream>(val stream: S, val version: Short = 
     override fun readFieldEnd() {}
 
     override fun readListBegin(readContainerResult: TaggedProtocolReader.ReadContainerResult) {
-        readContainerResult.key = null
-        readContainerResult.element = readType()
-        readContainerResult.count = UnsignedHelper.asUnsignedLong(reader.readVarInt32())
+        readContainerResult.keyType = null
+        readContainerResult.elementType = readType()
+        readContainerResult.count = reader.readVarUInt32();
     }
 
     override fun readMapBegin(readContainerResult: TaggedProtocolReader.ReadContainerResult) {
-        readContainerResult.key = readType()
-        readContainerResult.element = readType()
-        readContainerResult.count = UnsignedHelper.asUnsignedLong(reader.readVarInt32())
+        readContainerResult.keyType = readType()
+        readContainerResult.elementType = readType()
+        readContainerResult.count = reader.readVarUInt32();
     }
 
     override fun readContainerEnd() {}
