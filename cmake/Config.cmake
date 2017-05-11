@@ -62,6 +62,20 @@ if (WIN32)
         PATHS
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/client/bin/debug"
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/client/bin/retail")
+
+    find_program (BOND_CSHARP_GRPC_COMPAT_SERVER GrpcCompatServer.exe
+        PATH_SUFFIXES net45
+        NO_DEFAULT_PATH
+        PATHS
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/server/bin/debug"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/server/bin/retail")
+
+    find_program (BOND_CSHARP_GRPC_COMPAT_CLIENT GrpcCompatClient.exe
+        PATH_SUFFIXES net45
+        NO_DEFAULT_PATH
+        PATHS
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/client/bin/debug"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/client/bin/retail")
 endif()
 
 # find python interpreter, library and boost python library.
