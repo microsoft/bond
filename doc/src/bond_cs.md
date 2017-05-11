@@ -14,7 +14,7 @@ data transform mechanism. The framework is highly extensible via pluggable
 serialization protocols, data streams, user defined type aliases and more.
 
 By design Bond is language and platform independent and is currently supported
-for C++, C#, and Python on Linux, OS X and Windows.     
+for C++, C#, and Python on Linux, OS X and Windows.
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
@@ -272,8 +272,8 @@ The following changes to a schema will never break compatibility across the wire
 - Adding or removing an `optional` or `required_optional` field
 - Changing a field's type between `int32` and `enum`
 - Changing a field's type between `vector<T>` and `list<T>`
-- Changing a field's type between `blob` and `vector<uint8>` or `blob` and
-  `list<uint8>`
+- Changing a field's type between `blob` and `vector<int8>` or `blob` and
+  `list<int8>`
 - Changing a field's type between `T` and `bonded<T>`
 - Adding new enumeration constants that don't alter existing constants (beware
   of implicit reordering)
@@ -332,10 +332,10 @@ appropriate encoding format. Bond supports three kinds of protocols:
 
   - Untagged protocols
 
-    Untagged protocols serialize only data and thus require that consumers know 
-    the payload schema via some out-of-band mechanism. Untagged protocols are 
-    often used in storage scenarios because they allow storing a 
-    [schema](#runtime-schema) once (e.g. in a system table in a database) and 
+    Untagged protocols serialize only data and thus require that consumers know
+    the payload schema via some out-of-band mechanism. Untagged protocols are
+    often used in storage scenarios because they allow storing a
+    [schema](#runtime-schema) once (e.g. in a system table in a database) and
     thus eliminating metadata overhead from many records using the same schema.
 
   - DOM-based protocols
@@ -349,23 +349,23 @@ Compact Binary
 
 A binary, tagged protocol using variable integer encoding and compact field
 header. A good choice, along with [Fast Binary](#fast-binary), for RPC
-scenarios. 
+scenarios.
 
 Implemented in `CompactBinaryReader` and `CompactBinaryWriter` classes.
 Version 2 of Compact Binary adds length prefix for structs. This enables
 deserialization of [`bonded<T>`](#understanding-bondedt) and skipping of
 unknown struct fields in constant time. The trade-off is double pass encoding,
-resulting in up to 30% slower serialization performance. 
+resulting in up to 30% slower serialization performance.
 
 See also [Compact Binary encoding reference][compact_binary_format_reference].
 
 Fast Binary
 -----------
 
-A binary, tagged protocol similar to [Compact Binary](#compact-binary) but 
+A binary, tagged protocol similar to [Compact Binary](#compact-binary) but
 optimized for deserialization speed rather than payload compactness.
 
-Implemented in `FastBinaryReader` and`FastBinaryWriter` classes. 
+Implemented in `FastBinaryReader` and`FastBinaryWriter` classes.
 
 See also [Fast Binary encoding reference][fast_binary_format_reference].
 
@@ -384,8 +384,8 @@ marshaling objects between processes or between native and managed components.
 
 Implemented in `SimpleBinaryReader` and `SimpleBinaryWriter` classes.
 
-Version 2 of Simple Protocol uses variable integer encoding for string and 
-container lengths, resulting in more compact payload without measurable 
+Version 2 of Simple Protocol uses variable integer encoding for string and
+container lengths, resulting in more compact payload without measurable
 performance impact.
 
 See example: `examples/cs/core/untagged_protocols`.
@@ -1517,9 +1517,8 @@ References
 [bond_py]: bond_py.html
 [compiler]: compiler.html
 
-[compact_binary_format_reference]: 
+[compact_binary_format_reference]:
 ../reference/cpp/compact__binary_8h_source.html
 
-[fast_binary_format_reference]: 
+[fast_binary_format_reference]:
 ../reference/cpp/fast__binary_8h_source.html
-
