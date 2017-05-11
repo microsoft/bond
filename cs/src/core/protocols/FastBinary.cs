@@ -18,12 +18,12 @@
                      .---.---.---.---.---.---.---.---.                           i - id bits
    type              | 0 | 0 | 0 | t | t | t | t | t |                           t - type bits
                      '---'---'---'---'---'---'---'---'                           v - value bits
-                                   4               0 
+                                   4               0
 
    id                .---.   .---.---.   .---.
                      | i |...| i | i |...| i |
                      '---'   '---'---'   '---'
-                       7       0   15      8  
+                       7       0   15      8
 
                                             .---.---.---.---.---.---.---.---.
    value             bool                   |   |   |   |   |   |   |   | v |
@@ -33,13 +33,17 @@
                      integer,               little endian
                      float, double
 
+
                                             .-------.------------.
                      string, wstring        | count | characters |
                                             '-------'------------'
 
-                           count            variable uint32 count of 1-byte or 2-byte characters
+                           count            variable encoded uint32 count of 1-byte (for
+                                            string) or 2-byte (for wstring) Unicode code
+                                            units
 
-                           characters       1-byte or 2-byte characters
+                           characters       1-byte UTF-8 code units (for string) or 2-byte
+                                            UTF-16LE code units (for wstring)
 
 
                                             .-------.-------.-------.
@@ -49,9 +53,9 @@
                                             .---.---.---.---.---.---.---.---.
                            type             |   |   |   | t | t | t | t | t |
                                             '---'---'---'---'---'---'---'---'
-                                                          4               0 
+                                                          4               0
 
-                           count            variable uint32 count of items 
+                           count            variable uint32 count of items
 
                            items            each item encoded according to its type
 
@@ -63,7 +67,7 @@
                                             .---.---.---.---.---.---.---.---.
                             key type,       |   |   |   | t | t | t | t | t |
                             value type      '---'---'---'---'---'---'---'---'
-                                                          4               0 
+                                                          4               0
 
                             count           variable encoded uint32 count of {key,mapped} pairs
 
@@ -74,7 +78,7 @@
                      .---.---.   .---..---.---.   .---..---.---.   .---..---.---.   .---..---.---.---.---.   .---.
                      | 1 | v |...| v || 1 | v |...| v || 1 | v |...| v || 1 | v |...| v || 0 | 0 | 0 | v |...| v |
                      '---'---'   '---''---'---'   '---''---'---'   '---''---'---'   '---''---'---'---'---'   '---'
-                           6       0        13      7        20      14       27      21               31      28 
+                           6       0        13      7        20      14       27      21               31      28
 
                      1 to 5 bytes, high bit of every byte indicates if there is another byte
 
@@ -142,7 +146,7 @@ namespace Bond.Protocols
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public void WriteBaseBegin(Metadata metadata) 
+        public void WriteBaseBegin(Metadata metadata)
         {}
 
         /// <summary>
@@ -192,17 +196,17 @@ namespace Bond.Protocols
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public void WriteFieldOmitted(BondDataType dataType, ushort id, Metadata metadata) 
+        public void WriteFieldOmitted(BondDataType dataType, ushort id, Metadata metadata)
         {}
 
-        
+
         /// <summary>
         /// End writing a field
         /// </summary>
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public void WriteFieldEnd() 
+        public void WriteFieldEnd()
         {}
 
         /// <summary>
@@ -241,7 +245,7 @@ namespace Bond.Protocols
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public void WriteContainerEnd() 
+        public void WriteContainerEnd()
         {}
 
         /// <summary>
@@ -503,7 +507,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Start reading a field
         /// </summary>
-        /// <param name="type">An out parameter set to the field type 
+        /// <param name="type">An out parameter set to the field type
         /// or BT_STOP/BT_STOP_BASE if there is no more fields in current struct/base</param>
         /// <param name="id">Out parameter set to the field identifier</param>
         /// <exception cref="EndOfStreamException"/>
@@ -870,7 +874,7 @@ namespace Bond.Protocols
 
                 if (type == BondDataType.BT_STOP_BASE) continue;
                 if (type == BondDataType.BT_STOP) break;
-                    
+
                 Skip(type);
             }
         }
