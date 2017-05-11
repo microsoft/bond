@@ -16,13 +16,13 @@ namespace PingPongServer
 
     public class PingPongService : PingPongServiceBase
     {
-        const int NumRequestsExpected = 10;
-        const int NumEventsExpected = 9;
-        const int NumErrorsExpected = 8;
-        const int NumThrowsExpected = 7;
-        static int NumRequests = 0;
-        static int NumEvents = 0;
-        static int NumErrors = 0;
+        static CountdownEvent Countdown = new CountdownEvent((int)PingConstants.NumRequests +
+                                                             (int)PingConstants.NumEvents +
+                                                             (int)PingConstants.NumErrors);
+
+        static int NumRequestsReceived = 0;
+        static int NumEventsReceived = 0;
+        static int NumErrorsReceived = 0;
 
         public override Task<IMessage<PingResponse>> PingAsync(IMessage<PingRequest> param, CancellationToken ct)
         {
@@ -38,7 +38,8 @@ namespace PingPongServer
 
                     var response = new PingResponse { Payload = request.Payload };
                     message = Message.FromPayload(response);
-                    NumRequests++;
+                    Interlocked.Increment(ref NumRequestsReceived);
+                    Countdown.Signal();
                     break;
 
                 case PingAction.Error:
@@ -47,10 +48,12 @@ namespace PingPongServer
 
                     var error = new Error { error_code = 1234, message = request.Payload };
                     message = Message.FromError<PingResponse>(error);
-                    NumErrors++;
+                    Interlocked.Increment(ref NumErrorsReceived);
+                    Countdown.Signal();
                     break;
 
                 default:
+                    Countdown.Signal();
                     throw new NotImplementedException("Unknown PingAction");
             }
 
@@ -64,12 +67,13 @@ namespace PingPongServer
             Console.Out.WriteLine($"Received event \"{request.Payload}\"");
             Console.Out.Flush();
 
-            NumEvents++;
+            Interlocked.Increment(ref NumEventsReceived);
+            Countdown.Signal();
         }
 
         private static async Task SetupAsync(ILayerStackProvider layerStackProvider)
         {
-            var endpoint = new IPEndPoint(IPAddress.Loopback, 25188);
+            var endpoint = new IPEndPoint(IPAddress.Loopback, (int)PingConstants.Port);
             EpoxyTransport transport = new EpoxyTransportBuilder().SetLayerStackProvider(layerStackProvider).Construct();
             EpoxyListener pingPongListener = transport.MakeListener(endpoint);
 
@@ -90,11 +94,12 @@ namespace PingPongServer
             Console.Out.WriteLine("Server ready");
             Console.Out.Flush();
 
-            Thread.Sleep(3000);
+            bool countdownSet = Countdown.Wait(30000);
 
-            if ((NumRequests != NumRequestsExpected) ||
-                (NumEvents != NumEventsExpected) ||
-                (NumErrors != NumErrorsExpected))
+            if (!countdownSet ||
+                (NumRequestsReceived != (int)PingConstants.NumRequests) ||
+                (NumEventsReceived != (int)PingConstants.NumEvents) ||
+                (NumErrorsReceived != (int)PingConstants.NumErrors))
             {
                 Console.Out.WriteLine("Server failed: Did not receive all expected messages");
                 Console.Out.Flush();

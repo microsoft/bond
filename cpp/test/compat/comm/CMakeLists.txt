@@ -1,6 +1,6 @@
 cxx_add_compile_options(Clang -Wno-unused-value)
 
-add_bond_executable (comm_compatibility_test COMM EXCLUDE_FROM_ALL
+add_bond_executable (comm_compatibility_test EXCLUDE_FROM_ALL
     commcmd_arg.bond
     commcompat.cpp)
 
@@ -26,8 +26,6 @@ target_compile_definitions (comm_compatibility_test PRIVATE
     -DBOND_COMPACT_BINARY_PROTOCOL
     -DBOND_FAST_BINARY_PROTOCOL)
 
-target_link_libraries (cpp_comm_compat_server PRIVATE
-    ${Boost_CHRONO_LIBRARY})
 target_link_libraries (cpp_comm_compat_client PRIVATE
     ${Boost_CHRONO_LIBRARY})
 
