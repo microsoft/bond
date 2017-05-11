@@ -6,14 +6,16 @@
 #endif
 
 #include <bond/ext/grpc/thread_pool.h>
+#include <bond/ext/detail/event.h>
 
 // TODO: move unit_test_framework.h to cpp/test/inc
 #include "../core/unit_test_framework.h"
-#include "test_utils_grpc.h"
 
 #include <boost/chrono.hpp>
 #include <atomic>
 #include <functional>
+
+using namespace bond::ext::detail;
 
 class BasicThreadPoolTests
 {

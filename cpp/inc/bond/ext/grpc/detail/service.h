@@ -20,7 +20,7 @@
 
 namespace bond { namespace ext { namespace gRPC { namespace detail {
 
-struct io_mgr_tag;
+struct cq_poller_tag;
 
 /// @brief Base class that all Bond gRPC++ services implement.
 ///
@@ -38,7 +38,7 @@ public:
     /// @note This method is for use by generated and helper code only.
     ///
     /// Typical implementations call queue_receive on all the methods in the
-    /// service to kick of the process of receiveing messages.
+    /// service to kick of the process of receiving messages.
     virtual void start(grpc::ServerCompletionQueue* cq) = 0;
 
     /// @brief Starts the receive process for a method.
@@ -61,7 +61,7 @@ public:
     /// @param cq the completion queue to notify when a call has been
     /// received
     ///
-    /// @param tag the io_mgr_tag to include with the completion queue
+    /// @param tag the cq_poller_tag to include with the completion queue
     /// notification
     template <typename TRequest>
     void queue_receive(
@@ -70,7 +70,7 @@ public:
         TRequest* request,
         grpc::ServerAsyncStreamingInterface* responseStream,
         grpc::ServerCompletionQueue* cq,
-        detail::io_mgr_tag* tag)
+        cq_poller_tag* tag)
     {
         RequestAsyncUnary(
             methodIndex,

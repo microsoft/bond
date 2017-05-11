@@ -47,7 +47,7 @@
     #pragma warning (pop)
 #endif
 
-#include <bond/ext/grpc/io_mgr.h>
+#include <bond/ext/grpc/detail/cq_poller.h>
 
 #include <boost/assert.hpp>
 #include <boost/optional/optional.hpp>
@@ -65,15 +65,8 @@ namespace bond { namespace ext { namespace gRPC {
     public:
         ~server()
         {
-            if (_ioThread)
-            {
-                // if we have an _ioThread, then we've been started, so we
-                // should request shutdown
-                Shutdown();
-
-                // Wait will get rid of the _ioThread.
-                Wait();
-            }
+            Shutdown();
+            Wait();
         }
 
         server(const server&) = delete;
@@ -87,20 +80,20 @@ namespace bond { namespace ext { namespace gRPC {
         ///
         /// Forcefully terminate pending calls after \p deadline expires.
         ///
-        /// @param deadline How long to wait until pending rpcs are forcefully
-        /// terminated.
+        /// @param deadline How long to wait until pending rpcs are
+        /// forcefully terminated.
         template <class T>
         void Shutdown(const T& deadline)
         {
             _grpcServer->Shutdown(deadline);
-            _cq->Shutdown();
+            _cqPoller.shutdown();
         }
 
         /// Shutdown the server, waiting for all rpc processing to finish.
         void Shutdown()
         {
             _grpcServer->Shutdown();
-            _cq->Shutdown();
+            _cqPoller.shutdown();
         }
 
         /// @brief Block waiting for all work to complete.
@@ -110,53 +103,28 @@ namespace bond { namespace ext { namespace gRPC {
         void Wait()
         {
             _grpcServer->Wait();
-
-            // server_builder should have called start() before returning this,
-            // so we should have an IO thread.
-
-            // TODO: Wait() cannot currently be called by multiple threads at
-            // once. The following code is not safe to be called from multiple
-            // threads. Switching to an io manager like we plan to should fix
-            // this.
-            BOOST_ASSERT(_ioThread);
-            BOOST_ASSERT(_ioThread.get().joinable());
-            _ioThread.get().join();
-            _ioThread = boost::none;
+            _cqPoller.wait();
         }
 
         friend class server_builder;
 
-    private:
-        server(
-            std::unique_ptr<grpc::Server> grpcServer,
-            std::unique_ptr<grpc::ServerCompletionQueue> cq)
-            : _grpcServer(grpcServer.release()),
-            _cq(cq.release()),
-            _ioThread()
-        {
-            BOOST_ASSERT(_grpcServer);
-            BOOST_ASSERT(_cq);
-        }
+private:
+    server(
+        std::unique_ptr<grpc::Server> grpcServer,
+        std::unique_ptr<grpc::ServerCompletionQueue> cq)
+        : _grpcServer(std::move(grpcServer)),
+        _cqPoller(std::move(cq))
+    {
+        BOOST_ASSERT(_grpcServer);
+    }
 
-        void start()
-        {
-            // TODO: replace with an io_mgr class
-            grpc::CompletionQueue* cq = _cq.get();
-            _ioThread.emplace([cq]()
-            {
-                void* tag;
-                bool ok;
-                while (cq->Next(&tag, &ok))
-                {
-                    BOOST_ASSERT(tag);
-                    static_cast<detail::io_mgr_tag*>(tag)->invoke(ok);
-                }
-            });
-        }
+    void start()
+    {
+        _cqPoller.start();
+    }
 
         std::unique_ptr<grpc::Server> _grpcServer;
-        std::unique_ptr<grpc::ServerCompletionQueue> _cq;
-        boost::optional<std::thread> _ioThread;
+        detail::cq_poller _cqPoller;
     };
 
 } } } //namespace bond::ext::gRPC

@@ -106,8 +106,8 @@ namespace bond { namespace ext { namespace gRPC {
         ///
         /// All algorithms are enabled by default.
         ///
-        /// Incoming calls compressed with an unsupported algorithm will fail with
-        /// GRPC_STATUS_UNIMPLEMENTED.
+        /// Incoming calls compressed with an unsupported algorithm will
+        /// fail with GRPC_STATUS_UNIMPLEMENTED.
         server_builder& SetCompressionAlgorithmSupportStatus(
             grpc_compression_algorithm algorithm,
             bool enabled)
@@ -116,17 +116,17 @@ namespace bond { namespace ext { namespace gRPC {
             return *this;
         }
 
-        /// The default compression level to use for all channel calls in the
-        /// absence of a call-specific level.
+        /// The default compression level to use for all channel calls in
+        /// the absence of a call-specific level.
         server_builder& SetDefaultCompressionLevel(grpc_compression_level level)
         {
             _grpcServerBuilder.SetDefaultCompressionLevel(level);
             return *this;
         }
 
-        /// The default compression algorithm to use for all channel calls in the
-        /// absence of a call-specific level. Note that it overrides any
-        /// compression level set by \p SetDefaultCompressionLevel.
+        /// The default compression algorithm to use for all channel calls
+        /// in the absence of a call-specific level. Note that it overrides
+        /// any compression level set by \p SetDefaultCompressionLevel.
         server_builder& SetDefaultCompressionAlgorithm(
             grpc_compression_algorithm algorithm)
         {
@@ -148,8 +148,8 @@ namespace bond { namespace ext { namespace gRPC {
         /// @param addr The address to try to bind to the server (eg,
         /// localhost:1234, 192.168.1.1:31416, [::1]:27182, etc.).
         /// @param creds The credentials associated with the server.
-        /// @param[out] selected_port Upon success, updated to contain the port
-        /// number. \p nullptr otherwise.
+        /// @param[out] selected_port Upon success, updated to contain the
+        /// port number. \p nullptr otherwise.
         server_builder& AddListeningPort(
             const grpc::string& addr,
             std::shared_ptr<grpc::ServerCredentials> creds,

@@ -16,7 +16,7 @@
     #pragma warning (pop)
 #endif
 
-#include <bond/ext/grpc/io_mgr.h>
+#include <bond/ext/grpc/detail/cq_poller.h>
 
 #include <boost/assert.hpp>
 #include <atomic>
@@ -30,9 +30,9 @@ namespace detail {
     ///
     /// It manages its own lifetime: to send a response, it enques itself in
     /// the completion queue. When that sending of the response is done and
-    /// it is dequed from the completion queue, it deletes itself.
+    /// it is dequeued from the completion queue, it deletes itself.
     template <typename TRequest, typename TResponse>
-    struct unary_call_impl final : detail::io_mgr_tag
+    struct unary_call_impl final : detail::cq_poller_tag
     {
         grpc::ServerContext _context;
         TRequest _request;

@@ -17,7 +17,7 @@
     #pragma warning (pop)
 #endif
 
-#include <bond/ext/grpc/io_mgr.h>
+#include <bond/ext/grpc/detail/cq_poller.h>
 #include <bond/ext/grpc/detail/service.h>
 #include <bond/ext/grpc/unary_call.h>
 
@@ -32,14 +32,13 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
 /// receiving incomming calls for one method.
 ///
 /// There only needs to be one of these per method in a service, and it can
-/// be re-used for receiveing subsequent calls. A new
-/// detail::unary_call_impl is created for each individual call to hold the
-/// call-specific data. Once the detail::unary_call_impl has been dispatched
-/// to the user callback, detail::unary_call_impl is in charge of its own
-/// lifetime, and detail::service_unary_call_data re-enqueues itself to get
-/// the next call.
+/// be re-used for receiving subsequent calls. A new detail::unary_call_impl
+/// is created for each individual call to hold the call-specific data. Once
+/// the detail::unary_call_impl has been dispatched to the user callback,
+/// detail::unary_call_impl is in charge of its own lifetime, and
+/// detail::service_unary_call_data re-enqueues itself to get the next call.
 template <typename TRequest, typename TResponse>
-struct service_unary_call_data : io_mgr_tag
+struct service_unary_call_data : cq_poller_tag
 {
     typedef std::function<void(unary_call<TRequest, TResponse> call)> CallbackType;
 
