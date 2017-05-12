@@ -8,6 +8,7 @@ module Tests.Codegen
     ( verifyCodegen
     , verifyCppCodegen
     , verifyCppCommCodegen
+    , verifyCppGrpcCodegen
     , verifyApplyCodegen
     , verifyExportsCodegen
     , verifyCsCodegen
@@ -84,6 +85,18 @@ verifyCppCommCodegen args baseName =
     templates =
         [ comm_h (export_attribute options)
         , comm_cpp
+        , types_cpp
+        ]
+
+verifyCppGrpcCodegen :: [String] -> FilePath -> TestTree
+verifyCppGrpcCodegen args baseName =
+    testGroup baseName $
+        map (verifyFile options baseName cppTypeMapping "") templates
+  where
+    options = processOptions args
+    templates =
+        [ grpc_h (export_attribute options)
+        , grpc_cpp
         , types_cpp
         ]
 

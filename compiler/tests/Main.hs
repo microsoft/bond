@@ -122,6 +122,20 @@ tests = testGroup "Compiler tests"
                     ]
                     "service_attributes"
                 ]
+            , testGroup "Grpc"
+                [ verifyCppGrpcCodegen
+                    [ "c++"
+                    ]
+                    "service"
+                , verifyCppGrpcCodegen
+                    [ "c++"
+                    ]
+                    "generic_service"
+                , verifyCppGrpcCodegen
+                    [ "c++"
+                    ]
+                    "service_attributes"
+                ]
             ]
         , testGroup "C#"
             [ verifyCsCodegen "attributes"
