@@ -124,11 +124,14 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
         CODE python
         OPTIONS --self-contained --table-of-contents)
 
+    file(GLOB_RECURSE cpp_headers ../cpp/inc/bond/*.h)
+    
     set (doxygen_sources
         doxygen/bond.doxygen
         doxygen/bond_layout.xml
         doxygen/bond_reference.css
-        doxygen/mainpage.md)
+        doxygen/mainpage.md
+        ${cpp_headers})
 
     set (doxygen_output_dir
         "${CMAKE_CURRENT_BINARY_DIR}/html/reference")
