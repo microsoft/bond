@@ -47,6 +47,13 @@ public:
         if (0 == numThreads)
         {
             numThreads = std::thread::hardware_concurrency();
+            if (numThreads == 0)
+            {
+                // hardware_concurrency can return 0 if it can't figure out
+                // the hardware concurrency. Use a small number larger than 1.
+                const uint32_t recourseNumThreads = 2;
+                numThreads = recourseNumThreads;
+            }
         }
 
         //
