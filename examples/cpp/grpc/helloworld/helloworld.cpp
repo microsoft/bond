@@ -1,10 +1,23 @@
 #include "helloworld_types.h"
 #include "helloworld_grpc.h"
 
-#pragma warning (push)
-#pragma warning (disable: 4100)
+// TODO: this should be generated
+#include "helloworld_service.h"
+
+#ifdef _MSC_VER
+    #pragma warning (push)
+    #pragma warning (disable: 4100)
+#endif
 
 #include <grpc++/grpc++.h>
+
+#ifdef _MSC_VER
+    #pragma warning (pop)
+#endif
+
+#include <bond/ext/grpc/server.h>
+#include <bond/ext/grpc/server_builder.h>
+#include <bond/ext/grpc/unary_call.h>
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -27,7 +40,7 @@ class GreeterClient {
     ClientContext context;
 
     HelloRequest request;
-    request.name = "world";
+    request.name = user;
 
     HelloReply reply;
 
@@ -50,17 +63,19 @@ class GreeterClient {
 };
 
 // Logic and data behind the server's behavior.
-class GreeterServiceImpl final : public Greeter::Service {
-  Status SayHello(ServerContext* context, const bond::comm::message<HelloRequest>* request,
-                  bond::comm::message<HelloReply>* reply) override {
-    HelloReply real_reply;
-    real_reply.message = "hello " + request->value().Deserialize().name;
+class GreeterServiceImpl final : public GreeterServiceAsync {
+    void SayHello(
+        bond::ext::gRPC::unary_call<
+            bond::comm::message<::helloworld::HelloRequest>,
+            bond::comm::message<::helloworld::HelloReply>> call) override
+    {
+        HelloReply real_reply;
+        real_reply.message = "hello " + call.request().value().Deserialize().name;
 
-    bond::comm::message<HelloReply> rep(real_reply);
-    *reply = rep;
+        bond::comm::message<HelloReply> rep(real_reply);
 
-    return Status::OK;
-  }
+        call.Finish(rep, Status::OK);
+    }
 };
 
 int main()
@@ -68,10 +83,10 @@ int main()
     const std::string server_address("127.0.0.1:50051");
     GreeterServiceImpl service;
 
-    ServerBuilder builder;
+    bond::ext::gRPC::server_builder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
     builder.RegisterService(&service);
-    std::unique_ptr<Server> server(builder.BuildAndStart());
+    std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
 
     GreeterClient greeter(grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()));
     std::string user("world");
@@ -87,5 +102,3 @@ int main()
         return 1;
     }
 }
-
-#pragma warning (pop)

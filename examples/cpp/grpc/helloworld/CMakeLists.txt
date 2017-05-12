@@ -6,5 +6,5 @@ target_link_libraries(grpc-helloworld PRIVATE grpc++)
 target_include_directories(grpc-helloworld
   # TODO: It feels like the grpc++ target should have this as part of its
   # interface... Perhaps a patch for upstream?
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../../thirdparty/grpc/include
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../../../thirdparty/grpc/include
 )

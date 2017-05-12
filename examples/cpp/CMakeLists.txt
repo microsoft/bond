@@ -7,6 +7,5 @@ if (NOT BOND_CORE_ONLY)
 endif()
 
 if (BOND_ENABLE_GRPC)
-    # Bond-over-gRPC++ SYNC test.
-    add_subfolder (grpc-helloworld "examples/grpc-helloworld")
+    add_subfolder (grpc "examples/grpc")
 endif()

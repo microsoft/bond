@@ -25,21 +25,18 @@
 
 namespace bond { namespace ext
 {
-//
-// Basic thread pool implementation.
-//
+/// @brief Basic thread pool implementation.
 class thread_pool
     : private boost::asio::io_service
 {
 public:
 
-    //
-    // Constructs a thread pool with the specified number of threads
-    //
-    // @param numThreads: total number of threads to be created
-    // @remark:
-    //     Zero number of concurrent threads will allow simultaneous
-    //     execution of as many threads as many CPU/cores are available.
+    /// @brief Constructs and starts a thread pool with the specified number of
+    /// threads.
+    ///
+    /// @param numThreads total number of threads to be created. If zero
+    /// then as many threads as many CPU/cores are available will be
+    /// created.
     explicit
     thread_pool(uint32_t numThreads = 0)
         : _work(*this)
@@ -66,20 +63,16 @@ public:
     }
 
 
-    //
-    // Schedules callback for execution
-    //
-    // @param callback: functor object to be scheduled.
-    //
+    /// @brief Schedules a callback for execution.
+    ///
+    /// @param callback: functor object to be scheduled.
     template <typename Callback>
     void schedule(Callback&& callback)
     {
         this->post(std::forward<Callback>(callback));
     }
 
-    //
-    // Provide io_service
-    //
+    /// @brief Get the underlying boost::asio::io_service
     boost::asio::io_service& get_io_service()
     {
         return *this;
@@ -87,14 +80,10 @@ public:
 
 private:
 
-    //
-    // Working threads.
-    //
+    /// Working threads.
     std::vector<boost::scoped_thread<boost::join_if_joinable>> _threads;
 
-    //
-    // Helper to keep io_service spinning.
-    //
+    /// Helper to keep io_service spinning.
     boost::asio::io_service::work _work;
 };
 
