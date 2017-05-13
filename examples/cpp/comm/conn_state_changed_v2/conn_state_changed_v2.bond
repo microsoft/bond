@@ -1,0 +1,11 @@
+namespace examples.layer
+
+struct Trace
+{
+    0: string id = "{00000000-0000-0000-0000-000000000000}";
+}
+
+service Service
+{
+    void Method();
+};
