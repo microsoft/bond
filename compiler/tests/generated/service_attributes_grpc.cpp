@@ -43,27 +43,6 @@ Foo::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
     return new ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::Result>>(channel_.get(), cq, rpcmethod_foo_, context, request);
 }
 
-Foo::Service::Service()
-{
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[0],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message< ::tests::Param>, ::bond::comm::message< ::tests::Result>>(
-          std::mem_fn(&Foo::Service::foo), this)));
-
-}
-
-Foo::Service::~Service() { }
-
-::grpc::Status Foo::Service::foo(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::Param>* request, ::bond::comm::message< ::tests::Result>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-
 } // namespace tests
 
 #pragma warning (pop)

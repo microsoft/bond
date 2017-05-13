@@ -65,55 +65,6 @@ Foo::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
     return new ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>(channel_.get(), cq, rpcmethod_foo33_, context, request);
 }
 
-Foo::Service::Service()
-{
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[0],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message<Payload>, ::bond::comm::message<void>>(
-          std::mem_fn(&Foo::Service::foo31), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[1],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message<void>, ::bond::comm::message<Payload>>(
-          std::mem_fn(&Foo::Service::foo32), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[2],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message<Payload>, ::bond::comm::message<Payload>>(
-          std::mem_fn(&Foo::Service::foo33), this)));
-
-}
-
-Foo::Service::~Service() { }
-
-::grpc::Status Foo::Service::foo31(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<void>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo32(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<Payload>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo33(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<Payload>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-
 } // namespace tests
 
 #pragma warning (pop)

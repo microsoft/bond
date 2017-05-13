@@ -3,23 +3,32 @@
 
 #include "service_reflection.h"
 #include "service_types.h"
-#include <bond/comm/message.h>
 #include "basic_types_grpc.h"
 #include "namespace_basic_types_grpc.h"
 
+#include <bond/comm/message.h>
+#include <bond/ext/grpc/bond_utils.h>
+#include <bond/ext/grpc/unary_call.h>
+#include <bond/ext/grpc/detail/service.h>
+#include <bond/ext/grpc/detail/service_call_data.h>
+
+#include <boost/optional/optional.hpp>
+
+#ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable: 4100 4267)
-#include <bond/ext/grpc/bond_utils.h>
+#endif
 
-//?#include <grpc++/impl/codegen/async_stream.h>
 #include <grpc++/impl/codegen/async_unary_call.h>
 #include <grpc++/impl/codegen/method_handler_impl.h>
-//#include <grpc++/impl/codegen/bond_utils.h>
 #include <grpc++/impl/codegen/rpc_method.h>
 #include <grpc++/impl/codegen/service_type.h>
 #include <grpc++/impl/codegen/status.h>
 #include <grpc++/impl/codegen/stub_options.h>
-//??#include <grpc++/impl/codegen/sync_stream.h>
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
 
 namespace tests
 {
@@ -86,6 +95,12 @@ public:
             return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>>(Asyncfoo33Raw(context, request, cq));
         }
 
+        virtual ::grpc::Status _rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::bond::comm::message< ::tests::BasicTypes>* response) = 0;
+        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>> Async_rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>>(Async_rd_foo33Raw(context, request, cq));
+        }
+
         virtual ::grpc::Status foo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::bond::comm::message< ::tests::BasicTypes>* response) = 0;
         std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>> Asyncfoo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq)
         {
@@ -115,6 +130,13 @@ public:
         {
             return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>>(Asyncfoo44Raw(context, request, cq));
         }
+
+        virtual ::grpc::Status cq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::BasicTypes>* response) = 0;
+        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>> Asynccq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>>(AsynccqRaw(context, request, cq));
+        }
+
     private:
         /* TODO stub interface (private) for event foo11 */
         /* TODO stub interface (private) for event foo12 */
@@ -129,11 +151,13 @@ public:
         virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo31Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
         virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo32Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
         virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo33Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) = 0;
+        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* Async_rd_foo33Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) = 0;
         virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo34Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq) = 0;
         virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>* Asyncfoo41Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
         virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>* Asyncfoo42Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
         virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>* Asyncfoo43Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) = 0;
         virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>* Asyncfoo44Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq) = 0;
+        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* AsynccqRaw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
     };
 
     class Stub final : public StubInterface
@@ -195,6 +219,12 @@ public:
             return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>>(Asyncfoo33Raw(context, request, cq));
         }
 
+        ::grpc::Status _rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::bond::comm::message< ::tests::BasicTypes>* response) override;
+        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>> Async_rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>>(Async_rd_foo33Raw(context, request, cq));
+        }
+
         ::grpc::Status foo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::bond::comm::message< ::tests::BasicTypes>* response) override;
         std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>> Asyncfoo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq)
         {
@@ -224,20 +254,15 @@ public:
         {
             return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>>(Asyncfoo44Raw(context, request, cq));
         }
+
+        ::grpc::Status cq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::BasicTypes>* response) override;
+        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>> Asynccq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>>(AsynccqRaw(context, request, cq));
+        }
+
     private:
         std::shared_ptr< ::grpc::ChannelInterface> channel_;
-
-        /* TODO stub implementation (private) for event foo11 */
-
-        /* TODO stub implementation (private) for event foo12 */
-
-        /* TODO stub implementation (private) for event foo12_impl */
-
-        /* TODO stub implementation (private) for event foo13 */
-
-        /* TODO stub implementation (private) for event foo14 */
-
-        /* TODO stub implementation (private) for event foo15 */
 
         ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>* Asyncfoo21Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo21_;
@@ -260,6 +285,9 @@ public:
         ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo33Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo33_;
 
+        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* Async_rd_foo33Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) override;
+        const ::grpc::RpcMethod rpcmethod__rd_foo33_;
+
         ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo34Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo34_;
 
@@ -274,388 +302,132 @@ public:
 
         ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>* Asyncfoo44Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo44_;
+
+        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* AsynccqRaw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) override;
+        const ::grpc::RpcMethod rpcmethod_cq_;
     };
 
     static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
-    class Service : public ::grpc::Service
+    class Service : public ::bond::ext::gRPC::detail::service
     {
     public:
-        Service();
-        virtual ~Service();
+        Service()
+        {
+            AddMethod("/tests.Foo/foo11");
+            AddMethod("/tests.Foo/foo12");
+            AddMethod("/tests.Foo/foo12_impl");
+            AddMethod("/tests.Foo/foo13");
+            AddMethod("/tests.Foo/foo14");
+            AddMethod("/tests.Foo/foo15");
+            AddMethod("/tests.Foo/foo21");
+            AddMethod("/tests.Foo/foo22");
+            AddMethod("/tests.Foo/foo23");
+            AddMethod("/tests.Foo/foo24");
+            AddMethod("/tests.Foo/foo31");
+            AddMethod("/tests.Foo/foo32");
+            AddMethod("/tests.Foo/foo33");
+            AddMethod("/tests.Foo/_rd_foo33");
+            AddMethod("/tests.Foo/foo34");
+            AddMethod("/tests.Foo/foo41");
+            AddMethod("/tests.Foo/foo42");
+            AddMethod("/tests.Foo/foo43");
+            AddMethod("/tests.Foo/foo44");
+            AddMethod("/tests.Foo/cq");
+        }
 
-        /* TODO service method for event foo11 */
-        /* TODO service method for event foo12 */
-        /* TODO service method for event foo12_impl */
-        /* TODO service method for event foo13 */
-        /* TODO service method for event foo14 */
-        /* TODO service method for event foo15 */
-        virtual ::grpc::Status foo21(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<void>* response);
-        virtual ::grpc::Status foo22(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<void>* response);
-        virtual ::grpc::Status foo23(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::BasicTypes>* request, ::bond::comm::message<void>* response);
-        virtual ::grpc::Status foo24(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::dummy>* request, ::bond::comm::message<void>* response);
-        virtual ::grpc::Status foo31(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::BasicTypes>* response);
-        virtual ::grpc::Status foo32(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::BasicTypes>* response);
-        virtual ::grpc::Status foo33(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::BasicTypes>* request, ::bond::comm::message< ::tests::BasicTypes>* response);
-        virtual ::grpc::Status foo34(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::dummy>* request, ::bond::comm::message< ::tests::BasicTypes>* response);
-        virtual ::grpc::Status foo41(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::dummy>* response);
-        virtual ::grpc::Status foo42(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::dummy>* response);
-        virtual ::grpc::Status foo43(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::BasicTypes>* request, ::bond::comm::message< ::tests::dummy>* response);
-        virtual ::grpc::Status foo44(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::dummy>* request, ::bond::comm::message< ::tests::dummy>* response);
-    };
+        virtual ~Service() { }
+        virtual void start(::grpc::ServerCompletionQueue* cq0) override
+        {
+            BOOST_ASSERT(cq0);
 
-    /* TODO async mixin for event foo11 */
+            /* TODO: init for event foo11 */
+            /* TODO: init for event foo12 */
+            /* TODO: init for event foo12_impl */
+            /* TODO: init for event foo13 */
+            /* TODO: init for event foo14 */
+            /* TODO: init for event foo15 */
+            _rd_foo21.emplace(this, 6, cq0, std::bind(&foo21, this, std::placeholders::_1));
+            _rd_foo22.emplace(this, 7, cq0, std::bind(&foo22, this, std::placeholders::_1));
+            _rd_foo23.emplace(this, 8, cq0, std::bind(&foo23, this, std::placeholders::_1));
+            _rd_foo24.emplace(this, 9, cq0, std::bind(&foo24, this, std::placeholders::_1));
+            _rd_foo31.emplace(this, 10, cq0, std::bind(&foo31, this, std::placeholders::_1));
+            _rd_foo32.emplace(this, 11, cq0, std::bind(&foo32, this, std::placeholders::_1));
+            _rd_foo330.emplace(this, 12, cq0, std::bind(&foo33, this, std::placeholders::_1));
+            _rd__rd_foo33.emplace(this, 13, cq0, std::bind(&_rd_foo33, this, std::placeholders::_1));
+            _rd_foo34.emplace(this, 14, cq0, std::bind(&foo34, this, std::placeholders::_1));
+            _rd_foo41.emplace(this, 15, cq0, std::bind(&foo41, this, std::placeholders::_1));
+            _rd_foo42.emplace(this, 16, cq0, std::bind(&foo42, this, std::placeholders::_1));
+            _rd_foo43.emplace(this, 17, cq0, std::bind(&foo43, this, std::placeholders::_1));
+            _rd_foo44.emplace(this, 18, cq0, std::bind(&foo44, this, std::placeholders::_1));
+            _rd_cq.emplace(this, 19, cq0, std::bind(&cq, this, std::placeholders::_1));
 
-    /* TODO async mixin for event foo12 */
+            /* TODO: queue event foo11 */
+            /* TODO: queue event foo12 */
+            /* TODO: queue event foo12_impl */
+            /* TODO: queue event foo13 */
+            /* TODO: queue event foo14 */
+            /* TODO: queue event foo15 */
+            queue_receive(6, &_rd_foo21->_receivedCall->_context, &_rd_foo21->_receivedCall->_request, &_rd_foo21->_receivedCall->_responder, cq0, &_rd_foo21.get());
+            queue_receive(7, &_rd_foo22->_receivedCall->_context, &_rd_foo22->_receivedCall->_request, &_rd_foo22->_receivedCall->_responder, cq0, &_rd_foo22.get());
+            queue_receive(8, &_rd_foo23->_receivedCall->_context, &_rd_foo23->_receivedCall->_request, &_rd_foo23->_receivedCall->_responder, cq0, &_rd_foo23.get());
+            queue_receive(9, &_rd_foo24->_receivedCall->_context, &_rd_foo24->_receivedCall->_request, &_rd_foo24->_receivedCall->_responder, cq0, &_rd_foo24.get());
+            queue_receive(10, &_rd_foo31->_receivedCall->_context, &_rd_foo31->_receivedCall->_request, &_rd_foo31->_receivedCall->_responder, cq0, &_rd_foo31.get());
+            queue_receive(11, &_rd_foo32->_receivedCall->_context, &_rd_foo32->_receivedCall->_request, &_rd_foo32->_receivedCall->_responder, cq0, &_rd_foo32.get());
+            queue_receive(12, &_rd_foo330->_receivedCall->_context, &_rd_foo330->_receivedCall->_request, &_rd_foo330->_receivedCall->_responder, cq0, &_rd_foo330.get());
+            queue_receive(13, &_rd__rd_foo33->_receivedCall->_context, &_rd__rd_foo33->_receivedCall->_request, &_rd__rd_foo33->_receivedCall->_responder, cq0, &_rd__rd_foo33.get());
+            queue_receive(14, &_rd_foo34->_receivedCall->_context, &_rd_foo34->_receivedCall->_request, &_rd_foo34->_receivedCall->_responder, cq0, &_rd_foo34.get());
+            queue_receive(15, &_rd_foo41->_receivedCall->_context, &_rd_foo41->_receivedCall->_request, &_rd_foo41->_receivedCall->_responder, cq0, &_rd_foo41.get());
+            queue_receive(16, &_rd_foo42->_receivedCall->_context, &_rd_foo42->_receivedCall->_request, &_rd_foo42->_receivedCall->_responder, cq0, &_rd_foo42.get());
+            queue_receive(17, &_rd_foo43->_receivedCall->_context, &_rd_foo43->_receivedCall->_request, &_rd_foo43->_receivedCall->_responder, cq0, &_rd_foo43.get());
+            queue_receive(18, &_rd_foo44->_receivedCall->_context, &_rd_foo44->_receivedCall->_request, &_rd_foo44->_receivedCall->_responder, cq0, &_rd_foo44.get());
+            queue_receive(19, &_rd_cq->_receivedCall->_context, &_rd_cq->_receivedCall->_request, &_rd_cq->_receivedCall->_responder, cq0, &_rd_cq.get());
+        }
 
-    /* TODO async mixin for event foo12_impl */
+        /* TODO: abstract method for event foo11 */
+        /* TODO: abstract method for event foo12 */
+        /* TODO: abstract method for event foo12_impl */
+        /* TODO: abstract method for event foo13 */
+        /* TODO: abstract method for event foo14 */
+        /* TODO: abstract method for event foo15 */
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message<void>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message<void>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message<void>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::dummy>, ::bond::comm::message<void>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::BasicTypes>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::BasicTypes>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::BasicTypes>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::dummy>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::dummy>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes>) = 0;
 
-    /* TODO async mixin for event foo13 */
-
-    /* TODO async mixin for event foo14 */
-
-    /* TODO async mixin for event foo15 */
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo21 : public BaseClass
-    {
     private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo21()
-        {
-            ::grpc::Service::MarkMethodAsync(6);
-        }
-        ~WithAsyncMethod_foo21() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo21(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<void>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo21(::grpc::ServerContext* context, ::bond::comm::message<void>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<void>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
-        }
+        /* TODO: receive data for event foo11 */
+        /* TODO: receive data for event foo12 */
+        /* TODO: receive data for event foo12_impl */
+        /* TODO: receive data for event foo13 */
+        /* TODO: receive data for event foo14 */
+        /* TODO: receive data for event foo15 */
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>>, ::bond::comm::message<void>>>> _rd_foo21;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>>, ::bond::comm::message<void>>>> _rd_foo22;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::BasicTypes>>, ::bond::comm::message<void>>>> _rd_foo23;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::dummy>>, ::bond::comm::message<void>>>> _rd_foo24;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>>, ::bond::comm::message< ::tests::BasicTypes>>>> _rd_foo31;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>>, ::bond::comm::message< ::tests::BasicTypes>>>> _rd_foo32;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::BasicTypes>>, ::bond::comm::message< ::tests::BasicTypes>>>> _rd_foo330;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::BasicTypes>>, ::bond::comm::message< ::tests::BasicTypes>>>> _rd__rd_foo33;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::dummy>>, ::bond::comm::message< ::tests::BasicTypes>>>> _rd_foo34;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>>, ::bond::comm::message< ::tests::dummy>>>> _rd_foo41;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>>, ::bond::comm::message< ::tests::dummy>>>> _rd_foo42;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::BasicTypes>>, ::bond::comm::message< ::tests::dummy>>>> _rd_foo43;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::dummy>>, ::bond::comm::message< ::tests::dummy>>>> _rd_foo44;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>>, ::bond::comm::message< ::tests::BasicTypes>>>> _rd_cq;
     };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo22 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo22()
-        {
-            ::grpc::Service::MarkMethodAsync(7);
-        }
-        ~WithAsyncMethod_foo22() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo22(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<void>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo22(::grpc::ServerContext* context, ::bond::comm::message<void>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<void>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo23 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo23()
-        {
-            ::grpc::Service::MarkMethodAsync(8);
-        }
-        ~WithAsyncMethod_foo23() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo23(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::BasicTypes>* request, ::bond::comm::message<void>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo23(::grpc::ServerContext* context, ::bond::comm::message< ::tests::BasicTypes>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<void>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo24 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo24()
-        {
-            ::grpc::Service::MarkMethodAsync(9);
-        }
-        ~WithAsyncMethod_foo24() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo24(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::dummy>* request, ::bond::comm::message<void>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo24(::grpc::ServerContext* context, ::bond::comm::message< ::tests::dummy>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<void>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo31 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo31()
-        {
-            ::grpc::Service::MarkMethodAsync(10);
-        }
-        ~WithAsyncMethod_foo31() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo31(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::BasicTypes>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo31(::grpc::ServerContext* context, ::bond::comm::message<void>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message< ::tests::BasicTypes>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo32 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo32()
-        {
-            ::grpc::Service::MarkMethodAsync(11);
-        }
-        ~WithAsyncMethod_foo32() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo32(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::BasicTypes>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo32(::grpc::ServerContext* context, ::bond::comm::message<void>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message< ::tests::BasicTypes>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo33 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo33()
-        {
-            ::grpc::Service::MarkMethodAsync(12);
-        }
-        ~WithAsyncMethod_foo33() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo33(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::BasicTypes>* request, ::bond::comm::message< ::tests::BasicTypes>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo33(::grpc::ServerContext* context, ::bond::comm::message< ::tests::BasicTypes>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message< ::tests::BasicTypes>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo34 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo34()
-        {
-            ::grpc::Service::MarkMethodAsync(13);
-        }
-        ~WithAsyncMethod_foo34() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo34(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::dummy>* request, ::bond::comm::message< ::tests::BasicTypes>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo34(::grpc::ServerContext* context, ::bond::comm::message< ::tests::dummy>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message< ::tests::BasicTypes>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo41 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo41()
-        {
-            ::grpc::Service::MarkMethodAsync(14);
-        }
-        ~WithAsyncMethod_foo41() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo41(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::dummy>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo41(::grpc::ServerContext* context, ::bond::comm::message<void>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message< ::tests::dummy>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo42 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo42()
-        {
-            ::grpc::Service::MarkMethodAsync(15);
-        }
-        ~WithAsyncMethod_foo42() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo42(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::dummy>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo42(::grpc::ServerContext* context, ::bond::comm::message<void>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message< ::tests::dummy>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo43 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo43()
-        {
-            ::grpc::Service::MarkMethodAsync(16);
-        }
-        ~WithAsyncMethod_foo43() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo43(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::BasicTypes>* request, ::bond::comm::message< ::tests::dummy>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo43(::grpc::ServerContext* context, ::bond::comm::message< ::tests::BasicTypes>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message< ::tests::dummy>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo44 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo44()
-        {
-            ::grpc::Service::MarkMethodAsync(17);
-        }
-        ~WithAsyncMethod_foo44() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo44(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::dummy>* request, ::bond::comm::message< ::tests::dummy>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo44(::grpc::ServerContext* context, ::bond::comm::message< ::tests::dummy>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message< ::tests::dummy>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(17, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    typedef WithAsyncMethod_foo11<WithAsyncMethod_foo12<WithAsyncMethod_foo12_impl<WithAsyncMethod_foo13<WithAsyncMethod_foo14<WithAsyncMethod_foo15<WithAsyncMethod_foo21<WithAsyncMethod_foo22<WithAsyncMethod_foo23<WithAsyncMethod_foo24<WithAsyncMethod_foo31<WithAsyncMethod_foo32<WithAsyncMethod_foo33<WithAsyncMethod_foo34<WithAsyncMethod_foo41<WithAsyncMethod_foo42<WithAsyncMethod_foo43<WithAsyncMethod_foo44<Service > > > > > > > > > > > > > > > > > > AsyncService;
-
 };
 
 } // namespace tests
 
-#pragma warning (pop)

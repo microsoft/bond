@@ -33,11 +33,13 @@ static const char* Foo_method_names[] =
     "/tests.Foo/foo31",
     "/tests.Foo/foo32",
     "/tests.Foo/foo33",
+    "/tests.Foo/_rd_foo33",
     "/tests.Foo/foo34",
     "/tests.Foo/foo41",
     "/tests.Foo/foo42",
     "/tests.Foo/foo43",
     "/tests.Foo/foo44",
+    "/tests.Foo/cq",
 };
 
 std::unique_ptr< Foo::Stub> Foo::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
@@ -61,11 +63,13 @@ Foo::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
     , rpcmethod_foo31_(Foo_method_names[10], ::grpc::RpcMethod::NORMAL_RPC, channel)
     , rpcmethod_foo32_(Foo_method_names[11], ::grpc::RpcMethod::NORMAL_RPC, channel)
     , rpcmethod_foo33_(Foo_method_names[12], ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo34_(Foo_method_names[13], ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo41_(Foo_method_names[14], ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo42_(Foo_method_names[15], ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo43_(Foo_method_names[16], ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo44_(Foo_method_names[17], ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod__rd_foo33_(Foo_method_names[13], ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo34_(Foo_method_names[14], ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo41_(Foo_method_names[15], ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo42_(Foo_method_names[16], ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo43_(Foo_method_names[17], ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo44_(Foo_method_names[18], ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_cq_(Foo_method_names[19], ::grpc::RpcMethod::NORMAL_RPC, channel)
   { }
 
 /* TODO: stub implementation for event foo11 */
@@ -143,6 +147,15 @@ Foo::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
     return new ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>(channel_.get(), cq, rpcmethod_foo33_, context, request);
 }
 
+::grpc::Status Foo::Stub::_rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::bond::comm::message< ::tests::BasicTypes>* response)
+{
+    return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod__rd_foo33_, context, request, response);
+}
+::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* Foo::Stub::Async_rd_foo33Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq)
+{
+    return new ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>(channel_.get(), cq, rpcmethod__rd_foo33_, context, request);
+}
+
 ::grpc::Status Foo::Stub::foo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::bond::comm::message< ::tests::BasicTypes>* response)
 {
     return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_foo34_, context, request, response);
@@ -188,198 +201,14 @@ Foo::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
     return new ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>(channel_.get(), cq, rpcmethod_foo44_, context, request);
 }
 
-Foo::Service::Service()
+::grpc::Status Foo::Stub::cq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::BasicTypes>* response)
 {
-    /* TODO: register event foo11 */
-    /* TODO: register event foo12 */
-    /* TODO: register event foo12_impl */
-    /* TODO: register event foo13 */
-    /* TODO: register event foo14 */
-    /* TODO: register event foo15 */
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[6],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message<void>, ::bond::comm::message<void>>(
-          std::mem_fn(&Foo::Service::foo21), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[7],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message<void>, ::bond::comm::message<void>>(
-          std::mem_fn(&Foo::Service::foo22), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[8],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message<void>>(
-          std::mem_fn(&Foo::Service::foo23), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[9],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message< ::tests::dummy>, ::bond::comm::message<void>>(
-          std::mem_fn(&Foo::Service::foo24), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[10],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes>>(
-          std::mem_fn(&Foo::Service::foo31), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[11],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes>>(
-          std::mem_fn(&Foo::Service::foo32), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[12],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::BasicTypes>>(
-          std::mem_fn(&Foo::Service::foo33), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[13],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::BasicTypes>>(
-          std::mem_fn(&Foo::Service::foo34), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[14],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy>>(
-          std::mem_fn(&Foo::Service::foo41), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[15],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy>>(
-          std::mem_fn(&Foo::Service::foo42), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[16],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::dummy>>(
-          std::mem_fn(&Foo::Service::foo43), this)));
-
-    AddMethod(new ::grpc::RpcServiceMethod(
-      Foo_method_names[17],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< Foo::Service, ::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::dummy>>(
-          std::mem_fn(&Foo::Service::foo44), this)));
-
+    return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_cq_, context, request, response);
 }
-
-Foo::Service::~Service() { }
-
-/*TODO: service implementation of event foo11 */
-
-/*TODO: service implementation of event foo12 */
-
-/*TODO: service implementation of event foo12_impl */
-
-/*TODO: service implementation of event foo13 */
-
-/*TODO: service implementation of event foo14 */
-
-/*TODO: service implementation of event foo15 */
-
-::grpc::Status Foo::Service::foo21(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<void>* response)
+::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* Foo::Stub::AsynccqRaw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
 {
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    return new ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>(channel_.get(), cq, rpcmethod_cq_, context, request);
 }
-
-::grpc::Status Foo::Service::foo22(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<void>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo23(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::BasicTypes>* request, ::bond::comm::message<void>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo24(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::dummy>* request, ::bond::comm::message<void>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo31(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::BasicTypes>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo32(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::BasicTypes>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo33(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::BasicTypes>* request, ::bond::comm::message< ::tests::BasicTypes>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo34(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::dummy>* request, ::bond::comm::message< ::tests::BasicTypes>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo41(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::dummy>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo42(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message< ::tests::dummy>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo43(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::BasicTypes>* request, ::bond::comm::message< ::tests::dummy>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Foo::Service::foo44(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::dummy>* request, ::bond::comm::message< ::tests::dummy>* response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
 
 } // namespace tests
 

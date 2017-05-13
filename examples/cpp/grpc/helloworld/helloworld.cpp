@@ -1,9 +1,6 @@
 #include "helloworld_types.h"
 #include "helloworld_grpc.h"
 
-// TODO: this should be generated
-#include "helloworld_service.h"
-
 #ifdef _MSC_VER
     #pragma warning (push)
     #pragma warning (disable: 4100)
@@ -63,7 +60,7 @@ class GreeterClient {
 };
 
 // Logic and data behind the server's behavior.
-class GreeterServiceImpl final : public GreeterServiceAsync {
+class GreeterServiceImpl final : public Greeter::Service {
     void SayHello(
         bond::ext::gRPC::unary_call<
             bond::comm::message<::helloworld::HelloRequest>,

@@ -3,22 +3,31 @@
 
 #include "service_attributes_reflection.h"
 #include "service_attributes_types.h"
+
+
 #include <bond/comm/message.h>
+#include <bond/ext/grpc/bond_utils.h>
+#include <bond/ext/grpc/unary_call.h>
+#include <bond/ext/grpc/detail/service.h>
+#include <bond/ext/grpc/detail/service_call_data.h>
 
+#include <boost/optional/optional.hpp>
 
+#ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable: 4100 4267)
-#include <bond/ext/grpc/bond_utils.h>
+#endif
 
-//?#include <grpc++/impl/codegen/async_stream.h>
 #include <grpc++/impl/codegen/async_unary_call.h>
 #include <grpc++/impl/codegen/method_handler_impl.h>
-//#include <grpc++/impl/codegen/bond_utils.h>
 #include <grpc++/impl/codegen/rpc_method.h>
 #include <grpc++/impl/codegen/service_type.h>
 #include <grpc++/impl/codegen/status.h>
 #include <grpc++/impl/codegen/stub_options.h>
-//??#include <grpc++/impl/codegen/sync_stream.h>
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
 
 namespace tests
 {
@@ -36,6 +45,7 @@ public:
         {
             return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::Result>>>(AsyncfooRaw(context, request, cq));
         }
+
     private:
         virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::Result>>* AsyncfooRaw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, ::grpc::CompletionQueue* cq) = 0;
     };
@@ -50,6 +60,7 @@ public:
         {
             return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::Result>>>(AsyncfooRaw(context, request, cq));
         }
+
     private:
         std::shared_ptr< ::grpc::ChannelInterface> channel_;
 
@@ -59,47 +70,30 @@ public:
 
     static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
-    class Service : public ::grpc::Service
+    class Service : public ::bond::ext::gRPC::detail::service
     {
     public:
-        Service();
-        virtual ~Service();
+        Service()
+        {
+            AddMethod("/tests.Foo/foo");
+        }
 
-        virtual ::grpc::Status foo(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::Param>* request, ::bond::comm::message< ::tests::Result>* response);
-    };
+        virtual ~Service() { }
+        virtual void start(::grpc::ServerCompletionQueue* cq) override
+        {
+            BOOST_ASSERT(cq);
 
-    template <class BaseClass>
-    class WithAsyncMethod_foo : public BaseClass
-    {
+            _rd_foo.emplace(this, 0, cq, std::bind(&foo, this, std::placeholders::_1));
+
+            queue_receive(0, &_rd_foo->_receivedCall->_context, &_rd_foo->_receivedCall->_request, &_rd_foo->_receivedCall->_responder, cq, &_rd_foo.get());
+        }
+
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::Param>, ::bond::comm::message< ::tests::Result>) = 0;
+
     private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo()
-        {
-            ::grpc::Service::MarkMethodAsync(0);
-        }
-        ~WithAsyncMethod_foo() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::Param>* request, ::bond::comm::message< ::tests::Result>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo(::grpc::ServerContext* context, ::bond::comm::message< ::tests::Param>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message< ::tests::Result>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
-        }
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::Param>>, ::bond::comm::message< ::tests::Result>>>> _rd_foo;
     };
-
-    typedef WithAsyncMethod_foo<Service > AsyncService;
-
 };
 
 } // namespace tests
 
-#pragma warning (pop)

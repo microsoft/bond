@@ -10,7 +10,9 @@
 
 
 #include <grpc++/grpc++.h>
+#include <grpc++/impl/codegen/async_unary_call.h>
 #include <grpc++/impl/codegen/status.h>
+#include <grpc++/impl/codegen/server_context.h>
 
 #ifdef _MSC_VER
     #pragma warning (pop)

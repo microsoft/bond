@@ -3,22 +3,31 @@
 
 #include "generic_service_reflection.h"
 #include "generic_service_types.h"
+
+
 #include <bond/comm/message.h>
+#include <bond/ext/grpc/bond_utils.h>
+#include <bond/ext/grpc/unary_call.h>
+#include <bond/ext/grpc/detail/service.h>
+#include <bond/ext/grpc/detail/service_call_data.h>
 
+#include <boost/optional/optional.hpp>
 
+#ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable: 4100 4267)
-#include <bond/ext/grpc/bond_utils.h>
+#endif
 
-//?#include <grpc++/impl/codegen/async_stream.h>
 #include <grpc++/impl/codegen/async_unary_call.h>
 #include <grpc++/impl/codegen/method_handler_impl.h>
-//#include <grpc++/impl/codegen/bond_utils.h>
 #include <grpc++/impl/codegen/rpc_method.h>
 #include <grpc++/impl/codegen/service_type.h>
 #include <grpc++/impl/codegen/status.h>
 #include <grpc++/impl/codegen/stub_options.h>
-//??#include <grpc++/impl/codegen/sync_stream.h>
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
 
 namespace tests
 {
@@ -48,6 +57,7 @@ public:
         {
             return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>>(Asyncfoo33Raw(context, request, cq));
         }
+
     private:
         virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>* Asyncfoo31Raw(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) = 0;
         virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>* Asyncfoo32Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
@@ -76,6 +86,7 @@ public:
         {
             return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>>(Asyncfoo33Raw(context, request, cq));
         }
+
     private:
         std::shared_ptr< ::grpc::ChannelInterface> channel_;
 
@@ -91,105 +102,40 @@ public:
 
     static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
-    class Service : public ::grpc::Service
+    class Service : public ::bond::ext::gRPC::detail::service
     {
     public:
-        Service();
-        virtual ~Service();
+        Service()
+        {
+            AddMethod("/tests.Foo/foo31");
+            AddMethod("/tests.Foo/foo32");
+            AddMethod("/tests.Foo/foo33");
+        }
 
-        virtual ::grpc::Status foo31(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<void>* response);
-        virtual ::grpc::Status foo32(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<Payload>* response);
-        virtual ::grpc::Status foo33(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<Payload>* response);
-    };
+        virtual ~Service() { }
+        virtual void start(::grpc::ServerCompletionQueue* cq) override
+        {
+            BOOST_ASSERT(cq);
 
-    template <class BaseClass>
-    class WithAsyncMethod_foo31 : public BaseClass
-    {
+            _rd_foo31.emplace(this, 0, cq, std::bind(&foo31, this, std::placeholders::_1));
+            _rd_foo32.emplace(this, 1, cq, std::bind(&foo32, this, std::placeholders::_1));
+            _rd_foo33.emplace(this, 2, cq, std::bind(&foo33, this, std::placeholders::_1));
+
+            queue_receive(0, &_rd_foo31->_receivedCall->_context, &_rd_foo31->_receivedCall->_request, &_rd_foo31->_receivedCall->_responder, cq, &_rd_foo31.get());
+            queue_receive(1, &_rd_foo32->_receivedCall->_context, &_rd_foo32->_receivedCall->_request, &_rd_foo32->_receivedCall->_responder, cq, &_rd_foo32.get());
+            queue_receive(2, &_rd_foo33->_receivedCall->_context, &_rd_foo33->_receivedCall->_request, &_rd_foo33->_receivedCall->_responder, cq, &_rd_foo33.get());
+        }
+
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<Payload>, ::bond::comm::message<void>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message<Payload>) = 0;
+        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<Payload>, ::bond::comm::message<Payload>) = 0;
+
     private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo31()
-        {
-            ::grpc::Service::MarkMethodAsync(0);
-        }
-        ~WithAsyncMethod_foo31() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo31(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<void>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo31(::grpc::ServerContext* context, ::bond::comm::message<Payload>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<void>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
-        }
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<Payload>>, ::bond::comm::message<void>>>> _rd_foo31;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>>, ::bond::comm::message<Payload>>>> _rd_foo32;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<Payload>>, ::bond::comm::message<Payload>>>> _rd_foo33;
     };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo32 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo32()
-        {
-            ::grpc::Service::MarkMethodAsync(1);
-        }
-        ~WithAsyncMethod_foo32() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo32(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<Payload>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo32(::grpc::ServerContext* context, ::bond::comm::message<void>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<Payload>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    template <class BaseClass>
-    class WithAsyncMethod_foo33 : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_foo33()
-        {
-            ::grpc::Service::MarkMethodAsync(2);
-        }
-        ~WithAsyncMethod_foo33() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
-
-        // disable synchronous version of this method
-        ::grpc::Status foo33(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<Payload>* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Requestfoo33(::grpc::ServerContext* context, ::bond::comm::message<Payload>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<Payload>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };
-
-    typedef WithAsyncMethod_foo31<WithAsyncMethod_foo32<WithAsyncMethod_foo33<Service > > > AsyncService;
-
 };
 
 } // namespace tests
 
-#pragma warning (pop)

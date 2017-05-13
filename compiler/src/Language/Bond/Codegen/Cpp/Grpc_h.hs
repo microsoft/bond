@@ -6,7 +6,7 @@
 module Language.Bond.Codegen.Cpp.Grpc_h (grpc_h) where
 
 import System.FilePath
-import Data.List (elemIndex)
+import Data.List (zip)
 import Data.Monoid
 import Prelude
 import qualified Data.Text.Lazy as L
@@ -28,32 +28,42 @@ grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
 
 #include "#{file}_reflection.h"
 #include "#{file}_types.h"
-#include <bond/comm/message.h>
 #{newlineSep 0 includeImport imports}
 
+#include <bond/comm/message.h>
+#include <bond/ext/grpc/bond_utils.h>
+#include <bond/ext/grpc/unary_call.h>
+#include <bond/ext/grpc/detail/service.h>
+#include <bond/ext/grpc/detail/service_call_data.h>
+
+#include <boost/optional/optional.hpp>
+
+#ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable: 4100 4267)
-#include <bond/ext/grpc/bond_utils.h>
+#endif
 
-//?#include <grpc++/impl/codegen/async_stream.h>
 #include <grpc++/impl/codegen/async_unary_call.h>
 #include <grpc++/impl/codegen/method_handler_impl.h>
-//#include <grpc++/impl/codegen/bond_utils.h>
 #include <grpc++/impl/codegen/rpc_method.h>
 #include <grpc++/impl/codegen/service_type.h>
 #include <grpc++/impl/codegen/status.h>
 #include <grpc++/impl/codegen/stub_options.h>
-//??#include <grpc++/impl/codegen/sync_stream.h>
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
 
 #{CPP.openNamespace cpp}
 #{doubleLineSep 1 grpc declarations}
 
 #{CPP.closeNamespace cpp}
 
-#pragma warning (pop)
 |])
   where
     includeImport (Import path) = [lt|#include "#{dropExtension path}_grpc.h"|]
+
+    idl = MappingContext idlTypeMapping [] [] []
 
     cppType = getTypeName cpp
 
@@ -73,7 +83,7 @@ grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
             paramsText = toLazyText params
             padLeft = if L.head paramsText == ':' then [lt| |] else mempty
 
-    grpc Service {..} = [lt|
+    grpc s@Service{..} = [lt|
 class #{declName} final
 {
 public:
@@ -83,6 +93,7 @@ public:
         virtual ~StubInterface() {}
 
         #{doubleLineSep 2 publicInterfaceMethodDecl serviceMethods}
+
     private:
         #{newlineSep 2 privateInterfaceMethodDecl serviceMethods}
     };
@@ -93,6 +104,7 @@ public:
         Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
 
         #{doubleLineSep 2 publicStubMethodDecl serviceMethods}
+
     private:
         std::shared_ptr< ::grpc::ChannelInterface> channel_;
 
@@ -101,21 +113,30 @@ public:
 
     static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
-    class Service : public ::grpc::Service
+    class Service : public ::bond::ext::gRPC::detail::service
     {
     public:
-        Service();
-        virtual ~Service();
+        Service()
+        {
+            #{newlineSep 3 serviceAddMethod serviceMethods}
+        }
 
-        #{newlineSep 2 virtualServiceMethodDecl serviceMethods}
+        virtual ~Service() { }
+        #{serviceStartMethod}
+
+        #{newlineSep 2 serviceVirtualMethod serviceMethods}
+
+    private:
+        #{newlineSep 2 serviceMethodReceiveData serviceMethods}
     };
-
-    #{doubleLineSep 1 baseClassMethodDecl serviceMethods}
-
-    #{asyncServiceDef serviceMethods}
-
 };|]
       where
+        methodNames :: [String]
+        methodNames = map methodName serviceMethods
+
+        serviceMethodsWithIndex :: [(Integer,Method)]
+        serviceMethodsWithIndex = zip [0..] serviceMethods
+
         publicInterfaceMethodDecl Function{..} = [lt|virtual ::grpc::Status #{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, #{response methodResult}* response) = 0;
         std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< #{response methodResult}>> Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq)
         {
@@ -137,48 +158,29 @@ public:
         const ::grpc::RpcMethod rpcmethod_#{methodName}_;|]
         privateStubMethodDecl Event{..} = [lt|/* TODO stub implementation (private) for event #{methodName} */|]
 
-        virtualServiceMethodDecl Function{..} = [lt|virtual ::grpc::Status #{methodName}(::grpc::ServerContext* context, const #{request methodInput}* request, #{response methodResult}* response);|]
-        virtualServiceMethodDecl Event{..} = [lt|/* TODO service method for event #{methodName} */|]
+        serviceAddMethod Function{..} = [lt|AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
+        serviceAddMethod Event{..} = [lt|AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
 
-        baseClassMethodDecl f@Function{..} = [lt|template <class BaseClass>
-    class WithAsyncMethod_#{methodName} : public BaseClass
-    {
-    private:
-        void BaseClassMustBeDerivedFromService(const Service *service) {}
-
-    public:
-        WithAsyncMethod_#{methodName}()
+        serviceStartMethod = [lt|virtual void start(::grpc::ServerCompletionQueue* #{cqParam}) override
         {
-            ::grpc::Service::MarkMethodAsync(#{index});
-        }
-        ~WithAsyncMethod_#{methodName}() override
-        {
-            BaseClassMustBeDerivedFromService(this);
-        }
+            BOOST_ASSERT(#{cqParam});
 
-        // disable synchronous version of this method
-        ::grpc::Status #{methodName}(::grpc::ServerContext* context, const #{request methodInput}* request, #{response methodResult}* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-        void Request#{methodName}(::grpc::ServerContext* context, #{request methodInput}* request, ::grpc::ServerAsyncResponseWriter< #{response methodResult}>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(#{index}, context, request, response, new_call_cq, notification_cq, tag);
-        }
-    };|]
-          where
-            index = maybe (-1) id (elemIndex f serviceMethods)
+            #{newlineSep 3 initMethodReceiveData serviceMethodsWithIndex}
 
-        baseClassMethodDecl Event{..} = [lt|/* TODO async mixin for event #{methodName} */|]
+            #{newlineSep 3 queueReceive serviceMethodsWithIndex}
+        }|]
+            where cqParam = uniqueName "cq" methodNames
+                  initMethodReceiveData (index,Function{..}) = [lt|#{serviceRdMember methodName}.emplace(this, #{index}, #{cqParam}, std::bind(&Service::#{methodName}, this, std::placeholders::_1));|]
+                  initMethodReceiveData (_,Event{..}) = [lt|/* TODO: init for event #{methodName} */|]
+                  queueReceive (index,Function{..}) = [lt|queue_receive(#{index}, &#{serviceRdMember methodName}->_receivedCall->_context, &#{serviceRdMember methodName}->_receivedCall->_request, &#{serviceRdMember methodName}->_receivedCall->_responder, #{cqParam}, &#{serviceRdMember methodName}.get());|]
+                  queueReceive (_,Event{..}) = [lt|/* TODO: queue event #{methodName} */|]
 
-        asyncMethodChain [] = ""
-        asyncMethodChain [Function{..}] = "WithAsyncMethod_" ++ methodName ++ "<Service >"
-        asyncMethodChain [Event{..}] = "WithAsyncMethod_" ++ methodName ++ "<Service >"
-        asyncMethodChain (Function{..}:xs) = "WithAsyncMethod_" ++ methodName ++ "<" ++ asyncMethodChain xs ++ " >"
-        asyncMethodChain (Event{..}:xs) = "WithAsyncMethod_" ++ methodName ++ "<" ++ asyncMethodChain xs ++ " >"
+        serviceMethodReceiveData Function{..} = [lt|boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<#{request methodInput}, #{response methodResult}>> #{serviceRdMember methodName};|]
+        serviceMethodReceiveData Event{..} = [lt|/* TODO: receive data for event #{methodName} */|]
 
-        asyncServiceDef [] = mempty
-        asyncServiceDef m = [lt|typedef #{asyncMethodChain m} AsyncService;|]
+        serviceVirtualMethod Function{..} = [lt|virtual void #{methodName}(::bond::ext::gRPC::unary_call<#{request methodInput}, #{response methodResult}>) = 0;|]
+        serviceVirtualMethod Event{..} = [lt|/* TODO: abstract method for event #{methodName} */|]
+
+        serviceRdMember methodName = uniqueName ("_rd_" ++ methodName) methodNames
 
     grpc _ = mempty

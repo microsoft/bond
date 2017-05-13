@@ -56,12 +56,19 @@ class SerializationTraits<bond::comm::message<T>, typename std::enable_if<bond::
 
     const size_t bufferSize = grpc_byte_buffer_length(buffer);
 
+    if (bufferSize > std::numeric_limits<uint32_t>::max())
+    {
+        grpc_byte_buffer_destroy(buffer);
+        return Status(StatusCode::INTERNAL, "Buffer is too large");
+    }
+
     boost::shared_ptr<char []> buff = boost::make_shared_noinit<char []>(bufferSize);
 
     // TODO: exception safety of reader, s, buffer
     grpc_byte_buffer_reader reader;
     if (!grpc_byte_buffer_reader_init(&reader, buffer))
     {
+        grpc_byte_buffer_destroy(buffer);
         return Status(StatusCode::INTERNAL, "Failed to init buffer reader");
     }
 
@@ -74,7 +81,7 @@ class SerializationTraits<bond::comm::message<T>, typename std::enable_if<bond::
         dest += GRPC_SLICE_LENGTH(s);
     }
 
-    GPR_ASSERT(dest == buff.get() + bufferSize);
+    BOOST_ASSERT(dest == buff.get() + bufferSize);
 
     grpc_slice_unref(s);
     grpc_byte_buffer_reader_destroy(&reader);
@@ -82,7 +89,7 @@ class SerializationTraits<bond::comm::message<T>, typename std::enable_if<bond::
 
     // TODO: create a Bond input stream over grpc_byte_buffer to avoid
     // having to make this copy into a blob.
-    bond::blob data = bond::blob(buff, bufferSize);
+    bond::blob data = bond::blob(buff, static_cast<uint32_t>(bufferSize));
     bond::CompactBinaryReader<bond::InputBuffer> cbreader(data);
     bond::bonded<T> payload(cbreader);
 
