@@ -167,9 +167,9 @@ set (BOND_LIBRARIES_INSTALL_CPP
     "FALSE"
     CACHE BOOL "If TRUE, the generated .cpp files for the Bond libraries will be installed under src/ as part of the INSTALL target.")
 
-set (BOND_CORE_ONLY
-    "FALSE"
-    CACHE BOOL "If TRUE, then only build the Bond Core")
+set (BOND_ENABLE_COMM
+    "TRUE"
+    CACHE BOOL "If FALSE, then do not build Comm")
 
 set (BOND_SKIP_GBC_TESTS
     "FALSE"
@@ -179,6 +179,6 @@ set (BOND_SKIP_CORE_TESTS
     "FALSE"
     CACHE BOOL "If TRUE, then skip Bond Core tests and examples")
 
-if ((NOT BOND_CORE_ONLY) AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
-    message(FATAL_ERROR "BOND_CORE_ONLY is FALSE but compiler specified does not support C++11 standard")
+if (((BOND_ENABLE_COMM) OR (BOND_ENABLE_GRPC)) AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
+    message(FATAL_ERROR "BOND_ENABLE_COMM and/or BOND_ENABLE_GRPC is TRUE but compiler specified does not support C++11 standard")
 endif()

@@ -7,6 +7,11 @@ set (CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cmake-modules)
 
+# Initialize before ThirdParty
+set (BOND_ENABLE_GRPC
+    "TRUE"
+    CACHE BOOL "If FALSE, then do not build gRPC integration")
+
 # We need to include third-party CMake modules before we configure our own
 # settings so that we don't apply our settings to third-party code.
 add_subdirectory (thirdparty)

@@ -17,7 +17,8 @@ env:
     - BOND_LANG="cpp" BOOST="1.60.0"
     - BOND_LANG="cpp" BOOST="1.59.0"
     - BOND_LANG="cpp" BOOST="1.58.0"
-    - BOND_LANG="cpp" COMM="true"
+    - BOND_LANG="cpp" BOOST="1.63.0" COMM="true"
+    - BOND_LANG="cpp" BOOST="1.63.0" GRPC="true"
     - BOND_LANG="hs" GHC_VERSION="7.8.4"
     - BOND_LANG="hs" GHC_VERSION="7.6.3"
 addons:
@@ -44,7 +45,8 @@ before_install:
     - if [ "$CXX" == "" ]; then echo "Setting default $CXX"; export CXX="clang++"; fi
     - if [ "$CC" == "" ]; then echo "Setting default $CC"; export CC="clang"; fi
     - if [ "$BOOST" == "" ]; then echo "Setting default $BOOST"; export BOOST=1.63.0; fi
-    - if [ "$COMM" == "" ]; then echo "Building Core only"; export CORE_ONLY="true"; else echo "Building Core+Comm"; export CORE_ONLY="false"; fi
+    - if [ "$COMM" == "" ]; then echo "Skipping Comm"; export BUILD_COMM="false"; else echo "Building Comm"; export BUILD_COMM="true"; fi
+    - if [ "$GRPC" == "" ]; then echo "Skipping gRPC"; export BUILD_GRPC="false"; else echo "Building gRPC"; export BUILD_GRPC="true"; fi
     # pull down our boost binaries
     - export BOOST_ARCHIVE=boost-$BOOST.tar.xz
     - wget https://bondboostbinaries.blob.core.windows.net/bondboostbinaries/$BOOST_ARCHIVE -O /tmp/$BOOST_ARCHIVE
@@ -71,7 +73,7 @@ before_script:
 script:
     - mkdir build && cd build
 
-    - cmake -DBOND_CORE_ONLY:bool=$CORE_ONLY ..
+    - cmake -DBOND_ENABLE_COMM:bool=$BUILD_COMM -DBOND_ENABLE_GRPC:bool=$BUILD_GRPC ..
     - if [ "$BOND_LANG" == "cs" ]; then make --jobs 2 DESTDIR=$HOME install; fi
     - if [ "$BOND_LANG" == "cs" ]; then cd ..; fi
     - if [ "$BOND_LANG" == "cs" ]; then export BOND_COMPILER_PATH=$HOME/usr/local/bin; fi

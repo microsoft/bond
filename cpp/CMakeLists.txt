@@ -53,7 +53,8 @@ list (APPEND headers
     ${protocol_detail_headers}
     ${stream_headers})
 
-if (NOT BOND_CORE_ONLY)
+# gRPC integration currently requires portions of Bond Comm
+if ((BOND_ENABLE_COMM) OR (BOND_ENABLE_GRPC))
     set (comm_schemas
         ${BOND_IDL}/bond/comm/comm.bond
         ${BOND_IDL}/bond/comm/transport/packet.bond
@@ -103,7 +104,7 @@ if (NOT BOND_CORE_ONLY)
         ${comm_layers_headers}
         ${comm_transport_headers}
         ${comm_transport_detail_headers})
-endif(NOT BOND_CORE_ONLY)
+endif((BOND_ENABLE_COMM) OR (BOND_ENABLE_GRPC))
 
 source_group ("generated" FILES ${generated_files})
 
@@ -139,7 +140,7 @@ install (TARGETS bond bond_apply
 
 install (DIRECTORY ${BOND_IDL}/bond/core DESTINATION include/bond)
 
-if (NOT BOND_CORE_ONLY)
+if (BOND_ENABLE_COMM)
     install (DIRECTORY ${BOND_IDL}/bond/comm DESTINATION include/bond)
 endif()
 

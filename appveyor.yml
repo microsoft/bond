@@ -27,16 +27,31 @@
               BOND_VS_NUM: 14
               BOND_ARCH: 32
               BOND_BOOST: 60
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: Python
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
               BOND_BOOST: 63
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
               BOND_BOOST: 60
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE"
+            - BOND_BUILD: C++
+              BOND_VS: "Visual Studio 14 2015"
+              BOND_VS_NUM: 14
+              BOND_ARCH: 64
+              BOND_BOOST: 63
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
+            - BOND_BUILD: C++
+              BOND_VS: "Visual Studio 14 2015"
+              BOND_VS_NUM: 14
+              BOND_ARCH: 64
+              BOND_BOOST: 63
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
@@ -45,13 +60,13 @@
               BOND_VS_NUM: 12
               BOND_ARCH: 32
               BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_CORE_ONLY=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_GBC_TESTS=TRUE"
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 12 2013"
               BOND_VS_NUM: 12
               BOND_ARCH: 64
               BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
               BOND_CONFIG: Fields
@@ -60,7 +75,7 @@
 
     install:
         - ps: >-
-            git submodule update --init
+            git submodule update --init --recursive
 
             if ($env:BOND_BOOST -eq 56) {
                 # Hard-coded Boost path per https://www.appveyor.com/docs/installed-software#languages-libraries-frameworks
