@@ -47,7 +47,7 @@ public:
         //
         for (boost::thread& thread : m_threads)
         {
-            if (thread.get_id() == boost::this_thread::get_id())
+            if (thread.get_id() != boost::this_thread::get_id())
             {
                 thread.detach();
             }
