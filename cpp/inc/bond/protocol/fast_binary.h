@@ -160,7 +160,7 @@ public:
 
     // Read for primitive types
     template <typename T>
-    typename boost::disable_if<is_string_type<T> >::type
+    typename boost::disable_if_c<is_string_type<T>::value || is_type_alias<T>::value >::type
     Read(T& value)
     {
         _input.Read(value);
@@ -176,6 +176,17 @@ public:
 
         ReadVariableUnsigned(_input, length);
         detail::ReadStringData(_input, value, length);
+    }
+
+
+    // Read for type alias
+    template <typename T>
+    typename boost::enable_if<is_type_alias<T> >::type
+    Read(T& value)
+    {
+        typename aliased_type<T>::type x;
+        Read(x);
+        set_aliased_value(value, x);
     }
 
 
@@ -476,6 +487,14 @@ public:
 
         WriteVariableUnsigned(_output, length);
         detail::WriteStringData(_output, value, length);
+    }
+
+    // Write for type alias
+    template <typename T>
+    typename boost::enable_if<is_type_alias<T> >::type
+    Write(T& value)
+    {
+        Write(get_aliased_value(value));
     }
 
     // Write for blob

@@ -178,6 +178,18 @@ public:
         }
     }
 
+
+    // Read for type alias
+    template <typename T>
+    typename boost::enable_if<is_type_alias<T> >::type
+    Read(T& value)
+    {
+        typename aliased_type<T>::type x;
+        Read(x);
+        set_aliased_value(value, x);
+    }
+
+
     // Read for blob
     void Read(blob& value, uint32_t size)
     {
