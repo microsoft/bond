@@ -64,30 +64,32 @@ grpc_cpp cpp file _imports declarations = ("_grpc.cpp", [lt|
             padLeft = if L.head paramsText == ':' then [lt| |] else mempty
 
     grpc s@Service {..} = [lt|
-static const char* #{declName}_method_names[] = {
+static const char* #{declName}_method_names[] =
+{
     #{newlineSep 1 methodStrings serviceMethods}
 };
 
-std::unique_ptr< #{declName}::Stub> #{declName}::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
-  std::unique_ptr< #{declName}::Stub> stub(new #{declName}::Stub(channel));
-  return stub;
+std::unique_ptr< #{declName}::Stub> #{declName}::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+{
+    std::unique_ptr< #{declName}::Stub> stub(new #{declName}::Stub(channel));
+    return stub;
 }
 
 #{declName}::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
     : channel_(channel)
     #{newlineSep 1 methodStringsStub serviceMethods}
-  {}
+  { }
 
-#{newlineSep 1 methodDecl serviceMethods}
+#{doubleLineSep 0 methodDecl serviceMethods}
 
-#{declName}::Service::Service() {
+#{declName}::Service::Service()
+{
     #{newlineSep 1 addMethod serviceMethods}
 }
 
-#{declName}::Service::~Service() {
-}
+#{declName}::Service::~Service() { }
 
-#{newlineSep 1 methodDeclImpl serviceMethods}
+#{doubleLineSep 0 methodDeclImpl serviceMethods}
 
 |]
       where
@@ -97,16 +99,17 @@ std::unique_ptr< #{declName}::Stub> #{declName}::NewStub(const std::shared_ptr< 
         index f = maybe (-1) id (elemIndex f serviceMethods)
 
         methodStringsStub f@Function{..} = [lt|, rpcmethod_#{methodName}_(#{declName}_method_names[#{index f}], ::grpc::RpcMethod::NORMAL_RPC, channel)|]
-        methodStringsStub Event{..} = [lt|"",|]
+        methodStringsStub Event{..} = [lt|/* TODO stub ctor initialization for event #{methodName} */|]
 
-        methodDecl Function{..} = [lt|::grpc::Status #{declName}::Stub::#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, #{response methodResult}* response) {
-  return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_#{methodName}_, context, request, response);
+        methodDecl Function{..} = [lt|::grpc::Status #{declName}::Stub::#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, #{response methodResult}* response)
+{
+    return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_#{methodName}_, context, request, response);
 }
-
-::grpc::ClientAsyncResponseReader< #{response methodResult}>* #{declName}::Stub::Async#{methodName}Raw(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq) {
-  return new ::grpc::ClientAsyncResponseReader< #{response methodResult}>(channel_.get(), cq, rpcmethod_#{methodName}_, context, request);
+::grpc::ClientAsyncResponseReader< #{response methodResult}>* #{declName}::Stub::Async#{methodName}Raw(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq)
+{
+    return new ::grpc::ClientAsyncResponseReader< #{response methodResult}>(channel_.get(), cq, rpcmethod_#{methodName}_, context, request);
 }|]
-        methodDecl Event{..} = [lt|"",|]
+        methodDecl Event{..} = [lt|/* TODO: stub implementation for event #{methodName} */|]
 
         addMethod f@Function{..} = [lt|AddMethod(new ::grpc::RpcServiceMethod(
       #{declName}_method_names[#{index f}],
@@ -114,14 +117,15 @@ std::unique_ptr< #{declName}::Stub> #{declName}::NewStub(const std::shared_ptr< 
       new ::grpc::RpcMethodHandler< #{declName}::Service, #{request methodInput}, #{response methodResult}>(
           std::mem_fn(&#{declName}::Service::#{methodName}), this)));
 |]
-        addMethod Event{..} = [lt|"",|]
+        addMethod Event{..} = [lt|/* TODO: register event #{methodName} */|]
 
-        methodDeclImpl Function{..} = [lt|::grpc::Status #{declName}::Service::#{methodName}(::grpc::ServerContext* context, const #{request methodInput}* request, #{response methodResult}* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+        methodDeclImpl Function{..} = [lt|::grpc::Status #{declName}::Service::#{methodName}(::grpc::ServerContext* context, const #{request methodInput}* request, #{response methodResult}* response)
+{
+    (void) context;
+    (void) request;
+    (void) response;
+    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }|]
-        methodDeclImpl Event{..} = [lt|"",|]
+        methodDeclImpl Event{..} = [lt|/*TODO: service implementation of event #{methodName} */|]
 
     grpc _ = mempty

@@ -23,150 +23,172 @@
 namespace tests
 {
 
-class Foo final {
- public:
-  class StubInterface {
-   public:
-    virtual ~StubInterface() {}
-    virtual ::grpc::Status foo31(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::bond::comm::message<void>* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>> Asyncfoo31(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>>(Asyncfoo31Raw(context, request, cq));
-    }
+class Foo final
+{
+public:
+    class StubInterface
+    {
+    public:
+        virtual ~StubInterface() {}
 
-    virtual ::grpc::Status foo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message<Payload>* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>> Asyncfoo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>>(Asyncfoo32Raw(context, request, cq));
-    }
+        virtual ::grpc::Status foo31(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::bond::comm::message<void>* response) = 0;
+        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>> Asyncfoo31(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>>(Asyncfoo31Raw(context, request, cq));
+        }
 
-    virtual ::grpc::Status foo33(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::bond::comm::message<Payload>* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>> Asyncfoo33(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>>(Asyncfoo33Raw(context, request, cq));
-    }
+        virtual ::grpc::Status foo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message<Payload>* response) = 0;
+        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>> Asyncfoo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>>(Asyncfoo32Raw(context, request, cq));
+        }
 
-   private:
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>* Asyncfoo31Raw(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) = 0;
+        virtual ::grpc::Status foo33(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::bond::comm::message<Payload>* response) = 0;
+        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>> Asyncfoo33(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>>(Asyncfoo33Raw(context, request, cq));
+        }
+    private:
+        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>* Asyncfoo31Raw(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) = 0;
+        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>* Asyncfoo32Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
+        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>* Asyncfoo33Raw(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) = 0;
+    };
 
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>* Asyncfoo32Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
+    class Stub final : public StubInterface
+    {
+    public:
+        Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
 
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<Payload>>* Asyncfoo33Raw(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) = 0;
+        ::grpc::Status foo31(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::bond::comm::message<void>* response) override;
+        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>> Asyncfoo31(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>>(Asyncfoo31Raw(context, request, cq));
+        }
 
-  };
+        ::grpc::Status foo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message<Payload>* response) override;
+        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>> Asyncfoo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>>(Asyncfoo32Raw(context, request, cq));
+        }
 
-  class Stub final : public StubInterface {
-   public:
-    Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
-    ::grpc::Status foo31(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::bond::comm::message<void>* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>> Asyncfoo31(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>>(Asyncfoo31Raw(context, request, cq));
-    }
+        ::grpc::Status foo33(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::bond::comm::message<Payload>* response) override;
+        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>> Asyncfoo33(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>>(Asyncfoo33Raw(context, request, cq));
+        }
+    private:
+        std::shared_ptr< ::grpc::ChannelInterface> channel_;
 
-    ::grpc::Status foo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message<Payload>* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>> Asyncfoo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>>(Asyncfoo32Raw(context, request, cq));
-    }
+        ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>* Asyncfoo31Raw(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) override;
+        const ::grpc::RpcMethod rpcmethod_foo31_;
 
-    ::grpc::Status foo33(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::bond::comm::message<Payload>* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>> Asyncfoo33(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>>(Asyncfoo33Raw(context, request, cq));
-    }
+        ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>* Asyncfoo32Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) override;
+        const ::grpc::RpcMethod rpcmethod_foo32_;
 
-   private:
-    std::shared_ptr< ::grpc::ChannelInterface> channel_;
-    ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>* Asyncfoo31Raw(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) override;
-    const ::grpc::RpcMethod rpcmethod_foo31_;
+        ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>* Asyncfoo33Raw(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) override;
+        const ::grpc::RpcMethod rpcmethod_foo33_;
+    };
 
-    ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>* Asyncfoo32Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) override;
-    const ::grpc::RpcMethod rpcmethod_foo32_;
+    static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
-    ::grpc::ClientAsyncResponseReader< ::bond::comm::message<Payload>>* Asyncfoo33Raw(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, ::grpc::CompletionQueue* cq) override;
-    const ::grpc::RpcMethod rpcmethod_foo33_;
+    class Service : public ::grpc::Service
+    {
+    public:
+        Service();
+        virtual ~Service();
 
-  };
+        virtual ::grpc::Status foo31(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<void>* response);
+        virtual ::grpc::Status foo32(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<Payload>* response);
+        virtual ::grpc::Status foo33(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<Payload>* response);
+    };
 
-  static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+    template <class BaseClass>
+    class WithAsyncMethod_foo31 : public BaseClass
+    {
+    private:
+        void BaseClassMustBeDerivedFromService(const Service *service) {}
 
-  class Service : public ::grpc::Service {
-   public:
-    Service();
-    virtual ~Service();
-    virtual ::grpc::Status foo31(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<void>* response);
+    public:
+        WithAsyncMethod_foo31()
+        {
+            ::grpc::Service::MarkMethodAsync(0);
+        }
+        ~WithAsyncMethod_foo31() override
+        {
+            BaseClassMustBeDerivedFromService(this);
+        }
 
-    virtual ::grpc::Status foo32(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<Payload>* response);
+        // disable synchronous version of this method
+        ::grpc::Status foo31(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<void>* response) final override
+        {
+            abort();
+            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+        }
+        void Requestfoo31(::grpc::ServerContext* context, ::bond::comm::message<Payload>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<void>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
+        {
+            ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+        }
+    };
 
-    virtual ::grpc::Status foo33(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<Payload>* response);
-  };
+    template <class BaseClass>
+    class WithAsyncMethod_foo32 : public BaseClass
+    {
+    private:
+        void BaseClassMustBeDerivedFromService(const Service *service) {}
 
+    public:
+        WithAsyncMethod_foo32()
+        {
+            ::grpc::Service::MarkMethodAsync(1);
+        }
+        ~WithAsyncMethod_foo32() override
+        {
+            BaseClassMustBeDerivedFromService(this);
+        }
 
-  template <class BaseClass>
-  class WithAsyncMethod_foo31 : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_foo31() {
-      ::grpc::Service::MarkMethodAsync(0);
-    }
-    ~WithAsyncMethod_foo31() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status foo31(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<void>* response) final override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void Requestfoo31(::grpc::ServerContext* context, ::bond::comm::message<Payload>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<void>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
+        // disable synchronous version of this method
+        ::grpc::Status foo32(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<Payload>* response) final override
+        {
+            abort();
+            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+        }
+        void Requestfoo32(::grpc::ServerContext* context, ::bond::comm::message<void>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<Payload>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
+        {
+            ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+        }
+    };
 
+    template <class BaseClass>
+    class WithAsyncMethod_foo33 : public BaseClass
+    {
+    private:
+        void BaseClassMustBeDerivedFromService(const Service *service) {}
 
-  template <class BaseClass>
-  class WithAsyncMethod_foo32 : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_foo32() {
-      ::grpc::Service::MarkMethodAsync(1);
-    }
-    ~WithAsyncMethod_foo32() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status foo32(::grpc::ServerContext* context, const ::bond::comm::message<void>* request, ::bond::comm::message<Payload>* response) final override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void Requestfoo32(::grpc::ServerContext* context, ::bond::comm::message<void>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<Payload>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
+    public:
+        WithAsyncMethod_foo33()
+        {
+            ::grpc::Service::MarkMethodAsync(2);
+        }
+        ~WithAsyncMethod_foo33() override
+        {
+            BaseClassMustBeDerivedFromService(this);
+        }
 
+        // disable synchronous version of this method
+        ::grpc::Status foo33(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<Payload>* response) final override
+        {
+            abort();
+            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+        }
+        void Requestfoo33(::grpc::ServerContext* context, ::bond::comm::message<Payload>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<Payload>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
+        {
+            ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+        }
+    };
 
-  template <class BaseClass>
-  class WithAsyncMethod_foo33 : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_foo33() {
-      ::grpc::Service::MarkMethodAsync(2);
-    }
-    ~WithAsyncMethod_foo33() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status foo33(::grpc::ServerContext* context, const ::bond::comm::message<Payload>* request, ::bond::comm::message<Payload>* response) final override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void Requestfoo33(::grpc::ServerContext* context, ::bond::comm::message<Payload>* request, ::grpc::ServerAsyncResponseWriter< ::bond::comm::message<Payload>>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-
-
-  typedef WithAsyncMethod_foo31<WithAsyncMethod_foo32<WithAsyncMethod_foo33<Service > > > AsyncService;
+    typedef WithAsyncMethod_foo31<WithAsyncMethod_foo32<WithAsyncMethod_foo33<Service > > > AsyncService;
 
 };
-
 
 } // namespace tests
 

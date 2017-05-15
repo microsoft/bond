@@ -18,29 +18,33 @@
 namespace tests
 {
 
-static const char* Foo_method_names[] = {
+static const char* Foo_method_names[] =
+{
     "/tests.Foo/foo",
 };
 
-std::unique_ptr< Foo::Stub> Foo::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
-  std::unique_ptr< Foo::Stub> stub(new Foo::Stub(channel));
-  return stub;
+std::unique_ptr< Foo::Stub> Foo::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+{
+    std::unique_ptr< Foo::Stub> stub(new Foo::Stub(channel));
+    return stub;
 }
 
 Foo::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
     : channel_(channel)
     , rpcmethod_foo_(Foo_method_names[0], ::grpc::RpcMethod::NORMAL_RPC, channel)
-  {}
+  { }
 
-::grpc::Status Foo::Stub::foo(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, ::bond::comm::message< ::tests::Result>* response) {
-  return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_foo_, context, request, response);
+::grpc::Status Foo::Stub::foo(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, ::bond::comm::message< ::tests::Result>* response)
+{
+    return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_foo_, context, request, response);
+}
+::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::Result>>* Foo::Stub::AsyncfooRaw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, ::grpc::CompletionQueue* cq)
+{
+    return new ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::Result>>(channel_.get(), cq, rpcmethod_foo_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::Result>>* Foo::Stub::AsyncfooRaw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, ::grpc::CompletionQueue* cq) {
-  return new ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::Result>>(channel_.get(), cq, rpcmethod_foo_, context, request);
-}
-
-Foo::Service::Service() {
+Foo::Service::Service()
+{
     AddMethod(new ::grpc::RpcServiceMethod(
       Foo_method_names[0],
       ::grpc::RpcMethod::NORMAL_RPC,
@@ -49,14 +53,14 @@ Foo::Service::Service() {
 
 }
 
-Foo::Service::~Service() {
-}
+Foo::Service::~Service() { }
 
-::grpc::Status Foo::Service::foo(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::Param>* request, ::bond::comm::message< ::tests::Result>* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+::grpc::Status Foo::Service::foo(::grpc::ServerContext* context, const ::bond::comm::message< ::tests::Param>* request, ::bond::comm::message< ::tests::Result>* response)
+{
+    (void) context;
+    (void) request;
+    (void) response;
+    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
 

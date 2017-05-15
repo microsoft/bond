@@ -74,93 +74,103 @@ grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
             padLeft = if L.head paramsText == ':' then [lt| |] else mempty
 
     grpc Service {..} = [lt|
-class #{declName} final {
- public:
-  class StubInterface {
-   public:
-    virtual ~StubInterface() {}
-    #{newlineSep 1 publicInterfaceMethodDecl serviceMethods}
-   private:
-    #{newlineSep 1 privateInterfaceMethodDecl serviceMethods}
-  };
+class #{declName} final
+{
+public:
+    class StubInterface
+    {
+    public:
+        virtual ~StubInterface() {}
 
-  class Stub final : public StubInterface {
-   public:
-    Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
-    #{newlineSep 1 publicStubMethodDecl serviceMethods}
-   private:
-    std::shared_ptr< ::grpc::ChannelInterface> channel_;
-    #{newlineSep 1 privateStubMethodDecl serviceMethods}
-  };
+        #{doubleLineSep 2 publicInterfaceMethodDecl serviceMethods}
+    private:
+        #{newlineSep 2 privateInterfaceMethodDecl serviceMethods}
+    };
 
-  static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+    class Stub final : public StubInterface
+    {
+    public:
+        Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
 
-  class Service : public ::grpc::Service {
-   public:
-    Service();
-    virtual ~Service();
-    #{doubleLineSep 1 virtualServiceMethodDecl serviceMethods}
-  };
+        #{doubleLineSep 2 publicStubMethodDecl serviceMethods}
+    private:
+        std::shared_ptr< ::grpc::ChannelInterface> channel_;
 
-#{newlineSep 0 baseClassMethodDecl serviceMethods}
+        #{doubleLineSep 2 privateStubMethodDecl serviceMethods}
+    };
 
-  #{asyncServiceDef serviceMethods}
+    static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
-};
-|]
+    class Service : public ::grpc::Service
+    {
+    public:
+        Service();
+        virtual ~Service();
+
+        #{newlineSep 2 virtualServiceMethodDecl serviceMethods}
+    };
+
+    #{doubleLineSep 1 baseClassMethodDecl serviceMethods}
+
+    #{asyncServiceDef serviceMethods}
+
+};|]
       where
         publicInterfaceMethodDecl Function{..} = [lt|virtual ::grpc::Status #{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, #{response methodResult}* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< #{response methodResult}>> Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< #{response methodResult}>>(Async#{methodName}Raw(context, request, cq));
-    }
-|]
-        publicInterfaceMethodDecl Event{..} = [lt||]
+        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< #{response methodResult}>> Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< #{response methodResult}>>(Async#{methodName}Raw(context, request, cq));
+        }|]
+        publicInterfaceMethodDecl Event{..} = [lt|/* TODO stub interface (public) for event #{methodName} */|]
 
-        privateInterfaceMethodDecl Function{..} = [lt|virtual ::grpc::ClientAsyncResponseReaderInterface< #{response methodResult}>* Async#{methodName}Raw(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq) = 0;
-|]
-        privateInterfaceMethodDecl Event{..} = [lt||]
+        privateInterfaceMethodDecl Function{..} = [lt|virtual ::grpc::ClientAsyncResponseReaderInterface< #{response methodResult}>* Async#{methodName}Raw(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq) = 0;|]
+        privateInterfaceMethodDecl Event{..} = [lt|/* TODO stub interface (private) for event #{methodName} */|]
 
         publicStubMethodDecl Function{..} = [lt|::grpc::Status #{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, #{response methodResult}* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< #{response methodResult}>> Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< #{response methodResult}>>(Async#{methodName}Raw(context, request, cq));
-    }
-|]
-        publicStubMethodDecl Event{..} = [lt||]
+        std::unique_ptr< ::grpc::ClientAsyncResponseReader< #{response methodResult}>> Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq)
+        {
+            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< #{response methodResult}>>(Async#{methodName}Raw(context, request, cq));
+        }|]
+        publicStubMethodDecl Event{..} = [lt|/* TODO stub implementation (public) for event #{methodName} */|]
 
         privateStubMethodDecl Function{..} = [lt|::grpc::ClientAsyncResponseReader< #{response methodResult}>* Async#{methodName}Raw(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq) override;
-    const ::grpc::RpcMethod rpcmethod_#{methodName}_;
-|]
-        privateStubMethodDecl Event{..} = [lt||]
+        const ::grpc::RpcMethod rpcmethod_#{methodName}_;|]
+        privateStubMethodDecl Event{..} = [lt|/* TODO stub implementation (private) for event #{methodName} */|]
 
         virtualServiceMethodDecl Function{..} = [lt|virtual ::grpc::Status #{methodName}(::grpc::ServerContext* context, const #{request methodInput}* request, #{response methodResult}* response);|]
-        virtualServiceMethodDecl Event{..} = [lt||]
+        virtualServiceMethodDecl Event{..} = [lt|/* TODO service method for event #{methodName} */|]
 
-        baseClassMethodDecl f@Function{..} = [lt|
-  template <class BaseClass>
-  class WithAsyncMethod_#{methodName} : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_#{methodName}() {
-      ::grpc::Service::MarkMethodAsync(#{index});
-    }
-    ~WithAsyncMethod_#{methodName}() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status #{methodName}(::grpc::ServerContext* context, const #{request methodInput}* request, #{response methodResult}* response) final override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void Request#{methodName}(::grpc::ServerContext* context, #{request methodInput}* request, ::grpc::ServerAsyncResponseWriter< #{response methodResult}>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(#{index}, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-|]
+        baseClassMethodDecl f@Function{..} = [lt|template <class BaseClass>
+    class WithAsyncMethod_#{methodName} : public BaseClass
+    {
+    private:
+        void BaseClassMustBeDerivedFromService(const Service *service) {}
+
+    public:
+        WithAsyncMethod_#{methodName}()
+        {
+            ::grpc::Service::MarkMethodAsync(#{index});
+        }
+        ~WithAsyncMethod_#{methodName}() override
+        {
+            BaseClassMustBeDerivedFromService(this);
+        }
+
+        // disable synchronous version of this method
+        ::grpc::Status #{methodName}(::grpc::ServerContext* context, const #{request methodInput}* request, #{response methodResult}* response) final override
+        {
+            abort();
+            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+        }
+        void Request#{methodName}(::grpc::ServerContext* context, #{request methodInput}* request, ::grpc::ServerAsyncResponseWriter< #{response methodResult}>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
+        {
+            ::grpc::Service::RequestAsyncUnary(#{index}, context, request, response, new_call_cq, notification_cq, tag);
+        }
+    };|]
           where
             index = maybe (-1) id (elemIndex f serviceMethods)
 
-        baseClassMethodDecl Event{..} = [lt||]
+        baseClassMethodDecl Event{..} = [lt|/* TODO async mixin for event #{methodName} */|]
 
         asyncMethodChain [] = ""
         asyncMethodChain [Function{..}] = "WithAsyncMethod_" ++ methodName ++ "<Service >"
