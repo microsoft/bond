@@ -48,6 +48,7 @@
 #endif
 
 #include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/grpc/thread_pool.h>
 
 #include <boost/assert.hpp>
 #include <boost/optional/optional.hpp>
@@ -56,24 +57,27 @@
 
 namespace bond { namespace ext { namespace gRPC {
 
+    template <typename TThreadPool> class server_builder_core;
+
     /// @brief Models a gRPC server powered by Bond services.
     ///
     /// Servers are configured and started via
     /// bond::ext:gRPC::server_builder.
-    class server final
+    template <typename TThreadPool>
+    class server_core final
     {
     public:
-        ~server()
+        ~server_core()
         {
             Shutdown();
             Wait();
         }
 
-        server(const server&) = delete;
-        server& operator=(const server&) = delete;
+        server_core(const server_core&) = delete;
+        server_core& operator=(const server_core&) = delete;
 
-        server(server&&) = default;
-        server& operator=(server&&) = default;
+        server_core(server_core&&) = default;
+        server_core& operator=(server_core&&) = default;
 
         /// @brief Shutdown the server, blocking until all rpc processing
         /// finishes.
@@ -106,10 +110,10 @@ namespace bond { namespace ext { namespace gRPC {
             _ioManager.wait();
         }
 
-        friend class server_builder;
+        friend class server_builder_core<TThreadPool>;
 
 private:
-    server(
+    server_core(
         std::unique_ptr<grpc::Server> grpcServer,
         std::unique_ptr<grpc::ServerCompletionQueue> cq)
         : _grpcServer(std::move(grpcServer)),
@@ -121,5 +125,7 @@ private:
         std::unique_ptr<grpc::Server> _grpcServer;
         io_manager _ioManager;
     };
+
+    using server = server_core<bond::ext::thread_pool>;
 
 } } } //namespace bond::ext::gRPC

@@ -7,6 +7,7 @@
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 #include <bond/ext/grpc/detail/client_call_data.h>
 #include <bond/ext/grpc/detail/service.h>
@@ -65,24 +66,26 @@ public:
         const ::grpc::RpcMethod rpcmethod_foo33_;
     };
 
-    class Service : public ::bond::ext::gRPC::detail::service
+    template <typename TThreadPool>
+    class ServiceCore : public ::bond::ext::gRPC::detail::service<TThreadPool>
     {
     public:
-        Service()
+        ServiceCore()
         {
             AddMethod("/tests.Foo/foo31");
             AddMethod("/tests.Foo/foo32");
             AddMethod("/tests.Foo/foo33");
         }
 
-        virtual ~Service() { }
-        virtual void start(::grpc::ServerCompletionQueue* cq) override
+        virtual ~ServiceCore() { }
+        virtual void start(::grpc::ServerCompletionQueue* cq, TThreadPool* tp) override
         {
             BOOST_ASSERT(cq);
+            BOOST_ASSERT(tp);
 
-            _rd_foo31.emplace(this, 0, cq, std::bind(&Service::foo31, this, std::placeholders::_1));
-            _rd_foo32.emplace(this, 1, cq, std::bind(&Service::foo32, this, std::placeholders::_1));
-            _rd_foo33.emplace(this, 2, cq, std::bind(&Service::foo33, this, std::placeholders::_1));
+            _rd_foo31.emplace(this, 0, cq, tp, std::bind(&ServiceCore::foo31, this, std::placeholders::_1));
+            _rd_foo32.emplace(this, 1, cq, tp, std::bind(&ServiceCore::foo32, this, std::placeholders::_1));
+            _rd_foo33.emplace(this, 2, cq, tp, std::bind(&ServiceCore::foo33, this, std::placeholders::_1));
 
             queue_receive(0, &_rd_foo31->_receivedCall->_context, &_rd_foo31->_receivedCall->_request, &_rd_foo31->_receivedCall->_responder, cq, &_rd_foo31.get());
             queue_receive(1, &_rd_foo32->_receivedCall->_context, &_rd_foo32->_receivedCall->_request, &_rd_foo32->_receivedCall->_responder, cq, &_rd_foo32.get());
@@ -94,10 +97,12 @@ public:
         virtual void foo33(::bond::ext::gRPC::unary_call<::bond::bonded<Payload>, ::bond::bonded<Payload>>) = 0;
 
     private:
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<Payload>, ::bond::bonded<void>>> _rd_foo31;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded<Payload>>> _rd_foo32;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<Payload>, ::bond::bonded<Payload>>> _rd_foo33;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<Payload>, ::bond::bonded<void>, TThreadPool>> _rd_foo31;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded<Payload>, TThreadPool>> _rd_foo32;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<Payload>, ::bond::bonded<Payload>, TThreadPool>> _rd_foo33;
     };
+
+    using Service = ServiceCore<bond::ext::thread_pool>;
 };
 
 } // namespace tests

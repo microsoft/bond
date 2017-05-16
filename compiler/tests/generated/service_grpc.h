@@ -8,6 +8,7 @@
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 #include <bond/ext/grpc/detail/client_call_data.h>
 #include <bond/ext/grpc/detail/service.h>
@@ -134,10 +135,11 @@ public:
         const ::grpc::RpcMethod rpcmethod_cq_;
     };
 
-    class Service : public ::bond::ext::gRPC::detail::service
+    template <typename TThreadPool>
+    class ServiceCore : public ::bond::ext::gRPC::detail::service<TThreadPool>
     {
     public:
-        Service()
+        ServiceCore()
         {
             AddMethod("/tests.Foo/foo11");
             AddMethod("/tests.Foo/foo12");
@@ -161,10 +163,11 @@ public:
             AddMethod("/tests.Foo/cq");
         }
 
-        virtual ~Service() { }
-        virtual void start(::grpc::ServerCompletionQueue* cq0) override
+        virtual ~ServiceCore() { }
+        virtual void start(::grpc::ServerCompletionQueue* cq0, TThreadPool* tp) override
         {
             BOOST_ASSERT(cq0);
+            BOOST_ASSERT(tp);
 
             /* TODO: init for event foo11 */
             /* TODO: init for event foo12 */
@@ -172,20 +175,20 @@ public:
             /* TODO: init for event foo13 */
             /* TODO: init for event foo14 */
             /* TODO: init for event foo15 */
-            _rd_foo21.emplace(this, 6, cq0, std::bind(&Service::foo21, this, std::placeholders::_1));
-            _rd_foo22.emplace(this, 7, cq0, std::bind(&Service::foo22, this, std::placeholders::_1));
-            _rd_foo23.emplace(this, 8, cq0, std::bind(&Service::foo23, this, std::placeholders::_1));
-            _rd_foo24.emplace(this, 9, cq0, std::bind(&Service::foo24, this, std::placeholders::_1));
-            _rd_foo31.emplace(this, 10, cq0, std::bind(&Service::foo31, this, std::placeholders::_1));
-            _rd_foo32.emplace(this, 11, cq0, std::bind(&Service::foo32, this, std::placeholders::_1));
-            _rd_foo330.emplace(this, 12, cq0, std::bind(&Service::foo33, this, std::placeholders::_1));
-            _rd__rd_foo33.emplace(this, 13, cq0, std::bind(&Service::_rd_foo33, this, std::placeholders::_1));
-            _rd_foo34.emplace(this, 14, cq0, std::bind(&Service::foo34, this, std::placeholders::_1));
-            _rd_foo41.emplace(this, 15, cq0, std::bind(&Service::foo41, this, std::placeholders::_1));
-            _rd_foo42.emplace(this, 16, cq0, std::bind(&Service::foo42, this, std::placeholders::_1));
-            _rd_foo43.emplace(this, 17, cq0, std::bind(&Service::foo43, this, std::placeholders::_1));
-            _rd_foo44.emplace(this, 18, cq0, std::bind(&Service::foo44, this, std::placeholders::_1));
-            _rd_cq.emplace(this, 19, cq0, std::bind(&Service::cq, this, std::placeholders::_1));
+            _rd_foo21.emplace(this, 6, cq0, tp, std::bind(&ServiceCore::foo21, this, std::placeholders::_1));
+            _rd_foo22.emplace(this, 7, cq0, tp, std::bind(&ServiceCore::foo22, this, std::placeholders::_1));
+            _rd_foo23.emplace(this, 8, cq0, tp, std::bind(&ServiceCore::foo23, this, std::placeholders::_1));
+            _rd_foo24.emplace(this, 9, cq0, tp, std::bind(&ServiceCore::foo24, this, std::placeholders::_1));
+            _rd_foo31.emplace(this, 10, cq0, tp, std::bind(&ServiceCore::foo31, this, std::placeholders::_1));
+            _rd_foo32.emplace(this, 11, cq0, tp, std::bind(&ServiceCore::foo32, this, std::placeholders::_1));
+            _rd_foo330.emplace(this, 12, cq0, tp, std::bind(&ServiceCore::foo33, this, std::placeholders::_1));
+            _rd__rd_foo33.emplace(this, 13, cq0, tp, std::bind(&ServiceCore::_rd_foo33, this, std::placeholders::_1));
+            _rd_foo34.emplace(this, 14, cq0, tp, std::bind(&ServiceCore::foo34, this, std::placeholders::_1));
+            _rd_foo41.emplace(this, 15, cq0, tp, std::bind(&ServiceCore::foo41, this, std::placeholders::_1));
+            _rd_foo42.emplace(this, 16, cq0, tp, std::bind(&ServiceCore::foo42, this, std::placeholders::_1));
+            _rd_foo43.emplace(this, 17, cq0, tp, std::bind(&ServiceCore::foo43, this, std::placeholders::_1));
+            _rd_foo44.emplace(this, 18, cq0, tp, std::bind(&ServiceCore::foo44, this, std::placeholders::_1));
+            _rd_cq.emplace(this, 19, cq0, tp, std::bind(&ServiceCore::cq, this, std::placeholders::_1));
 
             /* TODO: queue event foo11 */
             /* TODO: queue event foo12 */
@@ -237,21 +240,23 @@ public:
         /* TODO: receive data for event foo13 */
         /* TODO: receive data for event foo14 */
         /* TODO: receive data for event foo15 */
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded<void>>> _rd_foo21;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded<void>>> _rd_foo22;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded<void>>> _rd_foo23;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::dummy>, ::bond::bonded<void>>> _rd_foo24;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>> _rd_foo31;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>> _rd_foo32;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>>> _rd_foo330;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>>> _rd__rd_foo33;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::BasicTypes>>> _rd_foo34;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::dummy>>> _rd_foo41;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::dummy>>> _rd_foo42;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::dummy>>> _rd_foo43;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::dummy>>> _rd_foo44;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>> _rd_cq;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded<void>, TThreadPool>> _rd_foo21;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded<void>, TThreadPool>> _rd_foo22;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded<void>, TThreadPool>> _rd_foo23;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::dummy>, ::bond::bonded<void>, TThreadPool>> _rd_foo24;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_foo31;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_foo32;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_foo330;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd__rd_foo33;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_foo34;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::dummy>, TThreadPool>> _rd_foo41;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::dummy>, TThreadPool>> _rd_foo42;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::dummy>, TThreadPool>> _rd_foo43;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::dummy>, TThreadPool>> _rd_foo44;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_cq;
     };
+
+    using Service = ServiceCore<bond::ext::thread_pool>;
 };
 
 } // namespace tests

@@ -1,16 +1,5 @@
-#include "helloworld_types.h"
 #include "helloworld_grpc.h"
-
-#ifdef _MSC_VER
-    #pragma warning (push)
-    #pragma warning (disable: 4100)
-#endif
-
-#include <grpc++/grpc++.h>
-
-#ifdef _MSC_VER
-    #pragma warning (pop)
-#endif
+#include "helloworld_types.h"
 
 // event.h needed for test purposes
 #include <bond/ext/detail/event.h>
@@ -19,12 +8,13 @@
 #include <bond/ext/grpc/server.h>
 #include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/unary_call.h>
+#include <bond/ext/grpc/thread_pool.h>
 
 #include <chrono>
 #include <functional>
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -86,7 +76,8 @@ int main()
     const std::string server_address("127.0.0.1:50051");
     GreeterServiceImpl service;
 
-    bond::ext::gRPC::server_builder builder;
+    bond::ext::thread_pool threadPool;
+    bond::ext::gRPC::server_builder builder(&threadPool);
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
     builder.RegisterService(&service);
     std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
@@ -118,7 +109,7 @@ int main()
 
     if (!waitResult)
     {
-        std::cout << "time out ocurred";
+        std::cout << "timeout ocurred";
     }
 
     if (waitResult && isCorrectResponse)

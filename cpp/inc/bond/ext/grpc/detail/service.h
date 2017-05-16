@@ -28,6 +28,7 @@ struct io_manager_tag;
 ///
 /// Helper class that codegen uses to generate abstract service classes,
 /// which a bond::ext::gRPC::server then hosts multiple services.
+template <typename TThreadPool>
 class service : private grpc::Service
 {
 public:
@@ -39,7 +40,7 @@ public:
     ///
     /// Typical implementations call queue_receive on all the methods in the
     /// service to kick of the process of receiving messages.
-    virtual void start(grpc::ServerCompletionQueue* cq) = 0;
+    virtual void start(grpc::ServerCompletionQueue* cq, TThreadPool* threadPool) = 0;
 
     /// @brief Starts the receive process for a method.
     ///

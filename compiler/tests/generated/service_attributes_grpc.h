@@ -7,6 +7,7 @@
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 #include <bond/ext/grpc/detail/client_call_data.h>
 #include <bond/ext/grpc/detail/service.h>
@@ -57,20 +58,22 @@ public:
         const ::grpc::RpcMethod rpcmethod_foo_;
     };
 
-    class Service : public ::bond::ext::gRPC::detail::service
+    template <typename TThreadPool>
+    class ServiceCore : public ::bond::ext::gRPC::detail::service<TThreadPool>
     {
     public:
-        Service()
+        ServiceCore()
         {
             AddMethod("/tests.Foo/foo");
         }
 
-        virtual ~Service() { }
-        virtual void start(::grpc::ServerCompletionQueue* cq) override
+        virtual ~ServiceCore() { }
+        virtual void start(::grpc::ServerCompletionQueue* cq, TThreadPool* tp) override
         {
             BOOST_ASSERT(cq);
+            BOOST_ASSERT(tp);
 
-            _rd_foo.emplace(this, 0, cq, std::bind(&Service::foo, this, std::placeholders::_1));
+            _rd_foo.emplace(this, 0, cq, tp, std::bind(&ServiceCore::foo, this, std::placeholders::_1));
 
             queue_receive(0, &_rd_foo->_receivedCall->_context, &_rd_foo->_receivedCall->_request, &_rd_foo->_receivedCall->_responder, cq, &_rd_foo.get());
         }
@@ -78,8 +81,10 @@ public:
         virtual void foo(::bond::ext::gRPC::unary_call<::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result>>) = 0;
 
     private:
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result>>> _rd_foo;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result>, TThreadPool>> _rd_foo;
     };
+
+    using Service = ServiceCore<bond::ext::thread_pool>;
 };
 
 } // namespace tests

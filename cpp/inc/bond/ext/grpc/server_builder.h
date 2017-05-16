@@ -48,6 +48,7 @@
 #endif
 
 #include <bond/ext/grpc/server.h>
+#include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/detail/service.h>
 
 #include <boost/assert.hpp>
@@ -58,14 +59,23 @@ namespace bond { namespace ext { namespace gRPC {
 
     /// @brief A builder class for the creation and startup of \a
     /// bond::ext::gRPC::server instances.
-    class server_builder final {
+    template <typename TThreadPool>
+    class server_builder_core final {
     public:
+        explicit server_builder_core(TThreadPool* threadPool)
+            : _grpcServerBuilder(),
+              _services(),
+              _threadPool(threadPool)
+        {
+            BOOST_ASSERT(threadPool);
+        }
+
         /// Register a service. This call does not take ownership of the
         /// service. The service must exist for the lifetime of the \p
         /// server instance returned by \p BuildAndStart().
         ///
         /// Matches requests with any :authority
-        server_builder& RegisterService(detail::service* service)
+        server_builder_core& RegisterService(detail::service<TThreadPool>* service)
         {
             BOOST_ASSERT(service);
             _grpcServerBuilder.RegisterService(service->grpc_service());
@@ -79,7 +89,7 @@ namespace bond { namespace ext { namespace gRPC {
         /// server instance returned by BuildAndStart().
         ///
         /// Only matches requests with :authority \p host
-        server_builder& RegisterService(const grpc::string& host, detail::service* service)
+        server_builder_core& RegisterService(const grpc::string& host, detail::service<TThreadPool>* service)
         {
             BOOST_ASSERT(service);
             _grpcServerBuilder.RegisterService(host, service->grpc_service());
@@ -89,14 +99,14 @@ namespace bond { namespace ext { namespace gRPC {
         }
 
         /// Set max receive message size in bytes.
-        server_builder& SetMaxReceiveMessageSize(int max_receive_message_size)
+        server_builder_core& SetMaxReceiveMessageSize(int max_receive_message_size)
         {
             _grpcServerBuilder.SetMaxReceiveMessageSize(max_receive_message_size);
             return *this;
         }
 
         /// Set max send message size in bytes.
-        server_builder& SetMaxSendMessageSize(int max_send_message_size)
+        server_builder_core& SetMaxSendMessageSize(int max_send_message_size)
         {
             _grpcServerBuilder.SetMaxSendMessageSize(max_send_message_size);
             return *this;
@@ -108,7 +118,7 @@ namespace bond { namespace ext { namespace gRPC {
         ///
         /// Incoming calls compressed with an unsupported algorithm will
         /// fail with GRPC_STATUS_UNIMPLEMENTED.
-        server_builder& SetCompressionAlgorithmSupportStatus(
+        server_builder_core& SetCompressionAlgorithmSupportStatus(
             grpc_compression_algorithm algorithm,
             bool enabled)
         {
@@ -118,7 +128,7 @@ namespace bond { namespace ext { namespace gRPC {
 
         /// The default compression level to use for all channel calls in
         /// the absence of a call-specific level.
-        server_builder& SetDefaultCompressionLevel(grpc_compression_level level)
+        server_builder_core& SetDefaultCompressionLevel(grpc_compression_level level)
         {
             _grpcServerBuilder.SetDefaultCompressionLevel(level);
             return *this;
@@ -127,7 +137,7 @@ namespace bond { namespace ext { namespace gRPC {
         /// The default compression algorithm to use for all channel calls
         /// in the absence of a call-specific level. Note that it overrides
         /// any compression level set by \p SetDefaultCompressionLevel.
-        server_builder& SetDefaultCompressionAlgorithm(
+        server_builder_core& SetDefaultCompressionAlgorithm(
             grpc_compression_algorithm algorithm)
         {
             _grpcServerBuilder.SetDefaultCompressionAlgorithm(algorithm);
@@ -135,7 +145,7 @@ namespace bond { namespace ext { namespace gRPC {
         }
 
         /// Set the attached buffer pool for this server.
-        server_builder& SetResourceQuota(const grpc::ResourceQuota& resource_quota)
+        server_builder_core& SetResourceQuota(const grpc::ResourceQuota& resource_quota)
         {
             _grpcServerBuilder.SetResourceQuota(resource_quota);
             return *this;
@@ -150,7 +160,7 @@ namespace bond { namespace ext { namespace gRPC {
         /// @param creds The credentials associated with the server.
         /// @param[out] selected_port Upon success, updated to contain the
         /// port number. \p nullptr otherwise.
-        server_builder& AddListeningPort(
+        server_builder_core& AddListeningPort(
             const grpc::string& addr,
             std::shared_ptr<grpc::ServerCredentials> creds,
             int* selected_port = nullptr)
@@ -160,7 +170,7 @@ namespace bond { namespace ext { namespace gRPC {
         }
 
         /// Return a running server which is ready for processing calls.
-        std::unique_ptr<bond::ext::gRPC::server> BuildAndStart()
+        std::unique_ptr<bond::ext::gRPC::server_core<TThreadPool>> BuildAndStart()
         {
             std::unique_ptr<grpc::ServerCompletionQueue> cq =
                 _grpcServerBuilder.AddCompletionQueue();
@@ -171,11 +181,11 @@ namespace bond { namespace ext { namespace gRPC {
             // methods.
             for (auto& service : _services)
             {
-                service->start(cq.get());
+                service->start(cq.get(), _threadPool);
             }
 
-            std::unique_ptr<bond::ext::gRPC::server> result{
-                new bond::ext::gRPC::server {
+            std::unique_ptr<bond::ext::gRPC::server_core<TThreadPool>> result{
+                new bond::ext::gRPC::server_core<TThreadPool> {
                     std::move(server),
                     std::move(cq) } };
 
@@ -184,7 +194,10 @@ namespace bond { namespace ext { namespace gRPC {
 
     private:
         grpc::ServerBuilder _grpcServerBuilder;
-        std::set<detail::service*> _services;
+        std::set<detail::service<TThreadPool>*> _services;
+        TThreadPool* _threadPool;
     };
+
+    using server_builder = server_builder_core<bond::ext::thread_pool>;
 
 } } } // namespace bond::ext::gRPC

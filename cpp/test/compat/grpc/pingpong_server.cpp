@@ -91,9 +91,11 @@ public:
 
 int main()
 {
-    const std::string server_address("127.0.0.1:" + std::to_string(Port));
     PingPongServiceImpl service;
-    bond::ext::gRPC::server_builder builder;
+    bond::ext::thread_pool threadPool;
+
+    bond::ext::gRPC::server_builder builder(&threadPool);
+    const std::string server_address("127.0.0.1:" + std::to_string(Port));
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
     builder.RegisterService(&service);
     std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
