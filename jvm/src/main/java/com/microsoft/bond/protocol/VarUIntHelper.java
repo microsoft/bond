@@ -14,6 +14,9 @@ import java.io.OutputStream;
  */
 final class VarUIntHelper {
 
+    // prevent instantiation
+    private VarUIntHelper() {}
+
     /**
      * Encodes an unsigned uint16 value (represented as a signed int16 value) into a stream.
      * The sign bit of the value is re-interpreted as the high order bit for encoding purposes.

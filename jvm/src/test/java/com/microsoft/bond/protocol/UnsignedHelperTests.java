@@ -9,12 +9,6 @@ import static org.junit.Assert.*;
 public class UnsignedHelperTests {
 
     @Test
-    public void callImplicitDefaultConstructor() {
-        // adds the implicit default constructor to unit test code coverage
-        new UnsignedHelper();
-    }
-
-    @Test
     public void asUnsignedShort_Byte() {
         testWidenedResultShort((short) 0, (byte) 0x00);
 

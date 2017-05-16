@@ -7,12 +7,6 @@ import static org.junit.Assert.*;
 public class ZigzagHelperTest {
 
     @Test
-    public void callImplicitDefaultConstructor() {
-        // adds the implicit default constructor to unit test code coverage
-        new ZigzagHelper();
-    }
-
-    @Test
     public void testZigzag16Encoding() {
         testEncodedDecodedTuple16((short) 0, (short) 0x0000);
 

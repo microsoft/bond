@@ -13,12 +13,6 @@ import static org.junit.Assert.*;
 public class VarUIntHelperTest {
 
     @Test
-    public void callImplicitDefaultConstructor() {
-        // adds the implicit default constructor to unit test code coverage
-        new VarUIntHelper();
-    }
-
-    @Test
     public void testVarUInt16Encoding() {
         testEncodedDecodedTuple16((short) 0x0000, new byte[]{(byte) 0x00});
 

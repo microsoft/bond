@@ -8,12 +8,6 @@ import static org.junit.Assert.*;
 public class StringHelperTest {
 
     @Test
-    public void callImplicitDefaultConstructor() {
-        // adds the implicit default constructor to unit test code coverage
-        new StringHelper();
-    }
-
-    @Test
     public void testStringEncoding() {
         // empty string
         testStringEncodingDecoding(

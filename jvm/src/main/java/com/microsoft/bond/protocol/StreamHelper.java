@@ -9,6 +9,9 @@ import java.io.InputStream;
  */
 final class StreamHelper {
 
+    // prevent instantiation
+    private StreamHelper() {}
+
     /**
      * Reads a single byte from the input, raising an EOFException if end of stream is reached.
      *

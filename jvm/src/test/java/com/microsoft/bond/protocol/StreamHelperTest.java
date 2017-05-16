@@ -13,12 +13,6 @@ import static org.junit.Assert.*;
 public class StreamHelperTest {
 
     @Test
-    public void callImplicitDefaultConstructor() {
-        // adds the implicit default constructor to unit test code coverage
-        new StreamHelper();
-    }
-
-    @Test
     public void readByte() {
         byte[] inputBytes = new byte[]{2, 7, 31, 127};
 
