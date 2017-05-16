@@ -10,6 +10,8 @@ class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short =
     val Magic = ProtocolType.FAST_PROTOCOL
     private val writer = BinaryStreamWriter(stream)
 
+    override fun getFirstPassWriter(): ProtocolWriter? = null
+
     override fun writeVersion() {
         writer.writeInt16(Magic.value.toShort())
         writer.writeInt16(version)
@@ -99,12 +101,14 @@ class FastBinaryWriter<out S : OutputStream>(val stream: S, val version: Short =
 
     override fun writeString(value: String) {
         writer.writeVarUInt32(value.length)
-        writer.writeString(value)
+        // class is being removed (ported to Java) in a parallel change so commenting this out
+        //writer.writeString(value)
     }
 
     override fun writeWString(value: String) {
         writer.writeVarUInt32(value.length)
-        writer.writeWString(value)
+        // class is being removed (ported to Java) in a parallel change so commenting this out
+        //writer.writeWString(value)
     }
 }
 

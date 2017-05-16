@@ -3,14 +3,14 @@ package com.microsoft.bond.protocol;
 import com.microsoft.bond.BondDataType;
 
 /**
- * Reads from serialize payload encoded using a tagged protocol.
+ * Reads from serialized payload encoded using a tagged protocol.
  */
 public interface TaggedProtocolReader {
 
     /**
      * Contains the result of reading a field of a struct.
      */
-    public final class ReadFieldResult {
+    final class ReadFieldResult {
 
         /**
          * Set to the field type or BT_STOP/BT_STOP_BASE if there is no more fields in current struct/base.
@@ -26,7 +26,7 @@ public interface TaggedProtocolReader {
     /**
      * Contains the result of reading a container (either list/set or a map).
      */
-    public final class ReadContainerResult {
+    final class ReadContainerResult {
 
         /**
          * Set to number of items in the container.

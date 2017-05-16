@@ -14,26 +14,39 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 
-// TODO: add Compact Binary protocol format comment (either here and/or in the deserializer and/or in package.html)
-
 /**
  * Implements Compact Binary protocol (serialization).
+ * Refer to {@link https://microsoft.github.io/bond/reference/cpp/compact__binary_8h_source.html} for details.
  */
-public final class CompactBinaryProtocolWriter implements TwoPassProtocolWriter {
+public final class CompactBinaryProtocolWriter implements ProtocolWriter {
+
+    /**
+     * Wraps a mutable integer that keeps track of the length of a struct.
+     */
+    private final class StructLength {
+        int length = 0;
+    }
 
     private static final short MAGIC = (short)ProtocolType.COMPACT_PROTOCOL.value;
 
     private final BinaryStreamWriter writer;
     private final short version;
-    private final FirstPassCounter firstPassCounter;
-
-    private int currentStructIndex;
+    private final LinkedList<StructLength> structLengths;
 
     public CompactBinaryProtocolWriter(OutputStream outputStream, short version) {
+        // check protocol version
+        if (version != 1 && version != 2) {
+            throw new IllegalArgumentException("Invalid protocol version: " + version);
+        }
+
         this.writer = new BinaryStreamWriter(outputStream);
         this.version = version;
-        this.firstPassCounter = (version == 2) ? new FirstPassCounter() : null;
-        this.currentStructIndex = 0;
+        this.structLengths = this.version == 2 ? new LinkedList<StructLength>() : null;
+    }
+
+    @Override
+    public ProtocolWriter getFirstPassWriter() {
+        return new FirstPassCounter();
     }
 
     @Override
@@ -45,11 +58,9 @@ public final class CompactBinaryProtocolWriter implements TwoPassProtocolWriter 
     @Override
     public void writeStructBegin(Metadata metadata) throws IOException {
         if (this.version == 2) {
-            int structLength = this.firstPassCounter.getResultLength(this.currentStructIndex);
+            int structLength = this.structLengths.removeFirst().length;
             this.writer.writeVarUInt32(structLength);
         }
-
-        ++this.currentStructIndex;
     }
 
     @Override
@@ -58,8 +69,6 @@ public final class CompactBinaryProtocolWriter implements TwoPassProtocolWriter 
     @Override
     public void writeStructEnd() throws IOException {
         this.writer.writeInt8((byte)BondDataType.BT_STOP.value);
-
-        --this.currentStructIndex;
     }
 
     @Override
@@ -173,7 +182,7 @@ public final class CompactBinaryProtocolWriter implements TwoPassProtocolWriter 
     public void writeString(String value) throws IOException {
         if (value.isEmpty()) {
             // avoid calling encoder for an empty string
-            this.writer.writeInt32(0);
+            this.writer.writeVarUInt32(0);
         }
         else {
             byte[] bytes = StringHelper.encodeString(value);
@@ -195,45 +204,22 @@ public final class CompactBinaryProtocolWriter implements TwoPassProtocolWriter 
         }
     }
 
-    @Override
-    public ProtocolWriter getFirstPassWriter() {
-        return this.firstPassCounter;
-    }
-
     /**
      * Implements the first-pass writer that collects lengths of all structs that need to be written.
      */
     private final class FirstPassCounter implements ProtocolWriter {
 
-        /**
-         * Wraps a mutable integer that keeps track of the length of the current struct.
-         */
-        private final class StructLength {
-            int length = 0;
-        }
-
-        /**
-         * Extends ArrayList by adding stack functionality. Doesn't check for emptiness when popping.
-         */
-        private final class ArrayListStack<T> extends ArrayList<T> {
-            void push(T e) {
-                this.add(e);
-            }
-
-            T pop() {
-                return this.remove(this.size() - 1);
-            }
-
-            T peek() {
-                return this.get(this.size() - 1);
-            }
-        }
-
-        private final ArrayListStack<StructLength> workingStack = new ArrayListStack<StructLength>();
-        private final ArrayList<StructLength> resultLengths = new ArrayList<StructLength>();
+        private final LinkedList<StructLength> workingStack = new LinkedList<StructLength>();
 
         @Override
-        public void writeVersion() throws IOException {}
+        public ProtocolWriter getFirstPassWriter() {
+            return null;
+        }
+
+        @Override
+        public void writeVersion() throws IOException {
+            // magic and version are not included in struct lengths
+        }
 
         @Override
         public void writeStructBegin(Metadata metadata) throws IOException {
@@ -249,7 +235,7 @@ public final class CompactBinaryProtocolWriter implements TwoPassProtocolWriter 
             // complete the current struct
             StructLength completedStackFrame = this.workingStack.pop();
             completedStackFrame.length += 1; // BT_STOP
-            this.resultLengths.add(completedStackFrame);
+            CompactBinaryProtocolWriter.this.structLengths.addLast(completedStackFrame);
 
             // update the enclosing struct (the new current)
             if (!this.workingStack.isEmpty()) {
@@ -369,11 +355,6 @@ public final class CompactBinaryProtocolWriter implements TwoPassProtocolWriter 
         public void writeWString(String value) throws IOException {
             this.addBytes(VarUIntHelper.getVarUInt32Length(value.length()));
             this.addBytes(StringHelper.getEncodedWStringLength(value) / 2);
-        }
-
-        // called by the enclosing class to get results given the index of struct in depth-first traversal
-        int getResultLength(int index) {
-            return this.resultLengths.get(index).length;
         }
 
         private void addBytes(int byteCount) {

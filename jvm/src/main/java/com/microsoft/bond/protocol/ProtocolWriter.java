@@ -6,23 +6,33 @@ import com.microsoft.bond.Metadata;
 import java.io.IOException;
 
 /**
- * Writes serialized payload.
+ * Writes a serialized payload.
  */
 public interface ProtocolWriter {
 
     /**
-     *  Write protocol magic number and version.
+     * Provide the first-pass writer, if one is needed for this writer.
+     * Otherwise, returns null.
+     *
+     * @return the first-pass writer
+     */
+    ProtocolWriter getFirstPassWriter();
+
+    /**
+     * Write protocol magic number and version.
      */
     void writeVersion() throws IOException;
 
     /**
      * Start writing a struct.
+     *
      * @param metadata schema metadata
      */
     void writeStructBegin(Metadata metadata) throws IOException;
 
     /**
      * Start writing a base struct.
+     *
      * @param metadata base schema metadata
      */
     void writeBaseBegin(Metadata metadata) throws IOException;
@@ -39,8 +49,9 @@ public interface ProtocolWriter {
 
     /**
      * Start writing a field.
-     * @param type type of the field
-     * @param id identifier of the field
+     *
+     * @param type     type of the field
+     * @param id       identifier of the field
      * @param metadata metadata of the field
      */
     void writeFieldBegin(BondDataType type, int id, Metadata metadata) throws IOException;
@@ -52,23 +63,26 @@ public interface ProtocolWriter {
 
     /**
      * Indicate that field was omitted because it was set to its default value.
-     * @param type type of the field
-     * @param id identifier of the field
+     *
+     * @param type     type of the field
+     * @param id       identifier of the field
      * @param metadata metadata of the field
      */
     void writeFieldOmitted(BondDataType type, int id, Metadata metadata) throws IOException;
 
     /**
      * Start writing a list or set container.
-     * @param count number of elements in the container
+     *
+     * @param count       number of elements in the container
      * @param elementType type of the elements
      */
     void writeContainerBegin(int count, BondDataType elementType) throws IOException;
 
     /**
      * Start writing a map container
-     * @param count number of elements in the container
-     * @param keyType type of the keys
+     *
+     * @param count     number of elements in the container
+     * @param keyType   type of the keys
      * @param valueType type of the values
      */
     void writeContainerBegin(int count, BondDataType keyType, BondDataType valueType) throws IOException;
@@ -80,84 +94,98 @@ public interface ProtocolWriter {
 
     /**
      * Write an int8.
+     *
      * @param value the value
      */
     void writeInt8(byte value) throws IOException;
 
     /**
      * Write an int16.
+     *
      * @param value the value
      */
     void writeInt16(short value) throws IOException;
 
     /**
      * Write an int32.
+     *
      * @param value the value
      */
     void writeInt32(int value) throws IOException;
 
     /**
      * Write an int64.
+     *
      * @param value the value
      */
     void writeInt64(long value) throws IOException;
 
     /**
      * Write an uint8.
+     *
      * @param value the value
      */
     void writeUInt8(byte value) throws IOException;
 
     /**
      * Write an uint16.
+     *
      * @param value the value
      */
     void writeUInt16(short value) throws IOException;
 
     /**
      * Write an uint32.
+     *
      * @param value the value
      */
     void writeUInt32(int value) throws IOException;
 
     /**
      * Write an uint64.
+     *
      * @param value the value
      */
     void writeUInt64(long value) throws IOException;
 
     /**
      * Write a float.
+     *
      * @param value the value
      */
     void writeFloat(float value) throws IOException;
 
     /**
      * Write a double.
+     *
      * @param value the value
      */
     void writeDouble(double value) throws IOException;
 
     /**
      * Write array of bytes verbatim.
+     *
      * @param value the value
      */
     void writeBytes(byte[] value) throws IOException;
 
     /**
      * Write a bool.
+     *
      * @param value the value
      */
     void writeBool(boolean value) throws IOException;
 
     /**
      * Write a string.
+     *
      * @param value the value
      */
     void writeString(String value) throws IOException;
 
     /**
      * Write a wstring.
+     *
      * @param value the value
      */
     void writeWString(String value) throws IOException;

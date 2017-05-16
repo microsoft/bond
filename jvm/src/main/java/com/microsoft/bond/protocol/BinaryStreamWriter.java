@@ -9,7 +9,7 @@ import java.nio.ByteOrder;
 
 /**
  * Responsible for writing Bond primitive data types to an output stream.
- * This class encapsulates big-endian to little-endian conversion.
+ * This class encapsulates big-endian to little-endian conversion and Bool encoding.
  */
 final class BinaryStreamWriter {
 
@@ -53,16 +53,6 @@ final class BinaryStreamWriter {
 
     void writeBool(boolean value) throws IOException {
         this.outputStream.write(value ? 1 : 0);
-    }
-
-    void writeString(String value) throws IOException {
-        byte[] bytes = StringHelper.encodeString(value);
-        this.outputStream.write(bytes);
-    }
-
-    void writeWString(String value) throws IOException {
-        byte[] bytes = StringHelper.encodeWString(value);
-        this.outputStream.write(bytes);
     }
 
     void writeBytes(byte[] value) throws IOException {

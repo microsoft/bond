@@ -8,8 +8,8 @@ import java.io.OutputStream;
  * Contains helper methods for working with variable-length unsigned integer representation.
  * Since Java doesn't have unsigned integral types, they are represented by signed integral
  * types of the same width (e.g. short for unsigned 16-bit integer) where the sign bit is
- * interpreted as the most significant bit of the unsigned value. Please note that applications
- * using unsigned integers in numeric expressions are responsible for implementing overflow
+ * interpreted as the most significant bit of the unsigned value. Please note that code
+ * using unsigned integers in numeric expressions is responsible for implementing overflow
  * protection such as type promotion (e.g. use int to represent unsigned 16-bit value).
  */
 final class VarUIntHelper {
@@ -17,8 +17,9 @@ final class VarUIntHelper {
     /**
      * Encodes an unsigned uint16 value (represented as a signed int16 value) into a stream.
      * The sign bit of the value is re-interpreted as the high order bit for encoding purposes.
+     *
      * @param unsignedValue the value to encode, interpreted as unsigned
-     * @param outputStream the output stream
+     * @param outputStream  the output stream
      * @return the number of bytes written to the stream (1-3)
      */
     static int encodeVarUInt16(short unsignedValue, OutputStream outputStream) throws IOException {
@@ -30,20 +31,20 @@ final class VarUIntHelper {
 
         // byte 0
         if (unsignedValueAsInt >= 0x80) {
-            outputStream.write((byte)(unsignedValueAsInt | 0x80));
+            outputStream.write((byte) (unsignedValueAsInt | 0x80));
             unsignedValueAsInt >>>= 7;
             length = 2;
 
             // byte 1
             if (unsignedValueAsInt >= 0x80) {
-                outputStream.write((byte)(unsignedValueAsInt | 0x80));
+                outputStream.write((byte) (unsignedValueAsInt | 0x80));
                 unsignedValueAsInt >>>= 7;
                 length = 3;
             }
         }
 
         // last byte
-        outputStream.write((byte)unsignedValueAsInt);
+        outputStream.write((byte) unsignedValueAsInt);
 
         return length;
     }
@@ -51,8 +52,9 @@ final class VarUIntHelper {
     /**
      * Encodes an unsigned uint32 value (represented as a signed int32 value) into a stream.
      * The sign bit of the value is re-interpreted as the high order bit for encoding purposes.
+     *
      * @param unsignedValue the value to encode, interpreted as unsigned
-     * @param outputStream the output stream
+     * @param outputStream  the output stream
      * @return the number of bytes written to the stream (1-5)
      */
     static int encodeVarUInt32(int unsignedValue, OutputStream outputStream) throws IOException {
@@ -60,25 +62,25 @@ final class VarUIntHelper {
 
         // byte 0 (needs a special case to test for negative)
         if (unsignedValue >= 0x80 || unsignedValue < 0) {
-            outputStream.write((byte)(unsignedValue | 0x80));
+            outputStream.write((byte) (unsignedValue | 0x80));
             unsignedValue >>>= 7;
             length = 2;
 
             // byte 1
             if (unsignedValue >= 0x80) {
-                outputStream.write((byte)(unsignedValue | 0x80));
+                outputStream.write((byte) (unsignedValue | 0x80));
                 unsignedValue >>>= 7;
                 length = 3;
 
                 // byte 2
                 if (unsignedValue >= 0x80) {
-                    outputStream.write((byte)(unsignedValue | 0x80));
+                    outputStream.write((byte) (unsignedValue | 0x80));
                     unsignedValue >>>= 7;
                     length = 4;
 
                     // byte 3
                     if (unsignedValue >= 0x80) {
-                        outputStream.write((byte)(unsignedValue | 0x80));
+                        outputStream.write((byte) (unsignedValue | 0x80));
                         unsignedValue >>>= 7;
                         length = 5;
                     }
@@ -87,7 +89,7 @@ final class VarUIntHelper {
         }
 
         // last byte
-        outputStream.write((byte)unsignedValue);
+        outputStream.write((byte) unsignedValue);
 
         return length;
     }
@@ -95,8 +97,9 @@ final class VarUIntHelper {
     /**
      * Encodes an unsigned uint64 value (represented as signed int64 value) into a stream.
      * The sign bit of the value is re-interpreted as the high order bit for encoding purposes.
+     *
      * @param unsignedValue the value to encode, interpreted as unsigned
-     * @param outputStream the output stream
+     * @param outputStream  the output stream
      * @return the number of bytes written to the stream (1-10)
      */
     static int encodeVarUInt64(long unsignedValue, OutputStream outputStream) throws IOException {
@@ -104,55 +107,55 @@ final class VarUIntHelper {
 
         // byte 0 (needs a special case to test for negative)
         if (unsignedValue >= 0x80 || unsignedValue < 0) {
-            outputStream.write((byte)(unsignedValue | 0x80));
+            outputStream.write((byte) (unsignedValue | 0x80));
             unsignedValue >>>= 7;
             length = 2;
-            
+
             // byte 1
             if (unsignedValue >= 0x80) {
-                outputStream.write((byte)(unsignedValue | 0x80));
+                outputStream.write((byte) (unsignedValue | 0x80));
                 unsignedValue >>>= 7;
                 length = 3;
-                
+
                 // byte 2
                 if (unsignedValue >= 0x80) {
-                    outputStream.write((byte)(unsignedValue | 0x80));
+                    outputStream.write((byte) (unsignedValue | 0x80));
                     unsignedValue >>>= 7;
                     length = 4;
-                    
+
                     // byte 3
                     if (unsignedValue >= 0x80) {
-                        outputStream.write((byte)(unsignedValue | 0x80));
+                        outputStream.write((byte) (unsignedValue | 0x80));
                         unsignedValue >>>= 7;
                         length = 5;
-                        
+
                         // byte 4
                         if (unsignedValue >= 0x80) {
-                            outputStream.write((byte)(unsignedValue | 0x80));
+                            outputStream.write((byte) (unsignedValue | 0x80));
                             unsignedValue >>>= 7;
                             length = 6;
-                            
+
                             // byte 5
                             if (unsignedValue >= 0x80) {
-                                outputStream.write((byte)(unsignedValue | 0x80));
+                                outputStream.write((byte) (unsignedValue | 0x80));
                                 unsignedValue >>>= 7;
                                 length = 7;
-                                
+
                                 // byte 6
                                 if (unsignedValue >= 0x80) {
-                                    outputStream.write((byte)(unsignedValue | 0x80));
+                                    outputStream.write((byte) (unsignedValue | 0x80));
                                     unsignedValue >>>= 7;
                                     length = 8;
-                                    
+
                                     // byte 7
                                     if (unsignedValue >= 0x80) {
-                                        outputStream.write((byte)(unsignedValue | 0x80));
+                                        outputStream.write((byte) (unsignedValue | 0x80));
                                         unsignedValue >>>= 7;
                                         length = 9;
-                                        
+
                                         // byte 8
                                         if (unsignedValue >= 0x80) {
-                                            outputStream.write((byte)(unsignedValue | 0x80));
+                                            outputStream.write((byte) (unsignedValue | 0x80));
                                             unsignedValue >>>= 7;
                                             length = 10;
                                         }
@@ -164,9 +167,9 @@ final class VarUIntHelper {
                 }
             }
         }
-        
+
         // last byte
-        outputStream.write((byte)unsignedValue);
+        outputStream.write((byte) unsignedValue);
 
         return length;
     }
@@ -174,6 +177,7 @@ final class VarUIntHelper {
     /**
      * Decodes a variable-length unsigned uint16 value from a stream, using signed int16 type
      * to represent the result.
+     *
      * @param inputStream the input stream
      * @return the result represented by signed short type
      * @throws IOException if I/O error occurred
@@ -193,12 +197,13 @@ final class VarUIntHelper {
             }
         }
 
-        return (short)unsignedResult;
+        return (short) unsignedResult;
     }
 
     /**
      * Decodes a variable-length unsigned uint32 value from a stream, using signed int32 type
      * to represent the result.
+     *
      * @param inputStream the input stream
      * @return the result represented by signed int type
      * @throws IOException if I/O error occurred
@@ -234,6 +239,7 @@ final class VarUIntHelper {
     /**
      * Decodes a variable-length unsigned uint64 value from a stream, using signed int64 type
      * to represent the result.
+     *
      * @param inputStream the input stream
      * @return the result represented by signed long type
      * @throws IOException if I/O error occurred
@@ -275,8 +281,8 @@ final class VarUIntHelper {
                                         raw = UnsignedHelper.asUnsignedInt(StreamHelper.readByte(inputStream));
                                         unsignedResult |= raw << 56;
                                         if (0x80 <= raw) {
-                                            // byte 9 (bit 63)
-                                            unsignedResult |= raw << 63;
+                                            // byte 9 (ignored, per VarInt specification)
+                                            StreamHelper.readByte(inputStream);
                                         }
                                     }
                                 }
@@ -293,6 +299,7 @@ final class VarUIntHelper {
     /**
      * Computes the number of bytes needed to encode an unsigned uint16 value (represented as a signed int16 value).
      * The sign bit of the value is re-interpreted as the high order bit for encoding purposes.
+     *
      * @param unsignedValue the value to encode, interpreted as unsigned
      * @return the number of bytes representing the encoded value (1-3)
      */
@@ -300,16 +307,13 @@ final class VarUIntHelper {
         if (unsignedValue < 0) {
             // negative value means the highest bit of the unsigned value is set, so using maximum bytes
             return 3;
-        }
-        else if (unsignedValue < (1 << 7)) {
+        } else if (unsignedValue < (1 << 7)) {
             // value fits into 7 bits
             return 1;
-        }
-        else if (unsignedValue < (1 << 14)) {
+        } else if (unsignedValue < (1 << 14)) {
             // value fits into 14 bits
             return 2;
-        }
-        else {
+        } else {
             // maximum bytes
             return 3;
         }
@@ -318,6 +322,7 @@ final class VarUIntHelper {
     /**
      * Computes the number of bytes needed to encode an unsigned uint32 value (represented as a signed int32 value).
      * The sign bit of the value is re-interpreted as the high order bit for encoding purposes.
+     *
      * @param unsignedValue the value to encode, interpreted as unsigned
      * @return the number of bytes representing the encoded value (1-5)
      */
@@ -325,24 +330,19 @@ final class VarUIntHelper {
         if (unsignedValue < 0) {
             // negative value means the highest bit of the unsigned value is set, so using maximum bytes
             return 5;
-        }
-        else if (unsignedValue < (1 << 7)) {
+        } else if (unsignedValue < (1 << 7)) {
             // value fits into 7 bits
             return 1;
-        }
-        else if (unsignedValue < (1 << 14)) {
+        } else if (unsignedValue < (1 << 14)) {
             // value fits into 14 bits
             return 2;
-        }
-        else if (unsignedValue < (1 << 21)) {
+        } else if (unsignedValue < (1 << 21)) {
             // value fits into 21 bits
             return 3;
-        }
-        else if (unsignedValue < (1 << 28)) {
+        } else if (unsignedValue < (1 << 28)) {
             // value fits into 28 bits
             return 4;
-        }
-        else {
+        } else {
             // maximum bytes
             return 5;
         }
@@ -351,53 +351,41 @@ final class VarUIntHelper {
     /**
      * Computes the number of bytes needed to encode an unsigned uint64 value (represented as a signed int64 value).
      * The sign bit of the value is re-interpreted as the high order bit for encoding purposes.
+     *
      * @param unsignedValue the value to encode, interpreted as unsigned
      * @return the number of bytes representing the encoded value (1-10)
      */
     static int getVarUInt64Length(long unsignedValue) {
-        if (unsignedValue < 0) {
+        if (unsignedValue < 0L) {
             // negative value means the highest bit of the unsigned value is set, so using maximum bytes
             return 10;
-        }
-        else if (unsignedValue < (1 << 7)) {
+        } else if (unsignedValue < (1L << 7)) {
             // value fits into 7 bits
             return 1;
-        }
-        else if (unsignedValue < (1 << 14)) {
+        } else if (unsignedValue < (1L << 14)) {
             // value fits into 14 bits
             return 2;
-        }
-        else if (unsignedValue < (1 << 21)) {
+        } else if (unsignedValue < (1L << 21)) {
             // value fits into 21 bits
             return 3;
-        }
-        else if (unsignedValue < (1 << 28)) {
+        } else if (unsignedValue < (1L << 28)) {
             // value fits into 28 bits
             return 4;
-        }
-        else if (unsignedValue < (1 << 35)) {
+        } else if (unsignedValue < (1L << 35)) {
             // value fits into 35 bits
             return 5;
-        }
-        else if (unsignedValue < (1 << 42)) {
+        } else if (unsignedValue < (1L << 42)) {
             // value fits into 42 bits
             return 6;
-        }
-        else if (unsignedValue < (1 << 49)) {
+        } else if (unsignedValue < (1L << 49)) {
             // value fits into 49 bits
             return 7;
-        }
-        else if (unsignedValue < (1 << 56)) {
+        } else if (unsignedValue < (1L << 56)) {
             // value fits into 56 bits
             return 8;
-        }
-        else if (unsignedValue < (1 << 63)) {
-            // value fits into 63 bits
+        } else {
+            // value fits into 63 bits (i.e. non-negative)
             return 9;
-        }
-        else {
-            // maximum bytes
-            return 10;
         }
     }
 }

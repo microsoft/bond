@@ -6,8 +6,8 @@ import java.math.BigInteger;
  * Contains helper methods for working with unsigned integers represented by signed types.
  * Since Java doesn't have unsigned integral types, they are represented by signed integral
  * types of the same width (e.g. short for unsigned 16-bit integer) where the sign bit is
- * interpreted as the most significant bit of the unsigned value. Please note that applications
- * using unsigned integers in numeric expressions are responsible for implementing overflow
+ * interpreted as the most significant bit of the unsigned value. Please note that code
+ * using unsigned integers in numeric expressions is responsible for implementing overflow
  * protection such as type promotion (e.g. use int to represent unsigned 16-bit value).
  */
 final class UnsignedHelper {
@@ -20,16 +20,18 @@ final class UnsignedHelper {
     /**
      * Converts an unsigned 8-bit value (represented by the signed byte data type) to a 16-bit short value.
      * The result represents a non-negative value within the range of 8-bit unsigned integers.
+     *
      * @param signedValue the value, interpreted as unsigned
      * @return an int containing the unsigned 8-bit value
      */
     static short asUnsignedShort(byte signedValue) {
-        return (short)(signedValue & 0xFF);
+        return (short) (signedValue & 0xFF);
     }
 
     /**
      * Converts an unsigned 8-bit value (represented by the signed byte data type) to a 32-bit int value.
      * The result represents a non-negative value within the range of 8-bit unsigned integers.
+     *
      * @param signedValue the value, interpreted as unsigned
      * @return an int containing the unsigned 8-bit value
      */
@@ -40,6 +42,7 @@ final class UnsignedHelper {
     /**
      * Converts an unsigned 16-bit value (represented by the signed short data type) to a 32-bit int value.
      * The result represents a non-negative value within the range of 16-bit unsigned integers.
+     *
      * @param signedValue the value, interpreted as unsigned
      * @return an int containing the unsigned 16-bit value
      */
@@ -50,6 +53,7 @@ final class UnsignedHelper {
     /**
      * Converts an unsigned 8-bit value (represented by the signed byte data type) to a 64-bit long value.
      * The result represents a non-negative value within the range of 8-bit unsigned integers.
+     *
      * @param signedValue the value, interpreted as unsigned
      * @return an int containing the unsigned 8-bit value
      */
@@ -60,6 +64,7 @@ final class UnsignedHelper {
     /**
      * Converts an unsigned 16-bit value (represented by the signed short data type) to a 64-bit long value.
      * The result represents a non-negative value within the range of 16-bit unsigned integers.
+     *
      * @param signedValue the value, interpreted as unsigned
      * @return an int containing the unsigned 16-bit value
      */
@@ -70,6 +75,7 @@ final class UnsignedHelper {
     /**
      * Converts an unsigned 32-bit value (represented by the signed int data type) to a 64-bit long value.
      * The result represents a non-negative value within the range of 32-bit unsigned integers.
+     *
      * @param signedValue the value, interpreted as unsigned
      * @return an int containing the unsigned 32-bit value
      */
@@ -80,6 +86,7 @@ final class UnsignedHelper {
     /**
      * Converts an unsigned 8-bit value (represented by the signed byte data type) to a BigInteger value.
      * The result represents a non-negative value within the range of 8-bit unsigned integers.
+     *
      * @param signedValue the value, interpreted as unsigned
      * @return a BigInteger object containing the unsigned 8-bit value
      */
@@ -94,6 +101,7 @@ final class UnsignedHelper {
     /**
      * Converts an unsigned 16-bit value (represented by the signed short data type) to a BigInteger value.
      * The result represents a non-negative value within the range of 16-bit unsigned integers.
+     *
      * @param signedValue the value, interpreted as unsigned
      * @return a BigInteger object containing the unsigned 16-bit value
      */
@@ -108,6 +116,7 @@ final class UnsignedHelper {
     /**
      * Converts an unsigned 32-bit value (represented by the signed int data type) to a BigInteger value.
      * The result represents a non-negative value within the range of 32-bit unsigned integers.
+     *
      * @param signedValue the value, interpreted as unsigned
      * @return a BigInteger object containing the unsigned 32-bit value
      */
@@ -122,6 +131,7 @@ final class UnsignedHelper {
     /**
      * Converts an unsigned 64-bit value (represented by the signed long data type) to a BigInteger value.
      * The result represents a non-negative value within the range of 64-bit unsigned integers.
+     *
      * @param signedValue the value, interpreted as unsigned
      * @return a BigInteger object containing the unsigned 64-bit value
      */

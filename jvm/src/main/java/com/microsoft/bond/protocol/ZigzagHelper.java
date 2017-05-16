@@ -1,16 +1,12 @@
 package com.microsoft.bond.protocol;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 /**
  * Contains helper methods for encoding and decoding integers using the zigzag scheme.
  */
 final class ZigzagHelper {
 
     static short encodeZigzag16(short signedValue) {
-        return (short)((signedValue << 1) ^ (signedValue >> 15));
+        return (short) ((signedValue << 1) ^ (signedValue >> 15));
     }
 
     static int encodeZigzag32(int signedValue) {
@@ -22,7 +18,7 @@ final class ZigzagHelper {
     }
 
     static short decodeZigzag16(short unsignedValue) {
-        return (short)((unsignedValue >>> 1) ^ -(unsignedValue & 1));
+        return (short) (((unsignedValue & 0x0000FFFF) >>> 1) ^ -(unsignedValue & 1));
     }
 
     static int decodeZigzag32(int unsignedValue) {

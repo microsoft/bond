@@ -7,7 +7,7 @@ import java.nio.ByteOrder;
 
 /**
  * Responsible for reading Bond primitive data types from an input stream.
- * This class encapsulates little-endian to big-endian conversion.
+ * This class encapsulates little-endian to big-endian conversion and Bool encoding.
  */
 final class BinaryStreamReader {
 
@@ -25,45 +25,37 @@ final class BinaryStreamReader {
     }
 
     short readInt16() throws IOException {
-        StreamHelper.readBytesIntoBuffer(this.inputStream, this.endiannessConversionByteBuffer.array(), 0, 2);
+        StreamHelper.readBytes(this.inputStream, this.endiannessConversionByteBuffer.array(), 0, 2);
         return this.endiannessConversionByteBuffer.getShort(0);
     }
 
     int readInt32() throws IOException {
-        StreamHelper.readBytesIntoBuffer(this.inputStream, this.endiannessConversionByteBuffer.array(), 0, 4);
+        StreamHelper.readBytes(this.inputStream, this.endiannessConversionByteBuffer.array(), 0, 4);
         return this.endiannessConversionByteBuffer.getInt(0);
     }
 
     long readInt64() throws IOException {
-        StreamHelper.readBytesIntoBuffer(this.inputStream, this.endiannessConversionByteBuffer.array(), 0, 8);
+        StreamHelper.readBytes(this.inputStream, this.endiannessConversionByteBuffer.array(), 0, 8);
         return this.endiannessConversionByteBuffer.getLong(0);
     }
 
     float readFloat() throws IOException {
-        StreamHelper.readBytesIntoBuffer(this.inputStream, this.endiannessConversionByteBuffer.array(), 0, 4);
+        StreamHelper.readBytes(this.inputStream, this.endiannessConversionByteBuffer.array(), 0, 4);
         return this.endiannessConversionByteBuffer.getFloat(0);
     }
 
     double readDouble() throws IOException {
-        StreamHelper.readBytesIntoBuffer(this.inputStream, this.endiannessConversionByteBuffer.array(), 0, 8);
+        StreamHelper.readBytes(this.inputStream, this.endiannessConversionByteBuffer.array(), 0, 8);
         return this.endiannessConversionByteBuffer.getDouble(0);
     }
 
-    boolean readBoolean() throws IOException {
+    boolean readBool() throws IOException {
         return StreamHelper.readByte(this.inputStream) != 0;
-    }
-
-    String readString(int byteCount) throws IOException {
-        return StringHelper.decodeString(this.readBytes(byteCount));
-    }
-
-    String readWString(int byteCount) throws IOException {
-        return StringHelper.decodeWString(this.readBytes(byteCount));
     }
 
     byte[] readBytes(int byteCount) throws IOException {
         byte[] bytes = new byte[byteCount];
-        StreamHelper.readBytesIntoBuffer(this.inputStream, bytes, 0, byteCount);
+        StreamHelper.readBytes(this.inputStream, bytes, 0, byteCount);
         return bytes;
     }
 
