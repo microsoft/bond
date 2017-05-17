@@ -18,8 +18,6 @@
     clone_depth: 15
 
     environment:
-        BOND_TOKEN:
-            secure: rjdX6JnXnnoL90NHux4CxJQ03mYDxRCYD8GuHhzJxRzIPwviuEj62cV7rbSso5dx
         matrix:
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
@@ -180,31 +178,6 @@
             if ($env:BOND_BUILD -eq "Doc") {
 
                 cmake --build . --target documentation -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-                if ($? -And $env:BOND_TOKEN -And $env:APPVEYOR_REPO_BRANCH -eq "master") {
-
-                    git config --global user.email "bondlab@microsoft.com"
-
-                    git config --global user.name "Appveyor"
-
-                    git clone -b gh-pages "https://${env:BOND_TOKEN}@github.com/Microsoft/bond.git" gh-pages 2>&1 | out-null
-
-                    cd gh-pages
-
-                    if (-not $?) { throw "Cloning gh-pages failed" }
-
-                    Remove-Item * -Recurse
-
-                    Copy-Item ..\html\* . -Recurse
-
-                    git add --all .
-
-                    git commit -m "Update documentation"
-
-                    git push origin gh-pages 2>&1 | out-null
-
-                    cd ..
-                }
 
             }
 
