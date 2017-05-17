@@ -5,6 +5,10 @@ import com.microsoft.bond.BondDataType;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Implements Fast Binary deserialization.
+ * Refer to {@link https://microsoft.github.io/bond/reference/cpp/fast__binary_8h_source.html} for details.
+ */
 public final class FastBinaryReader<S extends InputStream> implements TaggedProtocolReader {
     public final S stream;
     private final short version;

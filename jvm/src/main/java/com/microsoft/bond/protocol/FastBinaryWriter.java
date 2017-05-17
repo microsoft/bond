@@ -7,6 +7,10 @@ import com.microsoft.bond.ProtocolType;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * Implements Fast Binary serialization.
+ * Refer to {@link https://microsoft.github.io/bond/reference/cpp/fast__binary_8h_source.html} for details.
+ */
 public final class FastBinaryWriter<S extends OutputStream> implements ProtocolWriter {
     private static final ProtocolType MAGIC = ProtocolType.FAST_PROTOCOL;
 
