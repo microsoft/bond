@@ -3,16 +3,10 @@ package com.microsoft.bond.protocol;
 import com.microsoft.bond.BondDataType;
 import com.microsoft.bond.Metadata;
 import com.microsoft.bond.ProtocolType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
 
 /**
  * Implements Compact Binary protocol (serialization).

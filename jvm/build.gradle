@@ -4,18 +4,12 @@
 
 
 buildscript {
-    ext.kotlin_version = '1.1.0'
-
     repositories {
         mavenCentral()
     }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
 }
 
-apply plugin: 'kotlin'
+apply plugin: 'java'
 
 version = '5.0.0'
 sourceCompatibility = 1.6
@@ -25,7 +19,6 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testCompile 'junit:junit:4.12'
 }
 
@@ -40,7 +33,7 @@ allprojects {
             '../idl/bond/core/bond_const.bond',
             '--output', "$gbcOutputPath"
     }
-    compileKotlin.dependsOn coreCodegen
+    compileJava.dependsOn coreCodegen
 }
 
 sourceSets {
@@ -48,14 +41,5 @@ sourceSets {
         java {
             srcDirs += gbcOutputDir
         }
-    }
-}
-
-jar {
-    // This stanza adds "everything" to the jar, which will include the kotlin
-    // stdlib. Making this function more complicated should allow us to shave
-    // some bytes off the final jar.
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
