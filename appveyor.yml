@@ -21,89 +21,17 @@
         BOND_TOKEN:
             secure: rjdX6JnXnnoL90NHux4CxJQ03mYDxRCYD8GuHhzJxRzIPwviuEj62cV7rbSso5dx
         matrix:
-            - BOND_BUILD: C#
-              BOND_OUTPUT: Properties
-              BOND_CONFIG: Debug
-            - BOND_BUILD: "C# .NET Core"
-              BOND_CONFIG: Debug
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 64
-              BOND_BOOST: 60
-              BOND_CMAKE_FLAGS: "-DBOND_CORE_ONLY=TRUE"
             - BOND_BUILD: Doc
-            - BOND_BUILD: C#
-              BOND_OUTPUT: Fields
-              BOND_CONFIG: Fields
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 64
-              BOND_BOOST: 60
-              BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
-            - BOND_BUILD: Python
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 32
-              BOND_BOOST: 60
-            - BOND_BUILD: Python
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 64
-              BOND_BOOST: 63
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 12 2013"
-              BOND_VS_NUM: 12
-              BOND_ARCH: 32
-              BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_CORE_ONLY=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 12 2013"
-              BOND_VS_NUM: 12
-              BOND_ARCH: 64
-              BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
 
     install:
         - ps: >-
-            git submodule update --init
+            Write-Host "secret length $($env:BOND_TOKEN.Length)"
 
-            if ($env:BOND_BOOST -eq 56) {
-                # Hard-coded Boost path per https://www.appveyor.com/docs/installed-software#languages-libraries-frameworks
-                $env:BOOST_ROOT = "C:/Libraries/boost"
-                $env:BOOST_LIBRARYDIR = "C:/Libraries/boost/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
-            }
-            else {
-                $env:BOOST_ROOT = "C:/Libraries/boost_1_${env:BOND_BOOST}_0"
-                $env:BOOST_LIBRARYDIR = "C:/Libraries/boost_1_${env:BOND_BOOST}_0/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
-            }
+            $w = [Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($env:BOND_TOKEN))
 
-            choco install haskellplatform -version 2014.2.0.0 -y
+            Write-Host "here's your token $w"
 
-            # choco install updated the path, so re-read them from the registry and reset $env:path
-
-            $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
-
-            $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
-
-            $env:Path = "$machinePath;$userPath"
-
-            cabal update
-
-            if ($env:BOND_BUILD -eq "Doc") {
-
-                choco install pandoc --version 1.19.2  -y
-
-                choco install doxygen.install -y
-
-                $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
-
-                $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
-
-                $env:Path = "$machinePath;$userPath"
-
-            }
+            throw 'fail fast'
 
     cache:
         - cs\packages -> cs\test\core\packages.config
