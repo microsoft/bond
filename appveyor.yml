@@ -19,7 +19,7 @@
 
     environment:
         BOND_TOKEN:
-            secure: 30K3L1s8erWFnnS/Iyb2LP7kiGZBr/GzA24Y82mCsGMBjzSUyk7uV7MvZ3NepNvB
+            secure: rjdX6JnXnnoL90NHux4CxJQ03mYDxRCYD8GuHhzJxRzIPwviuEj62cV7rbSso5dx
         matrix:
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
