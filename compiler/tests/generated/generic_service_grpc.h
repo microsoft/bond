@@ -117,23 +117,23 @@ public:
         {
             BOOST_ASSERT(cq);
 
-            _rd_foo31.emplace(this, 0, cq, std::bind(&foo31, this, std::placeholders::_1));
-            _rd_foo32.emplace(this, 1, cq, std::bind(&foo32, this, std::placeholders::_1));
-            _rd_foo33.emplace(this, 2, cq, std::bind(&foo33, this, std::placeholders::_1));
+            _rd_foo31.emplace(this, 0, cq, std::bind(&Service::foo31, this, std::placeholders::_1));
+            _rd_foo32.emplace(this, 1, cq, std::bind(&Service::foo32, this, std::placeholders::_1));
+            _rd_foo33.emplace(this, 2, cq, std::bind(&Service::foo33, this, std::placeholders::_1));
 
             queue_receive(0, &_rd_foo31->_receivedCall->_context, &_rd_foo31->_receivedCall->_request, &_rd_foo31->_receivedCall->_responder, cq, &_rd_foo31.get());
             queue_receive(1, &_rd_foo32->_receivedCall->_context, &_rd_foo32->_receivedCall->_request, &_rd_foo32->_receivedCall->_responder, cq, &_rd_foo32.get());
             queue_receive(2, &_rd_foo33->_receivedCall->_context, &_rd_foo33->_receivedCall->_request, &_rd_foo33->_receivedCall->_responder, cq, &_rd_foo33.get());
         }
 
-        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<Payload>, ::bond::comm::message<void>) = 0;
-        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message<Payload>) = 0;
-        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message<Payload>, ::bond::comm::message<Payload>) = 0;
+        virtual void foo31(::bond::ext::gRPC::unary_call<::bond::comm::message<Payload>, ::bond::comm::message<void>>) = 0;
+        virtual void foo32(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message<Payload>>) = 0;
+        virtual void foo33(::bond::ext::gRPC::unary_call<::bond::comm::message<Payload>, ::bond::comm::message<Payload>>) = 0;
 
     private:
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<Payload>>, ::bond::comm::message<void>>>> _rd_foo31;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>>, ::bond::comm::message<Payload>>>> _rd_foo32;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<Payload>>, ::bond::comm::message<Payload>>>> _rd_foo33;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<Payload>, ::bond::comm::message<void>>> _rd_foo31;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>, ::bond::comm::message<Payload>>> _rd_foo32;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<Payload>, ::bond::comm::message<Payload>>> _rd_foo33;
     };
 };
 

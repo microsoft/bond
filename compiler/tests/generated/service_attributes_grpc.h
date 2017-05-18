@@ -83,15 +83,15 @@ public:
         {
             BOOST_ASSERT(cq);
 
-            _rd_foo.emplace(this, 0, cq, std::bind(&foo, this, std::placeholders::_1));
+            _rd_foo.emplace(this, 0, cq, std::bind(&Service::foo, this, std::placeholders::_1));
 
             queue_receive(0, &_rd_foo->_receivedCall->_context, &_rd_foo->_receivedCall->_request, &_rd_foo->_receivedCall->_responder, cq, &_rd_foo.get());
         }
 
-        virtual void(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::Param>, ::bond::comm::message< ::tests::Result>) = 0;
+        virtual void foo(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::Param>, ::bond::comm::message< ::tests::Result>>) = 0;
 
     private:
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::Param>>, ::bond::comm::message< ::tests::Result>>>> _rd_foo;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::Param>, ::bond::comm::message< ::tests::Result>>> _rd_foo;
     };
 };
 
