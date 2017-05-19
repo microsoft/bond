@@ -42,7 +42,7 @@ if (MSVC)
     # Our minimum required version of CMake doesn't have GREATER_EQUAL, so
     # we invert a less-than comparison instead. CMake 3.7 added
     # GREATER_EQUAL.
-    if (NOT (MSVC_VERSION LESS 1900))
+    if (NOT (MSVC_VERSION LESS 1910))
       add_compile_options (/permissive-)
     endif()
 
