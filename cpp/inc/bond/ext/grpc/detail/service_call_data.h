@@ -17,7 +17,7 @@
     #pragma warning (pop)
 #endif
 
-#include <bond/ext/grpc/detail/cq_poller.h>
+#include <bond/ext/grpc/detail/io_manager_tag.h>
 #include <bond/ext/grpc/detail/service.h>
 #include <bond/ext/grpc/unary_call.h>
 
@@ -38,7 +38,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
 /// detail::unary_call_impl is in charge of its own lifetime, and
 /// detail::service_unary_call_data re-enqueues itself to get the next call.
 template <typename TRequest, typename TResponse>
-struct service_unary_call_data : cq_poller_tag
+struct service_unary_call_data : io_manager_tag
 {
     typedef std::function<void(unary_call<TRequest, TResponse> call)> CallbackType;
 

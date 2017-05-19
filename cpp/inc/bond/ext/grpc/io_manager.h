@@ -16,6 +16,7 @@
 #endif
 
 #include <bond/ext/detail/event.h>
+#include <bond/ext/grpc/detail/io_manager_tag.h>
 
 #include <boost/assert.hpp>
 
@@ -24,31 +25,14 @@
 #include <thread>
 #include <vector>
 
-namespace bond { namespace ext { namespace gRPC { namespace detail {
-
-    /// @brief Interface for completion queue tag types that \ref cq_poller
-    /// expects.
-    ///
-    /// Typically, a type inherits from this type, captures at construction
-    /// time in its locals the state of some operation, and resumes that
-    /// operation in its implementation of \ref invoke.
-    struct cq_poller_tag
-    {
-        virtual ~cq_poller_tag() { }
-
-        /// @brief Called when this instance is dequeued from a completion
-        /// queue.
-        ///
-        /// @param ok whether or not the initial operation succeeded
-        virtual void invoke(bool ok) = 0;
-    };
+namespace bond { namespace ext { namespace gRPC {
 
     /// @brief Manages a pool of threads polling for work from the same
     /// %grpc::CompletionQueue
     ///
     /// All of the tags enqueued in this completion queue must inherit from
-    /// \ref cq_poller_tag. If not, the behavior is undefined.
-    class cq_poller final
+    /// \ref io_manager_tag. If not, the behavior is undefined.
+    class io_manager final
     {
     public:
         /// @param cq the completion queue to poll. Takes ownership.
@@ -56,7 +40,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         /// @param numThreads the number of threads to start. If 0, then a
         /// number of threads depending on the hardware's available
         /// concurrency will be started.
-        explicit cq_poller(std::unique_ptr<grpc::CompletionQueue> cq, size_t numThreads = 0)
+        explicit io_manager(std::unique_ptr<grpc::CompletionQueue> cq, size_t numThreads = 0)
             : _cq(std::move(cq)),
             _numThreads(compute_real_num_threads(numThreads)),
             _threads(),
@@ -67,8 +51,8 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
             BOOST_ASSERT(_cq);
         }
 
-        /// Waits for the \p cq_poller to stop.
-        ~cq_poller()
+        /// Waits for the \p io_manager to stop.
+        ~io_manager()
         {
             shutdown();
             wait();
@@ -84,9 +68,9 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
 
         /// @brief Starts polling the completion queue.
         ///
-        /// @remarks A cq_poller can only be started once.
+        /// @remarks An io_manager can only be started once.
         ///
-        /// @remarks A cq_poller cannot be restarted after it has been
+        /// @remarks An io_manager cannot be restarted after it has been
         /// shutdown.
         void start()
         {
@@ -104,15 +88,15 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
                     while (_cq->Next(&tag, &ok))
                     {
                         BOOST_ASSERT(tag);
-                        static_cast<cq_poller_tag*>(tag)->invoke(ok);
+                        static_cast<detail::io_manager_tag*>(tag)->invoke(ok);
                     }
                 });
             }
         }
 
-        /// @brief Requests that the cq_poller shutdown.
+        /// @brief Requests that the io_manager shutdown.
         ///
-        /// @remarks If the cq_poller is being used for by a
+        /// @remarks If the io_manager is being used for by a
         /// bond::ext::gRPC::server, that server needs to be shutdown first.
         ///
         /// @remarks Can be called from multiple threads concurrently.
@@ -125,14 +109,14 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
             }
         }
 
-        /// Waits for remaining work to drain from the cq_poller and for the
+        /// Waits for remaining work to drain from the io_manager and for the
         /// worker threads to be shutdown.
         ///
         /// @remarks Can be called from multiple threads concurrently.
         ///
-        /// @warning Cannot be called from a cq_poller worker thread. In
+        /// @warning Cannot be called from an io_manager worker thread. In
         /// other words, never call this function from inside of
-        /// cq_poller_tag::invoke.
+        /// io_manager_tag::invoke.
         ///
         /// @warning Either \ref shutdown must have been called already, or
         /// some other thread must call \p shutdown for this function to
@@ -183,4 +167,4 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         bond::ext::detail::event _shutdownCompleted;
     };
 
-} } } } // namespace bond::ext::gRPC::detail
+} } } // namespace bond::ext::gRPC

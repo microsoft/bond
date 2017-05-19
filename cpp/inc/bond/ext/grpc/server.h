@@ -47,7 +47,7 @@
     #pragma warning (pop)
 #endif
 
-#include <bond/ext/grpc/detail/cq_poller.h>
+#include <bond/ext/grpc/io_manager.h>
 
 #include <boost/assert.hpp>
 #include <boost/optional/optional.hpp>
@@ -86,14 +86,14 @@ namespace bond { namespace ext { namespace gRPC {
         void Shutdown(const T& deadline)
         {
             _grpcServer->Shutdown(deadline);
-            _cqPoller.shutdown();
+            _ioManager.shutdown();
         }
 
         /// Shutdown the server, waiting for all rpc processing to finish.
         void Shutdown()
         {
             _grpcServer->Shutdown();
-            _cqPoller.shutdown();
+            _ioManager.shutdown();
         }
 
         /// @brief Block waiting for all work to complete.
@@ -103,7 +103,7 @@ namespace bond { namespace ext { namespace gRPC {
         void Wait()
         {
             _grpcServer->Wait();
-            _cqPoller.wait();
+            _ioManager.wait();
         }
 
         friend class server_builder;
@@ -113,18 +113,18 @@ private:
         std::unique_ptr<grpc::Server> grpcServer,
         std::unique_ptr<grpc::ServerCompletionQueue> cq)
         : _grpcServer(std::move(grpcServer)),
-        _cqPoller(std::move(cq))
+        _ioManager(std::move(cq))
     {
         BOOST_ASSERT(_grpcServer);
     }
 
     void start()
     {
-        _cqPoller.start();
+        _ioManager.start();
     }
 
         std::unique_ptr<grpc::Server> _grpcServer;
-        detail::cq_poller _cqPoller;
+        io_manager _ioManager;
     };
 
 } } } //namespace bond::ext::gRPC

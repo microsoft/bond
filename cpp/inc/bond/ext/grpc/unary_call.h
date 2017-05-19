@@ -18,7 +18,7 @@
     #pragma warning (pop)
 #endif
 
-#include <bond/ext/grpc/detail/cq_poller.h>
+#include <bond/ext/grpc/detail/io_manager_tag.h>
 
 #include <boost/assert.hpp>
 #include <atomic>
@@ -34,7 +34,7 @@ namespace detail {
     /// the completion queue. When that sending of the response is done and
     /// it is dequeued from the completion queue, it deletes itself.
     template <typename TRequest, typename TResponse>
-    struct unary_call_impl final : detail::cq_poller_tag
+    struct unary_call_impl final : detail::io_manager_tag
     {
         grpc::ServerContext _context;
         TRequest _request;

@@ -42,4 +42,4 @@ target_link_libraries (grpc_test_common PUBLIC
     grpc++)
 
 add_unit_test (thread_pool.cpp)
-add_unit_test (cq_poller.cpp)
+add_unit_test (io_manager.cpp)

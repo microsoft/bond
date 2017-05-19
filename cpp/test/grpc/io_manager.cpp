@@ -13,7 +13,8 @@
 #include <grpc/grpc.h>
 #include <grpc/support/time.h>
 
-#include <bond/ext/grpc/detail/cq_poller.h>
+#include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/grpc/detail/io_manager_tag.h>
 #include <bond/ext/detail/countdown_event.h>
 #include <bond/ext/detail/barrier.h>
 #include <bond/ext/detail/event.h>
@@ -28,15 +29,16 @@
 
 using namespace bond::ext::detail;
 using namespace bond::ext::gRPC::detail;
+using namespace bond::ext::gRPC;
 
-class cq_pollerTests
+class io_managerTests
 {
     static void PollOneItem()
     {
-        cq_poller poller(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
-        poller.start();
+        io_manager ioManager(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+        ioManager.start();
 
-        struct alarm_completion_tag : cq_poller_tag
+        struct alarm_completion_tag : io_manager_tag
         {
             event& _e;
 
@@ -52,7 +54,7 @@ class cq_pollerTests
         alarm_completion_tag act(alarmCompleted);
 
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
-        grpc::Alarm alarm(poller.cq(), deadline, &act);
+        grpc::Alarm alarm(ioManager.cq(), deadline, &act);
 
         bool wasSet = alarmCompleted.wait(std::chrono::seconds(30));
         UT_AssertIsTrue(wasSet);
@@ -60,13 +62,13 @@ class cq_pollerTests
 
     static void PollManyItems()
     {
-        cq_poller poller(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
-        poller.start();
+        io_manager ioManager(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+        ioManager.start();
 
         const size_t numItems = 1000;
         countdown_event ce(numItems);
 
-        struct alarm_completion_tag : cq_poller_tag
+        struct alarm_completion_tag : io_manager_tag
         {
             countdown_event& _ce;
 
@@ -86,7 +88,7 @@ class cq_pollerTests
         alarms.reserve(numItems);
         for (size_t i = 0; i < numItems; ++i)
         {
-            alarms.emplace_back(poller.cq(), deadline, &act);
+            alarms.emplace_back(ioManager.cq(), deadline, &act);
         }
 
         bool wasSet = ce.wait(std::chrono::seconds(30));
@@ -95,17 +97,17 @@ class cq_pollerTests
 
     static void ShutdownUnstarted()
     {
-        cq_poller poller(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
-        poller.shutdown();
-        poller.wait();
+        io_manager ioManager(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+        ioManager.shutdown();
+        ioManager.wait();
 
         // also tests that we can run the dtor after successful shutdown
     }
 
     static void ConcurrentShutdown()
     {
-        cq_poller poller(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
-        poller.start();
+        io_manager ioManager(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+        ioManager.start();
 
         const size_t numConcurrentShutdowns = 5;
         barrier threadsStarted(numConcurrentShutdowns);
@@ -115,12 +117,12 @@ class cq_pollerTests
         threads.reserve(5);
         for (size_t i = 0; i < numConcurrentShutdowns; ++i)
         {
-            threads.emplace_back([&poller, &threadsStarted, &threadsObservedShutdown]()
+            threads.emplace_back([&ioManager, &threadsStarted, &threadsObservedShutdown]()
             {
                 threadsStarted.enter();
 
-                poller.shutdown();
-                poller.wait();
+                ioManager.shutdown();
+                ioManager.wait();
 
                 threadsObservedShutdown.enter();
             });
@@ -130,7 +132,7 @@ class cq_pollerTests
         UT_AssertIsTrue(wasSet); // all the threads took too long to get started
 
         wasSet = threadsObservedShutdown.wait(std::chrono::seconds(30));
-        UT_AssertIsTrue(wasSet); // took too long to see the cq_poller shutdown
+        UT_AssertIsTrue(wasSet); // took too long to see the io_manager shutdown
 
         for (auto& thread : threads)
         {
@@ -141,7 +143,7 @@ class cq_pollerTests
 public:
     static void Initialize()
     {
-        UnitTestSuite suite("cq_poller");
+        UnitTestSuite suite("io_manager");
         suite.AddTestCase(PollOneItem, "PollOneItem");
         suite.AddTestCase(PollManyItems, "PollManyItems");
         suite.AddTestCase(ShutdownUnstarted, "ShutdownUnstarted");
@@ -159,6 +161,6 @@ bool init_unit_test()
     grpc::internal::GrpcLibraryInitializer initializer;
     initializer.summon();
 
-    cq_pollerTests::Initialize();
+    io_managerTests::Initialize();
     return true;
 }
