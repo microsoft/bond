@@ -11,9 +11,7 @@ import Prelude
 import qualified Data.Text.Lazy as L
 import Data.Text.Lazy.Builder
 import Text.Shakespeare.Text
--- import Language.Bond.Util
 import Language.Bond.Syntax.Types
--- import Language.Bond.Syntax.Util
 import Language.Bond.Codegen.Util
 import Language.Bond.Codegen.TypeMapping
 import qualified Language.Bond.Codegen.Cpp.Util as CPP
