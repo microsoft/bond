@@ -39,6 +39,7 @@ public class Main {
             fis.read(); fis.read(); fis.read(); fis.read();
             ooe.deserialize(new FastBinaryReader<>(fis, (short) 1));
 
+            System.out.println("ooe.is_super_duper: " + ooe.is_super_duper);
             System.out.println(String.format("ooe.b: %d", ooe.b));
             System.out.println(String.format("ooe.s: %d", ooe.s));
             System.out.println(String.format("ooe.i: %d", ooe.i));
@@ -78,6 +79,7 @@ public class Main {
             System.out.println(String.format("ooe.n_null: %s", ooe.n_null));
         } else {
             OneOfEverything ooe = new OneOfEverything();
+            ooe.is_super_duper = true;
             ooe.b = 3;
             ooe.s = 333;
             ooe.i = 333333;

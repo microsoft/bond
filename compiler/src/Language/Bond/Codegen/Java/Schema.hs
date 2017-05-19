@@ -28,6 +28,8 @@ schema java decl@Struct {..} = [lt|
     public static synchronized void initSchema() {
         if (#{schemaInitField}) { return; }
 
+        #{initSuperSchema java structBase}
+
         #{schemaDefMember}.root.id = #{fieldTypeName $ BT_UserDefined decl []};
         #{schemaDefMember}.root.struct_def = 0;
         #{schemaDefMember}.root.element = null;
@@ -61,6 +63,14 @@ schema java decl@Struct {..} = [lt|
         schemaInitField = pack "schemaInitialized"
 
 schema _ _ = error "java: Can only generate static schema for struct decls."
+
+initSuperSchema :: MappingContext -> Maybe Type -> Text
+initSuperSchema _ Nothing = mempty
+initSuperSchema java (Just (BT_UserDefined baseDecl _)) =
+    [lt|#{qualifiedBase}.initSchema();|]
+    where
+        qualifiedBase = qualifiedName java baseDecl
+initSuperSchema _ _ = error "Java: base type was not a UserDefined"
 
 initAttr :: Text -> Attribute -> Text
 initAttr target Attribute {..} =

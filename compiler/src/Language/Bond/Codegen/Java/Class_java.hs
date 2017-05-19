@@ -44,12 +44,14 @@ public class #{declName}#{params}#{maybe interface baseClass structBase} {
     #{doubleLineSep 1 publicField structFields}
 #{serialize_ProtocolWriter java declaration}
 #{deserialize_ProtocolWriter java declaration}
+#{serializeFields java declaration}
+#{deserializeFields java declaration}
 #{marshal_ProtocolWriter}
 }|]
             where
                 interface = [lt| implements com.microsoft.bond.BondSerializable|]
                 params = angles $ sepBy ", " paramName declParams
-                baseClass x = [lt| extends #{javaType x}()|]
+                baseClass x = [lt| extends #{javaType x}|]
                 javaDefault = Java.defaultValue java
 
                 -- FIXME: nullable<int32> -> Integer?

@@ -43,6 +43,7 @@ int main(int argc, char ** argv) {
         bond::InputBuffer input(buffer, size);
         Unmarshal(input, ooe);
 
+        printf("ooe.is_super_duper: %s\n", ooe.is_super_duper ? "true" : "false");
         printf("ooe.b: %d\n", ooe.b);
         printf("ooe.s: %d\n", ooe.s);
         printf("ooe.i: %d\n", ooe.i);
@@ -84,6 +85,7 @@ int main(int argc, char ** argv) {
         printf("ooe.oos.str: %s\n", ooe.oos.str.c_str());
     } else {
         OneOfEverything ooe;
+        ooe.is_super_duper = true;
         ooe.b = 3;
         ooe.s = 333;
         ooe.i = 333333;

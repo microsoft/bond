@@ -7,8 +7,10 @@
 module Language.Bond.Codegen.Java.SerializationMethods
     ( marshal_ProtocolWriter
     , serialize_ProtocolWriter
+    , serializeFields
     , deserializationHelperMembers
     , deserialize_ProtocolWriter
+    , deserializeFields
     , fieldTypeName
     ) where
 
@@ -39,8 +41,15 @@ serialize_ProtocolWriter java declaration = [lt|
         initSchema();
 
         writer.writeStructBegin(#{schemaDefMember}.structs.get(0).metadata);
-        #{newlineSepEnd 2 writeField fields}
+        this.serializeFields(writer);
         writer.writeStructEnd();
+    }|]
+
+serializeFields :: MappingContext -> Declaration -> Text
+serializeFields java declaration = [lt|
+    protected void serializeFields(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
+        #{serializeBase java (structBase declaration)}
+        #{newlineSepEnd 2 writeField fields}
     }|]
     where
         fields = structFields declaration
@@ -48,6 +57,16 @@ serialize_ProtocolWriter java declaration = [lt|
         writer.writeFieldBegin(#{fieldTypeName fieldType}, #{fieldOrdinal}, #{fieldDefMember field}.metadata);
         #{writeFieldValue java fieldType fieldName 0}
         writer.writeFieldEnd();|]
+
+serializeBase :: MappingContext -> Maybe Type -> Text
+serializeBase _ Nothing = mempty
+serializeBase java (Just (BT_UserDefined baseDecl _)) =
+    [lt|writer.writeBaseBegin(#{qualifiedBase}.#{schemaDefMember}.structs.get(0).metadata);
+        super.serializeFields(writer);
+        writer.writeBaseEnd();|]
+    where
+        qualifiedBase = qualifiedName java baseDecl
+serializeBase _ _ = error "Java: base type was not a UserDefined"
 
 writeFieldValue :: MappingContext -> Type -> String -> Int -> Text
 writeFieldValue java fieldType fieldName depth =
@@ -145,8 +164,15 @@ deserialize_ProtocolWriter java declaration = [lt|
         initSchema();
 
         reader.readStructBegin();
-        #{newlineSepEnd 2 readField fields}
+        this.deserializeFields(reader);
         reader.readStructEnd();
+    }|]
+
+deserializeFields :: MappingContext -> Declaration -> Text
+deserializeFields java declaration = [lt|
+    protected void deserializeFields(com.microsoft.bond.protocol.TaggedProtocolReader reader) throws java.io.IOException {
+        #{deserializeBase java (structBase declaration)}
+        #{newlineSepEnd 2 readField fields}
     }|]
     where
         fields = structFields declaration
@@ -155,6 +181,16 @@ deserialize_ProtocolWriter java declaration = [lt|
         reader.readFieldBegin(this.#{readFieldResultMember});
         #{readFieldValue java fieldType fieldName 0}
         reader.readFieldEnd();|]
+
+deserializeBase :: MappingContext -> Maybe Type -> Text
+deserializeBase _ Nothing = mempty
+deserializeBase java (Just (BT_UserDefined baseDecl _)) =
+    [lt|reader.readBaseBegin();
+        super.deserializeFields(reader);
+        reader.readBaseEnd();|]
+    where
+        qualifiedBase = qualifiedName java baseDecl
+deserializeBase _ _ = error "Java: base type was not a UserDefined"
 
 readFieldValue :: MappingContext -> Type -> String -> Int -> Text
 readFieldValue java fieldType fieldName depth =

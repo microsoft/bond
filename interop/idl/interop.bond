@@ -6,7 +6,11 @@ struct OneOfSomething {
     0: string str;
 }
 
-struct OneOfEverything {
+struct SomeSupertype {
+    0: bool is_super_duper;
+}
+
+struct OneOfEverything : SomeSupertype {
      0: int8 b;
      1: int16 s;
      2: int32 i;
