@@ -6,9 +6,11 @@
 #include "helloworld_types.h"
 #include <bond/comm/message.h>
 
+#ifdef _MSC_VER
+    #pragma warning (push)
+    #pragma warning (disable: 4100)
+#endif
 
-#pragma warning (push)
-#pragma warning (disable: 4100 4267)
 #include <bond/ext/grpc/bond_utils.h>
 
 //?#include <grpc++/impl/codegen/async_stream.h>
@@ -20,6 +22,10 @@
 #include <grpc++/impl/codegen/status.h>
 #include <grpc++/impl/codegen/stub_options.h>
 //??#include <grpc++/impl/codegen/sync_stream.h>
+
+#ifdef _MSC_VER
+    #pragma warning (pop)
+#endif
 
 #include <bond/ext/grpc/detail/client_call_data.h>
 #include <bond/ext/grpc/io_manager.h>

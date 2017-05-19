@@ -36,8 +36,8 @@ using namespace PingPongNS;
 using namespace bond::ext::detail;
 
 static countdown_event Countdown(NumRequests + NumErrors);
-static std::atomic<uint32_t> NumRequestsReceived = 0;
-static std::atomic<uint32_t> NumErrorsReceived = 0;
+static std::atomic<uint32_t> NumRequestsReceived(0);
+static std::atomic<uint32_t> NumErrorsReceived(0);
 
 // Logic and data behind the server's behavior.
 class PingPongServiceImpl final : public PingPong::Service

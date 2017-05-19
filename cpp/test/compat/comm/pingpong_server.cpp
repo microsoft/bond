@@ -19,9 +19,9 @@ using namespace PingPongNS;
 using namespace bond::ext::detail;
 
 static countdown_event Countdown(NumRequests + NumEvents + NumErrors);
-static std::atomic<uint32_t> NumRequestsReceived = 0;
-static std::atomic<uint32_t> NumEventsReceived = 0;
-static std::atomic<uint32_t> NumErrorsReceived = 0;
+static std::atomic<uint32_t> NumRequestsReceived(0);
+static std::atomic<uint32_t> NumEventsReceived(0);
+static std::atomic<uint32_t> NumErrorsReceived(0);
 
 // Implement service
 struct PingPongImpl : PingPong
