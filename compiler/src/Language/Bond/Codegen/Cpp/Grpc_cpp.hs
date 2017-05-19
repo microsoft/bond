@@ -23,8 +23,10 @@ grpc_cpp cpp file _imports declarations = ("_grpc.cpp", [lt|
 #include "#{file}_reflection.h"
 #include "#{file}_grpc.h"
 
+#ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable: 4100)
+#endif
 
 //#include <grpc++/impl/codegen/async_stream.h>
 #include <grpc++/impl/codegen/async_unary_call.h>
@@ -40,7 +42,9 @@ grpc_cpp cpp file _imports declarations = ("_grpc.cpp", [lt|
 #{doubleLineSep 1 grpc declarations}
 #{CPP.closeNamespace cpp}
 
+#ifdef _MSC_VER
 #pragma warning (pop)
+#endif
 |])
   where
     idl = MappingContext idlTypeMapping [] [] []

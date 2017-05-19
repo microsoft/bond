@@ -2,8 +2,10 @@
 #include "generic_service_reflection.h"
 #include "generic_service_grpc.h"
 
+#ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable: 4100)
+#endif
 
 //#include <grpc++/impl/codegen/async_stream.h>
 #include <grpc++/impl/codegen/async_unary_call.h>
@@ -67,4 +69,6 @@ Foo::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
 
 } // namespace tests
 
+#ifdef _MSC_VER
 #pragma warning (pop)
+#endif

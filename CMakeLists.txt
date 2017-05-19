@@ -9,7 +9,7 @@ set (CMAKE_MODULE_PATH
 
 # We need to include third-party CMake modules before we configure our own
 # settings so that we don't apply our settings to third-party code.
-include (ThirdParty)
+add_subdirectory (thirdparty)
 
 enable_testing()
 
