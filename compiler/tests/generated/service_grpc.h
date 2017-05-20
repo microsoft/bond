@@ -5,26 +5,29 @@
 #include "service_types.h"
 #include "basic_types_grpc.h"
 #include "namespace_basic_types_grpc.h"
-
+// todo: remove message
 #include <bond/comm/message.h>
 #include <bond/ext/grpc/bond_utils.h>
+#include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/unary_call.h>
+#include <bond/ext/grpc/detail/client_call_data.h>
 #include <bond/ext/grpc/detail/service.h>
 #include <bond/ext/grpc/detail/service_call_data.h>
 
 #include <boost/optional/optional.hpp>
+#include <functional>
+#include <memory>
 
 #ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable: 4100 4267)
 #endif
 
-#include <grpc++/impl/codegen/async_unary_call.h>
-#include <grpc++/impl/codegen/method_handler_impl.h>
+#include <grpc++/impl/codegen/channel_interface.h>
+#include <grpc++/impl/codegen/client_context.h>
+#include <grpc++/impl/codegen/completion_queue.h>
 #include <grpc++/impl/codegen/rpc_method.h>
-#include <grpc++/impl/codegen/service_type.h>
 #include <grpc++/impl/codegen/status.h>
-#include <grpc++/impl/codegen/stub_options.h>
 
 #ifdef _MSC_VER
 #pragma warning (pop)
@@ -36,134 +39,10 @@ namespace tests
 class Foo final
 {
 public:
-    class StubInterface
+    class FooClient
     {
     public:
-        virtual ~StubInterface() {}
-
-        /* TODO stub interface (public) for event foo11 */
-
-        /* TODO stub interface (public) for event foo12 */
-
-        /* TODO stub interface (public) for event foo12_impl */
-
-        /* TODO stub interface (public) for event foo13 */
-
-        /* TODO stub interface (public) for event foo14 */
-
-        /* TODO stub interface (public) for event foo15 */
-
-        virtual ::grpc::Status foo21(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message<void>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>> Asyncfoo21(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>>(Asyncfoo21Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status foo22(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message<void>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>> Asyncfoo22(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>>(Asyncfoo22Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status foo23(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::bond::comm::message<void>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>> Asyncfoo23(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>>(Asyncfoo23Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status foo24(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::bond::comm::message<void>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>> Asyncfoo24(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>>(Asyncfoo24Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status foo31(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::BasicTypes>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>> Asyncfoo31(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>>(Asyncfoo31Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status foo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::BasicTypes>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>> Asyncfoo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>>(Asyncfoo32Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::bond::comm::message< ::tests::BasicTypes>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>> Asyncfoo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>>(Asyncfoo33Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status _rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::bond::comm::message< ::tests::BasicTypes>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>> Async_rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>>(Async_rd_foo33Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status foo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::bond::comm::message< ::tests::BasicTypes>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>> Asyncfoo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>>(Asyncfoo34Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status foo41(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::dummy>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>> Asyncfoo41(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>>(Asyncfoo41Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status foo42(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::dummy>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>> Asyncfoo42(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>>(Asyncfoo42Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status foo43(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::bond::comm::message< ::tests::dummy>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>> Asyncfoo43(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>>(Asyncfoo43Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status foo44(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::bond::comm::message< ::tests::dummy>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>> Asyncfoo44(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>>(Asyncfoo44Raw(context, request, cq));
-        }
-
-        virtual ::grpc::Status cq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::BasicTypes>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>> Asynccq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>>(AsynccqRaw(context, request, cq));
-        }
-
-    private:
-        /* TODO stub interface (private) for event foo11 */
-        /* TODO stub interface (private) for event foo12 */
-        /* TODO stub interface (private) for event foo12_impl */
-        /* TODO stub interface (private) for event foo13 */
-        /* TODO stub interface (private) for event foo14 */
-        /* TODO stub interface (private) for event foo15 */
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>* Asyncfoo21Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>* Asyncfoo22Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>* Asyncfoo23Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message<void>>* Asyncfoo24Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo31Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo32Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo33Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* Async_rd_foo33Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo34Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>* Asyncfoo41Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>* Asyncfoo42Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>* Asyncfoo43Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::dummy>>* Asyncfoo44Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::BasicTypes>>* AsynccqRaw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) = 0;
-    };
-
-    class Stub final : public StubInterface
-    {
-    public:
-        Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
+        FooClient(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager);
 
         /* TODO stub implementation (public) for event foo11 */
 
@@ -177,92 +56,43 @@ public:
 
         /* TODO stub implementation (public) for event foo15 */
 
-        ::grpc::Status foo21(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message<void>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>> Asyncfoo21(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>>(Asyncfoo21Raw(context, request, cq));
-        }
+        void Asyncfoo21(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status foo22(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message<void>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>> Asyncfoo22(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>>(Asyncfoo22Raw(context, request, cq));
-        }
+        void Asyncfoo22(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status foo23(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::bond::comm::message<void>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>> Asyncfoo23(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>>(Asyncfoo23Raw(context, request, cq));
-        }
+        void Asyncfoo23(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status foo24(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::bond::comm::message<void>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>> Asyncfoo24(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>>(Asyncfoo24Raw(context, request, cq));
-        }
+        void Asyncfoo24(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status foo31(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::BasicTypes>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>> Asyncfoo31(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>>(Asyncfoo31Raw(context, request, cq));
-        }
+        void Asyncfoo31(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status foo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::BasicTypes>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>> Asyncfoo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>>(Asyncfoo32Raw(context, request, cq));
-        }
+        void Asyncfoo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::bond::comm::message< ::tests::BasicTypes>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>> Asyncfoo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>>(Asyncfoo33Raw(context, request, cq));
-        }
+        void Asyncfoo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status _rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::bond::comm::message< ::tests::BasicTypes>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>> Async_rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>>(Async_rd_foo33Raw(context, request, cq));
-        }
+        void Async_rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status foo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::bond::comm::message< ::tests::BasicTypes>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>> Asyncfoo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>>(Asyncfoo34Raw(context, request, cq));
-        }
+        void Asyncfoo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status foo41(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::dummy>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>> Asyncfoo41(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>>(Asyncfoo41Raw(context, request, cq));
-        }
+        void Asyncfoo41(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status foo42(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::dummy>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>> Asyncfoo42(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>>(Asyncfoo42Raw(context, request, cq));
-        }
+        void Asyncfoo42(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status foo43(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::bond::comm::message< ::tests::dummy>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>> Asyncfoo43(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>>(Asyncfoo43Raw(context, request, cq));
-        }
+        void Asyncfoo43(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status foo44(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::bond::comm::message< ::tests::dummy>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>> Asyncfoo44(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>>(Asyncfoo44Raw(context, request, cq));
-        }
+        void Asyncfoo44(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb);
 
-        ::grpc::Status cq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::bond::comm::message< ::tests::BasicTypes>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>> Asynccq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>>(AsynccqRaw(context, request, cq));
-        }
+        void Asynccq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+
+        FooClient(const FooClient&) = delete;
+        FooClient& operator=(const FooClient&) = delete;
+
+        FooClient(FooClient&&) = default;
+        FooClient& operator=(FooClient&&) = default;
 
     private:
         std::shared_ptr< ::grpc::ChannelInterface> channel_;
+        std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager_;
 
         /* TODO stub implementation (private) for event foo11 */
 
@@ -276,50 +106,34 @@ public:
 
         /* TODO stub implementation (private) for event foo15 */
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>* Asyncfoo21Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo21_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>* Asyncfoo22Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo22_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>* Asyncfoo23Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo23_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message<void>>* Asyncfoo24Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo24_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo31Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo31_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo32Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo32_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo33Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo33_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* Async_rd_foo33Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod__rd_foo33_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* Asyncfoo34Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo34_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>* Asyncfoo41Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo41_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>* Asyncfoo42Raw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo42_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>* Asyncfoo43Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo43_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::dummy>>* Asyncfoo44Raw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo44_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::BasicTypes>>* AsynccqRaw(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_cq_;
     };
-
-    static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
     class Service : public ::bond::ext::gRPC::detail::service
     {

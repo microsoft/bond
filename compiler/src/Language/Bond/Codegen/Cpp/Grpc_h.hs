@@ -6,7 +6,6 @@
 module Language.Bond.Codegen.Cpp.Grpc_h (grpc_h) where
 
 import System.FilePath
-import Data.List (zip)
 import Data.Monoid
 import Prelude
 import qualified Data.Text.Lazy as L
@@ -29,26 +28,29 @@ grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
 #include "#{file}_reflection.h"
 #include "#{file}_types.h"
 #{newlineSep 0 includeImport imports}
-
+// todo: remove message
 #include <bond/comm/message.h>
 #include <bond/ext/grpc/bond_utils.h>
+#include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/unary_call.h>
+#include <bond/ext/grpc/detail/client_call_data.h>
 #include <bond/ext/grpc/detail/service.h>
 #include <bond/ext/grpc/detail/service_call_data.h>
 
 #include <boost/optional/optional.hpp>
+#include <functional>
+#include <memory>
 
 #ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable: 4100 4267)
 #endif
 
-#include <grpc++/impl/codegen/async_unary_call.h>
-#include <grpc++/impl/codegen/method_handler_impl.h>
+#include <grpc++/impl/codegen/channel_interface.h>
+#include <grpc++/impl/codegen/client_context.h>
+#include <grpc++/impl/codegen/completion_queue.h>
 #include <grpc++/impl/codegen/rpc_method.h>
-#include <grpc++/impl/codegen/service_type.h>
 #include <grpc++/impl/codegen/status.h>
-#include <grpc++/impl/codegen/stub_options.h>
 
 #ifdef _MSC_VER
 #pragma warning (pop)
@@ -87,31 +89,25 @@ grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
 class #{declName} final
 {
 public:
-    class StubInterface
+    class #{proxyName}
     {
     public:
-        virtual ~StubInterface() {}
-
-        #{doubleLineSep 2 publicInterfaceMethodDecl serviceMethods}
-
-    private:
-        #{newlineSep 2 privateInterfaceMethodDecl serviceMethods}
-    };
-
-    class Stub final : public StubInterface
-    {
-    public:
-        Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
+        #{proxyName}(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager);
 
         #{doubleLineSep 2 publicStubMethodDecl serviceMethods}
 
+        #{proxyName}(const #{proxyName}&) = delete;
+        #{proxyName}& operator=(const #{proxyName}&) = delete;
+
+        #{proxyName}(#{proxyName}&&) = default;
+        #{proxyName}& operator=(#{proxyName}&&) = default;
+
     private:
         std::shared_ptr< ::grpc::ChannelInterface> channel_;
+        std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager_;
 
         #{doubleLineSep 2 privateStubMethodDecl serviceMethods}
     };
-
-    static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
     class Service : public ::bond::ext::gRPC::detail::service
     {
@@ -134,28 +130,15 @@ public:
         methodNames :: [String]
         methodNames = map methodName serviceMethods
 
+        proxyName = declName ++ "Client"
+
         serviceMethodsWithIndex :: [(Integer,Method)]
         serviceMethodsWithIndex = zip [0..] serviceMethods
 
-        publicInterfaceMethodDecl Function{..} = [lt|virtual ::grpc::Status #{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, #{response methodResult}* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< #{response methodResult}>> Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< #{response methodResult}>>(Async#{methodName}Raw(context, request, cq));
-        }|]
-        publicInterfaceMethodDecl Event{..} = [lt|/* TODO stub interface (public) for event #{methodName} */|]
-
-        privateInterfaceMethodDecl Function{..} = [lt|virtual ::grpc::ClientAsyncResponseReaderInterface< #{response methodResult}>* Async#{methodName}Raw(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq) = 0;|]
-        privateInterfaceMethodDecl Event{..} = [lt|/* TODO stub interface (private) for event #{methodName} */|]
-
-        publicStubMethodDecl Function{..} = [lt|::grpc::Status #{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, #{response methodResult}* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< #{response methodResult}>> Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< #{response methodResult}>>(Async#{methodName}Raw(context, request, cq));
-        }|]
+        publicStubMethodDecl Function{..} = [lt|void Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, std::function<void(const #{response methodResult}&, const ::grpc::Status&)> cb);|]
         publicStubMethodDecl Event{..} = [lt|/* TODO stub implementation (public) for event #{methodName} */|]
 
-        privateStubMethodDecl Function{..} = [lt|::grpc::ClientAsyncResponseReader< #{response methodResult}>* Async#{methodName}Raw(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq) override;
-        const ::grpc::RpcMethod rpcmethod_#{methodName}_;|]
+        privateStubMethodDecl Function{..} = [lt|const ::grpc::RpcMethod rpcmethod_#{methodName}_;|]
         privateStubMethodDecl Event{..} = [lt|/* TODO stub implementation (private) for event #{methodName} */|]
 
         serviceAddMethod Function{..} = [lt|AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]

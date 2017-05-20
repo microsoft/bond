@@ -5,7 +5,6 @@
 
 module Language.Bond.Codegen.Cpp.Grpc_cpp (grpc_cpp) where
 
-import Data.List (elemIndex)
 import Data.Monoid
 import Prelude
 import qualified Data.Text.Lazy as L
@@ -20,31 +19,12 @@ import qualified Language.Bond.Codegen.Cpp.Util as CPP
 -- definitions of helper functions and schema metadata static variables.
 grpc_cpp :: MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
 grpc_cpp cpp file _imports declarations = ("_grpc.cpp", [lt|
-#include "#{file}_reflection.h"
 #include "#{file}_grpc.h"
-
-#ifdef _MSC_VER
-#pragma warning (push)
-#pragma warning (disable: 4100)
-#endif
-
-//#include <grpc++/impl/codegen/async_stream.h>
-#include <grpc++/impl/codegen/async_unary_call.h>
-#include <grpc++/impl/codegen/channel_interface.h>
-#include <grpc++/impl/codegen/client_unary_call.h>
-#include <grpc++/impl/codegen/method_handler_impl.h>
-#include <grpc++/impl/codegen/rpc_service_method.h>
-#include <grpc++/impl/codegen/service_type.h>
-//#include <grpc++/impl/codegen/sync_stream.h>
-
 
 #{CPP.openNamespace cpp}
 #{doubleLineSep 1 grpc declarations}
 #{CPP.closeNamespace cpp}
 
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif
 |])
   where
     idl = MappingContext idlTypeMapping [] [] []
@@ -73,16 +53,11 @@ static const char* #{declName}_method_names[] =
     #{newlineSep 1 methodStrings serviceMethods}
 };
 
-std::unique_ptr< #{declName}::Stub> #{declName}::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
-{
-    std::unique_ptr< #{declName}::Stub> stub(new #{declName}::Stub(channel));
-    return stub;
-}
-
-#{declName}::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
+#{declName}::#{declName}Client::#{declName}Client(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager)
     : channel_(channel)
-    #{newlineSep 1 methodStringsStub serviceMethods}
-  { }
+    , ioManager_(ioManager)
+    #{newlineSep 1 proxyMethodMemberInit serviceMethodsWithIndex}
+    { }
 
 #{doubleLineSep 0 methodDecl serviceMethods}
 |]
@@ -90,18 +65,16 @@ std::unique_ptr< #{declName}::Stub> #{declName}::NewStub(const std::shared_ptr< 
         methodStrings Function{..} = [lt|"/#{getDeclTypeName idl s}/#{methodName}",|]
         methodStrings Event{..} = [lt|"/#{getDeclTypeName idl s}/#{methodName}",|]
 
-        index f = maybe (-1) id (elemIndex f serviceMethods)
+        serviceMethodsWithIndex :: [(Integer,Method)]
+        serviceMethodsWithIndex = zip [0..] serviceMethods
 
-        methodStringsStub f@Function{..} = [lt|, rpcmethod_#{methodName}_(#{declName}_method_names[#{index f}], ::grpc::RpcMethod::NORMAL_RPC, channel)|]
-        methodStringsStub Event{..} = [lt|/* TODO stub ctor initialization for event #{methodName} */|]
+        proxyMethodMemberInit (index,Function{..}) = [lt|, rpcmethod_#{methodName}_(#{declName}_method_names[#{index}], ::grpc::RpcMethod::NORMAL_RPC, channel)|]
+        proxyMethodMemberInit (_,Event{..}) = [lt|/* TODO stub ctor initialization for event #{methodName} */|]
 
-        methodDecl Function{..} = [lt|::grpc::Status #{declName}::Stub::#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, #{response methodResult}* response)
+        methodDecl Function{..} = [lt|void #{declName}::#{declName}Client::Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, std::function<void(const #{response methodResult}&, const ::grpc::Status&)> cb)
 {
-    return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_#{methodName}_, context, request, response);
-}
-::grpc::ClientAsyncResponseReader< #{response methodResult}>* #{declName}::Stub::Async#{methodName}Raw(::grpc::ClientContext* context, const #{request methodInput}& request, ::grpc::CompletionQueue* cq)
-{
-    return new ::grpc::ClientAsyncResponseReader< #{response methodResult}>(channel_.get(), cq, rpcmethod_#{methodName}_, context, request);
+    ::bond::ext::gRPC::detail::client_unary_call_data< #{request methodInput}, #{response methodResult} >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< #{request methodInput}, #{response methodResult} >(cb);
+    calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_#{methodName}_, context, request);
 }|]
         methodDecl Event{..} = [lt|/* TODO: stub implementation for event #{methodName} */|]
 

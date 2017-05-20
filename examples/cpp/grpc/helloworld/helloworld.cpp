@@ -1,8 +1,6 @@
 #include "helloworld_types.h"
 #include "helloworld_grpc.h"
 
-#include "helloworld_proxy.h"
-
 #ifdef _MSC_VER
     #pragma warning (push)
     #pragma warning (disable: 4100)
@@ -14,19 +12,26 @@
     #pragma warning (pop)
 #endif
 
+// event.h needed for test purposes
 #include <bond/ext/detail/event.h>
+
+// todo: remove message
+#include <bond/comm/message.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
 #include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/unary_call.h>
 
+#include <chrono>
+#include <functional>
+#include <iostream>
+#include <string>
+#include <memory>
+
 using grpc::Channel;
 using grpc::ClientContext;
-using grpc::Status;
-
-using grpc::Server;
 using grpc::ServerBuilder;
-using grpc::ServerContext;
+using grpc::Status;
 
 using bond::ext::detail::event;
 using bond::ext::gRPC::io_manager;
@@ -89,7 +94,7 @@ int main()
     auto ioManager = std::make_shared<io_manager>(std::move(cq_));
     ioManager->start();
 
-    Greeter2::GreeterClient greeter(grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()), ioManager);
+    Greeter::GreeterClient greeter(grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()), ioManager);
 
     ClientContext context;
 

@@ -1,26 +1,21 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#include <stdio.h>
-
-#include <boost/lexical_cast.hpp>
-#include <boost/thread/thread.hpp>
-
 // Include auto-generated files
+#include "pingpong_grpc.h"
 #include "pingpong_reflection.h"
 #include "pingpong_types.h"
-#include "pingpong_grpc.h"
 
-#ifdef _MSC_VER
-#pragma warning (push)
-#pragma warning (disable: 4100)
-#endif
+#include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/detail/event.h>
 
-#include <grpc++/grpc++.h>
+#include <boost/optional/optional.hpp>
 
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif
+#include <chrono>
+#include <memory>
+#include <stdio.h>
+#include <string>
+#include <thread>
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -28,15 +23,77 @@ using grpc::Status;
 
 using namespace PingPongNS;
 
+template <typename TResponse>
+class wait_callback
+{
+public:
+    wait_callback() :
+        _response(),
+        _status(),
+        _event()
+    { }
+
+    wait_callback(const wait_callback&) = delete;
+    wait_callback(wait_callback&&) = delete;
+    wait_callback& operator=(const wait_callback&) = delete;
+    wait_callback& operator=(wait_callback&&) = delete;
+
+    std::function<void(const ::bond::comm::message<TResponse>&, const ::grpc::Status&)> callback()
+    {
+        return std::function<void(const ::bond::comm::message<TResponse>&, const ::grpc::Status&)>(
+            [this](const ::bond::comm::message<TResponse>& response, const ::grpc::Status& status)
+            {
+                _response.emplace(response);
+                _status.emplace(status);
+                _event.set();
+            });
+    }
+
+    operator std::function<void(const ::bond::comm::message<TResponse>&, const ::grpc::Status&)>()
+    {
+        return callback();
+    }
+
+    void wait()
+    {
+        _event.wait();
+    }
+
+    template <typename Rep, typename Period>
+    bool wait(std::chrono::duration<Rep, Period> timeout)
+    {
+        return _event.wait(timeout);
+    }
+
+    const ::bond::comm::message<TResponse>& response() const
+    {
+        return _response.get();
+    }
+
+    const grpc::Status& status() const
+    {
+        return _status.get();
+    }
+
+private:
+    boost::optional<::bond::comm::message<TResponse>> _response;
+    boost::optional<grpc::Status> _status;
+
+    bond::ext::detail::event _event;
+};
 
 int main()
 {
-    const std::string server_address("127.0.0.1:" + boost::lexical_cast<std::string>(Port));
+    auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>(
+        std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+    ioManager->start();
+
+    const std::string server_address("127.0.0.1:" + std::to_string(Port));
     std::shared_ptr<Channel> channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
 
-    boost::this_thread::sleep_for(boost::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    std::unique_ptr<PingPong::Stub> stub = PingPong::NewStub(channel);
+    PingPong::PingPongClient client(channel, ioManager);
 
     printf("Start client\n");
     fflush(stdout);
@@ -47,15 +104,25 @@ int main()
         {
             ClientContext context;
             PingRequest request;
-            bond::comm::message<PingResponse> response;
 
-            request.Payload = "request" + boost::lexical_cast<std::string>(i);
+            request.Payload = "request" + std::to_string(i);
             request.Action = PingAction::Identity;
 
             printf("Sending\n");
             fflush(stdout);
 
-            Status status = stub->Ping(&context, request, &response);
+            wait_callback<PingResponse> cb;
+            client.AsyncPing(&context, request, cb);
+            bool gotResponse = cb.wait(std::chrono::seconds(1));
+
+            if (!gotResponse)
+            {
+                printf("Client timed out waiting for response\n");
+                fflush(stdout);
+                exit(1);
+            }
+
+            Status status = cb.status();
 
             if (!status.ok())
             {
@@ -64,7 +131,8 @@ int main()
                 fflush(stdout);
                 exit(1);
             }
-            else if (response.value().Deserialize().Payload != request.Payload)
+
+            if (cb.response().value().Deserialize().Payload != request.Payload)
             {
                 printf("Response payload did not match request\n");
                 printf("Client failed\n");
@@ -77,16 +145,26 @@ int main()
         {
             ClientContext context;
             PingRequest request;
-            bond::comm::message<PingResponse> response;
 
-            request.Payload = "error" + boost::lexical_cast<std::string>(i);
+            request.Payload = "error" + std::to_string(i);
             request.Action = PingAction::Error;
 
-            Status status = stub->Ping(&context, request, &response);
+            wait_callback<PingResponse> cb;
+            client.AsyncPing(&context, request, cb);
+            bool gotResponse = cb.wait(std::chrono::seconds(1));
+
+            if (!gotResponse)
+            {
+                printf("Client timed out waiting for response\n");
+                fflush(stdout);
+                exit(1);
+            }
+
+            Status status = cb.status();
 
             if (status.ok())
             {
-                printf("Non-error response received: %s\n", response.value().Deserialize().Payload.c_str());
+                printf("Non-error response received: %s\n", cb.response().value().Deserialize().Payload.c_str());
                 printf("Client failed\n");
                 fflush(stdout);
                 exit(1);
@@ -97,11 +175,13 @@ int main()
     {
         printf("Caught exception: %s\n", e.what());
         fflush(stdout);
+        exit(1);
     }
     catch (...)
     {
         printf("Caught something\n");
         fflush(stdout);
+        exit(1);
     }
 
     printf("Client succeeded\n");

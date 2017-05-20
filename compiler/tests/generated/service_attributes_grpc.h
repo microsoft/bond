@@ -4,26 +4,29 @@
 #include "service_attributes_reflection.h"
 #include "service_attributes_types.h"
 
-
+// todo: remove message
 #include <bond/comm/message.h>
 #include <bond/ext/grpc/bond_utils.h>
+#include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/unary_call.h>
+#include <bond/ext/grpc/detail/client_call_data.h>
 #include <bond/ext/grpc/detail/service.h>
 #include <bond/ext/grpc/detail/service_call_data.h>
 
 #include <boost/optional/optional.hpp>
+#include <functional>
+#include <memory>
 
 #ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable: 4100 4267)
 #endif
 
-#include <grpc++/impl/codegen/async_unary_call.h>
-#include <grpc++/impl/codegen/method_handler_impl.h>
+#include <grpc++/impl/codegen/channel_interface.h>
+#include <grpc++/impl/codegen/client_context.h>
+#include <grpc++/impl/codegen/completion_queue.h>
 #include <grpc++/impl/codegen/rpc_method.h>
-#include <grpc++/impl/codegen/service_type.h>
 #include <grpc++/impl/codegen/status.h>
-#include <grpc++/impl/codegen/stub_options.h>
 
 #ifdef _MSC_VER
 #pragma warning (pop)
@@ -35,40 +38,25 @@ namespace tests
 class Foo final
 {
 public:
-    class StubInterface
+    class FooClient
     {
     public:
-        virtual ~StubInterface() {}
+        FooClient(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager);
 
-        virtual ::grpc::Status foo(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, ::bond::comm::message< ::tests::Result>* response) = 0;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::Result>>> Asyncfoo(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::Result>>>(AsyncfooRaw(context, request, cq));
-        }
+        void Asyncfoo(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, std::function<void(const ::bond::comm::message< ::tests::Result>&, const ::grpc::Status&)> cb);
 
-    private:
-        virtual ::grpc::ClientAsyncResponseReaderInterface< ::bond::comm::message< ::tests::Result>>* AsyncfooRaw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, ::grpc::CompletionQueue* cq) = 0;
-    };
+        FooClient(const FooClient&) = delete;
+        FooClient& operator=(const FooClient&) = delete;
 
-    class Stub final : public StubInterface
-    {
-    public:
-        Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
-
-        ::grpc::Status foo(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, ::bond::comm::message< ::tests::Result>* response) override;
-        std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::Result>>> Asyncfoo(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, ::grpc::CompletionQueue* cq)
-        {
-            return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::Result>>>(AsyncfooRaw(context, request, cq));
-        }
+        FooClient(FooClient&&) = default;
+        FooClient& operator=(FooClient&&) = default;
 
     private:
         std::shared_ptr< ::grpc::ChannelInterface> channel_;
+        std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager_;
 
-        ::grpc::ClientAsyncResponseReader< ::bond::comm::message< ::tests::Result>>* AsyncfooRaw(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, ::grpc::CompletionQueue* cq) override;
         const ::grpc::RpcMethod rpcmethod_foo_;
     };
-
-    static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
     class Service : public ::bond::ext::gRPC::detail::service
     {
