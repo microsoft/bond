@@ -9,6 +9,7 @@ module Language.Bond.Codegen.Java.Schema
     ) where
 
 import Prelude
+import Data.Monoid
 import Data.Text.Lazy (Text, pack)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Internal (showQualifiedName)

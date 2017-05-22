@@ -9,6 +9,7 @@ module Language.Bond.Codegen.Java.Enum_java
     ) where
 
 import Prelude
+import Data.Monoid
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types

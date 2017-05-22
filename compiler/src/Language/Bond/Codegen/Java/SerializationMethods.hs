@@ -15,6 +15,7 @@ module Language.Bond.Codegen.Java.SerializationMethods
     ) where
 
 import Prelude
+import Data.Monoid
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
