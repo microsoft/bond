@@ -10,17 +10,17 @@ cache:
         - cs/packages
         - /home/travis/.ccache
 env:
-    - BOND_LANG="cs"
-    - BOND_LANG="cpp" BOOST="1.63.0"
-    - BOND_LANG="cpp" BOOST="1.62.0"
-    - BOND_LANG="cpp" BOOST="1.61.0"
-    - BOND_LANG="cpp" BOOST="1.60.0"
-    - BOND_LANG="cpp" BOOST="1.59.0"
-    - BOND_LANG="cpp" BOOST="1.58.0"
-    - BOND_LANG="cpp" BOOST="1.63.0" COMM="true"
-    - BOND_LANG="cpp" BOOST="1.63.0" GRPC="true"
-    - BOND_LANG="hs" GHC_VERSION="7.8.4"
-    - BOND_LANG="hs" GHC_VERSION="7.6.3"
+    - FLAVOR="cs"
+    - FLAVOR="cpp-core" BOOST="1.63.0"
+    - FLAVOR="cpp-core" BOOST="1.62.0"
+    - FLAVOR="cpp-core" BOOST="1.61.0"
+    - FLAVOR="cpp-core" BOOST="1.60.0"
+    - FLAVOR="cpp-core" BOOST="1.59.0"
+    - FLAVOR="cpp-core" BOOST="1.58.0"
+    - FLAVOR="cpp-comm" BOOST="1.63.0"
+    - FLAVOR="cpp-grpc" BOOST="1.63.0"
+    - FLAVOR="hs" GHC_VERSION="7.8.4"
+    - FLAVOR="hs" GHC_VERSION="7.6.3"
 addons:
   apt:
     sources:
@@ -45,8 +45,6 @@ before_install:
     - if [ "$CXX" == "" ]; then echo "Setting default $CXX"; export CXX="clang++"; fi
     - if [ "$CC" == "" ]; then echo "Setting default $CC"; export CC="clang"; fi
     - if [ "$BOOST" == "" ]; then echo "Setting default $BOOST"; export BOOST=1.63.0; fi
-    - if [ "$COMM" == "" ]; then echo "Skipping Comm"; export BUILD_COMM="false"; else echo "Building Comm"; export BUILD_COMM="true"; fi
-    - if [ "$GRPC" == "" ]; then echo "Skipping gRPC"; export BUILD_GRPC="false"; else echo "Building gRPC"; export BUILD_GRPC="true"; fi
     # pull down our boost binaries
     - export BOOST_ARCHIVE=boost-$BOOST.tar.xz
     - wget https://bondboostbinaries.blob.core.windows.net/bondboostbinaries/$BOOST_ARCHIVE -O /tmp/$BOOST_ARCHIVE
@@ -61,26 +59,32 @@ before_install:
     - echo "CXX=$CXX"
     - echo "CC=$CC"
     # nunit installation
-    - if [ "$BOND_LANG" == "cs" ]; then travis_retry nuget install NUnit.Runners -version 2.6.4; fi
+    - if [ "$FLAVOR" == "cs" ]; then travis_retry nuget install NUnit.Runners -version 2.6.4; fi
     - export PATH=/opt/cabal/1.22/bin:/opt/ghc/${GHC_VERSION}/bin:$PATH
     - cabal update
     - cabal install happy Cabal
 
 before_script:
     # restore nuget packages for solution
-    - if [ "$BOND_LANG" == "cs" ]; then travis_retry nuget restore cs/cs.sln; fi
+    - if [ "$FLAVOR" == "cs" ]; then travis_retry nuget restore cs/cs.sln; fi
 
 script:
     - mkdir build && cd build
 
-    - cmake -DBOND_ENABLE_COMM:bool=$BUILD_COMM -DBOND_ENABLE_GRPC:bool=$BUILD_GRPC ..
-    - if [ "$BOND_LANG" == "cs" ]; then make --jobs 2 DESTDIR=$HOME install; fi
-    - if [ "$BOND_LANG" == "cs" ]; then cd ..; fi
-    - if [ "$BOND_LANG" == "cs" ]; then export BOND_COMPILER_PATH=$HOME/usr/local/bin; fi
-    - if [ "$BOND_LANG" == "cs" ]; then xbuild /p:Configuration=Debug cs/cs.sln; fi
-    - if [ "$BOND_LANG" == "cs" ]; then xbuild /p:Configuration=Fields cs/cs.sln; fi
-    - if [ "$BOND_LANG" == "cs" ]; then mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll; fi
-    - if [ "$BOND_LANG" == "cpp" ]; then make --jobs 2 check; fi
-    - if [ "$BOND_LANG" == "hs" ]; then make gbc-tests; fi
-    - if [ "$BOND_LANG" == "hs" ]; then cd ../compiler; fi
-    - if [ "$BOND_LANG" == "hs" ]; then ../build/compiler/build/gbc-tests/gbc-tests; fi
+    - if [ "$FLAVOR" == "cs" ]; then cmake ..; fi
+    - if [ "$FLAVOR" == "cs" ]; then make --jobs 2 DESTDIR=$HOME install; fi
+    - if [ "$FLAVOR" == "cs" ]; then cd ..; fi
+    - if [ "$FLAVOR" == "cs" ]; then export BOND_COMPILER_PATH=$HOME/usr/local/bin; fi
+    - if [ "$FLAVOR" == "cs" ]; then xbuild /p:Configuration=Debug cs/cs.sln; fi
+    - if [ "$FLAVOR" == "cs" ]; then xbuild /p:Configuration=Fields cs/cs.sln; fi
+    - if [ "$FLAVOR" == "cs" ]; then mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll; fi
+    - if [ "$FLAVOR" == "cpp-core" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_COMM=FALSE -DBOND_ENABLE_GRPC=FALSE ..; fi
+    - if [ "$FLAVOR" == "cpp-core" ]; then make --jobs 2 check; fi
+    - if [ "$FLAVOR" == "cpp-comm" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
+    - if [ "$FLAVOR" == "cpp-comm" ]; then make --jobs 2 check; fi
+    - if [ "$FLAVOR" == "cpp-grpc" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_COMM=FALSE ..; fi
+    - if [ "$FLAVOR" == "cpp-grpc" ]; then make --jobs 2 check; fi
+    - if [ "$FLAVOR" == "hs" ]; then cmake ..; fi
+    - if [ "$FLAVOR" == "hs" ]; then make gbc-tests; fi
+    - if [ "$FLAVOR" == "hs" ]; then cd ../compiler; fi
+    - if [ "$FLAVOR" == "hs" ]; then ../build/compiler/build/gbc-tests/gbc-tests; fi
