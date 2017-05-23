@@ -1,29 +1,21 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#include <stdio.h>
-
-#include <boost/lexical_cast.hpp>
-
 // Include auto-generated files
-#include "pingpong_types.h"
 #include "pingpong_grpc.h"
-
-#ifdef _MSC_VER
-#pragma warning (push)
-#pragma warning (disable: 4100)
-#endif
-
-#include <grpc++/grpc++.h>
-
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif
+#include "pingpong_reflection.h"
+#include "pingpong_types.h"
 
 #include <bond/ext/detail/countdown_event.h>
 #include <bond/ext/grpc/server.h>
 #include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/unary_call.h>
+
+#include <chrono>
+#include <memory>
+#include <stdio.h>
+#include <string>
+#include <thread>
 
 using grpc::Status;
 using grpc::StatusCode;
@@ -46,8 +38,8 @@ public:
 
     void Ping(
         bond::ext::gRPC::unary_call<
-        bond::comm::message<::PingPongNS::PingRequest>,
-        bond::comm::message<::PingPongNS::PingResponse>> call) override
+            bond::comm::message<::PingPongNS::PingRequest>,
+            bond::comm::message<::PingPongNS::PingResponse>> call) override
     {
         PingRequest request = call.request().value().Deserialize();
 
@@ -99,7 +91,7 @@ public:
 
 int main()
 {
-    const std::string server_address("127.0.0.1:" + boost::lexical_cast<std::string>(Port));
+    const std::string server_address("127.0.0.1:" + std::to_string(Port));
     PingPongServiceImpl service;
     bond::ext::gRPC::server_builder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
