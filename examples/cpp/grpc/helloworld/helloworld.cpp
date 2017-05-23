@@ -92,7 +92,6 @@ int main()
 
     std::unique_ptr<grpc::CompletionQueue> cq_(new grpc::CompletionQueue());
     auto ioManager = std::make_shared<io_manager>(std::move(cq_));
-    ioManager->start();
 
     Greeter::GreeterClient greeter(grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()), ioManager);
 

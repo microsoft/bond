@@ -118,11 +118,6 @@ private:
         BOOST_ASSERT(_grpcServer);
     }
 
-    void start()
-    {
-        _ioManager.start();
-    }
-
         std::unique_ptr<grpc::Server> _grpcServer;
         io_manager _ioManager;
     };

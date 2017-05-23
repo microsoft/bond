@@ -26,61 +26,49 @@
 #include <boost/test/debug.hpp>
 #include <atomic>
 #include <memory>
+#include <utility>
 
 using namespace bond::ext::detail;
 using namespace bond::ext::gRPC::detail;
 using namespace bond::ext::gRPC;
+
+template <typename TEvent>
+struct alarm_completion_tag : io_manager_tag
+{
+    TEvent completion_event;
+
+    template <typename... TArg>
+    explicit alarm_completion_tag(TArg&&... args)
+        : completion_event(std::forward<TArg>(args)...)
+    { }
+
+    void invoke(bool) override
+    {
+        completion_event.set();
+    }
+};
 
 class io_managerTests
 {
     static void PollOneItem()
     {
         io_manager ioManager(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
-        ioManager.start();
 
-        struct alarm_completion_tag : io_manager_tag
-        {
-            event& _e;
-
-            explicit alarm_completion_tag(event& e) : _e(e) { }
-
-            void invoke(bool) override
-            {
-                _e.set();
-            }
-        };
-
-        event alarmCompleted;
-        alarm_completion_tag act(alarmCompleted);
-
+        alarm_completion_tag<event> act;
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
         grpc::Alarm alarm(ioManager.cq(), deadline, &act);
 
-        bool wasSet = alarmCompleted.wait(std::chrono::seconds(30));
+        bool wasSet = act.completion_event.wait(std::chrono::seconds(30));
         UT_AssertIsTrue(wasSet);
     }
 
     static void PollManyItems()
     {
         io_manager ioManager(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
-        ioManager.start();
 
         const size_t numItems = 1000;
-        countdown_event ce(numItems);
 
-        struct alarm_completion_tag : io_manager_tag
-        {
-            countdown_event& _ce;
-
-            explicit alarm_completion_tag(countdown_event& ce) : _ce(ce) { }
-
-            void invoke(bool) override
-            {
-                _ce.set();
-            }
-        };
-
-        alarm_completion_tag act(ce);
+        alarm_completion_tag<countdown_event> act(numItems);
 
         const gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
 
@@ -91,13 +79,16 @@ class io_managerTests
             alarms.emplace_back(ioManager.cq(), deadline, &act);
         }
 
-        bool wasSet = ce.wait(std::chrono::seconds(30));
+        bool wasSet = act.completion_event.wait(std::chrono::seconds(30));
         UT_AssertIsTrue(wasSet);
     }
 
     static void ShutdownUnstarted()
     {
-        io_manager ioManager(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+        io_manager ioManager(
+            std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue),
+            io_manager::USE_HARDWARE_CONC,
+            io_manager::delay_start_tag{});
         ioManager.shutdown();
         ioManager.wait();
 
@@ -107,7 +98,6 @@ class io_managerTests
     static void ConcurrentShutdown()
     {
         io_manager ioManager(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
-        ioManager.start();
 
         const size_t numConcurrentShutdowns = 5;
         barrier threadsStarted(numConcurrentShutdowns);
@@ -140,14 +130,40 @@ class io_managerTests
         }
     }
 
+    static void DelayStartDoesntStart()
+    {
+        io_manager ioManager(
+            std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue),
+            io_manager::USE_HARDWARE_CONC,
+            io_manager::delay_start_tag{});
+
+        alarm_completion_tag<event> act;
+        gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
+        grpc::Alarm alarm(ioManager.cq(), deadline, &act);
+
+        bool wasSet = act.completion_event.wait(std::chrono::milliseconds(1250));
+        UT_AssertIsTrue(!wasSet);
+
+        // since we've put something into the completion queue, we need to
+        // start it so that it can be drained and shutdown.
+        ioManager.start();
+
+        // test that we can call start multiple times
+        ioManager.start();
+
+        wasSet = act.completion_event.wait(std::chrono::seconds(30));
+        UT_AssertIsTrue(wasSet);
+    }
+
 public:
     static void Initialize()
     {
         UnitTestSuite suite("io_manager");
-        suite.AddTestCase(PollOneItem, "PollOneItem");
-        suite.AddTestCase(PollManyItems, "PollManyItems");
-        suite.AddTestCase(ShutdownUnstarted, "ShutdownUnstarted");
-        suite.AddTestCase(ConcurrentShutdown, "ConcurrentShutdown");
+        suite.AddTestCase(PollOneItem, "Poll one item");
+        suite.AddTestCase(PollManyItems, "Poll many items");
+        suite.AddTestCase(ShutdownUnstarted, "Shutdown unstarted");
+        suite.AddTestCase(ConcurrentShutdown, "Concurrent shutdown");
+        suite.AddTestCase(DelayStartDoesntStart, "Delay Start doesn't start");
     }
 };
 

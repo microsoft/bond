@@ -35,12 +35,20 @@ namespace bond { namespace ext { namespace gRPC {
     class io_manager final
     {
     public:
+        /// @brief Tag type used to indicate that an io_manager should not
+        /// automatically start its polling threads.
+        struct delay_start_tag final { };
+
+        static constexpr size_t USE_HARDWARE_CONC = 0;
+
+        /// @brief Creates and starts and io_manager.
+        ///
         /// @param cq the completion queue to poll. Takes ownership.
         ///
-        /// @param numThreads the number of threads to start. If 0, then a
-        /// number of threads depending on the hardware's available
-        /// concurrency will be started.
-        explicit io_manager(std::unique_ptr<grpc::CompletionQueue> cq, size_t numThreads = 0)
+        /// @param numThreads the number of threads to start. If \ref
+        /// USE_HARDWARE_CONC, then a number of threads depending on the
+        /// hardware's available concurrency will be started.
+        explicit io_manager(std::unique_ptr<grpc::CompletionQueue> cq, size_t numThreads = USE_HARDWARE_CONC)
             : _cq(std::move(cq)),
             _numThreads(compute_real_num_threads(numThreads)),
             _threads(),
@@ -49,6 +57,27 @@ namespace bond { namespace ext { namespace gRPC {
             _shutdownCompleted()
         {
             BOOST_ASSERT(_cq);
+            start();
+        }
+
+        /// @brief Creates an io_managed, but does not start it.
+        ///
+        /// @param cq the completion queue to poll. Takes ownership.
+        ///
+        /// @param numThreads the number of threads to start. If \ref
+        /// USE_HARDWARE_CONC, then a number of threads depending on the
+        /// hardware's available concurrency will be started.
+        io_manager(std::unique_ptr<grpc::CompletionQueue> cq, size_t numThreads, delay_start_tag)
+            : _cq(std::move(cq)),
+            _numThreads(compute_real_num_threads(numThreads)),
+            _threads(),
+            _isShutdownRequested(),
+            _isShutdownInProgress(),
+            _shutdownCompleted()
+        {
+            BOOST_ASSERT(_cq);
+
+            // this overload does NOT call start()
         }
 
         /// Waits for the \p io_manager to stop.
@@ -60,7 +89,8 @@ namespace bond { namespace ext { namespace gRPC {
 
         /// Gets the underlying completion queue.
         ///
-        /// @note Ownership remains with the completion queue.
+        /// @note Ownership of the completion queue remains with the
+        /// io_manager.
         grpc::CompletionQueue* cq()
         {
             return _cq.get();
@@ -68,29 +98,32 @@ namespace bond { namespace ext { namespace gRPC {
 
         /// @brief Starts polling the completion queue.
         ///
-        /// @remarks An io_manager can only be started once.
+        /// @remarks Can be called multiple times, but not safe to be called
+        /// concurrently.
         ///
         /// @remarks An io_manager cannot be restarted after it has been
         /// shutdown.
         void start()
         {
             BOOST_ASSERT(_cq);
-            BOOST_ASSERT(_threads.empty());
 
-            _threads.reserve(_numThreads);
-
-            for (size_t i = 0; i < _numThreads; ++i)
+            if (_threads.empty())
             {
-                _threads.emplace_back([this]()
+                _threads.reserve(_numThreads);
+
+                for (size_t i = 0; i < _numThreads; ++i)
                 {
-                    void* tag;
-                    bool ok;
-                    while (_cq->Next(&tag, &ok))
+                    _threads.emplace_back([this]()
                     {
-                        BOOST_ASSERT(tag);
-                        static_cast<detail::io_manager_tag*>(tag)->invoke(ok);
-                    }
-                });
+                        void* tag;
+                        bool ok;
+                        while (_cq->Next(&tag, &ok))
+                        {
+                            BOOST_ASSERT(tag);
+                            static_cast<detail::io_manager_tag*>(tag)->invoke(ok);
+                        }
+                    });
+                }
             }
         }
 
@@ -109,8 +142,8 @@ namespace bond { namespace ext { namespace gRPC {
             }
         }
 
-        /// Waits for remaining work to drain from the io_manager and for the
-        /// worker threads to be shutdown.
+        /// Waits for remaining work to drain from the io_manager and for
+        /// the worker threads to be shutdown.
         ///
         /// @remarks Can be called from multiple threads concurrently.
         ///
@@ -148,12 +181,13 @@ namespace bond { namespace ext { namespace gRPC {
     private:
         static size_t compute_real_num_threads(size_t numThreads)
         {
-            if (numThreads == 0)
+            if (numThreads == USE_HARDWARE_CONC)
             {
                 numThreads = static_cast<size_t>(std::thread::hardware_concurrency());
             }
 
-            // hardware_concurency can fail. If so, we need a non-zero number of threads.
+            // hardware_concurency can fail and return 0. If so, we need a
+            // non-zero number of threads.
             const size_t recourseNumThreads = 2;
             return numThreads != 0 ? numThreads : recourseNumThreads;
         }

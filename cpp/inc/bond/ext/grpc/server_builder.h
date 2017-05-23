@@ -178,7 +178,6 @@ namespace bond { namespace ext { namespace gRPC {
                 new bond::ext::gRPC::server {
                     std::move(server),
                     std::move(cq) } };
-            result->start();
 
             return result;
         }

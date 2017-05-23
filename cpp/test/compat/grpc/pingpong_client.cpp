@@ -86,7 +86,6 @@ int main()
 {
     auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>(
         std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
-    ioManager->start();
 
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
     std::shared_ptr<Channel> channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
