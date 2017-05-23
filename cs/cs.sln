@@ -258,7 +258,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "output-no-slash", "test\cod
 		{92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89} = {92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "grpc_pingpong", "..\examples\cs\comm\grpc_pingpong\grpc_pingpong.csproj", "{618420F1-6465-4DF4-BD1B-747765F481FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "grpc_pingpong", "..\examples\cs\grpc\pingpong\grpc_pingpong.csproj", "{618420F1-6465-4DF4-BD1B-747765F481FF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2E6E238C-9017-445C-9611-66DA780609BE} = {2E6E238C-9017-445C-9611-66DA780609BE}
 		{43CBBA9B-C4BC-4E64-8733-7B72562D2E91} = {43CBBA9B-C4BC-4E64-8733-7B72562D2E91}

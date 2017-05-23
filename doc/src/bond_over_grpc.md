@@ -77,6 +77,8 @@ ones in the gRPC tutorial: on the service side, the request is wrapped in
 deserialization and also helps prevent slicing when using polymorphic Bond
 types.
 
+There is a [Bond-over-gRPC standalone example project](https://github.com/Microsoft/bond-grpc-examples).
+
 See also the following example:
 
-- `examples/cs/comm/grpc_pingpong`
+- `examples/cs/grpc/pingpong`
