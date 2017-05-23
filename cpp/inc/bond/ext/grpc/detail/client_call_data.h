@@ -30,7 +30,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
 
 /// @brief Implementation class that hold the state associated with
 /// outgoing incomming calls.
-template <typename TRequest, typename TResponse>
+template <typename TRequest, typename TResponse, typename TThreadPool>
 struct client_unary_call_data : io_manager_tag
 {
     typedef std::function<void(const TResponse&, const grpc::Status&)> CallbackType;
@@ -40,14 +40,18 @@ struct client_unary_call_data : io_manager_tag
     TResponse _response;
     grpc::Status _status;
     std::unique_ptr<grpc::ClientAsyncResponseReader<TResponse>> _responseReader;
+    TThreadPool* _threadPool;
 
     client_unary_call_data(
-        CallbackType cb)
+        CallbackType cb,
+        TThreadPool* threadPool)
         : _cb(cb),
         _response(),
-        _status()
+        _status(),
+        _threadPool(threadPool)
     {
         BOOST_ASSERT(cb);
+        BOOST_ASSERT(threadPool);
     }
 
     void dispatch(grpc::ChannelInterface* channel,
@@ -70,14 +74,12 @@ struct client_unary_call_data : io_manager_tag
     {
         if (ok)
         {
-            // TODO: switch to thread pool
-            // TODO: use queuing policy here after switching to thread pool
-            std::thread([this]()
+            _threadPool->schedule([this]()
             {
                 _cb(_response, _status);
 
                 delete this;
-            }).detach();
+            });
         }
         else
         {

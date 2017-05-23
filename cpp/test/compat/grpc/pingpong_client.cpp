@@ -7,6 +7,7 @@
 #include "pingpong_types.h"
 
 #include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/detail/event.h>
 
 #include <boost/optional/optional.hpp>
@@ -92,7 +93,8 @@ int main()
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    PingPong::PingPongClient client(channel, ioManager);
+    bond::ext::thread_pool threadPool;
+    PingPong::Client client(channel, ioManager, &threadPool);
 
     printf("Start client\n");
     fflush(stdout);

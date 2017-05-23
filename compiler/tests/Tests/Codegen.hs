@@ -96,7 +96,6 @@ verifyCppGrpcCodegen args baseName =
     options = processOptions args
     templates =
         [ grpc_h (export_attribute options)
-        , grpc_cpp
         , types_cpp
         ]
 
