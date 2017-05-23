@@ -94,6 +94,7 @@ writeValue java fieldType varName depth = case fieldType of
     BT_Vector e              -> writeSequence java e varName depth
     BT_Set e                 -> writeSequence java e varName depth
     BT_Map k v               -> writeMap java k v varName depth
+    BT_Bonded t              -> [lt|#{varName}.serialize(writer);|]
     BT_UserDefined Enum {} _ -> [lt|writer.writeInt32(#{varName}.value);|]
     -- FIXME: Recursive types will cause infinite recursion.
     BT_UserDefined _ _       -> [lt|#{varName}.serialize(writer);|]
@@ -218,6 +219,7 @@ readValue java fieldType varName depth = case fieldType of
     BT_Vector e              -> readSequence java e varName depth
     BT_Set e                 -> readSequence java e varName depth
     BT_Map k v               -> readMap java k v varName depth
+    BT_Bonded t              -> readBonded java t varName
     BT_UserDefined Enum {} _ ->
         [lt|#{varName} = new #{getTypeName java fieldType}(reader.readInt32());|]
     -- FIXME: Recursive types will cause infinite recursion.
@@ -278,3 +280,13 @@ readMap java keyType valueType fieldName depth =
         countLocal = "count" ++ show depth
         keyLocal = "k" ++ show depth
         valueLocal = "v" ++ show depth
+
+readBonded :: MappingContext -> Type -> String -> Text
+readBonded java innerType fieldName =
+    [lt|{
+            final #{innerTypeName} t = new #{innerTypeName}();
+            t.deserialize(reader);
+            #{fieldName} = new com.microsoft.bond.Bonded<#{innerTypeName}>(t);
+        }|]
+    where
+        innerTypeName = getTypeName java innerType

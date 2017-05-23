@@ -56,8 +56,6 @@ public class #{declName}#{params}#{maybe interface baseClass structBase} {
                 javaDefault = Java.defaultValue java
 
                 -- FIXME: nullable<int32> -> Integer?
-                publicField f@Field {..} = [lt|public #{javaType fieldType} #{fieldName} #{optional initializerValue $ javaDefault f};|]
-
-                initializerValue x = [lt|= #{x}|]
+                publicField f@Field {..} = [lt|public #{javaType fieldType} #{fieldName} = #{javaDefault f};|]
 
         typeDefinition _ = mempty
