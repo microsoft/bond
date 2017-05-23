@@ -232,7 +232,7 @@ javaBoxedTypeMapping = TypeMapping
     (Just Java)
     ""
     "."
-    javaBoxedType
+    javaBox
     id
     javaTypeMapping
     javaTypeMapping
@@ -478,7 +478,6 @@ csTypeAnnotation _ (BT_UserDefined decl args) = declTypeName decl <<>> (angles <
 csTypeAnnotation m t = m t
 
 -- Java type mapping
--- FIXME: Java has no unsigned types!
 javaBox :: Type -> TypeNameBuilder
 javaBox BT_Int8 = pure "Byte"
 javaBox BT_Int16 = pure "Short"
@@ -520,18 +519,4 @@ javaType (BT_Map key value) = "java.util.Map<" <>> javaBox key <<>> ", " <>> ele
 javaType (BT_TypeParam param) = pureText $ paramName param
 javaType (BT_UserDefined Alias {} _) = error "Java codegen does not support aliases"
 javaType (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> localWith (const javaTypeMapping) (commaSepTypeNames args))
-javaType (BT_Bonded _) = error "Java codegen does not support Bonded"
-
-javaBoxedType :: Type -> TypeNameBuilder
-javaBoxedType t@BT_Int8 = javaBox t
-javaBoxedType t@BT_Int16 = javaBox t
-javaBoxedType t@BT_Int32 = javaBox t
-javaBoxedType t@BT_Int64 = javaBox t
-javaBoxedType t@BT_UInt8 = javaBox t
-javaBoxedType t@BT_UInt16 = javaBox t
-javaBoxedType t@BT_UInt32 = javaBox t
-javaBoxedType t@BT_Float = javaBox t
-javaBoxedType t@BT_Double = javaBox t
-javaBoxedType t@BT_Bool = javaBox t
-javaBoxedType t@BT_Blob = javaBox t
-javaBoxedType t = javaType t
+javaType (BT_Bonded type_) = "com.microsoft.bond.IBonded<" <>> javaBox type_ <<> ">"

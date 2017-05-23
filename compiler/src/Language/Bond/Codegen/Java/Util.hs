@@ -50,11 +50,7 @@ defaultValue :: MappingContext -> Field -> Maybe Text
 defaultValue java Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
   where
     newInstance t = Just [lt|new #{getInstanceTypeName java t}()|]
-    implicitDefault (BT_Bonded t) = Just [lt|new Bonded<#{getTypeName java t}>()|]
-    -- We can't really initialize a default object for generic type
-    -- field due to the limitation of both Java and Kotlin.
-    -- I'm still looking for a solution. Please let me know if you has
-    -- any suggestions.
+    implicitDefault (BT_Bonded t) = Just [lt|new Bonded<#{getTypeName java t}>(null)|]
     implicitDefault (BT_TypeParam _) = Just [lt|null|]
     implicitDefault (BT_Nullable _) = Just[lt|null|]
     implicitDefault BT_Blob = Just [lt|new byte[0]|]
