@@ -11,24 +11,24 @@
 // TODO: move unit_test_framework.h to cpp/test/inc
 #include "../core/unit_test_framework.h"
 
-#include <boost/chrono.hpp>
 #include <atomic>
+#include <chrono>
 #include <functional>
+#include <memory>
+#include <thread>
 
 using namespace bond::ext::detail;
 
 class BasicThreadPoolTests
 {
-    static
-    void addOne(int* i, event* sum_event)
+    static void addOne(int* i, event* sum_event)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         (*i)++;
         sum_event->set();
     }
 
-    static
-    void UseStdFunction()
+    static void UseStdFunction()
     {
         bond::ext::thread_pool threads(1);
         int sum = 0;
@@ -41,10 +41,28 @@ class BasicThreadPoolTests
         bool waitResult = sum_event.wait(std::chrono::seconds(30));
 
         UT_AssertIsTrue(waitResult);
+        UT_AssertIsTrue(sum == 1);
     }
 
-    static
-    void FinishAllTasksAfterDelete()
+    static void UseLambda()
+    {
+        bond::ext::thread_pool threads(1);
+        int sum = 0;
+        event sum_event;
+
+        threads.schedule([&sum, &sum_event]()
+        {
+            ++sum;
+            sum_event.set();
+        });
+
+        bool waitResult = sum_event.wait(std::chrono::seconds(30));
+
+        UT_AssertIsTrue(waitResult);
+        UT_AssertIsTrue(sum == 1);
+    }
+
+    static void FinishAllTasksAfterDelete()
     {
         std::unique_ptr<bond::ext::thread_pool> threads(new bond::ext::thread_pool(2));
         std::atomic<int> sum(0);
@@ -66,13 +84,12 @@ class BasicThreadPoolTests
     }
 
 public:
-
-    static
-    void Initialize()
+    static void Initialize()
     {
         UnitTestSuite suite("ThreadPool");
 
         suite.AddTestCase(UseStdFunction, "UseStdFunction");
+        suite.AddTestCase(UseLambda, "UseLambda");
         suite.AddTestCase(FinishAllTasksAfterDelete, "FinishAllTasksAfterDelete");
     }
 };

@@ -25,41 +25,56 @@
 
 namespace bond { namespace ext
 {
+
+#if 0
+/// @brief The interface that a compliant thread pool must implement.
+class thread_pool_concept
+{
+    /// @brief Schedules a callback for execution.
+    ///
+    /// @warning The scheduled callback must be executed at some point in
+    /// the future. Some components use the thread_pool_concept to schedule
+    /// the freeing of resources. If a scheduled callback is dropped, these
+    /// resources may not be freed.
+    ///
+    /// @param callback functor object to be scheduled. Must accept any
+    /// callable object.
+    template <typename Callback>
+    void schedule(Callback&& callback);
+};
+#endif
+
 /// @brief Basic thread pool implementation.
 class thread_pool
     : private boost::asio::io_service
 {
 public:
+    static constexpr size_t USE_HARDWARE_CONC = 0;
 
     /// @brief Constructs and starts a thread pool with the specified number of
     /// threads.
     ///
-    /// @param numThreads total number of threads to be created. If zero
-    /// then as many threads as many CPU/cores are available will be
-    /// created.
+    /// @param numThreads total number of threads to be created. If
+    /// \ref USE_HARDWARE_CONC then as many threads as CPU/cores are available
+    /// will be created.
     explicit
-    thread_pool(uint32_t numThreads = 0)
+    thread_pool(size_t numThreads = USE_HARDWARE_CONC)
         : _work(*this)
     {
-        //
-        // If preferred # of threads is 0, use # of cpu cores.
-        //
-        if (0 == numThreads)
+        if (USE_HARDWARE_CONC == numThreads)
         {
-            numThreads = std::thread::hardware_concurrency();
+            numThreads = static_cast<size_t>(std::thread::hardware_concurrency());
             if (numThreads == 0)
             {
                 // hardware_concurrency can return 0 if it can't figure out
                 // the hardware concurrency. Use a small number larger than 1.
-                const uint32_t recourseNumThreads = 2;
+                const size_t recourseNumThreads = 2;
                 numThreads = recourseNumThreads;
             }
         }
 
-        //
         // Spin working threads.
-        //
-        for (uint32_t i = 0; i < numThreads; ++i)
+        for (size_t i = 0; i < numThreads; ++i)
         {
             _threads.emplace_back(
                 [this]()
@@ -86,7 +101,6 @@ public:
     }
 
 private:
-
     /// Working threads.
     std::vector<boost::scoped_thread<boost::join_if_joinable>> _threads;
 
