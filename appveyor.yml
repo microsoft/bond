@@ -76,7 +76,7 @@
 
     install:
         - ps: >-
-            git submodule update --init --recursive --depth=5
+            git submodule update --init --recursive
 
             if ($env:BOND_BOOST -eq 56) {
                 # Hard-coded Boost path per https://www.appveyor.com/docs/installed-software#languages-libraries-frameworks
