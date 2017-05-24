@@ -1,14 +1,26 @@
 #pragma once
 
 #include "err.h"
+#include <bond/core/customize.h>
 #include <bond/core/blob.h>
 #include <bond/core/exception.h>
+#include <bond/stream/input_buffer.h>
+#include <boost/mpl/list.hpp>
+#include <boost/mpl/transform_view.hpp>
+#include <boost/mpl/joint_view.hpp>
+#include <vector>
 #include <fstream>
 #include <string>
+#include <cassert>
+
 
 class InputFile
 {
 public:
+#if defined(_MSC_VER) && _MSC_VER < 1900
+    using range_type = bond::blob;
+#endif
+
     InputFile()
     {}
 
@@ -73,7 +85,73 @@ public:
         file.seekg(size, std::ios::cur);
     }
 
+    friend std::pair<InputFile, std::ifstream::pos_type> GetCurrentBuffer(const InputFile& input)
+    {
+        return std::make_pair(input, input.file.tellg());
+    }
+
+    friend bond::InputBuffer CreateInputBuffer(const InputFile& /*other*/, const bond::blob& blob)
+    {
+        return bond::InputBuffer(blob);
+    }
+
 private:
     mutable std::ifstream file;
     std::string name;
 };
+
+
+inline bond::blob GetBufferRange(
+    std::pair<InputFile, std::ifstream::pos_type> begin,
+    const std::pair<InputFile, std::ifstream::pos_type>& end)
+{
+    assert(begin.second <= end.second);
+
+    bond::blob blob;
+    begin.first.Read(blob, static_cast<uint32_t>(end.second - begin.second));
+    return blob;
+}
+
+
+template <typename InputBuffer>
+struct rebind_input_buffer
+{
+    template <typename T> struct
+    transform
+    {
+        typedef T type;
+    };
+
+    template <template <typename> class Reader, typename Buffer> struct
+    transform<Reader<Buffer>>
+    {
+        typedef Reader<InputBuffer> type;
+    };
+};
+
+
+namespace bond
+{
+    template <> struct
+    customize<protocols>
+    {
+        template <typename T> struct
+        modify
+        {
+            typedef typename boost::mpl::transform_view<
+                T,
+                typename rebind_input_buffer<InputFile>::template transform<boost::mpl::_>
+            >::type protocols_with_inputfile;
+
+            typedef typename boost::mpl::transform_view<
+                T,
+                typename rebind_input_buffer<InputFile&>::template transform<boost::mpl::_>
+            >::type protocols_with_inputfile_ref;
+
+            typedef typename boost::mpl::joint_view<T, protocols_with_inputfile>::type type1;
+
+            typedef typename boost::mpl::joint_view<type1, protocols_with_inputfile_ref>::type type;
+        };
+    };
+
+} // namespace bond

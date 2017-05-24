@@ -12,12 +12,13 @@
 
 namespace bond
 {
-
+namespace detail
+{
 
 /// @brief Apply transform to serialized struct wrapped in bonded<T>
 template <typename Transform, typename T, typename Reader>
-typename boost::disable_if<detail::need_double_pass<Transform>, bool>::type inline
-Apply(const Transform& transform, const bonded<T, Reader>& bonded)
+typename boost::disable_if<need_double_pass<Transform>, bool>::type inline
+ApplyTransform(const Transform& transform, const bonded<T, Reader>& bonded)
 {
     return bonded._Apply(transform);
 }
@@ -25,17 +26,18 @@ Apply(const Transform& transform, const bonded<T, Reader>& bonded)
 
 /// @brief Apply transform to serialized container wrapped in value<T, Reader>
 template <typename Transform, typename T, typename Reader>
-void inline
-Apply(const Transform& transform, const value<T, Reader>& value)
+bool inline
+ApplyTransform(const Transform& transform, const value<T, Reader>& value)
 {
     value._Apply(transform);
+    return true;
 }
 
 
 /// @brief Apply transform to an instance of a struct
 template <typename Transform, typename T>
-typename boost::disable_if<detail::need_double_pass<Transform>, bool>::type inline
-Apply(const Transform& transform, const T& value)
+typename boost::disable_if<need_double_pass<Transform>, bool>::type inline
+ApplyTransform(const Transform& transform, const T& value)
 {
     return StaticParser<const T&>(value).Apply(transform, typename schema<T>::type());
 }
@@ -44,7 +46,7 @@ Apply(const Transform& transform, const T& value)
 /// @brief Apply transform which can modify an instance of a struct
 template <typename Transform, typename T>
 typename boost::enable_if<is_modifying_transform<Transform>, bool>::type inline
-Apply(const Transform& transform, T& value)
+ApplyTransform(const Transform& transform, T& value)
 {
     return StaticParser<T&>(value).Apply(transform, typename schema<T>::type());
 }
@@ -52,26 +54,40 @@ Apply(const Transform& transform, T& value)
 
 // Specializations for transform requiring double-pass
 template <typename Transform, typename T, typename Reader>
-typename boost::enable_if<detail::need_double_pass<Transform>, bool>::type inline
-Apply(const Transform& transform, const bonded<T, Reader>& bonded)
+typename boost::enable_if<need_double_pass<Transform>, bool>::type inline
+ApplyTransform(const Transform& transform, const bonded<T, Reader>& bonded)
 {
     if (transform.NeedPass0())
-        return detail::DoublePassApply(transform, bonded);
+        return DoublePassApply(transform, bonded);
     else
         return bonded._Apply(transform);
 }
 
 
 template <typename Transform, typename T>
-typename boost::enable_if<detail::need_double_pass<Transform>, bool>::type inline
-Apply(const Transform& transform, const T& value)
+typename boost::enable_if<need_double_pass<Transform>, bool>::type inline
+ApplyTransform(const Transform& transform, const T& value)
 {
     if (transform.NeedPass0())
-        return detail::DoublePassApply(transform, value);
+        return DoublePassApply(transform, value);
     else
         return StaticParser<const T&>(value).Apply(transform, typename schema<T>::type());
 }
 
+} // namespace detail
+
+
+template <typename Transform, typename T, typename boost::enable_if<is_modifying_transform<Transform> >::type* = nullptr>
+bool Apply(const Transform& transform, T& value)
+{
+    return detail::ApplyTransform(transform, value);
+}
+
+template <typename Transform, typename T>
+bool Apply(const Transform& transform, const T& value)
+{
+    return detail::ApplyTransform(transform, value);
+}
 
 } // namespace bond
 

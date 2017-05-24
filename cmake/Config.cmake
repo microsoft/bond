@@ -35,6 +35,17 @@ if (MSVC)
     # Bond with MSVC CRT-specific code too much. More details at
     # https://msdn.microsoft.com/en-us/library/ms175759.aspx
     add_definitions (-D_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1 -D_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1)
+
+    # Enable standards-conformance mode for MSVC compilers that support this
+    # flag (Visual C++ 2017 and later).
+    #
+    # Our minimum required version of CMake doesn't have GREATER_EQUAL, so
+    # we invert a less-than comparison instead. CMake 3.7 added
+    # GREATER_EQUAL.
+    if (NOT (MSVC_VERSION LESS 1900))
+      add_compile_options (/permissive-)
+    endif()
+
     set (Boost_USE_STATIC_LIBS ON)
 endif (MSVC)
 

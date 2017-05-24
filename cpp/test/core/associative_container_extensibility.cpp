@@ -28,9 +28,7 @@ namespace bond
 {
     template <typename T>
     struct is_set_container<SimpleSet<T> >
-    {
-        static const bool value = true;
-    };
+        : std::true_type {};
 
     template <typename T>
     struct element_type<SimpleSet<T> >
@@ -94,9 +92,7 @@ namespace bond
 {
     template <typename K, typename T>
     struct is_map_container<SimpleMap<K, T> >
-    {
-        static const bool value = true;
-    };
+        : std::true_type {};
 
     template <typename K, typename T>
     struct element_type<SimpleMap<K, T> >

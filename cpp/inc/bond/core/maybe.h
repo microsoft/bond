@@ -9,7 +9,7 @@ namespace bond
 {
 
 
-void NothingException();
+BOND_NORETURN void NothingException();
 
 
 /// @brief Type used for fields with default value of 'nothing'

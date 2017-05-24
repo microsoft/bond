@@ -12,24 +12,25 @@
 
 namespace bond
 {
+namespace detail
+{
 
+template <typename Transform, typename T, typename Reader>
+typename boost::disable_if<need_double_pass<Transform>, bool>::type inline
+ApplyTransform(const Transform& transform, const bonded<T, Reader>& bonded);
 
-template <typename T> struct
-is_bonded
-    : false_type {};
+template <typename Transform, typename T, typename Reader>
+typename boost::enable_if<need_double_pass<Transform>, bool>::type inline
+ApplyTransform(const Transform& transform, const bonded<T, Reader>& bonded);
 
-
-template <typename T, typename Reader> struct
-is_bonded<bonded<T, Reader> >
-    : true_type {};
+} // namespace detail
 
 
 template <typename T, typename Reader, typename Unused = void> struct
 is_marshaled_bonded
-{
-    static const bool value = uses_marshaled_bonded<Reader, Unused>::value
-                           && is_bonded<T>::value;
-};
+    : std::integral_constant<bool,
+        uses_marshaled_bonded<Reader, Unused>::value
+        && is_bonded<T>::value> {};
 
 
 template <typename T, typename Buffer, typename Transform>
@@ -227,11 +228,11 @@ public:
 
     template <typename Transform, typename U, typename ReaderT>
     friend typename boost::disable_if<detail::need_double_pass<Transform>, bool>::type inline
-    Apply(const Transform& transform, const bonded<U, ReaderT>& bonded);
+    detail::ApplyTransform(const Transform& transform, const bonded<U, ReaderT>& bonded);
 
     template <typename Transform, typename U, typename ReaderT>
     friend typename boost::enable_if<detail::need_double_pass<Transform>, bool>::type inline
-    Apply(const Transform& transform, const bonded<U, ReaderT>& bonded);
+    detail::ApplyTransform(const Transform& transform, const bonded<U, ReaderT>& bonded);
 
     template <typename U, typename ReaderT>
     friend class bonded;
@@ -259,7 +260,7 @@ private:
     bool _SelectProtocolAndApply(const Transform& transform) const
     {
         _skip = false;
-        InputBuffer input(detail::ReadBlob(_data));
+        auto input = CreateInputBuffer(_data.GetBuffer(), detail::ReadBlob(_data));
         return SelectProtocolAndApply<typename remove_bonded<T>::type>(input, transform).second;
     }
 

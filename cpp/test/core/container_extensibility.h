@@ -52,9 +52,7 @@ namespace bond
     // SimpleList is a list container
     template <typename T>
     struct is_list_container<SimpleList<T> >
-    {
-        static const bool value = true;
-    };
+        : std::true_type {};
 
 
     // element_type trait
@@ -141,27 +139,19 @@ namespace bond
 {
     template <size_t N>
     struct is_string<std::array<char, N> >
-    {
-        static const bool value = true;
-    };
+        : std::true_type {};
 
     template <size_t N>
     struct is_string<const std::array<char, N> >
-    {
-        static const bool value = true;
-    };
+        : std::true_type {};
 
     template <size_t N>
     struct is_wstring<std::array<wchar_t, N> >
-    {
-        static const bool value = true;
-    };
+        : std::true_type {};
 
     template <size_t N>
     struct is_wstring<const std::array<wchar_t, N> >
-    {
-        static const bool value = true;
-    };
+        : std::true_type {};
 
     template <typename T, size_t N>
     struct element_type<std::array<T, N> >

@@ -1,6 +1,7 @@
 #include "precompiled.h"
 #include "apply_tests.h"
-#include "apply_test_apply.h"
+#include "apply_test_apply.h"   // Note that we don't want to include apply_test_reflection.h so that
+                                // we only see pre-generated Apply overloads.
 
 void Init(unittest::apply::Struct& obj)
 {
@@ -80,6 +81,20 @@ void Apply(uint16_t version = bond::v1)
 }
 
 
+// Just check that Apply overload can be called without attempting roundtrips
+template <typename Reader, typename Writer, typename X>
+void SimpleApply(uint16_t version = bond::v1)
+{
+    X obj;
+
+    Init(obj);
+
+    typename Writer::Buffer output;
+    Factory<Writer>::Call(output, version, boost::bind(
+        CallApply<bond::Serializer<Writer>, X>, boost::bind(bond::SerializeTo<Writer>, _1), obj));
+}
+
+
 template <typename Reader, typename Writer, typename X>
 typename boost::enable_if<bond::uses_static_parser<Reader> >::type
 Bonded(uint16_t = bond::v1)
@@ -141,6 +156,18 @@ struct Tests
     }
 };
 
+// Partial specialization for special CompactBinary internal output counter
+template <typename Reader>
+struct Tests<Reader, bond::CompactBinaryWriter<bond::OutputBuffer>::Pass0>
+{
+    template <typename X>
+    void operator()(const X&)
+    {
+        SimpleApply<Reader, bond::CompactBinaryWriter<bond::OutputBuffer>::Pass0, X>();
+        SimpleApply<Reader, bond::CompactBinaryWriter<bond::OutputBuffer>::Pass0, X>(Reader::version);
+    }
+};
+
 
 template <typename Reader, typename Writer>
 TEST_CASE_BEGIN(AllTests)
@@ -180,9 +207,17 @@ void ApplyTest::Initialize()
             bond::CompactBinaryWriter<bond::OutputBuffer> >("Apply tests for CompactBinary");
     );
 
-    TEST_FAST_BINARY_PROTOCOL(
+    // Test for apply overloads for CompactBinary v2 Pass0 output size counter
+    TEST_COMPACT_BINARY_PROTOCOL(
         ApplyTests<
             0x1603,
+            bond::CompactBinaryReader<bond::InputBuffer>,
+            bond::CompactBinaryWriter<bond::OutputBuffer>::Pass0 >("Apply tests for CompactBinary v2 Pass0");
+    );
+
+    TEST_FAST_BINARY_PROTOCOL(
+        ApplyTests<
+            0x1604,
             bond::FastBinaryReader<bond::InputBuffer>,
             bond::FastBinaryWriter<bond::OutputBuffer> >("Apply tests for FastBinary");
     );

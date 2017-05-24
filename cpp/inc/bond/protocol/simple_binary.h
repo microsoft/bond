@@ -9,6 +9,59 @@
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
 
+/*
+                     .-------------.----------------.
+   struct            | base fields | derived fields |
+                     '-------------'----------------'
+
+                     .----------.----------.   .----------.
+   fields            |  field   |  field   |...|  field   |
+                     '----------'----------'   '----------'
+
+                     .----------.
+   field             |  value   |
+                     '----------'
+
+                                           .---.---.---.---.---.---.---.---.
+   value            bool                   |   |   |   |   |   |   |   | v |
+                                           '---'---'---'---'---'---'---'---'
+                                                                          0
+
+                    all integral types are written binary, native size, uncompressed, little endian
+
+                    float, double          little endian
+
+
+                                            .-------.------------.
+                     string, wstring        | count | characters |
+                                            '-------'------------'
+
+                           count            variable encoded uint32 count of 1-byte (for
+                                            string) or 2-byte (for wstring) Unicode code
+                                            units (variable encoded in v2)
+
+                           characters       1-byte UTF-8 code units (for string) or 2-byte
+                                            UTF-16LE code units (for wstring)
+
+
+                                           .-------. .-------.
+                    blob, list, set,       | count | | items |...
+                    vector, nullable       '-------' '-------'
+
+                           count            uint32 count of items (variable encoded in v2)
+
+                           items            each item encoded according to its type
+
+                                           .-------. .-----.--------.
+                    map                    | count | | key | mapped |...
+                                           '-------' '-----'--------'
+
+                            count           uint32 count of {key,mapped} pairs (variable encoded in v2)
+
+                            key, mapped     each item encoded according to its type
+
+*/
+
 namespace bond
 {
 
@@ -26,8 +79,8 @@ public:
     typedef StaticParser<SimpleBinaryReader&> Parser;
     typedef SimpleBinaryWriter<Buffer>        Writer;
 
-    static const uint16_t magic; // = SIMPLE_PROTOCOL
-    static const uint16_t version = v2;
+    BOND_STATIC_CONSTEXPR uint16_t magic = SIMPLE_PROTOCOL;
+    BOND_STATIC_CONSTEXPR uint16_t version = v2;
 
 
     /// @brief Construct from input buffer/stream containing serialized data.
@@ -57,9 +110,17 @@ public:
     }
 
 
-    /// @brief Access to underlaying buffer
+    /// @brief Access to underlying buffer
     typename boost::call_traits<Buffer>::const_reference
     GetBuffer() const
+    {
+        return _input;
+    }
+
+
+    /// @brief Access to underlying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
     {
         return _input;
     }
@@ -207,7 +268,7 @@ protected:
 
 
 template <typename Buffer>
-const uint16_t SimpleBinaryReader<Buffer>::magic = SIMPLE_PROTOCOL;
+BOND_CONSTEXPR_OR_CONST uint16_t SimpleBinaryReader<Buffer>::magic;
 
 
 /// @brief Writer for Simple Binary protocol
@@ -226,6 +287,13 @@ public:
           _version(version)
     {
         BOOST_ASSERT(_version <= Reader::version);
+    }
+
+    /// @brief Access to underlying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _output;
     }
 
     void WriteVersion()

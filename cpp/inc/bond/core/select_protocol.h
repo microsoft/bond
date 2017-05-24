@@ -25,10 +25,11 @@ Apply(const boost::reference_wrapper<bonded<T> >& ref, const bonded<U, Reader>& 
 
 
 // Select protocol and apply transform using compile-time schema
-template <typename T, typename Buffer, typename Transform>
+template <typename T, typename Buffer, typename Transform, typename EndIter>
 inline std::pair<ProtocolType, bool> NextProtocol(
-    const boost::mpl::l_iter<boost::mpl::l_end>&, 
-    Buffer&, 
+    const EndIter&,
+    const EndIter&,
+    Buffer&,
     const Transform&)
 {
     UnknownProtocolException();
@@ -36,35 +37,37 @@ inline std::pair<ProtocolType, bool> NextProtocol(
 }
 
 
-template <typename T, typename Buffer, typename Transform, typename Iter>
+template <typename T, typename Buffer, typename Transform, typename Iter, typename EndIter>
 inline std::pair<ProtocolType, bool> NextProtocol(
-    const Iter&, 
-    Buffer& input, 
+    const Iter&,
+    const EndIter& end,
+    Buffer& input,
     const Transform& transform)
 {
     typedef typename boost::mpl::deref<Iter>::type Reader;
-    
+
     Reader reader(input);
 
     if (reader.ReadVersion())
     {
         return std::make_pair(
             static_cast<ProtocolType>(Reader::magic), 
-            Apply(transform, bonded<T, ProtocolReader<Buffer> >(reader)));
+            Apply(transform, bonded<T, ProtocolReader>(reader)));
     }
     else
     {
-        return NextProtocol<T>(typename boost::mpl::next<Iter>::type(), input, transform);
+        return NextProtocol<T>(typename boost::mpl::next<Iter>::type(), end, input, transform);
     }
 }
 
 
 // Select protocol and apply transform using runtime schema
-template <typename Buffer, typename Transform>
+template <typename Buffer, typename Transform, typename EndIter>
 inline std::pair<ProtocolType, bool> NextProtocol(
-    const boost::mpl::l_iter<boost::mpl::l_end>&, 
-    const RuntimeSchema&, 
-    Buffer&, 
+    const EndIter&,
+    const EndIter&,
+    const RuntimeSchema&,
+    Buffer&,
     const Transform&)
 {
     UnknownProtocolException(); 
@@ -72,50 +75,54 @@ inline std::pair<ProtocolType, bool> NextProtocol(
 }
 
 
-template <typename Buffer, typename Transform, typename Iter>
+template <typename Buffer, typename Transform, typename Iter, typename EndIter>
 inline std::pair<ProtocolType, bool> NextProtocol(
-    const Iter&, 
-    const RuntimeSchema& schema, 
-    Buffer& input, 
+    const Iter&,
+    const EndIter& end,
+    const RuntimeSchema& schema,
+    Buffer& input,
     const Transform& transform)
 {
     typedef typename boost::mpl::deref<Iter>::type Reader;
-    
+
     Reader reader(input);
 
     if (reader.ReadVersion())
     {
         return std::make_pair(
             static_cast<ProtocolType>(Reader::magic), 
-            Apply(transform, bonded<void, ProtocolReader<Buffer> >(reader, schema)));
+            Apply(transform, bonded<void, ProtocolReader>(reader, schema)));
     }
     else
     {
-        return NextProtocol(typename boost::mpl::next<Iter>::type(), schema, input, transform);
+        return NextProtocol(typename boost::mpl::next<Iter>::type(), end, schema, input, transform);
     }
 }
 
 
 // Select protocol based on magic number and apply transform using compile-time schema
-template <typename T, typename Buffer, typename Transform>
+template <typename T, typename Buffer, typename Transform, typename EndIter>
 inline bool NextProtocol(
-    const boost::mpl::l_iter<boost::mpl::l_end>&, 
-    Buffer&, const Transform&, uint16_t protocol)
+    const EndIter&,
+    const EndIter&,
+    Buffer&,
+    const Transform&, uint16_t protocol)
 {
     UnknownProtocolException(protocol);
     return false; 
 }
 
 
-template <typename T, typename Buffer, typename Transform, typename Iter>
+template <typename T, typename Buffer, typename Transform, typename Iter, typename EndIter>
 inline bool NextProtocol(
-    const Iter&, 
-    Buffer& input, 
+    const Iter&,
+    const EndIter& end,
+    Buffer& input,
     const Transform& transform,
     uint16_t protocol)
 {
     typedef typename boost::mpl::deref<Iter>::type Reader;
-    
+
     if (Reader::magic == protocol)
     {
         Reader reader(input);
@@ -123,15 +130,16 @@ inline bool NextProtocol(
     }
     else
     {
-        return NextProtocol<T>(typename boost::mpl::next<Iter>::type(), input, transform, protocol);
+        return NextProtocol<T>(typename boost::mpl::next<Iter>::type(), end, input, transform, protocol);
     }
 }
 
 
 // Select protocol based on magic number and apply transform using runtime schema
-template <typename Buffer, typename Transform>
+template <typename Buffer, typename Transform, typename EndIter>
 inline bool NextProtocol(
-    const boost::mpl::l_iter<boost::mpl::l_end>&, 
+    const EndIter&,
+    const EndIter&,
     const RuntimeSchema&, Buffer&, const Transform&, uint16_t protocol)
 {
     UnknownProtocolException(protocol); 
@@ -139,16 +147,17 @@ inline bool NextProtocol(
 }
 
 
-template <typename Buffer, typename Transform, typename Iter>
+template <typename Buffer, typename Transform, typename Iter, typename EndIter>
 inline bool NextProtocol(
-    const Iter&, 
-    const RuntimeSchema& schema, 
-    Buffer& input, 
+    const Iter&,
+    const EndIter& end,
+    const RuntimeSchema& schema,
+    Buffer& input,
     const Transform& transform,
     uint16_t protocol)
 {
     typedef typename boost::mpl::deref<Iter>::type Reader;
-    
+
     if (Reader::magic == protocol)
     {
         Reader reader(input);
@@ -156,39 +165,45 @@ inline bool NextProtocol(
     }
     else
     {
-        return NextProtocol(typename boost::mpl::next<Iter>::type(), schema, input, transform, protocol);
+        return NextProtocol(typename boost::mpl::next<Iter>::type(), end, schema, input, transform, protocol);
     }
 }
 
 
 // Select protocol based on magic number and apply instance of serializing transform 
-template <template <typename Writer> class Transform, typename Buffer, typename T>
+template <template <typename Writer> class Transform, typename Buffer, typename T, typename EndIter>
 inline bool NextProtocol(
-    const boost::mpl::l_iter<boost::mpl::l_end>&, 
-    const T&, Buffer&, uint16_t protocol)
+    const EndIter&,
+    const EndIter&,
+    const T&,
+    Buffer&,
+    uint16_t protocol)
 {
     UnknownProtocolException(protocol);
     return false;
 }
 
 
-template <template <typename Writer> class Transform, typename Buffer, typename T, typename Iter>
+template <template <typename Writer> class Transform, typename Buffer, typename T, typename Iter, typename EndIter>
 inline bool NextProtocol(
-    const Iter&, 
-    const T& value, 
-    Buffer& output, 
+    const Iter&,
+    const EndIter& end,
+    const T& value,
+    Buffer& output,
     uint16_t protocol)
 {
     typedef typename boost::mpl::deref<Iter>::type Reader;
 
     if (Reader::magic == protocol)
     {
-        typename Reader::Writer writer(output);
-        return Apply(Transform<typename Reader::Writer>(writer), value);
+        typedef typename get_protocol_writer<Reader, Buffer>::type Writer;
+
+        Writer writer(output);
+        return Apply(Transform<Writer>(writer), value);
     }
     else
     {
-        return NextProtocol<Transform>(typename boost::mpl::next<Iter>::type(), value, output, protocol);
+        return NextProtocol<Transform>(typename boost::mpl::next<Iter>::type(), end, value, output, protocol);
     }
 }
 
@@ -204,10 +219,10 @@ inline bool NextProtocol(
 // Use compile-time schema
 template <typename T, typename Buffer, typename Transform>
 inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
-    Buffer& input, 
+    Buffer& input,
     const Transform& transform)
 {
-    return detail::NextProtocol<T>(typename Protocols<Buffer>::begin(), input, transform);
+    return detail::NextProtocol<T>(typename FilteredProtocols<Buffer>::begin(), typename FilteredProtocols<Buffer>::end(), input, transform);
 }
 
 
@@ -215,10 +230,10 @@ inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
 template <typename Buffer, typename Transform>
 inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
     const RuntimeSchema& schema,
-    Buffer& input, 
+    Buffer& input,
     const Transform& transform)
 {
-    return detail::NextProtocol(typename Protocols<Buffer>::begin(), schema, input, transform);
+    return detail::NextProtocol(typename FilteredProtocols<Buffer>::begin(), typename FilteredProtocols<Buffer>::end(), schema, input, transform);
 }
 
 
@@ -226,14 +241,15 @@ inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
 // Use compile-time schema
 template <typename T, typename Buffer, typename Transform>
 inline bool Apply(
-    const Transform& transform, 
-    Buffer& input, 
+    const Transform& transform,
+    Buffer& input,
     uint16_t protocol)
 {
     return detail::NextProtocol<T>(
-        typename Protocols<Buffer>::begin(), 
-        input, 
-        transform, 
+        typename FilteredProtocols<Buffer>::begin(),
+        typename FilteredProtocols<Buffer>::end(),
+        input,
+        transform,
         protocol
     );
 }
@@ -242,16 +258,17 @@ inline bool Apply(
 // Use runtime schema
 template <typename Buffer, typename Transform>
 inline bool Apply(
-    const Transform& transform, 
-    const RuntimeSchema& schema, 
-    Buffer& input, 
+    const Transform& transform,
+    const RuntimeSchema& schema,
+    Buffer& input,
     uint16_t protocol)
 {
     return detail::NextProtocol(
-        typename Protocols<Buffer>::begin(), 
+        typename FilteredProtocols<Buffer>::begin(),
+        typename FilteredProtocols<Buffer>::end(),
         schema,
-        input, 
-        transform, 
+        input,
+        transform,
         protocol
     );
 }
@@ -262,9 +279,10 @@ template <template <typename Writer> class Transform, typename Buffer, typename 
 inline bool Apply(const T& value, Buffer& output, uint16_t protocol)
 {
     return detail::NextProtocol<Transform>(
-        typename Protocols<Buffer>::begin(), 
-        value, 
-        output, 
+        Protocols::begin(),
+        Protocols::end(),
+        value,
+        output,
         protocol);
 }
 

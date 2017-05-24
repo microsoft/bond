@@ -141,11 +141,11 @@ public:
 
     template <typename Transform, typename U, typename ReaderT>
     friend typename boost::disable_if<detail::need_double_pass<Transform>, bool>::type inline
-    Apply(const Transform& transform, const bonded<U, ReaderT>& bonded);
+    detail::ApplyTransform(const Transform& transform, const bonded<U, ReaderT>& bonded);
 
     template <typename Transform, typename U, typename ReaderT>
     friend typename boost::enable_if<detail::need_double_pass<Transform>, bool>::type inline
-    Apply(const Transform& transform, const bonded<U, ReaderT>& bonded);
+    detail::ApplyTransform(const Transform& transform, const bonded<U, ReaderT>& bonded);
 
     template <typename T, typename ReaderT>
     friend class bonded;
@@ -179,7 +179,7 @@ private:
     _SelectProtocolAndApply(const Transform& transform) const
     {
         _skip = false;
-        InputBuffer input(detail::ReadBlob(_data));
+        auto input = CreateInputBuffer(_data.GetBuffer(), detail::ReadBlob(_data));
         return SelectProtocolAndApply(_schema, input, transform).second;
     }
 

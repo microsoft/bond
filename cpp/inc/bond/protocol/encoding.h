@@ -118,15 +118,6 @@ ReadVariableUnsigned(Buffer& input, T& value)
 }
 
 
-// If protocol's Write(const bond::blob&) method doesn't write raw blob to
-// output, this function needs to be overloaded appropriately.
-template <typename Writer>
-inline void WriteRawBlob(Writer& writer, const blob& data)
-{
-    writer.Write(data);
-}
-
-
 // ZigZag encoding
 template<typename T>
 inline

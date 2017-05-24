@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <boost/assert.hpp>
+
 namespace bond
 {
 

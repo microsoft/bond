@@ -40,10 +40,10 @@ git clone --recursive https://github.com/Microsoft/bond.git
 ```
 
 In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and
-cabal-install 1.18+) and Boost (1.58+). The core Bond C++ library can be used
-with C++03 compilers, although Bond Comm, Python support, unit tests and various
-examples require some C++11 features. (Note: Boost 1.59 may not work with
-Bond Comm due to some bugs in that version of the Boost ASIO library).
+cabal-install 1.18+) and Boost (1.58+). Bond's C++ library requires some
+C++11 features (currently limited to those supported bv Visual C++ 2013).
+(Note: Boost 1.59 may not work with Bond Comm due to some bugs in that
+version of the Boost ASIO library).
 
 Following are specific instructions for building on various platforms.
 
@@ -170,7 +170,7 @@ cmake .. \
 
 ### Windows
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&branch=master)](https://ci.appveyor.com/project/sapek/bond/branch/master)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&branch=master)](https://ci.appveyor.com/project/MicrosoftBond/bond/branch/master)
 
 Install the following tools:
 
@@ -235,12 +235,7 @@ cmake -G "Visual Studio 14 2015 Win64" ..
 
 Setting `PreferredToolArchitecture=x64` selects the 64-bit toolchain which
 dramatically improves build speed. (The Bond unit tests are too big to build
-with 32-bit tools.) This variable works for Visual Studio 2013 or 2015. For
-Visual Studio 2012 set the following environment variable instead:
-
-```bash
-set _IsNativeEnvironment=true
-```
+with 32-bit tools.)
 
 Instead of `cmake` you can also use `cmake-gui` and specify configuration
 settings in the UI. This configuration step has to be performed only once. From

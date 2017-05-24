@@ -10,13 +10,13 @@
 namespace bond
 {
 
+class blob;
 class InputBuffer;
 class RuntimeSchema;
 
-template <typename Buffer>
 struct ProtocolReader;
 
-template <typename T, typename Reader = ProtocolReader<InputBuffer> >
+template <typename T, typename Reader = ProtocolReader>
 class bonded;
 
 template <typename Reader>
@@ -49,7 +49,7 @@ class To;
 template <typename T, typename Enable = void> struct 
 schema_for_passthrough;
 
-template<typename T> struct 
+template<typename T, typename Enable = void> struct
 get_type_id;
 
 template <typename T> struct 

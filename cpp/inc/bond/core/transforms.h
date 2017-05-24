@@ -24,6 +24,14 @@ namespace bond
 // indicating that the transform has completed and the parser may exit.
 
 
+namespace detail
+{
+    template <typename T, typename Schema, typename Transform>
+    class _Parser;
+
+} // namespace detail
+
+
 //
 // Serializer writes input using provided protocol writer. 
 // When the input is comming from parsing a struct, applying this transform is  
@@ -308,9 +316,12 @@ public:
 };
 
 
+namespace detail
+{
+
 template <typename Writer, typename T, typename Reader>
 bool inline
-Apply(const Marshaler<Writer>& marshaler, const bonded<T, Reader>& bonded)
+ApplyTransform(const Marshaler<Writer>& marshaler, const bonded<T, Reader>& bonded)
 {
     return marshaler.Marshal(bonded);
 }
@@ -318,10 +329,12 @@ Apply(const Marshaler<Writer>& marshaler, const bonded<T, Reader>& bonded)
 
 template <typename Writer, typename T>
 bool inline 
-Apply(const Marshaler<Writer>& marshaler, const T& value)
+ApplyTransform(const Marshaler<Writer>& marshaler, const T& value)
 {
     return marshaler.Marshal(value);
 }
+
+} // namespace detail
 
 
 // MarshalTo
@@ -377,7 +390,7 @@ protected:
     {}
 
 private:
-    void MissingFieldException() const;
+    BOND_NORETURN void MissingFieldException() const;
     
     mutable uint16_t _required;
 };
@@ -559,7 +572,7 @@ struct Mapping
     Mappings fields;
 };
 
-static const uint16_t mapping_base = invalid_field_id;
+BOND_STATIC_CONSTEXPR uint16_t mapping_base = invalid_field_id;
 
 //
 // MapTo<T> maps the input fields onto an instance of a static bond type T,

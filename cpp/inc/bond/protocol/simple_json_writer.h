@@ -40,6 +40,13 @@ public:
           _all_fields(all_fields)
     {}
 
+    /// @brief Access to underlying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _output;
+    }
+
     void WriteVersion()
     {}
     

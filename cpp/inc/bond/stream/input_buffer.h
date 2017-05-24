@@ -89,6 +89,10 @@ struct VariableUnsignedUnchecked<uint64_t, 56>
 class InputBuffer
 {
 public:
+#if defined(_MSC_VER) && _MSC_VER < 1900
+    using range_type = blob;
+#endif
+
     /// @brief Default constructor
     InputBuffer()
         : _pointer()
@@ -221,7 +225,7 @@ public:
     }
 
 protected:
-    void EofException(uint32_t size) const
+    BOND_NORETURN void EofException(uint32_t size) const
     {
         BOND_THROW(StreamException,
               "Read out of bounds: " << size << " bytes requested, offset: "
@@ -231,12 +235,23 @@ protected:
     blob        _blob;
     uint32_t    _pointer;
 
-    friend blob GetCurrentBuffer(const InputBuffer& input);
+
+    friend blob GetCurrentBuffer(const InputBuffer& input)
+    {
+        return input._blob.range(input._pointer);
+    }
+
+    friend InputBuffer CreateInputBuffer(const InputBuffer& /*other*/, const blob& blob)
+    {
+        return InputBuffer(blob);
+    }
 };
 
-inline blob GetCurrentBuffer(const InputBuffer& input)
+
+inline blob GetBufferRange(const blob& begin, const blob& end)
 {
-    return input._blob.range(input._pointer);
+    return begin.range(0, begin.length() - end.length());
 }
+
 
 } // namespace bond

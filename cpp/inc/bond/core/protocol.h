@@ -7,11 +7,13 @@
 #include <boost/variant.hpp>
 #include <boost/ref.hpp>
 #include <boost/mpl/list.hpp>
-#include <boost/mpl/push_front.hpp>
-#include <boost/mpl/copy_if.hpp>
+#include <boost/mpl/insert_range.hpp>
+#include <boost/mpl/filter_view.hpp>
+#include <boost/mpl/contains.hpp>
 
 #include "customize.h"
 #include "detail/odr.h"
+#include <bond/stream/input_buffer.h>
 #include <bond/protocol/simple_binary.h>
 #include <bond/protocol/compact_binary.h>
 #include <bond/protocol/fast_binary.h>
@@ -147,28 +149,46 @@ struct ValueReader
 
 using boost::mpl::_;
 
-template <typename Buffer>
 struct Protocols
 {
-    typedef typename boost::mpl::list<
-       CompactBinaryReader<Buffer>,
-       SimpleBinaryReader<Buffer>,
-       FastBinaryReader<Buffer>,
-       SimpleJsonReader<Buffer>
+    typedef boost::mpl::list<
+       CompactBinaryReader<InputBuffer>,
+       SimpleBinaryReader<InputBuffer>,
+       FastBinaryReader<InputBuffer>,
+       SimpleJsonReader<InputBuffer>
     >::type built_in;
 
-    typedef typename customize<protocols>::modify<built_in>::type all;
-    
-    typedef typename boost::mpl::copy_if<
-        all, 
-        is_protocol_enabled<_>, 
-        boost::mpl::front_inserter<boost::mpl::list<> > >::type type;
+    typedef customize<protocols>::modify<built_in>::type all;
 
-    typedef typename boost::mpl::begin<type>::type begin;
+    typedef boost::mpl::filter_view<all, is_protocol_enabled<_> >::type type;
+
+    typedef boost::mpl::begin<type>::type begin;
+
+    typedef boost::mpl::end<type>::type end;
 };
 
 
-template <typename Buffer>
+template <typename InputBuffer>
+struct FilteredProtocols
+{
+private:
+    template <typename Reader, typename Enable = void> struct
+    check_buffer
+        : std::false_type {};
+
+    template <typename Reader> struct
+    check_buffer<Reader, typename boost::enable_if<std::is_same<typename Reader::Buffer, InputBuffer> >::type>
+        : std::true_type {};
+
+public:
+    typedef typename boost::mpl::filter_view<Protocols::type, check_buffer<_> >::type type;
+
+    typedef typename boost::mpl::begin<type>::type begin;
+
+    typedef typename boost::mpl::end<type>::type end;
+};
+
+
 struct ProtocolReader
 {
     typedef void Parser;
@@ -178,14 +198,14 @@ struct ProtocolReader
         : value()
     {
         // Validate that all compilation units in a program use the same set of protocols.
-        (void)one_definition<Protocols<Buffer>, typename Protocols<Buffer>::all>::value;
+        (void)one_definition<Protocols, Protocols::all>::value;
     }
     
     ProtocolReader(const ValueReader& x)
         : value(x)
     {}
     
-    template <typename Reader>
+    template <typename Reader, typename boost::enable_if<boost::mpl::contains<Protocols::all, Reader> >::type* = nullptr>
     ProtocolReader(const Reader& reader)
         : value(reader)
     {}
@@ -199,10 +219,11 @@ struct ProtocolReader
         return value == rhs.value;
     }
     
-    typename boost::make_variant_over<
-        typename boost::mpl::push_front<
-            typename Protocols<Buffer>::all, 
-            ValueReader
+    boost::make_variant_over<
+        boost::mpl::insert_range<
+            boost::mpl::list<ValueReader>::type,
+            boost::mpl::end<boost::mpl::list<ValueReader>::type>::type,
+            Protocols::all
         >::type
     >::type value;
 };

@@ -347,11 +347,9 @@ T InitRandom(uint32_t max_string_length = c_max_string_length, uint32_t max_list
 }
 
 
-template <typename Field> struct 
+template <typename Field> struct
 is_optional_field
-{
-    static const bool value = std::is_same<typename Field::field_modifier, bond::reflection::optional_field_modifier>::value;
-};
+    : std::is_same<typename Field::field_modifier, bond::reflection::optional_field_modifier> {};
 
 
 template <typename T>
