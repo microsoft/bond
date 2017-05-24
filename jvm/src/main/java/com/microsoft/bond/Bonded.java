@@ -18,7 +18,7 @@ public class Bonded<T extends BondSerializable> implements IBonded<T> {
     }
 
     @Override
-    public <W extends ProtocolWriter> void Serialize(W writer) throws IOException {
+    public void Serialize(ProtocolWriter writer) throws IOException {
         value.serialize(writer);
     }
 

@@ -46,41 +46,41 @@ fieldTypeName fieldType = pack $ "com.microsoft.bond.BondDataType." ++ case fiel
     -- FIXME: Marker for unsupported types that compiles.
     _                        -> "BT_UNAVAILABLE"
 
-defaultValue :: MappingContext -> Field -> Maybe Text
+defaultValue :: MappingContext -> Field -> Text
 defaultValue java Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
   where
-    newInstance t = Just [lt|new #{getInstanceTypeName java t}()|]
-    implicitDefault (BT_Bonded t) = Just [lt|new Bonded<#{getTypeName java t}>(null)|]
-    implicitDefault (BT_TypeParam _) = Just [lt|null|]
-    implicitDefault (BT_Nullable _) = Just[lt|null|]
-    implicitDefault BT_Blob = Just [lt|new byte[0]|]
-    implicitDefault BT_Bool = Just [lt|false|]
-    implicitDefault BT_Int8 = Just [lt|0|]
-    implicitDefault BT_Int16 = Just [lt|0|]
-    implicitDefault BT_Int32 = Just [lt|0|]
-    implicitDefault BT_Int64 = Just [lt|0L|]
-    implicitDefault BT_UInt8 = Just [lt|0|]
-    implicitDefault BT_UInt16 = Just [lt|0|]
-    implicitDefault BT_UInt32 = Just [lt|0|]
-    implicitDefault BT_UInt64 = Just [lt|0L|]
-    implicitDefault BT_Float = Just [lt|0.0f|]
-    implicitDefault BT_Double = Just [lt|0.0|]
-    implicitDefault BT_String = Just [lt|""|]
-    implicitDefault BT_WString = Just [lt|""|]
-    implicitDefault (BT_List _) = Just [lt|new java.util.LinkedList()|]
-    implicitDefault (BT_Set _) = Just [lt|new java.util.HashSet()|]
-    implicitDefault (BT_Map _ _) = Just [lt|new java.util.HashMap()|]
-    implicitDefault (BT_Vector _) = Just [lt|new java.util.ArrayList()|]
+    newInstance t = [lt|new #{getInstanceTypeName java t}()|]
+    implicitDefault (BT_TypeParam _) = [lt|null|]
+    implicitDefault (BT_Nullable _) = [lt|null|]
+    implicitDefault BT_Blob = [lt|new byte[0]|]
+    implicitDefault BT_Bool = [lt|false|]
+    implicitDefault BT_Int8 = [lt|0|]
+    implicitDefault BT_Int16 = [lt|0|]
+    implicitDefault BT_Int32 = [lt|0|]
+    implicitDefault BT_Int64 = [lt|0L|]
+    implicitDefault BT_UInt8 = [lt|0|]
+    implicitDefault BT_UInt16 = [lt|0|]
+    implicitDefault BT_UInt32 = [lt|0|]
+    implicitDefault BT_UInt64 = [lt|0L|]
+    implicitDefault BT_Float = [lt|0.0f|]
+    implicitDefault BT_Double = [lt|0.0|]
+    implicitDefault BT_String = [lt|""|]
+    implicitDefault BT_WString = [lt|""|]
+    implicitDefault (BT_List _) = [lt|new java.util.LinkedList()|]
+    implicitDefault (BT_Set _) = [lt|new java.util.HashSet()|]
+    implicitDefault (BT_Map _ _) = [lt|new java.util.HashMap()|]
+    implicitDefault (BT_Vector _) = [lt|new java.util.ArrayList()|]
+    implicitDefault (BT_Bonded t) = [lt|new Bonded<#{getTypeName java t}>(#{implicitDefault t})|]
     implicitDefault t@(BT_UserDefined a@Alias {..} args)
         | customAliasMapping java a = newInstance t
         | otherwise = implicitDefault $ resolveAlias a args
     implicitDefault t
         | isStruct t = newInstance t
-    implicitDefault _ = Nothing
+    implicitDefault _ = error "implicitDefault: impossible happened"
 
 defaultValue java Field {fieldDefault = (Just def), ..} = explicitDefault def
   where
-    explicitDefault (DefaultInteger x) = Just $ intLiteral x
+    explicitDefault (DefaultInteger x) = intLiteral x
       where
         intMax = toInteger (maxBound :: Int32)
         intMin = toInteger (minBound :: Int32)
@@ -88,20 +88,20 @@ defaultValue java Field {fieldDefault = (Just def), ..} = explicitDefault def
             if value > intMax || value < intMin
             then [lt|#{value}L|]
             else [lt|#{value}|]
-    explicitDefault (DefaultFloat x) = Just $ floatLiteral fieldType x
+    explicitDefault (DefaultFloat x) = floatLiteral fieldType x
       where
         floatLiteral BT_Float y = [lt|#{y}f|]
         floatLiteral BT_Double y = [lt|#{y}|]
         floatLiteral _ _ = error "Java:Float:defaultValue/floatLiteral: impossible happened."
-    explicitDefault (DefaultBool True) = Just "true"
-    explicitDefault (DefaultBool False) = Just "false"
-    explicitDefault (DefaultString x) = Just $ strLiteral fieldType x
+    explicitDefault (DefaultBool True) = "true"
+    explicitDefault (DefaultBool False) = "false"
+    explicitDefault (DefaultString x) = strLiteral fieldType x
       where
         strLiteral BT_String value = [lt|"#{value}"|]
         strLiteral BT_WString value = [lt|"#{value}"|]
         strLiteral _ _ = error "Java:Str:defaultValue/floatLiteral: impossible happened."
-    explicitDefault DefaultNothing = Just [lt|null|]
-    explicitDefault (DefaultEnum x) = Just [lt|#{getTypeName java fieldType}.#{x}|]
+    explicitDefault DefaultNothing = [lt|null|]
+    explicitDefault (DefaultEnum x) = [lt|#{getTypeName java fieldType}.#{x}|]
 
 qualifiedName :: MappingContext -> Declaration -> String
 qualifiedName java s@Struct {..}  = intercalate "." $ getDeclNamespace java s ++ [declName]
