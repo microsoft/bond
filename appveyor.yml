@@ -26,23 +26,17 @@
               BOND_CONFIG: Debug
             - BOND_BUILD: "C# .NET Core"
               BOND_CONFIG: Debug
+              # C++ Core build and tests
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
               BOND_BOOST: 60
-              BOND_CMAKE_FLAGS: "-DBOND_CORE_ONLY=TRUE"
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: Doc
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
               BOND_CONFIG: Fields
-              # quick build sanity check
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 64
-              BOND_BOOST: 60
-              BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
             - BOND_BUILD: Python
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
@@ -55,21 +49,14 @@
               BOND_ARCH: 64
               BOND_BOOST: 63
               BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE"
-              # Core build and tests
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 64
-              BOND_BOOST: 60
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE"
-              # Comm build and tests
+              # C++ Comm build and tests
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
               BOND_BOOST: 63
               BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
-              # gRPC++ build and tests
+              # C++ gRPC build and tests
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
@@ -79,14 +66,14 @@
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
-              # Core build and tests (Visual C++ 2013)
+              # C++ Core build and tests (Visual C++ 2013)
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 12 2013"
               BOND_VS_NUM: 12
               BOND_ARCH: 32
               BOND_BOOST: 58
               BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_GBC_TESTS=TRUE"
-              # Comm build and tests (Visual C++ 2013)
+              # C++ Comm build and tests (Visual C++ 2013)
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 12 2013"
               BOND_VS_NUM: 12
