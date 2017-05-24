@@ -79,9 +79,9 @@ public:
     public:
         ServiceCore()
         {
-            AddMethod("/tests.Foo/foo31");
-            AddMethod("/tests.Foo/foo32");
-            AddMethod("/tests.Foo/foo33");
+            this->AddMethod("/tests.Foo/foo31");
+            this->AddMethod("/tests.Foo/foo32");
+            this->AddMethod("/tests.Foo/foo33");
         }
 
         virtual ~ServiceCore() { }
@@ -111,21 +111,21 @@ public:
                 tp,
                 std::bind(&ServiceCore::foo33, this, std::placeholders::_1));
 
-            queue_receive(
+            this->queue_receive(
                 0,
                 &_rd_foo31->_receivedCall->_context,
                 &_rd_foo31->_receivedCall->_request,
                 &_rd_foo31->_receivedCall->_responder,
                 cq,
                 &_rd_foo31.get());
-            queue_receive(
+            this->queue_receive(
                 1,
                 &_rd_foo32->_receivedCall->_context,
                 &_rd_foo32->_receivedCall->_request,
                 &_rd_foo32->_receivedCall->_responder,
                 cq,
                 &_rd_foo32.get());
-            queue_receive(
+            this->queue_receive(
                 2,
                 &_rd_foo33->_receivedCall->_context,
                 &_rd_foo33->_receivedCall->_request,

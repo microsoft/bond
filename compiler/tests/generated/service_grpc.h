@@ -148,26 +148,26 @@ public:
     public:
         ServiceCore()
         {
-            AddMethod("/tests.Foo/foo11");
-            AddMethod("/tests.Foo/foo12");
-            AddMethod("/tests.Foo/foo12_impl");
-            AddMethod("/tests.Foo/foo13");
-            AddMethod("/tests.Foo/foo14");
-            AddMethod("/tests.Foo/foo15");
-            AddMethod("/tests.Foo/foo21");
-            AddMethod("/tests.Foo/foo22");
-            AddMethod("/tests.Foo/foo23");
-            AddMethod("/tests.Foo/foo24");
-            AddMethod("/tests.Foo/foo31");
-            AddMethod("/tests.Foo/foo32");
-            AddMethod("/tests.Foo/foo33");
-            AddMethod("/tests.Foo/_rd_foo33");
-            AddMethod("/tests.Foo/foo34");
-            AddMethod("/tests.Foo/foo41");
-            AddMethod("/tests.Foo/foo42");
-            AddMethod("/tests.Foo/foo43");
-            AddMethod("/tests.Foo/foo44");
-            AddMethod("/tests.Foo/cq");
+            this->AddMethod("/tests.Foo/foo11");
+            this->AddMethod("/tests.Foo/foo12");
+            this->AddMethod("/tests.Foo/foo12_impl");
+            this->AddMethod("/tests.Foo/foo13");
+            this->AddMethod("/tests.Foo/foo14");
+            this->AddMethod("/tests.Foo/foo15");
+            this->AddMethod("/tests.Foo/foo21");
+            this->AddMethod("/tests.Foo/foo22");
+            this->AddMethod("/tests.Foo/foo23");
+            this->AddMethod("/tests.Foo/foo24");
+            this->AddMethod("/tests.Foo/foo31");
+            this->AddMethod("/tests.Foo/foo32");
+            this->AddMethod("/tests.Foo/foo33");
+            this->AddMethod("/tests.Foo/_rd_foo33");
+            this->AddMethod("/tests.Foo/foo34");
+            this->AddMethod("/tests.Foo/foo41");
+            this->AddMethod("/tests.Foo/foo42");
+            this->AddMethod("/tests.Foo/foo43");
+            this->AddMethod("/tests.Foo/foo44");
+            this->AddMethod("/tests.Foo/cq");
         }
 
         virtual ~ServiceCore() { }
@@ -275,98 +275,98 @@ public:
             /* TODO: queue event foo13 */
             /* TODO: queue event foo14 */
             /* TODO: queue event foo15 */
-            queue_receive(
+            this->queue_receive(
                 6,
                 &_rd_foo21->_receivedCall->_context,
                 &_rd_foo21->_receivedCall->_request,
                 &_rd_foo21->_receivedCall->_responder,
                 cq0,
                 &_rd_foo21.get());
-            queue_receive(
+            this->queue_receive(
                 7,
                 &_rd_foo22->_receivedCall->_context,
                 &_rd_foo22->_receivedCall->_request,
                 &_rd_foo22->_receivedCall->_responder,
                 cq0,
                 &_rd_foo22.get());
-            queue_receive(
+            this->queue_receive(
                 8,
                 &_rd_foo23->_receivedCall->_context,
                 &_rd_foo23->_receivedCall->_request,
                 &_rd_foo23->_receivedCall->_responder,
                 cq0,
                 &_rd_foo23.get());
-            queue_receive(
+            this->queue_receive(
                 9,
                 &_rd_foo24->_receivedCall->_context,
                 &_rd_foo24->_receivedCall->_request,
                 &_rd_foo24->_receivedCall->_responder,
                 cq0,
                 &_rd_foo24.get());
-            queue_receive(
+            this->queue_receive(
                 10,
                 &_rd_foo31->_receivedCall->_context,
                 &_rd_foo31->_receivedCall->_request,
                 &_rd_foo31->_receivedCall->_responder,
                 cq0,
                 &_rd_foo31.get());
-            queue_receive(
+            this->queue_receive(
                 11,
                 &_rd_foo32->_receivedCall->_context,
                 &_rd_foo32->_receivedCall->_request,
                 &_rd_foo32->_receivedCall->_responder,
                 cq0,
                 &_rd_foo32.get());
-            queue_receive(
+            this->queue_receive(
                 12,
                 &_rd_foo330->_receivedCall->_context,
                 &_rd_foo330->_receivedCall->_request,
                 &_rd_foo330->_receivedCall->_responder,
                 cq0,
                 &_rd_foo330.get());
-            queue_receive(
+            this->queue_receive(
                 13,
                 &_rd__rd_foo33->_receivedCall->_context,
                 &_rd__rd_foo33->_receivedCall->_request,
                 &_rd__rd_foo33->_receivedCall->_responder,
                 cq0,
                 &_rd__rd_foo33.get());
-            queue_receive(
+            this->queue_receive(
                 14,
                 &_rd_foo34->_receivedCall->_context,
                 &_rd_foo34->_receivedCall->_request,
                 &_rd_foo34->_receivedCall->_responder,
                 cq0,
                 &_rd_foo34.get());
-            queue_receive(
+            this->queue_receive(
                 15,
                 &_rd_foo41->_receivedCall->_context,
                 &_rd_foo41->_receivedCall->_request,
                 &_rd_foo41->_receivedCall->_responder,
                 cq0,
                 &_rd_foo41.get());
-            queue_receive(
+            this->queue_receive(
                 16,
                 &_rd_foo42->_receivedCall->_context,
                 &_rd_foo42->_receivedCall->_request,
                 &_rd_foo42->_receivedCall->_responder,
                 cq0,
                 &_rd_foo42.get());
-            queue_receive(
+            this->queue_receive(
                 17,
                 &_rd_foo43->_receivedCall->_context,
                 &_rd_foo43->_receivedCall->_request,
                 &_rd_foo43->_receivedCall->_responder,
                 cq0,
                 &_rd_foo43.get());
-            queue_receive(
+            this->queue_receive(
                 18,
                 &_rd_foo44->_receivedCall->_context,
                 &_rd_foo44->_receivedCall->_request,
                 &_rd_foo44->_receivedCall->_responder,
                 cq0,
                 &_rd_foo44.get());
-            queue_receive(
+            this->queue_receive(
                 19,
                 &_rd_cq->_receivedCall->_context,
                 &_rd_cq->_receivedCall->_request,

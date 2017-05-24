@@ -182,8 +182,8 @@ inline void #{declName}::#{proxyName}<TThreadPool>::Async#{methodName}(
 }|]
         methodDecl Event{..} = [lt|/* TODO: stub implementation for event #{methodName} */|]
 
-        serviceAddMethod Function{..} = [lt|AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
-        serviceAddMethod Event{..} = [lt|AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
+        serviceAddMethod Function{..} = [lt|this->AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
+        serviceAddMethod Event{..} = [lt|this->AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
 
         serviceStartMethod = [lt|virtual void start(
             ::grpc::ServerCompletionQueue* #{cqParam},
@@ -205,7 +205,7 @@ inline void #{declName}::#{proxyName}<TThreadPool>::Async#{methodName}(
                 #{tpParam},
                 std::bind(&#{serviceName}::#{methodName}, this, std::placeholders::_1));|]
                   initMethodReceiveData (_,Event{..}) = [lt|/* TODO: init for event #{methodName} */|]
-                  queueReceive (index,Function{..}) = [lt|queue_receive(
+                  queueReceive (index,Function{..}) = [lt|this->queue_receive(
                 #{index},
                 &#{serviceRdMember methodName}->_receivedCall->_context,
                 &#{serviceRdMember methodName}->_receivedCall->_request,

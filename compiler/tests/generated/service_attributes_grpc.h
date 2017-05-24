@@ -71,7 +71,7 @@ public:
     public:
         ServiceCore()
         {
-            AddMethod("/tests.Foo/foo");
+            this->AddMethod("/tests.Foo/foo");
         }
 
         virtual ~ServiceCore() { }
@@ -89,7 +89,7 @@ public:
                 tp,
                 std::bind(&ServiceCore::foo, this, std::placeholders::_1));
 
-            queue_receive(
+            this->queue_receive(
                 0,
                 &_rd_foo->_receivedCall->_context,
                 &_rd_foo->_receivedCall->_request,
