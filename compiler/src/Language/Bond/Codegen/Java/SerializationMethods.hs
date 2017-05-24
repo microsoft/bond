@@ -282,11 +282,11 @@ readMap java keyType valueType fieldName depth =
         valueLocal = "v" ++ show depth
 
 readBonded :: MappingContext -> Type -> String -> Text
-readBonded java bondedType fieldName =
+readBonded java innerType fieldName =
     [lt|{
-            final #{typeName} t = new #{typeName}();
+            final #{innerTypeName} t = new #{innerTypeName}();
             t.deserialize(reader);
-            #{fieldName} = new com.microsoft.bond.Bonded<#{typeName}>(t);
+            #{fieldName} = new com.microsoft.bond.Bonded<#{innerTypeName}>(t);
         }|]
     where
-        typeName = getTypeName java bondedType
+        innerTypeName = getTypeName java innerType
