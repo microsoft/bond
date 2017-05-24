@@ -28,8 +28,7 @@ grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
 #include "#{file}_reflection.h"
 #include "#{file}_types.h"
 #{newlineSep 0 includeImport imports}
-// todo: remove message
-#include <bond/comm/message.h>
+#include <bond/core/bonded.h>
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/unary_call.h>
@@ -72,7 +71,7 @@ grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
     request mt = request' (payload mt)
       where
         payload = maybe "void" cppType
-        request' params =  [lt|::bond::comm::message<#{padLeft}#{params}>|]
+        request' params =  [lt|::bond::bonded<#{padLeft}#{params}>|]
           where
             paramsText = toLazyText params
             padLeft = if L.head paramsText == ':' then [lt| |] else mempty
@@ -80,7 +79,7 @@ grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
     response mt = response' (payload mt)
       where
         payload = maybe "void" cppType
-        response' params =  [lt|::bond::comm::message<#{padLeft}#{params}>|]
+        response' params =  [lt|::bond::bonded<#{padLeft}#{params}>|]
           where
             paramsText = toLazyText params
             padLeft = if L.head paramsText == ':' then [lt| |] else mempty

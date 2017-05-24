@@ -4,8 +4,7 @@
 #include "generic_service_reflection.h"
 #include "generic_service_types.h"
 
-// todo: remove message
-#include <bond/comm/message.h>
+#include <bond/core/bonded.h>
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/unary_call.h>
@@ -43,11 +42,11 @@ public:
     public:
         FooClient(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager);
 
-        void Asyncfoo31(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo31(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message<Payload>&, const ::grpc::Status&)> cb);
+        void Asyncfoo32(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo33(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, std::function<void(const ::bond::comm::message<Payload>&, const ::grpc::Status&)> cb);
+        void Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)> cb);
 
         FooClient(const FooClient&) = delete;
         FooClient& operator=(const FooClient&) = delete;
@@ -90,14 +89,14 @@ public:
             queue_receive(2, &_rd_foo33->_receivedCall->_context, &_rd_foo33->_receivedCall->_request, &_rd_foo33->_receivedCall->_responder, cq, &_rd_foo33.get());
         }
 
-        virtual void foo31(::bond::ext::gRPC::unary_call<::bond::comm::message<Payload>, ::bond::comm::message<void>>) = 0;
-        virtual void foo32(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message<Payload>>) = 0;
-        virtual void foo33(::bond::ext::gRPC::unary_call<::bond::comm::message<Payload>, ::bond::comm::message<Payload>>) = 0;
+        virtual void foo31(::bond::ext::gRPC::unary_call<::bond::bonded<Payload>, ::bond::bonded<void>>) = 0;
+        virtual void foo32(::bond::ext::gRPC::unary_call<::bond::bonded<void>, ::bond::bonded<Payload>>) = 0;
+        virtual void foo33(::bond::ext::gRPC::unary_call<::bond::bonded<Payload>, ::bond::bonded<Payload>>) = 0;
 
     private:
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<Payload>, ::bond::comm::message<void>>> _rd_foo31;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>, ::bond::comm::message<Payload>>> _rd_foo32;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<Payload>, ::bond::comm::message<Payload>>> _rd_foo33;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<Payload>, ::bond::bonded<void>>> _rd_foo31;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded<Payload>>> _rd_foo32;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<Payload>, ::bond::bonded<Payload>>> _rd_foo33;
     };
 };
 

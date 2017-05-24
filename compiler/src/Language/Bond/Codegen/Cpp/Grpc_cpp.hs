@@ -34,7 +34,7 @@ grpc_cpp cpp file _imports declarations = ("_grpc.cpp", [lt|
     request mt = request' (payload mt)
       where
         payload = maybe "void" cppType
-        request' params =  [lt|::bond::comm::message<#{padLeft}#{params}>|]
+        request' params =  [lt|::bond::bonded<#{padLeft}#{params}>|]
           where
             paramsText = toLazyText params
             padLeft = if L.head paramsText == ':' then [lt| |] else mempty
@@ -42,7 +42,7 @@ grpc_cpp cpp file _imports declarations = ("_grpc.cpp", [lt|
     response mt = response' (payload mt)
       where
         payload = maybe "void" cppType
-        response' params =  [lt|::bond::comm::message<#{padLeft}#{params}>|]
+        response' params =  [lt|::bond::bonded<#{padLeft}#{params}>|]
           where
             paramsText = toLazyText params
             padLeft = if L.head paramsText == ':' then [lt| |] else mempty

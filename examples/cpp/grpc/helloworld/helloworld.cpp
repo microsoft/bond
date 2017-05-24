@@ -15,8 +15,6 @@
 // event.h needed for test purposes
 #include <bond/ext/detail/event.h>
 
-// todo: remove message
-#include <bond/comm/message.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
 #include <bond/ext/grpc/server_builder.h>
@@ -39,31 +37,34 @@ using bond::ext::gRPC::io_manager;
 using namespace helloworld;
 
 // Logic and data behind the server's behavior.
-class GreeterServiceImpl final : public Greeter::Service {
+class GreeterServiceImpl final : public Greeter::Service
+{
     void SayHello(
         bond::ext::gRPC::unary_call<
-            bond::comm::message<HelloRequest>,
-            bond::comm::message<HelloReply>> call) override
+        bond::bonded<HelloRequest>,
+        bond::bonded<HelloReply>> call) override
     {
-        HelloReply real_reply;
-        real_reply.message = "hello " + call.request().value().Deserialize().name;
+        HelloRequest request = call.request().Deserialize();
 
-        bond::comm::message<HelloReply> rep(real_reply);
+        HelloReply reply;
+        reply.message = "hello " + request.name;
 
-        call.Finish(rep, Status::OK);
+        call.Finish(bond::bonded<HelloReply>{reply}, Status::OK);
     }
 };
 
-void printAndSet(event* print_event,
-        bool* isCorrectResponse,
-        const bond::comm::message< HelloReply>& response,
-        const Status& status) {
+void printAndSet(
+    event* print_event,
+    bool* isCorrectResponse,
+    const bond::bonded<HelloReply>& response,
+    const Status& status)
+{
 
     *isCorrectResponse = false;
 
     if(status.ok())
     {
-        std::string message = response.value().Deserialize().message;
+        const std::string& message = response.Deserialize().message;
 
         if (message.compare("hello world") == 0)
         {
@@ -97,15 +98,16 @@ int main()
 
     ClientContext context;
 
-    std::string user("world");
+    const std::string user("world");
+
     HelloRequest request;
     request.name = user;
-    bond::comm::message<HelloRequest> req(request);
+    bond::bonded<HelloRequest> req(request);
     event print_event;
     bool isCorrectResponse;
 
-    std::function<void(const bond::comm::message< HelloReply>&, const Status&)> f_print =
-        [&print_event, &isCorrectResponse](bond::comm::message< HelloReply> response, Status status)
+    std::function<void(const bond::bonded<HelloReply>&, const Status&)> f_print =
+        [&print_event, &isCorrectResponse](bond::bonded<HelloReply> response, Status status)
         {
             printAndSet(&print_event, &isCorrectResponse, response, status);
         };

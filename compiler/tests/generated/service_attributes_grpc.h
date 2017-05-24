@@ -4,8 +4,7 @@
 #include "service_attributes_reflection.h"
 #include "service_attributes_types.h"
 
-// todo: remove message
-#include <bond/comm/message.h>
+#include <bond/core/bonded.h>
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/unary_call.h>
@@ -43,7 +42,7 @@ public:
     public:
         FooClient(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager);
 
-        void Asyncfoo(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, std::function<void(const ::bond::comm::message< ::tests::Result>&, const ::grpc::Status&)> cb);
+        void Asyncfoo(::grpc::ClientContext* context, const ::bond::bonded< ::tests::Param>& request, std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)> cb);
 
         FooClient(const FooClient&) = delete;
         FooClient& operator=(const FooClient&) = delete;
@@ -76,10 +75,10 @@ public:
             queue_receive(0, &_rd_foo->_receivedCall->_context, &_rd_foo->_receivedCall->_request, &_rd_foo->_receivedCall->_responder, cq, &_rd_foo.get());
         }
 
-        virtual void foo(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::Param>, ::bond::comm::message< ::tests::Result>>) = 0;
+        virtual void foo(::bond::ext::gRPC::unary_call<::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result>>) = 0;
 
     private:
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::Param>, ::bond::comm::message< ::tests::Result>>> _rd_foo;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result>>> _rd_foo;
     };
 };
 

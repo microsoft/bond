@@ -11,32 +11,35 @@
 #include <grpc++/impl/codegen/status_code_enum.h>
 #include <grpc/impl/codegen/byte_buffer_reader.h>
 #include <grpc/impl/codegen/slice.h>
-#include <grpc/support/log.h>
+
+#include <bond/core/bond.h>
+#include <bond/core/bonded.h>
+#include <bond/core/reflection.h>
+#include <bond/stream/output_buffer.h>
+
+#include <boost/assert.hpp>
+#include <boost/make_shared.hpp>
 
 #include <cstdint>
 #include <cstdlib>
-
-#include <bond/core/bond.h>
-#include <bond/core/reflection.h>
-// TODO: do not use comm/message
-#include <bond/comm/message.h>
-#include <bond/stream/output_buffer.h>
-
-#include <boost/make_shared.hpp>
+#include <limits>
+#include <stdint.h>
 
 namespace grpc {
 
 template <class T>
-class SerializationTraits<bond::comm::message<T>, typename std::enable_if<bond::is_bond_type<T>::value>::type> {
+class SerializationTraits<bond::bonded<T>, typename std::enable_if<bond::is_bond_type<T>::value>::type> {
  public:
-  static Status Serialize(const bond::comm::message<T>& msg, grpc_byte_buffer** bp,
-                          bool* own_buffer) {
+  static Status Serialize(
+      const bond::bonded<T>& msg,
+      grpc_byte_buffer** bp,
+      bool* own_buffer) {
     *own_buffer = true;
 
     bond::OutputBuffer output;
     bond::CompactBinaryWriter<bond::OutputBuffer> writer(output);
 
-    bond::Serialize(msg.value(), writer);
+    msg.Serialize(writer);
 
     bond::blob data = output.GetBuffer();
 
@@ -49,7 +52,7 @@ class SerializationTraits<bond::comm::message<T>, typename std::enable_if<bond::
     return Status::OK;
   }
 
-  static Status Deserialize(grpc_byte_buffer* buffer, bond::comm::message<T>* msg) {
+  static Status Deserialize(grpc_byte_buffer* buffer, bond::bonded<T>* msg) {
     if (!buffer) {
       return Status(StatusCode::INTERNAL, "No payload");
     }
@@ -91,9 +94,7 @@ class SerializationTraits<bond::comm::message<T>, typename std::enable_if<bond::
     // having to make this copy into a blob.
     bond::blob data = bond::blob(buff, static_cast<uint32_t>(bufferSize));
     bond::CompactBinaryReader<bond::InputBuffer> cbreader(data);
-    bond::bonded<T> payload(cbreader);
-
-    *msg = bond::comm::message<T>(payload);
+    *msg = bond::bonded<T>(cbreader);
 
     return Status::OK;
   }

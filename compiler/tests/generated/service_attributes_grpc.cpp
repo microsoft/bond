@@ -15,9 +15,9 @@ Foo::FooClient::FooClient(const std::shared_ptr< ::grpc::ChannelInterface>& chan
     , rpcmethod_foo_(Foo_method_names[0], ::grpc::RpcMethod::NORMAL_RPC, channel)
     { }
 
-void Foo::FooClient::Asyncfoo(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::Param>& request, std::function<void(const ::bond::comm::message< ::tests::Result>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo(::grpc::ClientContext* context, const ::bond::bonded< ::tests::Param>& request, std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::Param>, ::bond::comm::message< ::tests::Result> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::Param>, ::bond::comm::message< ::tests::Result> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo_, context, request);
 }
 

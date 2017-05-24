@@ -19,21 +19,21 @@ Foo::FooClient::FooClient(const std::shared_ptr< ::grpc::ChannelInterface>& chan
     , rpcmethod_foo33_(Foo_method_names[2], ::grpc::RpcMethod::NORMAL_RPC, channel)
     { }
 
-void Foo::FooClient::Asyncfoo31(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo31(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<Payload>, ::bond::comm::message<void> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<Payload>, ::bond::comm::message<void> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<Payload>, ::bond::bonded<void> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<Payload>, ::bond::bonded<void> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo31_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message<Payload>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo32(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message<Payload> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message<Payload> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded<Payload> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded<Payload> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo32_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo33(::grpc::ClientContext* context, const ::bond::comm::message<Payload>& request, std::function<void(const ::bond::comm::message<Payload>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<Payload>, ::bond::comm::message<Payload> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<Payload>, ::bond::comm::message<Payload> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<Payload>, ::bond::bonded<Payload> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<Payload>, ::bond::bonded<Payload> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo33_, context, request);
 }
 

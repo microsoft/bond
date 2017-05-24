@@ -5,8 +5,7 @@
 #include "service_types.h"
 #include "basic_types_grpc.h"
 #include "namespace_basic_types_grpc.h"
-// todo: remove message
-#include <bond/comm/message.h>
+#include <bond/core/bonded.h>
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/unary_call.h>
@@ -56,33 +55,33 @@ public:
 
         /* TODO stub implementation (public) for event foo15 */
 
-        void Asyncfoo21(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo21(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo22(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo22(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo23(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo23(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo24(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo24(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo31(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo31(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo32(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
 
-        void Async_rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Async_rd_foo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo34(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo41(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo41(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo42(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo42(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo43(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo43(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
 
-        void Asyncfoo44(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo44(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
 
-        void Asynccq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asynccq(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
 
         FooClient(const FooClient&) = delete;
         FooClient& operator=(const FooClient&) = delete;
@@ -216,20 +215,20 @@ public:
         /* TODO: abstract method for event foo13 */
         /* TODO: abstract method for event foo14 */
         /* TODO: abstract method for event foo15 */
-        virtual void foo21(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message<void>>) = 0;
-        virtual void foo22(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message<void>>) = 0;
-        virtual void foo23(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message<void>>) = 0;
-        virtual void foo24(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::dummy>, ::bond::comm::message<void>>) = 0;
-        virtual void foo31(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes>>) = 0;
-        virtual void foo32(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes>>) = 0;
-        virtual void foo33(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::BasicTypes>>) = 0;
-        virtual void _rd_foo33(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::BasicTypes>>) = 0;
-        virtual void foo34(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::BasicTypes>>) = 0;
-        virtual void foo41(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy>>) = 0;
-        virtual void foo42(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy>>) = 0;
-        virtual void foo43(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::dummy>>) = 0;
-        virtual void foo44(::bond::ext::gRPC::unary_call<::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::dummy>>) = 0;
-        virtual void cq(::bond::ext::gRPC::unary_call<::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes>>) = 0;
+        virtual void foo21(::bond::ext::gRPC::unary_call<::bond::bonded<void>, ::bond::bonded<void>>) = 0;
+        virtual void foo22(::bond::ext::gRPC::unary_call<::bond::bonded<void>, ::bond::bonded<void>>) = 0;
+        virtual void foo23(::bond::ext::gRPC::unary_call<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded<void>>) = 0;
+        virtual void foo24(::bond::ext::gRPC::unary_call<::bond::bonded< ::tests::dummy>, ::bond::bonded<void>>) = 0;
+        virtual void foo31(::bond::ext::gRPC::unary_call<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
+        virtual void foo32(::bond::ext::gRPC::unary_call<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
+        virtual void foo33(::bond::ext::gRPC::unary_call<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
+        virtual void _rd_foo33(::bond::ext::gRPC::unary_call<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
+        virtual void foo34(::bond::ext::gRPC::unary_call<::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
+        virtual void foo41(::bond::ext::gRPC::unary_call<::bond::bonded<void>, ::bond::bonded< ::tests::dummy>>) = 0;
+        virtual void foo42(::bond::ext::gRPC::unary_call<::bond::bonded<void>, ::bond::bonded< ::tests::dummy>>) = 0;
+        virtual void foo43(::bond::ext::gRPC::unary_call<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::dummy>>) = 0;
+        virtual void foo44(::bond::ext::gRPC::unary_call<::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::dummy>>) = 0;
+        virtual void cq(::bond::ext::gRPC::unary_call<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
 
     private:
         /* TODO: receive data for event foo11 */
@@ -238,20 +237,20 @@ public:
         /* TODO: receive data for event foo13 */
         /* TODO: receive data for event foo14 */
         /* TODO: receive data for event foo15 */
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>, ::bond::comm::message<void>>> _rd_foo21;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>, ::bond::comm::message<void>>> _rd_foo22;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message<void>>> _rd_foo23;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::dummy>, ::bond::comm::message<void>>> _rd_foo24;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes>>> _rd_foo31;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes>>> _rd_foo32;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::BasicTypes>>> _rd_foo330;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::BasicTypes>>> _rd__rd_foo33;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::BasicTypes>>> _rd_foo34;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy>>> _rd_foo41;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy>>> _rd_foo42;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::dummy>>> _rd_foo43;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::dummy>>> _rd_foo44;
-        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes>>> _rd_cq;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded<void>>> _rd_foo21;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded<void>>> _rd_foo22;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded<void>>> _rd_foo23;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::dummy>, ::bond::bonded<void>>> _rd_foo24;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>> _rd_foo31;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>> _rd_foo32;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>>> _rd_foo330;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>>> _rd__rd_foo33;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::BasicTypes>>> _rd_foo34;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::dummy>>> _rd_foo41;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::dummy>>> _rd_foo42;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::dummy>>> _rd_foo43;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::dummy>>> _rd_foo44;
+        boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>> _rd_cq;
     };
 };
 

@@ -65,87 +65,87 @@ Foo::FooClient::FooClient(const std::shared_ptr< ::grpc::ChannelInterface>& chan
 
 /* TODO: stub implementation for event foo15 */
 
-void Foo::FooClient::Asyncfoo21(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo21(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message<void> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message<void> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded<void> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded<void> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo21_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo22(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo22(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message<void> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message<void> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded<void> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded<void> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo22_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo23(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo23(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message<void> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message<void> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded<void> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded<void> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo23_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo24(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, std::function<void(const ::bond::comm::message<void>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo24(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::dummy>, ::bond::comm::message<void> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::dummy>, ::bond::comm::message<void> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded<void> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded<void> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo24_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo31(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo31(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo31_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo32(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo32(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo32_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::BasicTypes> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo33_, context, request);
 }
 
-void Foo::FooClient::Async_rd_foo33(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Async_rd_foo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::BasicTypes> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod__rd_foo33_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo34(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo34(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::BasicTypes> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::BasicTypes> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo34_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo41(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo41(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::dummy> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::dummy> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo41_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo42(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo42(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message< ::tests::dummy> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::dummy> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::dummy> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo42_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo43(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::BasicTypes>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo43(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::dummy> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::BasicTypes>, ::bond::comm::message< ::tests::dummy> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::dummy> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::dummy> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo43_, context, request);
 }
 
-void Foo::FooClient::Asyncfoo44(::grpc::ClientContext* context, const ::bond::comm::message< ::tests::dummy>& request, std::function<void(const ::bond::comm::message< ::tests::dummy>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asyncfoo44(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::dummy> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message< ::tests::dummy>, ::bond::comm::message< ::tests::dummy> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::dummy> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::dummy> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo44_, context, request);
 }
 
-void Foo::FooClient::Asynccq(::grpc::ClientContext* context, const ::bond::comm::message<void>& request, std::function<void(const ::bond::comm::message< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+void Foo::FooClient::Asynccq(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
 {
-    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::comm::message<void>, ::bond::comm::message< ::tests::BasicTypes> >(cb);
+    ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes> >* calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes> >(cb);
     calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_cq_, context, request);
 }
 

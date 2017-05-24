@@ -38,10 +38,10 @@ public:
     wait_callback& operator=(const wait_callback&) = delete;
     wait_callback& operator=(wait_callback&&) = delete;
 
-    std::function<void(const ::bond::comm::message<TResponse>&, const ::grpc::Status&)> callback()
+    std::function<void(const bond::bonded<TResponse>&, const ::grpc::Status&)> callback()
     {
-        return std::function<void(const ::bond::comm::message<TResponse>&, const ::grpc::Status&)>(
-            [this](const ::bond::comm::message<TResponse>& response, const ::grpc::Status& status)
+        return std::function<void(const bond::bonded<TResponse>&, const ::grpc::Status&)>(
+            [this](const bond::bonded<TResponse>& response, const ::grpc::Status& status)
             {
                 _response.emplace(response);
                 _status.emplace(status);
@@ -49,7 +49,7 @@ public:
             });
     }
 
-    operator std::function<void(const ::bond::comm::message<TResponse>&, const ::grpc::Status&)>()
+    operator std::function<void(const bond::bonded<TResponse>&, const ::grpc::Status&)>()
     {
         return callback();
     }
@@ -65,7 +65,7 @@ public:
         return _event.wait(timeout);
     }
 
-    const ::bond::comm::message<TResponse>& response() const
+    const bond::bonded<TResponse>& response() const
     {
         return _response.get();
     }
@@ -76,7 +76,7 @@ public:
     }
 
 private:
-    boost::optional<::bond::comm::message<TResponse>> _response;
+    boost::optional<bond::bonded<TResponse>> _response;
     boost::optional<grpc::Status> _status;
 
     bond::ext::detail::event _event;
@@ -111,7 +111,7 @@ int main()
             fflush(stdout);
 
             wait_callback<PingResponse> cb;
-            client.AsyncPing(&context, request, cb);
+            client.AsyncPing(&context, bond::bonded<PingRequest>{ request }, cb);
             bool gotResponse = cb.wait(std::chrono::seconds(1));
 
             if (!gotResponse)
@@ -131,7 +131,7 @@ int main()
                 exit(1);
             }
 
-            if (cb.response().value().Deserialize().Payload != request.Payload)
+            if (cb.response().Deserialize().Payload != request.Payload)
             {
                 printf("Response payload did not match request\n");
                 printf("Client failed\n");
@@ -149,7 +149,7 @@ int main()
             request.Action = PingAction::Error;
 
             wait_callback<PingResponse> cb;
-            client.AsyncPing(&context, request, cb);
+            client.AsyncPing(&context, bond::bonded<PingRequest> { request }, cb);
             bool gotResponse = cb.wait(std::chrono::seconds(1));
 
             if (!gotResponse)
@@ -163,7 +163,7 @@ int main()
 
             if (status.ok())
             {
-                printf("Non-error response received: %s\n", cb.response().value().Deserialize().Payload.c_str());
+                printf("Non-error response received: %s\n", cb.response().Deserialize().Payload.c_str());
                 printf("Client failed\n");
                 fflush(stdout);
                 exit(1);
