@@ -199,7 +199,13 @@
 
             if ($env:BOND_BUILD -eq "C++") {
 
-                msbuild cs\cs.sln /verbosity:minimal /target:Tests\Compat /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                # We don't always need all of these compat tests--depending
+                # on what part of C++ we're building--but they're pretty
+                # fast to build, so build them all.
+
+                $compatTests = ('Tests\CommCompatClient', 'Tests\CommCompatServer', 'Tests\Compat', 'Tests\GrpcCompatClient', 'Tests\GrpcCompatServer')
+
+                msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
                 mkdir build
 
