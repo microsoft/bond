@@ -295,7 +295,7 @@
                 nunit-console-x86 /framework:net-4.5 /labels "cs\test\core\bin\debug\net45\${env:BOND_OUTPUT}\Bond.UnitTest.dll" cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
                 if (-not $?) { throw "tests failed" }
 
-                & examples\cs\comm\grpc_pingpong\bin\Debug\pingpong.exe
+                & examples\cs\grpc\pingpong\bin\Debug\pingpong.exe
                 if (-not $?) { throw "tests failed" }
 
                 # We need to investigate why these tests are failing in AppVeyor, but not locally.
