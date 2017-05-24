@@ -3,8 +3,8 @@
 # About #
 
 Bond-over-gRPC provides code generation from Bond IDL service definitions
-to send Bond objects via gRPC. The gRPC functionality supercedes the
-(now deprecated) Bond Comm framework.
+to send Bond objects via [gRPC](http://www.grpc.io/) The gRPC functionality
+supercedes the (now deprecated) Bond Comm framework.
 
 # Features #
 
@@ -26,6 +26,9 @@ Note that gRPC doesn't provide a messaging pattern that matches
 the semantics of methods with a return type of `nothing`; to compensate,
 `gbc` provides generated wrappers to simulate the appropriate semantics.
 
+Also note that Bond-over-gRPC does not yet provide interfaces for gRPC's
+streaming; this functionality will be added in the coming months.
+
 # Implementations #
 
 Bond-over-gRPC is available for C# now and will be released for C++ in a
@@ -35,34 +38,56 @@ few weeks.
 
 Given a service definition like the following:
 
-    service ExampleService
+    service Example
     {
-        ExampleResponse Method(ExampleRequest);
+        ExampleResponse ExampleMethod(ExampleRequest);
     }
 
-`gbc` will produce stubs for gRPC with the `--grpc` flag:
+`gbc` will produce stub code for gRPC with the `--grpc` flag:
 
     gbc c# --grpc example.bond
 
-The service stub allows for the definition of the service implementation like this:
+The key parts of the generated C# stub code are:
+* A class with the name of the service (e.g.: `Example`), which encloses
+  the server-side service stub, the client-side proxy stub, and some static
+  methods and data members for initialization
+* The service stub, which is named with the name of the service plus the suffix
+  `Base` (e.g.: `Example.ExampleBase`). This service stub has
+  abstract methods for each of the methods defined in the service IDL.
+* The proxy stub, which is named with the name of the service plus the suffix
+  `Client' (e.g.: `Example.ExampleClient`).
 
-    public class ExampleService : ExampleServiceBase
+The service stub allows for the definition of the service implementation, with
+the application business logic:
+
+    public class ExampleServiceImpl : Example.ExampleBase
     {
-        public override async Task<IMessage<ExampleResponse>> Method(IMessage<ExampleRequest> param, ServerCallContext context)
+        public override async Task<IMessage<ExampleResponse>> ExampleMethod(IMessage<ExampleRequest> param, ServerCallContext context)
         {
             ExampleRequest request = param.Payload.Deserialize();
-
-            // Service business logic
-
             var response = new ExampleResponse();
+
+            // Service business logic goes here
+
             return Message.From(response);
         }
     }
 
-The proxy stub allows the client to invoke the remote service method like this:
+This service implementation is hooked up to a gRPC server as follows:
 
-    var channel = new Channel("localhost", Port, ChannelCredentials.Insecure);
-    var client = new ExampleClient(channel);
+    var server = new Grpc.Core.Server
+    {
+        Services = { Example.BindService(new ExampleServiceImpl()) },
+        Ports = { new Grpc.Core.ServerPort(ExampleHost, ExamplePort, Grpc.Core.ServerCredentials.Insecure) }
+    };
+    server.Start();
+
+On the client side, the proxy stub establishes a connection to the server like this:
+
+    var channel = new Grpc.Core.Channel(ExampleHost, ExamplePort, Grpc.Core.ChannelCredentials.Insecure);
+    var client = new Example.ExampleClient(channel);
+
+The proxy stub can then be used to make calls to the server as follows:
 
     var request = new ExampleRequest();
     IMessage<ExampleResponse> responseMessage = await client.Method(request);
@@ -75,7 +100,8 @@ ones in the gRPC tutorial: on the service side, the request is wrapped in
 `IMessage<T>` and on the client side, the response is wrapped in
 `IMessage<T>`. This allows for better control over the time of
 deserialization and also helps prevent slicing when using polymorphic Bond
-types.
+types. Note also that Bond-over-gRPC does not provide synchronous APIs in C#
+by design.
 
 There is a [Bond-over-gRPC standalone example project](https://github.com/Microsoft/bond-grpc-examples).
 
