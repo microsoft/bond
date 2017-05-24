@@ -45,8 +45,7 @@ class thread_pool_concept
 #endif
 
 /// @brief Basic thread pool implementation.
-class thread_pool
-    : private boost::asio::io_service
+class thread_pool : private boost::asio::io_service
 {
 public:
     static constexpr size_t USE_HARDWARE_CONC = 0;

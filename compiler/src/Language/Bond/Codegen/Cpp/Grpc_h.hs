@@ -91,7 +91,10 @@ public:
     class #{proxyName}
     {
     public:
-        #{proxyName}(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager, std::shared_ptr<TThreadPool> threadPool);
+        #{proxyName}(
+            const std::shared_ptr< ::grpc::ChannelInterface>& channel,
+            std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
+            std::shared_ptr<TThreadPool> threadPool);
 
         #{doubleLineSep 2 publicProxyMethodDecl serviceMethods}
 
@@ -102,9 +105,9 @@ public:
         #{proxyName}& operator=(#{proxyName}&&) = default;
 
     private:
-        std::shared_ptr< ::grpc::ChannelInterface> channel_;
-        std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager_;
-        std::shared_ptr<TThreadPool> threadPool_;
+        std::shared_ptr< ::grpc::ChannelInterface> _channel;
+        std::shared_ptr< ::bond::ext::gRPC::io_manager> _ioManager;
+        std::shared_ptr<TThreadPool> _threadPool;
 
         #{doubleLineSep 2 privateProxyMethodDecl serviceMethods}
     };
@@ -129,14 +132,17 @@ public:
         #{newlineSep 2 serviceMethodReceiveData serviceMethods}
     };
 
-    using Service = #{serviceName}<bond::ext::thread_pool>;
+    using Service = #{serviceName}< ::bond::ext::thread_pool>;
 };
 
 template <typename TThreadPool>
-inline #{declName}::#{proxyName}<TThreadPool>::#{proxyName}(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager, std::shared_ptr<TThreadPool> threadPool)
-    : channel_(channel)
-    , ioManager_(ioManager)
-    , threadPool_(threadPool)
+inline #{declName}::#{proxyName}<TThreadPool>::#{proxyName}(
+    const std::shared_ptr< ::grpc::ChannelInterface>& channel,
+    std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
+    std::shared_ptr<TThreadPool> threadPool)
+    : _channel(channel)
+    , _ioManager(ioManager)
+    , _threadPool(threadPool)
     #{newlineSep 1 proxyMethodMemberInit serviceMethods}
     { }
 
@@ -162,12 +168,15 @@ inline #{declName}::#{proxyName}<TThreadPool>::#{proxyName}(const std::shared_pt
         proxyMethodMemberInit Event{..} = [lt|/* TODO stub ctor initialization for event #{methodName} */|]
 
         methodDecl Function{..} = [lt|template <typename TThreadPool>
-inline void #{declName}::#{proxyName}<TThreadPool>::Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, std::function<void(const #{response methodResult}&, const ::grpc::Status&)> cb)
+inline void #{declName}::#{proxyName}<TThreadPool>::Async#{methodName}(
+    ::grpc::ClientContext* context,
+    const #{request methodInput}& request,
+    std::function<void(const #{response methodResult}&, const ::grpc::Status&)> cb)
 {
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< #{request methodInput}, #{response methodResult}, TThreadPool >(
-        channel_,
-        ioManager_,
-        threadPool_,
+        _channel,
+        _ioManager,
+        _threadPool,
         cb);
     calldata->dispatch(rpcmethod_#{methodName}_, context, request);
 }|]
@@ -176,7 +185,9 @@ inline void #{declName}::#{proxyName}<TThreadPool>::Async#{methodName}(::grpc::C
         serviceAddMethod Function{..} = [lt|AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
         serviceAddMethod Event{..} = [lt|AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
 
-        serviceStartMethod = [lt|virtual void start(::grpc::ServerCompletionQueue* #{cqParam}, std::shared_ptr<TThreadPool> #{tpParam}) override
+        serviceStartMethod = [lt|virtual void start(
+            ::grpc::ServerCompletionQueue* #{cqParam},
+            std::shared_ptr<TThreadPool> #{tpParam}) override
         {
             BOOST_ASSERT(#{cqParam});
             BOOST_ASSERT(#{tpParam});
@@ -187,15 +198,26 @@ inline void #{declName}::#{proxyName}<TThreadPool>::Async#{methodName}(::grpc::C
         }|]
             where cqParam = uniqueName "cq" methodNames
                   tpParam = uniqueName "tp" methodNames
-                  initMethodReceiveData (index,Function{..}) = [lt|#{serviceRdMember methodName}.emplace(this, #{index}, #{cqParam}, #{tpParam}, std::bind(&#{serviceName}::#{methodName}, this, std::placeholders::_1));|]
+                  initMethodReceiveData (index,Function{..}) = [lt|#{serviceRdMember methodName}.emplace(
+                this,
+                #{index},
+                #{cqParam},
+                #{tpParam},
+                std::bind(&#{serviceName}::#{methodName}, this, std::placeholders::_1));|]
                   initMethodReceiveData (_,Event{..}) = [lt|/* TODO: init for event #{methodName} */|]
-                  queueReceive (index,Function{..}) = [lt|queue_receive(#{index}, &#{serviceRdMember methodName}->_receivedCall->_context, &#{serviceRdMember methodName}->_receivedCall->_request, &#{serviceRdMember methodName}->_receivedCall->_responder, #{cqParam}, &#{serviceRdMember methodName}.get());|]
+                  queueReceive (index,Function{..}) = [lt|queue_receive(
+                #{index},
+                &#{serviceRdMember methodName}->_receivedCall->_context,
+                &#{serviceRdMember methodName}->_receivedCall->_request,
+                &#{serviceRdMember methodName}->_receivedCall->_responder,
+                #{cqParam},
+                &#{serviceRdMember methodName}.get());|]
                   queueReceive (_,Event{..}) = [lt|/* TODO: queue event #{methodName} */|]
 
-        serviceMethodReceiveData Function{..} = [lt|boost::optional<::bond::ext::gRPC::detail::service_unary_call_data<#{request methodInput}, #{response methodResult}, TThreadPool>> #{serviceRdMember methodName};|]
+        serviceMethodReceiveData Function{..} = [lt|::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< #{request methodInput}, #{response methodResult}, TThreadPool>> #{serviceRdMember methodName};|]
         serviceMethodReceiveData Event{..} = [lt|/* TODO: receive data for event #{methodName} */|]
 
-        serviceVirtualMethod Function{..} = [lt|virtual void #{methodName}(::bond::ext::gRPC::unary_call<#{request methodInput}, #{response methodResult}>) = 0;|]
+        serviceVirtualMethod Function{..} = [lt|virtual void #{methodName}(::bond::ext::gRPC::unary_call< #{request methodInput}, #{response methodResult}>) = 0;|]
         serviceVirtualMethod Event{..} = [lt|/* TODO: abstract method for event #{methodName} */|]
 
         serviceRdMember methodName = uniqueName ("_rd_" ++ methodName) methodNames

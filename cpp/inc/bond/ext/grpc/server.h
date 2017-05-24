@@ -117,7 +117,7 @@ private:
         std::unique_ptr<grpc::Server> grpcServer,
         std::unique_ptr<grpc::ServerCompletionQueue> cq)
         : _grpcServer(std::move(grpcServer)),
-        _ioManager(std::move(cq))
+          _ioManager(std::move(cq))
     {
         BOOST_ASSERT(_grpcServer);
     }

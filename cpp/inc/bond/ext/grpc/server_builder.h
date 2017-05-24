@@ -37,14 +37,14 @@
 #pragma once
 
 #ifdef _MSC_VER
-#pragma warning (push)
-#pragma warning (disable: 4100 4702)
+    #pragma warning (push)
+    #pragma warning (disable: 4100 4702)
 #endif
 
 #include <grpc++/server_builder.h>
 
 #ifdef _MSC_VER
-#pragma warning (pop)
+    #pragma warning (pop)
 #endif
 
 #include <bond/ext/grpc/server.h>
@@ -194,7 +194,7 @@ namespace bond { namespace ext { namespace gRPC {
                 service->start(cq.get(), _threadPool);
             }
 
-            std::unique_ptr<bond::ext::gRPC::server_core<TThreadPool>> result{
+            std::unique_ptr<bond::ext::gRPC::server_core<TThreadPool>> result {
                 new bond::ext::gRPC::server_core<TThreadPool> {
                     std::move(server),
                     std::move(cq) } };
