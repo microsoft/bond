@@ -83,8 +83,7 @@ int main()
     builder.RegisterService(&service);
     std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
 
-    std::unique_ptr<grpc::CompletionQueue> cq_(new grpc::CompletionQueue());
-    auto ioManager = std::make_shared<io_manager>(std::move(cq_));
+    auto ioManager = std::make_shared<io_manager>();
 
     Greeter::Client greeter(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),

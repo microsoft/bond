@@ -43,6 +43,23 @@ namespace bond { namespace ext { namespace gRPC {
 
         /// @brief Creates and starts and io_manager.
         ///
+        /// @param numThreads the number of threads to start. If \ref
+        /// USE_HARDWARE_CONC, then a number of threads depending on the
+        /// hardware's available concurrency will be started.
+        explicit io_manager(size_t numThreads = USE_HARDWARE_CONC)
+            : _cq(new grpc::CompletionQueue),
+            _numThreads(compute_real_num_threads(numThreads)),
+            _threads(),
+            _isShutdownRequested(),
+            _isShutdownInProgress(),
+            _shutdownCompleted()
+        {
+            BOOST_ASSERT(_cq);
+            start();
+        }
+
+        /// @brief Creates and starts and io_manager.
+        ///
         /// @param cq the completion queue to poll. Takes ownership.
         ///
         /// @param numThreads the number of threads to start. If \ref
@@ -58,6 +75,24 @@ namespace bond { namespace ext { namespace gRPC {
         {
             BOOST_ASSERT(_cq);
             start();
+        }
+
+        /// @brief Creates an io_managed, but does not start it.
+        ///
+        /// @param numThreads the number of threads to start. If \ref
+        /// USE_HARDWARE_CONC, then a number of threads depending on the
+        /// hardware's available concurrency will be started.
+        io_manager(size_t numThreads, delay_start_tag)
+            : _cq(new grpc::CompletionQueue),
+            _numThreads(compute_real_num_threads(numThreads)),
+            _threads(),
+            _isShutdownRequested(),
+            _isShutdownInProgress(),
+            _shutdownCompleted()
+        {
+            BOOST_ASSERT(_cq);
+
+            // this overload does NOT call start()
         }
 
         /// @brief Creates an io_managed, but does not start it.

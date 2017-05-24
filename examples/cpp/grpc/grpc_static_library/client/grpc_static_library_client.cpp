@@ -58,7 +58,7 @@ int main()
     { // Initialize proxy
         const std::string server_address("127.0.0.1:50051");
 
-        auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+        auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
         bond::ext::thread_pool threadPool;
 
         PingPong::Client client(

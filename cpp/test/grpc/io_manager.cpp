@@ -52,7 +52,7 @@ class io_managerTests
 {
     static void PollOneItem()
     {
-        io_manager ioManager(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+        io_manager ioManager;
 
         alarm_completion_tag<event> act;
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
@@ -64,7 +64,7 @@ class io_managerTests
 
     static void PollManyItems()
     {
-        io_manager ioManager(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+        io_manager ioManager;
 
         const size_t numItems = 1000;
 
@@ -86,7 +86,6 @@ class io_managerTests
     static void ShutdownUnstarted()
     {
         io_manager ioManager(
-            std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue),
             io_manager::USE_HARDWARE_CONC,
             io_manager::delay_start_tag{});
         ioManager.shutdown();
@@ -97,7 +96,9 @@ class io_managerTests
 
     static void ConcurrentShutdown()
     {
-        io_manager ioManager(std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+        io_manager ioManager(
+            // also tests that we can pass an explicit completion queue
+            std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
 
         const size_t numConcurrentShutdowns = 5;
         barrier threadsStarted(numConcurrentShutdowns);
@@ -133,6 +134,7 @@ class io_managerTests
     static void DelayStartDoesntStart()
     {
         io_manager ioManager(
+            // also tests that we can pass an explicit completion queue
             std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue),
             io_manager::USE_HARDWARE_CONC,
             io_manager::delay_start_tag{});
