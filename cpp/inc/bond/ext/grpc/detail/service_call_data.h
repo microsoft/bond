@@ -52,7 +52,7 @@ struct service_unary_call_data : io_manager_tag
     /// The completion port to post IO operations to.
     grpc::ServerCompletionQueue* _cq;
     /// The thread pool implementation to use to invoke the user callback.
-    TThreadPool* _threadPool;
+    std::shared_ptr<TThreadPool> _threadPool;
     /// The user code to invoke when a call to this method is received.
     CallbackType _cb;
     /// Individual state for one specific call to this method.
@@ -62,7 +62,7 @@ struct service_unary_call_data : io_manager_tag
         service<TThreadPool>* service,
         int methodIndex,
         grpc::ServerCompletionQueue* cq,
-        TThreadPool* threadPool,
+        std::shared_ptr<TThreadPool> threadPool,
         CallbackType cb)
         : _service(service),
           _methodIndex(methodIndex),

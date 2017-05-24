@@ -91,7 +91,7 @@ public:
     class #{proxyName}
     {
     public:
-        #{proxyName}(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager, TThreadPool* threadPool);
+        #{proxyName}(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager, std::shared_ptr<TThreadPool> threadPool);
 
         #{doubleLineSep 2 publicProxyMethodDecl serviceMethods}
 
@@ -104,7 +104,7 @@ public:
     private:
         std::shared_ptr< ::grpc::ChannelInterface> channel_;
         std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager_;
-        TThreadPool* threadPool_;
+        std::shared_ptr<TThreadPool> threadPool_;
 
         #{doubleLineSep 2 privateProxyMethodDecl serviceMethods}
     };
@@ -133,7 +133,7 @@ public:
 };
 
 template <typename TThreadPool>
-inline #{declName}::#{proxyName}<TThreadPool>::#{proxyName}(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager, TThreadPool* threadPool)
+inline #{declName}::#{proxyName}<TThreadPool>::#{proxyName}(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager, std::shared_ptr<TThreadPool> threadPool)
     : channel_(channel)
     , ioManager_(ioManager)
     , threadPool_(threadPool)
@@ -164,15 +164,19 @@ inline #{declName}::#{proxyName}<TThreadPool>::#{proxyName}(const std::shared_pt
         methodDecl Function{..} = [lt|template <typename TThreadPool>
 inline void #{declName}::#{proxyName}<TThreadPool>::Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, std::function<void(const #{response methodResult}&, const ::grpc::Status&)> cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< #{request methodInput}, #{response methodResult}, TThreadPool >(cb, threadPool_);
-    calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_#{methodName}_, context, request);
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< #{request methodInput}, #{response methodResult}, TThreadPool >(
+        channel_,
+        ioManager_,
+        threadPool_,
+        cb);
+    calldata->dispatch(rpcmethod_#{methodName}_, context, request);
 }|]
         methodDecl Event{..} = [lt|/* TODO: stub implementation for event #{methodName} */|]
 
         serviceAddMethod Function{..} = [lt|AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
         serviceAddMethod Event{..} = [lt|AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
 
-        serviceStartMethod = [lt|virtual void start(::grpc::ServerCompletionQueue* #{cqParam}, TThreadPool* #{tpParam}) override
+        serviceStartMethod = [lt|virtual void start(::grpc::ServerCompletionQueue* #{cqParam}, std::shared_ptr<TThreadPool> #{tpParam}) override
         {
             BOOST_ASSERT(#{cqParam});
             BOOST_ASSERT(#{tpParam});

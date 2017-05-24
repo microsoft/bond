@@ -59,12 +59,12 @@ int main()
         const std::string server_address("127.0.0.1:50051");
 
         auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-        bond::ext::thread_pool threadPool;
+        auto threadPool = std::make_shared<bond::ext::thread_pool>();
 
         PingPong::Client client(
             grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
             ioManager,
-            &threadPool);
+            threadPool);
     }
 
     return 0;

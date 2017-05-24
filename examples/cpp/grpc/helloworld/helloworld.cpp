@@ -73,22 +73,22 @@ void printAndSet(
 
 int main()
 {
-    bond::ext::thread_pool threadPool;
+    auto ioManager = std::make_shared<io_manager>();
+    auto threadPool = std::make_shared<bond::ext::thread_pool>();
 
     GreeterServiceImpl service;
 
-    bond::ext::gRPC::server_builder builder(&threadPool);
+    bond::ext::gRPC::server_builder builder;
+    builder.SetThreadPool(threadPool);
     const std::string server_address("127.0.0.1:50051");
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
     builder.RegisterService(&service);
     std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
 
-    auto ioManager = std::make_shared<io_manager>();
-
     Greeter::Client greeter(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
         ioManager,
-        &threadPool);
+        threadPool);
 
     ClientContext context;
 

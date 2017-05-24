@@ -40,7 +40,7 @@ public:
     ///
     /// Typical implementations call queue_receive on all the methods in the
     /// service to kick of the process of receiving messages.
-    virtual void start(grpc::ServerCompletionQueue* cq, TThreadPool* threadPool) = 0;
+    virtual void start(grpc::ServerCompletionQueue* cq, std::shared_ptr<TThreadPool> threadPool) = 0;
 
     /// @brief Starts the receive process for a method.
     ///

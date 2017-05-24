@@ -42,7 +42,7 @@ public:
     class ClientCore
     {
     public:
-        ClientCore(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager, TThreadPool* threadPool);
+        ClientCore(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager, std::shared_ptr<TThreadPool> threadPool);
 
         void Asyncfoo31(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb);
 
@@ -59,7 +59,7 @@ public:
     private:
         std::shared_ptr< ::grpc::ChannelInterface> channel_;
         std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager_;
-        TThreadPool* threadPool_;
+        std::shared_ptr<TThreadPool> threadPool_;
 
         const ::grpc::RpcMethod rpcmethod_foo31_;
 
@@ -82,7 +82,7 @@ public:
         }
 
         virtual ~ServiceCore() { }
-        virtual void start(::grpc::ServerCompletionQueue* cq, TThreadPool* tp) override
+        virtual void start(::grpc::ServerCompletionQueue* cq, std::shared_ptr<TThreadPool> tp) override
         {
             BOOST_ASSERT(cq);
             BOOST_ASSERT(tp);
@@ -110,7 +110,7 @@ public:
 };
 
 template <typename TThreadPool>
-inline Foo::ClientCore<TThreadPool>::ClientCore(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager, TThreadPool* threadPool)
+inline Foo::ClientCore<TThreadPool>::ClientCore(const std::shared_ptr< ::grpc::ChannelInterface>& channel, std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager, std::shared_ptr<TThreadPool> threadPool)
     : channel_(channel)
     , ioManager_(ioManager)
     , threadPool_(threadPool)
@@ -122,22 +122,34 @@ inline Foo::ClientCore<TThreadPool>::ClientCore(const std::shared_ptr< ::grpc::C
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo31(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<Payload>, ::bond::bonded<void>, TThreadPool >(cb, threadPool_);
-    calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo31_, context, request);
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<Payload>, ::bond::bonded<void>, TThreadPool >(
+        channel_,
+        ioManager_,
+        threadPool_,
+        cb);
+    calldata->dispatch(rpcmethod_foo31_, context, request);
 }
 
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo32(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)> cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded<Payload>, TThreadPool >(cb, threadPool_);
-    calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo32_, context, request);
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded<Payload>, TThreadPool >(
+        channel_,
+        ioManager_,
+        threadPool_,
+        cb);
+    calldata->dispatch(rpcmethod_foo32_, context, request);
 }
 
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)> cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<Payload>, ::bond::bonded<Payload>, TThreadPool >(cb, threadPool_);
-    calldata->dispatch(channel_.get(), ioManager_.get(), rpcmethod_foo33_, context, request);
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<Payload>, ::bond::bonded<Payload>, TThreadPool >(
+        channel_,
+        ioManager_,
+        threadPool_,
+        cb);
+    calldata->dispatch(rpcmethod_foo33_, context, request);
 }
 
 

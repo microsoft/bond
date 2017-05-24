@@ -106,11 +106,12 @@ int main()
         const std::string server_address("127.0.0.1:50051");
 
         auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-        bond::ext::thread_pool threadPool;
+        auto threadPool = std::make_shared<bond::ext::thread_pool>();
 
         // Create and start a service instance
         TestServiceImpl service;
-        bond::ext::gRPC::server_builder builder(&threadPool);
+        bond::ext::gRPC::server_builder builder;
+        builder.SetThreadPool(threadPool);
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(&service);
         std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
@@ -119,7 +120,7 @@ int main()
         TestService::Client proxy(
             grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
             ioManager,
-            &threadPool);
+            threadPool);
     }
 
     return 0;

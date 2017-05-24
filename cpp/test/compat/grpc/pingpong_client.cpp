@@ -86,14 +86,15 @@ private:
 int main()
 {
     auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
+    auto threadPool = std::make_shared<bond::ext::thread_pool>();
 
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
     std::shared_ptr<Channel> channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    bond::ext::thread_pool threadPool;
-    PingPong::Client client(channel, ioManager, &threadPool);
+    
+    PingPong::Client client(channel, ioManager, threadPool);
 
     printf("Start client\n");
     fflush(stdout);

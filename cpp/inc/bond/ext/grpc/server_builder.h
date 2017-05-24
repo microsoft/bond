@@ -62,12 +62,11 @@ namespace bond { namespace ext { namespace gRPC {
     template <typename TThreadPool>
     class server_builder_core final {
     public:
-        explicit server_builder_core(TThreadPool* threadPool)
+        server_builder_core()
             : _grpcServerBuilder(),
               _services(),
-              _threadPool(threadPool)
+              _threadPool()
         {
-            BOOST_ASSERT(threadPool);
         }
 
         /// Register a service. This call does not take ownership of the
@@ -151,6 +150,12 @@ namespace bond { namespace ext { namespace gRPC {
             return *this;
         }
 
+        server_builder_core& SetThreadPool(std::shared_ptr<TThreadPool> thread_pool)
+        {
+            _threadPool = thread_pool;
+            return *this;
+        }
+
         /// Tries to bind this server to the given \p addr.
         ///
         /// It can be invoked multiple times.
@@ -177,6 +182,11 @@ namespace bond { namespace ext { namespace gRPC {
             std::unique_ptr<grpc::Server> server =
                 _grpcServerBuilder.BuildAndStart();
 
+            if (!_threadPool)
+            {
+                _threadPool = std::make_shared<TThreadPool>();
+            }
+
             // Tickle all the services so they queue a receive for all their
             // methods.
             for (auto& service : _services)
@@ -195,7 +205,7 @@ namespace bond { namespace ext { namespace gRPC {
     private:
         grpc::ServerBuilder _grpcServerBuilder;
         std::set<detail::service<TThreadPool>*> _services;
-        TThreadPool* _threadPool;
+        std::shared_ptr<TThreadPool> _threadPool;
     };
 
     using server_builder = server_builder_core<bond::ext::thread_pool>;
