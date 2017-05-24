@@ -74,7 +74,7 @@ void printAndSet(
 int main()
 {
     auto ioManager = std::make_shared<io_manager>();
-    auto threadPool = std::make_shared<bond::ext::thread_pool>();
+    auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
 
     GreeterServiceImpl service;
 

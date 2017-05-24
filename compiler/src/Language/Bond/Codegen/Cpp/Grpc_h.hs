@@ -112,7 +112,7 @@ public:
         #{doubleLineSep 2 privateProxyMethodDecl serviceMethods}
     };
 
-    using Client = #{proxyName}< ::bond::ext::thread_pool>;
+    using Client = #{proxyName}< ::bond::ext::gRPC::thread_pool>;
 
     template <typename TThreadPool>
     class #{serviceName} : public ::bond::ext::gRPC::detail::service<TThreadPool>
@@ -132,7 +132,7 @@ public:
         #{newlineSep 2 serviceMethodReceiveData serviceMethods}
     };
 
-    using Service = #{serviceName}< ::bond::ext::thread_pool>;
+    using Service = #{serviceName}< ::bond::ext::gRPC::thread_pool>;
 };
 
 template <typename TThreadPool>

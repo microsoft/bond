@@ -92,7 +92,7 @@ public:
 int main()
 {
     PingPongServiceImpl service;
-    auto threadPool = std::make_shared<bond::ext::thread_pool>();
+    auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
 
     bond::ext::gRPC::server_builder builder;
     builder.SetThreadPool(threadPool);

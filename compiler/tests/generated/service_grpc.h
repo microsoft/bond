@@ -140,7 +140,7 @@ public:
         const ::grpc::RpcMethod rpcmethod_cq_;
     };
 
-    using Client = ClientCore< ::bond::ext::thread_pool>;
+    using Client = ClientCore< ::bond::ext::gRPC::thread_pool>;
 
     template <typename TThreadPool>
     class ServiceCore : public ::bond::ext::gRPC::detail::service<TThreadPool>
@@ -419,7 +419,7 @@ public:
         ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_cq;
     };
 
-    using Service = ServiceCore< ::bond::ext::thread_pool>;
+    using Service = ServiceCore< ::bond::ext::gRPC::thread_pool>;
 };
 
 template <typename TThreadPool>

@@ -86,7 +86,7 @@ private:
 int main()
 {
     auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-    auto threadPool = std::make_shared<bond::ext::thread_pool>();
+    auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
 
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
     std::shared_ptr<Channel> channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());

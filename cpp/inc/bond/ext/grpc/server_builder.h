@@ -208,6 +208,6 @@ namespace bond { namespace ext { namespace gRPC {
         std::shared_ptr<TThreadPool> _threadPool;
     };
 
-    using server_builder = server_builder_core<bond::ext::thread_pool>;
+    using server_builder = server_builder_core<bond::ext::gRPC::thread_pool>;
 
 } } } // namespace bond::ext::gRPC

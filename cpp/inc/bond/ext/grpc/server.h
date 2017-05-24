@@ -126,6 +126,6 @@ private:
         io_manager _ioManager;
     };
 
-    using server = server_core<bond::ext::thread_pool>;
+    using server = server_core<bond::ext::gRPC::thread_pool>;
 
 } } } //namespace bond::ext::gRPC

@@ -23,7 +23,7 @@
 #include <thread>
 #include <vector>
 
-namespace bond { namespace ext
+namespace bond { namespace ext { namespace gRPC
 {
 
 #if 0
@@ -107,4 +107,4 @@ private:
     boost::asio::io_service::work _work;
 };
 
-} } // namespace bond.ext
+} } } // namespace bond::ext::gRPC
