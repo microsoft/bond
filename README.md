@@ -77,7 +77,7 @@ In the root `bond` directory run:
 ```bash
 mkdir build
 cd build
-cmake ..
+cmake .. -DBOND_ENABLE_COMM=FALSE -DBOND_ENABLE_GRPC=FALSE
 make
 sudo make install
 ```
@@ -86,7 +86,8 @@ The `build` directory is just an example. Any directory can be used as the build
 destination.
 
 In order to build all the C++ and Python tests and examples, as well as
-Bond-over-gRPC and Bond Comm, a few more packages are needed:
+Bond-over-gRPC and Bond Comm, a few more packages are needed, and CMake
+needs to be run with different options:
 
 ```bash
 sudo apt-get install \
@@ -99,6 +100,9 @@ sudo apt-get install \
     python2.7-dev
 
 cabal install happy
+
+cd build # or wherever you ran CMake before
+cmake .. -DBOND_ENABLE_COMM=TRUE -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package
 ```
 
 Running the following command in the build directory will build and execute all
