@@ -83,12 +83,18 @@
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
               BOND_CONFIG: Fields
-            - BOND_BUILD: "C# .NET Core"
-              BOND_CONFIG: Debug
-
     install:
         - ps: >-
-            git submodule update --init --recursive
+            if (($env:BOND_BUILD -eq 'C++') -or ($env:BOND_BUILD -eq 'Python')) {
+
+                git submodule update --init thirdparty\rapidjson
+
+                # If gRPC is not disabled, init gRPC and its dependencies
+                if (($env:BOND_BUILD -eq 'C++') -and (-not ($env:BOND_CMAKE_FLAGS -match '-DBOND_ENABLE_GRPC=FALSE'))) {
+                    git submodule update --init --recursive thirdparty\grpc
+                }
+
+            }
 
             if ($env:BOND_BOOST -eq 56) {
                 # Hard-coded Boost path per https://www.appveyor.com/docs/installed-software#languages-libraries-frameworks
