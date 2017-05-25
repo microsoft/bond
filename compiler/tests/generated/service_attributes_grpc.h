@@ -47,7 +47,7 @@ public:
             std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
             std::shared_ptr<TThreadPool> threadPool);
 
-        void Asyncfoo(::grpc::ClientContext* context, const ::bond::bonded< ::tests::Param>& request, std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)> cb);
+        void Asyncfoo(::grpc::ClientContext* context, const ::bond::bonded< ::tests::Param>& request, const std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)>& cb);
 
         ClientCore(const ClientCore&) = delete;
         ClientCore& operator=(const ClientCore&) = delete;
@@ -122,8 +122,9 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::Param>& request,
-    std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)>& cb)
 {
+    
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result>, TThreadPool >(
         _channel,
         _ioManager,

@@ -57,7 +57,7 @@ struct client_unary_call_data : io_manager_tag
         std::shared_ptr<grpc::ChannelInterface> channel,
         std::shared_ptr<io_manager> ioManager,
         std::shared_ptr<TThreadPool> threadPool,
-        CallbackType cb)
+        CallbackType cb = {})
         : _channel(channel),
           _ioManager(ioManager),
           _threadPool(threadPool),
@@ -69,7 +69,6 @@ struct client_unary_call_data : io_manager_tag
         BOOST_ASSERT(channel);
         BOOST_ASSERT(ioManager);
         BOOST_ASSERT(threadPool);
-        BOOST_ASSERT(cb);
     }
 
     void dispatch(
@@ -89,7 +88,7 @@ struct client_unary_call_data : io_manager_tag
 
     void invoke(bool ok) override
     {
-        if (ok)
+        if (ok && _cb)
         {
             _threadPool->schedule([this]()
             {

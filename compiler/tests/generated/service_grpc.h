@@ -48,45 +48,45 @@ public:
             std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
             std::shared_ptr<TThreadPool> threadPool);
 
-        /* TODO stub implementation (public) for event foo11 */
+        void Asyncfoo11(::grpc::ClientContext* context);
 
-        /* TODO stub implementation (public) for event foo12 */
+        void Asyncfoo12(::grpc::ClientContext* context);
 
-        /* TODO stub implementation (public) for event foo12_impl */
+        void Asyncfoo12_impl(::grpc::ClientContext* context);
 
-        /* TODO stub implementation (public) for event foo13 */
+        void Asyncfoo13(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request);
 
-        /* TODO stub implementation (public) for event foo14 */
+        void Asyncfoo14(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request);
 
-        /* TODO stub implementation (public) for event foo15 */
+        void Asyncfoo15(::grpc::ClientContext* context, const ::bond::bonded< ::tests2::OtherBasicTypes>& request);
 
-        void Asyncfoo21(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo21(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo22(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo22(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo23(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo23(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo24(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo24(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo31(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo31(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo32(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo32(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
-        void Async_rd_foo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Async_rd_foo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo34(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo34(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo41(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo41(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo42(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo42(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo43(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo43(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo44(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo44(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
 
-        void Asynccq(::grpc::ClientContext* context, const ::bond::bonded<void>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asynccq(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
         ClientCore(const ClientCore&) = delete;
         ClientCore& operator=(const ClientCore&) = delete;
@@ -99,17 +99,17 @@ public:
         std::shared_ptr< ::bond::ext::gRPC::io_manager> _ioManager;
         std::shared_ptr<TThreadPool> _threadPool;
 
-        /* TODO stub implementation (private) for event foo11 */
+        const ::grpc::RpcMethod rpcmethod_foo11_;
 
-        /* TODO stub implementation (private) for event foo12 */
+        const ::grpc::RpcMethod rpcmethod_foo12_;
 
-        /* TODO stub implementation (private) for event foo12_impl */
+        const ::grpc::RpcMethod rpcmethod_foo12_impl_;
 
-        /* TODO stub implementation (private) for event foo13 */
+        const ::grpc::RpcMethod rpcmethod_foo13_;
 
-        /* TODO stub implementation (private) for event foo14 */
+        const ::grpc::RpcMethod rpcmethod_foo14_;
 
-        /* TODO stub implementation (private) for event foo15 */
+        const ::grpc::RpcMethod rpcmethod_foo15_;
 
         const ::grpc::RpcMethod rpcmethod_foo21_;
 
@@ -178,12 +178,42 @@ public:
             BOOST_ASSERT(cq0);
             BOOST_ASSERT(tp);
 
-            /* TODO: init for event foo11 */
-            /* TODO: init for event foo12 */
-            /* TODO: init for event foo12_impl */
-            /* TODO: init for event foo13 */
-            /* TODO: init for event foo14 */
-            /* TODO: init for event foo15 */
+            _rd_foo11.emplace(
+                this,
+                0,
+                cq0,
+                tp,
+                std::bind(&ServiceCore::foo11, this, std::placeholders::_1));
+            _rd_foo12.emplace(
+                this,
+                1,
+                cq0,
+                tp,
+                std::bind(&ServiceCore::foo12, this, std::placeholders::_1));
+            _rd_foo12_impl.emplace(
+                this,
+                2,
+                cq0,
+                tp,
+                std::bind(&ServiceCore::foo12_impl, this, std::placeholders::_1));
+            _rd_foo13.emplace(
+                this,
+                3,
+                cq0,
+                tp,
+                std::bind(&ServiceCore::foo13, this, std::placeholders::_1));
+            _rd_foo14.emplace(
+                this,
+                4,
+                cq0,
+                tp,
+                std::bind(&ServiceCore::foo14, this, std::placeholders::_1));
+            _rd_foo15.emplace(
+                this,
+                5,
+                cq0,
+                tp,
+                std::bind(&ServiceCore::foo15, this, std::placeholders::_1));
             _rd_foo21.emplace(
                 this,
                 6,
@@ -269,12 +299,48 @@ public:
                 tp,
                 std::bind(&ServiceCore::cq, this, std::placeholders::_1));
 
-            /* TODO: queue event foo11 */
-            /* TODO: queue event foo12 */
-            /* TODO: queue event foo12_impl */
-            /* TODO: queue event foo13 */
-            /* TODO: queue event foo14 */
-            /* TODO: queue event foo15 */
+            this->queue_receive(
+                0,
+                &_rd_foo11->_receivedCall->_context,
+                &_rd_foo11->_receivedCall->_request,
+                &_rd_foo11->_receivedCall->_responder,
+                cq0,
+                &_rd_foo11.get());
+            this->queue_receive(
+                1,
+                &_rd_foo12->_receivedCall->_context,
+                &_rd_foo12->_receivedCall->_request,
+                &_rd_foo12->_receivedCall->_responder,
+                cq0,
+                &_rd_foo12.get());
+            this->queue_receive(
+                2,
+                &_rd_foo12_impl->_receivedCall->_context,
+                &_rd_foo12_impl->_receivedCall->_request,
+                &_rd_foo12_impl->_receivedCall->_responder,
+                cq0,
+                &_rd_foo12_impl.get());
+            this->queue_receive(
+                3,
+                &_rd_foo13->_receivedCall->_context,
+                &_rd_foo13->_receivedCall->_request,
+                &_rd_foo13->_receivedCall->_responder,
+                cq0,
+                &_rd_foo13.get());
+            this->queue_receive(
+                4,
+                &_rd_foo14->_receivedCall->_context,
+                &_rd_foo14->_receivedCall->_request,
+                &_rd_foo14->_receivedCall->_responder,
+                cq0,
+                &_rd_foo14.get());
+            this->queue_receive(
+                5,
+                &_rd_foo15->_receivedCall->_context,
+                &_rd_foo15->_receivedCall->_request,
+                &_rd_foo15->_receivedCall->_responder,
+                cq0,
+                &_rd_foo15.get());
             this->queue_receive(
                 6,
                 &_rd_foo21->_receivedCall->_context,
@@ -375,48 +441,48 @@ public:
                 &_rd_cq.get());
         }
 
-        /* TODO: abstract method for event foo11 */
-        /* TODO: abstract method for event foo12 */
-        /* TODO: abstract method for event foo12_impl */
-        /* TODO: abstract method for event foo13 */
-        /* TODO: abstract method for event foo14 */
-        /* TODO: abstract method for event foo15 */
-        virtual void foo21(::bond::ext::gRPC::unary_call< ::bond::bonded<void>, ::bond::bonded<void>>) = 0;
-        virtual void foo22(::bond::ext::gRPC::unary_call< ::bond::bonded<void>, ::bond::bonded<void>>) = 0;
-        virtual void foo23(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded<void>>) = 0;
-        virtual void foo24(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::dummy>, ::bond::bonded<void>>) = 0;
-        virtual void foo31(::bond::ext::gRPC::unary_call< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
-        virtual void foo32(::bond::ext::gRPC::unary_call< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
+        virtual void foo11(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>>) = 0;
+        virtual void foo12(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>>) = 0;
+        virtual void foo12_impl(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>>) = 0;
+        virtual void foo13(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::bond::Void>>) = 0;
+        virtual void foo14(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::bond::Void>>) = 0;
+        virtual void foo15(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests2::OtherBasicTypes>, ::bond::bonded< ::bond::Void>>) = 0;
+        virtual void foo21(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>>) = 0;
+        virtual void foo22(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>>) = 0;
+        virtual void foo23(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::bond::Void>>) = 0;
+        virtual void foo24(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::bond::Void>>) = 0;
+        virtual void foo31(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
+        virtual void foo32(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
         virtual void foo33(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
         virtual void _rd_foo33(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
         virtual void foo34(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
-        virtual void foo41(::bond::ext::gRPC::unary_call< ::bond::bonded<void>, ::bond::bonded< ::tests::dummy>>) = 0;
-        virtual void foo42(::bond::ext::gRPC::unary_call< ::bond::bonded<void>, ::bond::bonded< ::tests::dummy>>) = 0;
+        virtual void foo41(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::dummy>>) = 0;
+        virtual void foo42(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::dummy>>) = 0;
         virtual void foo43(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::dummy>>) = 0;
         virtual void foo44(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::dummy>>) = 0;
-        virtual void cq(::bond::ext::gRPC::unary_call< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
+        virtual void cq(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>>) = 0;
 
     private:
-        /* TODO: receive data for event foo11 */
-        /* TODO: receive data for event foo12 */
-        /* TODO: receive data for event foo12_impl */
-        /* TODO: receive data for event foo13 */
-        /* TODO: receive data for event foo14 */
-        /* TODO: receive data for event foo15 */
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<void>, ::bond::bonded<void>, TThreadPool>> _rd_foo21;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<void>, ::bond::bonded<void>, TThreadPool>> _rd_foo22;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded<void>, TThreadPool>> _rd_foo23;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded<void>, TThreadPool>> _rd_foo24;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_foo31;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_foo32;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool>> _rd_foo11;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool>> _rd_foo12;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool>> _rd_foo12_impl;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool>> _rd_foo13;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::bond::Void>, TThreadPool>> _rd_foo14;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests2::OtherBasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool>> _rd_foo15;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool>> _rd_foo21;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool>> _rd_foo22;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool>> _rd_foo23;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::bond::Void>, TThreadPool>> _rd_foo24;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_foo31;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_foo32;
         ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_foo330;
         ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd__rd_foo33;
         ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_foo34;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::dummy>, TThreadPool>> _rd_foo41;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::dummy>, TThreadPool>> _rd_foo42;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::dummy>, TThreadPool>> _rd_foo41;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::dummy>, TThreadPool>> _rd_foo42;
         ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::dummy>, TThreadPool>> _rd_foo43;
         ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::dummy>, TThreadPool>> _rd_foo44;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_cq;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>> _rd_cq;
     };
 
     using Service = ServiceCore< ::bond::ext::gRPC::thread_pool>;
@@ -430,12 +496,12 @@ inline Foo::ClientCore<TThreadPool>::ClientCore(
     : _channel(channel)
     , _ioManager(ioManager)
     , _threadPool(threadPool)
-    /* TODO stub ctor initialization for event foo11 */
-    /* TODO stub ctor initialization for event foo12 */
-    /* TODO stub ctor initialization for event foo12_impl */
-    /* TODO stub ctor initialization for event foo13 */
-    /* TODO stub ctor initialization for event foo14 */
-    /* TODO stub ctor initialization for event foo15 */
+    , rpcmethod_foo11_("/tests.Foo/foo11", ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo12_("/tests.Foo/foo12", ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo12_impl_("/tests.Foo/foo12_impl", ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo13_("/tests.Foo/foo13", ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo14_("/tests.Foo/foo14", ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo15_("/tests.Foo/foo15", ::grpc::RpcMethod::NORMAL_RPC, channel)
     , rpcmethod_foo21_("/tests.Foo/foo21", ::grpc::RpcMethod::NORMAL_RPC, channel)
     , rpcmethod_foo22_("/tests.Foo/foo22", ::grpc::RpcMethod::NORMAL_RPC, channel)
     , rpcmethod_foo23_("/tests.Foo/foo23", ::grpc::RpcMethod::NORMAL_RPC, channel)
@@ -452,25 +518,92 @@ inline Foo::ClientCore<TThreadPool>::ClientCore(
     , rpcmethod_cq_("/tests.Foo/cq", ::grpc::RpcMethod::NORMAL_RPC, channel)
     { }
 
-/* TODO: stub implementation for event foo11 */
+template <typename TThreadPool>
+inline void Foo::ClientCore<TThreadPool>::Asyncfoo11(
+    ::grpc::ClientContext* context
+    )
+{
+    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool >(
+        _channel,
+        _ioManager,
+        _threadPool);
+    calldata->dispatch(rpcmethod_foo11_, context, request);
+}
 
-/* TODO: stub implementation for event foo12 */
+template <typename TThreadPool>
+inline void Foo::ClientCore<TThreadPool>::Asyncfoo12(
+    ::grpc::ClientContext* context
+    )
+{
+    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool >(
+        _channel,
+        _ioManager,
+        _threadPool);
+    calldata->dispatch(rpcmethod_foo12_, context, request);
+}
 
-/* TODO: stub implementation for event foo12_impl */
+template <typename TThreadPool>
+inline void Foo::ClientCore<TThreadPool>::Asyncfoo12_impl(
+    ::grpc::ClientContext* context
+    )
+{
+    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool >(
+        _channel,
+        _ioManager,
+        _threadPool);
+    calldata->dispatch(rpcmethod_foo12_impl_, context, request);
+}
 
-/* TODO: stub implementation for event foo13 */
+template <typename TThreadPool>
+inline void Foo::ClientCore<TThreadPool>::Asyncfoo13(
+    ::grpc::ClientContext* context
+    , const ::bond::bonded< ::tests::BasicTypes>& request)
+{
+    
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool >(
+        _channel,
+        _ioManager,
+        _threadPool);
+    calldata->dispatch(rpcmethod_foo13_, context, request);
+}
 
-/* TODO: stub implementation for event foo14 */
+template <typename TThreadPool>
+inline void Foo::ClientCore<TThreadPool>::Asyncfoo14(
+    ::grpc::ClientContext* context
+    , const ::bond::bonded< ::tests::dummy>& request)
+{
+    
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::bond::Void>, TThreadPool >(
+        _channel,
+        _ioManager,
+        _threadPool);
+    calldata->dispatch(rpcmethod_foo14_, context, request);
+}
 
-/* TODO: stub implementation for event foo15 */
+template <typename TThreadPool>
+inline void Foo::ClientCore<TThreadPool>::Asyncfoo15(
+    ::grpc::ClientContext* context
+    , const ::bond::bonded< ::tests2::OtherBasicTypes>& request)
+{
+    
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests2::OtherBasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool >(
+        _channel,
+        _ioManager,
+        _threadPool);
+    calldata->dispatch(rpcmethod_foo15_, context, request);
+}
 
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo21(
     ::grpc::ClientContext* context,
-    const ::bond::bonded<void>& request,
-    std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb)
+    
+    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded<void>, TThreadPool >(
+    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool >(
         _channel,
         _ioManager,
         _threadPool,
@@ -481,10 +614,11 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo21(
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo22(
     ::grpc::ClientContext* context,
-    const ::bond::bonded<void>& request,
-    std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb)
+    
+    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded<void>, TThreadPool >(
+    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool >(
         _channel,
         _ioManager,
         _threadPool,
@@ -496,9 +630,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo23(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded<void>, TThreadPool >(
+    
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool >(
         _channel,
         _ioManager,
         _threadPool,
@@ -510,9 +645,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo24(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::dummy>& request,
-    std::function<void(const ::bond::bonded<void>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded<void>, TThreadPool >(
+    
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::bond::Void>, TThreadPool >(
         _channel,
         _ioManager,
         _threadPool,
@@ -523,10 +659,11 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo24(
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo31(
     ::grpc::ClientContext* context,
-    const ::bond::bonded<void>& request,
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
+    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
         _channel,
         _ioManager,
         _threadPool,
@@ -537,10 +674,11 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo31(
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo32(
     ::grpc::ClientContext* context,
-    const ::bond::bonded<void>& request,
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
+    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
         _channel,
         _ioManager,
         _threadPool,
@@ -552,8 +690,9 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo33(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
+    
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
         _channel,
         _ioManager,
@@ -566,8 +705,9 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Async_rd_foo33(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
+    
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
         _channel,
         _ioManager,
@@ -580,8 +720,9 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo34(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::dummy>& request,
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
+    
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
         _channel,
         _ioManager,
@@ -593,10 +734,11 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo34(
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo41(
     ::grpc::ClientContext* context,
-    const ::bond::bonded<void>& request,
-    std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
+    
+    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::dummy>, TThreadPool >(
+    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::dummy>, TThreadPool >(
         _channel,
         _ioManager,
         _threadPool,
@@ -607,10 +749,11 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo41(
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo42(
     ::grpc::ClientContext* context,
-    const ::bond::bonded<void>& request,
-    std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
+    
+    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::dummy>, TThreadPool >(
+    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::dummy>, TThreadPool >(
         _channel,
         _ioManager,
         _threadPool,
@@ -622,8 +765,9 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo43(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
 {
+    
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::dummy>, TThreadPool >(
         _channel,
         _ioManager,
@@ -636,8 +780,9 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo44(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::dummy>& request,
-    std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
 {
+    
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::dummy>, TThreadPool >(
         _channel,
         _ioManager,
@@ -649,10 +794,11 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo44(
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asynccq(
     ::grpc::ClientContext* context,
-    const ::bond::bonded<void>& request,
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
+    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
         _channel,
         _ioManager,
         _threadPool,
