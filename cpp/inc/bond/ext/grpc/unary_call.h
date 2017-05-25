@@ -8,7 +8,6 @@
     #pragma warning (disable: 4100 4702)
 #endif
 
-
 #include <grpc++/grpc++.h>
 #include <grpc++/impl/codegen/async_unary_call.h>
 #include <grpc++/impl/codegen/status.h>

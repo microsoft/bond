@@ -124,6 +124,7 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo(
     const ::bond::bonded< ::tests::Param>& request,
     std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)> cb)
 {
+    
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result>, TThreadPool >(
         _channel,
         _ioManager,
