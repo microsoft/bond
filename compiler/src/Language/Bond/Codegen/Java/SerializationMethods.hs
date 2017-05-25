@@ -221,7 +221,7 @@ readValue java fieldType varName depth = case fieldType of
     BT_Map k v               -> readMap java k v varName depth
     BT_Bonded t              -> readBonded java t varName
     BT_UserDefined Enum {} _ ->
-        [lt|#{varName} = new #{getTypeName java fieldType}(reader.readInt32());|]
+        [lt|#{varName} = #{getTypeName java fieldType}.get(reader.readInt32());|]
     -- FIXME: Recursive types will cause infinite recursion.
     BT_UserDefined _ _       ->
         [lt|#{varName} = new #{getTypeName java fieldType}(); #{varName}.deserialize(reader);|]
