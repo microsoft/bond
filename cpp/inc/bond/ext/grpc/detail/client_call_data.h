@@ -78,7 +78,7 @@ struct client_unary_call_data : io_manager_tag
         const TRequest& request)
     {
         _responseReader = std::unique_ptr<grpc::ClientAsyncResponseReader<TResponse>>(
-            new ::grpc::ClientAsyncResponseReader<TResponse>(
+            ::grpc::ClientAsyncResponseReader<TResponse>::Create(
                 _channel.get(),
                 _ioManager->cq(),
                 method,
