@@ -11,8 +11,8 @@
     <DocumentationFile>$(OutDir)\$(TargetName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <FileToCopy Include="$(TargetDir)\$(TargetName).pdb" Condition="'$(OS)' != 'Unix'" />
-    <FileToCopy Include="$(TargetPath).mdb" Condition="'$(OS)' == 'Unix'" />
+    <FileToCopy Include="$(TargetDir)\$(TargetName).pdb" Condition="'$(MSBuildRuntimeType)' != 'Mono' or '$(_DebugFileExt)' == '.pdb'" />
+    <FileToCopy Include="$(TargetPath).mdb" Condition="'$(MSBuildRuntimeType)' == 'Mono' and '$(_DebugFileExt)' == '.mdb'" />
     <FileToCopy Include="$(OutDir)\$(TargetName).xml" />
   </ItemGroup>
   <Target Name="AfterBuild">
