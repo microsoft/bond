@@ -51,7 +51,7 @@ public final class #{declName} {
     public int hashCode() { return this.value; }
 
     @Override
-    public String toString() { return String.valueOf(this.value); }
+    public String toString() { return "#{declName}(" + String.valueOf(this.value) + ")"; }
 
     public static #{declName} get(int value) {
         switch (value) {
@@ -73,7 +73,8 @@ public final class #{declName} {
         switchCaseConstantMapping Constant {..} =
             [lt|case Values.#{constantName}: return #{constantName};|]
 
-        -- Process constants to make sure every constant value is set (either explicit or auto-generated)
+        -- Process constants to make sure every constant value is set (either explicit or auto-generated).
+		-- TODO: auto-generation of constant values should be handled earlier, once for all languages.
         enumConstantsWithInt = fixEnumWithInt 0 enumConstants []
  
         fixEnumWithInt :: Int -> [Constant] -> [Constant] -> [Constant]
@@ -82,7 +83,8 @@ public final class #{declName} {
           Just n -> fixEnumWithInt (n + 1) r (h:result)
           _ -> fixEnumWithInt (nextInt + 1) r ((Constant (constantName h) (Just nextInt)):result)
 
-        -- Process constants to make sure every constant value is distinct
+        -- Filter a list of constants, leaving a list of constants with distinct values. 
+		-- If several constants in the input list share a value, the first one that appears will be the one that appears in the output list.
         enumConstantsWithIntDistinct = findEnumConstantsDistinct enumConstantsWithInt []
 
         findEnumConstantsDistinct :: [Constant] -> [Maybe Int] -> [Constant]
@@ -91,7 +93,8 @@ public final class #{declName} {
             then findEnumConstantsDistinct r keys
             else h : findEnumConstantsDistinct r ((constantValue h):keys)
 
-        -- The RHS value to assign to an enum object
+        -- The RHS value to assign to an enum object. If an enum element is the first instance with a particular value, 
+		-- this function will return an instantiation. If it isn't, this function will return a reference to the first enum object with the same value.
         enumObjectAssigmentValue :: Constant -> Text
         enumObjectAssigmentValue enumConstant =
             let firstDeclaredEnumConstant = head (filter (\c -> (constantValue c) == (constantValue enumConstant)) enumConstantsWithIntDistinct) in
