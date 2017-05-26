@@ -66,7 +66,11 @@ endfunction()
 find_haskell_program (pandoc)
 find_program (Doxygen_EXECUTABLE doxygen)
 
+message(STATUS "here1")
+
 if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
+message(STATUS "here2")
+  
     add_custom_command(
         OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
         COMMAND ${CMAKE_COMMAND} -E copy .pandoc/templates/cmdargs.html "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"

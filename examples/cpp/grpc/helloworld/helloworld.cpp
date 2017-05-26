@@ -1,14 +1,12 @@
 #include "helloworld_grpc.h"
 #include "helloworld_types.h"
 
-// event.h needed for test purposes
-#include <bond/ext/detail/event.h>
-
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
 #include <bond/ext/grpc/server_builder.h>
-#include <bond/ext/grpc/unary_call.h>
 #include <bond/ext/grpc/thread_pool.h>
+#include <bond/ext/grpc/unary_call.h>
+#include <bond/ext/grpc/wait_callback.h>
 
 #include <chrono>
 #include <functional>
@@ -21,9 +19,6 @@ using grpc::ClientContext;
 using grpc::ServerBuilder;
 using grpc::Status;
 
-using bond::ext::detail::event;
-using bond::ext::gRPC::io_manager;
-
 using namespace helloworld;
 
 // Logic and data behind the server's behavior.
@@ -31,8 +26,8 @@ class GreeterServiceImpl final : public Greeter::Service
 {
     void SayHello(
         bond::ext::gRPC::unary_call<
-        bond::bonded<HelloRequest>,
-        bond::bonded<HelloReply>> call) override
+            bond::bonded<HelloRequest>,
+            bond::bonded<HelloReply>> call) override
     {
         HelloRequest request = call.request().Deserialize();
 
@@ -43,37 +38,9 @@ class GreeterServiceImpl final : public Greeter::Service
     }
 };
 
-void printAndSet(
-    event* print_event,
-    bool* isCorrectResponse,
-    const bond::bonded<HelloReply>& response,
-    const Status& status)
-{
-
-    *isCorrectResponse = false;
-
-    if(status.ok())
-    {
-        const std::string& message = response.Deserialize().message;
-
-        if (message.compare("hello world") == 0)
-        {
-            std::cout << "Correct response: " << message;
-            *isCorrectResponse = true;
-        }
-        else
-        {
-            std::cout << "Wrong response";
-            *isCorrectResponse = false;
-        }
-    }
-
-    print_event->set();
-}
-
 int main()
 {
-    auto ioManager = std::make_shared<io_manager>();
+    auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
     auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
 
     GreeterServiceImpl service;
@@ -96,31 +63,32 @@ int main()
 
     HelloRequest request;
     request.name = user;
-    bond::bonded<HelloRequest> req(request);
-    event print_event;
-    bool isCorrectResponse;
 
-    std::function<void(const bond::bonded<HelloReply>&, const Status&)> f_print =
-        [&print_event, &isCorrectResponse](bond::bonded<HelloReply> response, Status status)
-        {
-            printAndSet(&print_event, &isCorrectResponse, response, status);
-        };
+    bond::ext::gRPC::wait_callback<HelloReply> cb;
+    greeter.AsyncSayHello(&context, bond::bonded<HelloRequest>{request}, cb);
 
-    greeter.AsyncSayHello(&context, req, f_print);
-
-    bool waitResult = print_event.wait(std::chrono::seconds(10));
+    bool waitResult = cb.wait(std::chrono::seconds(10));
 
     if (!waitResult)
     {
         std::cout << "timeout ocurred";
-    }
-
-    if (waitResult && isCorrectResponse)
-    {
-        return 0;
-    }
-    else
-    {
         return 1;
     }
+    else if (!cb.status().ok())
+    {
+        std::cout << "request failed";
+        return 1;
+    }
+
+    HelloReply reply;
+    cb.response().Deserialize(reply);
+
+    if (reply.message.compare("hello world") != 0)
+    {
+        std::cout << "Wrong response: " << reply.message;
+        return 1;
+    }
+
+    std::cout << "Correct response: " << reply.message;
+    return 0;
 }
