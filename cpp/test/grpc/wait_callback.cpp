@@ -142,6 +142,8 @@ class wait_callback_tests
 
         cb.callback()(anyBondedValue, anyStatus);
         t.join();
+
+        UT_AssertIsTrue(wasInvoked);
     }
 
 public:
