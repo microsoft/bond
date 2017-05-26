@@ -5,8 +5,7 @@
 #include "../core/unit_test_framework.h"
 
 #include <bond/core/bond.h>
-#include <bond/core/bond_apply.h>
-#include <bond/core/bond_types.h>
+#include <bond/core/bond_reflection.h>
 #include <bond/ext/grpc/wait_callback.h>
 #include <bond/stream/output_buffer.h>
 #include <bond/protocol/compact_binary.h>
@@ -94,6 +93,31 @@ class wait_callback_tests
         cb1(anyBondedValue, anyStatus);
     }
 
+    static void CopiesSeeSameValues()
+    {
+        wait_callbackBox cb;
+        wait_callbackBox otherCb(cb);
+
+        cb.callback()(anyBondedValue, anyStatus);
+
+        UT_AssertIsTrue(otherCb.response().Deserialize().value == ANY_INT_VALUE);
+        UT_AssertIsTrue(otherCb.status().ok());
+    }
+
+    static void AsignmentSeesSameValues()
+    {
+        wait_callbackBox cb;
+        cb.callback()(anyBondedValue, anyStatus);
+
+        wait_callbackBox otherCb;
+        otherCb.callback()(anyBondedValue, grpc::Status::CANCELLED);
+
+        UT_AssertIsTrue(!otherCb.status().ok());
+
+        otherCb = cb;
+        UT_AssertIsTrue(otherCb.status().ok());
+    }
+
     static void WaitReturnsTrueAfterCBInvoked()
     {
         wait_callbackBox cb;
@@ -132,6 +156,8 @@ public:
         suite.AddTestCase(&CallbackCreationOrderIrrelevant, "CallbackCreationOrderIrrelevant");
         suite.AddTestCase(&ImplicitConvertionCreatesCallback, "ImplicitConvertionCreatesCallback");
         suite.AddTestCase(&CallbacksDoNothingAfterWaitCallbackDestroyed, "CallbacksDoNothingAfterWaitCallbackDestroyed");
+        suite.AddTestCase(&CopiesSeeSameValues, "CopiesSeeSameValues");
+        suite.AddTestCase(&AsignmentSeesSameValues, "AsignmentSeesSameValues");
         suite.AddTestCase(&WaitReturnsTrueAfterCBInvoked, "WaitReturnsTrueAfterCBInvoked");
         suite.AddTestCase(&WaitingThreadGetsNotified, "WaitingThreadGetsNotified");
     }
