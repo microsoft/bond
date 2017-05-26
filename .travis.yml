@@ -11,6 +11,7 @@ cache:
         - /home/travis/.ccache
 env:
     - FLAVOR="cs"
+    - FLAVOR="cpp" BOOST="1.64.0"
     - FLAVOR="cpp" BOOST="1.63.0"
     - FLAVOR="cpp" BOOST="1.62.0"
     - FLAVOR="cpp" BOOST="1.61.0"
