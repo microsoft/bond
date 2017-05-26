@@ -2,7 +2,7 @@
 
 set -eux
 
-BOOST_VERSIONS=(1.58.0 1.59.0 1.60.0 1.61.0 1.62.0 1.63.0)
+BOOST_VERSIONS=(1.58.0 1.59.0 1.60.0 1.61.0 1.62.0 1.63.0 1.64.0)
 BOOST_LIBRARIES="chrono,date_time,python,system,test,thread"
 
 BUILD_ROOT=/root/boosts
