@@ -42,14 +42,14 @@ class PingPongServiceImpl final : public PingPong::Service
     void Ping(
         bond::ext::gRPC::unary_call<
         bond::bonded<::examples::grpc_static_library::PingRequest>,
-        bond::bonded<::examples::grpc_static_library::PingResponse>> call) override
+        ::examples::grpc_static_library::PingResponse> call) override
     {
         PingRequest request = call.request().Deserialize();
 
         PingResponse response;
         response.Payload = request.Payload;
 
-        call.Finish(bond::bonded<PingResponse> { response }, Status::OK);
+        call.Finish(response);
      }
 };
 

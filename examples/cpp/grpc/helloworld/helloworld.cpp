@@ -27,14 +27,14 @@ class GreeterServiceImpl final : public Greeter::Service
     void SayHello(
         bond::ext::gRPC::unary_call<
             bond::bonded<HelloRequest>,
-            bond::bonded<HelloReply>> call) override
+            HelloReply> call) override
     {
         HelloRequest request = call.request().Deserialize();
 
         HelloReply reply;
         reply.message = "hello " + request.name;
 
-        call.Finish(bond::bonded<HelloReply>{reply}, Status::OK);
+        call.Finish(reply);
     }
 };
 

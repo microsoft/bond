@@ -98,10 +98,10 @@ public:
                 &_rd_foo.get());
         }
 
-        virtual void foo(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result>>) = 0;
+        virtual void foo(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::Param>, ::tests::Result>) = 0;
 
     private:
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result>, TThreadPool>> _rd_foo;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::Param>, ::tests::Result, TThreadPool>> _rd_foo;
     };
 
     using Service = ServiceCore< ::bond::ext::gRPC::thread_pool>;

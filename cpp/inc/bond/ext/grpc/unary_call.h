@@ -37,7 +37,7 @@ namespace detail {
     {
         grpc::ServerContext _context;
         TRequest _request;
-        grpc::ServerAsyncResponseWriter<TResponse> _responder;
+        grpc::ServerAsyncResponseWriter<bond::bonded<TResponse>> _responder;
         std::atomic_flag _responseSentFlag;
 
         unary_call_impl()
@@ -50,7 +50,7 @@ namespace detail {
         unary_call_impl(const unary_call_impl&) = delete;
         unary_call_impl& operator=(const unary_call_impl&) = delete;
 
-        void Finish(const TResponse& msg, const grpc::Status& status)
+        void Finish(const bond::bonded<TResponse>& msg, const grpc::Status& status)
         {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
@@ -157,7 +157,16 @@ public:
     ///
     /// Only the first call to \p Finish or \p FinishWithError will be
     /// honored.
-    void Finish(const TResponse& msg, const grpc::Status& status)
+    void Finish(const TResponse& msg, const grpc::Status& status = grpc::Status::OK)
+    {
+        _impl->Finish(bond::bonded<TResponse>{msg}, status);
+    }
+
+    /// @brief Responds to the client with the given message and status.
+    ///
+    /// Only the first call to \p Finish or \p FinishWithError will be
+    /// honored.
+    void Finish(const bond::bonded<TResponse>& msg, const grpc::Status& status = grpc::Status::OK)
     {
         _impl->Finish(msg, status);
     }
