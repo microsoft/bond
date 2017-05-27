@@ -13,10 +13,10 @@
 #include <atomic>
 #include <thread>
 
-using wait_callbackBox = bond::ext::gRPC::wait_callback<bond::Box<int>>;
-
-class wait_callback_tests
+namespace wait_callback_tests
 {
+    using wait_callbackBox = bond::ext::gRPC::wait_callback<bond::Box<int>>;
+
     static const int ANY_INT_VALUE = 100;
     static bond::bonded<bond::Box<int>> anyBondedValue;
     static grpc::Status anyStatus;
@@ -41,7 +41,7 @@ class wait_callback_tests
     static void CallbackCapturesValues()
     {
         wait_callbackBox cb;
-        cb.callback()(anyBondedValue, anyStatus);
+        cb(anyBondedValue, anyStatus);
 
         UT_AssertIsTrue(cb.response().Deserialize().value == ANY_INT_VALUE);
         UT_AssertIsTrue(cb.status().ok());
@@ -50,47 +50,22 @@ class wait_callback_tests
     static void SubsequentCallbacksIgnored()
     {
         wait_callbackBox cb;
-        cb.callback()(anyBondedValue, anyStatus);
-        cb.callback()(anyBondedValue, grpc::Status::CANCELLED);
+        cb(anyBondedValue, anyStatus);
+        cb(anyBondedValue, grpc::Status::CANCELLED);
 
         UT_AssertIsTrue(cb.response().Deserialize().value == ANY_INT_VALUE);
         UT_AssertIsTrue(cb.status().ok());
     }
 
-    static void CallbackCreationOrderIrrelevant()
+    static void CanBeConvertedToStdFunction()
     {
         wait_callbackBox cb;
-        auto cb1 = cb.callback();
-        auto cb2 = cb.callback();
+        std::function<void(const bond::bonded<bond::Box<int>>&, const grpc::Status&)> f = cb;
 
-        cb2(anyBondedValue, anyStatus);
-        cb1(anyBondedValue, grpc::Status::CANCELLED);
+        f(anyBondedValue, anyStatus);
 
         UT_AssertIsTrue(cb.response().Deserialize().value == ANY_INT_VALUE);
         UT_AssertIsTrue(cb.status().ok());
-    }
-
-    static void ImplicitConvertionCreatesCallback()
-    {
-        wait_callbackBox cb;
-        wait_callbackBox::CallbackType cb1 = cb;
-
-        cb1(anyBondedValue, anyStatus);
-
-        UT_AssertIsTrue(cb.response().Deserialize().value == ANY_INT_VALUE);
-        UT_AssertIsTrue(cb.status().ok());
-    }
-
-    static void CallbacksDoNothingAfterWaitCallbackDestroyed()
-    {
-        wait_callbackBox::CallbackType cb1;
-
-        {
-            wait_callbackBox cb;
-            cb1 = cb.callback();
-        }
-
-        cb1(anyBondedValue, anyStatus);
     }
 
     static void CopiesSeeSameValues()
@@ -98,7 +73,7 @@ class wait_callback_tests
         wait_callbackBox cb;
         wait_callbackBox otherCb(cb);
 
-        cb.callback()(anyBondedValue, anyStatus);
+        cb(anyBondedValue, anyStatus);
 
         UT_AssertIsTrue(otherCb.response().Deserialize().value == ANY_INT_VALUE);
         UT_AssertIsTrue(otherCb.status().ok());
@@ -107,10 +82,10 @@ class wait_callback_tests
     static void AsignmentSeesSameValues()
     {
         wait_callbackBox cb;
-        cb.callback()(anyBondedValue, anyStatus);
+        cb(anyBondedValue, anyStatus);
 
         wait_callbackBox otherCb;
-        otherCb.callback()(anyBondedValue, grpc::Status::CANCELLED);
+        otherCb(anyBondedValue, grpc::Status::CANCELLED);
 
         UT_AssertIsTrue(!otherCb.status().ok());
 
@@ -125,7 +100,7 @@ class wait_callback_tests
         bool wasInvoked = cb.wait(std::chrono::milliseconds(0));
         UT_AssertIsFalse(wasInvoked);
 
-        cb.callback()(anyBondedValue, anyStatus);
+        cb(anyBondedValue, anyStatus);
         wasInvoked = cb.wait(std::chrono::milliseconds(0));
         UT_AssertIsTrue(wasInvoked);
     }
@@ -140,13 +115,12 @@ class wait_callback_tests
             wasInvoked = cb.wait(std::chrono::seconds(30));
         });
 
-        cb.callback()(anyBondedValue, anyStatus);
+        cb(anyBondedValue, anyStatus);
         t.join();
 
         UT_AssertIsTrue(wasInvoked);
     }
 
-public:
     static void Initialize()
     {
         anyBondedValue = MakeAnyBonded();
@@ -155,18 +129,13 @@ public:
         UnitTestSuite suite("wait_callback");
         suite.AddTestCase(&CallbackCapturesValues, "CallbackCapturesValues");
         suite.AddTestCase(&SubsequentCallbacksIgnored, "SubsequentCallbacksIgnored");
-        suite.AddTestCase(&CallbackCreationOrderIrrelevant, "CallbackCreationOrderIrrelevant");
-        suite.AddTestCase(&ImplicitConvertionCreatesCallback, "ImplicitConvertionCreatesCallback");
-        suite.AddTestCase(&CallbacksDoNothingAfterWaitCallbackDestroyed, "CallbacksDoNothingAfterWaitCallbackDestroyed");
+        suite.AddTestCase(&CanBeConvertedToStdFunction, "CanBeConvertedToStdFunction");
         suite.AddTestCase(&CopiesSeeSameValues, "CopiesSeeSameValues");
         suite.AddTestCase(&AsignmentSeesSameValues, "AsignmentSeesSameValues");
         suite.AddTestCase(&WaitReturnsTrueAfterCBInvoked, "WaitReturnsTrueAfterCBInvoked");
         suite.AddTestCase(&WaitingThreadGetsNotified, "WaitingThreadGetsNotified");
     }
-};
-
-bond::bonded<bond::Box<int>> wait_callback_tests::anyBondedValue;
-grpc::Status wait_callback_tests::anyStatus;
+}
 
 bool init_unit_test()
 {
