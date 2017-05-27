@@ -20,19 +20,29 @@
     environment:
         BOND_TOKEN:
             secure: MdnZ86SpR3+/fVz2u31blV83LH6juiobrvO/l1Ak4zG7ykxtvfUI/Vd4l7etYB4J
+        # The slowest configurations should come first to help reduce
+        # overall completion time since we run multiple configurations in
+        # parallel.
         matrix:
-            - BOND_BUILD: C#
-              BOND_OUTPUT: Properties
-              BOND_CONFIG: Debug
-            - BOND_BUILD: "C# .NET Core"
-              BOND_CONFIG: Debug
-              # C++ Core build and tests
+              # C++ Core build and tests (Visual C++ 2013)
+            - BOND_BUILD: C++
+              BOND_VS: "Visual Studio 12 2013"
+              BOND_VS_NUM: 12
+              BOND_ARCH: 32
+              BOND_BOOST: 58
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_GBC_TESTS=TRUE"
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
               BOND_BOOST: 60
               BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE"
+            - BOND_BUILD: C#
+              BOND_OUTPUT: Properties
+              BOND_CONFIG: Debug
+            - BOND_BUILD: "C# .NET Core"
+              BOND_CONFIG: Debug
+              # C++ Core build and tests
             - BOND_BUILD: Doc
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
@@ -66,13 +76,6 @@
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
-              # C++ Core build and tests (Visual C++ 2013)
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 12 2013"
-              BOND_VS_NUM: 12
-              BOND_ARCH: 32
-              BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_GBC_TESTS=TRUE"
               # C++ Comm build and tests (Visual C++ 2013)
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 12 2013"
@@ -83,15 +86,23 @@
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
               BOND_CONFIG: Fields
-            - BOND_BUILD: "C# .NET Core"
-              BOND_CONFIG: Debug
-
     install:
         - ps: >-
-            git submodule update --init --recursive
+            if (($env:BOND_BUILD -eq 'C++') -or ($env:BOND_BUILD -eq 'Python')) {
+
+                git submodule update --init thirdparty\rapidjson
+
+                # If gRPC is not disabled, init gRPC and its dependencies
+
+                if (($env:BOND_BUILD -eq 'C++') -and (-not ($env:BOND_CMAKE_FLAGS -match '-DBOND_ENABLE_GRPC=FALSE'))) {
+                    git submodule update --init --recursive thirdparty\grpc
+                }
+
+            }
 
             if ($env:BOND_BOOST -eq 56) {
                 # Hard-coded Boost path per https://www.appveyor.com/docs/installed-software#languages-libraries-frameworks
+
                 $env:BOOST_ROOT = "C:/Libraries/boost"
                 $env:BOOST_LIBRARYDIR = "C:/Libraries/boost/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
             }
@@ -168,6 +179,7 @@
             if ($env:BOND_BUILD -eq "Python" -Or $env:BOND_BUILD -eq "C++") {
 
                 # Make sure we have Python27-64 before any other version
+
                 if ($env:BOND_ARCH -eq 64) {
                     $env:Path = "C:\Python27-x64\scripts;C:\Python27-x64\;${env:Path}"
                 }
