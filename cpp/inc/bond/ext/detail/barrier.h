@@ -73,7 +73,7 @@ public:
     /// @return \p true if the event was signaled. \p false if the timeout
     /// occured.
     template <typename Rep, typename Period>
-    bool wait(std::chrono::duration<Rep, Period> timeout)
+    bool wait(const std::chrono::duration<Rep, Period>& timeout)
     {
         return _e.wait(timeout);
     }
