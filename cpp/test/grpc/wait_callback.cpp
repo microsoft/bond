@@ -133,7 +133,7 @@ class wait_callback_tests
     static void WaitingThreadGetsNotified()
     {
         wait_callbackBox cb;
-        std::atomic<bool> wasInvoked = false;
+        std::atomic<bool> wasInvoked(false);
 
         std::thread t([&cb, &wasInvoked]()
         {
