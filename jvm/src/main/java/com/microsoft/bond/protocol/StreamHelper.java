@@ -1,8 +1,6 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 package com.microsoft.bond.protocol;
 
+import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +11,8 @@ import java.io.InputStream;
 final class StreamHelper {
 
     // prevent instantiation
-    private StreamHelper() {}
+    private StreamHelper() {
+    }
 
     /**
      * Reads a single byte from the input, raising an EOFException if end of stream is reached.
@@ -26,7 +25,6 @@ final class StreamHelper {
     static byte readByte(InputStream inputStream) throws IOException {
         int b = inputStream.read();
         if (b < 0) {
-            // EOFException is self-explanatory and doesn't need a message
             throw new EOFException();
         }
 
@@ -45,7 +43,22 @@ final class StreamHelper {
      */
     static void readBytes(InputStream inputStream, byte[] buffer, int offset, int length) throws IOException {
         if (inputStream.read(buffer, offset, length) < length) {
-            // EOFException is self-explanatory and doesn't need a message
+            throw new EOFException();
+        }
+    }
+
+    /**
+     * Skips a sequence of bytes from the input, raising an EOFException if end of stream is reached.
+     *
+     * @param inputStream source input stream
+     * @param length      number of bytes to skip
+     * @throws EOFException if end of stream reached
+     * @throws IOException  if other I/O error occurred
+     */
+    static void skipBytes(InputStream inputStream, long length) throws IOException {
+        long actualSkippedLength = inputStream.skip(length);
+        if (actualSkippedLength < length) {
+            // assume reached the end of file (although the API mentions "other possibilities")
             throw new EOFException();
         }
     }

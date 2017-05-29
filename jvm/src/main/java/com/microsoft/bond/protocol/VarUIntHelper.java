@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 package com.microsoft.bond.protocol;
 
 import java.io.IOException;
@@ -18,7 +15,8 @@ import java.io.OutputStream;
 final class VarUIntHelper {
 
     // prevent instantiation
-    private VarUIntHelper() {}
+    private VarUIntHelper() {
+    }
 
     /**
      * Encodes an unsigned uint16 value (represented as a signed int16 value) into a stream.

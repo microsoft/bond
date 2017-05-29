@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 package com.microsoft.bond.protocol;
 
 import java.nio.charset.Charset;
@@ -11,7 +8,8 @@ import java.nio.charset.Charset;
 final class StringHelper {
 
     // prevent instantiation
-    private StringHelper() {}
+    private StringHelper() {
+    }
 
     private static final Charset UTF8 = Charset.forName("UTF-8");
     private static final Charset UTF16LE = Charset.forName("UTF-16LE");

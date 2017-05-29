@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 package com.microsoft.bond.protocol;
 
 /**
@@ -9,7 +6,8 @@ package com.microsoft.bond.protocol;
 final class ZigzagHelper {
 
     // prevent instantiation
-    private ZigzagHelper() {}
+    private ZigzagHelper() {
+    }
 
     static short encodeZigzag16(short signedValue) {
         return (short) ((signedValue << 1) ^ (signedValue >> 15));

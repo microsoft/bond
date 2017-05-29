@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 package com.microsoft.bond.protocol;
 
 import java.math.BigInteger;
@@ -16,7 +13,8 @@ import java.math.BigInteger;
 final class UnsignedHelper {
 
     // prevent instantiation
-    private UnsignedHelper() {}
+    private UnsignedHelper() {
+    }
 
     private final static BigInteger TWO_TO_POWER_8 = BigInteger.valueOf(2L).pow(8);
     private final static BigInteger TWO_TO_POWER_16 = BigInteger.valueOf(2L).pow(16);

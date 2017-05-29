@@ -1,13 +1,16 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 package com.microsoft.bond.protocol;
 
+import com.microsoft.bond.TestHelper;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class ZigzagHelperTest {
+
+    @Test
+    public void staticClass() {
+        TestHelper.verifyStaticClass(ZigzagHelper.class);
+    }
 
     @Test
     public void testZigzag16Encoding() {
