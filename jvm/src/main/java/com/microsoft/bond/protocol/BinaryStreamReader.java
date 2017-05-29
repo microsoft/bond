@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 package com.microsoft.bond.protocol;
 
 import java.io.IOException;
@@ -72,5 +69,9 @@ final class BinaryStreamReader {
 
     long readVarUInt64() throws IOException {
         return VarUIntHelper.decodeVarUInt64(this.inputStream);
+    }
+
+    void skipBytes(long byteCount) throws IOException {
+        StreamHelper.skipBytes(this.inputStream, byteCount);
     }
 }
