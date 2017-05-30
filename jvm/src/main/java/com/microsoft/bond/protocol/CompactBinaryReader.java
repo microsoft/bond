@@ -2,28 +2,31 @@ package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
 import com.microsoft.bond.InvalidBondDataException;
+import com.microsoft.bond.Metadata;
+import com.microsoft.bond.ProtocolType;
+import com.sun.deploy.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.LinkedList;
 
 /**
- * Implements Fast Binary deserialization.
- * Refer to {@link https://microsoft.github.io/bond/reference/cpp/fast__binary_8h_source.html} for details.
+ * Implements Compact Binary deserialization.
+ * Refer to {@link https://microsoft.github.io/bond/reference/cpp/compact__binary_8h_source.html} for details.
  */
-public final class FastBinaryReader implements TaggedProtocolReader {
+public final class CompactBinaryReader implements TaggedProtocolReader {
 
     private final BinaryStreamReader reader;
-    private final short protocolVersion;
+    private final short version;
 
-    public FastBinaryReader(final InputStream inputStream, final short protocolVersion) {
-        if (inputStream == null)
-            throw new IllegalArgumentException("Argument stream must not be null");
-
-        if (protocolVersion != 1)
-            throw new IllegalArgumentException("Invalid protocol version: " + protocolVersion);
+    public CompactBinaryReader(InputStream inputStream, short version) {
+        // check protocol version
+        if (version != 1 && version != 2)
+            throw new IllegalArgumentException("Invalid protocol version: " + version);
 
         this.reader = new BinaryStreamReader(inputStream);
-        this.protocolVersion = protocolVersion;
+        this.version = version;
     }
 
     private BondDataType readType() throws IOException {
@@ -32,6 +35,7 @@ public final class FastBinaryReader implements TaggedProtocolReader {
 
     @Override
     public void readStructBegin() throws IOException {
+        this.reader.readVarUInt32();
     }
 
     @Override
@@ -48,14 +52,19 @@ public final class FastBinaryReader implements TaggedProtocolReader {
 
     @Override
     public void readFieldBegin(final ReadFieldResult result) throws IOException {
-        final BondDataType type = this.readType();
-        if (!type.equals(BondDataType.BT_STOP) && !type.equals(BondDataType.BT_STOP_BASE)) {
-            result.id = UnsignedHelper.asUnsignedInt(reader.readInt16());
+        final int raw = UnsignedHelper.asUnsignedInt(this.reader.readInt8());
+
+        int id;
+        if (raw < 0xC0) {
+            id = raw >>> 5;
+        } else if (raw == 0xC0) {
+            id = UnsignedHelper.asUnsignedInt(this.reader.readInt8());
         } else {
-            result.id = 0;
+            id = UnsignedHelper.asUnsignedInt(this.reader.readInt16());
         }
 
-        result.type = type;
+        result.id = id;
+        result.type = BondDataType.get(raw & 0x1F);
     }
 
     @Override
@@ -63,14 +72,20 @@ public final class FastBinaryReader implements TaggedProtocolReader {
     }
 
     @Override
-    public void readListBegin(final ReadContainerResult result) throws IOException {
+    public void readListBegin(ReadContainerResult result) throws IOException {
+        final int raw = UnsignedHelper.asUnsignedInt(this.reader.readInt8());
+
         result.keyType = null;
-        result.elementType = this.readType();
-        result.count = this.reader.readVarUInt32();
+        result.elementType = BondDataType.get(raw & 0x1F);
+
+        if (this.version == 2 && (raw & 0xE0) != 0)
+            result.count = (raw >>> 5) - 1;
+        else
+            result.count = this.reader.readVarUInt32();
     }
 
     @Override
-    public void readMapBegin(final ReadContainerResult result) throws IOException {
+    public void readMapBegin(ReadContainerResult result) throws IOException {
         result.keyType = this.readType();
         result.elementType = this.readType();
         result.count = this.reader.readVarUInt32();
@@ -87,41 +102,37 @@ public final class FastBinaryReader implements TaggedProtocolReader {
 
     @Override
     public short readInt16() throws IOException {
-        return reader.readInt16();
+        return ZigzagHelper.decodeZigzag16(this.reader.readVarUInt16());
     }
 
     @Override
     public int readInt32() throws IOException {
-        return this.reader.readInt32();
+        return ZigzagHelper.decodeZigzag32(this.reader.readVarUInt32());
     }
 
     @Override
     public long readInt64() throws IOException {
-        return this.reader.readInt64();
+        return ZigzagHelper.decodeZigzag64(this.reader.readVarUInt64());
     }
 
     @Override
     public byte readUInt8() throws IOException {
-        // reinterpret the sign bit as the high-order bit
         return this.reader.readInt8();
     }
 
     @Override
     public short readUInt16() throws IOException {
-        // reinterpret the sign bit as the high-order bit
-        return this.reader.readInt16();
+        return this.reader.readVarUInt16();
     }
 
     @Override
     public int readUInt32() throws IOException {
-        // reinterpret the sign bit as the high-order bit
-        return this.reader.readInt32();
+        return this.reader.readVarUInt32();
     }
 
     @Override
     public long readUInt64() throws IOException {
-        // reinterpret the sign bit as the high-order bit
-        return this.reader.readInt64();
+        return this.reader.readVarUInt64();
     }
 
     @Override
@@ -135,7 +146,7 @@ public final class FastBinaryReader implements TaggedProtocolReader {
     }
 
     @Override
-    public byte[] readBytes(final int count) throws IOException {
+    public byte[] readBytes(int count) throws IOException {
         return this.reader.readBytes(count);
     }
 
@@ -231,8 +242,14 @@ public final class FastBinaryReader implements TaggedProtocolReader {
     }
 
     private void skipListContainer() throws IOException {
-        final BondDataType elementType = this.readType();
-        int count = this.reader.readVarUInt32();
+        final int raw = UnsignedHelper.asUnsignedInt(this.reader.readInt8());
+        final BondDataType elementType = BondDataType.get(this.readInt8() & 0x1F);
+
+        int count;
+        if (this.version == 2 && (raw & 0xE0) != 0)
+            count = (raw >>> 5) - 1;
+        else
+            count = this.reader.readVarUInt32();
 
         // Process fixed-width data types separately to avoid looping over all elements
         int elementTypeFixedWidth = getFixedTypeWidth(elementType);
@@ -264,16 +281,20 @@ public final class FastBinaryReader implements TaggedProtocolReader {
     }
 
     private void skipStruct() throws IOException {
-        while (true) {
-            BondDataType fieldType = this.readType();
+        if (this.version == 2) {
+            this.reader.skipBytes(this.reader.readVarUInt32());
+        } else {
+            while (true) {
+                BondDataType fieldType = BondDataType.get(this.reader.readInt8() & 0x1F);
 
-            if (fieldType.value == BondDataType.BT_STOP_BASE.value)
-                continue;
+                if (fieldType.value == BondDataType.BT_STOP_BASE.value)
+                    continue;
 
-            if (fieldType.value == BondDataType.BT_STOP.value)
-                break;
+                if (fieldType.value == BondDataType.BT_STOP.value)
+                    break;
 
-            this.skip(fieldType);
+                this.skip(fieldType);
+            }
         }
     }
 
