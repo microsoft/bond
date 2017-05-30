@@ -62,7 +62,7 @@ namespace PingPongServer
                 {
                     PingPong.BindService(new PingPongService()),
                 },
-                Ports = { new ServerPort("localhost", (int)PingConstants.Port, ServerCredentials.Insecure) }
+                Ports = { new ServerPort("127.0.0.1", (int)PingConstants.Port, ServerCredentials.Insecure) }
             };
             pingServer.Start();
         }

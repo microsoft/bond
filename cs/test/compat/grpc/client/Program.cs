@@ -34,7 +34,7 @@ namespace PingPongClient
 
             try
             {
-                Channel pingChannel = new Channel("localhost", (int)PingConstants.Port, ChannelCredentials.Insecure);
+                Channel pingChannel = new Channel("127.0.0.1", (int)PingConstants.Port, ChannelCredentials.Insecure);
                 var pingClient = new PingPong.PingPongClient(pingChannel);
 
                 for (int i = 0; i < (int)PingConstants.NumRequests; i++)
