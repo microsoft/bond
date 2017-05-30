@@ -48,11 +48,11 @@ public:
             std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
             std::shared_ptr<TThreadPool> threadPool);
 
-        void Asyncfoo31(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo31(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo32(::grpc::ClientContext* context, std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)> cb);
+        void Asyncfoo32(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)> cb);
+        void Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, const std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)>& cb);
 
         ClientCore(const ClientCore&) = delete;
         ClientCore& operator=(const ClientCore&) = delete;
@@ -167,7 +167,7 @@ template <typename Payload>
 inline void Foo<Payload>::ClientCore<TThreadPool>::Asyncfoo31(
     ::grpc::ClientContext* context,
     const ::bond::bonded<Payload>& request,
-    std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<Payload>, ::bond::bonded< ::bond::Void>, TThreadPool >(
@@ -183,7 +183,7 @@ template <typename Payload>
 inline void Foo<Payload>::ClientCore<TThreadPool>::Asyncfoo32(
     ::grpc::ClientContext* context,
     
-    std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded<Payload>, TThreadPool >(
@@ -199,7 +199,7 @@ template <typename Payload>
 inline void Foo<Payload>::ClientCore<TThreadPool>::Asyncfoo33(
     ::grpc::ClientContext* context,
     const ::bond::bonded<Payload>& request,
-    std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)>& cb)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded<Payload>, ::bond::bonded<Payload>, TThreadPool >(

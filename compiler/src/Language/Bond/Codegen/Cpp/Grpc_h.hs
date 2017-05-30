@@ -160,8 +160,8 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
         serviceMethodsWithIndex :: [(Integer,Method)]
         serviceMethodsWithIndex = zip [0..] serviceMethods
 
-        publicProxyMethodDecl Function{methodInput = Nothing, ..} = [lt|void Async#{methodName}(::grpc::ClientContext* context, std::function<void(const #{response methodResult}&, const ::grpc::Status&)> cb);|]
-        publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, std::function<void(const #{response methodResult}&, const ::grpc::Status&)> cb);|]
+        publicProxyMethodDecl Function{methodInput = Nothing, ..} = [lt|void Async#{methodName}(::grpc::ClientContext* context, const std::function<void(const #{response methodResult}&, const ::grpc::Status&)>& cb);|]
+        publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request, const std::function<void(const #{response methodResult}&, const ::grpc::Status&)>& cb);|]
         publicProxyMethodDecl Event{methodInput = Nothing, ..} = [lt|void Async#{methodName}(::grpc::ClientContext* context);|]
         publicProxyMethodDecl Event{..} = [lt|void Async#{methodName}(::grpc::ClientContext* context, const #{request methodInput}& request);|]
 
@@ -175,7 +175,7 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
 inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
     ::grpc::ClientContext* context,
     #{voidParam methodInput}
-    std::function<void(const #{response methodResult}&, const ::grpc::Status&)> cb)
+    const std::function<void(const #{response methodResult}&, const ::grpc::Status&)>& cb)
 {
     #{voidRequest methodInput}
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< #{request methodInput}, #{response methodResult}, TThreadPool >(
@@ -193,7 +193,7 @@ inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
 
         methodDecl Event{..} = [lt|#{template}template <typename TThreadPool>
 inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
-    ::grpc::ClientContext* context,
+    ::grpc::ClientContext* context
     #{voidParam methodInput})
 {
     #{voidRequest methodInput}
@@ -207,7 +207,7 @@ inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
             voidRequest Nothing = [lt|auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};|]
             voidRequest _ = mempty
             voidParam Nothing = mempty
-            voidParam _ = [lt|const #{request methodInput}& request|]
+            voidParam _ = [lt|, const #{request methodInput}& request|]
 
         serviceAddMethod Function{..} = [lt|this->AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
         serviceAddMethod Event{..} = [lt|this->AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]

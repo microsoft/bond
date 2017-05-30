@@ -60,33 +60,33 @@ public:
 
         void Asyncfoo15(::grpc::ClientContext* context, const ::bond::bonded< ::tests2::OtherBasicTypes>& request);
 
-        void Asyncfoo21(::grpc::ClientContext* context, std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo21(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo22(::grpc::ClientContext* context, std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo22(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo23(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo23(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo24(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)> cb);
+        void Asyncfoo24(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo31(::grpc::ClientContext* context, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo31(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo32(::grpc::ClientContext* context, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo32(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
-        void Async_rd_foo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Async_rd_foo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo34(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asyncfoo34(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo41(::grpc::ClientContext* context, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo41(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo42(::grpc::ClientContext* context, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo42(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo43(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo43(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
 
-        void Asyncfoo44(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb);
+        void Asyncfoo44(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
 
-        void Asynccq(::grpc::ClientContext* context, std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb);
+        void Asynccq(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
         ClientCore(const ClientCore&) = delete;
         ClientCore& operator=(const ClientCore&) = delete;
@@ -520,7 +520,7 @@ inline Foo::ClientCore<TThreadPool>::ClientCore(
 
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo11(
-    ::grpc::ClientContext* context,
+    ::grpc::ClientContext* context
     )
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
@@ -533,7 +533,7 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo11(
 
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo12(
-    ::grpc::ClientContext* context,
+    ::grpc::ClientContext* context
     )
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
@@ -546,7 +546,7 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo12(
 
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo12_impl(
-    ::grpc::ClientContext* context,
+    ::grpc::ClientContext* context
     )
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
@@ -559,8 +559,8 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo12_impl(
 
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo13(
-    ::grpc::ClientContext* context,
-    const ::bond::bonded< ::tests::BasicTypes>& request)
+    ::grpc::ClientContext* context
+    , const ::bond::bonded< ::tests::BasicTypes>& request)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool >(
@@ -572,8 +572,8 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo13(
 
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo14(
-    ::grpc::ClientContext* context,
-    const ::bond::bonded< ::tests::dummy>& request)
+    ::grpc::ClientContext* context
+    , const ::bond::bonded< ::tests::dummy>& request)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::bond::Void>, TThreadPool >(
@@ -585,8 +585,8 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo14(
 
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo15(
-    ::grpc::ClientContext* context,
-    const ::bond::bonded< ::tests2::OtherBasicTypes>& request)
+    ::grpc::ClientContext* context
+    , const ::bond::bonded< ::tests2::OtherBasicTypes>& request)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests2::OtherBasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool >(
@@ -600,7 +600,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo21(
     ::grpc::ClientContext* context,
     
-    std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool >(
@@ -615,7 +615,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo22(
     ::grpc::ClientContext* context,
     
-    std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool >(
@@ -630,7 +630,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo23(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool >(
@@ -645,7 +645,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo24(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::dummy>& request,
-    std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::bond::Void>, TThreadPool >(
@@ -660,7 +660,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo31(
     ::grpc::ClientContext* context,
     
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
@@ -675,7 +675,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo32(
     ::grpc::ClientContext* context,
     
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
@@ -690,7 +690,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo33(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
@@ -705,7 +705,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Async_rd_foo33(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
@@ -720,7 +720,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo34(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::dummy>& request,
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(
@@ -735,7 +735,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo41(
     ::grpc::ClientContext* context,
     
-    std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::dummy>, TThreadPool >(
@@ -750,7 +750,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo42(
     ::grpc::ClientContext* context,
     
-    std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::dummy>, TThreadPool >(
@@ -765,7 +765,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo43(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::dummy>, TThreadPool >(
@@ -780,7 +780,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo44(
     ::grpc::ClientContext* context,
     const ::bond::bonded< ::tests::dummy>& request,
-    std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
 {
     
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::dummy>, TThreadPool >(
@@ -795,7 +795,7 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asynccq(
     ::grpc::ClientContext* context,
     
-    std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)> cb)
+    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
     auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool >(

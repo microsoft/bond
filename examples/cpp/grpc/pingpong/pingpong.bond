@@ -20,6 +20,8 @@ service DoublePing
 
     void PingVoid();
 
+    nothing PingEventVoid();
+
     PingReply PingShouldThrow(PingRequest);
 }
 

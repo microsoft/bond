@@ -57,7 +57,7 @@ struct client_unary_call_data : io_manager_tag
         std::shared_ptr<grpc::ChannelInterface> channel,
         std::shared_ptr<io_manager> ioManager,
         std::shared_ptr<TThreadPool> threadPool,
-        CallbackType cb = CallbackType())
+        CallbackType cb = {})
         : _channel(channel),
           _ioManager(ioManager),
           _threadPool(threadPool),

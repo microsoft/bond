@@ -77,6 +77,14 @@ class DoublePingServiceImpl final : public DoublePing::Service
         call.Finish(bond::bonded<bond::Void>{bond::Void()}, Status::OK);
     }
 
+    void PingEventVoid(
+        bond::ext::gRPC::unary_call<
+        bond::bonded<bond::Void>,
+        bond::bonded<bond::Void>> call) override
+    {
+        call.Finish(bond::bonded<bond::Void>{bond::Void()}, Status::OK);
+    }
+
     void PingShouldThrow(
         bond::ext::gRPC::unary_call<
         bond::bonded<PingRequest>,
@@ -142,8 +150,8 @@ int main()
     builder.SetThreadPool(threadPool);
     const std::string server_address("127.0.0.1:50051");
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    builder.RegisterService(&double_ping_service);
-    builder.RegisterService(&ping_pong_service);
+    builder.RegisterService(&double_ping_service)
+        .RegisterService(&ping_pong_service);
     std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
 
     DoublePing::Client doublePing(
@@ -179,8 +187,7 @@ int main()
     bond::bonded<PingRequest> req(request);
 
     {
-        std::function<void(const bond::bonded<PingReply>&, const Status&)> f_print =
-            [&ping_event, &isCorrectResponse](bond::bonded<PingReply> response, Status status)
+        auto f_print = [&ping_event, &isCorrectResponse](bond::bonded<PingReply> response, Status status)
             {
                 printAndSet(&ping_event, &isCorrectResponse, response, status);
             };
@@ -189,8 +196,7 @@ int main()
     }
 
     {
-        std::function<void(const bond::bonded<PingReply>&, const Status&)> f_print =
-            [&ping_event, &pingNoPayloadIsCorrectResponse](bond::bonded<PingReply> response, Status status)
+        auto f_print = [&ping_event, &pingNoPayloadIsCorrectResponse](bond::bonded<PingReply> response, Status status)
             {
                 printAndSet(&ping_event, &pingNoPayloadIsCorrectResponse, response, status);
             };
@@ -203,8 +209,7 @@ int main()
     }
 
     {
-        std::function<void(const bond::bonded<bond::Void>&, const Status&)> f_print =
-            [&ping_event, &pingVoidIsCorrectResponse](bond::bonded<bond::Void> response, Status status)
+        auto f_print = [&ping_event, &pingVoidIsCorrectResponse](bond::bonded<bond::Void> response, Status status)
             {
                 if(status.ok())
                 {
@@ -221,8 +226,7 @@ int main()
     }
 
     {
-        std::function<void(const bond::bonded<PingReply>&, const Status&)> f_print =
-            [&ping_event, &pingShouldThrowIsCorrectResponse](bond::bonded<PingReply> response, Status status)
+        auto f_print = [&ping_event, &pingShouldThrowIsCorrectResponse](bond::bonded<PingReply> response, Status status)
             {
                 pingShouldThrowIsCorrectResponse = false;
 
@@ -240,8 +244,7 @@ int main()
     }
 
     {
-        std::function<void(const bond::bonded<PingReply>&, const Status&)> f_print =
-            [&ping_event, &pingGenericIsCorrectResponse](bond::bonded<PingReply> response, Status status)
+        auto f_print = [&ping_event, &pingGenericIsCorrectResponse](bond::bonded<PingReply> response, Status status)
             {
                 printAndSet(&ping_event, &pingGenericIsCorrectResponse, response, status);
             };
