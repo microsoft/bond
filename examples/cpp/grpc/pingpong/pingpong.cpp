@@ -193,7 +193,6 @@ int main()
 
     PingRequest request;
     request.name = user;
-    bond::bonded<PingRequest> req(request);
 
     {
         auto f_print = [&ping_event, &isCorrectResponse](bond::bonded<PingReply> response, Status status)
@@ -201,7 +200,7 @@ int main()
                 printAndSet(&ping_event, &isCorrectResponse, response, status);
             };
 
-        doublePing.AsyncPing(&context, req, f_print);
+        doublePing.AsyncPing(&context, request, f_print);
     }
 
     {
@@ -214,7 +213,7 @@ int main()
     }
 
     {
-        doublePing.AsyncPingNoResponse(&pingNoResponseContext, req);
+        doublePing.AsyncPingNoResponse(&pingNoResponseContext, request);
     }
 
     {
@@ -247,7 +246,7 @@ int main()
                 ping_event.set();
             };
 
-        doublePing.AsyncPingShouldThrow(&pingShouldThrowContext, req, f_print);
+        doublePing.AsyncPingShouldThrow(&pingShouldThrowContext, request, f_print);
     }
 
     {
@@ -256,7 +255,7 @@ int main()
                 printAndSet(&ping_event, &pingGenericIsCorrectResponse, response, status);
             };
 
-        pingPong.AsyncPing(&pingGenericContext, req, f_print);
+        pingPong.AsyncPing(&pingGenericContext, request, f_print);
     }
 
     bool waitResult = ping_event.wait(std::chrono::seconds(10));

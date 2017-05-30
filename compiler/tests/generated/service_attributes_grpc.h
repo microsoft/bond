@@ -48,6 +48,10 @@ public:
             std::shared_ptr<TThreadPool> threadPool);
 
         void Asyncfoo(::grpc::ClientContext* context, const ::bond::bonded< ::tests::Param>& request, const std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)>& cb);
+        void Asyncfoo(::grpc::ClientContext* context, const ::tests::Param& request, const std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)>& cb)
+        {
+            Asyncfoo(context, ::bond::bonded< ::tests::Param>{request}, cb);
+        }
 
         ClientCore(const ClientCore&) = delete;
         ClientCore& operator=(const ClientCore&) = delete;

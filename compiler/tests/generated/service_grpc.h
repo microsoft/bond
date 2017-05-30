@@ -55,36 +55,76 @@ public:
         void Asyncfoo12_impl(::grpc::ClientContext* context);
 
         void Asyncfoo13(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request);
+        void Asyncfoo13(::grpc::ClientContext* context, const ::tests::BasicTypes& request)
+        {
+            Asyncfoo13(context, ::bond::bonded< ::tests::BasicTypes>{request});
+        }
 
         void Asyncfoo14(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request);
+        void Asyncfoo14(::grpc::ClientContext* context, const ::tests::dummy& request)
+        {
+            Asyncfoo14(context, ::bond::bonded< ::tests::dummy>{request});
+        }
 
         void Asyncfoo15(::grpc::ClientContext* context, const ::bond::bonded< ::tests2::OtherBasicTypes>& request);
+        void Asyncfoo15(::grpc::ClientContext* context, const ::tests2::OtherBasicTypes& request)
+        {
+            Asyncfoo15(context, ::bond::bonded< ::tests2::OtherBasicTypes>{request});
+        }
 
         void Asyncfoo21(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
 
         void Asyncfoo22(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
 
         void Asyncfoo23(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
+        void Asyncfoo23(::grpc::ClientContext* context, const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+        {
+            Asyncfoo23(context, ::bond::bonded< ::tests::BasicTypes>{request}, cb);
+        }
 
         void Asyncfoo24(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
+        void Asyncfoo24(::grpc::ClientContext* context, const ::tests::dummy& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+        {
+            Asyncfoo24(context, ::bond::bonded< ::tests::dummy>{request}, cb);
+        }
 
         void Asyncfoo31(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
         void Asyncfoo32(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 
         void Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
+        void Asyncfoo33(::grpc::ClientContext* context, const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        {
+            Asyncfoo33(context, ::bond::bonded< ::tests::BasicTypes>{request}, cb);
+        }
 
         void Async_rd_foo33(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
+        void Async_rd_foo33(::grpc::ClientContext* context, const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        {
+            Async_rd_foo33(context, ::bond::bonded< ::tests::BasicTypes>{request}, cb);
+        }
 
         void Asyncfoo34(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
+        void Asyncfoo34(::grpc::ClientContext* context, const ::tests::dummy& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        {
+            Asyncfoo34(context, ::bond::bonded< ::tests::dummy>{request}, cb);
+        }
 
         void Asyncfoo41(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
 
         void Asyncfoo42(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
 
         void Asyncfoo43(::grpc::ClientContext* context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
+        void Asyncfoo43(::grpc::ClientContext* context, const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+        {
+            Asyncfoo43(context, ::bond::bonded< ::tests::BasicTypes>{request}, cb);
+        }
 
         void Asyncfoo44(::grpc::ClientContext* context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
+        void Asyncfoo44(::grpc::ClientContext* context, const ::tests::dummy& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+        {
+            Asyncfoo44(context, ::bond::bonded< ::tests::dummy>{request}, cb);
+        }
 
         void Asynccq(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
 

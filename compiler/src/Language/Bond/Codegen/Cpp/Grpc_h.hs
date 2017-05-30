@@ -154,9 +154,17 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
         serviceMethodsWithIndex = zip [0..] serviceMethods
 
         publicProxyMethodDecl Function{methodInput = Nothing, ..} = [lt|void Async#{methodName}(::grpc::ClientContext* context, const std::function<void(const #{bonded methodResult}&, const ::grpc::Status&)>& cb);|]
-        publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(::grpc::ClientContext* context, const #{bonded methodInput}& request, const std::function<void(const #{bonded methodResult}&, const ::grpc::Status&)>& cb);|]
+        publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(::grpc::ClientContext* context, const #{bonded methodInput}& request, const std::function<void(const #{bonded methodResult}&, const ::grpc::Status&)>& cb);
+        void Async#{methodName}(::grpc::ClientContext* context, const #{payload methodInput}& request, const std::function<void(const #{bonded methodResult}&, const ::grpc::Status&)>& cb)
+        {
+            Async#{methodName}(context, #{bonded methodInput}{request}, cb);
+        }|]
         publicProxyMethodDecl Event{methodInput = Nothing, ..} = [lt|void Async#{methodName}(::grpc::ClientContext* context);|]
-        publicProxyMethodDecl Event{..} = [lt|void Async#{methodName}(::grpc::ClientContext* context, const #{bonded methodInput}& request);|]
+        publicProxyMethodDecl Event{..} = [lt|void Async#{methodName}(::grpc::ClientContext* context, const #{bonded methodInput}& request);
+        void Async#{methodName}(::grpc::ClientContext* context, const #{payload methodInput}& request)
+        {
+            Async#{methodName}(context, #{bonded methodInput}{request});
+        }|]
 
         privateProxyMethodDecl Function{..} = [lt|const ::grpc::RpcMethod rpcmethod_#{methodName}_;|]
         privateProxyMethodDecl Event{..} = [lt|const ::grpc::RpcMethod rpcmethod_#{methodName}_;|]

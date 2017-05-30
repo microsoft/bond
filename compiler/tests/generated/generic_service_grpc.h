@@ -49,10 +49,18 @@ public:
             std::shared_ptr<TThreadPool> threadPool);
 
         void Asyncfoo31(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
+        void Asyncfoo31(::grpc::ClientContext* context, const Payload& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+        {
+            Asyncfoo31(context, ::bond::bonded<Payload>{request}, cb);
+        }
 
         void Asyncfoo32(::grpc::ClientContext* context, const std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)>& cb);
 
         void Asyncfoo33(::grpc::ClientContext* context, const ::bond::bonded<Payload>& request, const std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)>& cb);
+        void Asyncfoo33(::grpc::ClientContext* context, const Payload& request, const std::function<void(const ::bond::bonded<Payload>&, const ::grpc::Status&)>& cb)
+        {
+            Asyncfoo33(context, ::bond::bonded<Payload>{request}, cb);
+        }
 
         ClientCore(const ClientCore&) = delete;
         ClientCore& operator=(const ClientCore&) = delete;

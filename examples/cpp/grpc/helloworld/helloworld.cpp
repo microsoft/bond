@@ -65,7 +65,7 @@ int main()
     request.name = user;
 
     bond::ext::gRPC::wait_callback<HelloReply> cb;
-    greeter.AsyncSayHello(&context, bond::bonded<HelloRequest>{request}, cb);
+    greeter.AsyncSayHello(&context, request, cb);
 
     bool waitResult = cb.wait_for(std::chrono::seconds(10));
 
