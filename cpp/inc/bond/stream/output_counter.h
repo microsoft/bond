@@ -108,6 +108,10 @@ private:
     uint32_t _count;
 };
 
+inline OutputCounter CreateOutputBuffer(const OutputCounter& /*other*/)
+{
+    return {};
+}
 
 inline OutputCounter CreateOutputBuffer(const OutputCounter& /*other*/)
 {
