@@ -6,9 +6,10 @@
 
 #include <bond/core/bond.h>
 #include <bond/core/bond_reflection.h>
+#include <bond/ext/detail/event.h>
 #include <bond/ext/grpc/wait_callback.h>
-#include <bond/stream/output_buffer.h>
 #include <bond/protocol/compact_binary.h>
+#include <bond/stream/output_buffer.h>
 
 #include <atomic>
 #include <thread>
@@ -47,14 +48,27 @@ namespace wait_callback_tests
         UT_AssertIsTrue(cb.status().ok());
     }
 
-    static void SubsequentCallbacksIgnored()
+    static void SubsequentInvocationThrow()
     {
         wait_callbackBox cb;
         cb(anyBondedValue, anyStatus);
-        cb(anyBondedValue, grpc::Status::CANCELLED);
+
+        UT_AssertThrows(cb(anyBondedValue, grpc::Status::CANCELLED), bond::ext::gRPC::MultipleInvocationException);
 
         UT_AssertIsTrue(cb.response().Deserialize().value == ANY_INT_VALUE);
         UT_AssertIsTrue(cb.status().ok());
+    }
+
+    static void SubsequentInvocationOnCopyThrow()
+    {
+        wait_callbackBox cb;
+        wait_callbackBox otherCb(cb);
+        cb(anyBondedValue, anyStatus);
+
+        UT_AssertThrows(otherCb(anyBondedValue, grpc::Status::CANCELLED), bond::ext::gRPC::MultipleInvocationException);
+
+        UT_AssertIsTrue(otherCb.response().Deserialize().value == ANY_INT_VALUE);
+        UT_AssertIsTrue(otherCb.status().ok());
     }
 
     static void CanBeConvertedToStdFunction()
@@ -97,23 +111,31 @@ namespace wait_callback_tests
     {
         wait_callbackBox cb;
 
-        bool wasInvoked = cb.wait(std::chrono::milliseconds(0));
+        bool wasInvoked = cb.wait_for(std::chrono::milliseconds(0));
         UT_AssertIsFalse(wasInvoked);
 
         cb(anyBondedValue, anyStatus);
-        wasInvoked = cb.wait(std::chrono::milliseconds(0));
+        wasInvoked = cb.wait_for(std::chrono::milliseconds(0));
         UT_AssertIsTrue(wasInvoked);
     }
 
     static void WaitingThreadGetsNotified()
     {
         wait_callbackBox cb;
+        bond::ext::detail::event threadStarted;
         std::atomic<bool> wasInvoked(false);
 
-        std::thread t([&cb, &wasInvoked]()
+
+        std::thread t([&cb, &threadStarted, &wasInvoked]()
         {
-            wasInvoked = cb.wait(std::chrono::seconds(30));
+            threadStarted.set();
+            wasInvoked = cb.wait_for(std::chrono::seconds(30));
         });
+
+        // This is a clumsy attempt to get the thread into the wait_for method
+        // before invoking the callback.
+        bool wasStarted = threadStarted.wait(std::chrono::seconds(30));
+        UT_AssertIsTrue(wasStarted);
 
         cb(anyBondedValue, anyStatus);
         t.join();
@@ -128,7 +150,8 @@ namespace wait_callback_tests
 
         UnitTestSuite suite("wait_callback");
         suite.AddTestCase(&CallbackCapturesValues, "CallbackCapturesValues");
-        suite.AddTestCase(&SubsequentCallbacksIgnored, "SubsequentCallbacksIgnored");
+        suite.AddTestCase(&SubsequentInvocationThrow, "SubsequentInvocationThrow");
+        suite.AddTestCase(&SubsequentInvocationOnCopyThrow, "SubsequentInvocationOnCopyThrow");
         suite.AddTestCase(&CanBeConvertedToStdFunction, "CanBeConvertedToStdFunction");
         suite.AddTestCase(&CopiesSeeSameValues, "CopiesSeeSameValues");
         suite.AddTestCase(&AsignmentSeesSameValues, "AsignmentSeesSameValues");

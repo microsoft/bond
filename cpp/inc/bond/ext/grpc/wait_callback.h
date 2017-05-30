@@ -4,6 +4,7 @@
 #pragma once
 
 #include <bond/core/bonded.h>
+#include <bond/ext/grpc/exception.h>
 #include <grpc++/impl/codegen/status.h>
 
 #include <boost/optional.hpp>
@@ -32,8 +33,8 @@ public:
 
     /// @brief Records the response and status.
     ///
-    /// May be invoked multiple times and from different threads, but only the first
-    /// invocation will be recorded.
+    /// @exception MultipleInvocationException thrown if the callback (or a
+    /// copy of the callback) is invoked more than once.
     void operator()(const bond::bonded<TResponse>& response, const grpc::Status& status)
     {
         std::unique_lock<std::mutex> lock(_impl->_m);
@@ -45,6 +46,10 @@ public:
             // then have them wait on the lock.
             lock.unlock();
             _impl->_cv.notify_all();
+        }
+        else
+        {
+            throw MultipleInvocationException();
         }
     }
 
@@ -62,7 +67,7 @@ public:
     /// @return \p true if a callback was invoked. \p false if the timeout
     /// occured.
     template <typename Rep, typename Period>
-    bool wait(const std::chrono::duration<Rep, Period>& timeout) const
+    bool wait_for(const std::chrono::duration<Rep, Period>& timeout) const
     {
         std::unique_lock<std::mutex> lock(_impl->_m);
         return _impl->_cv.wait_for(lock, timeout, [this]() { return static_cast<bool>(_impl->_results); });
@@ -99,9 +104,9 @@ private:
         impl& operator=(impl&&) = delete;
 
         /// mutex to lock the shared state
-        mutable std::mutex _m;
+        std::mutex _m;
         /// condition variable used to signal anyone waiting
-        mutable std::condition_variable _cv;
+        std::condition_variable _cv;
         /// The response and status, but more importantly, doubles as a flag
         /// indicating whether a callback has been invoked yet. If this is
         /// empty, no callback has been invoked yet. If non-empty, a

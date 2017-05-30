@@ -53,7 +53,7 @@ int main()
 
             bond::ext::gRPC::wait_callback<PingResponse> cb;
             client.AsyncPing(&context, bond::bonded<PingRequest>{ request }, cb);
-            bool gotResponse = cb.wait(std::chrono::seconds(1));
+            bool gotResponse = cb.wait_for(std::chrono::seconds(1));
 
             if (!gotResponse)
             {
@@ -91,7 +91,7 @@ int main()
 
             bond::ext::gRPC::wait_callback<PingResponse> cb;
             client.AsyncPing(&context, bond::bonded<PingRequest> { request }, cb);
-            bool gotResponse = cb.wait(std::chrono::seconds(1));
+            bool gotResponse = cb.wait_for(std::chrono::seconds(1));
 
             if (!gotResponse)
             {
