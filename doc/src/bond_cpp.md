@@ -242,19 +242,44 @@ Some best practices and other considerations to keep in mind:
   break text-based protocols like [SimpleJsonProtocol](#simple-json)
 - `required` should be used sparingly and only with careful consideration
 
+Default values
+==============
+
+Fields of a Bond defined struct always have a default value, either
+explicitly specified in the .bond file, or the implicit default.
+
+The implicit default is
+
+* `false` for `bool` fields
+* 0 for arithmetic types
+* empty for string/containers
+* `null` for [nullable type](#nullable-types)
+* for struct and `bonded` fields, an instance of a struct in which all of
+  the fields are initialized to their default values, recursively
+
+There is no implicit default for enum fields: they must have an explicit
+default value in the .bond file.
+
+Explicit default values (other than [`nothing`](#default-value-of-nothing))
+may not be specified for `nullable` or container fields. Struct and `bonded`
+fields may not have an explicit default value. They always use their
+implicit default values.
+
+The default values of fields matter because this is what an application will
+see after deserialization for any optional field that wasn't present in the
+payload (e.g. when the payload was created from an older version of the
+schema).
+
+Additionally, some protocols can omit
+[`optional` non-struct fields](#required-fields) set to their default
+values, reducing payload size.
 
 Default value of `nothing`
 ==========================
 
-Fields of a Bond defined struct always have a default value, either explicitly
-specified in the .bond file, or the implicit system default (`false` for
-`bool`, 0 for arithmetic types, empty for strings/containers and `null` for
-`nullable<T>`). Default values of fields matter because this is what an
-application will see after deserialization for any optional field that wasn't
-present in the payload (e.g. when the payload was created from an older version
-of the schema). Sometimes it is necessary to distinguish between any of the
-possible values of a field and absence of a value. To support such scenarios
-Bond allows fields' default values to be explicitly set to `nothing` [^1]:
+Sometimes it is necessary to distinguish between any of the possible values
+of a field and absence of a value. To support such scenarios Bond allows
+non-struct fields' default values to be explicitly set to `nothing` [^1]:
 
     struct AboutNothing
     {
@@ -263,68 +288,69 @@ Bond allows fields' default values to be explicitly set to `nothing` [^1]:
         2: list<float> floats = nothing;
     }
 
-Setting a field's default to `nothing` doesn't affect schema type of the field,
-however it may affect what type the field is mapped to in the generated code.
-The reason why is pretty obvious: some types such as `uint16_t` just can't
-represent absence of a value. In C++ fields with default of `nothing` always
-map to [`bond::maybe<T>`][maybe_reference]. In C# reference types already have
-a way to represent absence of value: `null`. For these types specifying default
-of `nothing` doesn't change the field type in the generated code. For C# value
-types such as `Int16`, generated code will use C# nullable type (e.g.
-`Int16?`).
+Setting a field's default to `nothing` doesn't affect the schema type of the
+field, however it may affect what type the field is mapped to in the
+generated code. The reason why is pretty obvious: some types such as
+`uint16_t` just can't represent absence of a value. In C++ fields with
+default of `nothing` always map to [`bond::maybe<T>`][maybe_reference].
 
-The fact that setting default value of a field to `nothing` doesn't affect the
-field's schema type has an important consequence: the default value of the
-field doesn't have serialized representation. What this means in practice
-depends on whether the field is `optional` or `required`. Optional fields set
-to `nothing` are usually omitted during serialization [^2], just like for any
-other default values. [Required fields](#required-fields), by definition, can
-never be omitted. Since `nothing` has no serialized representation, an attempt
-to serialize an object with required fields set to `nothing` will result in a
-runtime exception. If a null value needs to be represented in the serialized
-form, then default of `nothing` is a wrong choice and a [nullable
-type](#nullable-types) should be used instead.
+The fact that setting the default value of a field to `nothing` doesn't
+affect the field's schema type has an important consequence: the default
+value of the field doesn't have a serialized representation. What this means
+in practice depends on whether the field is `optional` or `required`.
+Optional fields set to `nothing` are usually omitted during serialization
+[^2], just like for any other default values.
+[Required fields](#required-fields), by definition, can never be omitted.
+Since `nothing` has no serialized representation, an attempt to serialize an
+object with required fields set to `nothing` will result in a runtime
+exception. If a `null` value needs to be represented in the serialized form,
+then a default of `nothing` is the wrong choice and a
+[nullable type](#nullable-types) should be used instead.
 
 
-[^1]: In Bond there is no concept of default for structs and thus default of
-`nothing` can't be set for fields of struct types or `bonded<T>`.
+[^1]: In Bond there is no concept of a default value for structs and thus a
+default of `nothing` can't be set for fields of struct types or `bonded<T>`.
 
 [^2]: Some protocols might not support omitting optional fields (e.g. Simple
-Protocol) or omitting fields may be disabled by specializing
-`bond::may_omit_fields` trait. In such cases an attempt to serialize an object
-with field(s) set to `nothing` will result in a runtime exception.
+Protocol) or omitting fields may be disabled by specializing the
+`bond::may_omit_fields` trait. In such cases an attempt to serialize an
+object with field(s) set to `nothing` will result in a runtime exception.
 
 
 Nullable types
 ==============
 
-For any type in Bond meta-schema `nullable<T>` defines a nullable type. A
-nullable type can store all the same values as the its base type plus one
+For any type in the Bond meta-schema, `nullable<T>` defines a nullable type.
+A nullable type can store all the same values as its base type plus one
 additional value: `null`.
 
     struct Nullables
     {
-        0: nullable<bool>         b;
-        1: list<nullable<string>> l;
+        0: nullable<bool>         b; // can be true, false, or null
+        1: list<nullable<string>> l; // can be a (possibly empty) list or null
     }
 
-Default value for a field of a nullable type is always implicitly set to
+The default value for a field of a nullable type is always implicitly set to
 `null`. Explicit default values for nullable fields are not supported.
 
-In generated C++ code nullable types are represented by
+In the generated C++ code nullable types are represented by the
 [`nullable<T>`][nullable_reference] class template.
 
 Since a nullable type must represent the additional value of `null`, its
-serialized representation necessarily incurs some overhead compared to the base
-type. Often it is more efficient to avoid using nullable type and instead
-designate one of normal values to handle the special case that otherwise would
-be represented by `null`. For example _empty_ is usually a good choice for
-string and container types and 0 for arithmetic types. Another option that may
-sometimes be appropriate is setting default value of a field to
-[`nothing`](#default-value-of-nothing).
+serialized representation necessarily incurs some overhead compared to the
+base type. Often it is more efficient to avoid using a nullable type and
+instead to designate one of the normal values to handle the special case
+that otherwise would be represented by `null`. For example _empty_ is
+usually a good choice for string and container types and 0 for arithmetic
+types. Another option that may sometimes be appropriate is setting the
+default value of a non-struct field to
+[`nothing`](#default-value-of-nothing). Struct fields can have neither an
+explicit default value nor be set to `nothing`, so `nullable` needs to be
+used if `null` semantics are needed for these fields.
 
-The canonical scenario where a nullable type is the right choice is recursive
-structures. For example here's how Bond `TypeDef` struct is defined:
+The canonical scenario where a nullable type is the right choice is
+recursive structures. For example here's how Bond `TypeDef` struct is
+defined:
 
     struct TypeDef
     {
@@ -347,12 +373,12 @@ structures. For example here's how Bond `TypeDef` struct is defined:
         4: bool bonded_type;
     }
 
-`TypeDef` struct is used to represent type of a field in a Bond schema. If the
-type is a container such as list or map, the type definition becomes recursive.
-For example, a list type definition contains type of the list element which of
-course itself can be a container of elements of some other type, and so on,
-until recursion is terminated with a `null` value for the `element` and `key`
-fields.
+The `TypeDef` struct is used to represent the type of a field in a Bond
+schema. If the type is a container such as a list or map, the type
+definition becomes recursive. For example, a list type definition contains
+the type of the list element which of course itself can be a container of
+elements of some other type, and so on, until the recursion is terminated
+with a `null` value for the `element` and `key` fields.
 
 Runtime schema
 ==============
@@ -835,18 +861,19 @@ See example: `examples/cpp/core/merge`.
 Required fields
 ===============
 
-By default, struct fields in Bond schemas are considered optional. This means
-that during deserialization, if the payload doesn't contain a field, Bond will
-just use the field's default value specified in the schema. Consequently,
-during serialization optional fields which are set to their default value _can_
-be omitted, resulting in a more compact payload. This behavior is fundamental
-to enabling forward and backward compatibility between different schema
-versions. As long as fields are optional, they can be freely added and removed,
-without breaking the ability of the old code to deserialize the new data and
-vice versa. In distributed systems, where we usually can't depend on deployment
-order, this two-way compatibility is a critical feature. This is why optional
-fields are the implicit default in Bond, and why avoiding required fields is
-generally considered a good rule of thumb.
+By default, fields of a struct in Bond schemas are considered optional. This
+means that during deserialization, if the payload doesn't contain a field,
+Bond will just use the field's [default value](#default-values) specified in
+the schema. Consequently, during serialization optional fields which are set
+to their default value _can_ be omitted, resulting in a more compact
+payload. This behavior is fundamental to enabling forward and backward
+compatibility between [different schema versions](#schema-evolution). As
+long as fields are optional, they can be freely added and removed, without
+breaking the ability of the old code to deserialize the new data and vice
+versa. In distributed systems, where we usually can't depend on deployment
+order, this two-way compatibility is a critical feature. This is why
+optional fields are the implicit default in Bond, and why avoiding required
+fields is generally considered a good rule of thumb.
 
 Required fields can be declared using the following syntax.
 
@@ -927,7 +954,7 @@ structs, e.g:
 
 Bond provides helper functions `Pack` and `Unpack` which can be used
 respectively to create/serialize a tuple from several values and deserialize
-struct fields into several variables.
+fields into several variables.
 
     std::string str;
     Pack(writer, str, 10);
@@ -1154,7 +1181,7 @@ Implemented in [`CompactBinaryReader`][compact_binary_reader_reference] and
 
 Version 2 of Compact Binary adds length prefix for structs. This enables
 deserialization of [`bonded<T>`](#understanding-bondedt) and skipping of
-unknown struct fields in constant time. The trade-off is double pass encoding,
+unknown fields in constant time. The trade-off is double pass encoding,
 resulting in up to 30% slower serialization performance.
 
 See also [Compact Binary encoding reference][compact_binary_format_reference].
