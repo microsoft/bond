@@ -36,37 +36,37 @@ class DoublePingServiceImpl final : public DoublePing::Service
     void Ping(
         bond::ext::gRPC::unary_call<
             bond::bonded<PingRequest>,
-            bond::bonded<PingReply>> call) override
+            PingReply> call) override
     {
         PingRequest request = call.request().Deserialize();
 
         PingReply reply;
         reply.message = "ping " + request.name;
 
-        call.Finish(bond::bonded<PingReply>{reply}, Status::OK);
+        call.Finish(reply);
     }
 
     void PingNoPayload(
         bond::ext::gRPC::unary_call<
             bond::bonded<bond::Void>,
-            bond::bonded<PingReply>> call) override
+            PingReply> call) override
     {
         PingReply reply;
         reply.message = "ping pong";
 
-        call.Finish(bond::bonded<PingReply>{reply}, Status::OK);
+        call.Finish(reply, Status::OK);
     }
 
     void PingNoResponse(
         bond::ext::gRPC::unary_call<
             bond::bonded<PingRequest>,
-            bond::bonded<bond::Void>> call) override
+            bond::Void> call) override
     {
         PingRequest request = call.request().Deserialize();
 
         // TODO: the current implementation requires that we respond with dummy data.
         // This will be fixed in a later release.
-        call.Finish(bond::bonded<bond::Void>{bond::Void()}, Status::OK);
+        call.Finish(bond::bonded<bond::Void>{bond::Void()});
 
         pingNoResponse_event.set();
     }
@@ -74,27 +74,27 @@ class DoublePingServiceImpl final : public DoublePing::Service
     void PingVoid(
         bond::ext::gRPC::unary_call<
             bond::bonded<bond::Void>,
-            bond::bonded<bond::Void>> call) override
+            bond::Void> call) override
     {
         // TODO: the current implementation requires that we respond with dummy data.
         // This will be fixed in a later release.
-        call.Finish(bond::bonded<bond::Void>{bond::Void()}, Status::OK);
+        call.Finish(bond::Void());
     }
 
     void PingEventVoid(
         bond::ext::gRPC::unary_call<
             bond::bonded<bond::Void>,
-            bond::bonded<bond::Void>> call) override
+            bond::Void> call) override
     {
         // TODO: the current implementation requires that we respond with dummy data.
         // This will be fixed in a later release.
-        call.Finish(bond::bonded<bond::Void>{bond::Void()}, Status::OK);
+        call.Finish(bond::Void());
     }
 
     void PingShouldThrow(
         bond::ext::gRPC::unary_call<
             bond::bonded<PingRequest>,
-            bond::bonded<PingReply>> call) override
+            PingReply> call) override
     {
         call.FinishWithError(Status(StatusCode::CANCELLED, "do not want to respond"));
     }
@@ -105,7 +105,7 @@ class PingPongServiceImpl final : public PingPong<PingRequest>::Service
     void Ping(
         bond::ext::gRPC::unary_call<
             bond::bonded<PingRequest>,
-            bond::bonded<PingReply>> call) override
+            PingReply> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -113,6 +113,8 @@ class PingPongServiceImpl final : public PingPong<PingRequest>::Service
         reply.message = "ping " + request.name;
 
         call.Finish(bond::bonded<PingReply>{reply}, Status::OK);
+        // could also call:
+        // call.Finish(reply);
     }
 };
 
@@ -191,7 +193,6 @@ int main()
 
     PingRequest request;
     request.name = user;
-    bond::bonded<PingRequest> req(request);
 
     {
         auto f_print = [&ping_event, &isCorrectResponse](bond::bonded<PingReply> response, Status status)
@@ -199,7 +200,7 @@ int main()
                 printAndSet(&ping_event, &isCorrectResponse, response, status);
             };
 
-        doublePing.AsyncPing(&context, req, f_print);
+        doublePing.AsyncPing(&context, request, f_print);
     }
 
     {
@@ -212,7 +213,7 @@ int main()
     }
 
     {
-        doublePing.AsyncPingNoResponse(&pingNoResponseContext, req);
+        doublePing.AsyncPingNoResponse(&pingNoResponseContext, request);
     }
 
     {
@@ -245,7 +246,7 @@ int main()
                 ping_event.set();
             };
 
-        doublePing.AsyncPingShouldThrow(&pingShouldThrowContext, req, f_print);
+        doublePing.AsyncPingShouldThrow(&pingShouldThrowContext, request, f_print);
     }
 
     {
@@ -254,7 +255,7 @@ int main()
                 printAndSet(&ping_event, &pingGenericIsCorrectResponse, response, status);
             };
 
-        pingPong.AsyncPing(&pingGenericContext, req, f_print);
+        pingPong.AsyncPing(&pingGenericContext, request, f_print);
     }
 
     bool waitResult = ping_event.wait_for(std::chrono::seconds(10));

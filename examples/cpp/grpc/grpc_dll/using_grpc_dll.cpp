@@ -48,14 +48,14 @@ struct TestServiceImpl : TestService::Service
 {
     void TestMethod(bond::ext::gRPC::unary_call<
                         bond::bonded<MyStruct>,
-                        bond::bonded<Item>> call) override
+                        Item> call) override
     {
         MyStruct request = call.request().Deserialize();
 
         Item response;
         response = request.items[0];
 
-        call.Finish(bond::bonded<Item> { response }, Status::OK);
+        call.Finish(response);
     }
 };
 
