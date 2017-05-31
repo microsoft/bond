@@ -261,6 +261,11 @@ commaSepTypeNames [] = return mempty
 commaSepTypeNames [x] = typeName x
 commaSepTypeNames (x:xs) = typeName x <<>> ", " <>> commaSepTypeNames xs
 
+commaSepTypeNameBuilders :: [TypeNameBuilder] -> TypeNameBuilder
+commaSepTypeNameBuilders [] = return mempty
+commaSepTypeNameBuilders [x] = x
+commaSepTypeNameBuilders (x:xs) = x <<>> ", " <>> commaSepTypeNameBuilders xs
+
 typeName :: Type -> TypeNameBuilder
 typeName t = do
     m <- asks $ mapType . typeMapping
@@ -269,7 +274,7 @@ typeName t = do
 localWith :: (TypeMapping -> TypeMapping) -> TypeNameBuilder -> TypeNameBuilder
 localWith f = local $ \c -> c { typeMapping = f $ typeMapping c }
 
--- | Builder for nested element types (e.g. list elements) in context of 'TypeNameBuilder' monad. 
+-- | Builder for nested element types (e.g. list elements) in context of 'TypeNameBuilder' monad.
 -- Used to implement 'mapType' function of 'TypeMapping'.
 elementTypeName :: Type -> TypeNameBuilder
 elementTypeName = localWith elementMapping . typeName
@@ -517,6 +522,9 @@ javaType (BT_Vector element) = "java.util.List<" <>> javaBox element <<> ">"
 javaType (BT_Set element) = "java.util.Set<" <>> javaBox element <<> ">"
 javaType (BT_Map key value) = "java.util.Map<" <>> javaBox key <<>> ", " <>> elementTypeName value <<> ">"
 javaType (BT_TypeParam param) = pureText $ paramName param
-javaType (BT_UserDefined Alias {} _) = error "Java codegen does not support aliases"
-javaType (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> localWith (const javaTypeMapping) (commaSepTypeNames args))
 javaType (BT_Bonded type_) = "com.microsoft.bond.IBonded<" <>> javaBox type_ <<> ">"
+javaType (BT_UserDefined Alias {} _) = error "Java codegen does not support aliases"
+javaType (BT_UserDefined decl args) =
+    declTypeName decl <<>> (angles <$> localWith (const javaTypeMapping) (commaSepTypeNameBuilders boxedArgs))
+        where
+            boxedArgs = map javaBox args
