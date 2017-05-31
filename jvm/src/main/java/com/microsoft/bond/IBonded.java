@@ -8,7 +8,7 @@ import com.microsoft.bond.protocol.ProtocolWriter;
 import java.io.IOException;
 
 public interface IBonded<T extends BondSerializable> {
-    void Serialize(ProtocolWriter writer) throws IOException;
+    void serialize(ProtocolWriter writer) throws IOException;
 
-    T Deserialize();
+    T deserialize();
 }

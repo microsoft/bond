@@ -18,12 +18,12 @@ public class Bonded<T extends BondSerializable> implements IBonded<T> {
     }
 
     @Override
-    public void Serialize(ProtocolWriter writer) throws IOException {
+    public void serialize(ProtocolWriter writer) throws IOException {
         value.serialize(writer);
     }
 
     @Override
-    public T Deserialize() {
+    public T deserialize() {
         return value;
     }
 }
