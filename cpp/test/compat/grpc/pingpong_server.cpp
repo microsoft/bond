@@ -54,9 +54,9 @@ public:
                 response.Payload = request.Payload;
 
                 NumRequestsReceived++;
-                Countdown.set();
 
                 call.Finish(response);
+                Countdown.set();
                 break;
             }
 
@@ -66,10 +66,10 @@ public:
                 fflush(stdout);
 
                 NumErrorsReceived++;
-                Countdown.set();
 
                 Status error(StatusCode::UNIMPLEMENTED, "Application Exception");
                 call.FinishWithError(error);
+                Countdown.set();
                 break;
             }
 
@@ -78,10 +78,9 @@ public:
                 printf("Received unknown request \"%s\"\n", request.Payload.c_str());
                 fflush(stdout);
 
-                Countdown.set();
-
                 Status error(StatusCode::UNIMPLEMENTED, "Unknown PingAction");
                 call.FinishWithError(error);
+                Countdown.set();
                 break;
             }
         }
@@ -105,6 +104,9 @@ int main()
     fflush(stdout);
 
     bool countdownSet = Countdown.wait_for(std::chrono::seconds(30));
+
+    server->Shutdown(std::chrono::system_clock::now() + std::chrono::seconds(10));
+    server->Wait();
 
     if (!countdownSet ||
         (NumRequestsReceived != NumRequests) ||

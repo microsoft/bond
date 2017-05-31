@@ -74,9 +74,17 @@ namespace PingPongServer
             Console.Out.WriteLine("Server ready");
             Console.Out.Flush();
 
-            bool countdownSet = Countdown.Wait(30000);
+            bool countdownSet = Countdown.Wait(TimeSpan.FromSeconds(30));
+            bool didShutdown = pingServer.ShutdownAsync().Wait(TimeSpan.FromSeconds(10));
 
-            if (!countdownSet ||
+            if (!didShutdown)
+            {
+                Console.Out.WriteLine("Server failed: Didn't shutdown in time");
+                Console.Out.Flush();
+                return;
+            }
+            else if (
+                !countdownSet ||
                 (NumRequestsReceived != (int)PingConstants.NumRequests) ||
                 (NumErrorsReceived != (int)PingConstants.NumErrors))
             {
