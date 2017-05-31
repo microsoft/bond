@@ -37,14 +37,14 @@ schema java decl@Struct {..} = [lt|
         #{schemaDefMember}.root.key = null;
         #{schemaDefMember}.root.bonded_type = false;
 
-        #{structDefRef}.metadata.name = "#{declName}";
-        #{structDefRef}.metadata.qualified_name = "#{qualifiedName java decl}";
-        #{structDefRef}.metadata.modifier = com.microsoft.bond.Modifier.Optional;
-        #{newlineSep 2 (initAttr structDefRef) declAttributes}
+        #{structDefMetadata}.name = "#{declName}";
+        #{structDefMetadata}.qualified_name = "#{qualifiedName java decl}";
+        #{structDefMetadata}.modifier = com.microsoft.bond.Modifier.Optional;
+        #{newlineSep 2 (initAttr structDefMetadata) declAttributes}
         // TODO: .base_def
-        #{schemaDefMember}.structs.add(0, #{structDefRef});
+        #{schemaDefMember}.structs.add(0, #{structDefMember});
 
-        #{doubleLineSep 2 (initFieldDef java structDefRef declName) structFields}
+        #{doubleLineSep 2 (initFieldDef java structDefMember declName) structFields}
 
         #{schemaInitField} = true;
     }
@@ -60,7 +60,7 @@ schema java decl@Struct {..} = [lt|
     }
     |]
     where
-        structDefRef = structDefMember
+        structDefMetadata = [lt|#{structDefMember}.metadata|]
         schemaInitField = pack "schemaInitialized"
 
 schema _ _ = error "java: Can only generate static schema for struct decls."
@@ -74,8 +74,8 @@ initSuperSchema java (Just (BT_UserDefined baseDecl _)) =
 initSuperSchema _ _ = error "Java: base type was not a UserDefined"
 
 initAttr :: Text -> Attribute -> Text
-initAttr target Attribute {..} =
-    [lt|#{target}.metadata.attributes.put("#{name}", "#{value}");|]
+initAttr metadata Attribute {..} =
+    [lt|#{metadata}.attributes.put("#{name}", "#{value}");|]
     where
         name = showQualifiedName attrName
         value = attrValue
