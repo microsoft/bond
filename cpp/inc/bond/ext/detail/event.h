@@ -53,7 +53,7 @@ namespace bond { namespace ext { namespace detail {
         /// @return \p true if the event was signaled. \p false if the
         /// timeout occured.
         template <typename Rep, typename Period>
-        bool wait(const std::chrono::duration<Rep, Period>& timeout)
+        bool wait_for(const std::chrono::duration<Rep, Period>& timeout)
         {
             std::unique_lock<std::mutex> lock(_m);
             return _cv.wait_for(lock, timeout, [this]() {return _isSet;});
