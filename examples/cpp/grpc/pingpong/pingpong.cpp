@@ -1,8 +1,7 @@
 #include "pingpong_grpc.h"
 #include "pingpong_types.h"
 
-// countdown_event.h and event.h needed for test purposes
-#include <bond/ext/detail/countdown_event.h>
+// event.h needed for test purposes
 #include <bond/ext/detail/event.h>
 
 #include <bond/ext/grpc/io_manager.h>
@@ -10,8 +9,10 @@
 #include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
+#include <bond/ext/grpc/wait_callback.h>
 
 #include <chrono>
+#include <cstdlib>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -23,16 +24,18 @@ using grpc::ServerBuilder;
 using grpc::Status;
 using grpc::StatusCode;
 
-using bond::ext::detail::countdown_event;
 using bond::ext::detail::event;
 using bond::ext::gRPC::io_manager;
+using bond::ext::gRPC::wait_callback;
 
 using namespace pingpong;
 
-event pingNoResponse_event;
-
 class DoublePingServiceImpl final : public DoublePing::Service
 {
+public:
+    event pingNoResponse_event;
+
+private:
     void Ping(
         bond::ext::gRPC::unary_call<
             bond::bonded<PingRequest>,
@@ -116,32 +119,38 @@ class PingPongServiceImpl final : public PingPong<PingRequest>::Service
     }
 };
 
-void printAndSet(
-    countdown_event* print_event,
-    bool* isCorrectResponse,
-    const bond::bonded<PingReply>& response,
-    const Status& status)
+template <typename T>
+static void assertResponseReceived(wait_callback<T>& cb, size_t line)
 {
-
-    *isCorrectResponse = false;
-
-    if(status.ok())
+    bool wasInvoked = cb.wait_for(std::chrono::seconds(2));
+    if (!wasInvoked)
     {
-        const std::string& message = response.Deserialize().message;
-
-        if (message.compare("ping pong") == 0)
-        {
-            std::cout << "Correct response: " << message;
-            *isCorrectResponse = true;
-        }
-        else
-        {
-            std::cout << "Wrong response";
-            *isCorrectResponse = false;
-        }
+        std::cerr << "Callback invocation at line " << line << " timed out." << std::endl;
+        abort();
     }
+}
 
-    print_event->set();
+static void assertStatus(StatusCode expected, StatusCode actual, size_t line)
+{
+    if (expected != actual)
+    {
+        std::cerr
+            << "Expected status code " << expected << " but got " << actual
+            << " at line " << line << std::endl;
+        abort();
+    }
+}
+
+static void assertResponseContents(const wait_callback<PingReply>& cb, size_t line)
+{
+    assertStatus(StatusCode::OK, cb.status().error_code(), line);
+
+    const std::string& message = cb.response().Deserialize().message;
+    if (message.compare("ping pong") != 0)
+    {
+        std::cerr << "Response at line " << line << " had unexpected message: " << message << std::endl;
+        abort();
+    }
 }
 
 int main()
@@ -174,108 +183,61 @@ int main()
 
     const std::string user("pong");
 
-    countdown_event ping_event(5);
-
-    bool isCorrectResponse;
-    bool pingNoPayloadIsCorrectResponse;
-    bool pingVoidIsCorrectResponse;
-    bool pingShouldThrowIsCorrectResponse;
-    bool pingGenericIsCorrectResponse;
-
-    ClientContext context;
-    ClientContext pingNoPayloadContext;
-    ClientContext pingNoResponseContext;
-    ClientContext pingVoidContext;
-    ClientContext pingShouldThrowContext;
-    ClientContext pingGenericContext;
-
     PingRequest request;
     request.name = user;
     bond::bonded<PingRequest> req(request);
 
     {
-        auto f_print = [&ping_event, &isCorrectResponse](bond::bonded<PingReply> response, Status status)
-            {
-                printAndSet(&ping_event, &isCorrectResponse, response, status);
-            };
-
-        doublePing.AsyncPing(&context, req, f_print);
+        ClientContext context;
+        wait_callback<PingReply> cb;
+        doublePing.AsyncPing(&context, req, cb);
+        assertResponseReceived(cb, __LINE__);
+        assertResponseContents(cb, __LINE__);
     }
 
     {
-        auto f_print = [&ping_event, &pingNoPayloadIsCorrectResponse](bond::bonded<PingReply> response, Status status)
-            {
-                printAndSet(&ping_event, &pingNoPayloadIsCorrectResponse, response, status);
-            };
-
-        doublePing.AsyncPingNoPayload(&pingNoPayloadContext, f_print);
+        ClientContext context;
+        wait_callback<PingReply> cb;
+        doublePing.AsyncPingNoPayload(&context, cb);
+        assertResponseReceived(cb, __LINE__);
+        assertResponseContents(cb, __LINE__);
     }
 
     {
+        ClientContext pingNoResponseContext;
         doublePing.AsyncPingNoResponse(&pingNoResponseContext, req);
+        bool wasEventHandled = double_ping_service.pingNoResponse_event.wait_for(std::chrono::seconds(10));
+
+        if (!wasEventHandled)
+        {
+            std::cerr << "timeout ocurred waiting for event to be handled at line " << __LINE__ << std::endl;
+            abort();
+        }
     }
 
     {
-        auto f_print = [&ping_event, &pingVoidIsCorrectResponse](bond::bonded<bond::Void> response, Status status)
-            {
-                if(status.ok())
-                {
-                    pingVoidIsCorrectResponse = true;
-                }
-                else
-                {
-                    pingVoidIsCorrectResponse = false;
-                }
-                ping_event.set();
-            };
-
-        doublePing.AsyncPingVoid(&pingVoidContext, f_print);
+        ClientContext context;
+        wait_callback<bond::Void> cb;
+        doublePing.AsyncPingVoid(&context, cb);
+        assertResponseReceived(cb, __LINE__);
+        assertStatus(StatusCode::OK, cb.status().error_code(), __LINE__);
     }
 
     {
-        auto f_print = [&ping_event, &pingShouldThrowIsCorrectResponse](bond::bonded<PingReply> response, Status status)
-            {
-                pingShouldThrowIsCorrectResponse = false;
-
-                if(status.error_code() == StatusCode::CANCELLED)
-                {
-                    pingShouldThrowIsCorrectResponse = true;
-                }
-
-                ping_event.set();
-            };
-
-        doublePing.AsyncPingShouldThrow(&pingShouldThrowContext, req, f_print);
+        ClientContext context;
+        wait_callback<PingReply> cb;
+        doublePing.AsyncPingShouldThrow(&context, req, cb);
+        assertResponseReceived(cb, __LINE__);
+        assertStatus(StatusCode::CANCELLED, cb.status().error_code(), __LINE__);
     }
 
     {
-        auto f_print = [&ping_event, &pingGenericIsCorrectResponse](bond::bonded<PingReply> response, Status status)
-            {
-                printAndSet(&ping_event, &pingGenericIsCorrectResponse, response, status);
-            };
-
-        pingPong.AsyncPing(&pingGenericContext, req, f_print);
+        ClientContext context;
+        wait_callback<PingReply> cb;
+        pingPong.AsyncPing(&context, req, cb);
+        assertResponseReceived(cb, __LINE__);
+        assertResponseContents(cb, __LINE__);
     }
 
-    bool waitResult = ping_event.wait_for(std::chrono::seconds(10));
-    waitResult &= pingNoResponse_event.wait_for(std::chrono::seconds(10));
-
-    if (!waitResult)
-    {
-        std::cout << "timeout ocurred";
-    }
-
-    if (waitResult
-            && isCorrectResponse
-            && pingNoPayloadIsCorrectResponse
-            && pingVoidIsCorrectResponse
-            && pingShouldThrowIsCorrectResponse
-            && pingGenericIsCorrectResponse)
-    {
-        return 0;
-    }
-    else
-    {
-        return 1;
-    }
+    return 0;
 }
