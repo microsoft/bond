@@ -27,14 +27,14 @@ class GreeterServiceImpl final : public Greeter::Service
     void SayHello(
         bond::ext::gRPC::unary_call<
             bond::bonded<HelloRequest>,
-            bond::bonded<HelloReply>> call) override
+            HelloReply> call) override
     {
         HelloRequest request = call.request().Deserialize();
 
         HelloReply reply;
         reply.message = "hello " + request.name;
 
-        call.Finish(bond::bonded<HelloReply>{reply}, Status::OK);
+        call.Finish(reply);
     }
 };
 
@@ -65,7 +65,7 @@ int main()
     request.name = user;
 
     bond::ext::gRPC::wait_callback<HelloReply> cb;
-    greeter.AsyncSayHello(&context, bond::bonded<HelloRequest>{request}, cb);
+    greeter.AsyncSayHello(&context, request, cb);
 
     bool waitResult = cb.wait_for(std::chrono::seconds(10));
 

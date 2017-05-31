@@ -38,8 +38,8 @@ public:
 
     void Ping(
         bond::ext::gRPC::unary_call<
-            bond::bonded<::PingPongNS::PingRequest>,
-            bond::bonded<::PingPongNS::PingResponse>> call) override
+            bond::bonded<PingRequest>,
+            PingResponse> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -56,7 +56,7 @@ public:
                 NumRequestsReceived++;
                 Countdown.set();
 
-                call.Finish(bond::bonded<PingResponse>{ response }, Status::OK);
+                call.Finish(response);
                 break;
             }
 

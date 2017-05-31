@@ -39,37 +39,37 @@ private:
     void Ping(
         bond::ext::gRPC::unary_call<
             bond::bonded<PingRequest>,
-            bond::bonded<PingReply>> call) override
+            PingReply> call) override
     {
         PingRequest request = call.request().Deserialize();
 
         PingReply reply;
         reply.message = "ping " + request.name;
 
-        call.Finish(bond::bonded<PingReply>{reply}, Status::OK);
+        call.Finish(reply);
     }
 
     void PingNoPayload(
         bond::ext::gRPC::unary_call<
             bond::bonded<bond::Void>,
-            bond::bonded<PingReply>> call) override
+            PingReply> call) override
     {
         PingReply reply;
         reply.message = "ping pong";
 
-        call.Finish(bond::bonded<PingReply>{reply}, Status::OK);
+        call.Finish(reply, Status::OK);
     }
 
     void PingNoResponse(
         bond::ext::gRPC::unary_call<
             bond::bonded<PingRequest>,
-            bond::bonded<bond::Void>> call) override
+            bond::Void> call) override
     {
         PingRequest request = call.request().Deserialize();
 
         // TODO: the current implementation requires that we respond with dummy data.
         // This will be fixed in a later release.
-        call.Finish(bond::bonded<bond::Void>{bond::Void()}, Status::OK);
+        call.Finish(bond::bonded<bond::Void>{bond::Void()});
 
         pingNoResponse_event.set();
     }
@@ -77,27 +77,27 @@ private:
     void PingVoid(
         bond::ext::gRPC::unary_call<
             bond::bonded<bond::Void>,
-            bond::bonded<bond::Void>> call) override
+            bond::Void> call) override
     {
         // TODO: the current implementation requires that we respond with dummy data.
         // This will be fixed in a later release.
-        call.Finish(bond::bonded<bond::Void>{bond::Void()}, Status::OK);
+        call.Finish(bond::Void());
     }
 
     void PingEventVoid(
         bond::ext::gRPC::unary_call<
             bond::bonded<bond::Void>,
-            bond::bonded<bond::Void>> call) override
+            bond::Void> call) override
     {
         // TODO: the current implementation requires that we respond with dummy data.
         // This will be fixed in a later release.
-        call.Finish(bond::bonded<bond::Void>{bond::Void()}, Status::OK);
+        call.Finish(bond::Void());
     }
 
     void PingShouldThrow(
         bond::ext::gRPC::unary_call<
             bond::bonded<PingRequest>,
-            bond::bonded<PingReply>> call) override
+            PingReply> call) override
     {
         call.FinishWithError(Status(StatusCode::CANCELLED, "do not want to respond"));
     }
@@ -108,7 +108,7 @@ class PingPongServiceImpl final : public PingPong<PingRequest>::Service
     void Ping(
         bond::ext::gRPC::unary_call<
             bond::bonded<PingRequest>,
-            bond::bonded<PingReply>> call) override
+            PingReply> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -116,6 +116,8 @@ class PingPongServiceImpl final : public PingPong<PingRequest>::Service
         reply.message = "ping " + request.name;
 
         call.Finish(bond::bonded<PingReply>{reply}, Status::OK);
+        // could also call:
+        // call.Finish(reply);
     }
 };
 
@@ -185,12 +187,11 @@ int main()
 
     PingRequest request;
     request.name = user;
-    bond::bonded<PingRequest> req(request);
 
     {
         ClientContext context;
         wait_callback<PingReply> cb;
-        doublePing.AsyncPing(&context, req, cb);
+        doublePing.AsyncPing(&context, request, cb);
         assertResponseReceived(cb, __LINE__);
         assertResponseContents(cb, __LINE__);
     }
@@ -204,8 +205,8 @@ int main()
     }
 
     {
-        ClientContext pingNoResponseContext;
-        doublePing.AsyncPingNoResponse(&pingNoResponseContext, req);
+        ClientContext context;
+        doublePing.AsyncPingNoResponse(&context, request);
         bool wasEventHandled = double_ping_service.pingNoResponse_event.wait_for(std::chrono::seconds(10));
 
         if (!wasEventHandled)
@@ -226,7 +227,7 @@ int main()
     {
         ClientContext context;
         wait_callback<PingReply> cb;
-        doublePing.AsyncPingShouldThrow(&context, req, cb);
+        doublePing.AsyncPingShouldThrow(&context, request, cb);
         assertResponseReceived(cb, __LINE__);
         assertStatus(StatusCode::CANCELLED, cb.status().error_code(), __LINE__);
     }
@@ -234,7 +235,7 @@ int main()
     {
         ClientContext context;
         wait_callback<PingReply> cb;
-        pingPong.AsyncPing(&context, req, cb);
+        pingPong.AsyncPing(&context, request, cb);
         assertResponseReceived(cb, __LINE__);
         assertResponseContents(cb, __LINE__);
     }
