@@ -223,7 +223,7 @@ javaTypeMapping = TypeMapping
     javaType
     id
     javaTypeMapping
-    javaTypeMapping
+    javaBoxedTypeMapping
     javaTypeMapping
 
 -- | Java type mapping that boxes all primitives.
@@ -235,7 +235,7 @@ javaBoxedTypeMapping = TypeMapping
     javaBox
     id
     javaTypeMapping
-    javaTypeMapping
+    javaBoxedTypeMapping
     javaTypeMapping
 
 infixr 6 <<>>
@@ -260,11 +260,6 @@ commaSepTypeNames :: [Type] -> TypeNameBuilder
 commaSepTypeNames [] = return mempty
 commaSepTypeNames [x] = typeName x
 commaSepTypeNames (x:xs) = typeName x <<>> ", " <>> commaSepTypeNames xs
-
-commaSepTypeNameBuilders :: [TypeNameBuilder] -> TypeNameBuilder
-commaSepTypeNameBuilders [] = return mempty
-commaSepTypeNameBuilders [x] = x
-commaSepTypeNameBuilders (x:xs) = x <<>> ", " <>> commaSepTypeNameBuilders xs
 
 typeName :: Type -> TypeNameBuilder
 typeName t = do
@@ -517,14 +512,12 @@ javaType BT_Blob = pure "byte[]"
 javaType (BT_IntTypeArg x) = pureText x
 javaType (BT_Maybe type_) = javaType (BT_Nullable type_)
 javaType (BT_Nullable element) = javaBox element
-javaType (BT_List element) = "java.util.List<" <>> javaBox element <<> ">"
-javaType (BT_Vector element) = "java.util.List<" <>> javaBox element <<> ">"
-javaType (BT_Set element) = "java.util.Set<" <>> javaBox element <<> ">"
-javaType (BT_Map key value) = "java.util.Map<" <>> javaBox key <<>> ", " <>> elementTypeName value <<> ">"
+javaType (BT_List element) = "java.util.List<" <>> elementTypeName element <<> ">"
+javaType (BT_Vector element) = "java.util.List<" <>> elementTypeName element <<> ">"
+javaType (BT_Set element) = "java.util.Set<" <>> elementTypeName element <<> ">"
+javaType (BT_Map key value) = "java.util.Map<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> ">"
 javaType (BT_TypeParam param) = pureText $ paramName param
 javaType (BT_Bonded type_) = "com.microsoft.bond.IBonded<" <>> javaBox type_ <<> ">"
 javaType (BT_UserDefined Alias {} _) = error "Java codegen does not support aliases"
 javaType (BT_UserDefined decl args) =
-    declTypeName decl <<>> (angles <$> localWith (const javaTypeMapping) (commaSepTypeNameBuilders boxedArgs))
-        where
-            boxedArgs = map javaBox args
+    declTypeName decl <<>> (angles <$> localWith (const javaBoxedTypeMapping) (commaSepTypeNames args))
