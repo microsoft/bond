@@ -15,9 +15,9 @@ The Bond IDL has been extended to support the definition of
 [generic services](compiler.html#generic-service). These definitions are
 used by the Bond compiler to generate classes that provide:
 
-* service base that can be used as the basis for implementing services'
+* a service base that can be used as the basis for implementing services'
   methods
-* proxy stubs that can be used by clients to invoke those methods
+* a proxy stub that can be used by clients to invoke those methods
 
 To generate these classes, pass the `--grpc` flag to `gbc` (the Bond compiler
 tool).
@@ -138,13 +138,19 @@ The key generated C++ classes for gRPC are:
   provides some basic encapsulation of the server-side service base and the
   client-side proxy stub.
 * The service base, which is an inner class named `Service` (e.g.:
-  `Example::Service`). [^1] This class has abstract methods
+  `Example::Service`). This class has abstract methods
   for each of the methods defined in the service IDL, serving as a base for the
   concrete implementation which will provide the actual server-side business
-  logic.
+  logic. (Technically, `Service` is a type alias for
+  `ServiceCore<bond::ext::gRPC::thread_pool>`. The `ServiceCore<T>` template
+  can be used to customize the service implementation to use a different
+  thread pool implementation.)
 * The proxy stub, which is an inner class named `Client` (e.g.:
-  `Example::Client`). [^2] This is used to invoke the service from the
-  client side.
+  `Example::Client`). This is used to invoke the service from the
+  client side. (Likewise, `Client` is a type alias for
+  `ClientCore<bond::ext::gRPC::thread_pool>`. The `ClientCore<T>` template
+  can be used to customize the client implementation to use a different
+  thread pool implementation.)  
 
 To build the service functionality, simply write a concrete service
 implementation by subclassing the server base and supplying the business logic:
@@ -161,7 +167,7 @@ implementation by subclassing the server base and supplying the business logic:
 
             // Service business logic goes here
 
-            call.Finish(bond::bonded<ExampleResponse >{response}, Status::OK);
+            call.Finish(bond::bonded<ExampleResponse>{response}, Status::OK);
         }
     }
 
@@ -174,7 +180,6 @@ This service implementation is hooked up to a gRPC server as follows:
     ExampleServiceImpl service;
     bond::ext::gRPC::server_builder builder;
     builder.SetThreadPool(threadPool);
-    const std::string server_address(Host + ":" + Port);
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
     builder.RegisterService(&service);
     std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
@@ -212,25 +217,15 @@ in C++. The use of `wait_callback<T>` here is for illustrative purposes; any
 callback implementation with the same signature can be used. Note also the use
 of `bonded<T>` to wrap the request and response objects in several places;
 this allows for better control over the time of deserialization and also helps
-prevent slicing when using polymorphic Bond types. Finally, note that
-Bond-over-gRPC does not provide synchronous APIs in C++ by design.
+prevent slicing when using polymorphic Bond types. Convenience APIs are
+provided in some places to hide the use `bonded<T>` where possible. Finally, note
+that Bond-over-gRPC does not provide synchronous APIs in C++ by design.
 
 For more information about gRPC in C++, take a look at the
 [gRPC C++ tutorial](http://www.grpc.io/docs/tutorials/basic/c.html);
-however, keep in mind that the Bond-over-gRPC APIs diverge significantlty
+however, keep in mind that the Bond-over-gRPC APIs diverge significantly
 from those documented there.
 
 See also the following example:
 
 - `examples/cpp/grpc/helloworld`
-
-
-[^1] Technically, `Service` is a type alias for
-`ServiceCore<bond::ext::gRPC::thread_pool>`. The `ServiceCore<T>` template
-can be used to customize the service implementation to use a different
-thread pool implementation.
-
-[^2] Likewise, `Client` is a type alias for
-`ClientCore<bond::ext::gRPC::thread_pool>`. The `ClientCore<>` template
-can be used to customize the client implementation to use a different
-thread pool implementation.
