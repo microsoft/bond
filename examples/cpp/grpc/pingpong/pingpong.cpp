@@ -257,8 +257,8 @@ int main()
         pingPong.AsyncPing(&pingGenericContext, req, f_print);
     }
 
-    bool waitResult = ping_event.wait(std::chrono::seconds(10));
-    waitResult &= pingNoResponse_event.wait(std::chrono::seconds(10));
+    bool waitResult = ping_event.wait_for(std::chrono::seconds(10));
+    waitResult &= pingNoResponse_event.wait_for(std::chrono::seconds(10));
 
     if (!waitResult)
     {

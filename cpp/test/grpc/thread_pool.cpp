@@ -38,7 +38,7 @@ class BasicThreadPoolTests
 
         threads.schedule(std::bind(f_addOne, &sum, &sum_event));
 
-        bool waitResult = sum_event.wait(std::chrono::seconds(30));
+        bool waitResult = sum_event.wait_for(std::chrono::seconds(30));
 
         UT_AssertIsTrue(waitResult);
         UT_AssertIsTrue(sum == 1);
@@ -56,7 +56,7 @@ class BasicThreadPoolTests
             sum_event.set();
         });
 
-        bool waitResult = sum_event.wait(std::chrono::seconds(30));
+        bool waitResult = sum_event.wait_for(std::chrono::seconds(30));
 
         UT_AssertIsTrue(waitResult);
         UT_AssertIsTrue(sum == 1);
