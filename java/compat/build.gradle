@@ -1,0 +1,44 @@
+group 'com.microsoft.bond'
+version '1.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile files('../core/build/libs/bond-5.0.0.jar')
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+def gbcOutputPath = "$buildDir/generated-src"
+def gbcOutputDir = file("$gbcOutputPath")
+def bondRoot = "../.."
+
+allprojects {
+    task compatCodegen(type:Exec) {
+        commandLine "$bondRoot/build/compiler/build/gbc/gbc", 'java',
+            "$bondRoot/test/compat/core/schemas/compat.bond",
+            "$bondRoot/test/compat/core/schemas/compat2.bond",
+            "$bondRoot/test/compat/core/schemas/compat_common.bond",
+            '--output', "$gbcOutputPath"
+    }
+    compileJava.dependsOn compatCodegen
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += gbcOutputDir
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.microsoft.bond.compat.CompatDriver'
+    }
+}
