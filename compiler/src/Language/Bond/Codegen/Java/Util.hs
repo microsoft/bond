@@ -70,7 +70,7 @@ defaultValue java Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
     implicitDefault (BT_Set _) = [lt|new java.util.HashSet()|]
     implicitDefault (BT_Map _ _) = [lt|new java.util.HashMap()|]
     implicitDefault (BT_Vector _) = [lt|new java.util.ArrayList()|]
-    implicitDefault (BT_Bonded t) = [lt|new Bonded<#{getTypeName java t}>(#{implicitDefault t})|]
+    implicitDefault (BT_Bonded t) = [lt|new com.microsoft.bond.Bonded<#{getTypeName java t}>(#{implicitDefault t})|]
     implicitDefault t@(BT_UserDefined a@Alias {..} args)
         | customAliasMapping java a = newInstance t
         | otherwise = implicitDefault $ resolveAlias a args
