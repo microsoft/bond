@@ -8,8 +8,8 @@
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
 #include <bond/ext/grpc/server_builder.h>
-#include <bond/ext/grpc/unary_call.h>
 #include <bond/ext/grpc/thread_pool.h>
+#include <bond/ext/grpc/unary_call.h>
 
 #include <chrono>
 #include <functional>
@@ -35,8 +35,8 @@ class DoublePingServiceImpl final : public DoublePing::Service
 {
     void Ping(
         bond::ext::gRPC::unary_call<
-        bond::bonded<PingRequest>,
-        bond::bonded<PingReply>> call) override
+            bond::bonded<PingRequest>,
+            bond::bonded<PingReply>> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -48,8 +48,8 @@ class DoublePingServiceImpl final : public DoublePing::Service
 
     void PingNoPayload(
         bond::ext::gRPC::unary_call<
-        bond::bonded<bond::Void>,
-        bond::bonded<PingReply>> call) override
+            bond::bonded<bond::Void>,
+            bond::bonded<PingReply>> call) override
     {
         PingReply reply;
         reply.message = "ping pong";
@@ -59,11 +59,13 @@ class DoublePingServiceImpl final : public DoublePing::Service
 
     void PingNoResponse(
         bond::ext::gRPC::unary_call<
-        bond::bonded<PingRequest>,
-        bond::bonded<bond::Void>> call) override
+            bond::bonded<PingRequest>,
+            bond::bonded<bond::Void>> call) override
     {
         PingRequest request = call.request().Deserialize();
 
+        // TODO: the current implementation requires that we respond with dummy data.
+        // This will be fixed in a later release.
         call.Finish(bond::bonded<bond::Void>{bond::Void()}, Status::OK);
 
         pingNoResponse_event.set();
@@ -71,24 +73,28 @@ class DoublePingServiceImpl final : public DoublePing::Service
 
     void PingVoid(
         bond::ext::gRPC::unary_call<
-        bond::bonded<bond::Void>,
-        bond::bonded<bond::Void>> call) override
+            bond::bonded<bond::Void>,
+            bond::bonded<bond::Void>> call) override
     {
+        // TODO: the current implementation requires that we respond with dummy data.
+        // This will be fixed in a later release.
         call.Finish(bond::bonded<bond::Void>{bond::Void()}, Status::OK);
     }
 
     void PingEventVoid(
         bond::ext::gRPC::unary_call<
-        bond::bonded<bond::Void>,
-        bond::bonded<bond::Void>> call) override
+            bond::bonded<bond::Void>,
+            bond::bonded<bond::Void>> call) override
     {
+        // TODO: the current implementation requires that we respond with dummy data.
+        // This will be fixed in a later release.
         call.Finish(bond::bonded<bond::Void>{bond::Void()}, Status::OK);
     }
 
     void PingShouldThrow(
         bond::ext::gRPC::unary_call<
-        bond::bonded<PingRequest>,
-        bond::bonded<PingReply>> call) override
+            bond::bonded<PingRequest>,
+            bond::bonded<PingReply>> call) override
     {
         call.FinishWithError(Status(StatusCode::CANCELLED, "do not want to respond"));
     }
@@ -98,8 +104,8 @@ class PingPongServiceImpl final : public PingPong<PingRequest>::Service
 {
     void Ping(
         bond::ext::gRPC::unary_call<
-        bond::bonded<PingRequest>,
-        bond::bonded<PingReply>> call) override
+            bond::bonded<PingRequest>,
+            bond::bonded<PingReply>> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -150,7 +156,8 @@ int main()
     builder.SetThreadPool(threadPool);
     const std::string server_address("127.0.0.1:50051");
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    builder.RegisterService(&double_ping_service)
+    builder
+        .RegisterService(&double_ping_service)
         .RegisterService(&ping_pong_service);
     std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
 
@@ -214,12 +221,12 @@ int main()
                 if(status.ok())
                 {
                     pingVoidIsCorrectResponse = true;
-                    ping_event.set();
                 }
                 else
                 {
                     pingVoidIsCorrectResponse = false;
                 }
+                ping_event.set();
             };
 
         doublePing.AsyncPingVoid(&pingVoidContext, f_print);
@@ -230,14 +237,12 @@ int main()
             {
                 pingShouldThrowIsCorrectResponse = false;
 
-                if(!status.ok())
+                if(status.error_code() == StatusCode::CANCELLED)
                 {
-                    if(status.error_code() == StatusCode::CANCELLED)
-                    {
-                        pingShouldThrowIsCorrectResponse = true;
-                        ping_event.set();
-                    }
+                    pingShouldThrowIsCorrectResponse = true;
                 }
+
+                ping_event.set();
             };
 
         doublePing.AsyncPingShouldThrow(&pingShouldThrowContext, req, f_print);
