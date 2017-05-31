@@ -41,5 +41,7 @@ target_link_libraries (grpc_test_common PUBLIC
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     grpc++)
 
-add_unit_test (thread_pool.cpp)
 add_unit_test (io_manager.cpp)
+add_unit_test (thread_pool.cpp)
+add_unit_test (wait_callback.cpp)
+target_link_libraries(wait_callback PRIVATE bond_apply)

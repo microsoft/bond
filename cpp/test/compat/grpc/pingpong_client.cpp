@@ -8,9 +8,7 @@
 
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/thread_pool.h>
-#include <bond/ext/detail/event.h>
-
-#include <boost/optional/optional.hpp>
+#include <bond/ext/grpc/wait_callback.h>
 
 #include <chrono>
 #include <memory>
@@ -23,65 +21,6 @@ using grpc::ClientContext;
 using grpc::Status;
 
 using namespace PingPongNS;
-
-template <typename TResponse>
-class wait_callback
-{
-public:
-    wait_callback() :
-        _response(),
-        _status(),
-        _event()
-    { }
-
-    wait_callback(const wait_callback&) = delete;
-    wait_callback(wait_callback&&) = delete;
-    wait_callback& operator=(const wait_callback&) = delete;
-    wait_callback& operator=(wait_callback&&) = delete;
-
-    std::function<void(const bond::bonded<TResponse>&, const ::grpc::Status&)> callback()
-    {
-        return std::function<void(const bond::bonded<TResponse>&, const ::grpc::Status&)>(
-            [this](const bond::bonded<TResponse>& response, const ::grpc::Status& status)
-            {
-                _response.emplace(response);
-                _status.emplace(status);
-                _event.set();
-            });
-    }
-
-    operator std::function<void(const bond::bonded<TResponse>&, const ::grpc::Status&)>()
-    {
-        return callback();
-    }
-
-    void wait()
-    {
-        _event.wait();
-    }
-
-    template <typename Rep, typename Period>
-    bool wait(std::chrono::duration<Rep, Period> timeout)
-    {
-        return _event.wait(timeout);
-    }
-
-    const bond::bonded<TResponse>& response() const
-    {
-        return _response.get();
-    }
-
-    const grpc::Status& status() const
-    {
-        return _status.get();
-    }
-
-private:
-    boost::optional<bond::bonded<TResponse>> _response;
-    boost::optional<grpc::Status> _status;
-
-    bond::ext::detail::event _event;
-};
 
 int main()
 {
@@ -112,9 +51,9 @@ int main()
             printf("Sending\n");
             fflush(stdout);
 
-            wait_callback<PingResponse> cb;
+            bond::ext::gRPC::wait_callback<PingResponse> cb;
             client.AsyncPing(&context, bond::bonded<PingRequest>{ request }, cb);
-            bool gotResponse = cb.wait(std::chrono::seconds(1));
+            bool gotResponse = cb.wait_for(std::chrono::seconds(1));
 
             if (!gotResponse)
             {
@@ -150,9 +89,9 @@ int main()
             request.Payload = "error" + std::to_string(i);
             request.Action = PingAction::Error;
 
-            wait_callback<PingResponse> cb;
+            bond::ext::gRPC::wait_callback<PingResponse> cb;
             client.AsyncPing(&context, bond::bonded<PingRequest> { request }, cb);
-            bool gotResponse = cb.wait(std::chrono::seconds(1));
+            bool gotResponse = cb.wait_for(std::chrono::seconds(1));
 
             if (!gotResponse)
             {
