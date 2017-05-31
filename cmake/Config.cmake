@@ -75,6 +75,15 @@ if (WIN32)
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/client/bin/retail")
 endif()
 
+# find Java libraries and programs
+find_file (BOND_JAVA_CORE bond-5.0.0.jar
+    NO_DEFAULT_PATH
+    PATHS "${CMAKE_CURRENT_SOURCE_DIR}/java/core/build/libs")
+
+find_file (BOND_JAVA_COMPAT_TEST compat-1.0.jar
+    NO_DEFAULT_PATH
+    PATHS "${CMAKE_CURRENT_SOURCE_DIR}/java/compat/build/libs")
+
 # find python interpreter, library and boost python library.
 # to specify a different version, invoke cmake with:
 # -DPYTHON_EXECUTABLE=/path/to/python
