@@ -26,7 +26,7 @@ namespace bond { namespace ext { namespace gRPC {
 /// been called. Then, the status() and response() member functions can be
 /// called to inspect the results.
 template <typename TResponse>
-class wait_callback
+class wait_callback final
 {
 public:
     wait_callback() : _impl(std::make_shared<impl>()) { }
@@ -95,7 +95,7 @@ private:
     /// The interesting guts of wait_callback. We use an impl class so that
     /// wait_callback can be copied and all the copies affect the same underlying
     /// state.
-    struct impl
+    struct impl final
     {
         impl() = default;
         impl(const impl&) = delete;
