@@ -75,7 +75,7 @@ initSuperSchema _ _ = error "Java: base type was not a UserDefined"
 
 initAttr :: Text -> Attribute -> Text
 initAttr target Attribute {..} =
-    [lt|#{target}.metadata.attributes.put(#{name}, #{value});|]
+    [lt|#{target}.metadata.attributes.put("#{name}", "#{value}");|]
     where
         name = showQualifiedName attrName
         value = attrValue
