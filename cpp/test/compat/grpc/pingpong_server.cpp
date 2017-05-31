@@ -104,7 +104,7 @@ int main()
     printf("Server ready\n");
     fflush(stdout);
 
-    bool countdownSet = Countdown.wait(std::chrono::seconds(30));
+    bool countdownSet = Countdown.wait_for(std::chrono::seconds(30));
 
     if (!countdownSet ||
         (NumRequestsReceived != NumRequests) ||

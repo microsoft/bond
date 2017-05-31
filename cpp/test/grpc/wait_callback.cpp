@@ -134,7 +134,7 @@ namespace wait_callback_tests
 
         // This is a clumsy attempt to get the thread into the wait_for method
         // before invoking the callback.
-        bool wasStarted = threadStarted.wait(std::chrono::seconds(30));
+        bool wasStarted = threadStarted.wait_for(std::chrono::seconds(30));
         UT_AssertIsTrue(wasStarted);
 
         cb(anyBondedValue, anyStatus);

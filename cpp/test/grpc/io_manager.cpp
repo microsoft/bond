@@ -58,7 +58,7 @@ class io_managerTests
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
         grpc::Alarm alarm(ioManager.cq(), deadline, &act);
 
-        bool wasSet = act.completion_event.wait(std::chrono::seconds(30));
+        bool wasSet = act.completion_event.wait_for(std::chrono::seconds(30));
         UT_AssertIsTrue(wasSet);
     }
 
@@ -79,7 +79,7 @@ class io_managerTests
             alarms.emplace_back(ioManager.cq(), deadline, &act);
         }
 
-        bool wasSet = act.completion_event.wait(std::chrono::seconds(30));
+        bool wasSet = act.completion_event.wait_for(std::chrono::seconds(30));
         UT_AssertIsTrue(wasSet);
     }
 
@@ -119,10 +119,10 @@ class io_managerTests
             });
         }
 
-        bool wasSet = threadsStarted.wait(std::chrono::seconds(30));
+        bool wasSet = threadsStarted.wait_for(std::chrono::seconds(30));
         UT_AssertIsTrue(wasSet); // all the threads took too long to get started
 
-        wasSet = threadsObservedShutdown.wait(std::chrono::seconds(30));
+        wasSet = threadsObservedShutdown.wait_for(std::chrono::seconds(30));
         UT_AssertIsTrue(wasSet); // took too long to see the io_manager shutdown
 
         for (auto& thread : threads)
@@ -143,7 +143,7 @@ class io_managerTests
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
         grpc::Alarm alarm(ioManager.cq(), deadline, &act);
 
-        bool wasSet = act.completion_event.wait(std::chrono::milliseconds(1250));
+        bool wasSet = act.completion_event.wait_for(std::chrono::milliseconds(1250));
         UT_AssertIsTrue(!wasSet);
 
         // since we've put something into the completion queue, we need to
@@ -153,7 +153,7 @@ class io_managerTests
         // test that we can call start multiple times
         ioManager.start();
 
-        wasSet = act.completion_event.wait(std::chrono::seconds(30));
+        wasSet = act.completion_event.wait_for(std::chrono::seconds(30));
         UT_AssertIsTrue(wasSet);
     }
 
