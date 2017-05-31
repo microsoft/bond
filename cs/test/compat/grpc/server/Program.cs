@@ -76,9 +76,10 @@ namespace PingPongServer
 
             bool countdownSet = Countdown.Wait(30000);
 
-            pingServer.ShutdownAsync().GetAwaiter().GetResult();
+            bool shutdownCompleted = pingServer.ShutdownAsync().Wait(30000);
 
             if (!countdownSet ||
+                !shutdownCompleted ||
                 (NumRequestsReceived != (int)PingConstants.NumRequests) ||
                 (NumErrorsReceived != (int)PingConstants.NumErrors))
             {

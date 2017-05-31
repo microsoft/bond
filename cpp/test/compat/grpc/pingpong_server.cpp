@@ -105,7 +105,7 @@ int main()
 
     bool countdownSet = Countdown.wait(std::chrono::seconds(30));
 
-    server->Shutdown();
+    server->Shutdown(std::chrono::system_clock::now() + std::chrono::seconds(30));
     server->Wait();
 
     if (!countdownSet ||
