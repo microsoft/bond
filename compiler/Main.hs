@@ -69,16 +69,7 @@ writeSchema _ = error "writeSchema: impossible happened."
 cppCodegen :: Options -> IO()
 cppCodegen options@Cpp {..} = do
     let typeMapping = maybe cppTypeMapping cppCustomAllocTypeMapping allocator
-    concurrentlyFor_ files $ codeGen options typeMapping $
-        [ reflection_h export_attribute
-        , types_h header enum_header allocator
-        , types_cpp
-        , apply_h applyProto export_attribute
-        , apply_cpp applyProto
-        , comm_h export_attribute
-        , comm_cpp
-        ] <>
-        [ enum_h | enum_header]
+    concurrentlyFor_ files $ codeGen options typeMapping templates
   where
     applyProto = map snd $ filter (enabled apply) protocols
     enabled a p = null a || fst p `elem` a
@@ -91,6 +82,19 @@ cppCodegen options@Cpp {..} = do
         , (Simple,  ProtocolReader " ::bond::SimpleBinaryReader< ::bond::InputBuffer>")
         , (Simple,  ProtocolWriter " ::bond::SimpleBinaryWriter< ::bond::OutputBuffer>")
         ]
+    templates = concat $ map snd $ filter fst codegen_templates
+    codegen_templates = [ (core_enabled, core_files)
+                        , (comm_enabled, [comm_h export_attribute, comm_cpp])
+                        , (grpc_enabled, [grpc_h export_attribute])
+                        ]
+    core_files = [
+          reflection_h export_attribute
+        , types_h header enum_header allocator
+        , types_cpp
+        , apply_h applyProto export_attribute
+        , apply_cpp applyProto
+        ] <>
+        [ enum_h | enum_header]
 cppCodegen _ = error "cppCodegen: impossible happened."
 
 csCodegen :: Options -> IO()

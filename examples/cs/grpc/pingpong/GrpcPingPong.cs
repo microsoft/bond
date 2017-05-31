@@ -11,6 +11,7 @@ namespace Examples.GrpcPingPong
 
     public static class GrpcPingPong
     {
+        const string Address = "127.0.0.1";
         const int PingPort = 50051;
 
         static Server pingServer;
@@ -26,11 +27,11 @@ namespace Examples.GrpcPingPong
                     PingPong<PingRequest>.BindService(new PingPongService()),
                     DoublePing.BindService(new DoublePingService())
                 },
-                Ports = { new ServerPort("localhost", PingPort, ServerCredentials.Insecure) }
+                Ports = { new ServerPort(Address, PingPort, ServerCredentials.Insecure) }
             };
             pingServer.Start();
 
-            pingChannel = new Channel("localhost", PingPort, ChannelCredentials.Insecure);
+            pingChannel = new Channel(Address, PingPort, ChannelCredentials.Insecure);
 
             var tasks = MakeRequestsAndPrintAsync(5);
 

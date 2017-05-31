@@ -53,6 +53,9 @@ different versioning scheme, following the Haskell community's
       and
       [the bf example](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-bdda0f39d99280d4858b4453906eea17)
       for more details.
+* Initial support for sending
+  [Bond objects over gRPC](https://microsoft.github.io/bond/manual/bond_over_grpc.html)
+  has been added.
 * The `bond::Apply` function now has a uniform signature. Call sites for
 the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
 `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now

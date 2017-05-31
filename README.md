@@ -20,13 +20,16 @@ are preserved for transition purposes.**
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
-For details, see the User's Manuals for
-[C++](https://Microsoft.github.io/bond/manual/bond_cpp.html),
-[C#](https://Microsoft.github.io/bond/manual/bond_cs.html) and
-[Python](https://Microsoft.github.io/bond/manual/bond_py.html), and the
-documentation of the compiler
-[tool](https://microsoft.github.io/bond/manual/compiler.html) and
-[library](https://hackage.haskell.org/package/bond).
+For details, see the User's Manuals:
+
+* [C++](https://Microsoft.github.io/bond/manual/bond_cpp.html)
+* [C#](https://Microsoft.github.io/bond/manual/bond_cs.html)
+* [Python](https://Microsoft.github.io/bond/manual/bond_py.html)
+* [Bond-over-gRPC](https://Microsoft.github.io/bond/manual/bond_over_grpc.html)
+* [`gbc`, the Bond compiler/codegen tool](https://microsoft.github.io/bond/manual/compiler.html)
+    * See also
+      [the compiler library](https://hackage.haskell.org/package/bond) that
+      powers `gbc`.
 
 For a discussion how Bond compares to similar frameworks see [Why Bond](https://Microsoft.github.io/bond/why_bond.html).
 
@@ -82,15 +85,18 @@ sudo make install
 The `build` directory is just an example. Any directory can be used as the build
 destination.
 
-In order to build all the C++ and Python tests and examples, a few more
-packages are needed:
+In order to build all the C++ and Python tests and examples, as well as
+Bond-over-gRPC and Bond Comm, a few more packages are needed:
 
 ```bash
 sudo apt-get install \
-    python2.7-dev \
+    autoconf \
+    build-essential \
     libboost-date-time-dev \
+    libboost-python-dev \
     libboost-test-dev \
-    libboost-python-dev
+    libtool \
+    python2.7-dev
 
 cabal install happy
 ```
@@ -219,9 +225,17 @@ set BOOST_LIBRARYDIR=D:\boost_1_58_0\lib64-msvc-14.0
 ```
 
 The core Bond library and most examples only require Boost headers. The
-pre-built libraries are only needed for unit tests and Python support. If Boost
-or Python libraries are not found on the system, then some tests and examples will
-not be built.
+pre-built libraries are only needed for unit tests, Python, gRPC, and Comm
+support. If Boost or Python libraries are not found on the system, then some
+tests and examples will not be built.
+
+To build Bond's gRPC++ integration from source, some of
+[gRPC's prerequisites](https://github.com/grpc/grpc/blob/master/INSTALL.md#building-using-cmake-with-boringssl)
+are also needed:
+
+```bash
+choco install activeperl golang ninja yasm
+```
 
 In order to generate a solution to build the C++ and Python versions with Visual
 Studio 2015 run the following commands from the root `bond` directory:

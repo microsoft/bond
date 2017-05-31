@@ -2,6 +2,10 @@ if (NOT BOND_SKIP_CORE_TESTS)
     add_subfolder (core "examples/core")
 endif()
 
-if (NOT BOND_CORE_ONLY)
+if (BOND_ENABLE_COMM)
     add_subfolder (comm "examples/comm")
+endif()
+
+if (BOND_ENABLE_GRPC)
+    add_subfolder (grpc "examples/grpc")
 endif()

@@ -78,7 +78,7 @@ int main(int argc, char** argv)
     bool server_ok = false;
     bool client_ok = false;
 
-    char   server_buffer[128];
+    char server_buffer[128];
 
     if (fgets(server_buffer, 128, server_process))
     {
@@ -99,7 +99,7 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    char   client_buffer[128];
+    char client_buffer[128];
 
     while (fgets(client_buffer, 128, client_process))
     {
