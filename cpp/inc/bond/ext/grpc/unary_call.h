@@ -20,31 +20,70 @@
 #include <bond/ext/grpc/detail/io_manager_tag.h>
 
 #include <boost/assert.hpp>
+#include <boost/optional.hpp>
 #include <atomic>
+#include <memory>
 
 namespace bond { namespace ext { namespace gRPC {
 
 namespace detail {
 
+    template <typename TRequest, typename TResponse, typename TThreadPool>
+    struct service_unary_call_data;
+
     /// @brief Implementation class that holds the state associated with a
     /// single async, unary call.
     ///
-    /// It manages its own lifetime: to send a response, it enques itself in
-    /// the completion queue. When that sending of the response is done and
-    /// it is dequeued from the completion queue, it deletes itself.
+    /// Two different object participate in shared ownership of instances of
+    /// this class: the user-facing unary_call object and the
+    /// response_sent_tag helper struct.
+    ///
+    /// To ensure that it stays alive while sending a response,
+    /// unary_call_impl creates a response_sent_tag with a shared_ptr to
+    /// itself that it enques in the completion queue. When that sending of
+    /// the response is done and it is dequeued from the completion queue,
+    /// response_sent_tag clears its shared_ptr to the unary_call_impl.
+    ///
+    /// The user-facing unary_call object also has a shared_ptr to an
+    /// instance of unary_call_impl to keep the state alive while the call
+    /// object is itself alive.
     template <typename TRequest, typename TResponse>
-    struct unary_call_impl final : detail::io_manager_tag
+        struct unary_call_impl final : std::enable_shared_from_this<unary_call_impl<TRequest, TResponse>>
     {
+        /// @brief Handles keeping a unary_call_impl instance alive while a
+        /// response it being sent.
+        struct response_sent_tag final : detail::io_manager_tag
+        {
+            std::shared_ptr<unary_call_impl> _parent;
+
+            explicit response_sent_tag(std::shared_ptr<unary_call_impl>&& parent)
+                : _parent(std::move(parent))
+            {
+                BOOST_ASSERT(_parent);
+            }
+
+            void invoke(bool /* ok */) override
+            {
+                // response has been sent, so we no longer need to keep the
+                // parent alive
+                _parent.reset();
+            }
+        };
+
         grpc::ServerContext _context;
         TRequest _request;
         grpc::ServerAsyncResponseWriter<bond::bonded<TResponse>> _responder;
+        /// Tracks whether any response has been sent yet.
         std::atomic_flag _responseSentFlag;
+        /// Used to keep this instance alive while a response is being sent.
+        boost::optional<response_sent_tag> _responseSentTag;
 
         unary_call_impl()
             : _context(),
             _request(),
             _responder(&_context),
-            _responseSentFlag()
+            _responseSentFlag(),
+            _responseSentTag()
         { }
 
         unary_call_impl(const unary_call_impl&) = delete;
@@ -55,7 +94,8 @@ namespace detail {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
             {
-                _responder.Finish(msg, status, this);
+                _responseSentTag.emplace(this->shared_from_this());
+                _responder.Finish(msg, status, &_responseSentTag.get());
             }
         }
 
@@ -64,13 +104,9 @@ namespace detail {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
             {
-                _responder.FinishWithError(status, this);
+                _responseSentTag.emplace(this->shared_from_this());
+                _responder.FinishWithError(status, &_responseSentTag.get());
             }
-        }
-
-        void invoke(bool /* ok */) override
-        {
-            delete this;
         }
     };
 
@@ -82,33 +118,26 @@ namespace detail {
 /// client.
 ///
 /// If no explicit call to Finish/FinishWithError has been made before this
-/// call is destroyed, a generic internal server error is sent.
+/// unary_call instance is destroyed, a generic internal server error is
+/// sent.
 ///
-/// \note This class can only be moved.
+/// @note This class can only be moved.
 template <typename TRequest, typename TResponse>
 class unary_call final
 {
 public:
-    unary_call() noexcept : _impl(nullptr) {}
-
-    explicit unary_call(detail::unary_call_impl<TRequest, TResponse>* impl) noexcept
-        : _impl(impl)
-    {
-        BOOST_ASSERT(impl);
-    }
-
     unary_call(unary_call&& other) noexcept
-        : _impl(other._impl)
+        : _impl(std::move(other._impl))
     {
-        other._impl = nullptr;
+        other._impl.reset();
     }
 
     unary_call& operator=(unary_call&& rhs)
     {
         if (this != &rhs)
         {
-            reset(rhs.impl);
-            rhs._impl = nullptr;
+            reset(std::move(rhs.impl));
+            rhs._impl.reset();
         }
 
         return *this;
@@ -132,24 +161,28 @@ public:
     /// @brief Get the server context for this call.
     const grpc::ServerContext& context() const
     {
+        BOOST_ASSERT(_impl);
         return _impl->_context;
     }
 
     /// @brief Get the server context for this call.
     grpc::ServerContext& context()
     {
+        BOOST_ASSERT(_impl);
         return _impl->_context;
     }
 
     /// @brief Get the request message for this call.
     const TRequest& request() const
     {
+        BOOST_ASSERT(_impl);
         return _impl->_request;
     }
 
     /// @brief Get the request message for this call.
     TRequest& request()
     {
+        BOOST_ASSERT(_impl);
         return _impl->_request;
     }
 
@@ -168,6 +201,7 @@ public:
     /// honored.
     void Finish(const bond::bonded<TResponse>& msg, const grpc::Status& status = grpc::Status::OK)
     {
+        BOOST_ASSERT(_impl);
         _impl->Finish(msg, status);
     }
 
@@ -177,32 +211,38 @@ public:
     /// honored.
     void FinishWithError(const grpc::Status& status)
     {
+        BOOST_ASSERT(_impl);
         _impl->FinishWithError(status);
     }
 
+    template <typename TRequest, typename TResponse, typename TThreadPool>
+    friend struct detail::service_unary_call_data;
+
 private:
-    detail::unary_call_impl<TRequest, TResponse>* _impl;
+    std::shared_ptr<detail::unary_call_impl<TRequest, TResponse>> _impl;
+
+    explicit unary_call(std::shared_ptr<detail::unary_call_impl<TRequest, TResponse>>&& impl) noexcept
+        : _impl(std::move(impl))
+    {
+        BOOST_ASSERT(_impl);
+    }
 
     /// Resets the underlying detail::unary_call_impl that this is wrapping.
     /// If the previous \p _impl was non-null, attempts to send an internal
     /// server error.
-    ///
-    /// By always sending something back we get two benefits:
-    ///    - the client will get some sort of response instead of having to
-    ///      wait for a timeout
-    ///    - resources will be cleaned up after the response has been sent
-    void reset(detail::unary_call_impl<TRequest, TResponse>* newValue)
+    void reset(std::shared_ptr<detail::unary_call_impl<TRequest, TResponse>>&& newValue)
     {
         auto oldValue = _impl;
         _impl = newValue;
 
-        if (oldValue != newValue)
+        if (oldValue != _impl)
         {
             if (oldValue)
             {
-                // the current impl is being destroyed, so send an error
-                // response. Relies on unary_call_impl to only send on
-                // actual response.
+                // the current impl may not have had Finish called on it by
+                // the user code, so attempt to send an error response.
+                // Relies on unary_call_impl to only send one actual
+                // response.
                 oldValue->FinishWithError(
                     grpc::Status{
                         grpc::StatusCode::INTERNAL,
