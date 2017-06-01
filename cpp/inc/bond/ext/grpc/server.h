@@ -90,14 +90,12 @@ namespace bond { namespace ext { namespace gRPC {
         void Shutdown(const T& deadline)
         {
             _grpcServer->Shutdown(deadline);
-            _ioManager.shutdown();
         }
 
         /// Shutdown the server, waiting for all rpc processing to finish.
         void Shutdown()
         {
             _grpcServer->Shutdown();
-            _ioManager.shutdown();
         }
 
         /// @brief Block waiting for all work to complete.
@@ -107,7 +105,6 @@ namespace bond { namespace ext { namespace gRPC {
         void Wait()
         {
             _grpcServer->Wait();
-            _ioManager.wait();
         }
 
         friend class server_builder_core<TThreadPool>;
