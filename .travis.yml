@@ -73,7 +73,7 @@ before_script:
 script:
     - mkdir build && cd build
 
-    - if [ "$FLAVOR" == "cs" ]; then cmake ..; fi
+    - if [ "$FLAVOR" == "cs" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_COMM=FALSE -DBOND_ENABLE_GRPC=FALSE ..; fi
     - if [ "$FLAVOR" == "cs" ]; then make --jobs 2 DESTDIR=$HOME install; fi
     - if [ "$FLAVOR" == "cs" ]; then cd ..; fi
     - if [ "$FLAVOR" == "cs" ]; then export BOND_COMPILER_PATH=$HOME/usr/local/bin; fi
@@ -86,7 +86,7 @@ script:
     - if [ "$FLAVOR" == "cpp-comm" ]; then make --jobs 2 check; fi
     - if [ "$FLAVOR" == "cpp-grpc" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_COMM=FALSE -DgRPC_ZLIB_PROVIDER=package ..; fi
     - if [ "$FLAVOR" == "cpp-grpc" ]; then make --jobs 2 check; fi
-    - if [ "$FLAVOR" == "hs" ]; then cmake ..; fi
+    - if [ "$FLAVOR" == "hs" ]; then cmake -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_COMM=FALSE -DBOND_ENABLE_GRPC=FALSE ..; fi
     - if [ "$FLAVOR" == "hs" ]; then make gbc-tests; fi
     - if [ "$FLAVOR" == "hs" ]; then cd ../compiler; fi
     - if [ "$FLAVOR" == "hs" ]; then ../build/compiler/build/gbc-tests/gbc-tests; fi
