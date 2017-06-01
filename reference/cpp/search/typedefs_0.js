@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['field_5fmodifier',['field_modifier',['../structbond_1_1reflection_1_1_field_template.html#acd083f1d610c38f67da966ffed8fa3ae',1,'bond::reflection::FieldTemplate']]],
-  ['field_5fpointer',['field_pointer',['../structbond_1_1reflection_1_1_field_template.html#aae709b2554b797f5209f8f394284bf1d',1,'bond::reflection::FieldTemplate']]],
-  ['field_5ftype',['field_type',['../structbond_1_1reflection_1_1_field_template.html#ace30bbaf65f63831316c0bd12cd87260',1,'bond::reflection::FieldTemplate']]]
+  ['callbacktype',['CallbackType',['../structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ac79c6c65bab02e5211dea9a52de85c09',1,'bond::ext::gRPC::detail::client_unary_call_data::CallbackType()'],['../structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html#ab791475985f79e75f4f9c1a9771f2933',1,'bond::ext::gRPC::detail::service_unary_call_data::CallbackType()']]]
 ];

@@ -144,6 +144,9 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#deserializer">Deserializer</a></li>
 <li><a href="#marshaling">Marshaling</a></li>
 <li><a href="#schema-evolution">Schema evolution</a></li>
+<li><a href="#default-values">Default values</a></li>
+<li><a href="#default-value-of-nothing">Default value of <code>nothing</code></a></li>
+<li><a href="#nullable-types">Nullable types</a></li>
 <li><a href="#protocols">Protocols</a><ul>
 <li><a href="#compact-binary">Compact Binary</a></li>
 <li><a href="#fast-binary">Fast Binary</a></li>
@@ -316,7 +319,6 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 {
     <span class="dv">0</span>: <span class="dt">string</span> str = nothing;
 }</code></pre></td></tr></table></div>
-<p>Caveat: <code>blob</code>, <code>nullable&lt;blob&gt;</code> and <code>blob = nothing</code> are all represented as an <code>ArraySegment&lt;byte&gt;</code> in the generated C# code. The default value for all three is <code>default(ArraySegment&lt;byte&gt;)</code> (in which the <code>Array</code> field is <code>null</code>). An empty <code>ArraySegment&lt;byte&gt;</code> (in which the <code>Array</code> field is not <code>null</code> but the <code>Count</code> is 0) is treated as a non-default value, so it will not be omitted for optional fields. This behavior will be changing in a future release, to align it with how other types are handled and how nullable/nothing fields are handled in other languages.</p>
 <p>Code generation can be customized by passing one or more of the following command line options to <code>gbc</code>:</p>
 <p><code>--fields</code></p>
 <p>Schema fields are represented by public fields with initializers and no constructor is generated.</p>
@@ -412,7 +414,7 @@ Marshal.<span class="fu">To</span>(writer, src);
 <li>Adding or removing an <code>optional</code> or <code>required_optional</code> field</li>
 <li>Changing a field’s type between <code>int32</code> and <code>enum</code></li>
 <li>Changing a field’s type between <code>vector&lt;T&gt;</code> and <code>list&lt;T&gt;</code></li>
-<li>Changing a field’s type between <code>blob</code> and <code>vector&lt;uint8&gt;</code> or <code>blob</code> and <code>list&lt;uint8&gt;</code></li>
+<li>Changing a field’s type between <code>blob</code> and <code>vector&lt;int8&gt;</code> or <code>blob</code> and <code>list&lt;int8&gt;</code></li>
 <li>Changing a field’s type between <code>T</code> and <code>bonded&lt;T&gt;</code></li>
 <li>Adding new enumeration constants that don’t alter existing constants (beware of implicit reordering)</li>
 </ul>
@@ -439,6 +441,94 @@ Marshal.<span class="fu">To</span>(writer, src);
 <li>Caution should be used when changing or reusing field names as this could break text-based protocols like <a href="#simple-json">SimpleJsonProtocol</a></li>
 <li><code>required</code> should be used sparingly and only with careful consideration</li>
 </ul>
+<h1 id="default-values">Default values</h1>
+<p>Fields of a Bond defined struct always have a default value, either explicitly specified in the .bond file, or the implicit default.</p>
+<p>The implicit default is</p>
+<ul>
+<li><code>false</code> for <code>bool</code> fields</li>
+<li>0 for arithmetic types</li>
+<li>empty for string/containers</li>
+<li><code>null</code> for <a href="#nullable-types">nullable type</a></li>
+<li>for struct and <code>bonded</code> fields, an instance of a struct in which all of the fields are initialized to their default values, recursively</li>
+</ul>
+<p>There is no implicit default for enum fields: they must have an explicit default value in the .bond file.</p>
+<p>Explicit default values (other than <a href="#default-value-of-nothing"><code>nothing</code></a>) may not be specified for <code>nullable</code> or container fields. Struct and <code>bonded</code> fields may not have an explicit default value. They always use their implicit default values.</p>
+<p>The default values of fields matter because this is what an application will see after deserialization for any optional field that wasn’t present in the payload (e.g. when the payload was created from an older version of the schema).</p>
+<p>Additionally, some protocols can omit <a href="bond_cpp.html#required-fields"><code>optional</code> non-struct fields</a> set to their default values, reducing payload size.</p>
+<h1 id="default-value-of-nothing">Default value of <code>nothing</code></h1>
+<p>Sometimes it is necessary to distinguish between any of the possible values of a field and absence of a value. To support such scenarios Bond allows non-struct fields’ default values to be explicitly set to <code>nothing</code> <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
+<div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="kw">struct</span> AboutNothing
+{
+    <span class="dv">0</span>: uint16 n = nothing;
+    <span class="dv">1</span>: <span class="dt">string</span> name = nothing;
+    <span class="dv">2</span>: list&lt;<span class="dt">float</span>&gt; floats = nothing;
+}</code></pre></td></tr></table></div>
+<p>Setting a field’s default to <code>nothing</code> doesn’t affect the schema type of the field, however it may affect what type the field is mapped to in the generated code. The reason why is pretty obvious: some types such as <code>ushort</code> just can’t represent absence of a value. In C# reference types already have a way to represent absence of value: <code>null</code>. For these types specifying a default of <code>nothing</code> doesn’t change the field type in the generated code. For C# value types such as <code>UInt16</code>, the generated code will use <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/nullable-types/">C# Nullable types</a> (e.g. <code>UInt16?</code>).</p>
+<p>The fact that setting the default value of a field to <code>nothing</code> doesn’t affect the field’s schema type has an important consequence: the default value of the field doesn’t have a serialized representation. What this means in practice depends on whether the field is <code>optional</code> or <code>required</code>. Optional fields set to <code>nothing</code> are usually omitted during serialization <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>, just like for any other default values. <a href="bond_cpp.html#required-fields">Required fields</a>, by definition, can never be omitted. Since <code>nothing</code> has no serialized representation, an attempt to serialize an object with required fields set to <code>nothing</code> will result in a runtime exception. If a null value needs to be represented in the serialized form, then a default of <code>nothing</code> is the wrong choice and a <a href="#nullable-types">nullable type</a> should be used instead.</p>
+<h1 id="nullable-types">Nullable types</h1>
+<p>For any type in the Bond meta-schema, <code>nullable&lt;T&gt;</code> defines a nullable type. A nullable type can store all the same values as its base type plus one additional value: <code>null</code>.</p>
+<div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="kw">struct</span> Nullables
+{
+    <span class="dv">0</span>: nullable&lt;<span class="dt">bool</span>&gt;         b; <span class="co">// can be true, false, or null</span>
+    <span class="dv">1</span>: list&lt;nullable&lt;<span class="dt">string</span>&gt;&gt; l; <span class="co">// can be a (possibly empty) list or null</span>
+}</code></pre></td></tr></table></div>
+<p>The default value for a field of a nullable type is always implicitly set to <code>null</code>. Explicit default values for nullable fields are not supported.</p>
+<p>In C# reference types already have a way to represent <code>null</code>: <code>null</code>. For these types <code>nullable&lt;T&gt;</code> and <code>T</code> will have the same type in the generated code. For C# value types such as <code>UInt16</code>, the generated code will use <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/nullable-types/">C# Nullable types</a> (e.g. <code>bool?</code>).</p>
+<p>Caveat: <code>blob</code>, <code>nullable&lt;blob&gt;</code> and <code>blob = nothing</code> are all represented as an <code>ArraySegment&lt;byte&gt;</code> in the generated C# code. The C# default value for all three is <code>default(ArraySegment&lt;byte&gt;)</code> (in which the <code>Array</code> field is <code>null</code>). An empty <code>ArraySegment&lt;byte&gt;</code> (in which the <code>Array</code> field is not <code>null</code> but the <code>Count</code> is 0) is treated as a non-default value, so it will not be omitted for optional fields. This behavior will be changing in a future release, to align it with how other types are handled and how nullable/nothing fields are handled in other languages.</p>
+<p>Since a nullable type must represent the additional value of <code>null</code>, its serialized representation necessarily incurs some overhead compared to the base type. Often it is more efficient to avoid using a nullable type and instead to designate one of the normal values to handle the special case that otherwise would be represented by <code>null</code>. For example <em>empty</em> is usually a good choice for string and container types and 0 for arithmetic types. Another option that may sometimes be appropriate is setting the default value of a non-struct field to <a href="#default-value-of-nothing"><code>nothing</code></a>. Struct fields can have neither an explicit default value nor be set to <code>nothing</code>, so <code>nullable</code> needs to be used if <code>null</code> semantics are needed for these fields.</p>
+<p>The canonical scenario where a nullable type is the right choice is recursive structures. For example here’s how Bond <code>TypeDef</code> struct is defined:</p>
+<div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="sourceCode"><pre><code class="sourceCode cs"><span class="kw">struct</span> TypeDef
+{
+    <span class="co">// Type identifier</span>
+    <span class="dv">0</span>: BondDataType id = BT_STRUCT;
+
+    <span class="co">// Index of struct definition in SchemaDef.structs when id == BT_STRUCT</span>
+    <span class="dv">1</span>: uint16 struct_def = <span class="dv">0</span>;
+
+    <span class="co">// Type definition for:</span>
+    <span class="co">//  list elements (id == BT_LIST),</span>
+    <span class="co">//  set elements (id == BT_SET),</span>
+    <span class="co">//  or mapped value (id == BT_MAP)</span>
+    <span class="dv">2</span>: nullable&lt;TypeDef&gt; element;
+
+    <span class="co">// Type definition for map key when id == BT_MAP</span>
+    <span class="dv">3</span>: nullable&lt;TypeDef&gt; key;
+
+    <span class="co">// True if the type is bonded&lt;T&gt;; used only when id == BT_STRUCT</span>
+    <span class="dv">4</span>: <span class="dt">bool</span> bonded_type;
+}</code></pre></td></tr></table></div>
+<p>The <code>TypeDef</code> struct is used to represent the type of a field in a Bond schema. If the type is a container such as a list or map, the type definition becomes recursive. For example, a list type definition contains the type of the list element which of course itself can be a container of elements of some other type, and so on, until the recursion is terminated with a <code>null</code> value for the <code>element</code> and <code>key</code> fields.</p>
 <h1 id="protocols">Protocols</h1>
 <p>Bond protocols are pluggable, allowing application to choose the most appropriate encoding format. Bond supports three kinds of protocols:</p>
 <ul>
@@ -451,7 +541,7 @@ Marshal.<span class="fu">To</span>(writer, src);
 </ul>
 <h2 id="compact-binary">Compact Binary</h2>
 <p>A binary, tagged protocol using variable integer encoding and compact field header. A good choice, along with <a href="#fast-binary">Fast Binary</a>, for RPC scenarios.</p>
-<p>Implemented in <code>CompactBinaryReader</code> and <code>CompactBinaryWriter</code> classes. Version 2 of Compact Binary adds length prefix for structs. This enables deserialization of <a href="#understanding-bondedt"><code>bonded&lt;T&gt;</code></a> and skipping of unknown struct fields in constant time. The trade-off is double pass encoding, resulting in up to 30% slower serialization performance.</p>
+<p>Implemented in <code>CompactBinaryReader</code> and <code>CompactBinaryWriter</code> classes. Version 2 of Compact Binary adds length prefix for structs. This enables deserialization of <a href="#understanding-bondedt"><code>bonded&lt;T&gt;</code></a> and skipping of unknown fields in constant time. The trade-off is double pass encoding, resulting in up to 30% slower serialization performance.</p>
 <p>See also <a href="../reference/cpp/compact__binary_8h_source.html">Compact Binary encoding reference</a>.</p>
 <h2 id="fast-binary">Fast Binary</h2>
 <p>A binary, tagged protocol similar to <a href="#compact-binary">Compact Binary</a> but optimized for deserialization speed rather than payload compactness.</p>
@@ -1462,6 +1552,13 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <h2 id="python-users-manualbond_py"><a href="bond_py.html">Python User’s Manual</a></h2>
 <h2 id="bond-comm-overviewbond_comm"><a href="bond_comm.html">Bond Comm overview</a></h2>
 <h2 id="bond-over-grpc-overviewbond_over_grpc"><a href="bond_over_grpc.html">Bond-over-gRPC overview</a></h2>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>In Bond there is no concept of a default value for structs and thus a default of <code>nothing</code> can’t be set for fields of struct types or <code>bonded&lt;T&gt;</code>.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Some protocols might not support omitting optional fields (e.g. Simple Protocol). In such cases an attempt to serialize an object with field(s) set to <code>nothing</code> will result in a runtime exception.<a href="#fnref2">↩</a></p></li>
+</ol>
+</div>
 </div>
 </div>
 </body>

@@ -108,6 +108,7 @@
 </ul></li>
 <li><a href="#implementations">Implementations</a><ul>
 <li><a href="#bond-over-grpc-for-c">Bond-over-gRPC for C#</a></li>
+<li><a href="#bond-over-grpc-for-c-1">Bond-over-gRPC for C++</a></li>
 </ul></li>
 </ul>
 </div>
@@ -116,50 +117,128 @@
 <h1 class="title">Bond-over-gRPC</h1>
 </div>
 <h1 id="about">About</h1>
-<p>Bond-over-gRPC provides code generation from Bond IDL service definitions to send Bond objects via gRPC. The gRPC functionality supercedes the (now deprecated) Bond Comm framework.</p>
+<p>Bond-over-gRPC provides code generation from Bond IDL service definitions to send Bond objects via <a href="http://www.grpc.io/">gRPC</a> The gRPC functionality supercedes the (now deprecated) Bond Comm framework.</p>
 <h1 id="features">Features</h1>
 <h2 id="defining-services">Defining Services</h2>
-<p>The Bond IDL has been extended to support the definition of <a href="compiler.html#service-definition">services</a> and <a href="compiler.html#generic-service">generic services</a>. These definitions are used by the Bond compiler to generate:</p>
+<p>The Bond IDL has been extended to support the definition of <a href="compiler.html#service-definition">services</a> and <a href="compiler.html#generic-service">generic services</a>. These definitions are used by the Bond compiler to generate classes that provide:</p>
 <ul>
-<li>service stubs that can be used as the base for implementing services’ methods</li>
-<li>proxy stubs that can be used by clients to invoke those methods</li>
+<li>a service base that can be used as the basis for implementing services’ methods</li>
+<li>a proxy stub that can be used by clients to invoke those methods</li>
 </ul>
-<p>To generate these stubs, pass the <code>--grpc</code> flag to <code>gbc</code> (the Bond compiler tool).</p>
+<p>To generate these classes, pass the <code>--grpc</code> flag to <code>gbc</code> (the Bond compiler tool).</p>
 <p>Note that gRPC doesn’t provide a messaging pattern that matches the semantics of methods with a return type of <code>nothing</code>; to compensate, <code>gbc</code> provides generated wrappers to simulate the appropriate semantics.</p>
+<p>Also note that Bond-over-gRPC does not yet provide interfaces for gRPC’s streaming; this functionality will be added in the coming months.</p>
 <h1 id="implementations">Implementations</h1>
-<p>Bond-over-gRPC is available for C# now and will be released for C++ in a few weeks.</p>
+<p>Bond-over-gRPC is available for C# and C++.</p>
 <h2 id="bond-over-grpc-for-c">Bond-over-gRPC for C#</h2>
 <p>Given a service definition like the following:</p>
-<pre><code>service ExampleService
+<pre><code>service Example
 {
-    ExampleResponse Method(ExampleRequest);
+    ExampleResponse ExampleMethod(ExampleRequest);
 }</code></pre>
-<p><code>gbc</code> will produce stubs for gRPC with the <code>--grpc</code> flag:</p>
+<p><code>gbc</code> will generate C# classes for gRPC with the <code>--grpc</code> flag:</p>
 <pre><code>gbc c# --grpc example.bond</code></pre>
-<p>The service stub allows for the definition of the service implementation like this:</p>
-<pre><code>public class ExampleService : ExampleServiceBase
+<p>The key generated C# classes for gRPC are: * A simple class with the name of the service (e.g.: <code>Example</code>). This class provides some basic encapsulation of the server-side service base, the client-side proxy stub, and some static methods and data members for initialization. * The service base, which is named with the name of the service plus the suffix <code>Base</code> (e.g.: <code>Example.ExampleBase</code>). This class has abstract methods for each of the methods defined in the service IDL, serving as a base for the concrete implementation which will provide the actual server-side business logic. * The proxy stub, which is named with the name of the service plus the suffix <code>Client' (e.g.:</code>Example.ExampleClient`). This is used to invoke the service from the client side.</p>
+<p>To build the service functionality, simply write a concrete service implementation by subclassing the server base and supplying the business logic:</p>
+<pre><code>public class ExampleServiceImpl : Example.ExampleBase
 {
-    public override async Task&lt;IMessage&lt;ExampleResponse&gt;&gt; Method(IMessage&lt;ExampleRequest&gt; param, ServerCallContext context)
+    public override async Task&lt;IMessage&lt;ExampleResponse&gt;&gt; ExampleMethod(IMessage&lt;ExampleRequest&gt; param, ServerCallContext context)
     {
         ExampleRequest request = param.Payload.Deserialize();
-
-        // Service business logic
-
         var response = new ExampleResponse();
+
+        // Service business logic goes here
+
         return Message.From(response);
     }
 }</code></pre>
-<p>The proxy stub allows the client to invoke the remote service method like this:</p>
-<pre><code>var channel = new Channel(&quot;localhost&quot;, Port, ChannelCredentials.Insecure);
-var client = new ExampleClient(channel);
+<p>This service implementation is hooked up to a gRPC server as follows:</p>
+<pre><code>var server = new Grpc.Core.Server
+{
+    Services = { Example.BindService(new ExampleServiceImpl()) },
+    Ports = { new Grpc.Core.ServerPort(ExampleHost, ExamplePort, Grpc.Core.ServerCredentials.Insecure) }
+};
+server.Start();</code></pre>
+<p>At this point the server is ready to receive requests and route them to the service implemetation.</p>
+<p>On the client side, the proxy stub establishes a connection to the server like this:</p>
+<pre><code>var channel = new Grpc.Core.Channel(ExampleHost, ExamplePort, Grpc.Core.ChannelCredentials.Insecure);
+var client = new Example.ExampleClient(channel);</code></pre>
+<p>The proxy stub can then be used to make calls to the server as follows:</p>
+<pre><code>var request = new ExampleRequest();
+// Fill in request fields here
 
-var request = new ExampleRequest();
 IMessage&lt;ExampleResponse&gt; responseMessage = await client.Method(request);
-var response = responseMessage.Payload.Deserialize().Payload;</code></pre>
-<p>For more information about gRPC in C#, take a look at the <a href="http://www.grpc.io/docs/tutorials/basic/csharp.html">gRPC C# tutorial</a>. Note that the singatures generated by <code>gbc</code> are slightly different from the ones in the gRPC tutorial: on the service side, the request is wrapped in <code>IMessage&lt;T&gt;</code> and on the client side, the response is wrapped in <code>IMessage&lt;T&gt;</code>. This allows for better control over the time of deserialization and also helps prevent slicing when using polymorphic Bond types.</p>
+
+ExampleResponse response = responseMessage.Payload.Deserialize().Payload;
+// Examine response here</code></pre>
+<p>Note that the singatures generated by <code>gbc</code> are slightly different from the ones in the gRPC documentation: on the service side, the request is wrapped in <code>IMessage&lt;T&gt;</code> and on the client side, the response is wrapped in `IMessage<T>; this allows for better control over the time of deserialization and also helps prevent slicing when using polymorphic Bond types. Note also that Bond-over-gRPC does not provide synchronous APIs in C# by design.</p>
+<p>For more information about gRPC in C#, take a look at the <a href="http://www.grpc.io/docs/tutorials/basic/csharp.html">gRPC C# tutorial</a>.</p>
+<p>There is a <a href="https://github.com/Microsoft/bond-grpc-examples">Bond-over-gRPC standalone example project</a>.</p>
 <p>See also the following example:</p>
 <ul>
-<li><code>examples/cs/comm/grpc_pingpong</code></li>
+<li><code>examples/cs/grpc/pingpong</code></li>
+</ul>
+<h2 id="bond-over-grpc-for-c-1">Bond-over-gRPC for C++</h2>
+<p>Given a service definition like the following:</p>
+<pre><code>service Example
+{
+    ExampleResponse ExampleMethod(ExampleRequest);
+}</code></pre>
+<p><code>gbc</code> will generate C++ classes for gRPC with the <code>--grpc</code> flag:</p>
+<pre><code>gbc c++ --grpc example.bond</code></pre>
+<p>The key generated C++ classes for gRPC are: * A simple class with the name of the service (e.g.: <code>Example</code>). This class provides some basic encapsulation of the server-side service base and the client-side proxy stub. * The service base, which is an inner class named <code>Service</code> (e.g.: <code>Example::Service</code>). This class has abstract methods for each of the methods defined in the service IDL, serving as a base for the concrete implementation which will provide the actual server-side business logic. (Technically, <code>Service</code> is a type alias for <code>ServiceCore&lt;bond::ext::gRPC::thread_pool&gt;</code>. The <code>ServiceCore&lt;T&gt;</code> template can be used to customize the service implementation to use a different thread pool implementation.) * The proxy stub, which is an inner class named <code>Client</code> (e.g.: <code>Example::Client</code>). This is used to invoke the service from the client side. (Likewise, <code>Client</code> is a type alias for <code>ClientCore&lt;bond::ext::gRPC::thread_pool&gt;</code>. The <code>ClientCore&lt;T&gt;</code> template can be used to customize the client implementation to use a different thread pool implementation.)</p>
+<p>To build the service functionality, simply write a concrete service implementation by subclassing the server base and supplying the business logic:</p>
+<pre><code>class ExampleServiceImpl final : Example::Service
+{
+    void ExampleMethod(
+        bond::ext::gRPC::unary_call&lt;
+            bond::bonded&lt;ExampleRequest&gt;,
+            ExampleResponse&gt; call) override
+    {
+        ExampleRequest request = call.request().Deserialize();
+        ExampleResponse reply;
+
+        // Service business logic goes here
+
+        call.Finish(response);
+    }
+}</code></pre>
+<p>This service implementation is hooked up to a gRPC server as follows:</p>
+<pre><code>auto ioManager = std::make_shared&lt;bond::ext::gRPC::io_manager&gt;();
+auto threadPool = std::make_shared&lt;bond::ext::gRPC::thread_pool&gt;();
+const std::string server_address(Host + &quot;:&quot; + Port);
+
+ExampleServiceImpl service;
+bond::ext::gRPC::server_builder builder;
+builder.SetThreadPool(threadPool);
+builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+builder.RegisterService(&amp;service);
+std::unique_ptr&lt;bond::ext::gRPC::server&gt; server(builder.BuildAndStart());</code></pre>
+<p>At this point the server is ready to receive requests and route them to the service implemetation.</p>
+<p>On the client side, the proxy stub establishes a connection to the server like this:</p>
+<pre><code>auto ioManager = std::make_shared&lt;bond::ext::gRPC::io_manager&gt;();
+auto threadPool = std::make_shared&lt;bond::ext::gRPC::thread_pool&gt;();
+const std::string server_address(Host + &quot;:&quot; + Port);
+
+Example::Client client(
+    grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
+    ioManager,
+    threadPool);</code></pre>
+<p>The proxy stub can then be used to make calls to the server as follows:</p>
+<pre><code>ExampleRequest request;
+// Fill in request fields here
+
+bond::ext::gRPC::wait_callback&lt;ExampleResponse&gt; cb;
+client.AsyncExampleMethod(&amp;context, request, callback);
+
+callback.wait();
+ExampleResponse response = callback.response().Deserialize();
+// Examine response here</code></pre>
+<p>Note these APIs are significantly different from the APIs presented in the gRPC documentation; Bond-over-gRPC is attempting to provide a more straightforward API for aynchronous communication than gRPC currently presents in C++. The use of <a href="../reference/cpp/classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html"><code>wait_callback&lt;T&gt;</code></a> here is for illustrative purposes; any callback implementation with the same signature can be used. Note also the use of <code>bonded&lt;T&gt;</code> to wrap the request and response objects in several places; this allows for better control over the time of deserialization and also helps prevent slicing when using polymorphic Bond types. Convenience APIs are provided in some places to hide the use <code>bonded&lt;T&gt;</code> where possible. Finally, note that Bond-over-gRPC does not provide synchronous APIs in C++ by design.</p>
+<p>For more information about gRPC in C++, take a look at the <a href="http://www.grpc.io/docs/tutorials/basic/c.html">gRPC C++ tutorial</a>; however, keep in mind that the Bond-over-gRPC APIs diverge significantly from those documented there.</p>
+<p>See also the following example:</p>
+<ul>
+<li><code>examples/cpp/grpc/helloworld</code></li>
 </ul>
 </div>
 </div>

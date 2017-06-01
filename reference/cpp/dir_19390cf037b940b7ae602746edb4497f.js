@@ -10,7 +10,7 @@ var dir_19390cf037b940b7ae602746edb4497f =
     [ "message.h", "message_8h_source.html", null ],
     [ "service_table.h", "service__table_8h_source.html", null ],
     [ "services.h", "services_8h_source.html", null ],
-    [ "thread_pool.h", "thread__pool_8h_source.html", null ],
+    [ "thread_pool.h", "comm_2thread__pool_8h_source.html", null ],
     [ "timeout.h", "timeout_8h_source.html", null ],
     [ "transport.h", "transport_8h_source.html", null ],
     [ "wire_protocol.h", "wire__protocol_8h_source.html", null ]

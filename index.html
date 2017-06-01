@@ -155,7 +155,17 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>Bond is an open source, cross-platform framework for working with schematized data. It supports cross-language serialization/deserialization and powerful generic mechanisms for efficiently manipulating data. Bond is broadly used at Microsoft in high scale services.</p>
 <p><strong>IMPORTANT NOTE: The <a href="https://Microsoft.github.io/bond/manual/bond_comm.html">Bond Communications framework</a> – known as Bond Comm – is deprecated. We recommend using <a href="https://Microsoft.github.io/bond/manual/bond_over_grpc.html">Bond-over-gRPC</a> for communication. The <a href="https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm">Bond Comm C# manual</a> and the <a href="https://Microsoft.github.io/bond/manual/bond_cpp.html#bond-comm">Bond Comm C++ manual</a> are preserved for transition purposes.</strong></p>
 <p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
-<p>For details, see the User’s Manuals for <a href="https://Microsoft.github.io/bond/manual/bond_cpp.html">C++</a>, <a href="https://Microsoft.github.io/bond/manual/bond_cs.html">C#</a> and <a href="https://Microsoft.github.io/bond/manual/bond_py.html">Python</a>, and the documentation of the compiler <a href="https://microsoft.github.io/bond/manual/compiler.html">tool</a> and <a href="https://hackage.haskell.org/package/bond">library</a>.</p>
+<p>For details, see the User’s Manuals:</p>
+<ul>
+<li><a href="https://Microsoft.github.io/bond/manual/bond_cpp.html">C++</a></li>
+<li><a href="https://Microsoft.github.io/bond/manual/bond_cs.html">C#</a></li>
+<li><a href="https://Microsoft.github.io/bond/manual/bond_py.html">Python</a></li>
+<li><a href="https://Microsoft.github.io/bond/manual/bond_over_grpc.html">Bond-over-gRPC</a></li>
+<li><a href="https://microsoft.github.io/bond/manual/compiler.html"><code>gbc</code>, the Bond compiler/codegen tool</a>
+<ul>
+<li>See also <a href="https://hackage.haskell.org/package/bond">the compiler library</a> that powers <code>gbc</code>.</li>
+</ul></li>
+</ul>
 <p>For a discussion how Bond compares to similar frameworks see <a href="https://Microsoft.github.io/bond/why_bond.html">Why Bond</a>.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>The Bond repository uses Git submodules and should be cloned with the <code>--recursive</code> flag:</p>
@@ -183,12 +193,15 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <span class="fu">make</span>
 <span class="fu">sudo</span> make install</code></pre></div>
 <p>The <code>build</code> directory is just an example. Any directory can be used as the build destination.</p>
-<p>In order to build all the C++ and Python tests and examples, a few more packages are needed:</p>
+<p>In order to build all the C++ and Python tests and examples, as well as Bond-over-gRPC and Bond Comm, a few more packages are needed:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> apt-get install \
-    python2.7-dev \
+    autoconf \
+    build-essential \
     libboost-date-time-dev \
+    libboost-python-dev \
     libboost-test-dev \
-    libboost-python-dev
+    libtool \
+    python2.7-dev
 
 <span class="ex">cabal</span> install happy</code></pre></div>
 <p>Running the following command in the build directory will build and execute all the tests and examples:</p>
@@ -222,7 +235,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> .. \
     -DPYTHON_LIBRARY=/usr/local/Cellar/python/2.7.9/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib</code></pre></div>
 <h3 id="windows">Windows</h3>
-<p><a href="https://ci.appveyor.com/project/sapek/bond/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&amp;branch=master" alt="Build Status" /></a></p>
+<p><a href="https://ci.appveyor.com/project/MicrosoftBond/bond/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&amp;branch=master" alt="Build Status" /></a></p>
 <p>Install the following tools:</p>
 <ul>
 <li>Visual Studio 2013 or 2015
@@ -248,7 +261,9 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment (MSVC 12 or MSVC 14) can be found, e.g.:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="va">BOOST_ROOT=</span>D:\<span class="ex">boost_1_58_0</span>
 <span class="kw">set</span> <span class="va">BOOST_LIBRARYDIR=</span>D:\<span class="ex">boost_1_58_0</span>\lib64-msvc-14.0</code></pre></div>
-<p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests and Python support. If Boost or Python libraries are not found on the system, then some tests and examples will not be built.</p>
+<p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests, Python, gRPC, and Comm support. If Boost or Python libraries are not found on the system, then some tests and examples will not be built.</p>
+<p>To build Bond’s gRPC++ integration from source, some of <a href="https://github.com/grpc/grpc/blob/master/INSTALL.md#building-using-cmake-with-boringssl">gRPC’s prerequisites</a> are also needed:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">choco</span> install activeperl golang ninja yasm</code></pre></div>
 <p>In order to generate a solution to build the C++ and Python versions with Visual Studio 2015 run the following commands from the root <code>bond</code> directory:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build

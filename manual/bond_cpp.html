@@ -142,6 +142,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#serialization">Serialization</a></li>
 <li><a href="#marshaling">Marshaling</a></li>
 <li><a href="#schema-evolution">Schema evolution</a></li>
+<li><a href="#default-values">Default values</a></li>
 <li><a href="#default-value-of-nothing">Default value of <code>nothing</code></a></li>
 <li><a href="#nullable-types">Nullable types</a></li>
 <li><a href="#runtime-schema">Runtime schema</a></li>
@@ -394,7 +395,7 @@ Deserialize(simple_reader, obj, schema);</code></pre></td></tr></table></div>
 <li>Adding or removing an <code>optional</code> or <code>required_optional</code> field</li>
 <li>Changing a field’s type between <code>int32</code> and <code>enum</code></li>
 <li>Changing a field’s type between <code>vector&lt;T&gt;</code> and <code>list&lt;T&gt;</code></li>
-<li>Changing a field’s type between <code>blob</code> and <code>vector&lt;uint8&gt;</code> or <code>blob</code> and <code>list&lt;uint8&gt;</code></li>
+<li>Changing a field’s type between <code>blob</code> and <code>vector&lt;int8&gt;</code> or <code>blob</code> and <code>list&lt;int8&gt;</code></li>
 <li>Changing a field’s type between <code>T</code> and <code>bonded&lt;T&gt;</code></li>
 <li>Adding new enumeration constants that don’t alter existing constants (beware of implicit reordering)</li>
 </ul>
@@ -421,8 +422,22 @@ Deserialize(simple_reader, obj, schema);</code></pre></td></tr></table></div>
 <li>Caution should be used when changing or reusing field names as this could break text-based protocols like <a href="#simple-json">SimpleJsonProtocol</a></li>
 <li><code>required</code> should be used sparingly and only with careful consideration</li>
 </ul>
+<h1 id="default-values">Default values</h1>
+<p>Fields of a Bond defined struct always have a default value, either explicitly specified in the .bond file, or the implicit default.</p>
+<p>The implicit default is</p>
+<ul>
+<li><code>false</code> for <code>bool</code> fields</li>
+<li>0 for arithmetic types</li>
+<li>empty for string/containers</li>
+<li><code>null</code> for <a href="#nullable-types">nullable type</a></li>
+<li>for struct and <code>bonded</code> fields, an instance of a struct in which all of the fields are initialized to their default values, recursively</li>
+</ul>
+<p>There is no implicit default for enum fields: they must have an explicit default value in the .bond file.</p>
+<p>Explicit default values (other than <a href="#default-value-of-nothing"><code>nothing</code></a>) may not be specified for <code>nullable</code> or container fields. Struct and <code>bonded</code> fields may not have an explicit default value. They always use their implicit default values.</p>
+<p>The default values of fields matter because this is what an application will see after deserialization for any optional field that wasn’t present in the payload (e.g. when the payload was created from an older version of the schema).</p>
+<p>Additionally, some protocols can omit <a href="#required-fields"><code>optional</code> non-struct fields</a> set to their default values, reducing payload size.</p>
 <h1 id="default-value-of-nothing">Default value of <code>nothing</code></h1>
-<p>Fields of a Bond defined struct always have a default value, either explicitly specified in the .bond file, or the implicit system default (<code>false</code> for <code>bool</code>, 0 for arithmetic types, empty for strings/containers and <code>null</code> for <code>nullable&lt;T&gt;</code>). Default values of fields matter because this is what an application will see after deserialization for any optional field that wasn’t present in the payload (e.g. when the payload was created from an older version of the schema). Sometimes it is necessary to distinguish between any of the possible values of a field and absence of a value. To support such scenarios Bond allows fields’ default values to be explicitly set to <code>nothing</code> <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
+<p>Sometimes it is necessary to distinguish between any of the possible values of a field and absence of a value. To support such scenarios Bond allows non-struct fields’ default values to be explicitly set to <code>nothing</code> <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
@@ -435,10 +450,10 @@ Deserialize(simple_reader, obj, schema);</code></pre></td></tr></table></div>
     <span class="dv">1</span>: string name = nothing;
     <span class="dv">2</span>: list&lt;<span class="dt">float</span>&gt; floats = nothing;
 }</code></pre></td></tr></table></div>
-<p>Setting a field’s default to <code>nothing</code> doesn’t affect schema type of the field, however it may affect what type the field is mapped to in the generated code. The reason why is pretty obvious: some types such as <code>uint16_t</code> just can’t represent absence of a value. In C++ fields with default of <code>nothing</code> always map to <a href="../reference/cpp/classbond_1_1maybe.html"><code>bond::maybe&lt;T&gt;</code></a>. In C# reference types already have a way to represent absence of value: <code>null</code>. For these types specifying default of <code>nothing</code> doesn’t change the field type in the generated code. For C# value types such as <code>Int16</code>, generated code will use C# nullable type (e.g. <code>Int16?</code>).</p>
-<p>The fact that setting default value of a field to <code>nothing</code> doesn’t affect the field’s schema type has an important consequence: the default value of the field doesn’t have serialized representation. What this means in practice depends on whether the field is <code>optional</code> or <code>required</code>. Optional fields set to <code>nothing</code> are usually omitted during serialization <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>, just like for any other default values. <a href="#required-fields">Required fields</a>, by definition, can never be omitted. Since <code>nothing</code> has no serialized representation, an attempt to serialize an object with required fields set to <code>nothing</code> will result in a runtime exception. If a null value needs to be represented in the serialized form, then default of <code>nothing</code> is a wrong choice and a <a href="#nullable-types">nullable type</a> should be used instead.</p>
+<p>Setting a field’s default to <code>nothing</code> doesn’t affect the schema type of the field, however it may affect what type the field is mapped to in the generated code. The reason why is pretty obvious: some types such as <code>uint16_t</code> just can’t represent absence of a value. In C++ fields with default of <code>nothing</code> always map to <a href="../reference/cpp/classbond_1_1maybe.html"><code>bond::maybe&lt;T&gt;</code></a>.</p>
+<p>The fact that setting the default value of a field to <code>nothing</code> doesn’t affect the field’s schema type has an important consequence: the default value of the field doesn’t have a serialized representation. What this means in practice depends on whether the field is <code>optional</code> or <code>required</code>. Optional fields set to <code>nothing</code> are usually omitted during serialization <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>, just like for any other default values. <a href="#required-fields">Required fields</a>, by definition, can never be omitted. Since <code>nothing</code> has no serialized representation, an attempt to serialize an object with required fields set to <code>nothing</code> will result in a runtime exception. If a <code>null</code> value needs to be represented in the serialized form, then a default of <code>nothing</code> is the wrong choice and a <a href="#nullable-types">nullable type</a> should be used instead.</p>
 <h1 id="nullable-types">Nullable types</h1>
-<p>For any type in Bond meta-schema <code>nullable&lt;T&gt;</code> defines a nullable type. A nullable type can store all the same values as the its base type plus one additional value: <code>null</code>.</p>
+<p>For any type in the Bond meta-schema, <code>nullable&lt;T&gt;</code> defines a nullable type. A nullable type can store all the same values as its base type plus one additional value: <code>null</code>.</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
@@ -446,12 +461,12 @@ Deserialize(simple_reader, obj, schema);</code></pre></td></tr></table></div>
 5
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Nullables
 {
-    <span class="dv">0</span>: nullable&lt;<span class="dt">bool</span>&gt;         b;
-    <span class="dv">1</span>: list&lt;nullable&lt;string&gt;&gt; l;
+    <span class="dv">0</span>: nullable&lt;<span class="dt">bool</span>&gt;         b; <span class="co">// can be true, false, or null</span>
+    <span class="dv">1</span>: list&lt;nullable&lt;string&gt;&gt; l; <span class="co">// can be a (possibly empty) list or null</span>
 }</code></pre></td></tr></table></div>
-<p>Default value for a field of a nullable type is always implicitly set to <code>null</code>. Explicit default values for nullable fields are not supported.</p>
-<p>In generated C++ code nullable types are represented by <a href="../reference/cpp/classbond_1_1nullable_3_01_t_00_01_allocator_00_01false_01_4.html"><code>nullable&lt;T&gt;</code></a> class template.</p>
-<p>Since a nullable type must represent the additional value of <code>null</code>, its serialized representation necessarily incurs some overhead compared to the base type. Often it is more efficient to avoid using nullable type and instead designate one of normal values to handle the special case that otherwise would be represented by <code>null</code>. For example <em>empty</em> is usually a good choice for string and container types and 0 for arithmetic types. Another option that may sometimes be appropriate is setting default value of a field to <a href="#default-value-of-nothing"><code>nothing</code></a>.</p>
+<p>The default value for a field of a nullable type is always implicitly set to <code>null</code>. Explicit default values for nullable fields are not supported.</p>
+<p>In the generated C++ code nullable types are represented by the <a href="../reference/cpp/classbond_1_1nullable_3_01_t_00_01_allocator_00_01false_01_4.html"><code>nullable&lt;T&gt;</code></a> class template.</p>
+<p>Since a nullable type must represent the additional value of <code>null</code>, its serialized representation necessarily incurs some overhead compared to the base type. Often it is more efficient to avoid using a nullable type and instead to designate one of the normal values to handle the special case that otherwise would be represented by <code>null</code>. For example <em>empty</em> is usually a good choice for string and container types and 0 for arithmetic types. Another option that may sometimes be appropriate is setting the default value of a non-struct field to <a href="#default-value-of-nothing"><code>nothing</code></a>. Struct fields can have neither an explicit default value nor be set to <code>nothing</code>, so <code>nullable</code> needs to be used if <code>null</code> semantics are needed for these fields.</p>
 <p>The canonical scenario where a nullable type is the right choice is recursive structures. For example here’s how Bond <code>TypeDef</code> struct is defined:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
@@ -493,7 +508,7 @@ Deserialize(simple_reader, obj, schema);</code></pre></td></tr></table></div>
     <span class="co">// True if the type is bonded&lt;T&gt;; used only when id == BT_STRUCT</span>
     <span class="dv">4</span>: <span class="dt">bool</span> <span class="dt">bonded_type</span>;
 }</code></pre></td></tr></table></div>
-<p><code>TypeDef</code> struct is used to represent type of a field in a Bond schema. If the type is a container such as list or map, the type definition becomes recursive. For example, a list type definition contains type of the list element which of course itself can be a container of elements of some other type, and so on, until recursion is terminated with a <code>null</code> value for the <code>element</code> and <code>key</code> fields.</p>
+<p>The <code>TypeDef</code> struct is used to represent the type of a field in a Bond schema. If the type is a container such as a list or map, the type definition becomes recursive. For example, a list type definition contains the type of the list element which of course itself can be a container of elements of some other type, and so on, until the recursion is terminated with a <code>null</code> value for the <code>element</code> and <code>key</code> fields.</p>
 <h1 id="runtime-schema">Runtime schema</h1>
 <p>Some generic applications may need to work with Bond schemas unknown at compile-time. In order to address such scenarios Bond defines a type <code>SchemaDef</code> to represent schemas at runtime. Applications can obtain an instance of <code>SchemaDef</code> for a particular type using the <code>GetRuntimeSchema</code> API:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
@@ -945,7 +960,7 @@ Apply(bond::Merger&lt;T, Writer&gt;(obj, output), payload);</code></pre></td></t
 <span class="dt">void</span> bonded&lt;T&gt;::Merge(<span class="at">const</span> X&amp; var);</code></pre></td></tr></table></div>
 <p>See example: <code>examples/cpp/core/merge</code>.</p>
 <h1 id="required-fields">Required fields</h1>
-<p>By default, struct fields in Bond schemas are considered optional. This means that during deserialization, if the payload doesn’t contain a field, Bond will just use the field’s default value specified in the schema. Consequently, during serialization optional fields which are set to their default value <em>can</em> be omitted, resulting in a more compact payload. This behavior is fundamental to enabling forward and backward compatibility between different schema versions. As long as fields are optional, they can be freely added and removed, without breaking the ability of the old code to deserialize the new data and vice versa. In distributed systems, where we usually can’t depend on deployment order, this two-way compatibility is a critical feature. This is why optional fields are the implicit default in Bond, and why avoiding required fields is generally considered a good rule of thumb.</p>
+<p>By default, fields of a struct in Bond schemas are considered optional. This means that during deserialization, if the payload doesn’t contain a field, Bond will just use the field’s <a href="#default-values">default value</a> specified in the schema. Consequently, during serialization optional fields which are set to their default value <em>can</em> be omitted, resulting in a more compact payload. This behavior is fundamental to enabling forward and backward compatibility between <a href="#schema-evolution">different schema versions</a>. As long as fields are optional, they can be freely added and removed, without breaking the ability of the old code to deserialize the new data and vice versa. In distributed systems, where we usually can’t depend on deployment order, this two-way compatibility is a critical feature. This is why optional fields are the implicit default in Bond, and why avoiding required fields is generally considered a good rule of thumb.</p>
 <p>Required fields can be declared using the following syntax.</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
@@ -990,7 +1005,7 @@ Apply(bond::Merger&lt;T, Writer&gt;(obj, output), payload);</code></pre></td></t
 Serialize(obj, writer);
 Deserialize(reader, obj);
 <span class="kw">auto</span> schema = bond::GetRuntimeSchema(obj);</code></pre></td></tr></table></div>
-<p>Bond provides helper functions <code>Pack</code> and <code>Unpack</code> which can be used respectively to create/serialize a tuple from several values and deserialize struct fields into several variables.</p>
+<p>Bond provides helper functions <code>Pack</code> and <code>Unpack</code> which can be used respectively to create/serialize a tuple from several values and deserialize fields into several variables.</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3
@@ -1126,7 +1141,7 @@ Unpack(reader, str2, n);</code></pre></td></tr></table></div>
     <span class="kw">template</span> &lt;<span class="kw">typename</span> Key, <span class="kw">typename</span> T&gt;
     <span class="dt">void</span> Container(<span class="at">const</span> Key&amp; key, <span class="at">const</span> T&amp; value, <span class="dt">uint32_t</span> size) <span class="at">const</span>;
 };</code></pre></td></tr></table></div>
-<p>The type <code>T</code> of the values visited by a transform depends on what the transform is applied to. If it is applied to an instance of a Bond type, the visited values will be references to the object’s fields and/or its base object (if any). If a transform is applied to a serialized payload, the visited values will represent the serialized fields, elements of a container and/or base (if any). The serialized data is represented by one of two types: <code>bond::bonded&lt;T,  Reader&gt;</code> or <code>bond::value&lt;T, Reader&gt;</code>. The former represents a serialized Bond object and the latter a serialized value of a basic type or a container.</p>
+<p>The type <code>T</code> of the values visited by a transform depends on what the transform is applied to. If it is applied to an instance of a Bond type, the visited values will be references to the object’s fields and/or its base object (if any). If a transform is applied to a serialized payload, the visited values will represent the serialized fields, elements of a container and/or base (if any). The serialized data is represented by one of two types: <code>bond::bonded&lt;T, Reader&gt;</code> or <code>bond::value&lt;T, Reader&gt;</code>. The former represents a serialized Bond object and the latter a serialized value of a basic type or a container.</p>
 <p>A transform can generally do one of two things with the serialized values:</p>
 <ol style="list-style-type: decimal">
 <li>Deserialize using the Deserialize method</li>
@@ -1185,7 +1200,7 @@ Field(<span class="dt">uint16_t</span>, <span class="at">const</span> bond::Meta
 <h2 id="compact-binary">Compact Binary</h2>
 <p>A binary, tagged protocol using variable integer encoding and compact field header. A good choice, along with <a href="#fast-binary">Fast Binary</a>, for RPC scenarios.</p>
 <p>Implemented in <a href="../reference/cpp/classbond_1_1_compact_binary_reader.html"><code>CompactBinaryReader</code></a> and <a href="../reference/cpp/classbond_1_1_compact_binary_writer.html"><code>CompactBinaryWriter</code></a> classes.</p>
-<p>Version 2 of Compact Binary adds length prefix for structs. This enables deserialization of <a href="#understanding-bondedt"><code>bonded&lt;T&gt;</code></a> and skipping of unknown struct fields in constant time. The trade-off is double pass encoding, resulting in up to 30% slower serialization performance.</p>
+<p>Version 2 of Compact Binary adds length prefix for structs. This enables deserialization of <a href="#understanding-bondedt"><code>bonded&lt;T&gt;</code></a> and skipping of unknown fields in constant time. The trade-off is double pass encoding, resulting in up to 30% slower serialization performance.</p>
 <p>See also <a href="../reference/cpp/compact__binary_8h_source.html">Compact Binary encoding reference</a>.</p>
 <h2 id="fast-binary">Fast Binary</h2>
 <p>A binary, tagged protocol similar to <a href="#compact-binary">Compact Binary</a> but optimized for deserialization speed rather than payload compactness.</p>
@@ -1413,12 +1428,12 @@ T&amp; mapped_at(M&amp; map, <span class="at">const</span> K&amp; key);</code></
           end(container.end())
     {}
 
-    <span class="dt">bool</span> more() <span class="at">const</span> 
+    <span class="dt">bool</span> more() <span class="at">const</span>
     {
         <span class="cf">return</span> it != end;
     }
 
-    <span class="kw">typename</span> T::const_reference 
+    <span class="kw">typename</span> T::const_reference
     next()
     {
         <span class="cf">return</span> *(it++);
@@ -1750,8 +1765,8 @@ bond::CompactBinaryWriter&lt;Output&gt; writer(output);</code></pre></td></tr></
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>In Bond there is no concept of default for structs and thus default of <code>nothing</code> can’t be set for fields of struct types or <code>bonded&lt;T&gt;</code>.<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>Some protocols might not support omitting optional fields (e.g. Simple Protocol) or omitting fields may be disabled by specializing <code>bond::may_omit_fields</code> trait. In such cases an attempt to serialize an object with field(s) set to <code>nothing</code> will result in a runtime exception.<a href="#fnref2">↩</a></p></li>
+<li id="fn1"><p>In Bond there is no concept of a default value for structs and thus a default of <code>nothing</code> can’t be set for fields of struct types or <code>bonded&lt;T&gt;</code>.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Some protocols might not support omitting optional fields (e.g. Simple Protocol) or omitting fields may be disabled by specializing the <code>bond::may_omit_fields</code> trait. In such cases an attempt to serialize an object with field(s) set to <code>nothing</code> will result in a runtime exception.<a href="#fnref2">↩</a></p></li>
 <li id="fn3"><p>An object of a derived type will be sliced to the type <code>T</code>.<a href="#fnref3">↩</a></p></li>
 <li id="fn4"><p>Cost of deserializing <code>bonded&lt;T&gt;</code> is protocol dependent. Most protocols need to parse the payload in order to find where the corresponding struct ends. Compact Binary version 2 stores length prefix for structs and thus can deserialize a <code>bonded&lt;T&gt;</code> field in constant time.<a href="#fnref4">↩</a></p></li>
 <li id="fn5"><p>As an optimization, if the data is already encoded in the target protocol Bond will simply copy the payload.<a href="#fnref5">↩</a></p></li>

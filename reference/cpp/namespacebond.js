@@ -1,5 +1,28 @@
 var namespacebond =
 [
+    [ "ext", null, [
+      [ "detail", null, [
+        [ "barrier", "classbond_1_1ext_1_1detail_1_1barrier.html", "classbond_1_1ext_1_1detail_1_1barrier" ],
+        [ "countdown_event", "classbond_1_1ext_1_1detail_1_1countdown__event.html", "classbond_1_1ext_1_1detail_1_1countdown__event" ],
+        [ "event", "classbond_1_1ext_1_1detail_1_1event.html", "classbond_1_1ext_1_1detail_1_1event" ]
+      ] ],
+      [ "gRPC", null, [
+        [ "detail", null, [
+          [ "client_unary_call_data", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data" ],
+          [ "io_manager_tag", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag" ],
+          [ "service", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service" ],
+          [ "service_unary_call_data", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data" ],
+          [ "unary_call_impl", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl" ]
+        ] ],
+        [ "io_manager", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager" ],
+        [ "MultipleInvocationException", "classbond_1_1ext_1_1g_r_p_c_1_1_multiple_invocation_exception.html", null ],
+        [ "server_builder_core", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder__core.html", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder__core" ],
+        [ "server_core", "classbond_1_1ext_1_1g_r_p_c_1_1server__core.html", "classbond_1_1ext_1_1g_r_p_c_1_1server__core" ],
+        [ "thread_pool", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool" ],
+        [ "unary_call", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call" ],
+        [ "wait_callback", "classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html", "classbond_1_1ext_1_1g_r_p_c_1_1wait__callback" ]
+      ] ]
+    ] ],
     [ "reflection", "namespacebond_1_1reflection.html", "namespacebond_1_1reflection" ],
     [ "blob", "classbond_1_1blob.html", "classbond_1_1blob" ],
     [ "bonded", "classbond_1_1bonded.html", "classbond_1_1bonded" ],
