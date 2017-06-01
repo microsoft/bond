@@ -250,7 +250,7 @@ readSequence java elemType fieldName depth =
         {
             long #{countLocal} = this.#{readContainerResultMember}.count;
             for (long #{iN} = 0; #{iN} < #{countLocal}; #{iN}++) {
-                #{getTypeName java elemType} #{elemLocal};
+                #{getTypeName java elemType} #{elemLocal} = #{defaultValue java elemType Nothing};
                 #{readValue java elemType elemLocal (depth + 1)}
                 #{fieldName}.add(#{elemLocal});
             }
@@ -267,8 +267,8 @@ readMap java keyType valueType fieldName depth =
         {
             long #{countLocal} = #{readContainerResultMember}.count;
             for (long #{iN} = 0; #{iN} < #{countLocal}; #{iN}++) {
-                #{getTypeName java keyType} #{keyLocal};
-                #{getTypeName java valueType} #{valueLocal};
+                #{getTypeName java keyType} #{keyLocal} = #{defaultValue java keyType Nothing};
+                #{getTypeName java valueType} #{valueLocal} = #{defaultValue java valueType Nothing};
                 #{readValue java keyType keyLocal (depth + 1)}
                 #{readValue java valueType valueLocal (depth + 1)}
                 #{fieldName}.put(#{keyLocal}, #{valueLocal});

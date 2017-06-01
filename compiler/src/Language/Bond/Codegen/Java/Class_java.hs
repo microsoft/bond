@@ -54,8 +54,6 @@ public class #{declName}#{params}#{maybe interface baseClass structBase} {
                 params = angles $ sepBy ", " paramName declParams
                 baseClass x = [lt| extends #{javaType x}|]
                 javaDefault = Java.defaultValue java
-
-                -- FIXME: nullable<int32> -> Integer?
-                publicField f@Field {..} = [lt|public #{javaType fieldType} #{fieldName} = #{javaDefault f};|]
+                publicField Field {..} = [lt|public #{javaType fieldType} #{fieldName} = #{javaDefault fieldType fieldDefault};|]
 
         typeDefinition _ = mempty

@@ -46,8 +46,8 @@ fieldTypeName fieldType = pack $ "com.microsoft.bond.BondDataType." ++ case fiel
     -- FIXME: Marker for unsupported types that compiles.
     _                        -> "BT_UNAVAILABLE"
 
-defaultValue :: MappingContext -> Field -> Text
-defaultValue java Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
+defaultValue :: MappingContext -> Type -> Maybe Default -> Text
+defaultValue java type_ Nothing = implicitDefault type_
   where
     newInstance t = [lt|new #{getInstanceTypeName java t}()|]
     implicitDefault (BT_TypeParam _) = [lt|null|]
@@ -74,11 +74,12 @@ defaultValue java Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
     implicitDefault t@(BT_UserDefined a@Alias {..} args)
         | customAliasMapping java a = newInstance t
         | otherwise = implicitDefault $ resolveAlias a args
+    implicitDefault (BT_UserDefined e@Enum {} _) = [lt|#{qualifiedName java e}.get(0)|]
     implicitDefault t
         | isStruct t = newInstance t
-    implicitDefault _ = error "implicitDefault: impossible happened"
+    implicitDefault t = error $ "implicitDefault: no default defined: " ++ (show t)
 
-defaultValue java Field {fieldDefault = (Just def), ..} = explicitDefault def
+defaultValue java type_ (Just def) = explicitDefault def
   where
     explicitDefault (DefaultInteger x) = intLiteral x
       where
@@ -88,24 +89,25 @@ defaultValue java Field {fieldDefault = (Just def), ..} = explicitDefault def
             if value > intMax || value < intMin
             then [lt|#{value}L|]
             else [lt|#{value}|]
-    explicitDefault (DefaultFloat x) = floatLiteral fieldType x
+    explicitDefault (DefaultFloat x) = floatLiteral type_ x
       where
         floatLiteral BT_Float y = [lt|#{y}f|]
         floatLiteral BT_Double y = [lt|#{y}|]
         floatLiteral _ _ = error "Java:Float:defaultValue/floatLiteral: impossible happened."
     explicitDefault (DefaultBool True) = "true"
     explicitDefault (DefaultBool False) = "false"
-    explicitDefault (DefaultString x) = strLiteral fieldType x
+    explicitDefault (DefaultString x) = strLiteral type_ x
       where
         strLiteral BT_String value = [lt|"#{value}"|]
         strLiteral BT_WString value = [lt|"#{value}"|]
         strLiteral _ _ = error "Java:Str:defaultValue/floatLiteral: impossible happened."
     explicitDefault DefaultNothing = [lt|null|]
-    explicitDefault (DefaultEnum x) = [lt|#{getTypeName java fieldType}.#{x}|]
+    explicitDefault (DefaultEnum x) = [lt|#{getTypeName java type_}.#{x}|]
 
 qualifiedName :: MappingContext -> Declaration -> String
 qualifiedName java s@Struct {..}  = intercalate "." $ getDeclNamespace java s ++ [declName]
-qualifiedName _ _ = error "invalid declaration type for qualifiedName"
+qualifiedName java e@Enum {..}  = intercalate "." $ getDeclNamespace java e ++ [declName]
+qualifiedName _ t = error $ "invalid declaration type for qualifiedName: " ++ (show t)
 
 generatedClassAnnotations :: Text
 generatedClassAnnotations = [lt|@javax.annotation.Generated("gbc")|]
