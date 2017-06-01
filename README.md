@@ -176,7 +176,7 @@ cmake .. \
 
 ### Windows
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&branch=master)](https://ci.appveyor.com/project/MicrosoftBond/bond/branch/master)
+[![Build Status](https://ci.appveyor.com/api/projects/status/7xd2a54x9cwco314/branch/master?svg=true)](https://ci.appveyor.com/project/MicrosoftBond/bond/branch/master)
 
 Install the following tools:
 
