@@ -15,7 +15,6 @@
 #include <string>
 
 using grpc::Channel;
-using grpc::ClientContext;
 using grpc::ServerBuilder;
 using grpc::Status;
 
@@ -57,15 +56,13 @@ int main()
         ioManager,
         threadPool);
 
-    ClientContext context;
-
     const std::string user("world");
 
     HelloRequest request;
     request.name = user;
 
     bond::ext::gRPC::wait_callback<HelloReply> cb;
-    greeter.AsyncSayHello(&context, request, cb);
+    greeter.AsyncSayHello(request, cb);
 
     bool waitResult = cb.wait_for(std::chrono::seconds(10));
 
