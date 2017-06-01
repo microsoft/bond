@@ -19,7 +19,6 @@
 #include <string>
 
 using grpc::Channel;
-using grpc::ClientContext;
 using grpc::ServerBuilder;
 using grpc::Status;
 using grpc::StatusCode;
@@ -29,6 +28,8 @@ using bond::ext::gRPC::io_manager;
 using bond::ext::gRPC::wait_callback;
 
 using namespace pingpong;
+
+static const char* metadata_key = "metadata-key";
 
 class DoublePingServiceImpl final : public DoublePing::Service
 {
@@ -57,6 +58,9 @@ private:
         PingReply reply;
         reply.message = "ping pong";
 
+        // the server context can been accessed to add, for example,
+        // additional metadata to the response
+        call.context().AddInitialMetadata(metadata_key, "metadata-value");
         call.Finish(reply, Status::OK);
     }
 
@@ -189,24 +193,44 @@ int main()
     request.name = user;
 
     {
-        ClientContext context;
+        // A bonded object can also be used for the request. Here we use a
+        // bonded object backed by an instance of PingRequest, but we could
+        // also use one backed by a reader.
+        bond::bonded<PingRequest> bondedRequest(request);
         wait_callback<PingReply> cb;
-        doublePing.AsyncPing(&context, request, cb);
+        doublePing.AsyncPing(bondedRequest, cb);
         assertResponseReceived(cb, __LINE__);
         assertResponseContents(cb, __LINE__);
     }
 
     {
-        ClientContext context;
+        // We explicitly pass a client context to this method so we can, for
+        // example, inspect the metadata the service included in the
+        // response.
+        auto context = std::make_shared<grpc::ClientContext>();
         wait_callback<PingReply> cb;
-        doublePing.AsyncPingNoPayload(&context, cb);
+        doublePing.AsyncPingNoPayload(context, cb);
         assertResponseReceived(cb, __LINE__);
         assertResponseContents(cb, __LINE__);
+
+        // After the response has been received, the server metadata can be
+        // inspected.
+        const auto& initialMetadata = context->GetServerInitialMetadata();
+        auto it = initialMetadata.find(metadata_key);
+        if (it == initialMetadata.end())
+        {
+            std::cerr << "Server was expected to include metadata with key \"" << metadata_key << "\" but it did not." << std::endl;
+            abort();
+        }
+        else if (it->second.compare("metadata-value") != 0)
+        {
+            std::cerr << "Server metadata value is unexpected. \"" << it->first << "\": \"" << it->second << "\"" << std::endl;
+            abort();
+        }
     }
 
     {
-        ClientContext context;
-        doublePing.AsyncPingNoResponse(&context, request);
+        doublePing.AsyncPingNoResponse(request);
         bool wasEventHandled = double_ping_service.pingNoResponse_event.wait_for(std::chrono::seconds(10));
 
         if (!wasEventHandled)
@@ -217,25 +241,22 @@ int main()
     }
 
     {
-        ClientContext context;
         wait_callback<bond::Void> cb;
-        doublePing.AsyncPingVoid(&context, cb);
+        doublePing.AsyncPingVoid(cb);
         assertResponseReceived(cb, __LINE__);
         assertStatus(StatusCode::OK, cb.status().error_code(), __LINE__);
     }
 
     {
-        ClientContext context;
         wait_callback<PingReply> cb;
-        doublePing.AsyncPingShouldThrow(&context, request, cb);
+        doublePing.AsyncPingShouldThrow(request, cb);
         assertResponseReceived(cb, __LINE__);
         assertStatus(StatusCode::CANCELLED, cb.status().error_code(), __LINE__);
     }
 
     {
-        ClientContext context;
         wait_callback<PingReply> cb;
-        pingPong.AsyncPing(&context, request, cb);
+        pingPong.AsyncPing(request, cb);
         assertResponseReceived(cb, __LINE__);
         assertResponseContents(cb, __LINE__);
     }

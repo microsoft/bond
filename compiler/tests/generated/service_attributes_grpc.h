@@ -47,10 +47,18 @@ public:
             std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
             std::shared_ptr<TThreadPool> threadPool);
 
-        void Asyncfoo(::grpc::ClientContext* context, const ::bond::bonded< ::tests::Param>& request, const std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo(::grpc::ClientContext* context, const ::tests::Param& request, const std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::Param>& request, const std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)>& cb);
+        void Asyncfoo(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::Param& request, const std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)>& cb)
         {
             Asyncfoo(context, ::bond::bonded< ::tests::Param>{request}, cb);
+        }
+        void Asyncfoo(const ::bond::bonded< ::tests::Param>& request, const std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)>& cb)
+        {
+            Asyncfoo(::std::make_shared< ::grpc::ClientContext>(), request, cb);
+        }
+        void Asyncfoo(const ::tests::Param& request, const std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)>& cb)
+        {
+            Asyncfoo(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests::Param>{request}, cb);
         }
 
         ClientCore(const ClientCore&) = delete;
@@ -124,17 +132,18 @@ inline Foo::ClientCore<TThreadPool>::ClientCore(
 
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo(
-    ::grpc::ClientContext* context,
+    ::std::shared_ptr< ::grpc::ClientContext> context,
     const ::bond::bonded< ::tests::Param>& request,
     const std::function<void(const ::bond::bonded< ::tests::Result>&, const ::grpc::Status&)>& cb)
 {
     
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result>, TThreadPool >(
+    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::Param>, ::bond::bonded< ::tests::Result>, TThreadPool>(
         _channel,
         _ioManager,
         _threadPool,
+        context,
         cb);
-    calldata->dispatch(rpcmethod_foo_, context, request);
+    calldata->dispatch(rpcmethod_foo_, request);
 }
 
 

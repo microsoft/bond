@@ -27,8 +27,6 @@
 #include <memory>
 
 using grpc::Channel;
-using grpc::ClientContext;
-using grpc::Status;
 
 using namespace examples::grpc_static_library;
 

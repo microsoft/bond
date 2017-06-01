@@ -43,6 +43,8 @@ struct client_unary_call_data : io_manager_tag
     std::shared_ptr<io_manager> _ioManager;
     /// The thread pool in which to invoke the callback.
     std::shared_ptr<TThreadPool> _threadPool;
+    /// The client context for this call
+    std::shared_ptr<grpc::ClientContext> _context;
     /// A response reader.
     std::unique_ptr<grpc::ClientAsyncResponseReader<TResponse>> _responseReader;
 
@@ -57,10 +59,12 @@ struct client_unary_call_data : io_manager_tag
         std::shared_ptr<grpc::ChannelInterface> channel,
         std::shared_ptr<io_manager> ioManager,
         std::shared_ptr<TThreadPool> threadPool,
+        std::shared_ptr<grpc::ClientContext> context,
         CallbackType cb = {})
         : _channel(channel),
           _ioManager(ioManager),
           _threadPool(threadPool),
+          _context(context),
           _responseReader(),
           _cb(cb),
           _response(),
@@ -73,7 +77,6 @@ struct client_unary_call_data : io_manager_tag
 
     void dispatch(
         grpc::RpcMethod method,
-        grpc::ClientContext* context,
         const TRequest& request)
     {
         _responseReader = std::unique_ptr<grpc::ClientAsyncResponseReader<TResponse>>(
@@ -81,7 +84,7 @@ struct client_unary_call_data : io_manager_tag
                 _channel.get(),
                 _ioManager->cq(),
                 method,
-                context,
+                &*_context,
                 request));
         _responseReader->Finish(&_response, &_status, static_cast<void*>(this));
     }

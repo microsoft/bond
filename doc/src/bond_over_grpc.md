@@ -163,7 +163,7 @@ implementation by subclassing the server base and supplying the business logic:
                 ExampleResponse> call) override
         {
             ExampleRequest request = call.request().Deserialize();
-            ExampleResponse reply;
+            ExampleResponse response;
 
             // Service business logic goes here
 
@@ -204,7 +204,7 @@ The proxy stub can then be used to make calls to the server as follows:
     // Fill in request fields here
 
     bond::ext::gRPC::wait_callback<ExampleResponse> cb;
-    client.AsyncExampleMethod(&context, request, callback);
+    client.AsyncExampleMethod(request, callback);
 
     callback.wait();
     ExampleResponse response = callback.response().Deserialize();
@@ -213,14 +213,23 @@ The proxy stub can then be used to make calls to the server as follows:
 Note these APIs are significantly different from the APIs presented in the
 gRPC documentation; Bond-over-gRPC is attempting to provide a more
 straightforward API for aynchronous communication than gRPC currently
-presents in C++. The use of [`wait_callback<T>`][wait_callback_reference]
-here is for illustrative purposes; any callback implementation with the same
-signature can be used. Note also the use of `bonded<T>` to wrap the request
-and response objects in several places; this allows for better control over
-the time of deserialization and also helps prevent slicing when using
-polymorphic Bond types. Convenience APIs are provided in some places to hide
-the use `bonded<T>` where possible. Finally, note that Bond-over-gRPC does
-not provide synchronous APIs in C++ by design.
+presents in C++. Bond-over-gRPC does not provide synchronous APIs in C++ by
+design. The use of [`wait_callback<T>`][wait_callback_reference] here is for
+illustrative purposes; any callback implementation with the same signature
+can be used. `wait_callback` satisfies the signature and provides a `wait()`
+method to adapt the asynchronous proxy method into an effectively
+synchronous call.
+
+The proxy stub has a number of overloads for each method. The simplest is
+demonstrated above, and there are ones that take `bonded<T>` and
+`grpc::ClientContext` arguments.
+
+Using `bonded<T>` to wrap the request and response objects allows for better
+control over the time of deserialization and also helps prevent slicing when
+using polymorphic Bond types. As demonstrated above, convenience APIs are
+provided in some places to hide the use `bonded<T>` where possible. For use
+of `bonded` request objects and `ClientContext` arguments, see the pingpong
+example.
 
 For more information about gRPC in C++, take a look at the
 [gRPC C++ tutorial](http://www.grpc.io/docs/tutorials/basic/c.html);
@@ -230,5 +239,6 @@ from those documented there.
 See also the following example:
 
 - `examples/cpp/grpc/helloworld`
+- `examples/cpp/grpc/pingpong`
 
 [wait_callback_reference]: ../reference/cpp/classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html
