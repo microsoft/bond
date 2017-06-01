@@ -27,8 +27,9 @@ using grpc::ServerContext;
 using namespace PingPongNS;
 using namespace bond::ext::detail;
 
-static countdown_event Countdown(NumRequests + NumErrors);
+static countdown_event Countdown(NumRequests + NumEvents + NumErrors);
 static std::atomic<uint32_t> NumRequestsReceived(0);
+static std::atomic<uint32_t> NumEventsReceived(0);
 static std::atomic<uint32_t> NumErrorsReceived(0);
 
 // Logic and data behind the server's behavior.
@@ -86,6 +87,24 @@ public:
         }
     }
 
+    void PingEvent(
+        bond::ext::gRPC::unary_call<
+        bond::bonded<PingRequest>,
+        bond::Void> call) override
+    {
+        PingRequest request = call.request().Deserialize();
+
+        printf("Received event \"%s\"\n", request.Payload.c_str());
+        fflush(stdout);
+
+        NumEventsReceived++;
+
+        // TODO: the current implementation requires that we respond with dummy data.
+        // This will be fixed in a later release.
+        call.Finish(bond::bonded<bond::Void>{bond::Void()});
+        Countdown.set();
+    }
+
 };
 
 int main()
@@ -110,6 +129,7 @@ int main()
 
     if (!countdownSet ||
         (NumRequestsReceived != NumRequests) ||
+        (NumEventsReceived != NumEvents) ||
         (NumErrorsReceived != NumErrors))
     {
         printf("Server failed: Did not receive all expected messages\n");

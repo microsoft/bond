@@ -16,9 +16,12 @@ namespace PingPongServer
     {
         static Server pingServer;
 
-        static CountdownEvent Countdown = new CountdownEvent((int)PingConstants.NumRequests + (int)PingConstants.NumErrors);
+        static CountdownEvent Countdown = new CountdownEvent((int)PingConstants.NumRequests +
+                                                             (int)PingConstants.NumEvents +
+                                                             (int)PingConstants.NumErrors);
 
         static int NumRequestsReceived = 0;
+        static int NumEventsReceived = 0;
         static int NumErrorsReceived = 0;
 
         public override Task<IMessage<PingResponse>> Ping(IMessage<PingRequest> param, ServerCallContext context)
@@ -54,6 +57,20 @@ namespace PingPongServer
             return Task.FromResult(message);
         }
 
+        public override async Task PingEvent(IMessage<PingRequest> param, ServerCallContext context)
+        {
+            PingRequest request = param.Payload.Deserialize();
+
+            Console.Out.WriteLine($"Received event \"{request.Payload}\"");
+            Console.Out.Flush();
+
+            Interlocked.Increment(ref NumEventsReceived);
+            Countdown.Signal();
+
+            await Task.Delay(1);
+        }
+
+
         private static void Setup()
         {
             pingServer = new Server
@@ -86,6 +103,7 @@ namespace PingPongServer
             else if (
                 !countdownSet ||
                 (NumRequestsReceived != (int)PingConstants.NumRequests) ||
+                (NumEventsReceived != (int)PingConstants.NumEvents) ||
                 (NumErrorsReceived != (int)PingConstants.NumErrors))
             {
                 Console.Out.WriteLine("Server failed: Did not receive all expected messages");

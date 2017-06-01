@@ -25,6 +25,15 @@ namespace PingPongClient
             return response;
         }
 
+
+        private static void DoPingPongEventAsync(PingPong.PingPongClient client, PingRequest request)
+        {
+            Console.Out.WriteLine("Sending event");
+            Console.Out.Flush();
+
+            client.PingEventAsync(request);
+        }
+
         static void Main(string[] args)
         {
             Thread.Sleep(1000);
@@ -48,6 +57,12 @@ namespace PingPongClient
                         Console.Out.Flush();
                         return;
                     }
+                }
+
+                for (int i = 0; i < (int)PingConstants.NumEvents; i++)
+                {
+                    var request = new PingRequest { Payload = "event" + i, Action = PingAction.Identity };
+                    DoPingPongEventAsync(pingClient, request);
                 }
 
                 for (int i = 0; i < (int)PingConstants.NumErrors; i++)
