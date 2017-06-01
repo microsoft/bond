@@ -70,7 +70,7 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
     add_custom_command(
         OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
         COMMAND ${CMAKE_COMMAND} -E copy .pandoc/templates/cmdargs.html "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
-        COMMAND ${GBC_EXECUTABLE} --help=html >> "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
+        COMMAND ${GBC_EXECUTABLE} --help=all,html >> "${CMAKE_CURRENT_BINARY_DIR}/html/manual/gbc.html"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS .pandoc/templates/cmdargs.html gbc ${GBC_EXECUTABLE})
 
@@ -125,7 +125,7 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
         OPTIONS --self-contained --table-of-contents)
 
     file(GLOB_RECURSE cpp_headers ../cpp/inc/bond/*.h)
-    
+
     set (doxygen_sources
         doxygen/bond.doxygen
         doxygen/bond_layout.xml

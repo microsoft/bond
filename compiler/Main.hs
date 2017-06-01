@@ -29,7 +29,7 @@ type Template = MappingContext -> String -> [Import] -> [Declaration] -> (String
 main :: IO()
 main = do
     args <- getArgs
-    options <- (if null args then withArgs ["--help"] else id) getOptions
+    options <- (if null args then withArgs ["--help=all"] else id) getOptions
     setJobs $ jobs options
     case options of
         Cpp {..}    -> cppCodegen options
