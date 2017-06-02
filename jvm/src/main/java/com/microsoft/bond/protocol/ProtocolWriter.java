@@ -21,7 +21,7 @@ public interface ProtocolWriter {
     /**
      * Start writing a struct.
      *
-     * @param schema metadata metadata
+     * @param metadata schema metadata
      */
     void writeStructBegin(Metadata metadata) throws IOException;
 
