@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
@@ -16,11 +19,13 @@ public final class FastBinaryReader implements TaggedProtocolReader {
     private final short protocolVersion;
 
     public FastBinaryReader(final InputStream inputStream, final short protocolVersion) {
-        if (inputStream == null)
+        if (inputStream == null) {
             throw new IllegalArgumentException("Argument stream must not be null");
+        }
 
-        if (protocolVersion != 1)
+        if (protocolVersion != 1) {
             throw new IllegalArgumentException("Invalid protocol version: " + protocolVersion);
+        }
 
         this.reader = new BinaryStreamReader(inputStream);
         this.protocolVersion = protocolVersion;
@@ -267,12 +272,17 @@ public final class FastBinaryReader implements TaggedProtocolReader {
         while (true) {
             BondDataType fieldType = this.readType();
 
-            if (fieldType.value == BondDataType.BT_STOP_BASE.value)
+            if (fieldType.value == BondDataType.BT_STOP_BASE.value) {
+                // don't stop, as there may be more fields
                 continue;
+            }
 
-            if (fieldType.value == BondDataType.BT_STOP.value)
+            if (fieldType.value == BondDataType.BT_STOP.value) {
+                // stop, as there are no more fields
                 break;
+            }
 
+            this.reader.skipBytes(2);
             this.skip(fieldType);
         }
     }

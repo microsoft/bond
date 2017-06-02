@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.TestHelper;
@@ -15,7 +18,7 @@ public class VarUIntHelperTest {
 
     @Test
     public void staticClass() {
-        TestHelper.verifyStaticClass(VarUIntHelper.class);
+        TestHelper.verifyStaticHelperClass(VarUIntHelper.class);
     }
 
     @Test

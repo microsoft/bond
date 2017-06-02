@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.bond;
 
 import java.lang.reflect.*;
@@ -36,7 +39,7 @@ public final class TestHelper {
      *
      * @param clazz the class to verify
      */
-    public static void verifyStaticClass(Class<?> clazz) {
+    public static void verifyStaticHelperClass(Class<?> clazz) {
 
         // The class is a concrete class (not an abstract class or an interface)
         assertFalse(

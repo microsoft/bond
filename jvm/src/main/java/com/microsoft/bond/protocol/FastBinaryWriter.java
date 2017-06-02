@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
@@ -20,11 +23,13 @@ public final class FastBinaryWriter implements ProtocolWriter {
     private final BinaryStreamWriter writer;
 
     public FastBinaryWriter(final OutputStream outputStream, final short protocolVersion) {
-        if (outputStream == null)
+        if (outputStream == null) {
             throw new IllegalArgumentException("Argument stream must not be null");
+        }
 
-        if (protocolVersion != 1)
+        if (protocolVersion != 1) {
             throw new IllegalArgumentException("Invalid protocol version: " + protocolVersion);
+        }
 
         this.writer = new BinaryStreamWriter(outputStream);
         this.protocolVersion = protocolVersion;

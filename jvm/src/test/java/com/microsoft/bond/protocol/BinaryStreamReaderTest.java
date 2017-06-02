@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.bond.protocol;
 
 import org.junit.Test;
@@ -170,7 +173,7 @@ public class BinaryStreamReaderTest {
     }
 
     @Test
-    public strictfp void readFloat() {
+    public void readFloat() {
         // setup
         byte[] inputBytes = new byte[]{
                 // 0, bit pattern:  0x00000000
@@ -280,7 +283,7 @@ public class BinaryStreamReaderTest {
     }
 
     @Test
-    public strictfp void readDouble() {
+    public void readDouble() {
         // setup
         byte[] inputBytes = new byte[]{
                 // 0, bit pattern:  0x0000000000000000

@@ -1,15 +1,13 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
 import com.microsoft.bond.InvalidBondDataException;
-import com.microsoft.bond.Metadata;
-import com.microsoft.bond.ProtocolType;
-import com.sun.deploy.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.LinkedList;
 
 /**
  * Implements Compact Binary deserialization.
@@ -21,9 +19,13 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
     private final short version;
 
     public CompactBinaryReader(InputStream inputStream, short version) {
-        // check protocol version
-        if (version != 1 && version != 2)
+        if (inputStream == null) {
+            throw new IllegalArgumentException("Argument stream must not be null");
+        }
+
+        if (version != 1 && version != 2) {
             throw new IllegalArgumentException("Invalid protocol version: " + version);
+        }
 
         this.reader = new BinaryStreamReader(inputStream);
         this.version = version;
@@ -35,7 +37,9 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
 
     @Override
     public void readStructBegin() throws IOException {
-        this.reader.readVarUInt32();
+        if (this.version == 2) {
+            this.reader.readVarUInt32();
+        }
     }
 
     @Override
@@ -53,14 +57,15 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
     @Override
     public void readFieldBegin(final ReadFieldResult result) throws IOException {
         final int raw = UnsignedHelper.asUnsignedInt(this.reader.readInt8());
+        final int embeddedId = raw >>> 5;
 
         int id;
-        if (raw < 0xC0) {
-            id = raw >>> 5;
-        } else if (raw == 0xC0) {
+        if (embeddedId == 6) {
             id = UnsignedHelper.asUnsignedInt(this.reader.readInt8());
-        } else {
+        } else if (embeddedId == 7) {
             id = UnsignedHelper.asUnsignedInt(this.reader.readInt16());
+        } else {
+            id = embeddedId;
         }
 
         result.id = id;
@@ -78,10 +83,11 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
         result.keyType = null;
         result.elementType = BondDataType.get(raw & 0x1F);
 
-        if (this.version == 2 && (raw & 0xE0) != 0)
+        if (this.version == 2 && (raw & 0xE0) != 0) {
             result.count = (raw >>> 5) - 1;
-        else
+        } else {
             result.count = this.reader.readVarUInt32();
+        }
     }
 
     @Override
@@ -189,24 +195,32 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
                 this.reader.skipBytes(1);
                 break;
 
-            // 2-byte
-            case BondDataType.Values.BT_UINT16:
-            case BondDataType.Values.BT_INT16:
-                this.reader.skipBytes(2);
-                break;
-
             // 4-byte
-            case BondDataType.Values.BT_UINT32:
-            case BondDataType.Values.BT_INT32:
             case BondDataType.Values.BT_FLOAT:
                 this.reader.skipBytes(4);
                 break;
 
             // 8-byte
-            case BondDataType.Values.BT_UINT64:
-            case BondDataType.Values.BT_INT64:
             case BondDataType.Values.BT_DOUBLE:
                 this.reader.skipBytes(8);
+                break;
+
+            // variable-length encoding
+            case BondDataType.Values.BT_INT16:
+            case BondDataType.Values.BT_UINT16:
+                this.reader.readVarUInt16();
+                break;
+
+            // variable-length encoding
+            case BondDataType.Values.BT_INT32:
+            case BondDataType.Values.BT_UINT32:
+                this.reader.readVarUInt32();
+                break;
+
+            // variable-length encoding
+            case BondDataType.Values.BT_INT64:
+            case BondDataType.Values.BT_UINT64:
+                this.reader.readVarUInt64();
                 break;
 
             // UTF-8 string (1-byte Unicode code units)
@@ -243,13 +257,14 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
 
     private void skipListContainer() throws IOException {
         final int raw = UnsignedHelper.asUnsignedInt(this.reader.readInt8());
-        final BondDataType elementType = BondDataType.get(this.readInt8() & 0x1F);
+        final BondDataType elementType = BondDataType.get(raw & 0x1F);
 
         int count;
-        if (this.version == 2 && (raw & 0xE0) != 0)
+        if (this.version == 2 && (raw & 0xE0) != 0) {
             count = (raw >>> 5) - 1;
-        else
+        } else {
             count = this.reader.readVarUInt32();
+        }
 
         // Process fixed-width data types separately to avoid looping over all elements
         int elementTypeFixedWidth = getFixedTypeWidth(elementType);
@@ -282,16 +297,28 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
 
     private void skipStruct() throws IOException {
         if (this.version == 2) {
+            // take advantage of the struct length stored in V2
             this.reader.skipBytes(this.reader.readVarUInt32());
         } else {
             while (true) {
-                BondDataType fieldType = BondDataType.get(this.reader.readInt8() & 0x1F);
+                final int raw = UnsignedHelper.asUnsignedInt(this.reader.readInt8());
+                BondDataType fieldType = BondDataType.get(raw & 0x1F);
+                final int embeddedId = raw >>> 5;
+                if (embeddedId == 6) {
+                    this.reader.skipBytes(1);
+                } else if (embeddedId == 7) {
+                    this.reader.skipBytes(2);
+                }
 
-                if (fieldType.value == BondDataType.BT_STOP_BASE.value)
+                if (fieldType.value == BondDataType.BT_STOP_BASE.value) {
+                    // don't stop, as there may be more fields
                     continue;
+                }
 
-                if (fieldType.value == BondDataType.BT_STOP.value)
+                if (fieldType.value == BondDataType.BT_STOP.value) {
+                    // stop, as there are no more fields
                     break;
+                }
 
                 this.skip(fieldType);
             }
@@ -306,20 +333,11 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
             case BondDataType.Values.BT_INT8:
                 return 1;
 
-            // 2-byte
-            case BondDataType.Values.BT_UINT16:
-            case BondDataType.Values.BT_INT16:
-                return 2;
-
             // 4-byte
-            case BondDataType.Values.BT_UINT32:
-            case BondDataType.Values.BT_INT32:
             case BondDataType.Values.BT_FLOAT:
                 return 4;
 
             // 8-byte
-            case BondDataType.Values.BT_UINT64:
-            case BondDataType.Values.BT_INT64:
             case BondDataType.Values.BT_DOUBLE:
                 return 8;
 

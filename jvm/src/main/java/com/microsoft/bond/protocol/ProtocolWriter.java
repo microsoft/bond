@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
@@ -18,7 +21,7 @@ public interface ProtocolWriter {
     /**
      * Start writing a struct.
      *
-     * @param metadata codegen metadata
+     * @param schema metadata metadata
      */
     void writeStructBegin(Metadata metadata) throws IOException;
 
@@ -30,7 +33,7 @@ public interface ProtocolWriter {
     /**
      * Start writing a base struct.
      *
-     * @param metadata base codegen metadata
+     * @param metadata base schema metadata
      */
     void writeBaseBegin(Metadata metadata) throws IOException;
 

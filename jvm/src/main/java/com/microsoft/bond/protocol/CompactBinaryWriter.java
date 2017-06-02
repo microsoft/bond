@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
@@ -27,11 +30,13 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
     private final LinkedList<StructLength> structLengths;
 
     public CompactBinaryWriter(final OutputStream outputStream, final short protocolVersion) {
-        if (outputStream == null)
+        if (outputStream == null) {
             throw new IllegalArgumentException("Argument stream must not be null");
+        }
 
-        if (protocolVersion != 1 && protocolVersion != 2)
+        if (protocolVersion != 1 && protocolVersion != 2) {
             throw new IllegalArgumentException("Invalid protocol version: " + protocolVersion);
+        }
 
         this.writer = new BinaryStreamWriter(outputStream);
         this.protocolVersion = protocolVersion;
@@ -216,7 +221,9 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
         @Override
         public void writeStructBegin(final Metadata metadata) throws IOException {
             // start new stack frame for the struct
-            this.workingStack.push(new StructLength());
+            StructLength stackFrame = new StructLength();
+            this.workingStack.push(stackFrame);
+            CompactBinaryWriter.this.structLengths.addLast(stackFrame);
         }
 
         @Override
@@ -228,7 +235,6 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
             // complete the current struct
             this.addBytes(1); // BT_STOP
             final StructLength completedStackFrame = this.workingStack.pop();
-            CompactBinaryWriter.this.structLengths.addLast(completedStackFrame);
 
             // update the enclosing struct (the new current)
             if (!this.workingStack.isEmpty()) {
@@ -357,7 +363,7 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
             final int length = value.length();
             this.addBytes(VarUIntHelper.getVarUInt32Length(length));
             if (length > 0) {
-                this.addBytes(StringHelper.getEncodedStringLength(value) / 2);
+                this.addBytes(StringHelper.getEncodedWStringLength(value));
             }
         }
 

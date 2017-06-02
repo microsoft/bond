@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.TestHelper;
@@ -10,7 +13,7 @@ public class StringHelperTest {
 
     @Test
     public void staticClass() {
-        TestHelper.verifyStaticClass(StringHelper.class);
+        TestHelper.verifyStaticHelperClass(StringHelper.class);
     }
 
     @Test
