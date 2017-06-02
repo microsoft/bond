@@ -7,6 +7,7 @@
 #include "namespace_basic_types_grpc.h"
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/bond_utils.h>
+#include <bond/ext/grpc/client_callback.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
@@ -108,142 +109,142 @@ public:
             Asyncfoo15(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests2::OtherBasicTypes>{request});
         }
 
-        void Asyncfoo21(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo21(const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo21(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb);
+        void Asyncfoo21(const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
         {
             Asyncfoo21(::std::make_shared< ::grpc::ClientContext>(), cb);
         }
 
-        void Asyncfoo22(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo22(const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo22(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb);
+        void Asyncfoo22(const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
         {
             Asyncfoo22(::std::make_shared< ::grpc::ClientContext>(), cb);
         }
 
-        void Asyncfoo23(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo23(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo23(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb);
+        void Asyncfoo23(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::BasicTypes& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
         {
             Asyncfoo23(context, ::bond::bonded< ::tests::BasicTypes>{request}, cb);
         }
-        void Asyncfoo23(const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo23(const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
         {
             Asyncfoo23(::std::make_shared< ::grpc::ClientContext>(), request, cb);
         }
-        void Asyncfoo23(const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo23(const ::tests::BasicTypes& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
         {
             Asyncfoo23(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests::BasicTypes>{request}, cb);
         }
 
-        void Asyncfoo24(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo24(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::dummy& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo24(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb);
+        void Asyncfoo24(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::dummy& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
         {
             Asyncfoo24(context, ::bond::bonded< ::tests::dummy>{request}, cb);
         }
-        void Asyncfoo24(const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo24(const ::bond::bonded< ::tests::dummy>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
         {
             Asyncfoo24(::std::make_shared< ::grpc::ClientContext>(), request, cb);
         }
-        void Asyncfoo24(const ::tests::dummy& request, const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo24(const ::tests::dummy& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
         {
             Asyncfoo24(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests::dummy>{request}, cb);
         }
 
-        void Asyncfoo31(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo31(const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo31(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb);
+        void Asyncfoo31(const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Asyncfoo31(::std::make_shared< ::grpc::ClientContext>(), cb);
         }
 
-        void Asyncfoo32(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo32(const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo32(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb);
+        void Asyncfoo32(const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Asyncfoo32(::std::make_shared< ::grpc::ClientContext>(), cb);
         }
 
-        void Asyncfoo33(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo33(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo33(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb);
+        void Asyncfoo33(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::BasicTypes& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Asyncfoo33(context, ::bond::bonded< ::tests::BasicTypes>{request}, cb);
         }
-        void Asyncfoo33(const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo33(const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Asyncfoo33(::std::make_shared< ::grpc::ClientContext>(), request, cb);
         }
-        void Asyncfoo33(const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo33(const ::tests::BasicTypes& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Asyncfoo33(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests::BasicTypes>{request}, cb);
         }
 
-        void Async_rd_foo33(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
-        void Async_rd_foo33(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Async_rd_foo33(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb);
+        void Async_rd_foo33(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::BasicTypes& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Async_rd_foo33(context, ::bond::bonded< ::tests::BasicTypes>{request}, cb);
         }
-        void Async_rd_foo33(const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Async_rd_foo33(const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Async_rd_foo33(::std::make_shared< ::grpc::ClientContext>(), request, cb);
         }
-        void Async_rd_foo33(const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Async_rd_foo33(const ::tests::BasicTypes& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Async_rd_foo33(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests::BasicTypes>{request}, cb);
         }
 
-        void Asyncfoo34(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo34(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::dummy& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo34(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb);
+        void Asyncfoo34(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::dummy& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Asyncfoo34(context, ::bond::bonded< ::tests::dummy>{request}, cb);
         }
-        void Asyncfoo34(const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo34(const ::bond::bonded< ::tests::dummy>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Asyncfoo34(::std::make_shared< ::grpc::ClientContext>(), request, cb);
         }
-        void Asyncfoo34(const ::tests::dummy& request, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo34(const ::tests::dummy& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Asyncfoo34(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests::dummy>{request}, cb);
         }
 
-        void Asyncfoo41(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo41(const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo41(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb);
+        void Asyncfoo41(const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
         {
             Asyncfoo41(::std::make_shared< ::grpc::ClientContext>(), cb);
         }
 
-        void Asyncfoo42(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo42(const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo42(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb);
+        void Asyncfoo42(const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
         {
             Asyncfoo42(::std::make_shared< ::grpc::ClientContext>(), cb);
         }
 
-        void Asyncfoo43(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo43(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo43(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb);
+        void Asyncfoo43(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::BasicTypes& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
         {
             Asyncfoo43(context, ::bond::bonded< ::tests::BasicTypes>{request}, cb);
         }
-        void Asyncfoo43(const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo43(const ::bond::bonded< ::tests::BasicTypes>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
         {
             Asyncfoo43(::std::make_shared< ::grpc::ClientContext>(), request, cb);
         }
-        void Asyncfoo43(const ::tests::BasicTypes& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo43(const ::tests::BasicTypes& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
         {
             Asyncfoo43(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests::BasicTypes>{request}, cb);
         }
 
-        void Asyncfoo44(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb);
-        void Asyncfoo44(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::dummy& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo44(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::dummy>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb);
+        void Asyncfoo44(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::dummy& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
         {
             Asyncfoo44(context, ::bond::bonded< ::tests::dummy>{request}, cb);
         }
-        void Asyncfoo44(const ::bond::bonded< ::tests::dummy>& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo44(const ::bond::bonded< ::tests::dummy>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
         {
             Asyncfoo44(::std::make_shared< ::grpc::ClientContext>(), request, cb);
         }
-        void Asyncfoo44(const ::tests::dummy& request, const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+        void Asyncfoo44(const ::tests::dummy& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
         {
             Asyncfoo44(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests::dummy>{request}, cb);
         }
 
-        void Asynccq(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb);
-        void Asynccq(const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+        void Asynccq(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb);
+        void Asynccq(const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
         {
             Asynccq(::std::make_shared< ::grpc::ClientContext>(), cb);
         }
@@ -684,7 +685,7 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo11(
     )
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -698,7 +699,7 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo12(
     )
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -712,7 +713,7 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo12_impl(
     )
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -726,7 +727,7 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo13(
     , const ::bond::bonded< ::tests::BasicTypes>& request)
 {
     
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::bond::Void, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -740,7 +741,7 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo14(
     , const ::bond::bonded< ::tests::dummy>& request)
 {
     
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::bond::Void>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::bond::Void, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -754,7 +755,7 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo15(
     , const ::bond::bonded< ::tests2::OtherBasicTypes>& request)
 {
     
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests2::OtherBasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests2::OtherBasicTypes, ::bond::Void, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -766,10 +767,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo21(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     
-    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -782,10 +783,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo22(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     
-    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::bond::Void>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -798,10 +799,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo23(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
 {
     
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::bond::Void>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::bond::Void, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -814,10 +815,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo24(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     const ::bond::bonded< ::tests::dummy>& request,
-    const std::function<void(const ::bond::bonded< ::bond::Void>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
 {
     
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::bond::Void>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::bond::Void, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -830,10 +831,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo31(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     
-    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::BasicTypes, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -846,10 +847,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo32(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     
-    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::BasicTypes, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -862,10 +863,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo33(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
 {
     
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::tests::BasicTypes, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -878,10 +879,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Async_rd_foo33(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
 {
     
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::tests::BasicTypes, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -894,10 +895,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo34(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     const ::bond::bonded< ::tests::dummy>& request,
-    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
 {
     
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::tests::BasicTypes, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -910,10 +911,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo41(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     
-    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::dummy>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::dummy, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -926,10 +927,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo42(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     
-    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::dummy>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::dummy, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -942,10 +943,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo43(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     const ::bond::bonded< ::tests::BasicTypes>& request,
-    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
 {
     
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::bonded< ::tests::dummy>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::tests::dummy, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -958,10 +959,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo44(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     const ::bond::bonded< ::tests::dummy>& request,
-    const std::function<void(const ::bond::bonded< ::tests::dummy>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::dummy>>)>& cb)
 {
     
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::bonded< ::tests::dummy>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::tests::dummy, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -974,10 +975,10 @@ template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asynccq(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     
-    const std::function<void(const ::bond::bonded< ::tests::BasicTypes>&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>>)>& cb)
 {
     auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::bonded< ::tests::BasicTypes>, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::BasicTypes, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,

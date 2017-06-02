@@ -5,6 +5,7 @@
 
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/exception.h>
+#include <bond/ext/grpc/client_callback.h>
 #include <grpc++/impl/codegen/status.h>
 
 #include <boost/optional.hpp>
@@ -31,16 +32,18 @@ class wait_callback final
 public:
     wait_callback() : _impl(std::make_shared<impl>()) { }
 
+    typedef unary_call_result<TResponse> arg_type;
+
     /// @brief Records the response and status.
     ///
     /// @exception MultipleInvocationException thrown if the callback (or a
     /// copy of the callback) is invoked more than once.
-    void operator()(const bond::bonded<TResponse>& response, const grpc::Status& status)
+    void operator()(std::shared_ptr<arg_type> args)
     {
         std::unique_lock<std::mutex> lock(_impl->_m);
         if (!_impl->_results)
         {
-            _impl->_results.emplace(response, status);
+            _impl->_results = std::move(args);
 
             // Drop the lock before notifying so we don't wake someone up to
             // then have them wait on the lock.
@@ -79,7 +82,7 @@ public:
     const bond::bonded<TResponse>& response() const
     {
         wait();
-        return std::get<0>(_impl->_results.get());
+        return _impl->_results->response;
     }
 
     /// @brief Gets the status.
@@ -88,7 +91,16 @@ public:
     const grpc::Status& status() const
     {
         wait();
-        return std::get<1>(_impl->_results.get());
+        return _impl->_results->status;
+    }
+
+    /// @brief Gets the context.
+    ///
+    /// @warning Blocks until this has been invoked.
+    std::shared_ptr<grpc::ClientContext> context() const
+    {
+        wait();
+        return _impl->_results->context;
     }
 
 private:
@@ -107,11 +119,11 @@ private:
         std::mutex _m;
         /// condition variable used to signal anyone waiting
         std::condition_variable _cv;
-        /// The response and status, but more importantly, doubles as a flag
+        /// The results, but more importantly, doubles as a flag
         /// indicating whether a callback has been invoked yet. If this is
-        /// empty, no callback has been invoked yet. If non-empty, a
+        /// nullptr, no callback has been invoked yet. If not nullptr, a
         /// callback has already been invoked.
-        boost::optional<std::tuple<bond::bonded<TResponse>, grpc::Status>> _results;
+        std::shared_ptr<arg_type> _results;
     };
 
     /// shared_ptr to the actual state.
