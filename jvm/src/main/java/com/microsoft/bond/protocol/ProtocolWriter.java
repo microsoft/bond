@@ -14,14 +14,6 @@ import java.io.IOException;
 public interface ProtocolWriter {
 
     /**
-     * Provide the first-pass writer, if one is needed for this writer.
-     * Otherwise, returns null.
-     *
-     * @return the first-pass writer
-     */
-    ProtocolWriter getFirstPassWriter();
-
-    /**
      * Write protocol magic number and version.
      */
     void writeVersion() throws IOException;
@@ -29,9 +21,14 @@ public interface ProtocolWriter {
     /**
      * Start writing a struct.
      *
-     * @param metadata schema metadata
+     * @param schema metadata metadata
      */
     void writeStructBegin(Metadata metadata) throws IOException;
+
+    /**
+     * End writing a struct.
+     */
+    void writeStructEnd() throws IOException;
 
     /**
      * Start writing a base struct.
@@ -39,11 +36,6 @@ public interface ProtocolWriter {
      * @param metadata base schema metadata
      */
     void writeBaseBegin(Metadata metadata) throws IOException;
-
-    /**
-     * End writing a struct.
-     */
-    void writeStructEnd() throws IOException;
 
     /**
      * End writing a base struct.
@@ -166,7 +158,7 @@ public interface ProtocolWriter {
     void writeDouble(double value) throws IOException;
 
     /**
-     * Write array of bytes verbatim.
+     * Write an array of bytes verbatim.
      *
      * @param value the value
      */

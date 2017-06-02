@@ -73,4 +73,8 @@ final class BinaryStreamReader {
     long readVarUInt64() throws IOException {
         return VarUIntHelper.decodeVarUInt64(this.inputStream);
     }
+
+    void skipBytes(long byteCount) throws IOException {
+        StreamHelper.skipBytes(this.inputStream, byteCount);
+    }
 }

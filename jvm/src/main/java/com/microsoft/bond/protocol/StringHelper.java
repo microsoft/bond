@@ -11,7 +11,8 @@ import java.nio.charset.Charset;
 final class StringHelper {
 
     // prevent instantiation
-    private StringHelper() {}
+    private StringHelper() {
+    }
 
     private static final Charset UTF8 = Charset.forName("UTF-8");
     private static final Charset UTF16LE = Charset.forName("UTF-16LE");

@@ -3,6 +3,7 @@
 
 package com.microsoft.bond.protocol;
 
+import com.microsoft.bond.TestHelper;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -14,6 +15,11 @@ import java.util.Arrays;
 import static org.junit.Assert.*;
 
 public class VarUIntHelperTest {
+
+    @Test
+    public void staticClass() {
+        TestHelper.verifyStaticHelperClass(VarUIntHelper.class);
+    }
 
     @Test
     public void testVarUInt16Encoding() {

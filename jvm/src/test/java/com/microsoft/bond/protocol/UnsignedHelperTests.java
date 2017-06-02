@@ -3,6 +3,7 @@
 
 package com.microsoft.bond.protocol;
 
+import com.microsoft.bond.TestHelper;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -10,6 +11,11 @@ import java.math.BigInteger;
 import static org.junit.Assert.*;
 
 public class UnsignedHelperTests {
+
+    @Test
+    public void staticClass() {
+        TestHelper.verifyStaticHelperClass(UnsignedHelper.class);
+    }
 
     @Test
     public void asUnsignedShort_Byte() {

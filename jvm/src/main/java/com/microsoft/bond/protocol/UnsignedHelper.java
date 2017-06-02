@@ -16,7 +16,8 @@ import java.math.BigInteger;
 final class UnsignedHelper {
 
     // prevent instantiation
-    private UnsignedHelper() {}
+    private UnsignedHelper() {
+    }
 
     private final static BigInteger TWO_TO_POWER_8 = BigInteger.valueOf(2L).pow(8);
     private final static BigInteger TWO_TO_POWER_16 = BigInteger.valueOf(2L).pow(16);

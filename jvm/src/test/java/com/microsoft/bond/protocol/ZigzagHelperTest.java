@@ -3,11 +3,17 @@
 
 package com.microsoft.bond.protocol;
 
+import com.microsoft.bond.TestHelper;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class ZigzagHelperTest {
+
+    @Test
+    public void staticClass() {
+        TestHelper.verifyStaticHelperClass(ZigzagHelper.class);
+    }
 
     @Test
     public void testZigzag16Encoding() {

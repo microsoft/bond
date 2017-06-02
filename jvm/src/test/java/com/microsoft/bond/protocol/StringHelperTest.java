@@ -3,12 +3,18 @@
 
 package com.microsoft.bond.protocol;
 
+import com.microsoft.bond.TestHelper;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class StringHelperTest {
+
+    @Test
+    public void staticClass() {
+        TestHelper.verifyStaticHelperClass(StringHelper.class);
+    }
 
     @Test
     public void testStringEncoding() {
@@ -180,8 +186,8 @@ public class StringHelperTest {
         // 4 code units
         testStringEncodingDecoding(
                 "\uD852\uDF62",
-                new byte[] {
-                        (byte)0xF0, (byte)0xA4, (byte)0xAD, (byte)0xA2,
+                new byte[]{
+                        (byte) 0xF0, (byte) 0xA4, (byte) 0xAD, (byte) 0xA2,
                 });
     }
 
@@ -355,8 +361,8 @@ public class StringHelperTest {
         // 2 code units
         testStringEncodingDecoding(
                 "\uD852\uDF62",
-                new byte[] {
-                        (byte)0xF0, (byte)0xA4, (byte)0xAD, (byte)0xA2
+                new byte[]{
+                        (byte) 0xF0, (byte) 0xA4, (byte) 0xAD, (byte) 0xA2
                 });
     }
 

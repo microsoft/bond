@@ -18,7 +18,8 @@ import java.io.OutputStream;
 final class VarUIntHelper {
 
     // prevent instantiation
-    private VarUIntHelper() {}
+    private VarUIntHelper() {
+    }
 
     /**
      * Encodes an unsigned uint16 value (represented as a signed int16 value) into a stream.

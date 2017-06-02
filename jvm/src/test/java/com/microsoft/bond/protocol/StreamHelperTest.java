@@ -3,6 +3,7 @@
 
 package com.microsoft.bond.protocol;
 
+import com.microsoft.bond.TestHelper;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -14,6 +15,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class StreamHelperTest {
+
+    @Test
+    public void staticClass() {
+        TestHelper.verifyStaticHelperClass(StreamHelper.class);
+    }
 
     @Test
     public void readByte() {
@@ -47,10 +53,10 @@ public class StreamHelperTest {
 
     @Test
     public void readBytes() {
-        byte[] inputBytes = new byte[]{2, 7, 31, 127};
+        byte[] inputBytes = new byte[]{-128, -64, -32, -16, -8, -4, -2, -1, 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 127};
 
         // iterate over output buffer offsets
-        int maxOffset = 5;
+        int maxOffset = inputBytes.length / 2;
         byte[] b = new byte[inputBytes.length + maxOffset];
         for (int offset = 0; offset < maxOffset; ++offset) {
 
@@ -77,20 +83,65 @@ public class StreamHelperTest {
                 } catch (IOException e) {
                     fail("IOException can't be thrown here: " + e);
                 }
-
-                // read past the end of stream
-                try {
-                    int eofByteCount = inputBytes.length + 1;
-                    ByteArrayInputStream bais = new ByteArrayInputStream(inputBytes);
-                    StreamHelper.readBytes(bais, b, offset, eofByteCount);
-
-                    fail("Operation can't succeed: " + eofByteCount);
-                } catch (EOFException e) {
-                    // success
-                } catch (IOException e) {
-                    fail("IOException can't be thrown here: " + e);
-                }
             }
+
+            // read past the end of stream
+            try {
+                int eofByteCount = inputBytes.length + 1;
+                ByteArrayInputStream bais = new ByteArrayInputStream(inputBytes);
+                StreamHelper.readBytes(bais, b, offset, eofByteCount);
+
+                fail("Operation can't succeed: " + eofByteCount);
+            } catch (EOFException e) {
+                // success
+            } catch (IOException e) {
+                fail("IOException can't be thrown here: " + e);
+            }
+        }
+    }
+
+    @Test
+    public void skipBytes() {
+        byte[] inputBytes = new byte[]{-128, -64, -32, -16, -8, -4, -2, -1, 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 127};
+
+        // iterate over length size
+        for (int byteCount = 1; byteCount <= inputBytes.length; ++byteCount) {
+
+            // skip bytes normally
+            try {
+                ByteArrayInputStream bais = new ByteArrayInputStream(inputBytes);
+                StreamHelper.skipBytes(bais, byteCount);
+
+                byte[] b = new byte[inputBytes.length];
+                int remainingByteCount = bais.read(b);
+
+                if (byteCount < inputBytes.length) {
+                    // didn't reach the end of stream
+                    assertEquals(inputBytes.length - byteCount, remainingByteCount);
+                } else {
+                    // reached the end of stream
+                    assertEquals(-1, remainingByteCount);
+                }
+
+                for (int i = 0; i < remainingByteCount; ++i) {
+                    assertEquals(inputBytes[byteCount + i], b[i]);
+                }
+            } catch (IOException e) {
+                fail("IOException can't be thrown here: " + e);
+            }
+        }
+
+        // read past the end of stream
+        try {
+            int eofByteCount = inputBytes.length + 1;
+            ByteArrayInputStream bais = new ByteArrayInputStream(inputBytes);
+            StreamHelper.skipBytes(bais, eofByteCount);
+
+            fail("Operation can't succeed: " + eofByteCount);
+        } catch (EOFException e) {
+            // success
+        } catch (IOException e) {
+            fail("IOException can't be thrown here: " + e);
         }
     }
 }

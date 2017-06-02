@@ -9,7 +9,8 @@ package com.microsoft.bond.protocol;
 final class ZigzagHelper {
 
     // prevent instantiation
-    private ZigzagHelper() {}
+    private ZigzagHelper() {
+    }
 
     static short encodeZigzag16(short signedValue) {
         return (short) ((signedValue << 1) ^ (signedValue >> 15));
