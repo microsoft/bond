@@ -189,11 +189,11 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>In the root <code>bond</code> directory run:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build
-<span class="fu">cmake</span> ..
+<span class="fu">cmake</span> .. -DBOND_ENABLE_COMM=FALSE -DBOND_ENABLE_GRPC=FALSE
 <span class="fu">make</span>
 <span class="fu">sudo</span> make install</code></pre></div>
 <p>The <code>build</code> directory is just an example. Any directory can be used as the build destination.</p>
-<p>In order to build all the C++ and Python tests and examples, as well as Bond-over-gRPC and Bond Comm, a few more packages are needed:</p>
+<p>In order to build all the C++ and Python tests and examples, as well as Bond-over-gRPC and Bond Comm, a few more packages are needed, and CMake needs to be run with different options:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> apt-get install \
     autoconf \
     build-essential \
@@ -203,7 +203,10 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
     libtool \
     python2.7-dev
 
-<span class="ex">cabal</span> install happy</code></pre></div>
+<span class="ex">cabal</span> install happy
+
+<span class="bu">cd</span> build <span class="co"># or wherever you ran CMake before</span>
+<span class="fu">cmake</span> .. -DBOND_ENABLE_COMM=TRUE -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package</code></pre></div>
 <p>Running the following command in the build directory will build and execute all the tests and examples:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">make</span> --jobs 8 check</code></pre></div>
 <p>(The unit tests are large so you may want to run 4-8 build jobs in parallel, assuming you have enough memory.)</p>
