@@ -22,13 +22,14 @@ dependencies {
 
 def gbcOutputPath = "$buildDir/generated-src"
 def gbcOutputDir = file("$gbcOutputPath")
+def bondRoot = '../..'
 
 allprojects {
     task coreCodegen(type:Exec) {
-        commandLine '../build/compiler/build/gbc/gbc', 'java',
+        commandLine "$bondRoot/build/compiler/build/gbc/gbc", 'java',
             '-n', 'bond=com.microsoft.bond',
-            '../idl/bond/core/bond.bond',
-            '../idl/bond/core/bond_const.bond',
+            "$bondRoot/idl/bond/core/bond.bond",
+            "$bondRoot/idl/bond/core/bond_const.bond",
             '--output', "$gbcOutputPath"
     }
     compileJava.dependsOn coreCodegen
