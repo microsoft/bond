@@ -48,42 +48,25 @@ namespace detail {
     /// instance of unary_call_impl to keep the state alive while the call
     /// object is itself alive.
     template <typename TRequest, typename TResponse>
-    struct unary_call_impl final : std::enable_shared_from_this<unary_call_impl<TRequest, TResponse>>
+    struct unary_call_impl final
+        : std::enable_shared_from_this<unary_call_impl<TRequest, TResponse>>,
+          io_manager_tag
     {
-        /// @brief Handles keeping a unary_call_impl instance alive while a
-        /// response it being sent.
-        struct response_sent_tag final : detail::io_manager_tag
-        {
-            std::shared_ptr<unary_call_impl> _parent;
-
-            explicit response_sent_tag(std::shared_ptr<unary_call_impl>&& parent)
-                : _parent(std::move(parent))
-            {
-                BOOST_ASSERT(_parent);
-            }
-
-            void invoke(bool /* ok */) override
-            {
-                // response has been sent, so we no longer need to keep the
-                // parent alive
-                _parent.reset();
-            }
-        };
-
         grpc::ServerContext _context;
         TRequest _request;
         grpc::ServerAsyncResponseWriter<bond::bonded<TResponse>> _responder;
         /// Tracks whether any response has been sent yet.
         std::atomic_flag _responseSentFlag;
-        /// Used to keep this instance alive while a response is being sent.
-        boost::optional<response_sent_tag> _responseSentTag;
+        /// A pointer to ourselves used to keep us alive while the response is
+        /// being sent.
+        std::shared_ptr<unary_call_impl> _self;
 
         unary_call_impl()
             : _context(),
             _request(),
             _responder(&_context),
             _responseSentFlag(),
-            _responseSentTag()
+            _self()
         { }
 
         unary_call_impl(const unary_call_impl&) = delete;
@@ -94,8 +77,8 @@ namespace detail {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
             {
-                _responseSentTag.emplace(this->shared_from_this());
-                _responder.Finish(msg, status, &_responseSentTag.get());
+                _self = this->shared_from_this();
+                _responder.Finish(msg, status, static_cast<void*>(this));
             }
         }
 
@@ -104,9 +87,16 @@ namespace detail {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
             {
-                _responseSentTag.emplace(this->shared_from_this());
-                _responder.FinishWithError(status, &_responseSentTag.get());
+                _self = this->shared_from_this();
+                _responder.FinishWithError(status, static_cast<void*>(this));
             }
+        }
+
+        void invoke(bool /* ok */) override
+        {
+            // response has been sent, so we no longer need to keep
+            // ourselves alive
+            _self.reset();
         }
     };
 

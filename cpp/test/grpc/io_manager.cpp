@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #ifdef _MSC_VER
+    #pragma warning(push)
     #pragma warning(disable : 4100) // disable "unreferenced formal parameter" warning
     #pragma warning(disable : 4505) // disable "unreferenced local function has been removed" warning
 #endif
@@ -12,6 +13,10 @@
 #include <grpc++/impl/grpc_library.h>
 #include <grpc/grpc.h>
 #include <grpc/support/time.h>
+
+#ifdef _MSC_VER
+    #pragma warning(pop)
+#endif
 
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/detail/io_manager_tag.h>

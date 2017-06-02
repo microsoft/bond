@@ -28,6 +28,7 @@ grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
 #{newlineSep 0 includeImport imports}
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/bond_utils.h>
+#include <bond/ext/grpc/client_callback.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
@@ -153,21 +154,21 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
         serviceMethodsWithIndex :: [(Integer,Method)]
         serviceMethodsWithIndex = zip [0..] serviceMethods
 
-        publicProxyMethodDecl Function{methodInput = Nothing, ..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(const #{bonded methodResult}&, const ::grpc::Status&)>& cb);
-        void Async#{methodName}(const std::function<void(const #{bonded methodResult}&, const ::grpc::Status&)>& cb)
+        publicProxyMethodDecl Function{methodInput = Nothing, ..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb);
+        void Async#{methodName}(const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb)
         {
             Async#{methodName}(::std::make_shared< ::grpc::ClientContext>(), cb);
         }|]
-        publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{bonded methodInput}& request, const std::function<void(const #{bonded methodResult}&, const ::grpc::Status&)>& cb);
-        void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{payload methodInput}& request, const std::function<void(const #{bonded methodResult}&, const ::grpc::Status&)>& cb)
+        publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{bonded methodInput}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb);
+        void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{payload methodInput}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb)
         {
             Async#{methodName}(context, #{bonded methodInput}{request}, cb);
         }
-        void Async#{methodName}(const #{bonded methodInput}& request, const std::function<void(const #{bonded methodResult}&, const ::grpc::Status&)>& cb)
+        void Async#{methodName}(const #{bonded methodInput}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb)
         {
             Async#{methodName}(::std::make_shared< ::grpc::ClientContext>(), request, cb);
         }
-        void Async#{methodName}(const #{payload methodInput}& request, const std::function<void(const #{bonded methodResult}&, const ::grpc::Status&)>& cb)
+        void Async#{methodName}(const #{payload methodInput}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb)
         {
             Async#{methodName}(::std::make_shared< ::grpc::ClientContext>(), #{bonded methodInput}{request}, cb);
         }|]
@@ -200,10 +201,10 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
 inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
     ::std::shared_ptr< ::grpc::ClientContext> context,
     #{voidParam methodInput}
-    const std::function<void(const #{bonded methodResult}&, const ::grpc::Status&)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb)
 {
     #{voidRequest methodInput}
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< #{bonded methodInput}, #{bonded methodResult}, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< #{payload methodInput}, #{payload methodResult}, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -223,7 +224,7 @@ inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
     #{voidParam methodInput})
 {
     #{voidRequest methodInput}
-    auto calldata = new ::bond::ext::gRPC::detail::client_unary_call_data< #{bonded methodInput}, #{bonded Nothing}, TThreadPool>(
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< #{payload methodInput}, #{payload Nothing}, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
