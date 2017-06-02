@@ -90,7 +90,8 @@ $(document).ready(function(){initNavTree('structbond_1_1ext_1_1g_r_p_c_1_1detail
 
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt; Struct Template Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
@@ -99,62 +100,62 @@ $(document).ready(function(){initNavTree('structbond_1_1ext_1_1g_r_p_c_1_1detail
 
 <p>Implementation class that holds the state associated with a single async, unary call.  
  <a href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html#details">More...</a></p>
-<div class="dynheader">
-Inheritance diagram for bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt;:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.png" usemap="#bond::ext::gRPC::detail::unary_5Fcall_5Fimpl_3C_20TRequest_2C_20TResponse_20_3E_map" alt=""/>
-  <map id="bond::ext::gRPC::detail::unary_5Fcall_5Fimpl_3C_20TRequest_2C_20TResponse_20_3E_map" name="bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt;_map">
-<area href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html" title="Interface for completion queue tag types that io_manager expects. " alt="bond::ext::gRPC::detail::io_manager_tag" shape="rect" coords="0,0,377,24"/>
-</map>
- </div></div>
+
+<p>Inherits enable_shared_from_this&lt; unary_call_impl&lt; TRequest, TResponse &gt; &gt;.</p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:a095edb8a297b6557fe55b60eb9d2c70e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html#a095edb8a297b6557fe55b60eb9d2c70e">invoke</a> (bool) override</td></tr>
-<tr class="memdesc:a095edb8a297b6557fe55b60eb9d2c70e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when this instance is dequeued from a completion queue.  <a href="#a095edb8a297b6557fe55b60eb9d2c70e">More...</a><br /></td></tr>
-<tr class="separator:a095edb8a297b6557fe55b60eb9d2c70e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl_1_1response__sent__tag.html">response_sent_tag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles keeping a <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html" title="Implementation class that holds the state associated with a single async, unary call. ">unary_call_impl</a> instance alive while a response it being sent.  <a href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl_1_1response__sent__tag.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a4f9173d0d1392708ae461ac32eec4514"><td class="memItemLeft" align="right" valign="top">std::atomic_flag&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html#a4f9173d0d1392708ae461ac32eec4514">_responseSentFlag</a></td></tr>
+<tr class="memdesc:a4f9173d0d1392708ae461ac32eec4514"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tracks whether any response has been sent yet.  <a href="#a4f9173d0d1392708ae461ac32eec4514">More...</a><br /></td></tr>
+<tr class="separator:a4f9173d0d1392708ae461ac32eec4514"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28311c1c90ebd004616175d573bb3894"><td class="memItemLeft" align="right" valign="top">boost::optional&lt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl_1_1response__sent__tag.html">response_sent_tag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html#a28311c1c90ebd004616175d573bb3894">_responseSentTag</a></td></tr>
+<tr class="memdesc:a28311c1c90ebd004616175d573bb3894"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to keep this instance alive while a response is being sent.  <a href="#a28311c1c90ebd004616175d573bb3894">More...</a><br /></td></tr>
+<tr class="separator:a28311c1c90ebd004616175d573bb3894"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename TRequest, typename TResponse&gt;<br />
 struct bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt;</h3>
 
 <p>Implementation class that holds the state associated with a single async, unary call. </p>
-<p>It manages its own lifetime: to send a response, it enques itself in the completion queue. When that sending of the response is done and it is dequeued from the completion queue, it deletes itself. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a095edb8a297b6557fe55b60eb9d2c70e"></a>
+<p>Two different object participate in shared ownership of instances of this class: the user-facing <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="The details of a single async, unary call. ">unary_call</a> object and the <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl_1_1response__sent__tag.html" title="Handles keeping a unary_call_impl instance alive while a response it being sent. ">response_sent_tag</a> helper struct.</p>
+<p>To ensure that it stays alive while sending a response, <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html" title="Implementation class that holds the state associated with a single async, unary call. ">unary_call_impl</a> creates a <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl_1_1response__sent__tag.html" title="Handles keeping a unary_call_impl instance alive while a response it being sent. ">response_sent_tag</a> with a shared_ptr to itself that it enques in the completion queue. When that sending of the response is done and it is dequeued from the completion queue, <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl_1_1response__sent__tag.html" title="Handles keeping a unary_call_impl instance alive while a response it being sent. ">response_sent_tag</a> clears its shared_ptr to the <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html" title="Implementation class that holds the state associated with a single async, unary call. ">unary_call_impl</a>.</p>
+<p>The user-facing <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="The details of a single async, unary call. ">unary_call</a> object also has a shared_ptr to an instance of <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html" title="Implementation class that holds the state associated with a single async, unary call. ">unary_call_impl</a> to keep the state alive while the call object is itself alive. </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a4f9173d0d1392708ae461ac32eec4514"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename TRequest, typename TResponse&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
+template&lt;typename TRequest , typename TResponse &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html">bond::ext::gRPC::detail::unary_call_impl</a>&lt; TRequest, TResponse &gt;::invoke </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>ok</em></td><td>)</td>
-          <td></td>
+          <td class="memname">std::atomic_flag <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html">bond::ext::gRPC::detail::unary_call_impl</a>&lt; TRequest, TResponse &gt;::_responseSentFlag</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p>Called when this instance is dequeued from a completion queue. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ok</td><td>whether or not the initial operation succeeded </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Tracks whether any response has been sent yet. </p>
 
-<p>Implements <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html#a6242ca809b26c2ae62479a766438e160">bond::ext::gRPC::detail::io_manager_tag</a>.</p>
+</div>
+</div>
+<a class="anchor" id="a28311c1c90ebd004616175d573bb3894"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename TRequest , typename TResponse &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">boost::optional&lt;<a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl_1_1response__sent__tag.html">response_sent_tag</a>&gt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html">bond::ext::gRPC::detail::unary_call_impl</a>&lt; TRequest, TResponse &gt;::_responseSentTag</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Used to keep this instance alive while a response is being sent. </p>
 
 </div>
 </div>
