@@ -18,7 +18,7 @@ import java.util.LinkedList;
 public final class CompactBinaryWriter implements TwoPassProtocolWriter {
 
     // Wraps a mutable integer that keeps track of the length of a struct.
-    private final class StructLength {
+    private static final class StructLength {
         int length = 0;
     }
 
