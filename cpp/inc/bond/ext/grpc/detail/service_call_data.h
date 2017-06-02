@@ -34,9 +34,9 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
 /// There only needs to be one of these per method in a service, and it can
 /// be re-used for receiving subsequent calls. A new detail::unary_call_impl
 /// is created for each individual call to hold the call-specific data. Once
-/// the detail::unary_call_impl has been dispatched to the user callback,
-/// detail::unary_call_impl is in charge of its own lifetime, and
-/// detail::service_unary_call_data re-enqueues itself to get the next call.
+/// the invocation of the user callback along with the call-specific data
+/// has been enqueued in the thread pool, detail::service_unary_call_data
+/// re-enqueues itself to get the next call.
 template <typename TRequest, typename TResponse, typename TThreadPool>
 struct service_unary_call_data : io_manager_tag
 {
@@ -56,7 +56,7 @@ struct service_unary_call_data : io_manager_tag
     /// The user code to invoke when a call to this method is received.
     CallbackType _cb;
     /// Individual state for one specific call to this method.
-    std::unique_ptr<unary_call_impl<TRequest, TResponse>> _receivedCall;
+    std::shared_ptr<unary_call_impl<TRequest, TResponse>> _receivedCall;
 
     service_unary_call_data(
         service<TThreadPool>* service,
@@ -69,7 +69,7 @@ struct service_unary_call_data : io_manager_tag
           _cq(cq),
           _threadPool(threadPool),
           _cb(cb),
-          _receivedCall(new unary_call_impl<TRequest, TResponse>)
+         _receivedCall(std::make_shared<unary_call_impl<TRequest, TResponse>>())
     {
         BOOST_ASSERT(service);
         BOOST_ASSERT(cq);
@@ -81,18 +81,30 @@ struct service_unary_call_data : io_manager_tag
     {
         if (ok)
         {
-            // unary_call_impl::invoke will delete itself after it's posted
-            // back to the completion queue as the result of sending a
-            // response. The UnaryCall wrapper that we create inside the
-            // thread guarantees that some response will always be sent.
-            unary_call_impl<TRequest, TResponse>* receivedCall = _receivedCall.release();
-
-            _threadPool->schedule([this, receivedCall]()
+            // capture the data associated with this one incomming request
+            // so that we can pass it to the user callback. The unary_call
+            // that we create to pass to the user callback takes ownership
+            // of this data.
+            //
+            // This scope block is here so that the shared_ptr that we
+            // create to capture in the lambda is destroyed after we enqueue
+            // in the thread pool but before we schedule the next receive.
+            // When we can use C++14, we can simplify this by using lambda's
+            // capture-by-move.
             {
-                _cb(unary_call<TRequest, TResponse> { receivedCall });
-            });
+                std::shared_ptr<unary_call_impl<TRequest, TResponse>> receivedCall = _receivedCall;
 
-            _receivedCall.reset(new unary_call_impl<TRequest, TResponse>);
+                _threadPool->schedule([this, receivedCall]() mutable
+                {
+                    _cb(unary_call<TRequest, TResponse> { std::move(receivedCall) });
+
+                    // should have transfered ownership
+                    BOOST_ASSERT(!receivedCall);
+                });
+            }
+
+            // create new state for the next request that will be received
+            _receivedCall = std::make_shared<unary_call_impl<TRequest, TResponse>>();
             _service->queue_receive(
                 _methodIndex,
                 &_receivedCall->_context,
