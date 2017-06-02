@@ -48,7 +48,7 @@ namespace detail {
     /// instance of unary_call_impl to keep the state alive while the call
     /// object is itself alive.
     template <typename TRequest, typename TResponse>
-        struct unary_call_impl final : std::enable_shared_from_this<unary_call_impl<TRequest, TResponse>>
+    struct unary_call_impl final : std::enable_shared_from_this<unary_call_impl<TRequest, TResponse>>
     {
         /// @brief Handles keeping a unary_call_impl instance alive while a
         /// response it being sent.
@@ -215,7 +215,7 @@ public:
         _impl->FinishWithError(status);
     }
 
-    template <typename TRequest, typename TResponse, typename TThreadPool>
+    template <typename SUCDRequest, typename SUCDResponse, typename SUCDThreadPool>
     friend struct detail::service_unary_call_data;
 
 private:

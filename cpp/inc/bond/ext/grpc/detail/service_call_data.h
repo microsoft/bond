@@ -69,7 +69,7 @@ struct service_unary_call_data : io_manager_tag
           _cq(cq),
           _threadPool(threadPool),
           _cb(cb),
-        _receivedCall(std::make_shared<unary_call_impl<TRequest, TResponse>>())
+         _receivedCall(std::make_shared<unary_call_impl<TRequest, TResponse>>())
     {
         BOOST_ASSERT(service);
         BOOST_ASSERT(cq);
