@@ -311,12 +311,12 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
                 }
 
                 if (fieldType.value == BondDataType.BT_STOP_BASE.value) {
-                    // don't stop, as there may be more fields
+                    // don't stop, as there may be more fields following the base struct
                     continue;
                 }
 
                 if (fieldType.value == BondDataType.BT_STOP.value) {
-                    // stop, as there are no more fields
+                    // stop, as we've reached then end and there are no more fields
                     break;
                 }
 
