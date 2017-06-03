@@ -102,9 +102,9 @@ $(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1wait__c
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae0926a1978531c5accd73a45b6782400"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html#ae0926a1978531c5accd73a45b6782400">operator()</a> (const <a class="el" href="classbond_1_1bonded.html">bond::bonded</a>&lt; TResponse &gt; &amp;<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html#a3ede4f56022d0486b4f910d08fb31da0">response</a>, const grpc::Status &amp;<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html#a3bbcbf4eda51fb656c670d5a2c4cd3f0">status</a>)</td></tr>
-<tr class="memdesc:ae0926a1978531c5accd73a45b6782400"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records the response and status.  <a href="#ae0926a1978531c5accd73a45b6782400">More...</a><br /></td></tr>
-<tr class="separator:ae0926a1978531c5accd73a45b6782400"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e82ed2e74e78367dfe4ee29a875e535"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html#a4e82ed2e74e78367dfe4ee29a875e535">operator()</a> (std::shared_ptr&lt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html">arg_type</a> &gt; args)</td></tr>
+<tr class="memdesc:a4e82ed2e74e78367dfe4ee29a875e535"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records the response and status.  <a href="#a4e82ed2e74e78367dfe4ee29a875e535">More...</a><br /></td></tr>
+<tr class="separator:a4e82ed2e74e78367dfe4ee29a875e535"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3c00f0eb0b359cf726e39781562cd0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html#ae3c00f0eb0b359cf726e39781562cd0a">wait</a> () const </td></tr>
 <tr class="memdesc:ae3c00f0eb0b359cf726e39781562cd0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Waits for this to have been invoked.  <a href="#ae3c00f0eb0b359cf726e39781562cd0a">More...</a><br /></td></tr>
 <tr class="separator:ae3c00f0eb0b359cf726e39781562cd0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -118,6 +118,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3bbcbf4eda51fb656c670d5a2c4cd3f0"><td class="memItemLeft" align="right" valign="top">const grpc::Status &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html#a3bbcbf4eda51fb656c670d5a2c4cd3f0">status</a> () const </td></tr>
 <tr class="memdesc:a3bbcbf4eda51fb656c670d5a2c4cd3f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the status.  <a href="#a3bbcbf4eda51fb656c670d5a2c4cd3f0">More...</a><br /></td></tr>
 <tr class="separator:a3bbcbf4eda51fb656c670d5a2c4cd3f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae618c5c6797dbc0f3a910df80c3a23b7"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; grpc::ClientContext &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html#ae618c5c6797dbc0f3a910df80c3a23b7">context</a> () const </td></tr>
+<tr class="memdesc:ae618c5c6797dbc0f3a910df80c3a23b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the context.  <a href="#ae618c5c6797dbc0f3a910df80c3a23b7">More...</a><br /></td></tr>
+<tr class="separator:ae618c5c6797dbc0f3a910df80c3a23b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename TResponse&gt;<br />
@@ -128,7 +131,27 @@ class bond::ext::gRPC::wait_callback&lt; TResponse &gt;</h3>
 <p>The <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html#ae3c00f0eb0b359cf726e39781562cd0a" title="Waits for this to have been invoked. ">wait()</a> member function can be used to wait until the callback has been called. Then, the <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html#a3bbcbf4eda51fb656c670d5a2c4cd3f0" title="Gets the status. ">status()</a> and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html#a3ede4f56022d0486b4f910d08fb31da0" title="Gets the response. ">response()</a> member functions can be called to inspect the results. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="wait_callback_example_8cpp-example.html#_a0">wait_callback_example.cpp</a>.</dd>
 </dl></div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ae0926a1978531c5accd73a45b6782400"></a>
+<a class="anchor" id="ae618c5c6797dbc0f3a910df80c3a23b7"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename TResponse&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;grpc::ClientContext&gt; <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html">bond::ext::gRPC::wait_callback</a>&lt; TResponse &gt;::context </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the context. </p>
+<dl class="section warning"><dt>Warning</dt><dd>Blocks until this has been invoked. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a4e82ed2e74e78367dfe4ee29a875e535"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -137,19 +160,9 @@ template&lt;typename TResponse&gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html">bond::ext::gRPC::wait_callback</a>&lt; TResponse &gt;::operator() </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classbond_1_1bonded.html">bond::bonded</a>&lt; TResponse &gt; &amp;&#160;</td>
-          <td class="paramname"><em>response</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html">arg_type</a> &gt;&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const grpc::Status &amp;&#160;</td>
-          <td class="paramname"><em>status</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">

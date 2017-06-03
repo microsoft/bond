@@ -196,7 +196,7 @@ ExampleResponse response = responseMessage.Payload.Deserialize().Payload;
             ExampleResponse&gt; call) override
     {
         ExampleRequest request = call.request().Deserialize();
-        ExampleResponse reply;
+        ExampleResponse response;
 
         // Service business logic goes here
 
@@ -229,16 +229,19 @@ Example::Client client(
 // Fill in request fields here
 
 bond::ext::gRPC::wait_callback&lt;ExampleResponse&gt; cb;
-client.AsyncExampleMethod(&amp;context, request, callback);
+client.AsyncExampleMethod(request, callback);
 
 callback.wait();
 ExampleResponse response = callback.response().Deserialize();
 // Examine response here</code></pre>
-<p>Note these APIs are significantly different from the APIs presented in the gRPC documentation; Bond-over-gRPC is attempting to provide a more straightforward API for aynchronous communication than gRPC currently presents in C++. The use of <a href="../reference/cpp/classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html"><code>wait_callback&lt;T&gt;</code></a> here is for illustrative purposes; any callback implementation with the same signature can be used. Note also the use of <code>bonded&lt;T&gt;</code> to wrap the request and response objects in several places; this allows for better control over the time of deserialization and also helps prevent slicing when using polymorphic Bond types. Convenience APIs are provided in some places to hide the use <code>bonded&lt;T&gt;</code> where possible. Finally, note that Bond-over-gRPC does not provide synchronous APIs in C++ by design.</p>
+<p>Note these APIs are significantly different from the APIs presented in the gRPC documentation; Bond-over-gRPC is attempting to provide a more straightforward API for aynchronous communication than gRPC currently presents in C++. Bond-over-gRPC does not provide synchronous APIs in C++ by design. The use of <a href="../reference/cpp/classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html"><code>wait_callback&lt;T&gt;</code></a> here is for illustrative purposes; any callback implementation with the same signature can be used. <code>wait_callback</code> satisfies the signature and provides a <code>wait()</code> method to adapt the asynchronous proxy method into an effectively synchronous call.</p>
+<p>The proxy stub has a number of overloads for each method. The simplest is demonstrated above, and there are ones that take <code>bonded&lt;T&gt;</code> and <code>grpc::ClientContext</code> arguments.</p>
+<p>Using <code>bonded&lt;T&gt;</code> to wrap the request and response objects allows for better control over the time of deserialization and also helps prevent slicing when using polymorphic Bond types. As demonstrated above, convenience APIs are provided in some places to hide the use <code>bonded&lt;T&gt;</code> where possible. For use of <code>bonded</code> request objects and <code>ClientContext</code> arguments, see the pingpong example.</p>
 <p>For more information about gRPC in C++, take a look at the <a href="http://www.grpc.io/docs/tutorials/basic/c.html">gRPC C++ tutorial</a>; however, keep in mind that the Bond-over-gRPC APIs diverge significantly from those documented there.</p>
 <p>See also the following example:</p>
 <ul>
 <li><code>examples/cpp/grpc/helloworld</code></li>
+<li><code>examples/cpp/grpc/pingpong</code></li>
 </ul>
 </div>
 </div>

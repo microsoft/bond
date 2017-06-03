@@ -113,14 +113,20 @@ Inheritance diagram for bond::ext::gRPC::detail::client_unary_call_data&lt; TReq
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ac79c6c65bab02e5211dea9a52de85c09"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; void(const TResponse &amp;, const grpc::Status &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ac79c6c65bab02e5211dea9a52de85c09">CallbackType</a></td></tr>
-<tr class="separator:ac79c6c65bab02e5211dea9a52de85c09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3e1efc4b02beeaa819a58b4002ec795"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; void(std::shared_ptr&lt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html">unary_call_result</a>&lt; TResponse &gt;&gt;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ad3e1efc4b02beeaa819a58b4002ec795">CallbackType</a></td></tr>
+<tr class="separator:ad3e1efc4b02beeaa819a58b4002ec795"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:aade392da54f0a6214965613a24c4a885"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#aade392da54f0a6214965613a24c4a885">dispatch</a> (const grpc::RpcMethod &amp;method, const <a class="el" href="classbond_1_1bonded.html">bond::bonded</a>&lt; TRequest &gt; &amp;request)</td></tr>
+<tr class="memdesc:aade392da54f0a6214965613a24c4a885"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiates the client request and wires up completion notification.  <a href="#aade392da54f0a6214965613a24c4a885">More...</a><br /></td></tr>
+<tr class="separator:aade392da54f0a6214965613a24c4a885"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9fb798695b1249d495243e7d568942d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a9fb798695b1249d495243e7d568942d4">invoke</a> (bool ok) override</td></tr>
-<tr class="memdesc:a9fb798695b1249d495243e7d568942d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when this instance is dequeued from a completion queue.  <a href="#a9fb798695b1249d495243e7d568942d4">More...</a><br /></td></tr>
+<tr class="memdesc:a9fb798695b1249d495243e7d568942d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoked after the response has been received.  <a href="#a9fb798695b1249d495243e7d568942d4">More...</a><br /></td></tr>
 <tr class="separator:a9fb798695b1249d495243e7d568942d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b486eb65ef3cdeea91bbd7cc09aad44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a9b486eb65ef3cdeea91bbd7cc09aad44">clean_up_after_receive</a> ()</td></tr>
+<tr class="memdesc:a9b486eb65ef3cdeea91bbd7cc09aad44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleans up resources that are no longer needed after receiving the response.  <a href="#a9b486eb65ef3cdeea91bbd7cc09aad44">More...</a><br /></td></tr>
+<tr class="separator:a9b486eb65ef3cdeea91bbd7cc09aad44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -133,18 +139,16 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:aba6568439de3991ea99a8e43f94ac428"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; TThreadPool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#aba6568439de3991ea99a8e43f94ac428">_threadPool</a></td></tr>
 <tr class="memdesc:aba6568439de3991ea99a8e43f94ac428"><td class="mdescLeft">&#160;</td><td class="mdescRight">The thread pool in which to invoke the callback.  <a href="#aba6568439de3991ea99a8e43f94ac428">More...</a><br /></td></tr>
 <tr class="separator:aba6568439de3991ea99a8e43f94ac428"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3417ab746078e9dc3b302fff3e23c870"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; grpc::ClientAsyncResponseReader&lt; TResponse &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a3417ab746078e9dc3b302fff3e23c870">_responseReader</a></td></tr>
-<tr class="memdesc:a3417ab746078e9dc3b302fff3e23c870"><td class="mdescLeft">&#160;</td><td class="mdescRight">A response reader.  <a href="#a3417ab746078e9dc3b302fff3e23c870">More...</a><br /></td></tr>
-<tr class="separator:a3417ab746078e9dc3b302fff3e23c870"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0f1b7caa67fca56a749cf6317b766ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ac79c6c65bab02e5211dea9a52de85c09">CallbackType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ac0f1b7caa67fca56a749cf6317b766ed">_cb</a></td></tr>
+<tr class="memitem:a0f5d60cd3a1d566a9b8e55f185030ab8"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; grpc::ClientAsyncResponseReader&lt; <a class="el" href="classbond_1_1bonded.html">bond::bonded</a>&lt; TResponse &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a0f5d60cd3a1d566a9b8e55f185030ab8">_responseReader</a></td></tr>
+<tr class="memdesc:a0f5d60cd3a1d566a9b8e55f185030ab8"><td class="mdescLeft">&#160;</td><td class="mdescRight">A response reader.  <a href="#a0f5d60cd3a1d566a9b8e55f185030ab8">More...</a><br /></td></tr>
+<tr class="separator:a0f5d60cd3a1d566a9b8e55f185030ab8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a544921d4f932b12d79c38237459ec969"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html">unary_call_result</a>&lt; TResponse &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a544921d4f932b12d79c38237459ec969">_callbackArgs</a></td></tr>
+<tr class="separator:a544921d4f932b12d79c38237459ec969"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a827bfe1caddc95f97689c339692818dd"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">client_unary_call_data</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a827bfe1caddc95f97689c339692818dd">_self</a></td></tr>
+<tr class="separator:a827bfe1caddc95f97689c339692818dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0f1b7caa67fca56a749cf6317b766ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ad3e1efc4b02beeaa819a58b4002ec795">CallbackType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ac0f1b7caa67fca56a749cf6317b766ed">_cb</a></td></tr>
 <tr class="memdesc:ac0f1b7caa67fca56a749cf6317b766ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">The user code to invoke when a response is received.  <a href="#ac0f1b7caa67fca56a749cf6317b766ed">More...</a><br /></td></tr>
 <tr class="separator:ac0f1b7caa67fca56a749cf6317b766ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae56e56330e790c510bf55b8c5ccc04ab"><td class="memItemLeft" align="right" valign="top">TResponse&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ae56e56330e790c510bf55b8c5ccc04ab">_response</a></td></tr>
-<tr class="memdesc:ae56e56330e790c510bf55b8c5ccc04ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">The response received.  <a href="#ae56e56330e790c510bf55b8c5ccc04ab">More...</a><br /></td></tr>
-<tr class="separator:ae56e56330e790c510bf55b8c5ccc04ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d798747ffe01ce56fc4d39a6e73e535"><td class="memItemLeft" align="right" valign="top">grpc::Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a0d798747ffe01ce56fc4d39a6e73e535">_status</a></td></tr>
-<tr class="memdesc:a0d798747ffe01ce56fc4d39a6e73e535"><td class="mdescLeft">&#160;</td><td class="mdescRight">The status received.  <a href="#a0d798747ffe01ce56fc4d39a6e73e535">More...</a><br /></td></tr>
-<tr class="separator:a0d798747ffe01ce56fc4d39a6e73e535"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename TRequest, typename TResponse, typename TThreadPool&gt;<br />
@@ -152,14 +156,14 @@ struct bond::ext::gRPC::detail::client_unary_call_data&lt; TRequest, TResponse, 
 
 <p>Implementation class that hold the state associated with outgoing unary calls. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a class="anchor" id="ac79c6c65bab02e5211dea9a52de85c09"></a>
+<a class="anchor" id="ad3e1efc4b02beeaa819a58b4002ec795"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::function&lt;void(const TResponse&amp;, const grpc::Status&amp;)&gt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::<a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ac79c6c65bab02e5211dea9a52de85c09">CallbackType</a></td>
+          <td class="memname">typedef std::function&lt;void(std::shared_ptr&lt;<a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html">unary_call_result</a>&lt;TResponse&gt;&gt;)&gt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::<a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ad3e1efc4b02beeaa819a58b4002ec795">CallbackType</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -168,6 +172,56 @@ template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; <
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a9b486eb65ef3cdeea91bbd7cc09aad44"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::clean_up_after_receive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cleans up resources that are no longer needed after receiving the response. </p>
+<p>The callback may copy the <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html" title="The client-side results of a unary call. ">unary_call_result</a> shared_ptr that is gets, but we don't need these members anymore. </p>
+
+</div>
+</div>
+<a class="anchor" id="aade392da54f0a6214965613a24c4a885"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::dispatch </td>
+          <td>(</td>
+          <td class="paramtype">const grpc::RpcMethod &amp;&#160;</td>
+          <td class="paramname"><em>method</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classbond_1_1bonded.html">bond::bonded</a>&lt; TRequest &gt; &amp;&#160;</td>
+          <td class="paramname"><em>request</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initiates the client request and wires up completion notification. </p>
+
+</div>
+</div>
 <a class="anchor" id="a9fb798695b1249d495243e7d568942d4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -192,19 +246,28 @@ template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; <
 </table>
 </div><div class="memdoc">
 
-<p>Called when this instance is dequeued from a completion queue. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ok</td><td>whether or not the initial operation succeeded </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Invoked after the response has been received. </p>
 
 <p>Implements <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html#a6242ca809b26c2ae62479a766438e160">bond::ext::gRPC::detail::io_manager_tag</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a544921d4f932b12d79c38237459ec969"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html">unary_call_result</a>&lt;TResponse&gt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::_callbackArgs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The arguments to pass back into the client callback. Also doubles as storage for the response, status, and context. </p>
+
+</div>
+</div>
 <a class="anchor" id="ac0f1b7caa67fca56a749cf6317b766ed"></a>
 <div class="memitem">
 <div class="memproto">
@@ -212,7 +275,7 @@ template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; <
 template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ac79c6c65bab02e5211dea9a52de85c09">CallbackType</a> <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::_cb</td>
+          <td class="memname"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ad3e1efc4b02beeaa819a58b4002ec795">CallbackType</a> <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::_cb</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -253,30 +316,14 @@ template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; <
 
 </div>
 </div>
-<a class="anchor" id="ae56e56330e790c510bf55b8c5ccc04ab"></a>
+<a class="anchor" id="a0f5d60cd3a1d566a9b8e55f185030ab8"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">TResponse <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::_response</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>The response received. </p>
-
-</div>
-</div>
-<a class="anchor" id="a3417ab746078e9dc3b302fff3e23c870"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::unique_ptr&lt;grpc::ClientAsyncResponseReader&lt;TResponse&gt; &gt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::_responseReader</td>
+          <td class="memname">std::unique_ptr&lt;grpc::ClientAsyncResponseReader&lt;<a class="el" href="classbond_1_1bonded.html">bond::bonded</a>&lt;TResponse&gt; &gt; &gt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::_responseReader</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -285,19 +332,18 @@ template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; <
 
 </div>
 </div>
-<a class="anchor" id="a0d798747ffe01ce56fc4d39a6e73e535"></a>
+<a class="anchor" id="a827bfe1caddc95f97689c339692818dd"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename TRequest , typename TResponse , typename TThreadPool &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">grpc::Status <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::_status</td>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">client_unary_call_data</a>&gt; <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html">bond::ext::gRPC::detail::client_unary_call_data</a>&lt; TRequest, TResponse, TThreadPool &gt;::_self</td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>The status received. </p>
+<p>A pointer to ourselves used to keep us alive while waiting to receive the response. </p>
 
 </div>
 </div>

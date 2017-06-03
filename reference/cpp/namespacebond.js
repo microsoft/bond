@@ -20,6 +20,7 @@ var namespacebond =
         [ "server_core", "classbond_1_1ext_1_1g_r_p_c_1_1server__core.html", "classbond_1_1ext_1_1g_r_p_c_1_1server__core" ],
         [ "thread_pool", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool" ],
         [ "unary_call", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call" ],
+        [ "unary_call_result", "structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html", "structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result" ],
         [ "wait_callback", "classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html", "classbond_1_1ext_1_1g_r_p_c_1_1wait__callback" ]
       ] ]
     ] ],

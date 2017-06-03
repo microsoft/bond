@@ -90,6 +90,9 @@ $(document).ready(function(){initNavTree('functions_vars.html','');});
 
 <div class="contents">
 &#160;<ul>
+<li>_callbackArgs
+: <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a544921d4f932b12d79c38237459ec969">bond::ext::gRPC::detail::client_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
+</li>
 <li>_cb
 : <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ac0f1b7caa67fca56a749cf6317b766ed">bond::ext::gRPC::detail::client_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
 , <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html#a71fbfa7c6b5759042dfa1b9d5d774b22">bond::ext::gRPC::detail::service_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
@@ -109,27 +112,25 @@ $(document).ready(function(){initNavTree('functions_vars.html','');});
 <li>_receivedCall
 : <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html#a8ab59b8477b4b1267aaf87efa403a5d9">bond::ext::gRPC::detail::service_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
 </li>
-<li>_response
-: <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ae56e56330e790c510bf55b8c5ccc04ab">bond::ext::gRPC::detail::client_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
-</li>
 <li>_responseReader
-: <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a3417ab746078e9dc3b302fff3e23c870">bond::ext::gRPC::detail::client_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
+: <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a0f5d60cd3a1d566a9b8e55f185030ab8">bond::ext::gRPC::detail::client_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
 </li>
 <li>_responseSentFlag
 : <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html#a4f9173d0d1392708ae461ac32eec4514">bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt;</a>
 </li>
-<li>_responseSentTag
-: <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html#a28311c1c90ebd004616175d573bb3894">bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt;</a>
+<li>_self
+: <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a827bfe1caddc95f97689c339692818dd">bond::ext::gRPC::detail::client_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
+, <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html#af1d819bd19bbe50c2608ff325aa4c75e">bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt;</a>
 </li>
 <li>_service
 : <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html#a4c1fb49d385a9ea854e79ad87c6720ec">bond::ext::gRPC::detail::service_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
 </li>
-<li>_status
-: <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a0d798747ffe01ce56fc4d39a6e73e535">bond::ext::gRPC::detail::client_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
-</li>
 <li>_threadPool
 : <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#aba6568439de3991ea99a8e43f94ac428">bond::ext::gRPC::detail::client_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
 , <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html#a2dc42e2391357026cf02628527ac9f55">bond::ext::gRPC::detail::service_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
+</li>
+<li>context
+: <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html#a697c64989b26ed378c80b655ea43c19e">bond::ext::gRPC::unary_call_result&lt; TResponse &gt;</a>
 </li>
 <li>field
 : <a class="el" href="structbond_1_1reflection_1_1_field_template.html#a32f61cd5d3d0fc4d70988458c2780b46">bond::reflection::FieldTemplate&lt; field_id, ModifierTag, Struct, FieldType, field_ptr, metadata_ptr &gt;</a>
@@ -143,6 +144,12 @@ $(document).ready(function(){initNavTree('functions_vars.html','');});
 </li>
 <li>method
 : <a class="el" href="structbond_1_1reflection_1_1_method_template.html#a838d0659e31a7259e753dc9449e2cabe">bond::reflection::MethodTemplate&lt; Service, Input, Result, method_ptr, metadata_ptr &gt;</a>
+</li>
+<li>response
+: <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html#a8c608bda954feca9bede3bb5f7a7f554">bond::ext::gRPC::unary_call_result&lt; TResponse &gt;</a>
+</li>
+<li>status
+: <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html#a9a994476b477b133fcb8dd43e10af6b7">bond::ext::gRPC::unary_call_result&lt; TResponse &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->
