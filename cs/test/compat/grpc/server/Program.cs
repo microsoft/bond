@@ -57,7 +57,7 @@ namespace PingPongServer
             return Task.FromResult(message);
         }
 
-        public override async Task PingEvent(IMessage<PingRequest> param, ServerCallContext context)
+        public override Task PingEvent(IMessage<PingRequest> param, ServerCallContext context)
         {
             PingRequest request = param.Payload.Deserialize();
 
@@ -67,7 +67,7 @@ namespace PingPongServer
             Interlocked.Increment(ref NumEventsReceived);
             Countdown.Signal();
 
-            await Task.Delay(1);
+            return Task.FromResult(false);
         }
 
 
