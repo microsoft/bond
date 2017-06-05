@@ -16,8 +16,8 @@ different versioning scheme, following the Haskell community's
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: TBD (major bump needed)
-* C# NuGet version: TBD
-* C# Comm NuGet version: TBD
+* C# NuGet version: (major bump needed)
+* C# Comm NuGet version: (minor bump needed, dependencies updated)
 
 ### `gbc` and Bond compiler library ###
 
@@ -71,6 +71,11 @@ get a compiler error. To fix, remove the `<Writer>` part:
   required. The RapidJSON submodule that Bond uses by default has been
   updated to v1.0.0.
 * C++ codegen hides FieldTemplate details, shortening symbol names.
+
+### C# ###
+
+* **Breaking change** The deprecated type `Bond.BondReflection` has been
+  removed. The type `Bond.Reflection` should be used instead.
 
 ## 5.3.1: 2017-04-25 ##
 
