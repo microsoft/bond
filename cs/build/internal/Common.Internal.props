@@ -26,6 +26,8 @@
     <NoWarn>1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)bond.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
   </PropertyGroup>
@@ -43,16 +45,5 @@
     <DefineConstants>$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(DELAY_SIGN_KEY) == ''">
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)bond.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(DELAY_SIGN_KEY) != ''">
-    <DelaySign>true</DelaySign>
-    <SignAssembly>true</SignAssembly>
-    <KeyFile>$(DELAY_SIGN_KEY)</KeyFile>
-    <AssemblyOriginatorKeyFile>$(DELAY_SIGN_KEY)</AssemblyOriginatorKeyFile>
-    <DefineConstants>$(DefineConstants);DELAY_SIGN</DefineConstants>
   </PropertyGroup>
 </Project>
