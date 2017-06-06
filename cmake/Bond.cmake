@@ -5,13 +5,14 @@ include (Folders)
 # add_bond_codegen (file.bond [file2.bond ...]
 #   [ENUM_HEADER]
 #   [COMM]
+#   [GRPC]
 #   [OUTPUT_DIR dir]
 #   [IMPORT_DIR dir [dir2, ...]]
 #   [OPTIONS opt [opt2 ...]])
 #   [TARGET name]
 #
 function (add_bond_codegen)
-    set (flagArgs ENUM_HEADER COMM)
+    set (flagArgs ENUM_HEADER COMM GRPC)
     set (oneValueArgs OUTPUT_DIR TARGET)
     set (multiValueArgs IMPORT_DIR OPTIONS)
     cmake_parse_arguments (arg "${flagArgs}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -19,7 +20,6 @@ function (add_bond_codegen)
     set (outputDir ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
     if (arg_OUTPUT_DIR)
         set (outputDir ${arg_OUTPUT_DIR})
-    else()
     endif()
     list (APPEND options --output-dir="${outputDir}")
     list (APPEND options --import-dir="${BOND_IDL}")
@@ -31,6 +31,12 @@ function (add_bond_codegen)
     endforeach()
     if (arg_ENUM_HEADER)
         list(APPEND options --enum-header)
+    endif()
+    if (arg_COMM)
+        list(APPEND options --comm)
+    endif()
+    if (arg_GRPC)
+        list(APPEND options --grpc)
     endif()
     set (inputs "${arg_UNPARSED_ARGUMENTS}")
     set (outputs)
@@ -49,6 +55,9 @@ function (add_bond_codegen)
         if (arg_COMM)
             list(APPEND outputs "${outputDir}/${name}_comm.cpp")
             list(APPEND outputs "${outputDir}/${name}_comm.h")
+        endif()
+        if (arg_GRPC)
+            list(APPEND outputs "${outputDir}/${name}_grpc.h")
         endif()
     endforeach()
     # if BOND_GBC_PATH is not set we must add a dependency on the "gbc" target to build it
@@ -74,12 +83,13 @@ endfunction()
 # add_bond_executable (name
 #   [schem.bond [schema2.bond]]
 #   source.cpp [source2.cpp]
-#   [COMM])
+#   [COMM]
+#   [GRPC])
 #
 function (add_bond_executable target)
     set (schemas)
     set (sources)
-    set (flagArgs COMM)
+    set (flagArgs COMM GRPC)
     cmake_parse_arguments (arg "${flagArgs}" "" "" ${ARGN})
     foreach (file ${ARGV})
         get_filename_component (ext ${file} EXT)
@@ -93,13 +103,17 @@ function (add_bond_executable target)
         endif()
     endforeach()
     if (schemas)
+        set (options)
         if (arg_COMM)
-            add_bond_codegen (${schemas} COMM)
-        else()
-            add_bond_codegen (${schemas})
+            list (APPEND options COMM)
         endif()
+        if (arg_GRPC)
+            list (APPEND options GRPC)
+        endif()
+        add_bond_codegen (${schemas} ${options})
     endif()
     list (REMOVE_ITEM ARGV COMM)
+    list (REMOVE_ITEM ARGV GRPC)
     add_executable (${ARGV} ${sources})
     add_target_to_folder(${target})
     target_link_libraries (${target} PRIVATE
@@ -114,7 +128,9 @@ endfunction()
 # add_bond_test (name
 #   [schem.bond [schema2.bond]]
 #   source.cpp [source2.cpp]
-#   [BUILD_ONLY])
+#   [BUILD_ONLY]
+#   [COMM]
+#   [GRPC])
 #
 function (add_bond_test test)
     set (flagArgs BUILD_ONLY)

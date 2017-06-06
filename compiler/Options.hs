@@ -38,6 +38,9 @@ data Options
         , export_attribute :: Maybe String
         , jobs :: Maybe Int
         , no_banner :: Bool
+        , core_enabled :: Bool
+        , comm_enabled :: Bool
+        , grpc_enabled :: Bool
         }
     | Cs
         { files :: [FilePath]
@@ -77,6 +80,9 @@ cpp = Cpp
     , export_attribute = def &= typ "ATTRIBUTE" &= explicit &= name "apply-attribute" &= name "export-attribute" &= help "Prefix declarations for library export with the specified C++ attribute/declspec. apply-attribute is a deprecated synonym."
     , jobs = def &= opt "0" &= typ "NUM" &= name "j" &= help "Run NUM jobs simultaneously (or '$ncpus' if no NUM is not given)"
     , no_banner = def &= help "Omit the banner at the top of generated files"
+    , core_enabled = True &= explicit &= name "core" &= help "Generate core serialization definitions (true by default, --core=false to disable)"
+    , comm_enabled = False &= explicit &= name "comm" &= help "Generate comm definitions"
+    , grpc_enabled = False &= explicit &= name "grpc" &= help "Generate gRPC definitions"
     } &=
     name "c++" &=
     help "Generate C++ code"

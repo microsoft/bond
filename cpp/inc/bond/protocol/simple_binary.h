@@ -9,6 +9,59 @@
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
 
+/*
+                     .-------------.----------------.
+   struct            | base fields | derived fields |
+                     '-------------'----------------'
+
+                     .----------.----------.   .----------.
+   fields            |  field   |  field   |...|  field   |
+                     '----------'----------'   '----------'
+
+                     .----------.
+   field             |  value   |
+                     '----------'
+
+                                           .---.---.---.---.---.---.---.---.
+   value            bool                   |   |   |   |   |   |   |   | v |
+                                           '---'---'---'---'---'---'---'---'
+                                                                          0
+
+                    all integral types are written binary, native size, uncompressed, little endian
+
+                    float, double          little endian
+
+
+                                            .-------.------------.
+                     string, wstring        | count | characters |
+                                            '-------'------------'
+
+                           count            variable encoded uint32 count of 1-byte (for
+                                            string) or 2-byte (for wstring) Unicode code
+                                            units (variable encoded in v2)
+
+                           characters       1-byte UTF-8 code units (for string) or 2-byte
+                                            UTF-16LE code units (for wstring)
+
+
+                                           .-------. .-------.
+                    blob, list, set,       | count | | items |...
+                    vector, nullable       '-------' '-------'
+
+                           count            uint32 count of items (variable encoded in v2)
+
+                           items            each item encoded according to its type
+
+                                           .-------. .-----.--------.
+                    map                    | count | | key | mapped |...
+                                           '-------' '-----'--------'
+
+                            count           uint32 count of {key,mapped} pairs (variable encoded in v2)
+
+                            key, mapped     each item encoded according to its type
+
+*/
+
 namespace bond
 {
 

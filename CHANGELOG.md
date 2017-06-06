@@ -58,6 +58,9 @@ different versioning scheme, following the Haskell community's
   an extra template argument `Protocols` which defaults to `bond::BuiltInProtocols`.
   Custom input streams now require bond::type_id<> to be specialized with a
   unique magic number. For more details please see [the bf example](https://github.com/Microsoft/bond/tree/master/examples/cpp/core/bf).
+* Initial support for sending
+  [Bond objects over gRPC](https://microsoft.github.io/bond/manual/bond_over_grpc.html)
+  has been added.
 * The `bond::Apply` function now has a uniform signature. Call sites for
 the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
 `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
@@ -520,6 +523,22 @@ get a compiler error. To fix, remove the `<Writer>` part:
 * Fix for rare buffer corruption in InputStream.
   [Issue #114](https://github.com/Microsoft/bond/issues/114).
 * Fix for SimpleXmlParser not handling XML declarations. [Issue #112](https://github.com/Microsoft/bond/issues/82)
+
+## Breaking changes between 3.x and 4.x ##
+
+Bond C# had the following breaking changes introduced in 4.x compared to the
+3.x versions:
+
+* The
+  [Bond.Core.CSharp NuGet package](https://www.nuget.org/packages/Bond.Core.CSharp/)
+  was introduced so that not all uses of Bond depend on Json.NET. The
+  [Bond.Runtime.CSharp package](https://www.nuget.org/packages/Bond.Runtime.CSharp/)
+  still depends on Json.NET and also depends on Bond.Core.CSharp. The
+  primary package remains Bond.CSharp.
+* `CompactBinaryReader<InputStream>` now
+  [explicitly implements](https://docs.microsoft.com/en-us/dotnet/articles/csharp/programming-guide/interfaces/explicit-interface-implementation)
+  `ICloneable<CompactBinaryReader<InputStream>>` instead of implicitly.
+  `FastBinaryReader` and `SimpleBinaryReader` were likewise changed.
 
 ## Earlier release ##
 

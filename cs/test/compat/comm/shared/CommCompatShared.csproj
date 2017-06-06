@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CommCompatShared</RootNamespace>
     <AssemblyName>CommCompatShared</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>

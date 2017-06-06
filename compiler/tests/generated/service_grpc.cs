@@ -112,6 +112,13 @@ namespace tests
             global::Bond.Grpc.Marshaller<BasicTypes>.Instance,
             global::Bond.Grpc.Marshaller<BasicTypes>.Instance);
 
+        static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<BasicTypes>, global::Bond.Grpc.IMessage<BasicTypes>> Method__rd_foo33 = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<BasicTypes>, global::Bond.Grpc.IMessage<BasicTypes>>(
+            global::Grpc.Core.MethodType.Unary,
+            ServiceName,
+            "_rd_foo33",
+            global::Bond.Grpc.Marshaller<BasicTypes>.Instance,
+            global::Bond.Grpc.Marshaller<BasicTypes>.Instance);
+
         static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<dummy>, global::Bond.Grpc.IMessage<BasicTypes>> Method_foo34 = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<dummy>, global::Bond.Grpc.IMessage<BasicTypes>>(
             global::Grpc.Core.MethodType.Unary,
             ServiceName,
@@ -146,6 +153,13 @@ namespace tests
             "foo44",
             global::Bond.Grpc.Marshaller<dummy>.Instance,
             global::Bond.Grpc.Marshaller<dummy>.Instance);
+
+        static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<BasicTypes>> Method_cq = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<BasicTypes>>(
+            global::Grpc.Core.MethodType.Unary,
+            ServiceName,
+            "cq",
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance,
+            global::Bond.Grpc.Marshaller<BasicTypes>.Instance);
 
         public abstract class FooBase
         {
@@ -199,6 +213,8 @@ namespace tests
 
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<BasicTypes>> foo33(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.ServerCallContext context);
 
+            public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<BasicTypes>> _rd_foo33(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.ServerCallContext context);
+
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<BasicTypes>> foo34(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.ServerCallContext context);
 
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<dummy>> foo41(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
@@ -208,6 +224,8 @@ namespace tests
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<dummy>> foo43(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.ServerCallContext context);
 
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<dummy>> foo44(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.ServerCallContext context);
+
+            public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<BasicTypes>> cq(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
         }
 
         public class FooClient : global::Grpc.Core.ClientBase<FooClient>
@@ -367,6 +385,17 @@ namespace tests
                 return CallInvoker.AsyncUnaryCall(Method_foo33, null, options, request);
             }
 
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> _rd_foo33Async(BasicTypes request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+            {
+                var message = global::Bond.Grpc.Message.From(request);
+                return _rd_foo33Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> _rd_foo33Async(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.CallOptions options)
+            {
+                return CallInvoker.AsyncUnaryCall(Method__rd_foo33, null, options, request);
+            }
+
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> foo34Async(dummy request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
                 var message = global::Bond.Grpc.Message.From(request);
@@ -422,6 +451,17 @@ namespace tests
                 return CallInvoker.AsyncUnaryCall(Method_foo44, null, options, request);
             }
 
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> cqAsync(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+            {
+                var message = global::Bond.Grpc.Message.Void;
+                return cqAsync(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> cqAsync(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
+            {
+                return CallInvoker.AsyncUnaryCall(Method_cq, null, options, request);
+            }
+
             protected override FooClient NewInstance(global::Grpc.Core.ClientBase.ClientBaseConfiguration configuration)
             {
                 return new FooClient(configuration);
@@ -444,11 +484,13 @@ namespace tests
                     .AddMethod(Method_foo31, serviceImpl.foo31)
                     .AddMethod(Method_foo32, serviceImpl.foo32)
                     .AddMethod(Method_foo33, serviceImpl.foo33)
+                    .AddMethod(Method__rd_foo33, serviceImpl._rd_foo33)
                     .AddMethod(Method_foo34, serviceImpl.foo34)
                     .AddMethod(Method_foo41, serviceImpl.foo41)
                     .AddMethod(Method_foo42, serviceImpl.foo42)
                     .AddMethod(Method_foo43, serviceImpl.foo43)
                     .AddMethod(Method_foo44, serviceImpl.foo44)
+                    .AddMethod(Method_cq, serviceImpl.cq)
                     .Build();
         }
     }

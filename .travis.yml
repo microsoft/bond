@@ -11,13 +11,16 @@ cache:
         - /home/travis/.ccache
 env:
     - FLAVOR="cs"
-    - FLAVOR="cpp" BOOST="1.63.0"
-    - FLAVOR="cpp" BOOST="1.62.0"
-    - FLAVOR="cpp" BOOST="1.61.0"
-    - FLAVOR="cpp" BOOST="1.60.0"
-    - FLAVOR="cpp" BOOST="1.59.0"
-    - FLAVOR="cpp" BOOST="1.58.0"
-    - FLAVOR="cpp-comm"
+    - FLAVOR="cpp-core" BOOST="1.64.0"
+    - FLAVOR="cpp-core" BOOST="1.63.0"
+    - FLAVOR="cpp-core" BOOST="1.62.0"
+    - FLAVOR="cpp-core" BOOST="1.61.0"
+    - FLAVOR="cpp-core" BOOST="1.60.0"
+    - FLAVOR="cpp-core" BOOST="1.59.0"
+    - FLAVOR="cpp-core" BOOST="1.58.0"
+    - FLAVOR="cpp-comm" BOOST="1.63.0"
+    - FLAVOR="cpp-grpc" BOOST="1.64.0"
+    - FLAVOR="cpp-grpc" BOOST="1.63.0"
     - FLAVOR="hs" GHC_VERSION="7.8.4"
     - FLAVOR="hs" GHC_VERSION="7.6.3"
 addons:
@@ -70,18 +73,20 @@ before_script:
 script:
     - mkdir build && cd build
 
-    - if [ "$FLAVOR" == "cs" ]; then cmake ..; fi
+    - if [ "$FLAVOR" == "cs" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_COMM=FALSE -DBOND_ENABLE_GRPC=FALSE ..; fi
     - if [ "$FLAVOR" == "cs" ]; then make --jobs 2 DESTDIR=$HOME install; fi
     - if [ "$FLAVOR" == "cs" ]; then cd ..; fi
     - if [ "$FLAVOR" == "cs" ]; then export BOND_COMPILER_PATH=$HOME/usr/local/bin; fi
     - if [ "$FLAVOR" == "cs" ]; then xbuild /p:Configuration=Debug cs/cs.sln; fi
     - if [ "$FLAVOR" == "cs" ]; then xbuild /p:Configuration=Fields cs/cs.sln; fi
     - if [ "$FLAVOR" == "cs" ]; then mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll; fi
-    - if [ "$FLAVOR" == "cpp" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_CORE_ONLY=TRUE ..; fi
-    - if [ "$FLAVOR" == "cpp" ]; then make --jobs 2 check; fi
-    - if [ "$FLAVOR" == "cpp-comm" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE ..; fi
+    - if [ "$FLAVOR" == "cpp-core" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_COMM=FALSE -DBOND_ENABLE_GRPC=FALSE ..; fi
+    - if [ "$FLAVOR" == "cpp-core" ]; then make --jobs 2 check; fi
+    - if [ "$FLAVOR" == "cpp-comm" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
     - if [ "$FLAVOR" == "cpp-comm" ]; then make --jobs 2 check; fi
-    - if [ "$FLAVOR" == "hs" ]; then cmake ..; fi
+    - if [ "$FLAVOR" == "cpp-grpc" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_COMM=FALSE -DgRPC_ZLIB_PROVIDER=package ..; fi
+    - if [ "$FLAVOR" == "cpp-grpc" ]; then make --jobs 2 check; fi
+    - if [ "$FLAVOR" == "hs" ]; then cmake -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_COMM=FALSE -DBOND_ENABLE_GRPC=FALSE ..; fi
     - if [ "$FLAVOR" == "hs" ]; then make gbc-tests; fi
     - if [ "$FLAVOR" == "hs" ]; then cd ../compiler; fi
     - if [ "$FLAVOR" == "hs" ]; then ../build/compiler/build/gbc-tests/gbc-tests; fi

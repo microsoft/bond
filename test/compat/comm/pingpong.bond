@@ -3,6 +3,14 @@
 
 namespace PingPongNS;
 
+enum PingConstants
+{
+    Port = 25188;
+    NumRequests = 10;
+    NumEvents = 9;
+    NumErrors = 8;
+}
+
 enum PingAction
 {
     Identity = 0;
