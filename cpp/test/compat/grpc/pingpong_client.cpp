@@ -45,7 +45,7 @@ int main()
             request.Payload = "request" + std::to_string(i);
             request.Action = PingAction::Identity;
 
-            printf("Sending\n");
+            printf("Sending request\n");
             fflush(stdout);
 
             bond::ext::gRPC::wait_callback<PingResponse> cb;
@@ -78,12 +78,27 @@ int main()
             }
         }
 
+        for (int i = 0; i < NumEvents; i++)
+        {
+            PingRequest request;
+
+            request.Payload = "event" + std::to_string(i);
+
+            printf("Sending event\n");
+            fflush(stdout);
+
+            client.AsyncPingEvent(request);
+        }
+
         for (int i = 0; i < NumErrors; i++)
         {
             PingRequest request;
 
             request.Payload = "error" + std::to_string(i);
             request.Action = PingAction::Error;
+
+            printf("Sending request\n");
+            fflush(stdout);
 
             bond::ext::gRPC::wait_callback<PingResponse> cb;
             client.AsyncPing(request, cb);

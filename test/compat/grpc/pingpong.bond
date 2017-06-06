@@ -7,6 +7,7 @@ enum PingConstants
 {
     Port = 25189;
     NumRequests = 10;
+    NumEvents = 9;
     NumErrors = 8;
 }
 
@@ -35,4 +36,6 @@ struct PingLayerData
 service PingPong
 {
     PingResponse Ping(PingRequest);
+
+    nothing PingEvent(PingRequest);
 }
