@@ -13,9 +13,34 @@
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/locale.hpp>
+
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/error/en.h"
+
+// rapidjson/document.h v1.1 uses std::min/max in ways that conflict
+// with macros defined in windows. This works around the issue.
+#ifdef _MSC_VER
+#if defined(_WINDEF_) || defined(_MINWINDEF_)
+#ifndef NOMINMAX
+  #pragma push_macro("min")
+  #pragma push_macro("max")
+#undef min
+#undef max
+#endif
+#endif
+#endif
+
 #include "rapidjson/document.h"
+
+#ifdef _MSC_VER
+#if defined(_WINDEF_) || defined(_MINWINDEF_)
+#ifndef NOMINMAX
+  #pragma pop_macro("min")
+  #pragma pop_macro("max")
+#endif
+#endif
+#endif
+
 #include "rapidjson/writer.h"
 #include <algorithm>
 

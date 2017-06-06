@@ -234,10 +234,9 @@ public:
     }
 
     template <typename T>
-    bool UnknownField(uint16_t id, const T&) const
+    BOND_NORETURN bool UnknownField(uint16_t id, const T&) const
     {
         UnknownSchemaDefException(id);
-        return false;
     }
 
     template <typename T>
