@@ -4,8 +4,11 @@
 package com.microsoft.bond;
 
 import java.lang.reflect.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 
@@ -87,5 +90,52 @@ public final class TestHelper {
             // shouldn't happen
             fail("Unexpected exception raised when testing static class: " + ex);
         }
+    }
+
+    /**
+     * Given a collection of objects, verifies consistencies between methods equals and hashCode.
+     * @param testObjects objects to test
+     */
+    public static void verifyEqualsAndHashCodeConsistency(Collection<?> testObjects) {
+        for (Object a : testObjects) {
+            // single object tests
+            assertTrue("Object equality must be symmetric", a.equals(a));
+
+            for (Object b : testObjects) {
+                // two object tests
+                assertEquals("Object equality must be symmetric", a.equals(b), b.equals(a));
+                if (a.equals(b)) {
+                    assertEquals("For equal objects the hash codes must be equal", a.hashCode(), b.hashCode());
+                }
+                if (a.hashCode() != b.hashCode()) {
+                    assertFalse("Objects with different hash codes must not be equal", a.equals(b));
+                }
+
+                for (Object c : testObjects) {
+                    // three object tests
+                    if (a.equals(b) && b.equals(c)) {
+                        assertTrue("Object equality must be transitive", a.equals(c));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Converts raw int bits to float.
+     * @param bits raw bits
+     * @return reinterpreted float
+     */
+    public static float rawIntBitsToFloat(int bits) {
+        return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(bits).getFloat(0);
+    }
+
+    /**
+     * Converts raw long bits to double.
+     * @param bits raw bits
+     * @return reinterpreted double
+     */
+    public static double rawLongBitsToDouble(long bits) {
+        return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(bits).getDouble(0);
     }
 }

@@ -3,6 +3,7 @@
 
 package com.microsoft.bond.protocol;
 
+import com.microsoft.bond.TestHelper;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -175,17 +176,17 @@ public class BinaryStreamWriterTest {
             // NaN values need special handling:
             // * we're avoiding Float.NaN since it may not be the canonical representation on some JVM implementations
             // * we're also avoiding Float.intBitsToFloat since it may not preserve the same NaN bit pattern
-            float nan0 = rawIntBitsToFloat(0x7FC00000);
+            float nan0 = TestHelper.rawIntBitsToFloat(0x7FC00000);
             assertTrue(Float.isNaN(nan0));
             w.writeFloat(nan0);
             assertEquals(20, baos.size());
 
-            float nan1 = rawIntBitsToFloat(0xFFC00000);
+            float nan1 = TestHelper.rawIntBitsToFloat(0xFFC00000);
             assertTrue(Float.isNaN(nan1));
             w.writeFloat(nan1);
             assertEquals(24, baos.size());
 
-            float nan2 = rawIntBitsToFloat(0x7F800001);
+            float nan2 = TestHelper.rawIntBitsToFloat(0x7F800001);
             assertTrue(Float.isNaN(nan2));
             w.writeFloat(nan2);
             assertEquals(28, baos.size());
@@ -251,17 +252,17 @@ public class BinaryStreamWriterTest {
             // NaN values need special handling:
             // * we're avoiding Double.NaN since it may not be the canonical representation on some JVM implementations
             // * we're also avoiding Double.longBitsToDouble since it may not preserve the same NaN bit pattern
-            double nan0 = rawLongBitsToDouble(0x7FF8000000000000L);
+            double nan0 = TestHelper.rawLongBitsToDouble(0x7FF8000000000000L);
             assertTrue(Double.isNaN(nan0));
             w.writeDouble(nan0);
             assertEquals(40, baos.size());
 
-            double nan1 = rawLongBitsToDouble(0xFFF8000000000000L);
+            double nan1 = TestHelper.rawLongBitsToDouble(0xFFF8000000000000L);
             assertTrue(Double.isNaN(nan1));
             w.writeDouble(nan1);
             assertEquals(48, baos.size());
 
-            double nan2 = rawLongBitsToDouble(0x7FF0000000000001L);
+            double nan2 = TestHelper.rawLongBitsToDouble(0x7FF0000000000001L);
             assertTrue(Double.isNaN(nan2));
             w.writeDouble(nan2);
             assertEquals(56, baos.size());
@@ -424,13 +425,5 @@ public class BinaryStreamWriterTest {
         // verify
         byte[] actualBytes = baos.toByteArray();
         assertArrayEquals(expectedBytes, actualBytes);
-    }
-
-    private static float rawIntBitsToFloat(int bits) {
-        return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(bits).getFloat(0);
-    }
-
-    private static double rawLongBitsToDouble(long bits) {
-        return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(bits).getDouble(0);
     }
 }
