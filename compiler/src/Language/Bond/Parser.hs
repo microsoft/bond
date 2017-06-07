@@ -327,6 +327,15 @@ userType = do
         Right (Service {..}, _) -> fail $ "Unexpected service " ++ declName ++ ". Expected struct, enum or alias."
         Right (decl, args) -> return $ BT_UserDefined decl args
 
+-- parser for service type
+serviceType :: Parser Type
+serviceType = do
+    symbol_ <- userSymbol
+    case symbol_ of
+        Right (decl@Service{}, args) -> return $ BT_UserDefined decl args
+        Right (decl, _) -> fail $ "Unexpected type " ++ (declName decl) ++ ". Expected a service."
+        Left param -> fail $ "Unexpected type parameter " ++ (paramName param) ++ ". Expected a service."
+
 userSymbol :: Parser (Either TypeParam (Declaration, [Type]))
 userSymbol = do
     name <- qualifiedName
@@ -369,8 +378,9 @@ service = do
     name <- keyword "service" *> identifier <?> "service definition"
     params <- parameters
     namespaces <- asks currentNamespaces
-    local (with params) $ Service namespaces attr name params <$> methods <* optional semi
+    local (with params) $ Service namespaces attr name params <$> base <*> methods <* optional semi
   where
+    base = optional (colon *> serviceType <?> "base service")
     with params e = e { currentParams = params }
     methods = unique $ braces $ semiEnd (try event <|> try function)
     unique p = do

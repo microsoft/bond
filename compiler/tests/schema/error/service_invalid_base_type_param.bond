@@ -1,0 +1,7 @@
+namespace tests
+
+// Invalid service definition with type param as base
+service Foo<T> : T
+{
+    nothing bar();
+}  
