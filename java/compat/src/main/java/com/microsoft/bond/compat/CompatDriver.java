@@ -13,11 +13,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class CompatDriver {
+    private static final int STATUS_FAILURE = 255;
+
     public static void main(final String[] args) throws IOException {
         if (args.length < 3 || args.length > 4) {
             System.out.println("Usage:");
             System.out.println("CompatDriver json|compact|compact2|fast|simple|simple2|schema input_file output_file [json|compact|fast|simple|simple2]");
-            System.exit(255);
+            System.exit(STATUS_FAILURE);
         }
 
         final String fromProtocol = args[0];
@@ -32,7 +34,6 @@ public class CompatDriver {
 
         final FileInputStream input = new FileInputStream(inputFile);
         final FileOutputStream output = new FileOutputStream(outputFile);
-        final Compat compat = new Compat();
 
         TaggedProtocolReader reader = null;
         ProtocolWriter writer = null;
@@ -45,7 +46,7 @@ public class CompatDriver {
             reader = new CompactBinaryReader(input, (short) 2);
         } else {
             System.err.println("Unsupported input protocol: " + fromProtocol);
-            System.exit(255);
+            System.exit(STATUS_FAILURE);
         }
 
         if (toProtocol.equals("fast")) {
@@ -56,9 +57,10 @@ public class CompatDriver {
             writer = new CompactBinaryWriter(output, (short) 2);
         } else {
             System.err.println("Unsupported output protocol: " + toProtocol);
-            System.exit(255);
+            System.exit(STATUS_FAILURE);
         }
 
+        final Compat compat = new Compat();
         compat.deserialize(reader);
         compat.serialize(writer);
     }

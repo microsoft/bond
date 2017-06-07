@@ -22,6 +22,10 @@ if (CSHARP_COMPAT)
 endif()
 
 if (JAVA_COMPAT)
+    if (NOT JAVA_CORE)
+        message(FATAL_ERROR "Cannot run Java compat without setting JAVA_CORE")
+    endif()
+
     if (WIN32)
         set (PATHSEP "\\\;")
     else()
