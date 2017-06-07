@@ -29,6 +29,7 @@ tests = testGroup "Compiler tests"
             , testCase "service attributes" $ compareAST "service_attributes"
             , testCase "generic service" $ compareAST "generic_service"
             , testCase "documentation example" $ compareAST "example"
+            , testCase "service inheritance" $ compareAST "service_inheritance"
             ]
         ]
     , testGroup "SchemaDef"
@@ -54,6 +55,8 @@ tests = testGroup "Compiler tests"
         , testCase "Alias default value" $ failBadSyntax "Should fail when underlying default value is of the wrong type" "aliases_default"
         , testCase "Out of range" $ failBadSyntax "Should fail, out of range for int16" "int_out_of_range"
         , testCase "Duplicate method definition in service" $ failBadSyntax "Should fail, method name should be unique" "duplicate_service_method"
+        , testCase "Invalid service base: struct" $ failBadSyntax "Should fail, struct can't be used as service base" "service_invalid_base_struct"
+        , testCase "Invalid service base: type param" $ failBadSyntax "Should fail, type param can't be used as service base" "service_invalid_base_type_param"
         ]
     , testGroup "Codegen"
         [ utilTestGroup,
