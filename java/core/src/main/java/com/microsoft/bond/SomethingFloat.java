@@ -6,7 +6,7 @@ package com.microsoft.bond;
 import com.microsoft.bond.helpers.FloatingPointHelper;
 
 /**
- * An implementation of the {@see Something} construct that wraps a primitive float value which can be
+ * An implementation of the {@link Something} construct that wraps a primitive float value which can be
  * accessed directly and is never set to null.
  *
  * Used for values of non-nullable "float" fields with "nothing" as the default value.

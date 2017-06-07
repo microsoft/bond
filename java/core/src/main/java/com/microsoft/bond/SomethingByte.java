@@ -4,7 +4,7 @@
 package com.microsoft.bond;
 
 /**
- * An implementation of the {@see Something} construct that wraps a primitive byte value which can be
+ * An implementation of the {@link Something} construct that wraps a primitive byte value which can be
  * accessed directly and is never set to null.
  *
  * Used for values of non-nullable "uint8" and "int8" fields with "nothing" as the default value.

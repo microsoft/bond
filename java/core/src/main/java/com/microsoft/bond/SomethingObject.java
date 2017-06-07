@@ -4,7 +4,7 @@
 package com.microsoft.bond;
 
 /**
- * An implementation of the {@see Something} construct that wraps an object value.
+ * An implementation of the {@link Something} construct that wraps an object value.
  * @param <T> the type of the wrapped value
  */
 public final class SomethingObject<T> extends Something<T> {
