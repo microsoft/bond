@@ -99,7 +99,7 @@ public final class TestHelper {
     public static void verifyEqualsAndHashCodeConsistency(Collection<?> testObjects) {
         for (Object a : testObjects) {
             // single object tests
-            assertTrue("Object equality must be symmetric", a.equals(a));
+            assertTrue("Object equality must be reflexive", a.equals(a));
 
             for (Object b : testObjects) {
                 // two object tests
