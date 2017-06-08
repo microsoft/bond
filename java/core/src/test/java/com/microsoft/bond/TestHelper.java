@@ -94,6 +94,7 @@ public final class TestHelper {
 
     /**
      * Given a collection of objects, verifies consistencies between methods equals and hashCode.
+     *
      * @param testObjects objects to test
      */
     public static void verifyEqualsAndHashCodeConsistency(Collection<?> testObjects) {
@@ -123,19 +124,21 @@ public final class TestHelper {
 
     /**
      * Converts raw int bits to float.
+     *
      * @param bits raw bits
      * @return reinterpreted float
      */
     public static float rawIntBitsToFloat(int bits) {
-        return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(bits).getFloat(0);
+        return ByteBuffer.allocate(4).putInt(bits).getFloat(0);
     }
 
     /**
      * Converts raw long bits to double.
+     *
      * @param bits raw bits
      * @return reinterpreted double
      */
     public static double rawLongBitsToDouble(long bits) {
-        return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(bits).getDouble(0);
+        return ByteBuffer.allocate(8).putLong(bits).getDouble(0);
     }
 }
