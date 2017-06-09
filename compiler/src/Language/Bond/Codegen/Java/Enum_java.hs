@@ -30,7 +30,7 @@ package #{javaPackage};
 
     typeDefinition Enum {..} = [lt|
 #{Java.generatedClassAnnotations}
-public final class #{declName} {
+public final class #{declName} implements com.microsoft.bond.BondEnum, java.lang.Comparable<#{declName}> {
 
     public static final class Values {
         private Values() {}
@@ -42,21 +42,29 @@ public final class #{declName} {
 
     public final int value;
 
-    public #{declName}(int value) { this.value = value; }
+    private final String label;
+
+    private #{declName}(int value, String label) { this.value = value; this.label = label; }
+
+    @Override
+    public int getValue() { return this.value; }
+
+    @Override
+    public int compareTo(#{declName} o) { return this.value < o.value ? -1 : (this.value > o.value ? 1 : 0); }
 
     @Override
     public boolean equals(Object other) { return (other instanceof #{declName}) && (this.value == ((#{declName}) other).value); }
- 
+
     @Override
     public int hashCode() { return this.value; }
 
     @Override
-    public String toString() { return "#{declName}(" + String.valueOf(this.value) + ")"; }
+    public String toString() { return this.label != null ? this.label : ("#{declName}(" + String.valueOf(this.value) + ")"); }
 
     public static #{declName} get(int value) {
         switch (value) {
             #{newlineSep 3 switchCaseConstantMapping enumConstantsWithIntDistinct}
-            default: return new #{declName}(value);
+            default: return new #{declName}(value, null);
         }
     }
 }|]
@@ -99,7 +107,7 @@ public final class #{declName} {
         enumObjectAssigmentValue enumConstant =
             let firstDeclaredEnumConstant = head (filter (\c -> (constantValue c) == (constantValue enumConstant)) enumConstantsWithIntDistinct) in
                 if firstDeclaredEnumConstant == enumConstant
-                    then [lt|new #{declName}(Values.#{constantName enumConstant})|]
+                    then [lt|new #{declName}(Values.#{constantName enumConstant}, "#{constantName enumConstant}")|]
                     else [lt|#{constantName firstDeclaredEnumConstant}|]
 
     typeDefinition _ = mempty
