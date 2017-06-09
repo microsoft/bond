@@ -41,6 +41,7 @@ data Options
         , core_enabled :: Bool
         , comm_enabled :: Bool
         , grpc_enabled :: Bool
+        , service_inheritance_enabled :: Bool
         }
     | Cs
         { files :: [FilePath]
@@ -56,6 +57,7 @@ data Options
         , structs_enabled :: Bool
         , comm_enabled :: Bool
         , grpc_enabled :: Bool
+        , service_inheritance_enabled :: Bool
         }
     | Schema
         { files :: [FilePath]
@@ -63,6 +65,7 @@ data Options
         , output_dir :: FilePath
         , jobs :: Maybe Int
         , runtime_schema :: Bool
+        , service_inheritance_enabled :: Bool
         }
       deriving (Show, Data, Typeable)
 
@@ -83,6 +86,7 @@ cpp = Cpp
     , core_enabled = True &= explicit &= name "core" &= help "Generate core serialization definitions (true by default, --core=false to disable)"
     , comm_enabled = False &= explicit &= name "comm" &= help "Generate comm definitions"
     , grpc_enabled = False &= explicit &= name "grpc" &= help "Generate gRPC definitions"
+    , service_inheritance_enabled = False &= explicit &= name "enable-service-inheritance" &= help "Enable service inheritance syntax in IDL"
     } &=
     name "c++" &=
     help "Generate C++ code"

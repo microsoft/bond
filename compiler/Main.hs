@@ -6,7 +6,9 @@
 import System.Environment (getArgs, withArgs)
 import System.Directory
 import System.FilePath
+import Data.Maybe
 import Data.Monoid
+import qualified Data.Foldable as F
 import Control.Monad
 import Prelude
 import Control.Concurrent.Async
@@ -116,6 +118,12 @@ csCodegen options@Cs {..} = do
                         ]
 csCodegen _ = error "csCodegen: impossible happened."
 
+anyServiceInheritance :: [Declaration] -> Bool
+anyServiceInheritance = getAny . F.foldMap serviceWithBase
+  where
+    serviceWithBase Service{..} = Any $ isJust serviceBase
+    serviceWithBase _ = Any False
+
 codeGen :: Options -> TypeMapping -> [Template] -> FilePath -> IO ()
 codeGen options typeMapping templates file = do
     let outputDir = output_dir options
@@ -124,9 +132,13 @@ codeGen options typeMapping templates file = do
     namespaceMapping <- parseNamespaceMappings $ namespace options
     (Bond imports namespaces declarations) <- parseFile (import_dir options) file
     let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
-    forM_ templates $ \template -> do
-        let (suffix, code) = template mappingContext baseName imports declarations
-        let fileName = baseName ++ suffix
-        createDirectoryIfMissing True outputDir
-        let content = if (no_banner options) then code else (commonHeader "//" fileName <> code)
-        L.writeFile (outputDir </> fileName) content
+    case (anyServiceInheritance declarations, service_inheritance_enabled options, grpc_enabled options, comm_enabled options) of
+        (True, False, _, _)   -> fail "Use --enable-service-inheritance to enable service inheritance syntax."
+        (True, True, True, _) -> fail "Service inheritance is not supported in gRPC codegen."
+        (True, True, _, True) -> fail "Service inheritance is not supported in Comm codegen."
+        _                     -> forM_ templates $ \template -> do
+                                    let (suffix, code) = template mappingContext baseName imports declarations
+                                    let fileName = baseName ++ suffix
+                                    createDirectoryIfMissing True outputDir
+                                    let content = if (no_banner options) then code else (commonHeader "//" fileName <> code)
+                                    L.writeFile (outputDir </> fileName) content
