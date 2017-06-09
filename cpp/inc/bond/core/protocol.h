@@ -5,9 +5,9 @@
 
 #include "traits.h"
 #include "customize.h"
-#include "detail/odr.h"
-#include "detail/mpl.h"
 #include "detail/any.h"
+#include "detail/mpl.h"
+#include "detail/odr.h"
 #include "detail/visit_any.h"
 #include <bond/stream/input_buffer.h>
 #include <bond/protocol/simple_binary.h>

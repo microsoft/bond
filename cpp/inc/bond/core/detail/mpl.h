@@ -64,24 +64,24 @@ filter<list<T, U...>, C>
 
 
 template <typename F, typename... T>
-void apply(F&& f, const list<T...>&)
+inline void apply(F&& f, const list<T...>&)
 {
     std::initializer_list<int>{ (f(identity<T>{}), 0)... };
 }
 
 template <typename F>
-void apply(F&& /*f*/, const list<>&)
+inline void apply(F&& /*f*/, const list<>&)
 {}
 
 template <typename List, typename F>
-void apply(F&& f)
+inline void apply(F&& f)
 {
     apply(std::forward<F>(f), List{});
 }
 
 
 template <typename F, typename T>
-auto try_apply(F&& f, const list<T>&)
+inline auto try_apply(F&& f, const list<T>&)
 #ifdef BOND_NO_CXX14_RETURN_TYPE_DEDUCTION
     -> decltype(std::forward<F>(f)(identity<T>{}))
 #endif
@@ -90,7 +90,7 @@ auto try_apply(F&& f, const list<T>&)
 }
 
 template <typename F, typename T, typename U, typename... R>
-auto try_apply(F&& f, const list<T, U, R...>&)
+inline auto try_apply(F&& f, const list<T, U, R...>&)
 #ifdef BOND_NO_CXX14_RETURN_TYPE_DEDUCTION
     -> decltype(f(identity<T>{}))
 #endif
@@ -104,7 +104,7 @@ auto try_apply(F&& f, const list<T, U, R...>&)
 }
 
 template <typename List, typename F>
-auto try_apply(F&& f)
+inline auto try_apply(F&& f)
 #ifdef BOND_NO_CXX14_RETURN_TYPE_DEDUCTION
     -> decltype(try_apply(std::forward<F>(f), List{}))
 #endif

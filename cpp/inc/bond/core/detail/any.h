@@ -36,13 +36,13 @@ public:
 
     any(const any& other)
     {
-        emplace(other);
+        emplace_uninitialized(other);
     }
 
     template <typename T>
     any(const T& value)
     {
-        emplace(value);
+        emplace_uninitialized(value);
     }
 
     ~any()
@@ -102,7 +102,7 @@ private:
 
         void (*assign)(any& x, const any& other);
 
-        void (*emplace)(any& x, const any& other);
+        void (*emplace_uninitialized)(any& x, const any& other);
 
         bool (*compare)(const any& x, const any& y);
 
@@ -116,16 +116,16 @@ private:
             static T* unsafe_cast(any& x) BOND_NOEXCEPT
             {
                 BOOST_ASSERT(TypeId<T>::value == x._id);
-                return reinterpret_cast<T*>(x.data());
+                return static_cast<T*>(x.data());
             }
 
             static const T* unsafe_cast(const any& x) BOND_NOEXCEPT
             {
                 BOOST_ASSERT(TypeId<T>::value == x._id);
-                return reinterpret_cast<const T*>(x.data());
+                return static_cast<const T*>(x.data());
             }
 
-            static void emplace(any& x, const T& value)
+            static void emplace_uninitialized(any& x, const T& value)
             {
                 new (x.data()) T{ value };
             }
@@ -142,18 +142,18 @@ private:
             static T* unsafe_cast(any& x) BOND_NOEXCEPT
             {
                 BOOST_ASSERT(TypeId<T>::value == x._id);
-                return *reinterpret_cast<T**>(x.data());
+                return *static_cast<T**>(x.data());
             }
 
             static const T* unsafe_cast(const any& x) BOND_NOEXCEPT
             {
                 BOOST_ASSERT(TypeId<T>::value == x._id);
-                return *reinterpret_cast<const T* const*>(x.data());
+                return *static_cast<const T* const*>(x.data());
             }
 
-            static void emplace(any& x, const T& value)
+            static void emplace_uninitialized(any& x, const T& value)
             {
-                *reinterpret_cast<T**>(x.data()) = new T{ value };
+                *static_cast<T**>(x.data()) = new T{ value };
             }
 
             static void destroy(any& x)
@@ -165,6 +165,8 @@ private:
         template <typename T>
         struct table : impl<T, (sizeof(T) <= sizeof(storage))>
         {
+            BOOST_STATIC_ASSERT(TypeId<T>::value != 0);
+
             using base = impl<T, (sizeof(T) <= sizeof(storage))>;
 
             template <typename U = T, typename boost::enable_if<std::is_copy_assignable<U> >::type* = nullptr>
@@ -178,13 +180,13 @@ private:
             {
                 // TODO: Cache allocated buffer and reuse.
                 base::destroy(x);
-                emplace(x, value);
+                emplace_uninitialized(x, value);
             }
 
-            static void emplace(any& x, const T& value)
+            static void emplace_uninitialized(any& x, const T& value)
             {
-                base::emplace(x, value);
-                x._id = TypeId<T>::value;  // Update the id if emplace did not throw.
+                base::emplace_uninitialized(x, value);
+                x._id = TypeId<T>::value;  // Update the id if emplace_uninitialized did not throw.
             }
 
             static functions make() BOND_NOEXCEPT
@@ -193,7 +195,7 @@ private:
                 {
                     base::destroy,
                     [](any& x, const any& other) { assign(x, *base::unsafe_cast(other)); },
-                    [](any& x, const any& other) { emplace(x, *base::unsafe_cast(other)); },
+                    [](any& x, const any& other) { emplace_uninitialized(x, *base::unsafe_cast(other)); },
                     [](const any& x, const any& y) { return *base::unsafe_cast(x) == *base::unsafe_cast(y); }
                 };
             }
@@ -211,18 +213,20 @@ private:
         return &_storage;
     }
 
+    /// The precondition is that *this is uninitialized (or destroyed).
     template <typename T>
-    void emplace(const T& value)
+    void emplace_uninitialized(const T& value)
     {
-        functions::template table<T>::emplace(*this, value);
+        functions::template table<T>::emplace_uninitialized(*this, value);
         _functions = functions::template table<T>::make();
     }
 
-    void emplace(const any& other)
+    /// The precondition is that *this is uninitialized (or destroyed).
+    void emplace_uninitialized(const any& other)
     {
         if (!other.empty())
         {
-            other._functions.emplace(*this, other);
+            other._functions.emplace_uninitialized(*this, other);
             _functions = other._functions;
         }
         else
@@ -238,7 +242,7 @@ private:
         {
             // TODO: Cache allocated buffer and reuse.
             destroy();
-            emplace(value);
+            emplace_uninitialized(value);
         }
 
         return *this;
@@ -281,21 +285,21 @@ private:
     }
 
 
-    std::uint32_t _id;
     storage _storage;
     functions _functions;
+    std::uint32_t _id;
 };
 
 
 template <typename T, template <typename> class TypeId, std::size_t Size>
-T* any_cast(any<TypeId, Size>* x) BOND_NOEXCEPT
+inline T* any_cast(any<TypeId, Size>* x) BOND_NOEXCEPT
 {
     BOOST_ASSERT(x);
     return x->template cast<T>();
 }
 
 template <typename T, template <typename> class TypeId, std::size_t Size>
-const T* any_cast(const any<TypeId, Size>* x) BOND_NOEXCEPT
+inline const T* any_cast(const any<TypeId, Size>* x) BOND_NOEXCEPT
 {
     BOOST_ASSERT(x);
     return x->template cast<T>();

@@ -152,7 +152,7 @@ Equal(const T1& lhs, const T2& rhs)
 }
 
 
-// "loose" equality for struct just calls ==
+// "loose" equality for struct just calls Compare
 template <typename Protocols = bond::BuiltInProtocols, typename T1, typename T2>
 typename boost::enable_if_c<bond::has_schema<T1>::value
                          && bond::has_schema<T2>::value, bool>::type

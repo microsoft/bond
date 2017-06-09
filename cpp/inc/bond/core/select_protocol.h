@@ -43,7 +43,7 @@ template <typename T, typename Protocols>
 struct NextProtocolFunctor
 {
     template <typename Buffer, typename Transform, typename Reader>
-    inline boost::optional<std::pair<ProtocolType, bool> >
+    boost::optional<std::pair<ProtocolType, bool> >
     operator()(Buffer& input, const Transform& transform, const mpl::identity<Reader>&) const
     {
         Reader reader(input);
@@ -59,7 +59,7 @@ struct NextProtocolFunctor
     }
 
     template <typename Buffer, typename Transform, typename Reader>
-    inline boost::optional<bool>
+    boost::optional<bool>
     operator()(Buffer& input, const Transform& transform, uint16_t protocol, const mpl::identity<Reader>&) const
     {
         if (Reader::magic == protocol)
@@ -76,7 +76,7 @@ struct NextProtocolFunctor
     struct TransformFunctor
     {
         template <typename Buffer, typename Reader>
-        inline boost::optional<bool>
+        boost::optional<bool>
         operator()(const T& value, Buffer& output, uint16_t protocol, const mpl::identity<Reader>&) const
         {
             if (Reader::magic == protocol)
@@ -97,7 +97,7 @@ template <typename Protocols>
 struct NextProtocolFunctor<void, Protocols>
 {
     template <typename Buffer, typename Transform, typename Reader>
-    inline boost::optional<std::pair<ProtocolType, bool> >
+    boost::optional<std::pair<ProtocolType, bool> >
     operator()(const RuntimeSchema& schema, Buffer& input, const Transform& transform, const mpl::identity<Reader>&) const
     {
         Reader reader(input);
@@ -113,7 +113,7 @@ struct NextProtocolFunctor<void, Protocols>
     }
 
     template <typename Buffer, typename Transform, typename Reader>
-    inline boost::optional<bool>
+    boost::optional<bool>
     operator()(const RuntimeSchema& schema, Buffer& input, const Transform& transform, uint16_t protocol, const mpl::identity<Reader>&) const
     {
         if (Reader::magic == protocol)

@@ -17,7 +17,7 @@ namespace detail
 #if !defined(BOND_NO_CXX14_RETURN_TYPE_DEDUCTION) && !defined(BOND_NO_CXX14_GENERIC_LAMBDAS)
 
 template <typename T, typename Visitor, typename Any>
-typename boost::disable_if<std::is_void<std::result_of_t<Visitor(T&)> >, boost::optional<std::result_of_t<Visitor(T&)> > >::type
+inline typename boost::disable_if<std::is_void<std::result_of_t<Visitor(T&)> >, boost::optional<std::result_of_t<Visitor(T&)> > >::type
 try_visit_any(Visitor&& visitor, Any& x)
 {
     if (auto value = any_cast<T>(&x))
@@ -29,7 +29,7 @@ try_visit_any(Visitor&& visitor, Any& x)
 }
 
 template <typename T, typename Visitor, typename Any>
-typename boost::enable_if<std::is_void<std::result_of_t<Visitor(T&)> >, bool>::type
+inline typename boost::enable_if<std::is_void<std::result_of_t<Visitor(T&)> >, bool>::type
 try_visit_any(Visitor&& visitor, Any& x)
 {
     if (auto value = any_cast<T>(&x))
@@ -42,7 +42,7 @@ try_visit_any(Visitor&& visitor, Any& x)
 }
 
 template <typename List, typename Visitor, typename Any>
-auto visit_any(Visitor&& visitor, Any& x)
+inline auto visit_any(Visitor&& visitor, Any& x)
 {
     return mpl::try_apply<List>(
         [&](auto identity)
@@ -106,13 +106,13 @@ visitor_result<void>
 };
 
 template <typename Result, typename Visitor, typename Any, typename T, typename... U>
-typename visitor_result<Result>::type visit_any(Visitor&& visitor, Any& x, const mpl::list<T, U...>&)
+inline typename visitor_result<Result>::type visit_any(Visitor&& visitor, Any& x, const mpl::list<T, U...>&)
 {
     return mpl::try_apply<mpl::list<T, U...> >(try_visit_any<Result, Visitor, Any>(visitor, x));
 }
 
 template <typename List, typename Result, typename Visitor, typename Any>
-typename visitor_result<Result>::type visit_any(Visitor&& visitor, Any& x)
+inline typename visitor_result<Result>::type visit_any(Visitor&& visitor, Any& x)
 {
     return visit_any<Result>(std::forward<Visitor>(visitor), x, List{});
 }

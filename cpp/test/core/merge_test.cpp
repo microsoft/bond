@@ -175,7 +175,7 @@ void Merging(Payload payload, const T& obj, uint16_t version, bool mergeByDeseri
     // Deserialize merged into T and compare against obj
     {
         T to;
-        
+
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4127) // C4127: conditional expression is constant

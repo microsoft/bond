@@ -305,7 +305,7 @@ TEST_CASE_BEGIN(SimpleBinaryVersion)
 
     {
         bond::OutputBuffer output_buffer;
-    
+
         // serialize using default version of SimpleBinary reader
         bond::SimpleBinaryWriter<bond::OutputBuffer> output(output_buffer);
 
@@ -315,9 +315,9 @@ TEST_CASE_BEGIN(SimpleBinaryVersion)
         {
             // deserialize using version 1 of SimpleBinary reader
             bond::SimpleBinaryReader<bond::InputBuffer> input(input_buffer, 1);
-    
+
             SimpleListsStruct to;
-    
+
             bond::Deserialize(input, to);
 
             UT_Compare(from, to);
@@ -326,9 +326,9 @@ TEST_CASE_BEGIN(SimpleBinaryVersion)
         {
             // deserialize using default version of SimpleBinary reader
             bond::SimpleBinaryReader<bond::InputBuffer> input(input_buffer);
-    
+
             SimpleListsStruct to;
-    
+
             bond::Deserialize(input, to);
 
             UT_Compare(from, to);
@@ -338,7 +338,7 @@ TEST_CASE_BEGIN(SimpleBinaryVersion)
 
     {
         bond::OutputBuffer output_buffer;
-    
+
         // serialize using version 2 of SimpleBinary writer
         bond::SimpleBinaryWriter<bond::OutputBuffer> output(output_buffer, 2);
 
@@ -348,9 +348,9 @@ TEST_CASE_BEGIN(SimpleBinaryVersion)
         {
             // deserialize using version 2 of SimpleBinary reader
             bond::SimpleBinaryReader<bond::InputBuffer> input(input_buffer, 2);
-    
+
             SimpleListsStruct to;
-    
+
             bond::Deserialize(input, to);
 
             UT_Compare(from, to);
@@ -359,7 +359,7 @@ TEST_CASE_BEGIN(SimpleBinaryVersion)
 
     {
         bond::OutputBuffer output_buffer;
-    
+
         // serialize using version 1 of SimpleBinary writer
         bond::SimpleBinaryWriter<bond::OutputBuffer> output(output_buffer, 1);
 
@@ -382,7 +382,7 @@ TEST_CASE_BEGIN(SimpleBinaryVersion)
             bond::SimpleBinaryReader<bond::InputBuffer> input(input_buffer);
 
             SimpleListsStruct to;
-    
+
             bond::Deserialize(input, to);
 
             UT_Compare(from, to);
