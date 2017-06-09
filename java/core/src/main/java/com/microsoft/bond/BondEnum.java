@@ -16,15 +16,3 @@ public interface BondEnum {
      */
     int getValue();
 }
-
-class foo implements Comparable<foo>, BondEnum {
-    @Override
-    public int compareTo(foo o) {
-        return 0;
-    }
-
-    @Override
-    public int getValue() {
-        return 0;
-    }
-}
