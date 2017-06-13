@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Bond: bond::SimpleBinaryReader&lt; BufferT &gt; Class Template Reference</title>
+<title>Bond: bond::SimpleBinaryReader&lt; BufferT, MarshaledBondedProtocolsT &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -93,7 +93,7 @@ $(document).ready(function(){initNavTree('classbond_1_1_simple_binary_reader.htm
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classbond_1_1_simple_binary_reader-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">bond::SimpleBinaryReader&lt; BufferT &gt; Class Template Reference</div>  </div>
+<div class="title">bond::SimpleBinaryReader&lt; BufferT, MarshaledBondedProtocolsT &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -102,36 +102,36 @@ $(document).ready(function(){initNavTree('classbond_1_1_simple_binary_reader.htm
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a51a8eb47075f1c1d83bd765b30444c75"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1_simple_binary_reader.html#a51a8eb47075f1c1d83bd765b30444c75">SimpleBinaryReader</a> (typename boost::call_traits&lt; Buffer &gt;::param_type input, uint16_t version_value=default_version&lt; <a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a> &gt;::value)</td></tr>
-<tr class="memdesc:a51a8eb47075f1c1d83bd765b30444c75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from input buffer/stream containing serialized data.  <a href="#a51a8eb47075f1c1d83bd765b30444c75">More...</a><br /></td></tr>
-<tr class="separator:a51a8eb47075f1c1d83bd765b30444c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a033f9addabb4b411b0fd9f079861d3a0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1_simple_binary_reader.html#a033f9addabb4b411b0fd9f079861d3a0">SimpleBinaryReader</a> (const <a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a> &amp;that) BOND_NOEXCEPT</td></tr>
-<tr class="memdesc:a033f9addabb4b411b0fd9f079861d3a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor.  <a href="#a033f9addabb4b411b0fd9f079861d3a0">More...</a><br /></td></tr>
-<tr class="separator:a033f9addabb4b411b0fd9f079861d3a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acd16f4f58864ebca92cc926d7343353c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1_simple_binary_reader.html#acd16f4f58864ebca92cc926d7343353c">operator==</a> (const <a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a> &amp;rhs) const </td></tr>
-<tr class="memdesc:acd16f4f58864ebca92cc926d7343353c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Comparison operator.  <a href="#acd16f4f58864ebca92cc926d7343353c">More...</a><br /></td></tr>
-<tr class="separator:acd16f4f58864ebca92cc926d7343353c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a061860585e40aa362fa776e21dd502a7"><td class="memItemLeft" align="right" valign="top">boost::call_traits&lt; Buffer &gt;::const_reference&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1_simple_binary_reader.html#a061860585e40aa362fa776e21dd502a7">GetBuffer</a> () const </td></tr>
-<tr class="memdesc:a061860585e40aa362fa776e21dd502a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to underlying buffer.  <a href="#a061860585e40aa362fa776e21dd502a7">More...</a><br /></td></tr>
-<tr class="separator:a061860585e40aa362fa776e21dd502a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab43b537d9bc1f1cc4cfefb1108c75619"><td class="memItemLeft" align="right" valign="top">boost::call_traits&lt; Buffer &gt;::reference&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1_simple_binary_reader.html#ab43b537d9bc1f1cc4cfefb1108c75619">GetBuffer</a> ()</td></tr>
-<tr class="memdesc:ab43b537d9bc1f1cc4cfefb1108c75619"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to underlying buffer.  <a href="#ab43b537d9bc1f1cc4cfefb1108c75619">More...</a><br /></td></tr>
-<tr class="separator:ab43b537d9bc1f1cc4cfefb1108c75619"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30824e34a289ed9288c49fbb7f1a3f89"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1_simple_binary_reader.html#a30824e34a289ed9288c49fbb7f1a3f89">SimpleBinaryReader</a> (typename boost::call_traits&lt; Buffer &gt;::param_type input, uint16_t version_value=default_version&lt; <a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a> &gt;::value)</td></tr>
+<tr class="memdesc:a30824e34a289ed9288c49fbb7f1a3f89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from input buffer/stream containing serialized data.  <a href="#a30824e34a289ed9288c49fbb7f1a3f89">More...</a><br /></td></tr>
+<tr class="separator:a30824e34a289ed9288c49fbb7f1a3f89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0c39e59a35bfdb305504660e119b105"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1_simple_binary_reader.html#ac0c39e59a35bfdb305504660e119b105">SimpleBinaryReader</a> (const <a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a> &amp;that) BOND_NOEXCEPT</td></tr>
+<tr class="memdesc:ac0c39e59a35bfdb305504660e119b105"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor.  <a href="#ac0c39e59a35bfdb305504660e119b105">More...</a><br /></td></tr>
+<tr class="separator:ac0c39e59a35bfdb305504660e119b105"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa874b93d95768265c089379b118fde77"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1_simple_binary_reader.html#aa874b93d95768265c089379b118fde77">operator==</a> (const <a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a> &amp;rhs) const </td></tr>
+<tr class="memdesc:aa874b93d95768265c089379b118fde77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Comparison operator.  <a href="#aa874b93d95768265c089379b118fde77">More...</a><br /></td></tr>
+<tr class="separator:aa874b93d95768265c089379b118fde77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86db960813a7ec027ac411f766ea8d7b"><td class="memItemLeft" align="right" valign="top">boost::call_traits&lt; Buffer &gt;::const_reference&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1_simple_binary_reader.html#a86db960813a7ec027ac411f766ea8d7b">GetBuffer</a> () const </td></tr>
+<tr class="memdesc:a86db960813a7ec027ac411f766ea8d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to underlying buffer.  <a href="#a86db960813a7ec027ac411f766ea8d7b">More...</a><br /></td></tr>
+<tr class="separator:a86db960813a7ec027ac411f766ea8d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f30a1b2078951d47cf3961cc93d4a64"><td class="memItemLeft" align="right" valign="top">boost::call_traits&lt; Buffer &gt;::reference&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1_simple_binary_reader.html#a5f30a1b2078951d47cf3961cc93d4a64">GetBuffer</a> ()</td></tr>
+<tr class="memdesc:a5f30a1b2078951d47cf3961cc93d4a64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to underlying buffer.  <a href="#a5f30a1b2078951d47cf3961cc93d4a64">More...</a><br /></td></tr>
+<tr class="separator:a5f30a1b2078951d47cf3961cc93d4a64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename BufferT&gt;<br />
-class bond::SimpleBinaryReader&lt; BufferT &gt;</h3>
+<div class="textblock"><h3>template&lt;typename BufferT, typename MarshaledBondedProtocolsT&gt;<br />
+class bond::SimpleBinaryReader&lt; BufferT, MarshaledBondedProtocolsT &gt;</h3>
 
 <p>Reader for Simple Binary protocol. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a51a8eb47075f1c1d83bd765b30444c75"></a>
+<a class="anchor" id="a30824e34a289ed9288c49fbb7f1a3f89"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename BufferT&gt; </div>
+template&lt;typename BufferT, typename MarshaledBondedProtocolsT&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classbond_1_1_simple_binary_reader.html">bond::SimpleBinaryReader</a>&lt; BufferT &gt;::<a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a> </td>
+          <td class="memname"><a class="el" href="classbond_1_1_simple_binary_reader.html">bond::SimpleBinaryReader</a>&lt; BufferT, MarshaledBondedProtocolsT &gt;::<a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a> </td>
           <td>(</td>
           <td class="paramtype">typename boost::call_traits&lt; Buffer &gt;::param_type&#160;</td>
           <td class="paramname"><em>input</em>, </td>
@@ -140,7 +140,7 @@ template&lt;typename BufferT&gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>version_value</em> = <code>default_version&lt;<a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a>&lt;&#160;BufferT&#160;&gt;&gt;::value</code>&#160;</td>
+          <td class="paramname"><em>version_value</em> = <code>default_version&lt;<a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a>&lt;&#160;BufferT,&#160;MarshaledBondedProtocolsT&#160;&gt;&gt;::value</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -154,16 +154,16 @@ template&lt;typename BufferT&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a033f9addabb4b411b0fd9f079861d3a0"></a>
+<a class="anchor" id="ac0c39e59a35bfdb305504660e119b105"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename BufferT&gt; </div>
+template&lt;typename BufferT, typename MarshaledBondedProtocolsT&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classbond_1_1_simple_binary_reader.html">bond::SimpleBinaryReader</a>&lt; BufferT &gt;::<a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a> </td>
+          <td class="memname"><a class="el" href="classbond_1_1_simple_binary_reader.html">bond::SimpleBinaryReader</a>&lt; BufferT, MarshaledBondedProtocolsT &gt;::<a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a> </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a>&lt; BufferT &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a>&lt; BufferT, MarshaledBondedProtocolsT &gt; &amp;&#160;</td>
           <td class="paramname"><em>that</em></td><td>)</td>
           <td></td>
         </tr>
@@ -175,14 +175,14 @@ template&lt;typename BufferT&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a061860585e40aa362fa776e21dd502a7"></a>
+<a class="anchor" id="a86db960813a7ec027ac411f766ea8d7b"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename BufferT&gt; </div>
+template&lt;typename BufferT, typename MarshaledBondedProtocolsT&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">boost::call_traits&lt;Buffer&gt;::const_reference <a class="el" href="classbond_1_1_simple_binary_reader.html">bond::SimpleBinaryReader</a>&lt; BufferT &gt;::GetBuffer </td>
+          <td class="memname">boost::call_traits&lt;Buffer&gt;::const_reference <a class="el" href="classbond_1_1_simple_binary_reader.html">bond::SimpleBinaryReader</a>&lt; BufferT, MarshaledBondedProtocolsT &gt;::GetBuffer </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -194,14 +194,14 @@ template&lt;typename BufferT&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="ab43b537d9bc1f1cc4cfefb1108c75619"></a>
+<a class="anchor" id="a5f30a1b2078951d47cf3961cc93d4a64"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename BufferT&gt; </div>
+template&lt;typename BufferT, typename MarshaledBondedProtocolsT&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">boost::call_traits&lt;Buffer&gt;::reference <a class="el" href="classbond_1_1_simple_binary_reader.html">bond::SimpleBinaryReader</a>&lt; BufferT &gt;::GetBuffer </td>
+          <td class="memname">boost::call_traits&lt;Buffer&gt;::reference <a class="el" href="classbond_1_1_simple_binary_reader.html">bond::SimpleBinaryReader</a>&lt; BufferT, MarshaledBondedProtocolsT &gt;::GetBuffer </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -213,16 +213,16 @@ template&lt;typename BufferT&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="acd16f4f58864ebca92cc926d7343353c"></a>
+<a class="anchor" id="aa874b93d95768265c089379b118fde77"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename BufferT&gt; </div>
+template&lt;typename BufferT, typename MarshaledBondedProtocolsT&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">bool <a class="el" href="classbond_1_1_simple_binary_reader.html">bond::SimpleBinaryReader</a>&lt; BufferT &gt;::operator== </td>
+          <td class="memname">bool <a class="el" href="classbond_1_1_simple_binary_reader.html">bond::SimpleBinaryReader</a>&lt; BufferT, MarshaledBondedProtocolsT &gt;::operator== </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a>&lt; BufferT &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classbond_1_1_simple_binary_reader.html">SimpleBinaryReader</a>&lt; BufferT, MarshaledBondedProtocolsT &gt; &amp;&#160;</td>
           <td class="paramname"><em>rhs</em></td><td>)</td>
           <td> const</td>
         </tr>

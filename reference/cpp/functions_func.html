@@ -159,9 +159,9 @@ $(document).ready(function(){initNavTree('functions_func.html','');});
 : <a class="el" href="classbond_1_1blob.html#aa50bfbd006616b0b68ad9cf52b6fe6f7">bond::blob</a>
 </li>
 <li>Deserialize()
-: <a class="el" href="classbond_1_1bonded.html#aa4cf4de3dceb7018cfa5d5de400e3e69">bond::bonded&lt; T, Reader &gt;</a>
-, <a class="el" href="classbond_1_1bonded_3_01void_00_01_reader_01_4.html#ad5ff3e73282b82024214a68ee6e97dc8">bond::bonded&lt; void, Reader &gt;</a>
-, <a class="el" href="classbond_1_1value_3_01_t_00_01_reader_00_01typename_01boost_1_1enable__if__c_3_01is__basic__typce7e294bd4d6cdc037de46bb14c43848.html#a4943ca907de8f2f1be9788f0dbb4ed97">bond::value&lt; T, Reader, typename boost::enable_if_c&lt; is_basic_type&lt; T &gt;::value &amp;&amp;!is_type_alias&lt; T &gt;::value &gt;::type &gt;</a>
+: <a class="el" href="classbond_1_1bonded.html#ab10cafc4a22b9671c9736b3ff43a689b">bond::bonded&lt; T, Reader &gt;</a>
+, <a class="el" href="classbond_1_1bonded_3_01void_00_01_reader_01_4.html#a44c12b4beb06b4f98b7db1c7a482ed11">bond::bonded&lt; void, Reader &gt;</a>
+, <a class="el" href="classbond_1_1value_3_01_t_00_01_reader_00_01typename_01boost_1_1enable__if__c_3_01is__basic__typce7e294bd4d6cdc037de46bb14c43848.html#a5dade74937ae0d9bf30c203bf8ed2984">bond::value&lt; T, Reader, typename boost::enable_if_c&lt; is_basic_type&lt; T &gt;::value &amp;&amp;!is_type_alias&lt; T &gt;::value &gt;::type &gt;</a>
 </li>
 <li>dispatch()
 : <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#aade392da54f0a6214965613a24c4a885">bond::ext::gRPC::detail::client_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>
@@ -209,7 +209,7 @@ $(document).ready(function(){initNavTree('functions_func.html','');});
 , <a class="el" href="classbond_1_1_fast_binary_reader.html#ac9cce8f67b04d017cbc72a59523786b3">bond::FastBinaryReader&lt; BufferT &gt;</a>
 , <a class="el" href="classbond_1_1_fast_binary_writer.html#a7c6d91ba58c572e11f0444656812b34a">bond::FastBinaryWriter&lt; BufferT &gt;</a>
 , <a class="el" href="classbond_1_1_output_memory_stream.html#aa14984fb7269a685efa991bba35a3049">bond::OutputMemoryStream&lt; A &gt;</a>
-, <a class="el" href="classbond_1_1_simple_binary_reader.html#a061860585e40aa362fa776e21dd502a7">bond::SimpleBinaryReader&lt; BufferT &gt;</a>
+, <a class="el" href="classbond_1_1_simple_binary_reader.html#a86db960813a7ec027ac411f766ea8d7b">bond::SimpleBinaryReader&lt; BufferT, MarshaledBondedProtocolsT &gt;</a>
 , <a class="el" href="classbond_1_1_simple_binary_writer.html#ab51b7c35e1e31fb04426198e72b2e030">bond::SimpleBinaryWriter&lt; BufferT &gt;</a>
 , <a class="el" href="classbond_1_1_simple_json_reader.html#a14e095fa11368b90b9d637e913fc54fc">bond::SimpleJsonReader&lt; BufferT &gt;</a>
 , <a class="el" href="classbond_1_1_simple_json_writer.html#affbf10945a240e85e9b83aa8e9a0f7ef">bond::SimpleJsonWriter&lt; BufferT &gt;</a>
@@ -263,7 +263,7 @@ $(document).ready(function(){initNavTree('functions_func.html','');});
 : <a class="el" href="classbond_1_1maybe.html#a0876e81eb275f4ec4eb0888306701d82">bond::maybe&lt; T &gt;</a>
 </li>
 <li>Merge()
-: <a class="el" href="classbond_1_1bonded.html#a4361ec873c0bbac3a43b698005dd9f04">bond::bonded&lt; T, Reader &gt;</a>
+: <a class="el" href="classbond_1_1bonded.html#a87a687d614562875e322aed7f915f736">bond::bonded&lt; T, Reader &gt;</a>
 </li>
 </ul>
 
@@ -300,7 +300,7 @@ $(document).ready(function(){initNavTree('functions_func.html','');});
 , <a class="el" href="classbond_1_1_compact_binary_reader.html#a953ab6df1f44abbc7526674e26bac521">bond::CompactBinaryReader&lt; BufferT &gt;</a>
 , <a class="el" href="classbond_1_1_fast_binary_reader.html#a2407d572f01a2d08f33ed66000720bcb">bond::FastBinaryReader&lt; BufferT &gt;</a>
 , <a class="el" href="classbond_1_1maybe.html#a1487b1ccb6f168e60f9b1be99cd20a88">bond::maybe&lt; T &gt;</a>
-, <a class="el" href="classbond_1_1_simple_binary_reader.html#acd16f4f58864ebca92cc926d7343353c">bond::SimpleBinaryReader&lt; BufferT &gt;</a>
+, <a class="el" href="classbond_1_1_simple_binary_reader.html#aa874b93d95768265c089379b118fde77">bond::SimpleBinaryReader&lt; BufferT, MarshaledBondedProtocolsT &gt;</a>
 </li>
 <li>OutputMemoryStream()
 : <a class="el" href="classbond_1_1_output_memory_stream.html#a607bf4518cf3f814e54abd37fa0aae35">bond::OutputMemoryStream&lt; A &gt;</a>
@@ -342,8 +342,8 @@ $(document).ready(function(){initNavTree('functions_func.html','');});
 : <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#a4bb3500f11b9c6c5dd04fda6a16618d3">bond::ext::gRPC::thread_pool</a>
 </li>
 <li>Serialize()
-: <a class="el" href="classbond_1_1bonded.html#aeaf0a97c4d8fec8a0cd1b95ffeb38676">bond::bonded&lt; T, Reader &gt;</a>
-, <a class="el" href="classbond_1_1bonded_3_01void_00_01_reader_01_4.html#aa72752456389c36a11ed36cc1f47f473">bond::bonded&lt; void, Reader &gt;</a>
+: <a class="el" href="classbond_1_1bonded.html#aca429b36649da3f9860f1f08248d6108">bond::bonded&lt; T, Reader &gt;</a>
+, <a class="el" href="classbond_1_1bonded_3_01void_00_01_reader_01_4.html#a9655c6c69dcb2f8e7a8b8f449107a7c9">bond::bonded&lt; void, Reader &gt;</a>
 </li>
 <li>set()
 : <a class="el" href="classbond_1_1ext_1_1detail_1_1countdown__event.html#ab96fc766fecd3abfe5e9513753ea7bca">bond::ext::detail::countdown_event</a>
@@ -381,7 +381,7 @@ $(document).ready(function(){initNavTree('functions_func.html','');});
 : <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server__core.html#a697eafc5333f67ee6aa36c152aeb6376">bond::ext::gRPC::server_core&lt; TThreadPool &gt;</a>
 </li>
 <li>SimpleBinaryReader()
-: <a class="el" href="classbond_1_1_simple_binary_reader.html#a033f9addabb4b411b0fd9f079861d3a0">bond::SimpleBinaryReader&lt; BufferT &gt;</a>
+: <a class="el" href="classbond_1_1_simple_binary_reader.html#a30824e34a289ed9288c49fbb7f1a3f89">bond::SimpleBinaryReader&lt; BufferT, MarshaledBondedProtocolsT &gt;</a>
 </li>
 <li>SimpleBinaryWriter()
 : <a class="el" href="classbond_1_1_simple_binary_writer.html#ab062ddf6a65772e93ec1bc972c804b30">bond::SimpleBinaryWriter&lt; BufferT &gt;</a>

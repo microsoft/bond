@@ -193,11 +193,11 @@ Typedefs</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ae176d8686766448570635ab0722693dd"></a>
+<a class="anchor" id="a6ef04914bf1af65ea5cb6d31c9f8ad04"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Reader &gt; </div>
+template&lt;typename Protocols  = BuiltInProtocols, typename Reader , typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void bond::Deserialize </td>
@@ -223,11 +223,11 @@ template&lt;typename T , typename Reader &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="af163c4a12994de9161d52d95ac66ad85"></a>
+<a class="anchor" id="a0cf47924d171456a07bafdb036a43f23"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Reader &gt; </div>
+template&lt;typename T , typename Protocols  = BuiltInProtocols, typename Reader &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">T bond::Deserialize </td>
@@ -243,11 +243,11 @@ template&lt;typename T , typename Reader &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a87f533225bb09733d27fc77ac16c7e75"></a>
+<a class="anchor" id="a7c671bb10e0b549504c2a8d31040d03e"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Reader &gt; </div>
+template&lt;typename Protocols  = BuiltInProtocols, typename Reader , typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void bond::Deserialize </td>
@@ -279,11 +279,11 @@ template&lt;typename T , typename Reader &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a629dee59a265d89a3fe491039ad719d4"></a>
+<a class="anchor" id="a7b47a58f00ec543f96dc21fbc9b23ffb"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Reader &gt; </div>
+template&lt;typename T , typename Protocols  = BuiltInProtocols, typename Reader &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">T bond::Deserialize </td>
@@ -366,11 +366,11 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="aec79caa8abe28738c176e499f84efcc0"></a>
+<a class="anchor" id="a850226afe7af0679779fc6ecb7144acd"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Writer &gt; </div>
+template&lt;typename Protocols , typename T , typename Writer &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void bond::Marshal </td>
@@ -396,11 +396,11 @@ template&lt;typename T , typename Writer &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a9a6b871474f2f7ba7c1dbfeed27085cd"></a>
+<a class="anchor" id="a95642a5fa0590898e42a981a12fda6f5"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Reader , typename Writer &gt; </div>
+template&lt;typename Protocols  = BuiltInProtocols, typename T , typename Reader , typename Writer &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void bond::Merge </td>
@@ -660,11 +660,11 @@ template&lt;typename UnsignedT &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a7fad6ee192d0ee2458ad2977f22d2cbc"></a>
+<a class="anchor" id="a3c5e0c8c158f355e63cc748d6798bf9a"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Writer &gt; </div>
+template&lt;typename Protocols  = BuiltInProtocols, typename T , typename Writer &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void bond::Serialize </td>
@@ -718,11 +718,11 @@ template&lt;typename T , typename Writer &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a230fcac6259bf2b92c40d20d90293d7b"></a>
+<a class="anchor" id="af36ea3dea21b0e56bd37c018503f4210"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Buffer &gt; </div>
+template&lt;typename Protocols  = BuiltInProtocols, typename Buffer , typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void bond::Unmarshal </td>
@@ -748,11 +748,11 @@ template&lt;typename T , typename Buffer &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a5ee9be28b5e2ccc4f7aa49177f7efe03"></a>
+<a class="anchor" id="afe51d9bd184a8d8108485380861d8b33"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Buffer &gt; </div>
+template&lt;typename T , typename Protocols  = BuiltInProtocols, typename Buffer &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">T bond::Unmarshal </td>
@@ -768,11 +768,11 @@ template&lt;typename T , typename Buffer &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="abec07ad8494dab298b78434c32c991ed"></a>
+<a class="anchor" id="affc02b3be7b924616e5dbb3b1686960c"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Buffer &gt; </div>
+template&lt;typename Protocols  = BuiltInProtocols, typename Buffer , typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void bond::Unmarshal </td>
@@ -798,11 +798,11 @@ template&lt;typename T , typename Buffer &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a1f772eaad14e8011bb3817845eed5d55"></a>
+<a class="anchor" id="a95cd3b64329f45595366422ffd163e34"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Buffer &gt; </div>
+template&lt;typename Protocols  = BuiltInProtocols, typename Buffer , typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void bond::Unmarshal </td>
@@ -834,11 +834,11 @@ template&lt;typename T , typename Buffer &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a863997382edb41032722590b94ab2656"></a>
+<a class="anchor" id="a6061350106199d74c065cf74364d25e7"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Buffer &gt; </div>
+template&lt;typename T , typename Protocols  = BuiltInProtocols, typename Buffer &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">T bond::Unmarshal </td>
@@ -864,11 +864,11 @@ template&lt;typename T , typename Buffer &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a1e15becbfb7f3367c252762e250e3081"></a>
+<a class="anchor" id="a3cf518a34fca4473697a0b8880ec7451"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename Buffer &gt; </div>
+template&lt;typename Protocols  = BuiltInProtocols, typename Buffer , typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void bond::Unmarshal </td>
@@ -900,9 +900,11 @@ template&lt;typename T , typename Buffer &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a9cdff49b5ffc5008fdf3be75e8571139"></a>
+<a class="anchor" id="a56ef4127ee01991e867feaa1e48e8f43"></a>
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename Protocols  = BuiltInProtocols&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">bool bond::Validate </td>
@@ -942,9 +944,11 @@ template&lt;typename T , typename Buffer &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a8bd6fbc630c2a2196512d6e4b4fa625f"></a>
+<a class="anchor" id="a80c95d9967349c27d07f8fffabef992f"></a>
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename Protocols  = BuiltInProtocols&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">bool bond::Validate </td>
@@ -984,9 +988,11 @@ template&lt;typename T , typename Buffer &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="ae7fa958420bd65db0a3fee1e79ee55e7"></a>
+<a class="anchor" id="a09d5095a2e379764b6387544feb6e37f"></a>
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename Protocols  = BuiltInProtocols&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">bool bond::Validate </td>
@@ -1026,11 +1032,11 @@ template&lt;typename T , typename Buffer &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a13670accb2299e1818efba8099485938"></a>
+<a class="anchor" id="a34a0388727f6c793a47cadb9238c2ba8"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T1 , typename T2 &gt; </div>
+template&lt;typename Protocols  = BuiltInProtocols, typename T1 , typename T2 &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">bool bond::ValidateTwoWay </td>

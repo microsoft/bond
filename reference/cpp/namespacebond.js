@@ -1,5 +1,12 @@
 var namespacebond =
 [
+    [ "detail", null, [
+      [ "mpl", null, [
+        [ "append", "structbond_1_1detail_1_1mpl_1_1append.html", null ],
+        [ "filter", "structbond_1_1detail_1_1mpl_1_1filter.html", null ],
+        [ "list", "structbond_1_1detail_1_1mpl_1_1list.html", null ]
+      ] ]
+    ] ],
     [ "ext", null, [
       [ "detail", null, [
         [ "barrier", "classbond_1_1ext_1_1detail_1_1barrier.html", "classbond_1_1ext_1_1detail_1_1barrier" ],
