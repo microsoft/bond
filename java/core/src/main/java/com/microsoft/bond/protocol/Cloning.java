@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;
 
 class Cloning {
-    private static final Object byteArrayInputStreamLock = new Object();
     private static final Field byteArrayInputStream_buf;
     private static final Field byteArrayInputStream_pos;
     private static final Field byteArrayInputStream_count;
@@ -19,6 +18,11 @@ class Cloning {
             // fields since JDK 1.0.
             throw new RuntimeException(e);
         }
+
+        // These changes are scoped to our Field instances and need not be cleaned up.
+        byteArrayInputStream_buf.setAccessible(true);
+        byteArrayInputStream_pos.setAccessible(true);
+        byteArrayInputStream_count.setAccessible(true);
     }
 
     static ByteArrayInputStream clone(ByteArrayInputStream stream) {
@@ -34,35 +38,13 @@ class Cloning {
         final int pos;
         final int count;
 
-        synchronized (byteArrayInputStreamLock) {
-            byteArrayInputStream_buf.setAccessible(true);
-            byteArrayInputStream_pos.setAccessible(true);
-            byteArrayInputStream_count.setAccessible(true);
-
-            try {
-                buf = (byte[]) byteArrayInputStream_buf.get(stream);
-                pos = byteArrayInputStream_pos.getInt(stream);
-                count = byteArrayInputStream_count.getInt(stream);
-            } catch (final IllegalAccessException e) {
-                // This synchronized block makes this expose/access/hide
-                // operation safe to call concurrently, but there's no way to
-                // guarantee unrelated code isn't modifying these fields'
-                // accessibility. In that unlikely event, there's nothing
-                // sensible we can do to recover.
-                throw new RuntimeException(e);
-            }
-
-            // The RuntimeException caused by an IllegalAccessException thrown
-            // above indicates a serious incompatibility between this part of
-            // Bond and some other component and cannot be resolved
-            // programmatically.
-            //
-            // We can't even clean up without a risk of causing the same
-            // problem to the other component, so we do this outside the try,
-            // not in a finally {}.
-            byteArrayInputStream_buf.setAccessible(false);
-            byteArrayInputStream_pos.setAccessible(false);
-            byteArrayInputStream_count.setAccessible(false);
+        try {
+            buf = (byte[]) byteArrayInputStream_buf.get(stream);
+            pos = byteArrayInputStream_pos.getInt(stream);
+            count = byteArrayInputStream_count.getInt(stream);
+        } catch (final IllegalAccessException e) {
+            // We made these accessible in this class's static block.
+            throw new RuntimeException(e);
         }
 
         return new ByteArrayInputStream(buf, pos, count - pos);

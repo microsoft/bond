@@ -2,10 +2,12 @@ package com.microsoft.bond.protocol;
 
 import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
+
+import static org.junit.Assert.fail;
 
 public class CloningTest {
     private final byte[] bytes = new byte[] {
@@ -97,5 +99,60 @@ public class CloningTest {
         byteArrayInput(0, middleSegmentOffset, segmentLength);
         byteArrayInput(segmentLength / 2, middleSegmentOffset, segmentLength);
         byteArrayInput(segmentLength, middleSegmentOffset, segmentLength);
+    }
+
+    @Test
+    public void byteArrayInputStream_fieldAccessibility() throws NoSuchFieldException, IllegalAccessException {
+        // We need to be able to access these fields by reflection to clone a
+        // ByteArrayInputStream. They have been part of ByteArrayInputStream
+        // since JDK 1.0, so something interesting has happened if this test
+        // throws.
+
+        final Field bufField = ByteArrayInputStream.class.getDeclaredField("buf");
+        final Field posField = ByteArrayInputStream.class.getDeclaredField("pos");
+        final Field countField = ByteArrayInputStream.class.getDeclaredField("count");
+
+        bufField.setAccessible(true);
+        posField.setAccessible(true);
+        countField.setAccessible(true);
+
+        final ByteArrayInputStream bais = new ByteArrayInputStream(new byte[]{});
+        bufField.get(bais);
+        posField.getInt(bais);
+        countField.getInt(bais);
+    }
+
+    private class PrivateInt {
+        private int i;
+    }
+
+    @Test
+    public void fieldAccessibilityIsolation() {
+        // We depend on the assumption that we can modify accessibility through
+        // our java.lang.reflect.Field instances without interfering with or
+        // interference from other components.
+
+        final Field accessible;
+        final Field inaccessible;
+        try {
+            accessible = PrivateInt.class.getDeclaredField("i");
+            inaccessible = PrivateInt.class.getDeclaredField("i");
+        } catch (final NoSuchFieldException e) {
+            fail("Couldn't get field - did the test class definition change?");
+            return;     // javac doesn't realize fail() doesn't return
+        }
+
+        // Make only one field accessible...
+        accessible.setAccessible(true);
+
+        // ... then try to access the private field with the other.
+        boolean getThrew = false;
+        try {
+            inaccessible.getInt(new PrivateInt());
+        } catch (final IllegalAccessException e) {
+            getThrew = true;
+        }
+
+        Assert.assertTrue("accessing private field through unmodified Field should have thrown", getThrew);
     }
 }
