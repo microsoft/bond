@@ -207,6 +207,7 @@ inline void ValidateStruct(const RuntimeSchema& src,
 
 
 // Checks if payload contains unknown fields
+template <typename Protocols>
 class SchemaValidator
     : public DeserializingTransform
 {
@@ -271,14 +272,14 @@ private:
     typename boost::disable_if<is_basic_type<T>, bool>::type
     Recurse(const value<T, Reader>& value) const
     {
-        Apply(*this, value);
+        Apply<Protocols>(*this, value);
         return false;
     }
 
     template <typename T, typename Reader>
     bool Recurse(const bonded<T, Reader>& value) const
     {
-        return Apply(*this, value);
+        return Apply<Protocols>(*this, value);
     }
 };
 

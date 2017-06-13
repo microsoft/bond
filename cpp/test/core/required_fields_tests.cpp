@@ -2,33 +2,31 @@
 #include "serialization_test.h"
 #include "untagged_protocol.h"
 
-namespace unittest
-{
 
-inline bool operator==(const Required& left, const RequiredViewGood& right)
+template <typename Protocols>
+bool Compare(const Required& left, const RequiredViewGood& right)
 {
-    return left.x == right.x
-        && Equal(left.x2, right.x2)
-        && (uint64_t)left.z2 == right.z2;
+    return Compare<Protocols>(left.x, right.x)
+        && Equal<Protocols>(left.x2, right.x2)
+        && Compare<Protocols>((uint64_t)left.z2, right.z2);
 }
 
-}
 
-template <typename Reader, typename Writer, typename From, typename To>
+template <typename Reader, typename Writer, typename From, typename To, typename Protocols>
 void RequiredFieldsTest(const From& from)
 {
     typename Writer::Buffer buffer(1024);
     Writer writer(buffer);
 
-    bond::Serialize(from, writer);
+    bond::Serialize<Protocols>(from, writer);
 
     {
         To to;
         Reader reader(buffer.GetBuffer());
         bond::bonded<From, Reader&> bonded(reader);
 
-        bonded.Deserialize(to);
-        UT_AssertIsTrue(Equal(from, to));
+        bonded.template Deserialize<Protocols>(to);
+        UT_Equal(from, to);
     }
 
     {
@@ -36,35 +34,35 @@ void RequiredFieldsTest(const From& from)
         Reader reader(buffer.GetBuffer());
         bond::bonded<void, Reader&> bonded(reader, bond::GetRuntimeSchema<From>());
 
-        bonded.Deserialize(to);
-        UT_AssertIsTrue(Equal(from, to));
+        bonded.template Deserialize<Protocols>(to);
+        UT_Equal(from, to);
     }
 }
 
 
-template <typename Reader, typename Writer, typename From, typename To>
+template <typename Reader, typename Writer, typename From, typename To, typename Protocols>
 TEST_CASE_BEGIN(RequiredFields)
 {
-    RequiredFieldsTest<Reader, Writer, From, To>(From());
-    RequiredFieldsTest<Reader, Writer, From, To>(InitRandom<From>());
+    RequiredFieldsTest<Reader, Writer, From, To, Protocols>(From());
+    RequiredFieldsTest<Reader, Writer, From, To, Protocols>(InitRandom<From, Protocols>());
 }
 TEST_CASE_END
 
 
-template <typename Reader, typename Writer, typename From, typename To>
+template <typename Reader, typename Writer, typename From, typename To, typename Protocols>
 void MissingRequiredFieldsTest(const From& from)
 {
     typename Writer::Buffer buffer(1024);
     Writer writer(buffer);
 
-    bond::Serialize(from, writer);
+    bond::Serialize<Protocols>(from, writer);
 
     {
         To to;
         Reader reader(buffer.GetBuffer());
         bond::bonded<From, Reader&> bonded(reader);
 
-        UT_AssertThrows((bonded.Deserialize(to)), bond::CoreException);
+        UT_AssertThrows((bonded.template Deserialize<Protocols>(to)), bond::CoreException);
     }
 
     {
@@ -72,21 +70,21 @@ void MissingRequiredFieldsTest(const From& from)
         Reader reader(buffer.GetBuffer());
         bond::bonded<void, Reader&> bonded(reader, bond::GetRuntimeSchema<From>());
 
-        UT_AssertThrows((bonded.Deserialize(to)), bond::CoreException);
+        UT_AssertThrows((bonded.template Deserialize<Protocols>(to)), bond::CoreException);
     }
 }
 
 
-template <typename Reader, typename Writer, typename From, typename To>
+template <typename Reader, typename Writer, typename From, typename To, typename Protocols>
 TEST_CASE_BEGIN(MissingRequiredFields)
 {
-    MissingRequiredFieldsTest<Reader, Writer, From, To>(From());
-    MissingRequiredFieldsTest<Reader, Writer, From, To>(InitRandom<From>());
+    MissingRequiredFieldsTest<Reader, Writer, From, To, Protocols>(From());
+    MissingRequiredFieldsTest<Reader, Writer, From, To, Protocols>(InitRandom<From, Protocols>());
 }
 TEST_CASE_END
 
 
-template <typename Reader, typename Writer, typename T>
+template <typename Reader, typename Writer, typename T, typename Protocols>
 TEST_CASE_BEGIN(OptionalToRequired)
 {
     typedef BondStructOptional<T> From;
@@ -97,14 +95,14 @@ TEST_CASE_BEGIN(OptionalToRequired)
     typename Writer::Buffer buffer(1024);
     
     Factory<Writer>::Call(buffer, bond::v1, boost::bind(
-        bond::Serialize<From, Writer>, from, _1));
+        bond::Serialize<Protocols, From, Writer>, from, _1));
 
     {
         To to;
         Reader reader(buffer.GetBuffer());
         bond::bonded<To, Reader&> bonded(reader);
 
-        UT_AssertThrows((bonded.Deserialize(to)), bond::CoreException);
+        UT_AssertThrows((bonded.template Deserialize<Protocols>(to)), bond::CoreException);
     }
 
     {
@@ -112,48 +110,48 @@ TEST_CASE_BEGIN(OptionalToRequired)
         Reader reader(buffer.GetBuffer());
         bond::bonded<void, Reader&> bonded(reader, bond::GetRuntimeSchema<To>());
 
-        UT_AssertThrows((bonded.Deserialize(to)), bond::CoreException);
+        UT_AssertThrows((bonded.template Deserialize<Protocols>(to)), bond::CoreException);
     }
 }
 TEST_CASE_END
 
 
-template <uint16_t N, typename Reader, typename Writer>
+template <uint16_t N, typename Reader, typename Writer, typename Protocols = bond::BuiltInProtocols>
 void RequiredTests(const char* name)
 {
     UnitTestSuite suite(name);
 
     AddTestCase<TEST_ID(N), 
-        RequiredFields, Reader, Writer, Required, Required>(suite, "Struct with required fields");
+        RequiredFields, Reader, Writer, Required, Required, Protocols>(suite, "Struct with required fields");
     
     AddTestCase<TEST_ID(N), 
-        RequiredFields, Reader, Writer, Required, RequiredViewGood>(suite, "View with required fields");
+        RequiredFields, Reader, Writer, Required, RequiredViewGood, Protocols>(suite, "View with required fields");
 
     AddTestCase<TEST_ID(N), 
-        RequiredFields, Reader, Writer, RequiredViewGood, RequiredViewGood>(suite, "Required and optional fields");
+        RequiredFields, Reader, Writer, RequiredViewGood, RequiredViewGood, Protocols>(suite, "Required and optional fields");
 
     AddTestCase<TEST_ID(N), 
-        MissingRequiredFields, Reader, Writer, Required, RequiredViewMissingLast>(suite, "Missing last required field");
+        MissingRequiredFields, Reader, Writer, Required, RequiredViewMissingLast, Protocols>(suite, "Missing last required field");
 
     AddTestCase<TEST_ID(N), 
-        MissingRequiredFields, Reader, Writer, Required, RequiredViewMissingFirst>(suite, "Missing first required field");
+        MissingRequiredFields, Reader, Writer, Required, RequiredViewMissingFirst, Protocols>(suite, "Missing first required field");
 
     AddTestCase<TEST_ID(N), 
-        MissingRequiredFields, Reader, Writer, Required, RequiredViewMismatchType>(suite, "Mimatched type required field");
+        MissingRequiredFields, Reader, Writer, Required, RequiredViewMismatchType, Protocols>(suite, "Mimatched type required field");
 
     AddTestCase<TEST_ID(N), 
-        MissingRequiredFields, Reader, Writer, Required, RequiredViewMissingInNested>(suite, "Required in nested fields");
+        MissingRequiredFields, Reader, Writer, Required, RequiredViewMissingInNested, Protocols>(suite, "Required in nested fields");
     
     AddTestCase<TEST_ID(N), 
-        MissingRequiredFields, Reader, Writer, bond::Void, RequiredViewMissingLast>(suite, "Missing all fields");
+        MissingRequiredFields, Reader, Writer, bond::Void, RequiredViewMissingLast, Protocols>(suite, "Missing all fields");
 
     if (bond::may_omit_fields<Writer>::value)
     {
         AddTestCase<TEST_ID(N), 
-            OptionalToRequired, Reader, Writer, bool>(suite, "Optional bool to required");
+            OptionalToRequired, Reader, Writer, bool, Protocols>(suite, "Optional bool to required");
 
         AddTestCase<TEST_ID(N), 
-            OptionalToRequired, Reader, Writer, list<float> >(suite, "Optional list to required");
+            OptionalToRequired, Reader, Writer, list<float>, Protocols>(suite, "Optional list to required");
     }
 }
 
@@ -191,7 +189,8 @@ void RequiredTestsInit()
         RequiredTests<
             0x1405,
             UntaggedProtocolReader<bond::InputBuffer>,
-            UntaggedProtocolWriter<bond::OutputBuffer> >("Required fields tests for untagged protocol");
+            UntaggedProtocolWriter<bond::OutputBuffer>,
+            bond::BuiltInProtocols::Append<UntaggedProtocolReader<bond::InputBuffer> > >("Required fields tests for untagged protocol");
 }
 
 bool init_unit_test()

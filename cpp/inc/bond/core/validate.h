@@ -18,6 +18,7 @@ namespace bond
 /// are different but payload in source schema can be deserialized as destination.
 /// @throw SchemaValidateException if payload in source schema is incompatible
 /// with destination schema.
+template <typename Protocols = BuiltInProtocols>
 inline bool Validate(const RuntimeSchema& src,
                      const RuntimeSchema& dst)
 {
@@ -38,14 +39,15 @@ inline bool Validate(const RuntimeSchema& src,
 /// are different but payload in source schema can be deserialized as destination.
 /// @throw SchemaValidateException if payload in source schema is incompatible
 /// with destination schema or the schema of source SchemaDef is unknown.
+template <typename Protocols = BuiltInProtocols>
 inline bool Validate(const bonded<SchemaDef>& src,
                      const RuntimeSchema& dst)
 {
-    Apply(detail::SchemaValidator(), src);
+    Apply<Protocols>(detail::SchemaValidator<Protocols>(), src);
 
     SchemaDef schema;
-    src.Deserialize(schema);
-    return Validate(RuntimeSchema(schema), dst);
+    src.template Deserialize<Protocols>(schema);
+    return Validate<Protocols>(RuntimeSchema(schema), dst);
 }
 
 
@@ -56,14 +58,15 @@ inline bool Validate(const bonded<SchemaDef>& src,
 /// are different but payload in source schema can be deserialized as destination.
 /// @throw SchemaValidateException if payload in source schema is incompatible
 /// with destination schema or the schema of destination SchemaDef is unknown.
+template <typename Protocols = BuiltInProtocols>
 inline bool Validate(const RuntimeSchema& src,
                      const bonded<SchemaDef>& dst)
 {
-    Apply(detail::SchemaValidator(), dst);
+    Apply<Protocols>(detail::SchemaValidator<Protocols>(), dst);
 
     SchemaDef schema;
-    dst.Deserialize(schema);
-    return Validate(src, RuntimeSchema(schema));
+    dst.template Deserialize<Protocols>(schema);
+    return Validate<Protocols>(src, RuntimeSchema(schema));
 }
 
 
@@ -75,10 +78,10 @@ inline bool Validate(const RuntimeSchema& src,
 /// and vice versa.
 /// @throw SchemaValidateException if payload in any one schema is incompatible
 /// with the other schema.
-template <typename T1, typename T2>
+template <typename Protocols = BuiltInProtocols, typename T1, typename T2>
 inline bool ValidateTwoWay(const T1& s1, const T2& s2)
 {
-    return Validate(s1, s2) & Validate(s2, s1);
+    return Validate<Protocols>(s1, s2) & Validate<Protocols>(s2, s1);
 }
 
 } // namespace bond

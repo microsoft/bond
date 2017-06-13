@@ -12,11 +12,14 @@
 
 namespace bond
 {
-    template <typename Buffer>
-    class SimpleBinaryReader;
+    template <typename... T>
+    struct Protocols;
 
     template <typename BufferT>
     class CompactBinaryReader;
+
+    template <typename BufferT, typename MarshaledBondedProtocolsT = Protocols<CompactBinaryReader<BufferT> > >
+    class SimpleBinaryReader;
 
     BOND_CONSTEXPR_OR_CONST uint16_t v1 = 0x0001;
     BOND_CONSTEXPR_OR_CONST uint16_t v2 = 0x0002;

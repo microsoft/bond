@@ -113,171 +113,34 @@ private:
 };
 
 
-// Unspecialized unit test wrappers
-template <bool Enable, typename Test>
-struct TestCase
+template <uint32_t Key, typename Test>
+inline void AddTestCase(UnitTestSuite& suite, const char* name, std::true_type)
 {
-    static void Register(UnitTestSuite& suite, uint32_t key, const char* name)
-    {
-        suite.Add(Test::Run, key, name);  
-    }
-};
+    suite.Add(Test::Run, Key, name);
+}
 
-template <bool Enable, template <typename T1> class Test, typename T1>
-struct TestCase1
+template <uint32_t Key, typename Test>
+inline void AddTestCase(UnitTestSuite& /*suite*/, const char* /*name*/, std::false_type)
+{}
+
+template <uint32_t Key, template <typename...> class Test, typename... T>
+inline void AddTestCase(UnitTestSuite& suite, const char* name, std::true_type)
 {
-    static void Register(UnitTestSuite& suite, uint32_t key, const char* name)
-    {
-        suite.Add(Test<T1>::Run, key, name);
-    }
-};
+    suite.Add(Test<T...>::Run, Key, name);
+}
 
-template <bool Enable, template <typename T1, typename T2> class Test, typename T1, typename T2>
-struct TestCase2
-{
-    static void Register(UnitTestSuite& suite, uint32_t key, const char* name)
-    {
-        suite.Add(Test<T1, T2>::Run, key, name);
-    }
-};
+template <uint32_t Key, template <typename...> class Test, typename... T>
+inline void AddTestCase(UnitTestSuite& /*suite*/, const char* /*name*/, std::false_type)
+{}
 
-template <bool Enable, template <typename T1, typename T2, typename T3> class Test, typename T1, typename T2, typename T3>
-struct TestCase3
-{
-    static void Register(UnitTestSuite& suite, uint32_t key, const char* name)
-    {
-        suite.Add(Test<T1, T2, T3>::Run, key, name);
-    }
-};
-
-template <bool Enable, template <typename T1, typename T2, typename T3, typename T4> class Test, typename T1, typename T2, typename T3, typename T4>
-struct TestCase4
-{
-    static void Register(UnitTestSuite& suite, uint32_t key, const char* name)
-    {
-        suite.Add(Test<T1, T2, T3, T4>::Run, key, name);
-    }
-};
-
-template <bool Enable, template <typename T1, typename T2, typename T3, typename T4, typename T5> class Test, typename T1, typename T2, typename T3, typename T4, typename T5>
-struct TestCase5
-{
-    static void Register(UnitTestSuite& suite, uint32_t key, const char* name)
-    {
-        suite.Add(Test<T1, T2, T3, T4, T5>::Run, key, name);
-    }
-};
-
-template <bool Enable, template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6> class Test, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-struct TestCase6
-{
-    static void Register(UnitTestSuite& suite, uint32_t key, const char* name)
-    {
-        suite.Add(Test<T1, T2, T3, T4, T5, T6>::Run, key, name);
-    }
-};
-
-
-// Unit test wrapper specialization for disabled tests
-template <typename Test>
-struct TestCase<false, Test>
-{
-    static void Register(UnitTestSuite& /*suite*/, uint32_t /*key*/, const char* /*name*/)
-    {
-    }
-};
-
-template <template <typename T1> class Test, typename T1>
-struct TestCase1<false, Test, T1>
-{
-    static void Register(UnitTestSuite& /*suite*/, uint32_t /*key*/, const char* /*name*/)
-    {
-    }
-};
-
-
-template <template <typename T1, typename T2> class Test, typename T1, typename T2>
-struct TestCase2<false, Test, T1, T2>
-{
-    static void Register(UnitTestSuite& /*suite*/, uint32_t /*key*/, const char* /*name*/)
-    {
-    }
-};
-
-
-template <template <typename T1, typename T2, typename T3> class Test, typename T1, typename T2, typename T3>
-struct TestCase3<false, Test, T1, T2, T3>
-{
-    static void Register(UnitTestSuite& /*suite*/, uint32_t /*key*/, const char* /*name*/)
-    {
-    }
-};
-
-template <template <typename T1, typename T2, typename T3, typename T4> class Test, typename T1, typename T2, typename T3, typename T4>
-struct TestCase4<false, Test, T1, T2, T3, T4>
-{
-    static void Register(UnitTestSuite& /*suite*/, uint32_t /*key*/, const char* /*name*/)
-    {
-    }
-};
-
-template <template <typename T1, typename T2, typename T3, typename T4, typename T5> class Test, typename T1, typename T2, typename T3, typename T4, typename T5>
-struct TestCase5<false, Test, T1, T2, T3, T4 ,T5>
-{
-    static void Register(UnitTestSuite& /*suite*/, uint32_t /*key*/, const char* /*name*/)
-    {
-    }
-};
-
-template <template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6> class Test, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-struct TestCase6<false, Test, T1, T2, T3, T4 ,T5, T6>
-{
-    static void Register(UnitTestSuite& /*suite*/, uint32_t /*key*/, const char* /*name*/)
-    {
-    }
-};
-
-
-// Helper function to add a unit test
 template <bool Pred, uint32_t Key, typename Test>
 inline void AddTestCase(UnitTestSuite& suite, const char* name)
 {
-    TestCase<ENABLE(Pred, Key), Test>().Register(suite, Key, name);
+    AddTestCase<Key, Test>(suite, name, std::integral_constant<bool, ENABLE(Pred, Key)>{});
 }
 
-template <bool Pred, uint32_t Key, template <typename T1> class Test, typename T1>
+template <bool Pred, uint32_t Key, template <typename...> class Test, typename... T>
 inline void AddTestCase(UnitTestSuite& suite, const char* name)
 {
-    TestCase1<ENABLE(Pred, Key), Test, T1>().Register(suite, Key, name);
+    AddTestCase<Key, Test, T...>(suite, name, std::integral_constant<bool, ENABLE(Pred, Key)>{});
 }
-
-template <bool Pred, uint32_t Key, template <typename T1, typename T2> class Test, typename T1, typename T2>
-inline void AddTestCase(UnitTestSuite& suite, const char* name)
-{
-    TestCase2<ENABLE(Pred, Key), Test, T1, T2>().Register(suite, Key, name);
-}
-
-template <bool Pred, uint32_t Key, template <typename T1, typename T2, typename T3> class Test, typename T1, typename T2, typename T3>
-inline void AddTestCase(UnitTestSuite& suite, const char* name)
-{
-    TestCase3<ENABLE(Pred, Key), Test, T1, T2, T3>().Register(suite, Key, name);
-}
-
-template <bool Pred, uint32_t Key, template <typename T1, typename T2, typename T3, typename T4> class Test, typename T1, typename T2, typename T3, typename T4>
-inline void AddTestCase(UnitTestSuite& suite, const char* name)
-{
-    TestCase4<ENABLE(Pred, Key), Test, T1, T2, T3, T4>().Register(suite, Key, name);
-}
-
-template <bool Pred, uint32_t Key, template <typename T1, typename T2, typename T3, typename T4, typename T5> class Test, typename T1, typename T2, typename T3, typename T4, typename T5>
-inline void AddTestCase(UnitTestSuite& suite, const char* name)
-{
-    TestCase5<ENABLE(Pred, Key), Test, T1, T2, T3, T4, T5>().Register(suite, Key, name);
-}
-
-template <bool Pred, uint32_t Key, template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6> class Test, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-inline void AddTestCase(UnitTestSuite& suite, const char* name)
-{
-    TestCase6<ENABLE(Pred, Key), Test, T1, T2, T3, T4, T5, T6>().Register(suite, Key, name);
-}
-

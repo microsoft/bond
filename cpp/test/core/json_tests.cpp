@@ -73,7 +73,7 @@ TEST_CASE_BEGIN(StreamDeserializationTest)
             T record = InitRandom<T>();
 
             stream.Deserialize(record);
-            UT_AssertIsTrue(Equal(from[i], record));
+            UT_Equal(from[i], record);
         }
     }
 
@@ -86,14 +86,14 @@ TEST_CASE_BEGIN(StreamDeserializationTest)
         r2 = InitRandom<T>();
         Deserialize(reader, r1);
         Deserialize(reader, r2);
-        UT_AssertIsTrue(Equal(r1, r2));
+        UT_Equal(r1, r2);
 
         bond::bonded<T> bonded(reader);
         r1 = InitRandom<T>();
         r2 = InitRandom<T>();
         bonded.Deserialize(r1);
         bonded.Deserialize(r2);
-        UT_AssertIsTrue(Equal(r1, r2));
+        UT_Equal(r1, r2);
     }
 }
 TEST_CASE_END
@@ -139,7 +139,7 @@ void StreamTranscoding(uint16_t version = bond::v1)
         Record record = InitRandom<Record>();
 
         stream.Deserialize(record);
-        UT_AssertIsTrue(Equal(records[i], record));
+        UT_Equal(records[i], record);
     }
 }
 

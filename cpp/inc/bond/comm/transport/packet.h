@@ -300,7 +300,7 @@ private:
                 // FIXME - handle Unmarshal errors
                 try
                 {
-                    Unmarshal<Error, InputBuffer>(buffer, response.error);
+                    Unmarshal(buffer, response.error);
                 }
                 catch (const bond::Exception&)
                 {

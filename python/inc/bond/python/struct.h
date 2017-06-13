@@ -367,12 +367,7 @@ private:
             InputBuffer input(data);
             // A workaround for GCC 4.8 which doesn't resolve the Apply overload below properly.
             // Apply<U>(To<U>(obj), input, protocol);
-            bond::detail::NextProtocol<U>(
-                typename FilteredProtocols<InputBuffer>::begin(),
-                typename FilteredProtocols<InputBuffer>::end(),
-                input,
-                To<U>(obj),
-                protocol);
+            bond::detail::NextProtocol<U, bond::BuiltInProtocols>(input, To<U>(obj), protocol);
         }
 
         static void deserialize_schema(const bond::blob& data, U& obj, const bond::SchemaDef& schema, uint16_t protocol = COMPACT_PROTOCOL)

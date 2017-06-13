@@ -61,7 +61,7 @@ private:
             .def(boost::python::init<const T&>())
             .def(schema_base_visitor<T>())
             .def("Deserialize",
-                static_cast<void (bonded<T>::*)(T&) const>(&bonded<T>::template Deserialize<T>));
+                static_cast<void (bonded<T>::*)(T&) const>(&bonded<T>::template Deserialize<BuiltInProtocols, T>));
 
         // Expose struct T to Python
         struct_<T>()

@@ -13,6 +13,12 @@ rebind_buffer_by_reference<Reader<Buffer> >
     typedef Reader<Buffer&> type;
 };
 
+template <template <typename T, typename U> class Reader, typename Buffer, typename MarshaledBondedProtocols> struct
+rebind_buffer_by_reference<Reader<Buffer, MarshaledBondedProtocols>>
+{
+    typedef Reader<Buffer&, MarshaledBondedProtocols> type;
+};
+
 
 template <typename Reader, typename Writer, typename T>
 TEST_CASE_BEGIN(Streaming)
@@ -49,8 +55,8 @@ TEST_CASE_BEGIN(Streaming)
 
         UT_AssertIsTrue(reader.GetBuffer().IsEof());
 
-        UT_AssertIsTrue(from1 == to1);
-        UT_AssertIsTrue(from2 == to2);
+        UT_Compare(from1, to1);
+        UT_Compare(from2, to2);
     }
 
     {
@@ -67,8 +73,8 @@ TEST_CASE_BEGIN(Streaming)
 
         UT_AssertIsTrue(buffer.IsEof());
 
-        UT_AssertIsTrue(from1 == to1);
-        UT_AssertIsTrue(from2 == to2);
+        UT_Compare(from1, to1);
+        UT_Compare(from2, to2);
     }
 }
 TEST_CASE_END
@@ -94,7 +100,7 @@ untagged_payload_size<bond::no_base>
 };
 
 
-template <typename Reader, typename Writer, typename T>
+template <typename Reader, typename Writer, typename T, typename Protocols>
 TEST_CASE_BEGIN(DefaultValues)
 {
     T obj;
@@ -106,7 +112,7 @@ TEST_CASE_BEGIN(DefaultValues)
     Writer output(output_buffer);
 
     // serialize value to output
-    bond::Serialize(obj, output);
+    bond::Serialize<Protocols>(obj, output);
 
     if (bond::uses_dynamic_parser<Reader>::value)
     {
@@ -123,8 +129,8 @@ TEST_CASE_BEGIN(DefaultValues)
     T to;
     Reader reader(output_buffer.GetBuffer());
 
-    bond::Deserialize(reader, to);
-    UT_AssertIsTrue(obj == to);
+    bond::Deserialize<Protocols>(reader, to);
+    UT_Compare_P(obj, to, Protocols);
 }
 TEST_CASE_END
 
@@ -144,23 +150,23 @@ TEST_CASE_BEGIN(SerializeAPIs)
     {
         T to;
         Deserialize(reader, to);
-        UT_AssertIsTrue(Equal(from, to));
+        UT_Equal(from, to);
     }
 
     {
         T to;
         Deserialize(reader, to, bond::GetRuntimeSchema<T>());
-        UT_AssertIsTrue(Equal(from, to));
+        UT_Equal(from, to);
     }
 
     {
         auto to = bond::Deserialize<T>(reader);
-        UT_AssertIsTrue(Equal(from, to));
+        UT_Equal(from, to);
     }
 
     {
         auto to = bond::Deserialize<T>(reader, bond::GetRuntimeSchema<T>());
-        UT_AssertIsTrue(Equal(from, to));
+        UT_Equal(from, to);
     }
 
 }
@@ -182,35 +188,35 @@ TEST_CASE_BEGIN(MarshalAPIs)
     {
         T to;
         Unmarshal(input, to);
-        UT_AssertIsTrue(from == to);
+        UT_Compare(from, to);
     }
 
     {
         bond::bonded<T> to;
         Unmarshal(input, to);
-        UT_AssertIsTrue(Equal(from, to));
+        UT_Equal(from, to);
     }
 
     {
         T to;
         Unmarshal(input, to, bond::GetRuntimeSchema<T>());
-        UT_AssertIsTrue(from == to);
+        UT_Compare(from, to);
     }
 
     {
         bond::bonded<T> to;
         Unmarshal(input, to, bond::GetRuntimeSchema<T>());
-        UT_AssertIsTrue(Equal(from, to));
+        UT_Equal(from, to);
     }
 
     {
         auto to = bond::Unmarshal<T>(input);
-        UT_AssertIsTrue(from == to);
+        UT_Compare(from, to);
     }
 
     {
         auto to = bond::Unmarshal<T>(input, bond::GetRuntimeSchema<T>());
-        UT_AssertIsTrue(from == to);
+        UT_Compare(from, to);
     }
 }
 TEST_CASE_END
@@ -234,10 +240,10 @@ void SimpleStructTests(const char* name)
         AllBindingAndMapping1, Reader, Writer, UsingImport>(suite, "Imported struct");
 
     AddTestCase<TEST_ID(N),
-        DefaultValues, Reader, Writer, StructWithDefaults>(suite, "Omitting default values");
+        DefaultValues, Reader, Writer, StructWithDefaults, bond::BuiltInProtocols>(suite, "Omitting default values");
 
     AddTestCase<TEST_ID(N),
-        DefaultValues, Reader, Writer, OptionalContainers>(suite, "Omitting empty containers");
+        DefaultValues, Reader, Writer, OptionalContainers, bond::BuiltInProtocols>(suite, "Omitting empty containers");
 
     AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, NestedStruct1, NestedStruct1OptionalBondedView>(suite, "Optional bonded field");
@@ -259,19 +265,19 @@ void SimpleStructTests(const char* name)
 }
 
 
-template <uint16_t N, typename Reader, typename Writer>
+template <uint16_t N, typename Reader, typename Writer, typename Protocols>
 void OmittingDefaultsTests(const char* name)
 {
     UnitTestSuite suite(name);
 
     AddTestCase<TEST_ID(N),
-        DefaultValues, Reader, Writer, StructWithDefaults>(suite, "Omitting default values");
+        DefaultValues, Reader, Writer, StructWithDefaults, Protocols>(suite, "Omitting default values");
 
     AddTestCase<TEST_ID(N),
-        DefaultValues, Reader, Writer, OptionalContainers>(suite, "Omitting empty containers");
+        DefaultValues, Reader, Writer, OptionalContainers, Protocols>(suite, "Omitting empty containers");
 
     AddTestCase<TEST_ID(N),
-        DefaultValues, Reader, Writer, OptionalNothing>(suite, "Omitting nothing");
+        DefaultValues, Reader, Writer, OptionalNothing, Protocols>(suite, "Omitting nothing");
 }
 
 
@@ -308,7 +314,8 @@ void SerializationTest::SimpleStructTestsInit()
         OmittingDefaultsTests<
             0x905,
             UntaggedProtocolReader<bond::InputBuffer>,
-            UntaggedProtocolWriter<bond::OutputBuffer> >("Omitting defaults for untagged protocol");
+            UntaggedProtocolWriter<bond::OutputBuffer>,
+            bond::BuiltInProtocols::Append<UntaggedProtocolReader<bond::InputBuffer> > >("Omitting defaults for untagged protocol");
 }
 
 

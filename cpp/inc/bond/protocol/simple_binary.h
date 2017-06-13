@@ -71,7 +71,7 @@ class SimpleBinaryWriter;
 
 
 /// @brief Reader for Simple Binary protocol
-template <typename BufferT>
+template <typename BufferT, typename MarshaledBondedProtocolsT>
 class SimpleBinaryReader
 {
 public:
@@ -257,9 +257,9 @@ protected:
     }
 
 
-    template <typename Input, typename Output>
+    template <typename Input, typename MarshaledBondedProtocols, typename Output>
     friend
-    bool is_protocol_version_same(const SimpleBinaryReader<Input>&,
+    bool is_protocol_version_same(const SimpleBinaryReader<Input, MarshaledBondedProtocols>&,
                                   const SimpleBinaryWriter<Output>&);
 
     Buffer   _input;
@@ -267,8 +267,8 @@ protected:
 };
 
 
-template <typename Buffer>
-BOND_CONSTEXPR_OR_CONST uint16_t SimpleBinaryReader<Buffer>::magic;
+template <typename BufferT, typename MarshaledBondedProtocolsT>
+BOND_CONSTEXPR_OR_CONST uint16_t SimpleBinaryReader<BufferT, MarshaledBondedProtocolsT>::magic;
 
 
 /// @brief Writer for Simple Binary protocol
@@ -372,9 +372,9 @@ protected:
             WriteVariableUnsigned(_output, size);
     }
 
-    template <typename Input, typename Output>
+    template <typename Input, typename MarshaledBondedProtocols, typename Output>
     friend
-    bool is_protocol_version_same(const SimpleBinaryReader<Input>&,
+    bool is_protocol_version_same(const SimpleBinaryReader<Input, MarshaledBondedProtocols>&,
                                   const SimpleBinaryWriter<Output>&);
 
     Buffer&  _output;
@@ -382,13 +382,13 @@ protected:
 };
 
 
-template <typename Input> struct
-protocol_has_multiple_versions<SimpleBinaryReader<Input> >
+template <typename Input, typename MarshaledBondedProtocols> struct
+protocol_has_multiple_versions<SimpleBinaryReader<Input, MarshaledBondedProtocols> >
     : true_type {};
 
 
-template <typename Input, typename Output>
-bool is_protocol_version_same(const SimpleBinaryReader<Input>& reader,
+template <typename Input, typename MarshaledBondedProtocols, typename Output>
+bool is_protocol_version_same(const SimpleBinaryReader<Input, MarshaledBondedProtocols>& reader,
                               const SimpleBinaryWriter<Output>& writer)
 {
     return reader._version == writer._version;

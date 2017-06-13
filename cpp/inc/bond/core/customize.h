@@ -14,18 +14,4 @@ is_protocol_enabled
     : false_type {};
 
 
-struct protocols;
-
-// User can modify set of protocols by specializing customize<protocols>
-template <typename> struct
-customize
-{
-    template <typename T> struct
-    modify
-    {
-        typedef T type;
-    };
-};
-
-
 }

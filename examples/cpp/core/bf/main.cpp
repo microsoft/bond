@@ -97,6 +97,21 @@ bool TryProtocol(Reader reader, int confidence = 5)
 }
 
 
+// Here using a bond::InputBuffer for marshaled bonded protocols
+// instead of defaulted one because corresponding CreateInputBuffer
+// returns bond::InputBuffer instead of InputFile.
+using MarshaledBondedProtocols = bond::Protocols<bond::CompactBinaryReader<bond::InputBuffer> >;
+
+using NewProtocols = bond::BuiltInProtocols::Append<
+    bond::CompactBinaryReader<InputFile>,
+    bond::FastBinaryReader<InputFile>,
+    bond::SimpleBinaryReader<InputFile, MarshaledBondedProtocols>,
+    bond::SimpleJsonReader<InputFile>,
+    bond::CompactBinaryReader<InputFile&>,
+    bond::FastBinaryReader<InputFile&>,
+    bond::SimpleBinaryReader<InputFile&, MarshaledBondedProtocols>,
+    bond::SimpleJsonReader<InputFile&> >;
+
 Protocol Guess(InputFile input)
 {
     uint16_t word;
@@ -134,8 +149,8 @@ bond::SchemaDef LoadSchema(const std::string& file)
     tryJson.Read(c);
 
     return (c == '{')
-        ? bond::Deserialize<bond::SchemaDef>(bond::SimpleJsonReader<InputFile>(input))
-        : bond::Unmarshal<bond::SchemaDef>(input);
+        ? bond::Deserialize<bond::SchemaDef, NewProtocols>(bond::SimpleJsonReader<InputFile>(input))
+        : bond::Unmarshal<bond::SchemaDef, NewProtocols>(input);
 }
 
 template <typename Reader, typename Writer>
@@ -144,11 +159,11 @@ void TranscodeFromTo(Reader& reader, Writer& writer, const Options& options)
     if (!options.schema.empty() && !options.schema.front().empty())
     {
         bond::SchemaDef schema(LoadSchema(options.schema.front()));
-        bond::bonded<void, bond::ProtocolReader>(reader, bond::RuntimeSchema(schema)).Serialize(writer);
+        bond::bonded<void, bond::ProtocolReader>(reader, bond::RuntimeSchema(schema)).template Serialize<NewProtocols>(writer);
     }
     else
     {
-        bond::bonded<UnknownSchema, bond::ProtocolReader>(reader).Serialize(writer);
+        bond::bonded<UnknownSchema, bond::ProtocolReader>(reader).template Serialize<NewProtocols>(writer);
     }
 }
 
@@ -159,11 +174,11 @@ void TranscodeFromTo(InputFile& input, Writer& writer, const Options& options)
     if (!options.schema.empty() && !options.schema.front().empty())
     {
         bond::SchemaDef schema(LoadSchema(options.schema.front()));
-        bond::SelectProtocolAndApply(bond::RuntimeSchema(schema), input, SerializeTo(writer));
+        bond::SelectProtocolAndApply<NewProtocols>(bond::RuntimeSchema(schema), input, bond::SerializeTo<NewProtocols>(writer));
     }
     else
     {
-        bond::SelectProtocolAndApply<UnknownSchema>(input, SerializeTo(writer));
+        bond::SelectProtocolAndApply<UnknownSchema, NewProtocols>(input, bond::SerializeTo<NewProtocols>(writer));
     }
 }
 

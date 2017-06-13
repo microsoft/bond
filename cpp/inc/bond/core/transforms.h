@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "bond_fwd.h"
 #include "reflection.h"
 #include "exception.h"
 #include "null.h"
@@ -39,7 +40,7 @@ namespace detail
 // Applying this transform to input from parsing serialized data is equivalent  
 // to transcoding from one protocol to another.
 //
-template <typename Writer>
+template <typename Writer, typename Protocols>
 class Serializer
     : public SerializingTransform
 {
@@ -60,9 +61,9 @@ public:
     }
 
     template <typename Pass0>
-    Serializer<Pass0> Rebind(Pass0& pass0) const
+    Serializer<Pass0, Protocols> Rebind(Pass0& pass0) const
     {
-        return Serializer<Pass0>(pass0);
+        return Serializer<Pass0, Protocols>(pass0);
     }
 
     void Begin(const Metadata& metadata) const
@@ -84,7 +85,7 @@ public:
     bool Base(const T& value) const
     {
         // 'true' means that we are writing a base struct 
-        Apply(Serializer<Writer>(_output, true), value);
+        Apply<Protocols>(Serializer(_output, true), value);
         return false;
     }
 
@@ -199,7 +200,7 @@ private:
     typename boost::enable_if<is_bond_type<T> >::type
     Write(const T& value) const
     {
-        Apply(Serializer<Writer>(_output), value);
+        Apply<Protocols>(Serializer(_output), value);
     }
 
     // bonded<T> and untagged writer
@@ -207,7 +208,7 @@ private:
     typename boost::enable_if<uses_marshaled_bonded<typename Writer::Reader, T> >::type
     Write(const bonded<T>& value) const
     {
-        detail::MarshalToBlob(value, _output);
+        detail::MarshalToBlob<Protocols>(value, _output);
     }
 
     // bonded<void> and untagged writer
@@ -215,7 +216,7 @@ private:
     typename boost::enable_if<uses_marshaled_bonded<typename Writer::Reader, Reader> >::type
     Write(const bonded<void, Reader>& value) const
     {
-        value.Serialize(_output);
+        value.template Serialize<Protocols>(_output);
     }
 
     // 2-tuple
@@ -258,7 +259,7 @@ private:
     {
         T data = T();
         
-        value.Deserialize(data);
+        value.template Deserialize<Protocols>(data);
         Write(data);
     }
     
@@ -266,11 +267,11 @@ private:
     typename boost::disable_if<is_basic_type<T> >::type
     Write(const value<T, Reader>& value) const
     {
-        Apply(Serializer<Writer>(_output), value);
+        Apply<Protocols>(Serializer(_output), value);
     }
 
     
-    template <typename T, typename WriterT>
+    template <typename T, typename WriterT, typename ProtocolsT>
     friend class Merger;
 
     template <typename T, typename Reader, typename Enable>
@@ -279,7 +280,7 @@ private:
     template <typename T, typename Schema, typename Transform>
     friend class detail::_Parser;
 
-    template <typename Transform, typename T>
+    template <typename ProtocolsT, typename Transform, typename T>
     friend bool detail::DoublePassApply(const Transform&, const T&);
 
 protected:
@@ -289,29 +290,29 @@ protected:
 
 
 // SerializeTo
-template <typename Writer>
-Serializer<Writer> SerializeTo(Writer& output)
+template <typename Protocols, typename Writer>
+Serializer<Writer, Protocols> SerializeTo(Writer& output)
 {
-    return Serializer<Writer>(output);
+    return Serializer<Writer, Protocols>(output);
 }
 
 
-template <typename Writer>
+template <typename Writer, typename Protocols>
 class Marshaler
-    : protected Serializer<Writer>
+    : protected Serializer<Writer, Protocols>
 {
 public:
     typedef Writer writer_type;
 
     Marshaler(Writer& output)
-        : Serializer<Writer>(output)
+        : Serializer<Writer, Protocols>(output)
     {}
     
     template <typename T>
     bool Marshal(const T& value) const
     {
         this->_output.WriteVersion();
-        return Apply(static_cast<const Serializer<Writer>&>(*this), value);
+        return Apply<Protocols>(static_cast<const Serializer<Writer, Protocols>&>(*this), value);
     }
 };
 
@@ -319,17 +320,17 @@ public:
 namespace detail
 {
 
-template <typename Writer, typename T, typename Reader>
+template <typename Protocols, typename Writer, typename T, typename Reader>
 bool inline
-ApplyTransform(const Marshaler<Writer>& marshaler, const bonded<T, Reader>& bonded)
+ApplyTransform(const Marshaler<Writer, Protocols>& marshaler, const bonded<T, Reader>& bonded)
 {
     return marshaler.Marshal(bonded);
 }
 
 
-template <typename Writer, typename T>
+template <typename Protocols, typename Writer, typename T>
 bool inline 
-ApplyTransform(const Marshaler<Writer>& marshaler, const T& value)
+ApplyTransform(const Marshaler<Writer, Protocols>& marshaler, const T& value)
 {
     return marshaler.Marshal(value);
 }
@@ -338,10 +339,10 @@ ApplyTransform(const Marshaler<Writer>& marshaler, const T& value)
 
 
 // MarshalTo
-template <typename Writer>
-Marshaler<Writer> MarshalTo(Writer& output)
+template <typename Protocols, typename Writer>
+Marshaler<Writer, Protocols> MarshalTo(Writer& output)
 {
-    return Marshaler<Writer>(output);
+    return Marshaler<Writer, Protocols>(output);
 }
 
 
@@ -410,6 +411,7 @@ void RequiredFieldValiadator<T>::MissingFieldException() const
 namespace detail
 {
 
+template <typename Protocols>
 class To
     : public DeserializingTransform
 {
@@ -426,20 +428,20 @@ protected:
     template <typename V, typename X>
     void AssignToVar(V& var, const X& value) const
     {
-        value.Deserialize(var);
+        value.template Deserialize<Protocols>(var);
     }
 
     template <typename V, typename X>
     void AssignToVar(maybe<V>& var, const X& value) const
     {
-        value.Deserialize(var.set_value());
+        value.template Deserialize<Protocols>(var.set_value());
     }
 
     template <typename V, typename X>
     typename boost::enable_if<has_base<V>, bool>::type
     AssignToBase(V& var, const X& value) const
     {
-        return Apply(bond::To<typename schema<V>::type::base>(var), value);
+        return Apply<Protocols>(bond::To<typename schema<V>::type::base, Protocols>(var), value);
     }
 
     template <typename V, typename X>
@@ -459,9 +461,9 @@ protected:
 } // namespace detail
 
 
-template <typename T, typename Validator>
+template <typename T, typename Protocols, typename Validator>
 class To
-    : public detail::To,
+    : public detail::To<Protocols>,
       protected Validator
 {
 public:
@@ -536,8 +538,9 @@ public:
     }
 
 private:
-    using detail::To::AssignToBase;
-    using detail::To::AssignToField;
+    using detail::To<Protocols>::AssignToBase;
+    using detail::To<Protocols>::AssignToVar;
+    using detail::To<Protocols>::AssignToField;
 
     template <typename Fields, typename X>
     bool AssignToField(const Fields&, uint16_t id, const X& value) const
@@ -582,6 +585,7 @@ BOND_STATIC_CONSTEXPR uint16_t mapping_base = invalid_field_id;
 namespace detail
 {
 
+template <typename Protocols>
 class MapTo
     : public DeserializingTransform
 {
@@ -602,7 +606,7 @@ public:
     }
     
 protected:
-        struct PathView
+    struct PathView
         : boost::noncopyable
     {
         PathView(const Path& path)
@@ -730,23 +734,23 @@ protected:
     template <typename V, typename X>
     void AssignToVar(V& var, const X& value) const
     {
-        value.Deserialize(var);
+        value.template Deserialize<Protocols>(var);
     }
 
     
     template <typename V, typename X>
     void AssignToVar(maybe<V>& var, const X& value) const
     {
-        value.Deserialize(var.set_value());
+        value.template Deserialize<Protocols>(var.set_value());
     }
 };
 
 } // namespace detail
 
 
-template <typename T>
+template <typename T, typename Protocols = BuiltInProtocols>
 class MapTo
-    : public detail::MapTo
+    : public detail::MapTo<Protocols>
 {
 public:
     BOOST_STATIC_ASSERT(has_schema<T>::value);
@@ -763,7 +767,7 @@ public:
         Mappings::const_iterator it = _mappings.find(mapping_base);
 
         if (it != _mappings.end())
-            return Apply(MapTo(_var, it->second.fields), value);
+            return Apply<Protocols>(MapTo(_var, it->second.fields), value);
         else
             return false;
     }
@@ -781,7 +785,7 @@ public:
                 return Apply(MapTo(_var, it->second.fields), value);
             
             if (!it->second.path.empty())
-                return Assign(_var, it->second.path, value);
+                return this->Assign(_var, it->second.path, value);
         }
         
         return false;
@@ -795,7 +799,7 @@ public:
         Mappings::const_iterator it = _mappings.find(id);
 
         if (it != _mappings.end() && !it->second.path.empty())
-            return Assign(_var, it->second.path, value);
+            return this->Assign(_var, it->second.path, value);
         else
             return false;
     }

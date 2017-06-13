@@ -45,8 +45,8 @@ TEST_CASE_BEGIN(DontOmit)
     Reader reader(input);
     Deserialize(reader, to);
 
-    UT_AssertIsTrue(from.field1 == to.field1);
-    UT_AssertIsTrue(from.field2 == to.field2);
+    UT_Compare(from.field1, to.field1);
+    UT_Compare(from.field2, to.field2);
 }
 TEST_CASE_END
 
