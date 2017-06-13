@@ -21,6 +21,7 @@ different versioning scheme, following the Haskell community's
 
 ### `gbc` and Bond compiler library ###
 
+* IDL support for service inheritance syntax
 * C++ codegen now generates
   [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
   of `bond::Apply` instead of overloads.
