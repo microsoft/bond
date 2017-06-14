@@ -98,7 +98,7 @@ public:
     {
         auto stream = StreamFactory::Create();
 
-        ::bond::Apply< ::bond::Marshaler>(payload, stream, requestProtocol);
+        ::bond::Apply< ::bond::Marshaler>(payload, stream, static_cast<uint16_t>(requestProtocol));
 
         std::vector<blob> buffers;
         stream.GetBuffers(buffers);

@@ -74,7 +74,7 @@ get a compiler error. To fix, remove the `<Writer>` part:
   support which was broken for some scenarios.
 * For Visual C++ 2017 compability, RapidJSON v1.0.0 or newer is now
   required. The RapidJSON submodule that Bond uses by default has been
-  updated to v1.0.0.
+  updated to v1.1.0 due to a warning from clang in earlier versions.
 * C++ codegen hides FieldTemplate details, shortening symbol names.
 
 ### C# ###
