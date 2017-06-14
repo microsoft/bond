@@ -34,6 +34,16 @@ different versioning scheme, following the Haskell community's
 * Use Newtonsoft's JSON.NET BigInteger support -- when available -- to
   handle the full range of uint64 values in the SimpleJson protocol (.NET
   4.5 or greater, .NET Standard 1.6 or greater).
+* `Bond.IO.Unsafe.InputStream` can now be used with streams that do not
+  implement [`Stream.Seek`][msdn-stream-seek], like
+  [`System.IO.Compression.GzipStream`][msdn-gzipstream].
+  [Issue #498](https://github.com/Microsoft/bond/issues/498)
+    * Such streams are detected by inspecting
+      [`Stream.CanSeek`][msdn-stream-canseek].
+
+[msdn-gzipstream]: https://msdn.microsoft.com/en-us/library/system.io.compression.gzipstream(v=vs.110).aspx
+[msdn-stream-canseek]: https://msdn.microsoft.com/en-us/library/system.io.stream.canseek(v=vs.110).aspx
+[msdn-stream-seek]: https://msdn.microsoft.com/en-us/library/system.io.stream.seek(v=vs.110).aspx
 
 ## 6.0.0: 2017-06-29  ##
 * `gbc` & compiler library: 0.10.0.0
