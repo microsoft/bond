@@ -782,7 +782,7 @@ get_type_id<int16_t>
 
 template <> struct
 get_type_id<int32_t>
-    : boost::integral_constant<BondDataType, BT_INT32> {};
+    : std::integral_constant<BondDataType, BT_INT32> {};
 
 template <> struct
 get_type_id<int64_t>
@@ -794,7 +794,7 @@ get_type_id<float>
 
 template <> struct
 get_type_id<double>
-    : boost::integral_constant<BondDataType, BT_DOUBLE> {};
+    : std::integral_constant<BondDataType, BT_DOUBLE> {};
 
 template <> struct
 get_type_id<void>
