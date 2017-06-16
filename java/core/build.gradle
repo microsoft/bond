@@ -1,15 +1,23 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+group 'com.microsoft.bond'
+version = '5.0.0'
+
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.microsoft.bond:gradle:+'
     }
 }
 
 apply plugin: 'java'
+apply plugin: 'com.microsoft.bond.gradle'
 
-version = '5.0.0'
 sourceCompatibility = 1.6
 
 repositories {
@@ -20,25 +28,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-def gbcOutputPath = "$buildDir/generated-src"
-def gbcOutputDir = file("$gbcOutputPath")
-def bondRoot = '../..'
-
-allprojects {
-    task coreCodegen(type:Exec) {
-        commandLine "$bondRoot/build/compiler/build/gbc/gbc", 'java',
-            '-n', 'bond=com.microsoft.bond',
-            "$bondRoot/idl/bond/core/bond.bond",
-            "$bondRoot/idl/bond/core/bond_const.bond",
-            '--output', "$gbcOutputPath"
-    }
-    compileJava.dependsOn coreCodegen
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs += gbcOutputDir
-        }
-    }
+bondCodegen {
+    bondfiles '../../idl/bond/core/bond.bond',
+              '../../idl/bond/core/bond_const.bond'
+    options '-n', 'bond=com.microsoft.bond'
 }

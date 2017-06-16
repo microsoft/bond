@@ -1,7 +1,19 @@
 group 'com.microsoft.bond'
 version '1.0'
 
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.microsoft.bond:gradle:+'
+    }
+}
+
 apply plugin: 'java'
+apply plugin: 'com.microsoft.bond.gradle'
 
 sourceCompatibility = 1.8
 
@@ -14,27 +26,10 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-def gbcOutputPath = "$buildDir/generated-src"
-def gbcOutputDir = file("$gbcOutputPath")
-def bondRoot = "../.."
-
-allprojects {
-    task compatCodegen(type:Exec) {
-        commandLine "$bondRoot/build/compiler/build/gbc/gbc", 'java',
-            "$bondRoot/test/compat/core/schemas/compat.bond",
-            "$bondRoot/test/compat/core/schemas/compat2.bond",
-            "$bondRoot/test/compat/core/schemas/compat_common.bond",
-            '--output', "$gbcOutputPath"
-    }
-    compileJava.dependsOn compatCodegen
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs += gbcOutputDir
-        }
-    }
+bondCodegen {
+    bondfiles '../../test/compat/core/schemas/compat.bond',
+              '../../test/compat/core/schemas/compat2.bond',
+              '../../test/compat/core/schemas/compat_common.bond'
 }
 
 jar {
