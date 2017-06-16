@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.bond;
 
 import org.junit.Test;
@@ -100,14 +103,14 @@ public class SomethingTest {
     @Test
     public void testObject() {
         Object value = new Object();
-        SomethingObject s = Something.wrap(value);
+        SomethingObject<Object> s = Something.wrap(value);
         assertNotNull(s);
         assertEquals(value, s.getValue());
         assertEquals(String.valueOf(value), s.toString());
         Object fallbackValue = new String();
         assertEquals(value, Something.unwrap(s, fallbackValue));
-        assertEquals(fallbackValue, Something.unwrap((SomethingObject) null, fallbackValue));
+        assertEquals(fallbackValue, Something.unwrap((SomethingObject<Object>) null, fallbackValue));
         assertEquals(value, Something.unwrap(s));
-        assertNull(Something.unwrap((SomethingObject) null));
+        assertNull(Something.unwrap((SomethingObject<Object>) null));
     }
 }

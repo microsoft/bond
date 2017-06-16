@@ -11,7 +11,7 @@ import java.io.InputStream;
 
 /**
  * Implements Compact Binary deserialization.
- * Refer to {@link https://microsoft.github.io/bond/reference/cpp/compact__binary_8h_source.html} for details.
+ * Refer to {@see https://microsoft.github.io/bond/reference/cpp/compact__binary_8h_source.html} for details.
  */
 public final class CompactBinaryReader implements TaggedProtocolReader {
 

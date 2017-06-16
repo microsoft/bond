@@ -4,7 +4,6 @@
 package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
-import com.microsoft.bond.Metadata;
 import com.microsoft.bond.ProtocolType;
 
 import java.io.IOException;
@@ -13,7 +12,7 @@ import java.util.LinkedList;
 
 /**
  * Implements Compact Binary serialization.
- * Refer to {@link https://microsoft.github.io/bond/reference/cpp/compact__binary_8h_source.html} for details.
+ * Refer to {@see https://microsoft.github.io/bond/reference/cpp/compact__binary_8h_source.html} for details.
  */
 public final class CompactBinaryWriter implements TwoPassProtocolWriter {
 
@@ -56,7 +55,7 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
     }
 
     @Override
-    public void writeStructBegin(final Metadata metadata) throws IOException {
+    public void writeStructBegin(final StructMetadata metadata) throws IOException {
         if (this.protocolVersion == 2) {
             int structLength = this.structLengths.removeFirst().length;
             this.writer.writeVarUInt32(structLength);
@@ -69,7 +68,7 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
     }
 
     @Override
-    public void writeBaseBegin(final Metadata metadata) throws IOException {
+    public void writeBaseBegin(final StructMetadata metadata) throws IOException {
     }
 
     @Override
@@ -78,7 +77,8 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
     }
 
     @Override
-    public void writeFieldBegin(final BondDataType type, final int id, final Metadata metadata) throws IOException {
+    public void writeFieldBegin(
+            final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
         if (id <= 5) {
             this.writer.writeInt8((byte) (type.value | (id << 5)));
         } else if (id <= 0xFF) {
@@ -95,7 +95,8 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
     }
 
     @Override
-    public void writeFieldOmitted(final BondDataType type, final int id, final Metadata metadata) throws IOException {
+    public void writeFieldOmitted(
+            final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
     }
 
     @Override
@@ -219,7 +220,7 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
         }
 
         @Override
-        public void writeStructBegin(final Metadata metadata) throws IOException {
+        public void writeStructBegin(final StructMetadata metadata) throws IOException {
             // start new stack frame for the struct
             StructLength stackFrame = new StructLength();
             this.workingStack.push(stackFrame);
@@ -227,7 +228,7 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
         }
 
         @Override
-        public void writeBaseBegin(final Metadata metadata) throws IOException {
+        public void writeBaseBegin(final StructMetadata metadata) throws IOException {
         }
 
         @Override
@@ -249,8 +250,8 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
         }
 
         @Override
-        public void writeFieldBegin(final BondDataType type, final int id, final Metadata metadata)
-                throws IOException {
+        public void writeFieldBegin(
+                final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
             if (id <= 5) {
                 this.addBytes(1);
             } else if (id <= 0xFF) {
@@ -265,8 +266,8 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
         }
 
         @Override
-        public void writeFieldOmitted(final BondDataType type, final int id, final Metadata metadata)
-                throws IOException {
+        public void writeFieldOmitted(
+                final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
         }
 
         @Override

@@ -5,10 +5,7 @@ package com.microsoft.bond;
 
 import java.lang.reflect.*;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -140,5 +137,102 @@ public final class TestHelper {
      */
     public static double rawLongBitsToDouble(long bits) {
         return ByteBuffer.allocate(8).putLong(bits).getDouble(0);
+    }
+
+    /**
+     * Performs memberwise comparison of two Bond struct objects of the same Bond struct type
+     * (and same Java class). Raises assertion error with details if the comparison fails.
+     *
+     * @param a         struct object
+     * @param b         struct object
+     * @param <TStruct> struct type
+     * @throws IllegalAccessException if there was a reflection error
+     */
+    public static <TStruct extends BondSerializable> void assertStructMemberwiseEquals(
+            TStruct a, TStruct b) throws IllegalAccessException {
+        assertStructMemberwiseEqualsHelper(a, b, "");
+    }
+
+    private static void assertStructMemberwiseEqualsHelper(
+            Object a, Object b, String path) throws IllegalAccessException {
+        if (a != null && b == null) {
+            fail("If first object is non-null then the second object must not be null: " + path);
+        } else if (a == null && b != null) {
+            fail("If second object is non-null then the first object must not be null: " + path);
+        } else if (a == null && b == null) {
+            // nothing more to compare
+            return;
+        }
+
+        assertSame("Object class must be the same: " + path, a.getClass(), b.getClass());
+
+        Class<?> clazz = a.getClass();
+        if (BondSerializable.class.isAssignableFrom(clazz)) {
+            // struct type
+            Field[] fields = clazz.getFields();
+            for (Field field : fields) {
+                if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                    // compare field values based onthe field's declared type
+                    Class<?> fieldClass = field.getType();
+                    String fieldPath = path + "." + field.getName();
+                    if (fieldClass == Byte.TYPE) {
+                        // primitive type
+                        assertEquals("Fields of type byte must match: " + fieldPath,
+                                field.getByte(a), field.getByte(b));
+                    } else if (fieldClass == Short.TYPE) {
+                        // primitive type
+                        assertEquals("Fields of type short must match: " + fieldPath,
+                                field.getShort(a), field.getShort(b));
+                    } else if (fieldClass == Integer.TYPE) {
+                        // primitive type
+                        assertEquals("Fields of type int must match: " + fieldPath,
+                                field.getInt(a), field.getInt(b));
+                    } else if (fieldClass == Long.TYPE) {
+                        // primitive type
+                        assertEquals("Fields of type long must match: " + fieldPath,
+                                field.getLong(a), field.getLong(b));
+                    } else if (fieldClass == Boolean.TYPE) {
+                        // primitive type
+                        assertEquals("Fields of type boolean must match: " + fieldPath,
+                                field.getBoolean(a), field.getBoolean(b));
+                    } else if (fieldClass == Float.TYPE) {
+                        // primitive type
+                        assertEquals("Fields of type float must match: " + fieldPath,
+                                field.getFloat(a), field.getFloat(b), 0F);
+                    } else if (fieldClass == Long.TYPE) {
+                        // primitive type
+                        assertEquals("Fields of type double must match: " + fieldPath,
+                                field.getDouble(a), field.getDouble(b), 0D);
+                    } else {
+                        // object
+                        assertStructMemberwiseEqualsHelper(field.get(a), field.get(b), fieldPath);
+                    }
+                }
+            }
+        } else if (List.class.isAssignableFrom(clazz)) {
+            // list type
+            List aList = (List)a;
+            List bList = (List)b;
+            assertEquals("List sizes muct mathch: " + path, aList.size(), bList.size());
+            for (int i = 0; i < aList.size(); ++i) {
+                String elementPath = path + "[" + i + "]";
+                assertStructMemberwiseEqualsHelper(aList.get(i), bList.get(i), elementPath);
+            }
+        } else if (Set.class.isAssignableFrom(clazz)) {
+            // set
+            // TODO: support set comparison
+            throw new UnsupportedOperationException();
+        } else if (Map.class.isAssignableFrom(clazz)) {
+            // map
+            // TODO: support map comparison
+            throw new UnsupportedOperationException();
+        } else if (Bonded.class.isAssignableFrom(clazz)) {
+            // bonded
+            // TODO: support bonded comparison
+            throw new UnsupportedOperationException();
+        } else {
+            // general object
+            assertEquals("Values of type " + clazz.getName() + " must match: " + path, a, b);
+        }
     }
 }

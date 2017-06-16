@@ -4,7 +4,6 @@
 package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
-import com.microsoft.bond.Metadata;
 
 import java.io.IOException;
 
@@ -21,9 +20,9 @@ public interface ProtocolWriter {
     /**
      * Start writing a struct.
      *
-     * @param metadata schema metadata
+     * @param metadata struct metadata
      */
-    void writeStructBegin(Metadata metadata) throws IOException;
+    void writeStructBegin(StructMetadata metadata) throws IOException;
 
     /**
      * End writing a struct.
@@ -33,9 +32,9 @@ public interface ProtocolWriter {
     /**
      * Start writing a base struct.
      *
-     * @param metadata base schema metadata
+     * @param metadata base struct metadata
      */
-    void writeBaseBegin(Metadata metadata) throws IOException;
+    void writeBaseBegin(StructMetadata metadata) throws IOException;
 
     /**
      * End writing a base struct.
@@ -49,7 +48,7 @@ public interface ProtocolWriter {
      * @param id       identifier of the field
      * @param metadata metadata of the field
      */
-    void writeFieldBegin(BondDataType type, int id, Metadata metadata) throws IOException;
+    void writeFieldBegin(BondDataType type, int id, FieldMetadata metadata) throws IOException;
 
     /**
      * End writing a field.
@@ -63,7 +62,7 @@ public interface ProtocolWriter {
      * @param id       identifier of the field
      * @param metadata metadata of the field
      */
-    void writeFieldOmitted(BondDataType type, int id, Metadata metadata) throws IOException;
+    void writeFieldOmitted(BondDataType type, int id, FieldMetadata metadata) throws IOException;
 
     /**
      * Start writing a list or set container.

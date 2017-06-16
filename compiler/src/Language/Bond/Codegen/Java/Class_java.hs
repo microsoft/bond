@@ -39,15 +39,13 @@ package #{javaPackage};
         typeDefinition Struct {..} = [lt|
 #{Java.generatedClassAnnotations}
 public class #{declName}#{params}#{maybe interface baseClass structBase} {
-#{schema java declaration}
-#{deserializationHelperMembers}
+
+    @Override
+    public StructBondType<? extends BondSerializable> getStruct() {
+        return null;
+    }
 
     #{doubleLineSep 1 publicField structFields}
-#{serialize_ProtocolWriter java declaration}
-#{deserialize_ProtocolWriter java declaration}
-#{serializeFields java declaration}
-#{deserializeFields java declaration}
-#{marshal_ProtocolWriter}
 }|]
             where
                 interface = [lt| implements com.microsoft.bond.BondSerializable|]
