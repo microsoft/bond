@@ -334,6 +334,19 @@ public abstract class BondType<T> {
     }
 
     /**
+     * Gets a type descriptor for the Bond "vector" container type.
+     *
+     * @param elementType a type descriptor for the element value class
+     * @param <TElement>  the class of the element values
+     * @return a type descriptor instance
+     */
+    public static <TElement> VectorBondType<TElement> vectorOf(
+            BondType<TElement> elementType) {
+        ArgumentHelper.ensureNotNull(elementType, "elementType");
+        return (VectorBondType<TElement>) typeCache.get(new VectorBondType<TElement>(elementType));
+    }
+
+    /**
      * Gets a type descriptor for the Bond "list" container type.
      *
      * @param elementType a type descriptor for the element value class
