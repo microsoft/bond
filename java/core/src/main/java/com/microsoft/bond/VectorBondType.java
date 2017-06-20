@@ -6,24 +6,23 @@ package com.microsoft.bond;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Implements the {@link BondType} contract for (linked) list container data types.
+ * Implements the {@link BondType} contract for (contiguous) vector container data types.
  * @param <TElement> the class of the element values
  */
-public final class ListBondType<TElement> extends BondType<List<TElement>> {
+public final class VectorBondType<TElement> extends BondType<List<TElement>> {
 
     /**
      * The name of the type as it appears in Bond schemas.
      */
-    public static final String TYPE_NAME = "list";
+    public static final String TYPE_NAME = "vector";
 
     private final BondType<TElement> elementType;
 
     // restrict instantiation to the current package
-    ListBondType(BondType<TElement> elementType) {
+    VectorBondType(BondType<TElement> elementType) {
         super(multiplyAndShift(elementType.hashCode(), 3));
         this.elementType = elementType;
     }
@@ -49,6 +48,7 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
 
     @Override
     public final BondDataType getBondDataType() {
+        // vectors are represented as lists in serialized form
         return BondDataType.BT_LIST;
     }
 
@@ -91,7 +91,13 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
      * @return new list instance
      */
     public final List<TElement> newInstance() {
-        return new LinkedList<TElement>();
+        // default initial capacity
+        return new ArrayList<TElement>();
+    }
+
+    private static <TElement> List<TElement> newDefaultValue(int initialCapacity) {
+        // custom initial capacity to match element count when deserializing
+        return new ArrayList<TElement>(initialCapacity);
     }
 
     @Override
@@ -121,7 +127,7 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
                     this.elementType.getBondDataType(),
                     this.getFullName());
         }
-        List<TElement> value = newDefaultValue();
+        List<TElement> value = newDefaultValue(context.readContainerResult.count);
         for (int i = 0; i < context.readContainerResult.count; ++i) {
             try {
                 TElement element = this.elementType.deserializeValue(context);
@@ -177,7 +183,7 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
     @Override
     final boolean equalsInternal(BondType<?> obj) {
         // the caller makes sure that the class of the argument is the same as the class of this object
-        ListBondType that = (ListBondType) obj;
+        VectorBondType that = (VectorBondType) obj;
         return this.elementType.equals(that.elementType);
     }
 
