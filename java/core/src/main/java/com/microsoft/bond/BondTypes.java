@@ -77,6 +77,11 @@ public final class BondTypes {
      */
     public static final WStringBondType WSTRING = WStringBondType.INSTANCE;
 
+    /**
+     * A singleton type descriptor for the Bond "blob" data type.
+     */
+    public static final BlobBondType BLOB = BlobBondType.INSTANCE;
+
     static {
         // cache primitive types for consistency
         BondType.typeCache.get(UINT8);
@@ -92,5 +97,6 @@ public final class BondTypes {
         BondType.typeCache.get(DOUBLE);
         BondType.typeCache.get(STRING);
         BondType.typeCache.get(WSTRING);
+        BondType.typeCache.get(BLOB);
     }
 }
