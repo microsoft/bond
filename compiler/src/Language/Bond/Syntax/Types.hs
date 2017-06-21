@@ -173,6 +173,7 @@ data Declaration =
         , declAttributes :: [Attribute]     -- zero or more attributes
         , declName :: String                -- service name
         , declParams :: [TypeParam]         -- type parameters for generic service
+        , serviceBase :: Maybe Type         -- optional base service
         , serviceMethods :: [Method]        -- zero or more methods
         }                                   -- ^ <https://microsoft.github.io/bond/manual/compiler.html#service-definition service definition>
     deriving (Eq, Show)

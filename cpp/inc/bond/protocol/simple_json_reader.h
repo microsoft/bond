@@ -25,8 +25,8 @@ public:
     typedef SimpleJsonWriter<Buffer>        Writer;
     typedef rapidjson::Value                Field;
 
-    static const uint16_t magic; // = SIMPLE_JSON_PROTOCOL;
-    static const uint16_t version = 0x0001;
+    BOND_STATIC_CONSTEXPR uint16_t magic = SIMPLE_JSON_PROTOCOL;
+    BOND_STATIC_CONSTEXPR uint16_t version = 0x0001;
 
     /// @brief Construct from input buffer/stream containing serialized data.
     SimpleJsonReader(typename boost::call_traits<Buffer>::param_type input)
@@ -108,6 +108,20 @@ public:
     {
         return _value == rhs._value;
     }
+
+    /// @brief Access to underlying buffer
+    typename boost::call_traits<Buffer>::const_reference
+    GetBuffer() const
+    {
+        return _input;
+    }
+
+    /// @brief Access to underlying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _input;
+    }
     
 private:
     rapidjson::Value::ConstMemberIterator MemberBegin() const
@@ -138,21 +152,21 @@ private:
     template <typename Input>
     friend struct base_input;
 
-    template <typename A, typename T, typename Buffer>
+    template <typename Protocols, typename A, typename T, typename Buffer>
     friend void DeserializeContainer(std::vector<bool, A>&, const T&, SimpleJsonReader<Buffer>&);
 
-    template <typename T, typename Buffer>
+    template <typename Protocols, typename T, typename Buffer>
     friend void DeserializeContainer(blob&, const T&, SimpleJsonReader<Buffer>&);
 
-    template <typename X, typename T, typename Buffer>
+    template <typename Protocols, typename X, typename T, typename Buffer>
     friend typename boost::enable_if<is_list_container<X> >::type
     DeserializeContainer(X&, const T&, SimpleJsonReader<Buffer>&);
 
-    template <typename X, typename T, typename Buffer>
+    template <typename Protocols, typename X, typename T, typename Buffer>
     friend typename boost::enable_if<is_set_container<X> >::type
     DeserializeContainer(X&, const T&, SimpleJsonReader<Buffer>&);
 
-    template <typename X, typename T, typename Buffer>
+    template <typename Protocols, typename X, typename T, typename Buffer>
     friend typename boost::enable_if<is_map_container<X> >::type
     DeserializeMap(X&, BondDataType, const T&, SimpleJsonReader<Buffer>&);
 
@@ -171,7 +185,7 @@ private:
 
 
 template <typename Buffer>
-const uint16_t SimpleJsonReader<Buffer>::magic = SIMPLE_JSON_PROTOCOL;
+BOND_CONSTEXPR_OR_CONST uint16_t SimpleJsonReader<Buffer>::magic;
 
 // Disable fast pass-through optimization for Simple JSON
 template <typename Input, typename Output> struct

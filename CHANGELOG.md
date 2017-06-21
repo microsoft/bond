@@ -1,7 +1,7 @@
 # Bond Changelog #
 
-Notable changes--especially new features and breaking changes--are recorded
-here.
+Notable changes--especially new features and **breaking changes**--are
+recorded here.
 
 Bond's version numbers follow [Semantic Versioning](http://semver.org/).
 Each release is tagged with a Git tag. The
@@ -12,18 +12,194 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased ##
-
-* `gbc` & compiler library: TBD (B version bump needed)
+* `gbc` & compiler library: TBD
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD (minor bump needed [Boost dependencies changed])
-* C# NuGet version: TBD (minor bump needed)
-* C# Comm NuGet version: TBD (minor bump needed [dependencies changed])
+* C++ version: TBD (major bump needed)
+* C# NuGet version: (major bump needed)
+* C# Comm NuGet version: (minor bump needed, dependencies updated)
 
-### bond compiler library ###
+### `gbc` and Bond compiler library ###
 
-* The C++ Comm .cpp template has been renamed to `comm_cpp` from
-  `types_comm_cpp` to match the file it generates.
+* IDL support for service inheritance syntax
+* C++ codegen now generates
+  [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
+  of `bond::Apply` instead of overloads.
+* C++ codegen hides FieldTemplate details, shortening symbol names.
+
+### C++ ###
+
+* **Breaking change** A C++11 compiler is now required. The minimum
+  supported C++ compiler versions are now:
+    * Clang 3.4 or newer
+    * GNU C++ 4.7 or newer
+    * Microsoft Visual C++ 2013 or newer
+* **Breaking change** The generated apply.h/.cpp files now contain
+  [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
+  of `bond::Apply` instead of overload implementations. Calls to bare `Apply`
+  or `TypeNamespace::Apply` must be changed to `bond::Apply`.
+* **Breaking change** Users who are implementing custom streams are now
+  required to provide the free functions `CreateInputBuffer`,
+  `CreateOutputBuffer` and `GetBufferRange`, depending on which scenarios
+  are used (there will be a corresponding compilation error for each case).
+    * Users who were _mistakenly_ calling `bond::Merge<T>` with explicit an
+      template argument will get a compilation error. To fix, remove the
+      `<T>` part.
+    * In addition, users of MSVC12 are required to define a `range_type`
+      typedef as a return type of corresponding `GetBufferRange` inside
+      their custom input buffer implementation.
+    * Please see
+      [InputBuffer](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-9260b18a00d12a6102a69b9fffd7e33f),
+      [OutputBuffer](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-1f15d4c92f87d4bd41f705b20cce80ad),
+      and
+      [the bf example](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-bdda0f39d99280d4858b4453906eea17)
+      for more details.
+* **Breaking change** The `bond::customize<protocols>` has been removed. All the
+  public APIs that require a protocol list (e.g. `bond::Marshal`) now accept
+  an extra template argument `Protocols` which defaults to `bond::BuiltInProtocols`.
+  Custom input streams now require `bond::type_id<>` to be specialized with a
+  unique magic number. For more details please see [the bf example](https://github.com/Microsoft/bond/tree/master/examples/cpp/core/bf).
+* Initial support for sending
+  [Bond objects over gRPC](https://microsoft.github.io/bond/manual/bond_over_grpc.html)
+  has been added.
+* The `bond::Apply` function now has a uniform signature. Call sites for
+the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
+`Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
+get a compiler error. To fix, remove the `<Writer>` part:
+`bond::Apply(marshaler, value)`.
+* Fixed a bug that caused serialization using
+  `CompactBinaryWriter<OutputCounter>` (to get the expected length of
+  serializing with compact binary) to produced bogus results.
+* Fixed
+  [custom streams](https://microsoft.github.io/bond/manual/bond_cpp.html#custom-streams)
+  support which was broken for some scenarios.
+* For Visual C++ 2017 compability, RapidJSON v1.0.0 or newer is now
+  required. The RapidJSON submodule that Bond uses by default has been
+  updated to v1.1.0 due to a warning from clang in earlier versions.
+* C++ codegen hides FieldTemplate details, shortening symbol names.
+
+### C# ###
+
+* **Breaking change** The deprecated type `Bond.BondReflection` has been
+  removed. The type `Bond.Reflection` should be used instead.
+
+## 5.3.1: 2017-04-25 ##
+
+* `gbc` & compiler library: 0.9.0.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 5.3.0
+* C# NuGet version: 5.3.1
+* C# Comm NuGet version: 0.11.1
+
+### C# ###
+
+* Cleaned up documentation comments.
+
+## 5.3.0: 2017-04-12 ##
+
+* `gbc` & compiler library: 0.9.0.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 5.3.0
+* C# NuGet version: 5.3.0
+* C# Comm NuGet version: 0.11.0
+
+### `gbc` and Bond compiler library ###
+
+* C++ codegen ensures that parameter names do not shadow field names.
+* When generating C++ apply files, there are now explicit `bond::Apply<>`
+  instantiations for `CompactBinaryWriter<OutputCounter>` and
+  `SimpleBinaryWriter<Null>` writers.
+  [Pull request #373](https://github.com/Microsoft/bond/pull/373)
+    * **Breaking change (Haskell library only):**
+      `Language.Bond.Codegen.Cpp.ApplyOverloads.Protocol` is now a union of
+      `ProtocolReader` and `ProtocolWriter` to permit mixing and matching of
+      reader/writer protocols without having to explicitly compute the full
+      cross product.
+* Add gbc flags to pick which C# files to generate (structs, gRPC, and
+  comm). Only structs are generated by default.
+* gbc ensures that method names are unique within a service.
+  [Issue #381](https://github.com/Microsoft/bond/issues/381)
+
+### C++ ###
+
+* Fix Python shared_ptr converter build break with Boost 1.63.
+* Improve compliance with
+  [Microsoft's SDL](https://www.microsoft.com/en-us/sdl/).
+    * Bond now builds on MSVC with
+      [`_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES`](https://msdn.microsoft.com/en-us/library/ms175759.aspx)
+      instead of `_CTR_SECURE_NO_WARNINGS`.
+    * Bond builds on MSVC with SDL recommended warnings enabled.
+* Eliminate need for warning suppression on MSVC14 via warning.h in Bond
+  itself. warning.h is still in place on MSVC12; furthermore, we don't alter
+  warning.h for now as it may be depended upon by application code.
+* Avoid unaligned memory access on non-x86/x64 platforms.
+  [Issue #305](https://github.com/Microsoft/bond/issues/305)
+* Improve compliance with strict-aliasing rules.
+    * Bond now builds on Clang/GCC with `-fstrict-aliasing`.
+* When generating C++ apply files, there are now explicit `bond::Apply<>`
+  instantiations for `CompactBinaryWriter<OutputCounter>` and
+  `SimpleBinaryWriter<Null>` writers.
+  [Pull request #373](https://github.com/Microsoft/bond/pull/373)
+* Improve C++ allocator support
+  [Issue #379](https://github.com/Microsoft/bond/issues/379)
+  [Pull request #380](https://github.com/Microsoft/bond/pull/380)
+    * Support C++11 and above allocator model for rebind
+    * Simplify detection of the default allocator
+* Remove per-field instantiation of DynamicParser<>::UnknownFieldOrTypeMismatch method.
+
+## C# ###
+
+* Added gRPC integration. See the
+  [Bond-over-gRPC manual](https://microsoft.github.io/bond/manual/bond_over_grpc.html).
+* Added controls to cap incremental allocation between reads in
+  `Bond.IO.Unsafe.InputStream`.
+* Extended fix for bug parsing JSON when a string value is a date.
+  [Pull request #358](https://github.com/Microsoft/bond/pull/358)
+* Bond C# 5.1.0 accidentally broke backward compability by renaming
+  `Bond.Reflection` to `Bond.BondReflection`. This has been fixed:
+  `Bond.BondReflection` was unrenamed back to `Bond.Reflection`, and a shim
+  `Bond.BondReflection` type now redirects all calls to their original names
+  to minimize further breakage.
+  [Issue #369](https://github.com/Microsoft/bond/issues/369)
+    * Code that started using `Bond.BondReflection` by name will encounter
+      warning CS0618 indicating use of an obselete method/type. To fix this,
+      use the original name `Bond.Reflection`. This warning can be
+      suppressed if needed. However...
+    * ...the shim type `Bond.BondReflection` will be removed during or after
+      the next major release of C# Bond.
+
+### C# Comm ###
+
+* **Breaking change** To generate C# Comm files, be sure to pass the
+  `--comm` flag to gbc.
+  [See how the pingpong example was updated](https://github.com/Microsoft/bond/blob/581d88632e0ad8b2fc87f5674273f613e78af752/examples/cs/comm/pingpong/pingpong.csproj#L39).
+* C# Comm is now deprecated. We recommend that you use Bond-over-gRPC. See
+  the
+  [Bond-over-gRPC manual](https://microsoft.github.io/bond/manual/bond_over_grpc.html).
+* EpoxyListener's StopAsync() now stops all the outstanding connections that
+  it accepted.
+* EpoxyTransport's StopAsync() now stops all the connections and listeners
+  that it created.
+
+## 5.2.0: 2017-02-07 ##
+
+* `gbc` & compiler library: 0.8.0.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 5.2.0
+* C# NuGet version: 5.2.0
+* C# Comm NuGet version: 0.10.0
+
+### `gbc` and Bond compiler library ###
+
+* **Breaking change:** The C++ Comm .cpp template has been renamed to
+  `comm_cpp` from `types_comm_cpp` to match the file it generates.
+* Add export-attribute option for C++ and make apply-attribute a
+  deprecated synonym for export-attribute
+* Fix C++ Comm build problems when services are shared via DLL.
+  [Issue #314](https://github.com/Microsoft/bond/issues/314)
 
 ### C++ ###
 
@@ -38,6 +214,10 @@ different versioning scheme, following the Haskell community's
   that occurs with Microsoft Visual C++ 2015 Update 3.
   [Issue #306](https://github.com/Microsoft/bond/issues/306)
 
+### C++ Comm ###
+* Fixed a multiply-defined symbol linker error for
+  `bond::comm::epoxy::detail::MakeConfigFrame`.
+
 ### C# ###
 
 * Added controls to cap pre-allocation during deserialization of containers
@@ -49,6 +229,8 @@ different versioning scheme, following the Haskell community's
 
 * Resources are now properly cleaned up if failures are encountered when
   establishing client-side Epoxy connections.
+* The generated interfaces for services are now public. They were
+  inadvertently internal before.
 
 ## 5.1.0: 2016-11-14 ##
 
@@ -61,10 +243,10 @@ different versioning scheme, following the Haskell community's
 
 ### `gbc` and Bond compiler library ###
 
+* **Breaking change:** The Haskell utility functions `structName` and
+  `structParams` were renamed to `className` and `classParams` (in the
+  `Language.Bond.Codegen.Cpp.Util` module).
 * Added initial support for generating C++ Comm services and proxies.
-* The Haskell utility functions `structName` and `structParams` were renamed
-  to `className` and `classParams` (in the `Language.Bond.Codegen.Cpp.Util`
-  module).
 
 ### C++ Comm ###
 * The initial C++ Comm code has been merged in, but there is still work left
@@ -118,24 +300,30 @@ different versioning scheme, following the Haskell community's
 * C# NuGet version: 5.0.0
 * C# Comm NuGet version: 0.7.0
 
+### IDL core ###
+* **Breaking change:** `bond.TypeDef.list_sub_type` field removed, as it was
+  breaking some consumers of serialized SchemaDef. We plan to restore this
+  field in the future.
+  [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
+
 ### IDL comm ###
 * Update IDL to conform to naming conventions.
 * Adjust IDL for changes made to Epoxy internals
 
 ### C++ ###
+* **Breaking change:** Runtime SchemaDef `list_sub_type` field removed, as
+  it was breaking some consumers of serialized SchemaDef. We plan to restore
+  this field in the future.
+  [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
 * Generated enum types now have a `FromEnum` method that can be used to
   convert from an enum value to a string. Now generated enum types have all
   four of `ToEnum`, `FromEnum`, `ToString`, and `FromString`. (The `...Enum`
   variants return false on failure, while the `...String` variants throw.)
-* Runtime SchemaDef `list_sub_type` field removed, as it was breaking some
-  consumers of serialized SchemaDef. We plan to restore this field in the
-  future.
-  [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
 
 ### C# ###
-* Runtime SchemaDef `list_sub_type` field removed, as it was breaking some
-  consumers of serialized SchemaDef. We plan to restore this field in the
-  future.
+* **Breaking change:** Runtime SchemaDef `list_sub_type` field removed, as
+  it was breaking some consumers of serialized SchemaDef. We plan to restore
+  this field in the future.
   [Issue #161 re-opened](https://github.com/Microsoft/bond/issues/161)
 * The Bond.Runtime NuGet package no longer artificially limits
   Newtonsoft.Json to versions before 10.
@@ -160,12 +348,12 @@ different versioning scheme, following the Haskell community's
 
 ### `gbc` and Bond compiler library ###
 
+* **Breaking change:** Runtime SchemaDef now includes information about
+  whether BT_LIST fields are nullable or blobs.
+  [Issue #161](https://github.com/Microsoft/bond/issues/161)
 * User-defined `TypeMapping`s can now be created. This makes is easier to
   implement code generation for new languages. [Pull request
   #172](https://github.com/Microsoft/bond/pull/172)
-* Runtime SchemaDef now includes information about whether BT_LIST fields
-  are nullable or blobs.
-  [Issue #161](https://github.com/Microsoft/bond/issues/161)
 * Validate default value type mistmatches.
   [Issue #72](https://github.com/Microsoft/bond/issues/72)
   [Issue #128](https://github.com/Microsoft/bond/issues/128)
@@ -341,6 +529,22 @@ different versioning scheme, following the Haskell community's
 * Fix for rare buffer corruption in InputStream.
   [Issue #114](https://github.com/Microsoft/bond/issues/114).
 * Fix for SimpleXmlParser not handling XML declarations. [Issue #112](https://github.com/Microsoft/bond/issues/82)
+
+## Breaking changes between 3.x and 4.x ##
+
+Bond C# had the following breaking changes introduced in 4.x compared to the
+3.x versions:
+
+* The
+  [Bond.Core.CSharp NuGet package](https://www.nuget.org/packages/Bond.Core.CSharp/)
+  was introduced so that not all uses of Bond depend on Json.NET. The
+  [Bond.Runtime.CSharp package](https://www.nuget.org/packages/Bond.Runtime.CSharp/)
+  still depends on Json.NET and also depends on Bond.Core.CSharp. The
+  primary package remains Bond.CSharp.
+* `CompactBinaryReader<InputStream>` now
+  [explicitly implements](https://docs.microsoft.com/en-us/dotnet/articles/csharp/programming-guide/interfaces/explicit-interface-implementation)
+  `ICloneable<CompactBinaryReader<InputStream>>` instead of implicitly.
+  `FastBinaryReader` and `SimpleBinaryReader` were likewise changed.
 
 ## Earlier release ##
 

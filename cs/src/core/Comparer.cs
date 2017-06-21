@@ -8,7 +8,7 @@ namespace Bond
     using System.Collections.Generic;
     using System.Linq.Expressions;
     using System.Reflection;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     /// <summary>
     /// Utility for comparing instances of Bond schemas for equality
@@ -31,9 +31,9 @@ namespace Bond
         {
             public static readonly Func<T, T, bool> Equal;
 
-            static readonly MethodInfo blobCompareData = BondReflection.MethodInfoOf(() => Blob.CompareData(default(ArraySegment<byte>), default(ArraySegment<byte>)));
-            static readonly MethodInfo moveNext =        BondReflection.MethodInfoOf((IEnumerator ie) => ie.MoveNext());
-            static readonly MethodInfo comparerEqual =   BondReflection.GenericMethodInfoOf(() => Comparer.Equal(default(T), default(T)));
+            static readonly MethodInfo blobCompareData = Reflection.MethodInfoOf(() => Blob.CompareData(default(ArraySegment<byte>), default(ArraySegment<byte>)));
+            static readonly MethodInfo moveNext =        Reflection.MethodInfoOf((IEnumerator ie) => ie.MoveNext());
+            static readonly MethodInfo comparerEqual =   Reflection.GenericMethodInfoOf(() => Comparer.Equal(default(T), default(T)));
 
             static Cache()
             {

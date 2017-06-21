@@ -1,16 +1,13 @@
 #include "precompiled.h"
 #include "serialization_test.h"
 
-namespace unittest
-{
 
-inline bool operator==(const ListWithBase& left, const ListOfBase& right)
+template <typename Protocols>
+bool Compare(const ListWithBase& left, const ListOfBase& right)
 {
-    return Equal(left.l1, right.l1)
-        && Equal(left.vl2, right.vl2)
-        && Equal(left.v4, right.v4);
-}
-
+    return Equal<Protocols>(left.l1, right.l1)
+        && Equal<Protocols>(left.vl2, right.vl2)
+        && Equal<Protocols>(left.v4, right.v4);
 }
 
 template <uint16_t N, typename Reader, typename Writer>

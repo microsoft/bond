@@ -39,13 +39,17 @@
                      integer,               little endian
                      float, double
 
+
                                             .-------.------------.
                      string, wstring        | count | characters |
                                             '-------'------------'
 
-                           count            variable uint32 count of 1-byte or 2-byte characters
+                           count            variable encoded uint32 count of 1-byte (for
+                                            string) or 2-byte (for wstring) Unicode code
+                                            units
 
-                           characters       1-byte or 2-byte characters
+                           characters       1-byte UTF-8 code units (for string) or 2-byte
+                                            UTF-16LE code units (for wstring)
 
 
                                             .-------.-------.-------.
@@ -101,8 +105,8 @@ public:
     typedef DynamicParser<FastBinaryReader&>   Parser;
     typedef FastBinaryWriter<Buffer>           Writer;
 
-    static const uint16_t magic; // = FAST_PROTOCOL
-    static const uint16_t version; // = v1
+    BOND_STATIC_CONSTEXPR uint16_t magic = FAST_PROTOCOL;
+    BOND_STATIC_CONSTEXPR uint16_t version = v1;
 
     /// @brief Construct from input buffer/stream containing serialized data.
     FastBinaryReader(typename boost::call_traits<Buffer>::param_type buffer)
@@ -126,7 +130,7 @@ public:
     }
 
 
-    /// @brief Access to underlaying buffer
+    /// @brief Access to underlying buffer
     typename boost::call_traits<Buffer>::const_reference
     GetBuffer() const
     {
@@ -134,15 +138,23 @@ public:
     }
 
 
+    /// @brief Access to underlying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _input;
+    }
+
+
     bool ReadVersion()
     {
-        uint16_t magic, version;
+        uint16_t magic_value, version_value;
 
-        _input.Read(magic);
-        _input.Read(version);
+        _input.Read(magic_value);
+        _input.Read(version_value);
 
-        return magic == FastBinaryReader::magic
-            && version <= FastBinaryReader::version;
+        return magic_value == FastBinaryReader::magic
+            && version_value <= FastBinaryReader::version;
     }
 
 
@@ -363,10 +375,10 @@ protected:
 };
 
 template <typename Buffer>
-const uint16_t FastBinaryReader<Buffer>::magic = FAST_PROTOCOL;
+BOND_CONSTEXPR_OR_CONST uint16_t FastBinaryReader<Buffer>::magic;
 
 template <typename Buffer>
-const uint16_t FastBinaryReader<Buffer>::version = v1;
+BOND_CONSTEXPR_OR_CONST uint16_t FastBinaryReader<Buffer>::version;
 
 
 /// @brief Writer for Fast Binary protocol
@@ -382,6 +394,13 @@ public:
     FastBinaryWriter(Buffer& buffer)
         : _output(buffer)
     {
+    }
+
+    /// @brief Access to underlying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _output;
     }
 
     void WriteVersion()
@@ -476,4 +495,3 @@ protected:
 
 
 } // namespace bond
-

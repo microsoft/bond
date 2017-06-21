@@ -1,27 +1,35 @@
 #include "custom_protocols.h"
-
-namespace bond
-{
-    // Enable TestReader in this file
-    template <typename Buffer> struct 
-    is_protocol_enabled<unit_test::TestReader<Buffer> >
-    {
-        static const bool value = true;
-    };
-}
-
-
 #include "precompiled.h"
 #include "serialization_test.h"
 
 
-template <uint16_t N, typename Reader, typename Writer>
+template <uint16_t N, typename Reader, typename Writer, typename Protocols>
 void CustomProtocolsTests(const char* name)
 {
     UnitTestSuite suite(name);
 
     AddTestCase<TEST_ID(N), 
-        AllBindingAndMapping1, Reader, Writer, TestReaderStruct>(suite, "Simple struct");
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+        AllBindingAndMapping1,
+#else
+        AllBindingAndMapping1_CustomProtocols,
+#endif
+        Reader, Writer, TestReaderStruct, Protocols>(suite, "Simple struct");
+}
+
+
+template <uint16_t N, typename Reader, typename Writer, typename Protocols>
+void CustomInputBufferTests(const char* name)
+{
+    UnitTestSuite suite(name);
+
+    AddTestCase<TEST_ID(N),
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+        AllBindingAndMapping2,
+#else
+        AllBindingAndMapping2_CustomProtocols,
+#endif
+        Reader, Writer, NestedStruct1, NestedStruct1OptionalBondedView, Protocols>(suite, "Optional bonded field");
 }
 
 
@@ -31,7 +39,14 @@ void CustomProtocolsTestsInit()
         CustomProtocolsTests<
             0x2102,
             unit_test::TestReader<bond::InputBuffer>,
-            unit_test::TestWriter<bond::OutputBuffer> >("Custom protocol TestReader");
+            unit_test::TestWriter<bond::OutputBuffer>,
+            bond::BuiltInProtocols::Append<unit_test::TestReader<bond::InputBuffer> > >("Custom protocol TestReader");
+
+        CustomInputBufferTests<
+            0x2103,
+            unit_test::TestReader<unit_test::CustomInputBuffer>,
+            unit_test::TestWriter<bond::OutputBuffer>,
+            bond::BuiltInProtocols::Append<unit_test::TestReader<unit_test::CustomInputBuffer> > >("Custom protocol TestReader using CustomInputBuffer");
     );
 }
 

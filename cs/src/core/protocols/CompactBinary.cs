@@ -4,81 +4,84 @@
 #region Compact Binary format
 /*
 
-                     .----------.--------------.   .----------.---------.                            
-   struct (v1)       |  fields  | BT_STOP_BASE |...|  fields  | BT_STOP |                            
-                     '----------'--------------'   '----------'---------'                            
+                     .----------.--------------.   .----------.---------.
+   struct (v1)       |  fields  | BT_STOP_BASE |...|  fields  | BT_STOP |
+                     '----------'--------------'   '----------'---------'
 
-                     .----------.----------.--------------.   .----------.---------.                            
-   struct (v2)       |  length  |  fields  | BT_STOP_BASE |...|  fields  | BT_STOP |                            
-                     '----------'----------'--------------'   '----------'---------'                            
+                     .----------.----------.--------------.   .----------.---------.
+   struct (v2)       |  length  |  fields  | BT_STOP_BASE |...|  fields  | BT_STOP |
+                     '----------'----------'--------------'   '----------'---------'
 
-   length             variable int encoded uint32 length of following fields, up to and 
+   length             variable int encoded uint32 length of following fields, up to and
                       including BT_STOP but excluding length itself.
 
-                     .----------.----------.   .----------.                                           
-   fields            |  field   |  field   |...|  field   |                                           
-                     '----------'----------'   '----------'                                           
-                                                                                                      
+                     .----------.----------.   .----------.
+   fields            |  field   |  field   |...|  field   |
+                     '----------'----------'   '----------'
+
                      .----------.----------.
-   field             | id+type  |  value   |                                                          
-                     '----------'----------'                                                          
-                                                                                                      
-                                            .---.---.---.---.---.---.---.---.                       i - id bits 
-   id+type           0 <= id <= 5           | i | i | i | t | t | t | t | t |                       t - type bits     
+   field             | id+type  |  value   |
+                     '----------'----------'
+
+                                            .---.---.---.---.---.---.---.---.                       i - id bits
+   id+type           0 <= id <= 5           | i | i | i | t | t | t | t | t |                       t - type bits
                                             '---'---'---'---'---'---'---'---'                       v - value bits
-                                              2       0   4               0                           
+                                              2       0   4               0
 
                                             .---.---.---.---.---.---.---.---.---.   .---.
-                     5 < id <= 0xff         | 1 | 1 | 0 | t | t | t | t | t | i |...| i |             
-                                            '---'---'---'---'---'---'---'---'---'   '---'             
-                                                          4               0   7       0               
-                                                                                                      
-                                            .---.---.---.---.---.---.---.---.---.   .---.---.   .---.
-                     0xff < id <= 0xffff    | 1 | 1 | 1 | t | t | t | t | t | i |...| i | i |...| i |             
-                                            '---'---'---'---'---'---'---'---'---'   '---'---'   '---'             
-                                                          4               0   7       0   15      8               
+                     5 < id <= 0xff         | 1 | 1 | 0 | t | t | t | t | t | i |...| i |
+                                            '---'---'---'---'---'---'---'---'---'   '---'
+                                                          4               0   7       0
 
-                                                                                                      
-                                            .---.---.---.---.---.---.---.---.                       
-   value             bool                   |   |   |   |   |   |   |   | v |                         
-                                            '---'---'---'---'---'---'---'---'                         
+                                            .---.---.---.---.---.---.---.---.---.   .---.---.   .---.
+                     0xff < id <= 0xffff    | 1 | 1 | 1 | t | t | t | t | t | i |...| i | i |...| i |
+                                            '---'---'---'---'---'---'---'---'---'   '---'---'   '---'
+                                                          4               0   7       0   15      8
+
+
+                                            .---.---.---.---.---.---.---.---.
+   value             bool                   |   |   |   |   |   |   |   | v |
+                                            '---'---'---'---'---'---'---'---'
                                                                           0
 
                                             .---.---.---.---.---.---.---.---.
                      int8, uint8            | v | v | v | v | v | v | v | v |
                                             '---'---'---'---'---'---'---'---'
-                                              7                           0 
-                                                                                                      
-                                            .---.---.   .---.---.---.   .---.
-                     uint16, uint32,        | 1 | v |...| v | 0 | v |...| v |  [...]                       
-                     uint64                 '---'---'   '---'---'---'   '---'
-                                                  6       0       13      7                           
-                                                                                                      
-                                            variable encoding, high bit of every byte                 
-                                            indicates if there is another byte        
-                                                                                                      
-                                                                                                      
-                     int16, int32,          zig zag encoded to unsigned integer:                       
-                     int64                                                                                 
-                                             0 -> 0                                             
-                                            -1 -> 1                                                   
-                                             1 -> 2                                             
-                                            -2 -> 3                                                   
-                                            ...                                                 
-                                                                                                
-                                            and then encoded as unsigned integer                
+                                              7                           0
 
-                                            
+                                            .---.---.   .---.---.---.   .---.
+                     uint16, uint32,        | 1 | v |...| v | 0 | v |...| v |  [...]
+                     uint64                 '---'---'   '---'---'---'   '---'
+                                                  6       0       13      7
+
+                                            variable encoding, high bit of every byte
+                                            indicates if there is another byte
+
+
+                     int16, int32,          zig zag encoded to unsigned integer:
+                     int64
+                                             0 -> 0
+                                            -1 -> 1
+                                             1 -> 2
+                                            -2 -> 3
+                                            ...
+
+                                            and then encoded as unsigned integer
+
+
                      float, double          little endian
-                                            
+
 
                                             .-------.------------.
                      string, wstring        | count | characters |
                                             '-------'------------'
 
-                           count            variable encoded uint32 count of 1-byte or 2-byte characters
+                           count            variable encoded uint32 count of 1-byte (for
+                                            string) or 2-byte (for wstring) Unicode code
+                                            units
 
-                           characters       1-byte or 2-byte characters
+                           characters       1-byte UTF-8 code units (for string) or 2-byte
+                                            UTF-16LE code units (for wstring)
 
 
                                             .-------.-------.-------.
@@ -88,12 +91,12 @@
                                             .---.---.---.---.---.---.---.---.
                            type (v1)        |   |   |   | t | t | t | t | t |
                                             '---'---'---'---'---'---'---'---'
-                                                          4               0 
+                                                          4               0
 
-                                            .---.---.---.---.---.---.---.---. 
-                           type (v2)        | c | c | c | t | t | t | t | t | 
-                                            '---'---'---'---'---'---'---'---' 
-                                              2       0   4               0   
+                                            .---.---.---.---.---.---.---.---.
+                           type (v2)        | c | c | c | t | t | t | t | t |
+                                            '---'---'---'---'---'---'---'---'
+                                              2       0   4               0
 
                                             if count of items is < 7, 'c' are bit of (count + 1),
                                             otherwise 'c' bits are 0.
@@ -111,7 +114,7 @@
                                             .---.---.---.---.---.---.---.---.
                             key type,       |   |   |   | t | t | t | t | t |
                             value type      '---'---'---'---'---'---'---'---'
-                                                          4               0 
+                                                          4               0
 
                             count           variable encoded uint32 count of {key,mapped} pairs
 
@@ -218,7 +221,7 @@ namespace Bond.Protocols
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public void WriteBaseBegin(Metadata metadata) 
+        public void WriteBaseBegin(Metadata metadata)
         {}
 
         /// <summary>
@@ -281,17 +284,17 @@ namespace Bond.Protocols
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public void WriteFieldOmitted(BondDataType dataType, ushort id, Metadata metadata) 
+        public void WriteFieldOmitted(BondDataType dataType, ushort id, Metadata metadata)
         {}
 
-        
+
         /// <summary>
         /// End writing a field
         /// </summary>
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public void WriteFieldEnd() 
+        public void WriteFieldEnd()
         {}
 
         /// <summary>
@@ -337,7 +340,7 @@ namespace Bond.Protocols
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public void WriteContainerEnd() 
+        public void WriteContainerEnd()
         {}
 
         /// <summary>
@@ -635,7 +638,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Start reading a field
         /// </summary>
-        /// <param name="type">An out parameter set to the field type 
+        /// <param name="type">An out parameter set to the field type
         /// or BT_STOP/BT_STOP_BASE if there is no more fields in current struct/base</param>
         /// <param name="id">Out parameter set to the field identifier</param>
         /// <exception cref="EndOfStreamException"/>
@@ -1011,7 +1014,7 @@ namespace Bond.Protocols
 
                     if (type == BondDataType.BT_STOP_BASE) continue;
                     if (type == BondDataType.BT_STOP) break;
-                    
+
                     Skip(type);
                 }
             }

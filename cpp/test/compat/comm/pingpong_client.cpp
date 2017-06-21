@@ -18,10 +18,6 @@
 
 using namespace PingPongNS;
 
-const int NumRequests = 10;
-const int NumEvents = 9;
-const int NumErrors = 8;
-
 int main()
 {
     boost::this_thread::sleep_for(boost::chrono::seconds(1));
@@ -36,7 +32,7 @@ int main()
         TestLayer<2>
     > layers(layer1, layer2);
 
-    bond::comm::SocketAddress loopback("127.0.0.1", 25188);
+    bond::comm::SocketAddress loopback("127.0.0.1", Port);
     bond::comm::epoxy::EpoxyTransport transport(layers);
 
     printf("Start client\n");

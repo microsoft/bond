@@ -18,16 +18,17 @@ namespace bond
                                                  typename Transform::writer_type::Pass0>::value>::type
         > : true_type {};
 
-        template <typename Transform, typename T>
+        template <typename Protocols, typename Transform, typename T>
         inline bool DoublePassApply(const Transform& transform, const T& value)
         {
             typedef typename Transform::writer_type Writer;
+            typedef Serializer<Writer, Protocols> Serializer;
 
             typename Writer::Pass0::Buffer output;
-            typename Writer::Pass0 pass0(output, transform.Serializer<Writer>::_output);
+            typename Writer::Pass0 pass0(output, transform.Serializer::_output);
 
-            Apply(transform.Rebind(pass0), value);
-            return transform.Serializer<Writer>::_output.WithPass0(pass0), Apply(transform, value);
+            Apply<Protocols>(transform.Rebind(pass0), value);
+            return transform.Serializer::_output.WithPass0(pass0), Apply<Protocols>(transform, value);
         }
 
     } // namespace detail

@@ -6,9 +6,8 @@
 #include <bond/core/containers.h>
 #include <bond/core/blob.h>
 #include <bond/core/traits.h>
-
-#include <cstring>
 #include <boost/static_assert.hpp>
+#include <cstring>
 
 namespace bond
 {
@@ -116,6 +115,8 @@ public:
 
     void Read(double& value)
     {
+        BOOST_STATIC_ASSERT(sizeof(double) == sizeof(uint64_t));
+
         uint8_t sign;
         uint8_t exponent;
         uint32_t mantissa;
@@ -129,12 +130,13 @@ public:
             exponent = 0x80;
 
         uint64_t bits = ((uint64_t)(sign) << 63) | ((uint64_t)(exponent) << (52 + 3)) | (uint64_t)mantissa;
-
-        *reinterpret_cast<uint64_t*>(&value) = bits;
+        std::memcpy(&value, &bits, sizeof(bits));
     }
 
     void Read(float& value)
     {
+        BOOST_STATIC_ASSERT(sizeof(float) == sizeof(uint32_t));
+
         uint8_t sign;
         uint8_t exponent;
         uint16_t mantissa;
@@ -148,8 +150,7 @@ public:
             exponent = 0x80;
 
         uint32_t bits = ((uint32_t)(sign) << 31) | ((uint32_t)(exponent) << 23) | (uint32_t)mantissa;
-
-        *reinterpret_cast<uint32_t*>(&value) = bits;
+        std::memcpy(&value, &bits, sizeof(bits));
     }
 
     template <typename T>

@@ -8,11 +8,23 @@
  * Using boost/test/included/unit_test.hpp on *nix causes segfaults during
  * teardown in some suites.
  */
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4702) // C4702: unreachable code
+#endif
+
 #if defined(_WIN32)
     #include <boost/test/included/unit_test.hpp>
 #else
     #include <boost/test/unit_test.hpp>
 #endif
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
+#include "../logging.h"
 
 extern bool init_unit_test();
 

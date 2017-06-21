@@ -1,0 +1,19 @@
+namespace tests
+
+struct Params {}
+struct Result {}
+
+service Foo
+{
+    Result foo(Params);
+}
+
+service Bar<T> : Foo
+{
+    Result bar(T);
+}
+
+service Bux : Bar<Params>
+{
+    Result bux(Params);
+}

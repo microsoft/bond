@@ -8,14 +8,41 @@
 #define RAPIDJSON_PARSE_ERROR(err, offset) bond::RapidJsonException(rapidjson::GetParseError_En(err), offset)
 
 #include <bond/core/bond_const_enum.h>
+#include <bond/core/detail/sdl.h>
 #include <bond/core/exception.h>
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/locale.hpp>
+
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/error/en.h"
+
+// rapidjson/document.h v1.1 uses std::min/max in ways that conflict
+// with macros defined in windows. This works around the issue.
+#ifdef _MSC_VER
+#if defined(_WINDEF_) || defined(_MINWINDEF_)
+#ifndef NOMINMAX
+  #pragma push_macro("min")
+  #pragma push_macro("max")
+#undef min
+#undef max
+#endif
+#endif
+#endif
+
 #include "rapidjson/document.h"
+
+#ifdef _MSC_VER
+#if defined(_WINDEF_) || defined(_MINWINDEF_)
+#ifndef NOMINMAX
+  #pragma pop_macro("min")
+  #pragma pop_macro("max")
+#endif
+#endif
+#endif
+
 #include "rapidjson/writer.h"
+#include <algorithm>
 
 namespace bond
 {
@@ -238,10 +265,12 @@ template <typename T>
 typename boost::enable_if<is_string<T> >::type
 Read(const rapidjson::Value& value, T& var)
 {
-    uint32_t length = value.GetStringLength();
-
+    const uint32_t length = value.GetStringLength();
     resize_string(var, length);
-    memcpy(string_data(var), value.GetString(), length);
+
+    std::copy(make_checked_array_iterator(value.GetString(), length),
+              make_checked_array_iterator(value.GetString(), length, length),
+              make_checked_array_iterator(string_data(var), length));
 }
 
 
@@ -250,13 +279,19 @@ template <typename T>
 typename boost::enable_if<is_wstring<T> >::type
 Read(const rapidjson::Value& value, T& var)
 {
-    std::basic_string<uint16_t> str =
+    const std::basic_string<uint16_t> str =
         boost::locale::conv::utf_to_utf<uint16_t>(
-            value.GetString(), value.GetString() + value.GetStringLength(), boost::locale::conv::stop);
-    const uint32_t length = static_cast<uint32_t>(str.size());
+            value.GetString(),
+            value.GetString() + value.GetStringLength(),
+            boost::locale::conv::stop);
 
-    resize_string(var, length);
-    std::copy(str.begin(), str.end(), string_data(var));
+    const size_t length = str.size();
+    resize_string(var, static_cast<uint32_t>(length));
+
+    std::copy(
+        str.begin(),
+        str.end(),
+        make_checked_array_iterator(string_data(var), length));
 }
 
 

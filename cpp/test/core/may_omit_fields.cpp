@@ -17,18 +17,14 @@ public:
 namespace bond
 {
     // Override optional field omitting for CompactBinary and FastBinary
-    template <> struct 
+    template <> struct
     may_omit_fields<CompactBinaryWriter<MyOutputBuffer> >
-    {
-        static const bool value = false;
-    };
+        : std::false_type {};
 
 
     template <> struct 
     may_omit_fields<FastBinaryWriter<MyOutputBuffer> >
-    {
-        static const bool value = false;
-    };
+        : std::false_type {};
 }
 
 
@@ -49,8 +45,8 @@ TEST_CASE_BEGIN(DontOmit)
     Reader reader(input);
     Deserialize(reader, to);
 
-    UT_AssertIsTrue(from.field1 == to.field1);
-    UT_AssertIsTrue(from.field2 == to.field2);
+    UT_Compare(from.field1, to.field1);
+    UT_Compare(from.field2, to.field2);
 }
 TEST_CASE_END
 

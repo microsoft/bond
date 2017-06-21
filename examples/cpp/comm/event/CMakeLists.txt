@@ -1,3 +1,3 @@
-add_bond_test (event event.bond event.cpp COMM)
+add_bond_test (event_example event.bond event.cpp COMM)
 
-target_compile_definitions (event PRIVATE -D_WIN32_WINNT=0x0600)
+target_compile_definitions (event_example PRIVATE -D_WIN32_WINNT=0x0600)

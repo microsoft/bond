@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <BuildFramework Condition="'$(Configuration)' == 'Net40'">net40</BuildFramework>
@@ -36,7 +36,7 @@
     <Compile Include="Interfaces\TestHelpers.cs" />
     <Compile Include="Interfaces\ListenerTests.cs" />
     <BondCodegen Include="comm-test.bond">
-      <Options>--namespace=unittest.comm=UnitTest.Comm</Options>
+      <Options>--namespace=unittest.comm=UnitTest.Comm --comm</Options>
     </BondCodegen>
     <Compile Include="Layers\LayerStackTests.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
@@ -45,11 +45,12 @@
     <Compile Include="SimpleInMem\SimpleInMemListenerTest.cs" />
     <Compile Include="SimpleInMem\SimpleInMemTransportTest.cs" />
     <BondCodegen Include="SimpleInMem\SimpleStruct.bond">
-      <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
+      <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem --comm</Options>
     </BondCodegen>
     <BondCodegen Include="SimpleInMem\Calculator.bond">
-      <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem</Options>
+      <Options>--namespace=unittest.simpleinmem=UnitTest.SimpleInMem --comm</Options>
     </BondCodegen>
+    <Compile Include="Epoxy\CleanupCollectionTests.cs" />
     <Compile Include="Epoxy\EpoxyConnectionTests.cs" />
     <Compile Include="Epoxy\EpoxyListenerTests.cs" />
     <Compile Include="Epoxy\EpoxyProtocolTests.cs" />

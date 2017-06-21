@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CommCompatShared</RootNamespace>
     <AssemblyName>CommCompatShared</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
@@ -16,7 +16,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <BondCodegen Include="..\..\..\..\..\test\compat\comm\pingpong.bond" />
+    <BondCodegen Include="..\..\..\..\..\test\compat\comm\pingpong.bond">
+      <Options>--comm</Options>
+    </BondCodegen>
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\pingpong_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\pingpong_interfaces.cs" />

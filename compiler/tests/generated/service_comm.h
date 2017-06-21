@@ -4,6 +4,7 @@
 #include <bond/comm/services.h>
 #include "service_types.h"
 #include "basic_types_comm.h"
+#include "namespace_basic_types_comm.h"
 
 namespace tests
 {
@@ -16,9 +17,13 @@ namespace tests
 
         virtual void foo12(const ::bond::comm::payload<void>& input) = 0;
 
+        virtual void foo12_impl(const ::bond::comm::payload<void>& input) = 0;
+
         virtual void foo13(const ::bond::comm::payload< ::tests::BasicTypes>& input) = 0;
 
         virtual void foo14(const ::bond::comm::payload< ::tests::dummy>& input) = 0;
+
+        virtual void foo15(const ::bond::comm::payload< ::tests2::OtherBasicTypes>& input) = 0;
 
         virtual void foo21(const ::bond::comm::payload<void>& input,
             const std::function<void (const ::bond::comm::message<void>&)>& callback) = 0;
@@ -41,6 +46,9 @@ namespace tests
         virtual void foo33(const ::bond::comm::payload< ::tests::BasicTypes>& input,
             const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) = 0;
 
+        virtual void _rd_foo33(const ::bond::comm::payload< ::tests::BasicTypes>& input,
+            const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) = 0;
+
         virtual void foo34(const ::bond::comm::payload< ::tests::dummy>& input,
             const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) = 0;
 
@@ -56,6 +64,9 @@ namespace tests
         virtual void foo44(const ::bond::comm::payload< ::tests::dummy>& input,
             const std::function<void (const ::bond::comm::message< ::tests::dummy>&)>& callback) = 0;
 
+        virtual void cq(const ::bond::comm::payload<void>& input,
+            const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) = 0;
+
         struct Schema;
         class Proxy;
 
@@ -69,8 +80,10 @@ namespace tests
 
         private: static const ::bond::Metadata s_foo11_metadata;
         private: static const ::bond::Metadata s_foo12_metadata;
+        private: static const ::bond::Metadata s_foo12_impl_metadata;
         private: static const ::bond::Metadata s_foo13_metadata;
         private: static const ::bond::Metadata s_foo14_metadata;
+        private: static const ::bond::Metadata s_foo15_metadata;
         private: static const ::bond::Metadata s_foo21_metadata;
         private: static const ::bond::Metadata s_foo22_metadata;
         private: static const ::bond::Metadata s_foo23_metadata;
@@ -78,11 +91,13 @@ namespace tests
         private: static const ::bond::Metadata s_foo31_metadata;
         private: static const ::bond::Metadata s_foo32_metadata;
         private: static const ::bond::Metadata s_foo33_metadata;
+        private: static const ::bond::Metadata s__rd_foo33_metadata;
         private: static const ::bond::Metadata s_foo34_metadata;
         private: static const ::bond::Metadata s_foo41_metadata;
         private: static const ::bond::Metadata s_foo42_metadata;
         private: static const ::bond::Metadata s_foo43_metadata;
         private: static const ::bond::Metadata s_foo44_metadata;
+        private: static const ::bond::Metadata s_cq_metadata;
 
         public: struct service
         {
@@ -104,6 +119,14 @@ namespace tests
 
             typedef ::bond::reflection::MethodTemplate<
                 Foo,
+                ::bond::comm::payload<void>,
+                void,
+                &Foo::foo12_impl,
+                &s_foo12_impl_metadata
+            > foo12_impl;
+
+            typedef ::bond::reflection::MethodTemplate<
+                Foo,
                 ::bond::comm::payload< ::tests::BasicTypes>,
                 void,
                 &Foo::foo13,
@@ -117,6 +140,14 @@ namespace tests
                 &Foo::foo14,
                 &s_foo14_metadata
             > foo14;
+
+            typedef ::bond::reflection::MethodTemplate<
+                Foo,
+                ::bond::comm::payload< ::tests2::OtherBasicTypes>,
+                void,
+                &Foo::foo15,
+                &s_foo15_metadata
+            > foo15;
 
             typedef ::bond::reflection::MethodTemplate<
                 Foo,
@@ -176,6 +207,14 @@ namespace tests
 
             typedef ::bond::reflection::MethodTemplate<
                 Foo,
+                ::bond::comm::payload< ::tests::BasicTypes>,
+                ::bond::comm::message< ::tests::BasicTypes>,
+                &Foo::_rd_foo33,
+                &s__rd_foo33_metadata
+            > _rd_foo33;
+
+            typedef ::bond::reflection::MethodTemplate<
+                Foo,
                 ::bond::comm::payload< ::tests::dummy>,
                 ::bond::comm::message< ::tests::BasicTypes>,
                 &Foo::foo34,
@@ -213,27 +252,39 @@ namespace tests
                 &Foo::foo44,
                 &s_foo44_metadata
             > foo44;
+
+            typedef ::bond::reflection::MethodTemplate<
+                Foo,
+                ::bond::comm::payload<void>,
+                ::bond::comm::message< ::tests::BasicTypes>,
+                &Foo::cq,
+                &s_cq_metadata
+            > cq;
         };
 
         private: typedef boost::mpl::list<> methods0;
-        private: typedef boost::mpl::push_front<methods0, service::foo44>::type methods1;
-        private: typedef boost::mpl::push_front<methods1, service::foo43>::type methods2;
-        private: typedef boost::mpl::push_front<methods2, service::foo42>::type methods3;
-        private: typedef boost::mpl::push_front<methods3, service::foo41>::type methods4;
-        private: typedef boost::mpl::push_front<methods4, service::foo34>::type methods5;
-        private: typedef boost::mpl::push_front<methods5, service::foo33>::type methods6;
-        private: typedef boost::mpl::push_front<methods6, service::foo32>::type methods7;
-        private: typedef boost::mpl::push_front<methods7, service::foo31>::type methods8;
-        private: typedef boost::mpl::push_front<methods8, service::foo24>::type methods9;
-        private: typedef boost::mpl::push_front<methods9, service::foo23>::type methods10;
-        private: typedef boost::mpl::push_front<methods10, service::foo22>::type methods11;
-        private: typedef boost::mpl::push_front<methods11, service::foo21>::type methods12;
-        private: typedef boost::mpl::push_front<methods12, service::foo14>::type methods13;
-        private: typedef boost::mpl::push_front<methods13, service::foo13>::type methods14;
-        private: typedef boost::mpl::push_front<methods14, service::foo12>::type methods15;
-        private: typedef boost::mpl::push_front<methods15, service::foo11>::type methods16;
+        private: typedef boost::mpl::push_front<methods0, service::cq>::type methods1;
+        private: typedef boost::mpl::push_front<methods1, service::foo44>::type methods2;
+        private: typedef boost::mpl::push_front<methods2, service::foo43>::type methods3;
+        private: typedef boost::mpl::push_front<methods3, service::foo42>::type methods4;
+        private: typedef boost::mpl::push_front<methods4, service::foo41>::type methods5;
+        private: typedef boost::mpl::push_front<methods5, service::foo34>::type methods6;
+        private: typedef boost::mpl::push_front<methods6, service::_rd_foo33>::type methods7;
+        private: typedef boost::mpl::push_front<methods7, service::foo33>::type methods8;
+        private: typedef boost::mpl::push_front<methods8, service::foo32>::type methods9;
+        private: typedef boost::mpl::push_front<methods9, service::foo31>::type methods10;
+        private: typedef boost::mpl::push_front<methods10, service::foo24>::type methods11;
+        private: typedef boost::mpl::push_front<methods11, service::foo23>::type methods12;
+        private: typedef boost::mpl::push_front<methods12, service::foo22>::type methods13;
+        private: typedef boost::mpl::push_front<methods13, service::foo21>::type methods14;
+        private: typedef boost::mpl::push_front<methods14, service::foo15>::type methods15;
+        private: typedef boost::mpl::push_front<methods15, service::foo14>::type methods16;
+        private: typedef boost::mpl::push_front<methods16, service::foo13>::type methods17;
+        private: typedef boost::mpl::push_front<methods17, service::foo12_impl>::type methods18;
+        private: typedef boost::mpl::push_front<methods18, service::foo12>::type methods19;
+        private: typedef boost::mpl::push_front<methods19, service::foo11>::type methods20;
 
-        public: typedef methods16::type methods;
+        public: typedef methods20::type methods;
         
     };
     
@@ -276,6 +327,16 @@ namespace tests
             _impl->foo12(::bond::comm::payload<void>());
         }
 
+        void foo12_impl(const ::bond::comm::payload<void>& input) override
+        {
+            _impl->foo12_impl(input);
+        }
+
+        void foo12_impl()
+        {
+            _impl->foo12_impl(::bond::comm::payload<void>());
+        }
+
         void foo13(const ::bond::comm::payload< ::tests::BasicTypes>& input) override
         {
             _impl->foo13(input);
@@ -294,6 +355,16 @@ namespace tests
         void foo14(const ::tests::dummy& input)
         {
             _impl->foo14(boost::cref(input));
+        }
+
+        void foo15(const ::bond::comm::payload< ::tests2::OtherBasicTypes>& input) override
+        {
+            _impl->foo15(input);
+        }
+
+        void foo15(const ::tests2::OtherBasicTypes& input)
+        {
+            _impl->foo15(boost::cref(input));
         }
 
         void foo21(const ::bond::comm::payload<void>& input,
@@ -380,6 +451,18 @@ namespace tests
             _impl->foo33(boost::cref(input), callback);
         }
 
+        void _rd_foo33(const ::bond::comm::payload< ::tests::BasicTypes>& input,
+            const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) override
+        {
+            _impl->_rd_foo33(input, callback);
+        }
+
+        void _rd_foo33(const ::tests::BasicTypes& input,
+            const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback)
+        {
+            _impl->_rd_foo33(boost::cref(input), callback);
+        }
+
         void foo34(const ::bond::comm::payload< ::tests::dummy>& input,
             const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) override
         {
@@ -440,6 +523,18 @@ namespace tests
             _impl->foo44(boost::cref(input), callback);
         }
 
+        void cq(const ::bond::comm::payload<void>& input,
+            const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) override
+        {
+            _impl->cq(input, callback);
+        }
+
+        void cq(
+            const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback)
+        {
+            _impl->cq(::bond::comm::payload<void>(), callback);
+        }
+
         template <template <typename> class Promise>
         class Using;
 
@@ -468,6 +563,11 @@ namespace tests
                 _proxy.Send(_name, Schema::service::foo12::metadata.name, input);
             }
 
+            void foo12_impl(const ::bond::comm::payload<void>& input) override
+            {
+                _proxy.Send(_name, Schema::service::foo12_impl::metadata.name, input);
+            }
+
             void foo13(const ::bond::comm::payload< ::tests::BasicTypes>& input) override
             {
                 _proxy.Send(_name, Schema::service::foo13::metadata.name, input);
@@ -476,6 +576,11 @@ namespace tests
             void foo14(const ::bond::comm::payload< ::tests::dummy>& input) override
             {
                 _proxy.Send(_name, Schema::service::foo14::metadata.name, input);
+            }
+
+            void foo15(const ::bond::comm::payload< ::tests2::OtherBasicTypes>& input) override
+            {
+                _proxy.Send(_name, Schema::service::foo15::metadata.name, input);
             }
 
             void foo21(const ::bond::comm::payload<void>& input,
@@ -520,6 +625,12 @@ namespace tests
                 _proxy.Send(_name, Schema::service::foo33::metadata.name, input, callback);
             }
 
+            void _rd_foo33(const ::bond::comm::payload< ::tests::BasicTypes>& input,
+                const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) override
+            {
+                _proxy.Send(_name, Schema::service::_rd_foo33::metadata.name, input, callback);
+            }
+
             void foo34(const ::bond::comm::payload< ::tests::dummy>& input,
                 const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) override
             {
@@ -548,6 +659,12 @@ namespace tests
                 const std::function<void (const ::bond::comm::message< ::tests::dummy>&)>& callback) override
             {
                 _proxy.Send(_name, Schema::service::foo44::metadata.name, input, callback);
+            }
+
+            void cq(const ::bond::comm::payload<void>& input,
+                const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) override
+            {
+                _proxy.Send(_name, Schema::service::cq::metadata.name, input, callback);
             }
 
         private:
@@ -582,6 +699,9 @@ namespace tests
         virtual auto foo33(const ::bond::comm::payload< ::tests::BasicTypes>& input)
             -> decltype(std::declval< Promise< ::bond::comm::message< ::tests::BasicTypes>>>().get_future()) = 0;
 
+        virtual auto _rd_foo33(const ::bond::comm::payload< ::tests::BasicTypes>& input)
+            -> decltype(std::declval< Promise< ::bond::comm::message< ::tests::BasicTypes>>>().get_future()) = 0;
+
         virtual auto foo34(const ::bond::comm::payload< ::tests::dummy>& input)
             -> decltype(std::declval< Promise< ::bond::comm::message< ::tests::BasicTypes>>>().get_future()) = 0;
 
@@ -596,6 +716,9 @@ namespace tests
 
         virtual auto foo44(const ::bond::comm::payload< ::tests::dummy>& input)
             -> decltype(std::declval< Promise< ::bond::comm::message< ::tests::dummy>>>().get_future()) = 0;
+
+        virtual auto cq(const ::bond::comm::payload<void>& input)
+            -> decltype(std::declval< Promise< ::bond::comm::message< ::tests::BasicTypes>>>().get_future()) = 0;
 
         void foo21(const ::bond::comm::payload<void>& input,
             const std::function<void (const ::bond::comm::message<void>&)>& callback) override
@@ -639,6 +762,12 @@ namespace tests
             when(foo33(input), ::bond::comm::Continuation(callback));
         }
 
+        void _rd_foo33(const ::bond::comm::payload< ::tests::BasicTypes>& input,
+            const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) override
+        {
+            when(_rd_foo33(input), ::bond::comm::Continuation(callback));
+        }
+
         void foo34(const ::bond::comm::payload< ::tests::dummy>& input,
             const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) override
         {
@@ -667,6 +796,12 @@ namespace tests
             const std::function<void (const ::bond::comm::message< ::tests::dummy>&)>& callback) override
         {
             when(foo44(input), ::bond::comm::Continuation(callback));
+        }
+
+        void cq(const ::bond::comm::payload<void>& input,
+            const std::function<void (const ::bond::comm::message< ::tests::BasicTypes>&)>& callback) override
+        {
+            when(cq(input), ::bond::comm::Continuation(callback));
         }
     };
 
@@ -846,6 +981,29 @@ namespace tests
         }
         
 
+        using Foo::Proxy::_rd_foo33;
+
+        auto _rd_foo33(const ::bond::comm::payload< ::tests::BasicTypes>& input)
+            -> decltype(std::declval< Promise< ::bond::comm::message< ::tests::BasicTypes>>>().get_future())
+        {
+            auto promise = boost::make_shared<Promise< ::bond::comm::message< ::tests::BasicTypes>>>();
+
+            _impl->_rd_foo33(input,
+                [=](const ::bond::comm::message< ::tests::BasicTypes>& result) mutable
+                {
+                    promise->set_value(result);
+                });
+
+            return promise->get_future();
+        }
+
+        auto _rd_foo33(const ::tests::BasicTypes& input)
+            -> decltype(std::declval< Promise< ::bond::comm::message< ::tests::BasicTypes>>>().get_future())
+        {
+            return _rd_foo33(::bond::comm::payload< ::tests::BasicTypes>(boost::cref(input)));
+        }
+        
+
         using Foo::Proxy::foo34;
 
         auto foo34(const ::bond::comm::payload< ::tests::dummy>& input)
@@ -958,6 +1116,28 @@ namespace tests
             return foo44(::bond::comm::payload< ::tests::dummy>(boost::cref(input)));
         }
         
+
+        using Foo::Proxy::cq;
+
+        auto cq(const ::bond::comm::payload<void>& input)
+            -> decltype(std::declval< Promise< ::bond::comm::message< ::tests::BasicTypes>>>().get_future())
+        {
+            auto promise = boost::make_shared<Promise< ::bond::comm::message< ::tests::BasicTypes>>>();
+
+            _impl->cq(input,
+                [=](const ::bond::comm::message< ::tests::BasicTypes>& result) mutable
+                {
+                    promise->set_value(result);
+                });
+
+            return promise->get_future();
+        }
+
+        auto cq()
+            -> decltype(std::declval< Promise< ::bond::comm::message< ::tests::BasicTypes>>>().get_future())
+        {
+            return cq(::bond::comm::payload<void>());
+        }
     };
     
 

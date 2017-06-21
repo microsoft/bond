@@ -48,10 +48,19 @@ TEST_CASE_BEGIN(OutputBufferBlobs)
         std::vector<bond::blob> buffers;
         stream.GetBuffers(buffers);
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4127) // conditional expression is constant
+#endif // _MSC_VER
+
         if (Reader::magic == bond::SIMPLE_JSON_PROTOCOL)
             UT_AssertAreEqual(std::size_t(1), buffers.size());
         else
             UT_AssertAreEqual(blobs.blobs.size() * 2 + 1, buffers.size());
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
     }
 
     {

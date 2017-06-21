@@ -44,9 +44,6 @@
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Util.hs">
       <Filter>Bond\Codegen</Filter>
     </None>
-    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Reflection_h.hs">
-      <Filter>Bond\Codegen\Cpp</Filter>
-    </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_cpp.hs">
       <Filter>Bond\Codegen\Cpp</Filter>
     </None>
@@ -56,10 +53,19 @@
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\ApplyOverloads.hs">
       <Filter>Bond\Codegen\Cpp</Filter>
     </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Comm_cpp.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
+    </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Comm_h.hs">
       <Filter>Bond\Codegen\Cpp</Filter>
     </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Enum_h.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Grpc_h.hs">
+      <Filter>Bond\Codegen\Cpp</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Reflection_h.hs">
       <Filter>Bond\Codegen\Cpp</Filter>
     </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_cpp.hs">
@@ -78,6 +84,9 @@
       <Filter>Bond\Codegen\Cs</Filter>
     </None>
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Util.hs">
+      <Filter>Bond\Codegen\Cs</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Grpc_cs.hs">
       <Filter>Bond\Codegen\Cs</Filter>
     </None>
   </ItemGroup>

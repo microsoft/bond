@@ -1,11 +1,41 @@
-#include <iostream>
-#include "input_file.h"
 #include "cmd_arg_reflection.h"
+#include "err.h"
+#include "input_file.h"
 #include <bond/core/cmdargs.h>
-#include <bond/stream/stdio_output_stream.h>
 #include <bond/protocol/simple_json_writer.h>
+#include <bond/stream/stdio_output_stream.h>
+#include <errno.h>
+#include <iostream>
+#include <stdio.h>
 
 using namespace bf;
+
+FILE* OpenFile(const char* path, const char* mode)
+{
+    FILE* file;
+
+#ifdef _MSC_VER
+
+    // Under the compiler settings we use with MSVC, fopen is not considered
+    // "secure", so we use the "secure" variant.
+    errno_t err = fopen_s(&file, path, mode);
+    if (err != 0)
+    {
+        BOND_THROW(bond::StreamException, "Error " << ErrorString(err) << " opening file " << path);
+    }
+
+#else
+
+    file = fopen(path, mode);
+    if (file == nullptr)
+    {
+        BOND_THROW(bond::StreamException, "Error " << ErrorString(errno) << " opening file " << path);
+    }
+
+#endif
+
+    return file;
+}
 
 inline bool IsValidType(bond::BondDataType type)
 {
@@ -67,6 +97,21 @@ bool TryProtocol(Reader reader, int confidence = 5)
 }
 
 
+// Here using a bond::InputBuffer for marshaled bonded protocols
+// instead of defaulted one because corresponding CreateInputBuffer
+// returns bond::InputBuffer instead of InputFile.
+using MarshaledBondedProtocols = bond::Protocols<bond::CompactBinaryReader<bond::InputBuffer> >;
+
+using NewProtocols = bond::BuiltInProtocols::Append<
+    bond::CompactBinaryReader<InputFile>,
+    bond::FastBinaryReader<InputFile>,
+    bond::SimpleBinaryReader<InputFile, MarshaledBondedProtocols>,
+    bond::SimpleJsonReader<InputFile>,
+    bond::CompactBinaryReader<InputFile&>,
+    bond::FastBinaryReader<InputFile&>,
+    bond::SimpleBinaryReader<InputFile&, MarshaledBondedProtocols>,
+    bond::SimpleJsonReader<InputFile&> >;
+
 Protocol Guess(InputFile input)
 {
     uint16_t word;
@@ -104,8 +149,8 @@ bond::SchemaDef LoadSchema(const std::string& file)
     tryJson.Read(c);
 
     return (c == '{')
-        ? bond::Deserialize<bond::SchemaDef>(bond::SimpleJsonReader<InputFile>(input))
-        : bond::Unmarshal<bond::SchemaDef>(input);
+        ? bond::Deserialize<bond::SchemaDef, NewProtocols>(bond::SimpleJsonReader<InputFile>(input))
+        : bond::Unmarshal<bond::SchemaDef, NewProtocols>(input);
 }
 
 template <typename Reader, typename Writer>
@@ -114,11 +159,11 @@ void TranscodeFromTo(Reader& reader, Writer& writer, const Options& options)
     if (!options.schema.empty() && !options.schema.front().empty())
     {
         bond::SchemaDef schema(LoadSchema(options.schema.front()));
-        bond::bonded<void, typename bond::ProtocolReader<typename Reader::Buffer> >(reader, bond::RuntimeSchema(schema)).Serialize(writer);
+        bond::bonded<void, bond::ProtocolReader>(reader, bond::RuntimeSchema(schema)).template Serialize<NewProtocols>(writer);
     }
     else
     {
-        bond::bonded<UnknownSchema, typename bond::ProtocolReader<typename Reader::Buffer> >(reader).Serialize(writer);
+        bond::bonded<UnknownSchema, bond::ProtocolReader>(reader).template Serialize<NewProtocols>(writer);
     }
 }
 
@@ -129,11 +174,11 @@ void TranscodeFromTo(InputFile& input, Writer& writer, const Options& options)
     if (!options.schema.empty() && !options.schema.front().empty())
     {
         bond::SchemaDef schema(LoadSchema(options.schema.front()));
-        bond::SelectProtocolAndApply(bond::RuntimeSchema(schema), input, SerializeTo(writer));
+        bond::SelectProtocolAndApply<NewProtocols>(bond::RuntimeSchema(schema), input, bond::SerializeTo<NewProtocols>(writer));
     }
     else
     {
-        bond::SelectProtocolAndApply<UnknownSchema>(input, SerializeTo(writer));
+        bond::SelectProtocolAndApply<UnknownSchema, NewProtocols>(input, bond::SerializeTo<NewProtocols>(writer));
     }
 }
 
@@ -144,9 +189,13 @@ bool TranscodeFrom(Reader reader, const Options& options)
     FILE* file;
 
     if (options.output == "stdout")
+    {
         file = stdout;
+    }
     else
-        file = fopen(options.output.c_str(), "wb");
+    {
+        file = OpenFile(options.output.c_str(), "wb");
+    }
 
     bond::StdioOutputStream out(file);
 
@@ -271,4 +320,3 @@ int main(int argc, char** argv)
 
     return 1;
 }
-

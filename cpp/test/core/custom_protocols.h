@@ -1,10 +1,12 @@
 #pragma once
 
 #include <bond/core/customize.h>
+#include <bond/core/protocol.h>
 #include <bond/protocol/compact_binary.h>
+#include <bond/stream/input_buffer.h>
+
 #include "untagged_protocol.h"
-#include <boost/mpl/list.hpp>
-#include <boost/mpl/push_front.hpp>
+
 
 namespace unit_test
 {
@@ -20,9 +22,22 @@ namespace unit_test
         typedef bond::DynamicParser<TestReader&> Parser;
         typedef TestWriter<Buffer>               Writer;
 
+        BOND_STATIC_CONSTEXPR uint16_t magic = 0xEEEE;
+
         TestReader(typename boost::call_traits<Buffer>::param_type input)
             : bond::CompactBinaryReader<Buffer>(input)
         {}
+
+        bool ReadVersion()
+        {
+            uint16_t temp_magic;
+
+            this->_input.Read(temp_magic);
+            this->_input.Read(this->_version);
+
+            return temp_magic == TestReader::magic
+                && this->_version <= TestReader::version;
+        }
 
         bool operator==(const TestReader& rhs) const
         {
@@ -44,46 +59,80 @@ namespace unit_test
     {
     public:
         typedef bond::DynamicParser<TestWriter&> Parser;
+        typedef TestReader<Buffer>               Reader;
 
         TestWriter(Buffer& output)
             : bond::CompactBinaryWriter<Buffer>(output)
         {}
 
+        void WriteVersion()
+        {
+            this->_output.Write(Reader::magic);
+            this->_output.Write(this->_version);
+        }
+
         void WriteStructBegin(const bond::Metadata& /*metadata*/, bool /*base*/)
         {}
     };
-}
 
-namespace bond
-{
-    // Add TestReader to the list of protocols used by Bond
-    template <> struct
-    customize<protocols>
+    class CustomInputBuffer
     {
-        template <typename T> struct
-        modify
-        {
-            typedef typename boost::mpl::push_front<
-                T, unit_test::TestReader<InputBuffer>
-            >::type type1;
- 
-            typedef typename boost::mpl::push_front<
-                type1, UntaggedProtocolReader<InputBuffer>
-            >::type type;
-        };
-    };
+    public:
+        CustomInputBuffer(const bond::blob& blob)
+            : _buffer{ blob }
+        {}
 
-    // Protocols are disabled by default and we leave TestReader disabled
-    // and enable it only in custom_protocol.cpp and UntaggedProtocolReader
-    // in pass_through.cpp.
+        bool operator==(const CustomInputBuffer& rhs) const
+        {
+            return _buffer == rhs._buffer;
+        }
+
+        template <typename T>
+        void Read(T& value)
+        {
+            _buffer.Read(value);
+        }
+
+        void Read(void *buffer, uint32_t size)
+        {
+            _buffer.Read(buffer, size);
+        }
+
+        void Read(bond::blob& blob, uint32_t size)
+        {
+            _buffer.Read(blob, size);
+        }
+
+        void Skip(uint32_t size)
+        {
+            _buffer.Skip(size);
+        }
+
+        bool IsEof() const
+        {
+            return _buffer.IsEof();
+        }
+
+    private:
+        friend bond::blob GetCurrentBuffer(const CustomInputBuffer& input)
+        {
+            return GetCurrentBuffer(input._buffer);
+        }
+
+
+        bond::InputBuffer _buffer;
+    };
 }
 
 namespace bond
 {
-    // Enable UntaggedProtocolReader in this file
+    BOND_DEFINE_BUFFER_MAGIC(unit_test::CustomInputBuffer, 0x4243 /*CB*/);
+
     template <typename Buffer> struct 
     is_protocol_enabled<UntaggedProtocolReader<Buffer> >
-    {
-        static const bool value = true;
-    };
+        : std::true_type {};
+
+    template <typename Buffer> struct 
+    is_protocol_enabled<unit_test::TestReader<Buffer> >
+        : std::true_type {};
 }

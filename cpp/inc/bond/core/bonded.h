@@ -6,33 +6,36 @@
 #include "config.h"
 #include "protocol.h"
 #include "runtime_schema.h"
-#include "detail/protocol_visitors.h"
+#include "bond_fwd.h"
 #include "detail/double_pass.h"
+#include "detail/protocol_visitors.h"
 #include "detail/marshaled_bonded.h"
+
 
 namespace bond
 {
+namespace detail
+{
 
+template <typename Protocols, typename Transform, typename T, typename Reader>
+typename boost::disable_if<need_double_pass<Transform>, bool>::type inline
+ApplyTransform(const Transform& transform, const bonded<T, Reader>& bonded);
 
-template <typename T> struct
-is_bonded
-    : false_type {};
+template <typename Protocols, typename Transform, typename T, typename Reader>
+typename boost::enable_if<need_double_pass<Transform>, bool>::type inline
+ApplyTransform(const Transform& transform, const bonded<T, Reader>& bonded);
 
-
-template <typename T, typename Reader> struct
-is_bonded<bonded<T, Reader> >
-    : true_type {};
+} // namespace detail
 
 
 template <typename T, typename Reader, typename Unused = void> struct
 is_marshaled_bonded
-{
-    static const bool value = uses_marshaled_bonded<Reader, Unused>::value
-                           && is_bonded<T>::value;
-};
+    : std::integral_constant<bool,
+        uses_marshaled_bonded<Reader, Unused>::value
+        && is_bonded<T>::value> {};
 
 
-template <typename T, typename Buffer, typename Transform>
+template <typename T, typename Protocols, typename Buffer, typename Transform>
 inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
     Buffer& input,
     const Transform& transform);
@@ -152,46 +155,38 @@ public:
     }
 
     /// @brief Serialize bonded using specified protocol writer
-    template <typename Writer>
+    template <typename Protocols = BuiltInProtocols, typename Writer>
     void Serialize(Writer& output) const
     {
-        Apply(SerializeTo(output), *this);
-    }
-
-    /// @brief Deserialize an object of type T
-    T Deserialize() const
-    {
-        T tmp;
-        Apply(To<T>(tmp), *this);
-        return tmp;
+        Apply<Protocols>(SerializeTo<Protocols>(output), *this);
     }
 
     /// @brief Deserialize an object of type X
-    template <typename X>
+    template <typename X = T, typename Protocols = BuiltInProtocols>
     X Deserialize() const
     {
         X tmp;
-        Apply(To<X>(tmp), *this);
+        Apply<Protocols>(To<X, Protocols>(tmp), *this);
         return tmp;
     }
 
     /// @brief Deserialize to an object of type X
-    template <typename X>
+    template <typename Protocols = BuiltInProtocols, typename X>
     void Deserialize(X& var) const
     {
-        Apply(To<X>(var), *this);
+        Apply<Protocols>(To<X, Protocols>(var), *this);
     }
 
     /// @brief Deserialize to a bonded<U>
-    template <typename U>
+    template <typename Protocols = BuiltInProtocols, typename U>
     typename boost::enable_if<is_marshaled_bonded<T, Reader, U> >::type
     Deserialize(bonded<U>& var) const
     {
-        _SelectProtocolAndApply(boost::ref(var));
+        _SelectProtocolAndApply<Protocols>(boost::ref(var));
     }
 
 
-    template <typename U>
+    template <typename Protocols = BuiltInProtocols, typename U>
     typename boost::disable_if<is_marshaled_bonded<T, Reader, U> >::type
     Deserialize(bonded<U>& var) const
     {
@@ -200,10 +195,10 @@ public:
 
 
     /// @brief Update bonded<T> payload by merging it with an object of type X
-    template <typename X>
+    template <typename Protocols = BuiltInProtocols, typename X>
     void Merge(const X& var)
     {
-        detail::Merge(var, _data);
+        detail::Merge<Protocols>(var, _data);
     }
 
 
@@ -225,42 +220,42 @@ public:
     }
 
 
-    template <typename Transform, typename U, typename ReaderT>
+    template <typename Protocols, typename Transform, typename U, typename ReaderT>
     friend typename boost::disable_if<detail::need_double_pass<Transform>, bool>::type inline
-    Apply(const Transform& transform, const bonded<U, ReaderT>& bonded);
+    detail::ApplyTransform(const Transform& transform, const bonded<U, ReaderT>& bonded);
 
-    template <typename Transform, typename U, typename ReaderT>
+    template <typename Protocols, typename Transform, typename U, typename ReaderT>
     friend typename boost::enable_if<detail::need_double_pass<Transform>, bool>::type inline
-    Apply(const Transform& transform, const bonded<U, ReaderT>& bonded);
+    detail::ApplyTransform(const Transform& transform, const bonded<U, ReaderT>& bonded);
 
     template <typename U, typename ReaderT>
     friend class bonded;
 
 private:
     // Apply transform to serialized data
-    template <typename Transform>
+    template <typename Protocols, typename Transform>
     typename boost::enable_if<is_marshaled_bonded<T, Reader, Transform>, bool>::type
     _Apply(const Transform& transform) const
     {
-        return _SelectProtocolAndApply(transform);
+        return _SelectProtocolAndApply<Protocols>(transform);
     }
 
 
-    template <typename Transform>
+    template <typename Protocols, typename Transform>
     typename boost::disable_if<is_marshaled_bonded<T, Reader, Transform>, bool>::type
     _Apply(const Transform& transform) const
     {
         _skip = false;
-        return detail::Parse<T>(transform, _data, typename schema_for_passthrough<T>::type(), _schema.get(), _base);
+        return detail::Parse<T, Protocols>(transform, _data, typename schema_for_passthrough<T>::type(), _schema.get(), _base);
     }
 
 
-    template <typename Transform>
+    template <typename Protocols, typename Transform>
     bool _SelectProtocolAndApply(const Transform& transform) const
     {
         _skip = false;
-        InputBuffer input(detail::ReadBlob(_data));
-        return SelectProtocolAndApply<typename remove_bonded<T>::type>(input, transform).second;
+        auto input = CreateInputBuffer(_data.GetBuffer(), detail::ReadBlob(_data));
+        return SelectProtocolAndApply<typename remove_bonded<T>::type, Protocols>(input, transform).second;
     }
 
     Reader _data;

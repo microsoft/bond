@@ -4,19 +4,20 @@
 #pragma once
 
 #include "config.h"
-#include <bond/core/bond_const_enum.h>
+#include "detail/tags.h"
 #include <stdint.h>
+#include <boost/utility/enable_if.hpp>
 
 namespace bond
 {
 
+class blob;
 class InputBuffer;
 class RuntimeSchema;
 
-template <typename Buffer>
-struct ProtocolReader;
+class ProtocolReader;
 
-template <typename T, typename Reader = ProtocolReader<InputBuffer> >
+template <typename T, typename Reader = ProtocolReader>
 class bonded;
 
 template <typename Reader>
@@ -43,13 +44,15 @@ class DOMParser;
 template <typename T>
 class RequiredFieldValiadator;
 
-template <typename T, typename Validator = RequiredFieldValiadator<T> >
+struct BuiltInProtocols;
+
+template <typename T, typename Protocols = BuiltInProtocols, typename Validator = RequiredFieldValiadator<T> >
 class To;
 
 template <typename T, typename Enable = void> struct 
 schema_for_passthrough;
 
-template<typename T> struct 
+template<typename T, typename Enable = void> struct
 get_type_id;
 
 template <typename T> struct 
@@ -62,4 +65,26 @@ struct Metadata;
 
 struct qualified_name_tag;
 
-}
+template <typename Protocols = BuiltInProtocols, typename Transform, typename T, typename boost::enable_if<is_modifying_transform<Transform> >::type* = nullptr>
+bool Apply(const Transform& transform, T& value);
+
+template <typename Protocols = BuiltInProtocols, typename Transform, typename T>
+bool Apply(const Transform& transform, const T& value);
+
+template <typename Protocols = BuiltInProtocols, typename T, typename Writer>
+inline void Marshal(const T& obj, Writer& output);
+
+template <typename Writer, typename Protocols = BuiltInProtocols>
+class Marshaler;
+
+template <typename Protocols = BuiltInProtocols, typename Writer>
+Marshaler<Writer, Protocols> MarshalTo(Writer& output);
+
+template <typename Writer, typename Protocols = BuiltInProtocols>
+class Serializer;
+
+template <typename Protocols = BuiltInProtocols, typename Writer>
+Serializer<Writer, Protocols> SerializeTo(Writer& output);
+
+} // bond
+

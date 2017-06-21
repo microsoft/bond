@@ -1,0 +1,41 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+namespace PingPongNS;
+
+enum PingConstants
+{
+    Port = 25189;
+    NumRequests = 10;
+    NumEvents = 9;
+    NumErrors = 8;
+}
+
+enum PingAction
+{
+    Identity = 0;
+    Error = 1;
+}
+
+struct PingRequest
+{
+    0: string Payload;
+    1: PingAction Action = Identity;
+}
+
+struct PingResponse
+{
+    0: string Payload;
+}
+
+struct PingLayerData
+{
+    0: int32 data;
+}
+
+service PingPong
+{
+    PingResponse Ping(PingRequest);
+
+    nothing PingEvent(PingRequest);
+}

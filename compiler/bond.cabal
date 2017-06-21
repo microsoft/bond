@@ -2,7 +2,7 @@
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 name:               bond
-version:            0.7.0.0
+version:            0.9.0.0
 cabal-version:      >= 1.8
 tested-with:        GHC>=7.4.1
 synopsis:           Bond schema compiler and code generator
@@ -65,8 +65,10 @@ library
                     Language.Bond.Codegen.Cpp.Types_h
                     Language.Bond.Codegen.Cpp.Comm_cpp
                     Language.Bond.Codegen.Cpp.Comm_h
+                    Language.Bond.Codegen.Cpp.Grpc_h
                     Language.Bond.Codegen.Cs.Types_cs
                     Language.Bond.Codegen.Cs.Comm_cs
+                    Language.Bond.Codegen.Cs.Grpc_cs
                     Language.Bond.Codegen.Cpp.ApplyOverloads
                     Language.Bond.Codegen.Cpp.Util
                     Language.Bond.Codegen.Cs.Util
@@ -79,11 +81,15 @@ test-suite gbc-tests
   hs-source-dirs:   tests, .
   main-is:          Main.hs
   other-modules:    Tests.Codegen
+                    Tests.Codegen.Util
                     Tests.Syntax
   ghc-options:      -threaded -Wall
   build-depends:    bond,
                     aeson >= 0.7.0.6 && < 0.12.0.0,
                     aeson-pretty == 0.7.2,
+                    -- pinned to a lower version pending resolution of
+                    -- https://github.com/feuerbach/ansi-terminal/issues/22
+                    ansi-terminal < 0.6.3,
                     base >= 4.5 && < 5,
                     bytestring >= 0.10,
                     cmdargs >= 0.10.10,
@@ -91,7 +97,7 @@ test-suite gbc-tests
                     filepath >= 1.0,
                     monad-loops >= 0.4,
                     text >= 0.11,
-                    derive,
+                    derive < 2.6,
                     HUnit,
                     QuickCheck,
                     Diff >= 0.2 && < 0.4,

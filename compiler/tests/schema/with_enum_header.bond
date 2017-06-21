@@ -1,0 +1,69 @@
+namespace tests
+
+enum EnumType1
+{
+    EnumValue1 = 5,
+    EnumValue2 = 10,
+    EnumValue3 = -10,
+    EnumValue4 = 0x2A,
+    Low = 1,
+    EnumValue5 = 0xFFFFFFFFFFFFFFF6, //-10 in two's complement: 64-bits
+    EnumValue6 = 0xFFFFFFF6, //-10 in two's complement: 32-bits
+    Int32Min = -2147483648,
+    Int32Max = 2147483647,
+    UInt32Min = 0,
+    UInt32Max = 0xFFFFFFFF,
+}
+
+struct Foo
+{
+     0: bool m_bool_1 = true;
+     1: bool m_bool_2 = false;
+     2: bool m_bool_3 = nothing;
+
+     3: string m_str_1 = "default string value";
+     4: string m_str_2 = nothing;
+
+     5: int8 m_int8_4 = -127;
+     6: int8 m_int8_5 = nothing;
+
+     7: int16 m_int16_4 = -32767;
+     8: int16 m_int16_5 = nothing;
+
+     9: int32 m_int32_4 = nothing;
+    10: int32 m_int32_max = 2147483647;
+
+    11: int64 m_int64_4 = nothing;
+    12: int64 m_int64_max = 9223372036854775807;
+
+    13: uint8 m_uint8_2 = 255;
+    14: uint8 m_uint8_3 = nothing;
+
+    15: uint16 m_uint16_2 = 65535;
+    16: uint16 m_uint16_3 = nothing;
+
+    17: uint32 m_uint32_3 = nothing;
+    18: uint32 m_uint32_max = 4294967295;
+
+    19: uint64 m_uint64_3 = nothing;
+    20: uint64 m_uint64_max = 0xFFFFFFFFFFFFFFFF;
+
+    21: double m_double_3 = nothing;
+    22: double m_double_4 = -123.4567890;
+    23: double m_double_5 = -0.0;
+
+    24: float  m_float_3 = nothing;
+    25: float  m_float_4 = 2.71828183;
+    26: float  m_float_7 = +0.0;
+
+    27: EnumType1 m_enum1 = EnumValue1;
+    28: EnumType1 m_enum2 = EnumValue3;
+    29: EnumType1 m_enum3 = nothing;
+    30: EnumType1 m_enum_int32min = Int32Min;
+    31: EnumType1 m_enum_int32max = Int32Max;
+    32: EnumType1 m_enum_uint32_min = UInt32Min;
+    33: EnumType1 m_enum_uint32_max = UInt32Max;
+
+    34: wstring m_wstr_1 = L"default wstring value";
+    35: wstring m_wstr_2 = nothing;
+}

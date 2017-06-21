@@ -6,7 +6,7 @@
     using Bond;
     using NUnit.Framework;
     using Bond.Tag;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     [TestFixture]
     public class ReflectionTests
@@ -35,21 +35,21 @@
         [Test]
         public void FindMethodFromObject()
         {
-            Assert.AreEqual("ReadStructBegin", Reflection.FindMethod(typeof(ReaderA), "ReadStructBegin", new Type[0]).Name);
-            Assert.AreEqual(typeof(ReaderA), Reflection.FindMethod(typeof(ReaderA), "ReadStructBegin", new Type[0]).DeclaringType);
+            Assert.AreEqual("ReadStructBegin", ReflectionExtensions.FindMethod(typeof(ReaderA), "ReadStructBegin", new Type[0]).Name);
+            Assert.AreEqual(typeof(ReaderA), ReflectionExtensions.FindMethod(typeof(ReaderA), "ReadStructBegin", new Type[0]).DeclaringType);
         }
 
         [Test]
         public void FindMethodFromInterface()
         {
-            Assert.AreEqual("ReadStructBegin", Reflection.FindMethod(typeof(IReaderA), "ReadStructBegin", new Type[0]).Name);
-            Assert.AreEqual(typeof(IReaderA), Reflection.FindMethod(typeof(IReaderA), "ReadStructBegin", new Type[0]).DeclaringType);
+            Assert.AreEqual("ReadStructBegin", ReflectionExtensions.FindMethod(typeof(IReaderA), "ReadStructBegin", new Type[0]).Name);
+            Assert.AreEqual(typeof(IReaderA), ReflectionExtensions.FindMethod(typeof(IReaderA), "ReadStructBegin", new Type[0]).DeclaringType);
         }
 
         [Test]
         public void MultipleMethodsImplementedException()
         {
-            Assert.That(() => Reflection.FindMethod(typeof(IReaderAB), "ReadStructBegin", new Type[0]),
+            Assert.That(() => ReflectionExtensions.FindMethod(typeof(IReaderAB), "ReadStructBegin", new Type[0]),
                 Throws.TypeOf<System.Reflection.AmbiguousMatchException>()
                      .With.Message.Contains("FindMethod found more than one matching method"));
         }

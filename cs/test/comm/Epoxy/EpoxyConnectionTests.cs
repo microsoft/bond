@@ -5,7 +5,6 @@ namespace UnitTest.Epoxy
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Bond;
@@ -77,15 +76,12 @@ namespace UnitTest.Epoxy
             var testClientServer = await SetupTestClientServer<TestService>();
             EpoxyConnection connection = testClientServer.ClientConnection;
 
-            var stopTasks = new[] {connection.StopAsync(), connection.StopAsync()};
+            var stopTasks = Task.WhenAll(connection.StopAsync(), connection.StopAsync());
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
-            var allTasks = new List<Task>(stopTasks) { timeoutTask };
 
-            var completedTask = await Task.WhenAny(allTasks);
+            var completedTask = await Task.WhenAny(stopTasks, timeoutTask);
 
             Assert.AreNotSame(timeoutTask, completedTask, "Timed out waiting for connection to be shutdown.");
-
-            await connection.StopAsync();
         }
 
         [Test]

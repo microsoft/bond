@@ -24,40 +24,22 @@ namespace detail
 
 template <typename T, typename Enable = void> struct 
 hierarchy_depth
-{
-    static const uint16_t value = 1;
-};
+    : std::integral_constant<uint16_t, 1> {};
 
 
 template <typename T> struct 
 hierarchy_depth<T, typename boost::enable_if<is_class<typename schema<typename T::base>::type> >::type>
-{
-    static const uint16_t value = 1 + hierarchy_depth<typename schema<typename T::base>::type>::value;
-};
+    : std::integral_constant<uint16_t, 1 + hierarchy_depth<typename schema<typename T::base>::type>::value> {};
 
 
 template <typename T> struct 
 expected_depth
-{
-    static const uint16_t value = 0xffff;
-};
+    : std::integral_constant<uint16_t, 0xffff> {};
 
 
-template <typename T> struct 
-expected_depth<bond::To<T> >
-{
-    static const uint16_t value = hierarchy_depth<typename schema<T>::type>::value;
-};
-
-
-template <typename Input, typename T = void, typename Enable = void> struct 
-is_reader 
-    : false_type {};
-
-
-template <typename Input, typename T> struct 
-is_reader<Input&, T, typename boost::enable_if<is_class<typename Input::Parser> >::type>
-    : true_type {};
+template <typename T, typename Protocols, typename Validator> struct
+expected_depth<bond::To<T, Protocols, Validator> >
+    : hierarchy_depth<typename schema<T>::type> {};
 
 
 template <typename Base, typename T>

@@ -58,7 +58,7 @@ namespace Bond.Expressions
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     internal class DeserializerTransform<R>
     {
@@ -73,15 +73,15 @@ namespace Bond.Expressions
         readonly Dictionary<Type, int> deserializeIndex = new Dictionary<Type, int>();
         readonly Stack<Type> inProgress = new Stack<Type>();
         static readonly MethodInfo bondedConvert =
-            BondReflection.GenericMethodInfoOf((IBonded bonded) => bonded.Convert<object>());
+            Reflection.GenericMethodInfoOf((IBonded bonded) => bonded.Convert<object>());
         static readonly MethodInfo bondedDeserialize =
-            BondReflection.GenericMethodInfoOf((IBonded bonded) => bonded.Deserialize<object>());
+            Reflection.GenericMethodInfoOf((IBonded bonded) => bonded.Deserialize<object>());
         static readonly MethodInfo arrayResize =
-            BondReflection.GenericMethodInfoOf((object[] o) => Array.Resize(ref o, default(int)));
+            Reflection.GenericMethodInfoOf((object[] o) => Array.Resize(ref o, default(int)));
         static readonly ConstructorInfo arraySegmentCtor =
             typeof(ArraySegment<byte>).GetConstructor(typeof(byte[]), typeof(int), typeof(int));
         static readonly MethodInfo bufferBlockCopy =
-            BondReflection.MethodInfoOf((byte[] a) => Buffer.BlockCopy(a, default(int), a, default(int), default(int)));
+            Reflection.MethodInfoOf((byte[] a) => Buffer.BlockCopy(a, default(int), a, default(int), default(int)));
 
         public DeserializerTransform(
             Expression<Func<R, int, object>> deferredDeserialize,

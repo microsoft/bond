@@ -3,18 +3,21 @@
 
 #pragma once
 
-#include <bond/core/bond_fwd.h>
+#include <bond/core/bond_const_enum.h>
 #include "nonassignable.h"
+#include <type_traits>
 
 namespace bond
 {
+
+struct Metadata;
 
 // Used to get qualified name of enum using generated GetTypeName
 struct qualified_name_tag
 {};
 
 
-static const qualified_name_tag qualified_name = {};
+BOND_STATIC_CONSTEXPR qualified_name_tag qualified_name = {};
 
 
 // A serializing transform accepts fields of a structure
@@ -74,17 +77,17 @@ struct ModifyingTransform
 
 template <typename T, typename Unused = void> struct 
 is_serializing_transform
-    : is_base_of<SerializingTransform, T> {};
+    : std::is_base_of<SerializingTransform, T> {};
 
 
 template <typename T, typename Unused = void> struct 
 is_deserializing_transform
-    : is_base_of<DeserializingTransform, T> {};
+    : std::is_base_of<DeserializingTransform, T> {};
 
 
 template <typename T, typename Unused = void> struct 
 is_modifying_transform
-    : is_base_of<ModifyingTransform, T> {};
+    : std::is_base_of<ModifyingTransform, T> {};
 
 
 } // namespace bond

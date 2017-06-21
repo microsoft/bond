@@ -1,4 +1,5 @@
 import "basic_types.bond"
+import "namespace_basic_types.bond"
 
 namespace tests
 
@@ -14,8 +15,11 @@ service Foo
 {
     nothing foo11();
     nothing foo12(void);
+    // test name conflict with _impl methods used by Bond Comm
+    nothing foo12_impl(void);
     nothing foo13(BasicTypes);
     nothing foo14(bar);
+    nothing foo15(tests2.OtherBasicTypes);
 
     void foo21();
     void foo22(void);
@@ -25,11 +29,15 @@ service Foo
     BasicTypes foo31();
     BasicTypes foo32(void);
     BasicTypes foo33(BasicTypes);
+    // test name conflict with gRC++ receive data member
+    BasicTypes _rd_foo33(BasicTypes);
     BasicTypes foo34(bar);
 
     bar foo41();
     bar foo42(void);
     bar foo43(BasicTypes);
     bar foo44(bar);
-}
 
+    // test name conflict with gRPC++ cq parameter
+    BasicTypes cq();
+}

@@ -11,26 +11,25 @@ data. It supports cross-language serialization/deserialization and powerful
 generic mechanisms for efficiently manipulating data. Bond is broadly used at
 Microsoft in high scale services.
 
-We are also introducing the
-[Bond Communications framework](https://Microsoft.github.io/bond/manual/bond_comm.html)--known
-as Bond Comm--which allows for remote process communication. This framework is the successor
-to an internal framework that is used by several large services inside
-Microsoft. We have now released versions of Bond Comm for C# and C++. Consult
-the [C# manual](https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm)
-and the [C++ manual](https://Microsoft.github.io/bond/manual/bond_cpp.html#bond-comm)
-for more details on Bond Comm's usage and capabilities. Note that the wire format should be
-considered firm at this point but the APIs and implementation are still evolving so Bond Comm is
-still considered "pre-1.0".
+**IMPORTANT NOTE: The [Bond Communications framework](https://Microsoft.github.io/bond/manual/bond_comm.html)
+-- known as Bond Comm -- is deprecated. We recommend using
+[Bond-over-gRPC](https://Microsoft.github.io/bond/manual/bond_over_grpc.html) for communication.
+The [Bond Comm C# manual](https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm)
+and the [Bond Comm C++ manual](https://Microsoft.github.io/bond/manual/bond_cpp.html#bond-comm)
+are preserved for transition purposes.**
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
-For details, see the User's Manuals for
-[C++](https://Microsoft.github.io/bond/manual/bond_cpp.html),
-[C#](https://Microsoft.github.io/bond/manual/bond_cs.html) and
-[Python](https://Microsoft.github.io/bond/manual/bond_py.html), and the
-documentation of the compiler
-[tool](https://microsoft.github.io/bond/manual/compiler.html) and
-[library](https://hackage.haskell.org/package/bond).
+For details, see the User's Manuals:
+
+* [C++](https://Microsoft.github.io/bond/manual/bond_cpp.html)
+* [C#](https://Microsoft.github.io/bond/manual/bond_cs.html)
+* [Python](https://Microsoft.github.io/bond/manual/bond_py.html)
+* [Bond-over-gRPC](https://Microsoft.github.io/bond/manual/bond_over_grpc.html)
+* [`gbc`, the Bond compiler/codegen tool](https://microsoft.github.io/bond/manual/compiler.html)
+    * See also
+      [the compiler library](https://hackage.haskell.org/package/bond) that
+      powers `gbc`.
 
 For a discussion how Bond compares to similar frameworks see [Why Bond](https://Microsoft.github.io/bond/why_bond.html).
 
@@ -44,10 +43,10 @@ git clone --recursive https://github.com/Microsoft/bond.git
 ```
 
 In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and
-cabal-install 1.18+) and Boost (1.58+). The core Bond C++ library can be used
-with C++03 compilers, although Bond Comm, Python support, unit tests and various
-examples require some C++11 features. (Note: Boost 1.59 may not work with
-Bond Comm due to some bugs in that version of the Boost ASIO library).
+cabal-install 1.18+) and Boost (1.58+). Bond's C++ library requires some
+C++11 features (currently limited to those supported bv Visual C++ 2013).
+(Note: Boost 1.59 may not work with Bond Comm due to some bugs in that
+version of the Boost ASIO library).
 
 Following are specific instructions for building on various platforms.
 
@@ -78,7 +77,7 @@ In the root `bond` directory run:
 ```bash
 mkdir build
 cd build
-cmake ..
+cmake .. -DBOND_ENABLE_COMM=FALSE -DBOND_ENABLE_GRPC=FALSE
 make
 sudo make install
 ```
@@ -86,17 +85,24 @@ sudo make install
 The `build` directory is just an example. Any directory can be used as the build
 destination.
 
-In order to build all the C++ and Python tests and examples, a few more
-packages are needed:
+In order to build all the C++ and Python tests and examples, as well as
+Bond-over-gRPC and Bond Comm, a few more packages are needed, and CMake
+needs to be run with different options:
 
 ```bash
 sudo apt-get install \
-    python2.7-dev \
+    autoconf \
+    build-essential \
     libboost-date-time-dev \
+    libboost-python-dev \
     libboost-test-dev \
-    libboost-python-dev
+    libtool \
+    python2.7-dev
 
 cabal install happy
+
+cd build # or wherever you ran CMake before
+cmake .. -DBOND_ENABLE_COMM=TRUE -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package
 ```
 
 Running the following command in the build directory will build and execute all
@@ -174,7 +180,7 @@ cmake .. \
 
 ### Windows
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&branch=master)](https://ci.appveyor.com/project/sapek/bond/branch/master)
+[![Build Status](https://ci.appveyor.com/api/projects/status/7xd2a54x9cwco314/branch/master?svg=true)](https://ci.appveyor.com/project/MicrosoftBond/bond/branch/master)
 
 Install the following tools:
 
@@ -223,9 +229,17 @@ set BOOST_LIBRARYDIR=D:\boost_1_58_0\lib64-msvc-14.0
 ```
 
 The core Bond library and most examples only require Boost headers. The
-pre-built libraries are only needed for unit tests and Python support. If Boost
-or Python libraries are not found on the system, then some tests and examples will
-not be built.
+pre-built libraries are only needed for unit tests, Python, gRPC, and Comm
+support. If Boost or Python libraries are not found on the system, then some
+tests and examples will not be built.
+
+To build Bond's gRPC++ integration from source, some of
+[gRPC's prerequisites](https://github.com/grpc/grpc/blob/master/INSTALL.md#building-using-cmake-with-boringssl)
+are also needed:
+
+```bash
+choco install activeperl golang ninja yasm
+```
 
 In order to generate a solution to build the C++ and Python versions with Visual
 Studio 2015 run the following commands from the root `bond` directory:
@@ -239,12 +253,7 @@ cmake -G "Visual Studio 14 2015 Win64" ..
 
 Setting `PreferredToolArchitecture=x64` selects the 64-bit toolchain which
 dramatically improves build speed. (The Bond unit tests are too big to build
-with 32-bit tools.) This variable works for Visual Studio 2013 or 2015. For
-Visual Studio 2012 set the following environment variable instead:
-
-```bash
-set _IsNativeEnvironment=true
-```
+with 32-bit tools.)
 
 Instead of `cmake` you can also use `cmake-gui` and specify configuration
 settings in the UI. This configuration step has to be performed only once. From

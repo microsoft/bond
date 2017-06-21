@@ -8,6 +8,7 @@
 #include <bond/core/traits.h>
 #include <bond/stream/output_buffer.h>
 
+#include <boost/variant.hpp>
 #include <boost/mpl/if.hpp>
 
 namespace bond { namespace comm

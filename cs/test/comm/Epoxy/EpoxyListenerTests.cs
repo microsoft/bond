@@ -4,7 +4,6 @@
 namespace UnitTest.Epoxy
 {
     using System;
-    using System.Diagnostics;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
@@ -12,10 +11,15 @@ namespace UnitTest.Epoxy
     using Bond.Comm;
     using Bond.Comm.Epoxy;
     using NUnit.Framework;
+    using UnitTest.Comm;
 
     [TestFixture]
     public class EpoxyListenerTests : EpoxyTestBase
     {
+        private const string AnyServiceName = "AnyServiceName";
+        private const string AnyMethodName = "AnyMethodName";
+        private static readonly IMessage<Dummy> AnyMessage = Message.FromPayload(new Dummy());
+
         private static readonly IPEndPoint localhostEndpoint = new IPEndPoint(IPAddress.Loopback, EpoxyTransport.DefaultInsecurePort);
         private static readonly string localhostAddress = "epoxy://127.0.0.1";
 
@@ -23,7 +27,7 @@ namespace UnitTest.Epoxy
         public async Task ListenOnPortZero_ActuallyListensOnSomeOtherPort()
         {
             EpoxyTransport transport = MakeTransport();
-            listener = transport.MakeListener(localhostEndpoint);
+            var listener = transport.MakeListener(localhostEndpoint);
 
             await listener.StartAsync();
 
@@ -34,7 +38,7 @@ namespace UnitTest.Epoxy
         public async Task ConnectedEvent_HasRightRemoteEndpointDetails()
         {
             EpoxyTransport transport = MakeTransport();
-            listener = transport.MakeListener(localhostEndpoint);
+            var listener = transport.MakeListener(localhostEndpoint);
 
             EpoxyConnection remoteConnection = null;
             var connectedEventDone = new ManualResetEventSlim(initialState: false);
@@ -53,8 +57,6 @@ namespace UnitTest.Epoxy
 
             Assert.AreEqual(connection.LocalEndPoint, remoteConnection.RemoteEndPoint);
             Assert.AreEqual(connection.RemoteEndPoint, remoteConnection.LocalEndPoint);
-
-            await transport.StopAsync();
         }
 
         [Test]
@@ -65,7 +67,7 @@ namespace UnitTest.Epoxy
             const string DisconnectMessage = "Go away!";
 
             EpoxyTransport transport = MakeTransport();
-            listener = transport.MakeListener(localhostEndpoint);
+            var listener = transport.MakeListener(localhostEndpoint);
 
             var connectedEventDone = new ManualResetEventSlim(initialState: false);
             listener.Connected += (sender, args) =>
@@ -102,7 +104,7 @@ namespace UnitTest.Epoxy
         public async Task DisconnectedEvent_ClientDisconnects_GetsFired()
         {
             EpoxyTransport transport = MakeTransport();
-            listener = transport.MakeListener(localhostEndpoint);
+            var listener = transport.MakeListener(localhostEndpoint);
 
             var disconnectedEventDone = new ManualResetEventSlim(initialState: false);
             EpoxyConnection disconnectedConnection = null;
@@ -127,7 +129,7 @@ namespace UnitTest.Epoxy
         public async Task OneConnectionStalledDuringHandshake_CanAcceptAnother()
         {
             EpoxyTransport transport = MakeTransport();
-            listener = transport.MakeListener(localhostEndpoint);
+            var listener = transport.MakeListener(localhostEndpoint);
             await listener.StartAsync();
 
             var noHandshakeConnection = new TcpClient();
@@ -138,13 +140,28 @@ namespace UnitTest.Epoxy
             var connectTask = transport.ConnectToAsync(localhostAddress);
             bool didConnect = connectTask.Wait(TimeSpan.FromSeconds(10));
             Assert.IsTrue(didConnect, "Timed out waiting for connection to be established.");
-
-            await transport.StopAsync();
         }
 
-        private static EpoxyTransport MakeTransport()
+        [Test]
+        public async Task StopAsync_ClosesAllOutstandingConnections()
+        {
+            EpoxyTransport transport = MakeTransport();
+            var listener = transport.MakeListener(localhostEndpoint);
+
+            await listener.StartAsync();
+            var clientConnection = await transport.ConnectToAsync(localhostAddress);
+
+            await listener.StopAsync();
+
+            Assert.Throws<InvalidOperationException>(
+                async () => await clientConnection.RequestResponseAsync<Dummy, Dummy>(
+                    AnyServiceName, AnyMethodName, AnyMessage, CancellationToken.None));
+        }
+
+        private EpoxyTransport MakeTransport()
         {
             var transport = new EpoxyTransportBuilder().Construct();
+            transports.Add(transport);
             return transport;
         }
     }

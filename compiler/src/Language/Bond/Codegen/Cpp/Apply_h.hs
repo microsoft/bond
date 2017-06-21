@@ -14,7 +14,6 @@ import Language.Bond.Util
 import Language.Bond.Codegen.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Cpp.ApplyOverloads
-import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- | Codegen template for generating /base_name/_apply.h containing declarations of
 -- <https://microsoft.github.io/bond/manual/bond_cpp.html#optimizing-build-time Apply>
@@ -22,7 +21,7 @@ import qualified Language.Bond.Codegen.Cpp.Util as CPP
 apply_h :: [Protocol]   -- ^ List of protocols for which @Apply@ overloads should be generated
         -> Maybe String -- ^ Optional attribute to decorate the @Apply@ function declarations
         -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
-apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
+apply_h protocols export_attribute cpp file imports declarations = ("_apply.h", [lt|
 #pragma once
 
 #include "#{file}_types.h"
@@ -30,15 +29,15 @@ apply_h protocols attribute cpp file imports declarations = ("_apply.h", [lt|
 #include <bond/stream/output_buffer.h>
 #{newlineSep 0 includeImport imports}
 
-#{CPP.openNamespace cpp}
-    #{newlineSepEnd 1 (applyOverloads protocols cpp attr semi) declarations}
-#{CPP.closeNamespace cpp}
+namespace bond
+{
+    #{newlineSepEnd 1 (applyOverloads protocols cpp export_attr extern) declarations}
+} // namespace bond
 |])
   where
     includeImport (Import path) = [lt|#include "#{dropExtension path}_apply.h"|]
 
-    attr = optional (\a -> [lt|#{a}
-    |]) attribute
+    export_attr = optional (\a -> [lt|#{a}|]) export_attribute
 
-    semi = [lt|;|]
+    extern = "extern "
 

@@ -17,11 +17,6 @@ namespace PingPongClient
 
     public class Program
     {
-        private const int NumRequests = 10;
-        private const int NumEvents = 9;
-        private const int NumErrors = 8;
-        private const int NumThrows = 7;
-
         private static async Task<PingPongProxy<EpoxyConnection>> SetupProxyAsync(ILayerStackProvider layerStack)
         {
             var transport = new EpoxyTransportBuilder().SetLayerStackProvider(layerStack).Construct();
@@ -64,7 +59,7 @@ namespace PingPongClient
             {
                 var proxy = SetupProxyAsync(layerStackProvider).GetAwaiter().GetResult();
 
-                for (int i = 0; i < NumRequests; i++)
+                for (int i = 0; i < (int)PingConstants.NumRequests; i++)
                 {
                     var request = new PingRequest { Payload = "request" + i, Action = PingAction.Identity };
                     var message = DoPingPongAsync(proxy, request).GetAwaiter().GetResult();
@@ -75,22 +70,26 @@ namespace PingPongClient
                         Console.Out.Flush();
                         return;
                     }
-                    else if (message.Payload.Deserialize().Payload != request.Payload)
+                    else
                     {
-                        Console.Out.WriteLine("Response payload did not match request");
-                        Console.Out.WriteLine("Client failed");
-                        Console.Out.Flush();
-                        return;
+                        string msg = message.Payload.Deserialize().Payload;
+                        if (msg != request.Payload)
+                        {
+                            Console.Out.WriteLine($"Response message did not match request payload: expected \"{request.Payload}\", got \"{msg}\"");
+                            Console.Out.WriteLine("Client failed");
+                            Console.Out.Flush();
+                            return;
+                        }
                     }
                 }
 
-                for (int i = 0; i < NumEvents; i++)
+                for (int i = 0; i < (int)PingConstants.NumEvents; i++)
                 {
                     var request = new PingRequest { Payload = "event" + i };
                     DoPingEvent(proxy, request);
                 }
 
-                for (int i = 0; i < NumErrors; i++)
+                for (int i = 0; i < (int)PingConstants.NumErrors; i++)
                 {
                     var request = new PingRequest { Payload = "error" + i, Action = PingAction.Error };
                     var message = DoPingPongAsync(proxy, request).GetAwaiter().GetResult();
@@ -101,12 +100,16 @@ namespace PingPongClient
                         Console.Out.Flush();
                         return;
                     }
-                    else if (message.Error.Deserialize().message != request.Payload)
+                    else
                     {
-                        Console.Out.WriteLine("Error message did not match request payload");
-                        Console.Out.WriteLine("Client failed");
-                        Console.Out.Flush();
-                        return;
+                        string msg = message.Error.Deserialize().message;
+                        if (msg != request.Payload)
+                        {
+                            Console.Out.WriteLine($"Error message did not match request payload: expected \"{request.Payload}\", got \"{msg}\"");
+                            Console.Out.WriteLine("Client failed");
+                            Console.Out.Flush();
+                            return;
+                        }
                     }
                 }
             }

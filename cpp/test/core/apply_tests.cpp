@@ -1,6 +1,7 @@
 #include "precompiled.h"
 #include "apply_tests.h"
-#include "apply_test_apply.h"
+#include "apply_test_apply.h"   // Note that we don't want to include apply_test_reflection.h so that
+                                // we only see pre-generated Apply overloads.
 
 void Init(unittest::apply::Struct& obj)
 {
@@ -23,13 +24,13 @@ void Marshal(uint16_t version = bond::v1)
 
     bond::OutputBuffer output;
     Factory<Writer>::Call(output, version, boost::bind(
-        bond::Marshal<X, Writer>, obj, _1));
+        bond::Marshal<bond::BuiltInProtocols, X, Writer>, obj, _1));
 
     bond::InputBuffer input = output.GetBuffer();
 
     Unmarshal(input, obj2);
 
-    UT_AssertIsTrue(obj == obj2);
+    UT_Compare(obj, obj2);
 }
 
 
@@ -42,14 +43,14 @@ void Serialize(uint16_t version = bond::v1)
 
     bond::OutputBuffer output;
     Factory<Writer>::Call(output, version, boost::bind(
-        bond::Serialize<X, Writer>, obj, _1));
+        bond::Serialize<bond::BuiltInProtocols, X, Writer>, obj, _1));
 
     bond::InputBuffer input = output.GetBuffer();
     Reader reader(Factory<Reader>::Create(input, version));
 
     Deserialize(reader, obj2);
 
-    UT_AssertIsTrue(obj == obj2);
+    UT_Compare(obj, obj2);
 }
 
 
@@ -68,7 +69,7 @@ void Apply(uint16_t version = bond::v1)
 
     bond::OutputBuffer output;
     Factory<Writer>::Call(output, version, boost::bind(
-        CallApply<bond::Serializer<Writer>, X>, boost::bind(bond::SerializeTo<Writer>, _1), obj));
+        CallApply<bond::Serializer<Writer>, X>, boost::bind(bond::SerializeTo<bond::BuiltInProtocols, Writer>, _1), obj));
 
     bond::InputBuffer input = output.GetBuffer();
     Reader reader(Factory<Reader>::Create(input, version));
@@ -76,7 +77,21 @@ void Apply(uint16_t version = bond::v1)
 
     Apply(bond::To<X>(obj2), bonded);
 
-    UT_AssertIsTrue(obj == obj2);
+    UT_Compare(obj, obj2);
+}
+
+
+// Just check that Apply overload can be called without attempting roundtrips
+template <typename Reader, typename Writer, typename X>
+void SimpleApply(uint16_t version = bond::v1)
+{
+    X obj;
+
+    Init(obj);
+
+    typename Writer::Buffer output;
+    Factory<Writer>::Call(output, version, boost::bind(
+        CallApply<bond::Serializer<Writer>, X>, boost::bind(bond::SerializeTo<bond::BuiltInProtocols, Writer>, _1), obj));
 }
 
 
@@ -99,7 +114,7 @@ Bonded(uint16_t version = bond::v1)
 
     bond::OutputBuffer output;
     Factory<Writer>::Call(output, version, boost::bind(
-        bond::Serialize<X, Writer>, obj, _1));
+        bond::Serialize<bond::BuiltInProtocols, X, Writer>, obj, _1));
 
     bond::InputBuffer input = output.GetBuffer();
     Reader reader(Factory<Reader>::Create(input, version));
@@ -107,7 +122,7 @@ Bonded(uint16_t version = bond::v1)
 
     bond::OutputBuffer output2;
     Factory<Writer>::Call(output2, version, boost::bind(
-        &bond::bonded<X>::template Serialize<Writer>, bonded, _1));
+        &bond::bonded<X>::template Serialize<bond::BuiltInProtocols, Writer>, bonded, _1));
 
     bond::InputBuffer input2 = output2.GetBuffer();
     Reader reader2(Factory<Reader>::Create(input2, version));
@@ -115,7 +130,7 @@ Bonded(uint16_t version = bond::v1)
     
     bonded2.Deserialize(obj2);
 
-    UT_AssertIsTrue(obj == obj2);
+    UT_Compare(obj, obj2);
 }
 
 
@@ -138,6 +153,18 @@ struct Tests
         Bonded<Reader, Writer, X>(Reader::version);
 
         bond::RuntimeSchema schema = bond::GetRuntimeSchema<X>();
+    }
+};
+
+// Partial specialization for special CompactBinary internal output counter
+template <typename Reader>
+struct Tests<Reader, bond::CompactBinaryWriter<bond::OutputBuffer>::Pass0>
+{
+    template <typename X>
+    void operator()(const X&)
+    {
+        SimpleApply<Reader, bond::CompactBinaryWriter<bond::OutputBuffer>::Pass0, X>();
+        SimpleApply<Reader, bond::CompactBinaryWriter<bond::OutputBuffer>::Pass0, X>(Reader::version);
     }
 };
 
@@ -180,9 +207,17 @@ void ApplyTest::Initialize()
             bond::CompactBinaryWriter<bond::OutputBuffer> >("Apply tests for CompactBinary");
     );
 
-    TEST_FAST_BINARY_PROTOCOL(
+    // Test for apply overloads for CompactBinary v2 Pass0 output size counter
+    TEST_COMPACT_BINARY_PROTOCOL(
         ApplyTests<
             0x1603,
+            bond::CompactBinaryReader<bond::InputBuffer>,
+            bond::CompactBinaryWriter<bond::OutputBuffer>::Pass0 >("Apply tests for CompactBinary v2 Pass0");
+    );
+
+    TEST_FAST_BINARY_PROTOCOL(
+        ApplyTests<
+            0x1604,
             bond::FastBinaryReader<bond::InputBuffer>,
             bond::FastBinaryWriter<bond::OutputBuffer> >("Apply tests for FastBinary");
     );

@@ -1,0 +1,11 @@
+namespace tests
+
+struct dummy {
+    0: int32 count;
+}
+
+// Invalid service definition with struct as a base
+service Foo : dummy
+{
+    nothing bar();
+}  

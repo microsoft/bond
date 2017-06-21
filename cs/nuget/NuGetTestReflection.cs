@@ -1,4 +1,4 @@
-﻿namespace Bond.Reflection
+﻿namespace Bond.Internal.Reflection
 {
     using System;
     using System.Reflection;

@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using Bond;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     [Schema, Attribute("xmlns", "urn:UnitTest.BondClass")]
     class BondClass<T>

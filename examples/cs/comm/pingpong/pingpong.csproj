@@ -35,7 +35,9 @@
     <Compile Include="PingPong.cs" />
     <Compile Include="PingPongService.cs" />
     <Compile Include="ReversePingPongService.cs" />
-    <BondCodegen Include="pingpong.bond" />
+    <BondCodegen Include="pingpong.bond">
+      <Options>--comm</Options>
+    </BondCodegen>
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\pingpong_types.cs" Condition="False" />
     <!-- End Resharper Workaround -->

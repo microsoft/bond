@@ -8,7 +8,7 @@ namespace Bond
     using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     /// <summary>
     /// Utility to create runtime schema for dynamically specified Bond schema

@@ -52,7 +52,7 @@ namespace Bond
     public sealed class Bonded<T> : IBonded<T>
     {
         /// <summary>
-        /// A static, readonly field representing an empty instance of Boned&lt;T>
+        /// A static, readonly field representing an empty instance of Bonded&lt;T>
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
             "Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]

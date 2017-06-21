@@ -1,0 +1,33 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+namespace Examples.GrpcPingPong;
+
+struct PingRequest
+{
+    0: string Payload;
+    1: uint16 DelayMilliseconds;
+}
+
+struct PingResponse
+{
+    0: string Payload;
+}
+
+service PingPong<RequestType>
+{
+    PingResponse Ping(RequestType);
+}
+
+service DoublePing
+{
+    PingResponse Ping(PingRequest);
+
+    PingResponse PingNoPayload();
+
+    nothing PingNoResponse(PingRequest);
+
+    void PingVoid();
+
+    PingResponse PingShouldThrow(PingRequest);
+}

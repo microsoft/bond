@@ -65,7 +65,7 @@ parseBond ::
  -> String                              -- ^ content of a schema file to parse
  -> FilePath                            -- ^ path of the file being parsed, used to resolve relative import paths
  -> ImportResolver                      -- ^ function to resolve and load imported files
- -> IO (Either ParseError Bond)         -- ^ function returns 'Bond' which represents the parsed abstract syntax tree 
+ -> IO (Either ParseError Bond)         -- ^ function returns 'Bond' which represents the parsed abstract syntax tree
                                         --   or 'ParserError' if parsing failed
 parseBond s c f r = runReaderT (runParserT bond (Symbols [] []) s c) (Environment [] [] f r)
 
@@ -240,11 +240,6 @@ struct = do
             [] -> return fields'
             Field {..}:_ -> fail $ "Duplicate definition of the field with ordinal " ++ show fieldOrdinal ++
                 " and name " ++ show fieldName
-      where
-        findDuplicatesBy accessor xs = deleteFirstsBy ((==) `on` accessor) xs (nubBy ((==) `on` accessor) xs)
-
-manySortedBy :: (a -> a -> Ordering) -> ParsecT s u m a -> ParsecT s u m [a]
-manySortedBy = manyAccum . insertBy
 
 -- field definition parser
 field :: Parser Field
@@ -282,6 +277,155 @@ field = do
                                         then Right $ Field a o m t n d
                                         else Left "Invalid default value for field"
 
+-- enum definition parser
+enum :: Parser Declaration
+enum = Enum <$> asks currentNamespaces <*> attributes <*> name <*> consts <* optional semi <?> "enum definition"
+  where
+    name = keyword "enum" *> (identifier <?> "enum identifier")
+    consts = braces (semiOrCommaSepEnd1 constant <?> "enum constant")
+    constant = Constant <$> identifier <*> optional value
+    value = equal *> (fromIntegral <$> integer)
+
+-- basic types parser
+basicType :: Parser Type
+basicType =
+        keyword "int8" *> pure BT_Int8
+    <|> keyword "int16" *> pure BT_Int16
+    <|> keyword "int32" *> pure BT_Int32
+    <|> keyword "int64" *> pure BT_Int64
+    <|> keyword "uint8" *> pure BT_UInt8
+    <|> keyword "uint16" *> pure BT_UInt16
+    <|> keyword "uint32" *> pure BT_UInt32
+    <|> keyword "uint64" *> pure BT_UInt64
+    <|> keyword "float" *> pure BT_Float
+    <|> keyword "double" *> pure BT_Double
+    <|> keyword "wstring" *> pure BT_WString
+    <|> keyword "string" *> pure BT_String
+    <|> keyword "bool" *> pure BT_Bool
+
+-- containers parser
+complexType :: Parser Type
+complexType =
+        keyword "list" *> angles (BT_List <$> type_)
+    <|> keyword "blob" *> pure BT_Blob
+    <|> keyword "vector" *> angles (BT_Vector <$> type_)
+    <|> keyword "nullable" *> angles (BT_Nullable <$> type_)
+    <|> keyword "set" *> angles (BT_Set <$> keyType)
+    <|> keyword "map" *> angles (BT_Map <$> keyType <* comma <*> type_)
+    <|> keyword "bonded" *> angles (BT_Bonded <$> userStruct)
+  where
+    keyType = try (basicType <|> checkUserType isValidKeyType) <?> "scalar, string or enum"
+    userStruct = try (checkUserType isStruct) <?> "user defined struct"
+    isValidKeyType t = isScalar t || isString t
+
+-- parser for user defined type (struct, enum, alias or type parameter)
+userType :: Parser Type
+userType = do
+    symbol_ <- userSymbol
+    case symbol_ of
+        Left param -> return $ BT_TypeParam param
+        Right (Service {..}, _) -> fail $ "Unexpected service " ++ declName ++ ". Expected struct, enum or alias."
+        Right (decl, args) -> return $ BT_UserDefined decl args
+
+-- parser for service type
+serviceType :: Parser Type
+serviceType = do
+    symbol_ <- userSymbol
+    case symbol_ of
+        Right (decl@Service{}, args) -> return $ BT_UserDefined decl args
+        Right (decl, _) -> fail $ "Unexpected type " ++ (declName decl) ++ ". Expected a service."
+        Left param -> fail $ "Unexpected type parameter " ++ (paramName param) ++ ". Expected a service."
+
+userSymbol :: Parser (Either TypeParam (Declaration, [Type]))
+userSymbol = do
+    name <- qualifiedName
+    params <- asks currentParams
+    case find (isParam name) params of
+        Just param -> return $ Left param
+        Nothing -> do
+            decl <- findSymbol name
+            args <- option [] (angles $ commaSep1 arg)
+            if length args /= paramsCount decl then
+                fail $ declName decl ++
+                    if paramsCount decl /= 0 then
+                        " requires " ++ show (paramsCount decl) ++ " type argument(s)"
+                    else
+                        " is not a generic type"
+                else
+                    return $ Right (decl, args)
+          where
+            paramsCount Enum{} = 0
+            paramsCount decl   = length $ declParams decl
+            arg = type_ <|> BT_IntTypeArg <$> (fromIntegral <$> integer)
+  where
+    isParam [name] = (name ==) . paramName
+    isParam _      = const False
+
+-- type parser
+type_ :: Parser Type
+type_ = basicType <|> complexType <|> userType
+
+-- field type parser
+ftype :: Parser Type
+ftype = keyword "bond_meta::name" *> pure BT_MetaName
+    <|> keyword "bond_meta::full_name" *> pure BT_MetaFullName
+    <|> type_
+
+-- service definition parser
+service :: Parser Declaration
+service = do
+    attr <- attributes
+    name <- keyword "service" *> identifier <?> "service definition"
+    params <- parameters
+    namespaces <- asks currentNamespaces
+    local (with params) $ Service namespaces attr name params <$> base <*> methods <* optional semi
+  where
+    base = optional (colon *> serviceType <?> "base service")
+    with params e = e { currentParams = params }
+    methods = unique $ braces $ semiEnd (try event <|> try function)
+    unique p = do
+        methods' <- p
+        case findDuplicatesBy methodName methods' of
+            [] -> return methods'
+            Function {..}:_ -> fail $ "Duplicate definition of the function with name " ++ show methodName
+            Event {..}:_ -> fail $ "Duplicate definition of the event with name " ++ show methodName
+
+function :: Parser Method
+function = Function <$> attributes <*> payload <*> identifier <*> input
+
+event :: Parser Method
+event = Event <$> attributes <* keyword "nothing" <*> identifier <*> input
+
+input :: Parser (Maybe Type)
+input = do
+  pld <- parens $ optional payload
+  case pld of
+      Nothing -> pure Nothing
+      Just m -> return m
+
+payload :: Parser (Maybe Type)
+payload = void_ <|> liftM Just userStruct
+  where
+    void_ = keyword "void" *> pure Nothing
+    userStruct = try (checkUserType isStruct) <?> "user defined struct"
+
+-- helper methods
+
+checkUserType :: (Type -> Bool) -> Parser Type
+checkUserType check = do
+    t <- userType
+    if (valid t) then return t else unexpected "type"
+  where
+    valid t = case t of
+        BT_TypeParam _ -> True
+        _ -> check t
+
+findDuplicatesBy :: (Eq b) => (a -> b) -> [a] -> [a]
+findDuplicatesBy accessor xs = deleteFirstsBy ((==) `on` accessor) xs (nubBy ((==) `on` accessor) xs)
+
+manySortedBy :: (a -> a -> Ordering) -> ParsecT s u m a -> ParsecT s u m [a]
+manySortedBy = manyAccum . insertBy
+
 -- default type validator (type checking, out-of-range, enforce default type)
 validDefaultType :: Type -> Maybe Default -> Bool
 validDefaultType (BT_UserDefined a@Alias {} args) d = validDefaultType (resolveAlias a args) d
@@ -311,132 +455,4 @@ validDefaultType bondType (Just defaultValue) = validDefaultType' bondType defau
 -- The value of the second paramater is never used: only its type is used.
 isInBounds :: forall a. (Integral a, Bounded a) => Integer -> a -> Bool
 isInBounds value _ = value >= (toInteger (minBound :: a)) && value <= (toInteger (maxBound :: a))
-
--- enum definition parser
-enum :: Parser Declaration
-enum = Enum <$> asks currentNamespaces <*> attributes <*> name <*> consts <* optional semi <?> "enum definition"
-  where
-    name = keyword "enum" *> (identifier <?> "enum identifier")
-    consts = braces (semiOrCommaSepEnd1 constant <?> "enum constant")
-    constant = Constant <$> identifier <*> optional value
-    value = equal *> (fromIntegral <$> integer)
-
--- basic types parser
-basicType :: Parser Type
-basicType =
-        keyword "int8" *> pure BT_Int8
-    <|> keyword "int16" *> pure BT_Int16
-    <|> keyword "int32" *> pure BT_Int32
-    <|> keyword "int64" *> pure BT_Int64
-    <|> keyword "uint8" *> pure BT_UInt8
-    <|> keyword "uint16" *> pure BT_UInt16
-    <|> keyword "uint32" *> pure BT_UInt32
-    <|> keyword "uint64" *> pure BT_UInt64
-    <|> keyword "float" *> pure BT_Float
-    <|> keyword "double" *> pure BT_Double
-    <|> keyword "wstring" *> pure BT_WString
-    <|> keyword "string" *> pure BT_String
-    <|> keyword "bool" *> pure BT_Bool
-
-
--- containers parser
-complexType :: Parser Type
-complexType =
-        keyword "list" *> angles (BT_List <$> type_)
-    <|> keyword "blob" *> pure BT_Blob
-    <|> keyword "vector" *> angles (BT_Vector <$> type_)
-    <|> keyword "nullable" *> angles (BT_Nullable <$> type_)
-    <|> keyword "set" *> angles (BT_Set <$> keyType)
-    <|> keyword "map" *> angles (BT_Map <$> keyType <* comma <*> type_)
-    <|> keyword "bonded" *> angles (BT_Bonded <$> userStruct)
-  where
-    keyType = try (basicType <|> checkUserType isValidKeyType) <?> "scalar, string or enum"
-    userStruct = try (checkUserType isStruct) <?> "user defined struct"
-    isValidKeyType t = isScalar t || isString t
-
-
--- parser for user defined type (struct, enum, alias or type parameter)
-userType :: Parser Type
-userType = do
-    symbol_ <- userSymbol
-    case symbol_ of
-        Left param -> return $ BT_TypeParam param
-        Right (Service {..}, _) -> fail $ "Unexpected service " ++ declName ++ ". Expected struct, enum or alias."
-        Right (decl, args) -> return $ BT_UserDefined decl args
-
-userSymbol :: Parser (Either TypeParam (Declaration, [Type]))
-userSymbol = do
-    name <- qualifiedName
-    params <- asks currentParams
-    case find (isParam name) params of
-        Just param -> return $ Left param
-        Nothing -> do
-            decl <- findSymbol name
-            args <- option [] (angles $ commaSep1 arg)
-            if length args /= paramsCount decl then
-                fail $ declName decl ++
-                    if paramsCount decl /= 0 then
-                        " requires " ++ show (paramsCount decl) ++ " type argument(s)"
-                    else
-                        " is not a generic type"
-                else
-                    return $ Right (decl, args)
-          where
-            paramsCount Enum{} = 0
-            paramsCount decl   = length $ declParams decl
-            arg = type_ <|> BT_IntTypeArg <$> (fromIntegral <$> integer)
-  where
-    isParam [name] = (name ==) . paramName
-    isParam _      = const False
-
-
--- type parser
-type_ :: Parser Type
-type_ = basicType <|> complexType <|> userType
-
--- field type parser
-ftype :: Parser Type
-ftype = keyword "bond_meta::name" *> pure BT_MetaName
-    <|> keyword "bond_meta::full_name" *> pure BT_MetaFullName
-    <|> type_
-
--- service definition parser
-service :: Parser Declaration
-service = do
-    attr <- attributes
-    name <- keyword "service" *> identifier <?> "service definition"
-    params <- parameters
-    namespaces <- asks currentNamespaces
-    local (with params) $ Service namespaces attr name params <$> methods <* optional semi
-  where
-    with params e = e { currentParams = params }
-    methods = braces $ semiEnd (try event <|> try function)
-
-function :: Parser Method
-function = Function <$> attributes <*> payload <*> identifier <*> input
-
-event :: Parser Method
-event = Event <$> attributes <* keyword "nothing" <*> identifier <*> input
-
-input :: Parser (Maybe Type)
-input = do
-  pld <- parens $ optional payload
-  case pld of
-      Nothing -> pure Nothing
-      Just m -> return m
-
-payload :: Parser (Maybe Type)
-payload = void_ <|> liftM Just userStruct
-  where
-    void_ = keyword "void" *> pure Nothing
-    userStruct = try (checkUserType isStruct) <?> "user defined struct"
-
-checkUserType :: (Type -> Bool) -> Parser Type
-checkUserType check = do
-    t <- userType
-    if (valid t) then return t else unexpected "type"
-  where
-    valid t = case t of
-        BT_TypeParam _ -> True
-        _ -> check t
 

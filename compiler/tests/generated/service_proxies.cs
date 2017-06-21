@@ -15,7 +15,7 @@
 
 namespace tests
 {
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.7.0.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.9.0.0")]
     public class FooProxy<TConnection> : IFoo where TConnection : global::Bond.Comm.IEventConnection, global::Bond.Comm.IRequestResponseConnection
     {
         private readonly TConnection m_connection;
@@ -53,6 +53,20 @@ namespace tests
                 param);
         }
 
+        public void foo12_implAsync()
+        {
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
+            foo12_implAsync(message);
+        }
+
+        public void foo12_implAsync(global::Bond.Comm.IMessage<global::Bond.Void> param)
+        {
+            m_connection.FireEventAsync<global::Bond.Void>(
+                "tests.Foo",
+                "foo12_impl",
+                param);
+        }
+
         public void foo13Async(BasicTypes param)
         {
             var message = new global::Bond.Comm.Message<BasicTypes>(param);
@@ -78,6 +92,20 @@ namespace tests
             m_connection.FireEventAsync<dummy>(
                 "tests.Foo",
                 "foo14",
+                param);
+        }
+
+        public void foo15Async(global::tests2.OtherBasicTypes param)
+        {
+            var message = new global::Bond.Comm.Message<global::tests2.OtherBasicTypes>(param);
+            foo15Async(message);
+        }
+
+        public void foo15Async(global::Bond.Comm.IMessage<global::tests2.OtherBasicTypes> param)
+        {
+            m_connection.FireEventAsync<global::tests2.OtherBasicTypes>(
+                "tests.Foo",
+                "foo15",
                 param);
         }
 
@@ -186,6 +214,21 @@ namespace tests
                 ct);
         }
 
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> _rd_foo33Async(BasicTypes param)
+        {
+            var message = new global::Bond.Comm.Message<BasicTypes>(param);
+            return _rd_foo33Async(message, global::System.Threading.CancellationToken.None);
+        }
+
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> _rd_foo33Async(global::Bond.Comm.IMessage<BasicTypes> param, global::System.Threading.CancellationToken ct)
+        {
+            return m_connection.RequestResponseAsync<BasicTypes, BasicTypes>(
+                "tests.Foo",
+                "_rd_foo33",
+                param,
+                ct);
+        }
+
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> foo34Async(dummy param)
         {
             var message = new global::Bond.Comm.Message<dummy>(param);
@@ -257,6 +300,21 @@ namespace tests
             return m_connection.RequestResponseAsync<dummy, dummy>(
                 "tests.Foo",
                 "foo44",
+                param,
+                ct);
+        }
+
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> cqAsync()
+        {
+            var message = new global::Bond.Comm.Message<global::Bond.Void>(new global::Bond.Void());
+            return cqAsync(message, global::System.Threading.CancellationToken.None);
+        }
+
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<BasicTypes>> cqAsync(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct)
+        {
+            return m_connection.RequestResponseAsync<global::Bond.Void, BasicTypes>(
+                "tests.Foo",
+                "cq",
                 param,
                 ct);
         }

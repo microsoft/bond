@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Reflection;
     using Bond;
-    using Bond.Reflection;
+    using Bond.Internal.Reflection;
 
     public static class Equal
     {

@@ -1,8 +1,0 @@
-
-import "unit_test_comm.bond"
-namespace unittest.comm
-
-service EventService
-{
-    nothing Event(Params);
-}

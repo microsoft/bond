@@ -12,29 +12,6 @@
 
 #include "../../core/unit_test_framework.h"
 
-// We need to define bond::LogHandler before we can include epoxy_protocol.h.
-
-namespace bond { namespace comm
-{
-void LogHandler(
-    const char* functionName,
-    const char* fileName,
-    uint32_t lineNumber,
-    LogSeverity /*level*/,
-    const char* category,
-    const char* message)
-{
-    bond::detail::string_stream ss;
-    ss << category << ", "
-       << message  << " ["
-       << functionName << " "
-       << fileName << "("
-       << lineNumber << ")]\n";
-
-    printf("%s", ss.content());
-}
-} }
-
 #include <bond/comm/transport/detail/epoxy_protocol.h>
 #include "epoxy_protocol_tests.h"
 

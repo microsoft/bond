@@ -40,6 +40,13 @@ public:
           _all_fields(all_fields)
     {}
 
+    /// @brief Access to underlying buffer
+    typename boost::call_traits<Buffer>::reference
+    GetBuffer()
+    {
+        return _output;
+    }
+
     void WriteVersion()
     {}
     
@@ -201,7 +208,7 @@ private:
             _output.Write("        ", _indent);
     }
 
-    template <typename Writer>
+    template <typename Writer, typename Protocols>
     friend class Serializer;
     
     detail::RapidJsonOutputStream<BufferT> _stream;
@@ -219,8 +226,8 @@ is_writer<SimpleJsonWriter<Buffer>, void>
     : true_type {};
 
 
-template <typename Buffer>
-class Serializer<SimpleJsonWriter<Buffer> >
+template <typename Buffer, typename Protocols>
+class Serializer<SimpleJsonWriter<Buffer>, Protocols>
     : public SerializingTransform
 {
 public:
@@ -250,7 +257,7 @@ public:
     template <typename T>
     bool Base(const T& value) const
     {
-        Apply(*this, value);
+        Apply<Protocols>(*this, value);
         return false;
     }
 
@@ -412,7 +419,7 @@ private:
     typename boost::enable_if<is_bond_type<T> >::type
     Write(const T& value) const
     {
-        Apply(SerializeTo(_output), value);
+        Apply<Protocols>(SerializeTo<Protocols>(_output), value);
     }
 
     // 2-tuple
@@ -461,7 +468,7 @@ private:
     {
         T data;
 
-        value.Deserialize(data);
+        value.template Deserialize<Protocols>(data);
         _output.Write(data);
     }
 
@@ -469,7 +476,7 @@ private:
     typename boost::disable_if<is_basic_type<T> >::type
     Write(const value<T, Reader>& value) const
     {
-        Apply(SerializeTo(_output), value);
+        Apply<Protocols>(SerializeTo<Protocols>(_output), value);
     }
 
 protected:

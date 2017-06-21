@@ -6,7 +6,9 @@
 import System.Environment (getArgs, withArgs)
 import System.Directory
 import System.FilePath
+import Data.Maybe
 import Data.Monoid
+import qualified Data.Foldable as F
 import Control.Monad
 import Prelude
 import Control.Concurrent.Async
@@ -29,7 +31,7 @@ type Template = MappingContext -> String -> [Import] -> [Declaration] -> (String
 main :: IO()
 main = do
     args <- getArgs
-    options <- (if null args then withArgs ["--help"] else id) getOptions
+    options <- (if null args then withArgs ["--help=all"] else id) getOptions
     setJobs $ jobs options
     case options of
         Cpp {..}    -> cppCodegen options
@@ -69,40 +71,58 @@ writeSchema _ = error "writeSchema: impossible happened."
 cppCodegen :: Options -> IO()
 cppCodegen options@Cpp {..} = do
     let typeMapping = maybe cppTypeMapping cppCustomAllocTypeMapping allocator
-    concurrentlyFor_ files $ codeGen options typeMapping $
-        [ reflection_h
-        , types_cpp
-        , types_h header enum_header allocator
-        , apply_h applyProto apply_attribute
-        , apply_cpp applyProto
-        , comm_cpp
-        , comm_h
-        ] <>
-        [ enum_h | enum_header]
+    concurrentlyFor_ files $ codeGen options typeMapping templates
   where
     applyProto = map snd $ filter (enabled apply) protocols
     enabled a p = null a || fst p `elem` a
     protocols =
-        [ (Compact, Protocol " ::bond::CompactBinaryReader< ::bond::InputBuffer>"
-                             " ::bond::CompactBinaryWriter< ::bond::OutputBuffer>")
-        , (Fast,    Protocol " ::bond::FastBinaryReader< ::bond::InputBuffer>"
-                             " ::bond::FastBinaryWriter< ::bond::OutputBuffer>")
-        , (Simple,  Protocol " ::bond::SimpleBinaryReader< ::bond::InputBuffer>"
-                             " ::bond::SimpleBinaryWriter< ::bond::OutputBuffer>")
+        [ (Compact, ProtocolReader " ::bond::CompactBinaryReader< ::bond::InputBuffer>")
+        , (Compact, ProtocolWriter " ::bond::CompactBinaryWriter< ::bond::OutputBuffer>")
+        , (Compact, ProtocolWriter " ::bond::CompactBinaryWriter< ::bond::CompactBinaryCounter::type>")
+        , (Fast,    ProtocolReader " ::bond::FastBinaryReader< ::bond::InputBuffer>")
+        , (Fast,    ProtocolWriter " ::bond::FastBinaryWriter< ::bond::OutputBuffer>")
+        , (Simple,  ProtocolReader " ::bond::SimpleBinaryReader< ::bond::InputBuffer>")
+        , (Simple,  ProtocolWriter " ::bond::SimpleBinaryWriter< ::bond::OutputBuffer>")
         ]
+    templates = concat $ map snd $ filter fst codegen_templates
+    codegen_templates = [ (core_enabled, core_files)
+                        , (comm_enabled, [comm_h export_attribute, comm_cpp])
+                        , (grpc_enabled, [grpc_h export_attribute])
+                        ]
+    core_files = [
+          reflection_h export_attribute
+        , types_h header enum_header allocator
+        , types_cpp
+        , apply_h applyProto export_attribute
+        , apply_cpp applyProto
+        ] <>
+        [ enum_h | enum_header]
 cppCodegen _ = error "cppCodegen: impossible happened."
 
 csCodegen :: Options -> IO()
 csCodegen options@Cs {..} = do
-    let fieldMapping = if readonly_properties
+    concurrentlyFor_ files $ codeGen options typeMapping templates
+  where
+    typeMapping = if collection_interfaces
+            then csCollectionInterfacesTypeMapping
+            else csTypeMapping
+    fieldMapping = if readonly_properties
             then ReadOnlyProperties
             else if fields
                  then PublicFields
                  else Properties
-    let typeMapping = if collection_interfaces then csCollectionInterfacesTypeMapping else csTypeMapping
-    let templates = [ comm_interface_cs , comm_proxy_cs , comm_service_cs , types_cs Class fieldMapping ]
-    concurrentlyFor_ files $ codeGen options typeMapping templates
+    templates = concat $ map snd $ filter fst codegen_templates
+    codegen_templates = [ (structs_enabled, [types_cs Class fieldMapping])
+                        , (comm_enabled, [comm_interface_cs, comm_proxy_cs, comm_service_cs])
+                        , (grpc_enabled, [grpc_cs])
+                        ]
 csCodegen _ = error "csCodegen: impossible happened."
+
+anyServiceInheritance :: [Declaration] -> Bool
+anyServiceInheritance = getAny . F.foldMap serviceWithBase
+  where
+    serviceWithBase Service{..} = Any $ isJust serviceBase
+    serviceWithBase _ = Any False
 
 codeGen :: Options -> TypeMapping -> [Template] -> FilePath -> IO ()
 codeGen options typeMapping templates file = do
@@ -112,9 +132,13 @@ codeGen options typeMapping templates file = do
     namespaceMapping <- parseNamespaceMappings $ namespace options
     (Bond imports namespaces declarations) <- parseFile (import_dir options) file
     let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
-    forM_ templates $ \template -> do
-        let (suffix, code) = template mappingContext baseName imports declarations
-        let fileName = baseName ++ suffix
-        createDirectoryIfMissing True outputDir
-        let content = if (no_banner options) then code else (commonHeader "//" fileName <> code)
-        L.writeFile (outputDir </> fileName) content
+    case (anyServiceInheritance declarations, service_inheritance_enabled options, grpc_enabled options, comm_enabled options) of
+        (True, False, _, _)   -> fail "Use --enable-service-inheritance to enable service inheritance syntax."
+        (True, True, True, _) -> fail "Service inheritance is not supported in gRPC codegen."
+        (True, True, _, True) -> fail "Service inheritance is not supported in Comm codegen."
+        _                     -> forM_ templates $ \template -> do
+                                    let (suffix, code) = template mappingContext baseName imports declarations
+                                    let fileName = baseName ++ suffix
+                                    createDirectoryIfMissing True outputDir
+                                    let content = if (no_banner options) then code else (commonHeader "//" fileName <> code)
+                                    L.writeFile (outputDir </> fileName) content

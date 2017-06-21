@@ -11,8 +11,33 @@ namespace Bond.IO.Unsafe
     /// </summary>
     public class InputStream : InputBuffer, ICloneable<InputStream>
     {
+        // Default setting for maximum incremental allocation chunk size before reading from stream
+        public const int DefaultAllocationChunk = 128 * 1024 * 1024;
+
+        // Active setting for maximum incremental allocation chunk size before reading from stream
+        public static int ActiveAllocationChunk
+        {
+            get { return activeAllocationChunk; }
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Value cannot be negative");
+                }
+                activeAllocationChunk = value;
+            }
+        }
+
+        static int activeAllocationChunk;
+
         readonly Stream stream;
         readonly int bufferLength;
+
+        static InputStream()
+        {
+            ActiveAllocationChunk = DefaultAllocationChunk;
+        }
+
         // When we read more data from the stream we can override existing buffer
         // only if it hasn't been exposed via ReadBytes or Clone. Otherwise a new
         // buffer has to be allocated.
@@ -65,31 +90,68 @@ namespace Bond.IO.Unsafe
             canReuseBuffer = false;
             return result;
         }
-        
+
         internal override void EndOfStream(int count)
         {
             var oldBuffer = buffer;
 
-            if (!canReuseBuffer || count > buffer.Length)
-            {
-                buffer = new byte[Math.Max(bufferLength, count)];
-                canReuseBuffer = true;
-            }
-
             var remaining = end - position;
 
-            if (remaining > 0)
-            {
-                Buffer.BlockCopy(oldBuffer, position, buffer, 0, remaining);
-            }
-            else if (remaining < 0)
+            if (remaining < 0)
             {
                 stream.Seek(-remaining, SeekOrigin.Current);
                 remaining = 0;
             }
 
-            end = remaining + stream.Read(buffer, remaining, buffer.Length - remaining);
-            position = 0;
+            bool failed = false;
+            byte[][] tempBuffers = null;
+            int numTempBuffers = 0;
+            if ((count > buffer.Length && (count - buffer.Length > ActiveAllocationChunk)))
+            {
+                // Calculate number of temp buffers -1 in case difference is exactly
+                // multiple of chunk size.
+                numTempBuffers = (count - buffer.Length - 1) / ActiveAllocationChunk;
+
+                tempBuffers = new byte[numTempBuffers][];
+                for (int i = 0; i < numTempBuffers; i++)
+                {
+                    tempBuffers[i] = new byte[ActiveAllocationChunk];
+
+                    var bytesRead = stream.Read(tempBuffers[i], 0, ActiveAllocationChunk);
+                    if (bytesRead != ActiveAllocationChunk)
+                    {
+                        failed = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!failed)
+            {
+                if (!canReuseBuffer || count > buffer.Length)
+                {
+                    buffer = new byte[Math.Max(bufferLength, count)];
+                    canReuseBuffer = true;
+                }
+
+                if (remaining > 0)
+                {
+                    Buffer.BlockCopy(oldBuffer, position, buffer, 0, remaining);
+                }
+
+                int offset = remaining;
+                if (numTempBuffers > 0)
+                {
+                    for (int i = 0; i < numTempBuffers; i++)
+                    {
+                        Buffer.BlockCopy(tempBuffers[i], 0, buffer, offset, ActiveAllocationChunk);
+                        offset += ActiveAllocationChunk;
+                    }
+                }
+                end = offset + stream.Read(buffer, offset, buffer.Length - offset);
+
+                position = 0;
+            }
 
             if (count > end)
             {

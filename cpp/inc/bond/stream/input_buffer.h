@@ -5,7 +5,9 @@
 
 #include <bond/core/blob.h>
 #include <bond/core/exception.h>
+#include <bond/core/traits.h>
 #include <boost/static_assert.hpp>
+#include <cstring>
 
 namespace bond
 {
@@ -21,7 +23,7 @@ struct VariableUnsignedUnchecked
     {
         T byte = *p++;
         value |= (byte & 0x7f) << Shift;
-        
+
         if (byte >= 0x80)
             VariableUnsignedUnchecked<T, Shift + 7>::Read(p, value);
     }
@@ -36,7 +38,7 @@ struct VariableUnsignedUnchecked<T, 0>
     {
         T byte = *p++;
         value = (byte & 0x7f);
-        
+
         if (byte >= 0x80)
             VariableUnsignedUnchecked<T, 7>::Read(p, value);
     }
@@ -84,14 +86,18 @@ struct VariableUnsignedUnchecked<uint64_t, 56>
 }
 
 /// @brief Memory backed input stream
-class InputBuffer 
+class InputBuffer
 {
 public:
+#if defined(_MSC_VER) && _MSC_VER < 1900
+    using range_type = blob;
+#endif
+
     /// @brief Default constructor
     InputBuffer()
         : _pointer()
     {}
-    
+
     /// @brief Construct from a blob
     ///
     /// InputBuffer makes a copy of the blob. Assuming that the blob was
@@ -106,7 +112,7 @@ public:
     ///
     /// Pointer(s) to the memory buffer may be held by the objects deserialized
     /// from the stream. It is the application's responsibility to manage
-    /// the lifetime of the memory buffer appropriately. 
+    /// the lifetime of the memory buffer appropriately.
     InputBuffer(const void* buffer, uint32_t length)
         : _blob(buffer, length),
           _pointer()
@@ -126,25 +132,39 @@ public:
         {
             EofException(sizeof(uint8_t));
         }
-        
+
         value = static_cast<const uint8_t>(_blob.content()[_pointer++]);
     }
 
-    
+
     template <typename T>
     void Read(T& value)
     {
+        BOOST_STATIC_ASSERT(bond::is_arithmetic<T>::value || bond::is_enum<T>::value);
+
         if (sizeof(T) > _blob.length() - _pointer)
         {
             EofException(sizeof(T));
         }
-        
+
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
+        // x86/x64 performance tweak: we can access memory unaligned, so
+        // read directly from the buffer. Benchmarks show this as being
+        // slightly faster than memcpy.
         value = *reinterpret_cast<const T*>(_blob.content() + _pointer);
+#else
+        //
+        // We can't use the trick above on platforms that don't support
+        // unaligned memory access, so just use memcpy.
+        //
+        const void* const src = _blob.content() + _pointer;
+        std::memcpy(&value, src, sizeof(T));
+#endif
 
         _pointer += sizeof(T);
     }
 
-    
+
     void Read(void *buffer, uint32_t size)
     {
         if (size > _blob.length() - _pointer)
@@ -152,12 +172,13 @@ public:
             EofException(size);
         }
 
-        ::memcpy(buffer, _blob.content() + _pointer, size);
+        const void* const src = _blob.content() + _pointer;
+        std::memcpy(buffer, src, size);
 
         _pointer += size;
     }
 
-    
+
     void Read(blob& blob, uint32_t size)
     {
         if (size > _blob.length() - _pointer)
@@ -170,14 +191,14 @@ public:
         _pointer += size;
     }
 
-    
-    void Skip(uint32_t size) 
+
+    void Skip(uint32_t size)
     {
         if (size > _blob.length() - _pointer)
         {
             return;
         }
-        
+
         _pointer += size;
     }
 
@@ -202,9 +223,9 @@ public:
             GenericReadVariableUnsigned(*this, value);
         }
     }
-    
+
 protected:
-    void EofException(uint32_t size) const
+    BOND_NORETURN void EofException(uint32_t size) const
     {
         BOND_THROW(StreamException,
               "Read out of bounds: " << size << " bytes requested, offset: "
@@ -214,12 +235,24 @@ protected:
     blob        _blob;
     uint32_t    _pointer;
 
-    friend blob GetCurrentBuffer(const InputBuffer& input);
+
+    friend blob GetCurrentBuffer(const InputBuffer& input)
+    {
+        return input._blob.range(input._pointer);
+    }
 };
 
-inline blob GetCurrentBuffer(const InputBuffer& input)
+
+inline InputBuffer CreateInputBuffer(const InputBuffer& /*other*/, const blob& blob)
 {
-    return input._blob.range(input._pointer);
+    return InputBuffer(blob);
 }
+
+inline blob GetBufferRange(const blob& begin, const blob& end)
+{
+    return begin.range(0, begin.length() - end.length());
+}
+
+BOND_DEFINE_BUFFER_MAGIC(InputBuffer, 0x4249 /*IB*/);
 
 } // namespace bond

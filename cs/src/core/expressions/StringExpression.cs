@@ -15,25 +15,25 @@ namespace Bond.Expressions
     internal static class StringExpression
     {
         static readonly Expression invariantCulture = Expression.Property(null, typeof(CultureInfo), "InvariantCulture");
-        static readonly MethodInfo equals =      BondReflection.MethodInfoOf(() => string.Equals(default(string), default(string), default(StringComparison)));
-        static readonly MethodInfo format =      BondReflection.MethodInfoOf(() => string.Format(default(IFormatProvider), default(string), default(object[])));
-        static readonly MethodInfo getHashCode = BondReflection.MethodInfoOf((string s) => s.GetHashCode());
-        static readonly FieldInfo stringEmpty =  BondReflection.FieldInfoOf((string s) => string.Empty);
+        static readonly MethodInfo equals =      Reflection.MethodInfoOf(() => string.Equals(default(string), default(string), default(StringComparison)));
+        static readonly MethodInfo format =      Reflection.MethodInfoOf(() => string.Format(default(IFormatProvider), default(string), default(object[])));
+        static readonly MethodInfo getHashCode = Reflection.MethodInfoOf((string s) => s.GetHashCode());
+        static readonly FieldInfo stringEmpty =  Reflection.FieldInfoOf((string s) => string.Empty);
         
         static readonly IDictionary<BondDataType, MethodInfo> methods =
             new Dictionary<BondDataType, MethodInfo>
                 {
-                    { BondDataType.BT_BOOL,   BondReflection.MethodInfoOf(() => System.Convert.ToBoolean(default(string), default(IFormatProvider))) },
-                    { BondDataType.BT_UINT8,  BondReflection.MethodInfoOf(() => System.Convert.ToByte(default(string), default(IFormatProvider))) },
-                    { BondDataType.BT_UINT16, BondReflection.MethodInfoOf(() => System.Convert.ToUInt16(default(string), default(IFormatProvider))) },
-                    { BondDataType.BT_UINT32, BondReflection.MethodInfoOf(() => System.Convert.ToUInt32(default(string), default(IFormatProvider))) },
-                    { BondDataType.BT_UINT64, BondReflection.MethodInfoOf(() => System.Convert.ToUInt64(default(string), default(IFormatProvider))) },
-                    { BondDataType.BT_INT8,   BondReflection.MethodInfoOf(() => System.Convert.ToSByte(default(string), default(IFormatProvider))) },
-                    { BondDataType.BT_INT16,  BondReflection.MethodInfoOf(() => System.Convert.ToInt16(default(string), default(IFormatProvider))) },
-                    { BondDataType.BT_INT32,  BondReflection.MethodInfoOf(() => System.Convert.ToInt32(default(string), default(IFormatProvider))) },
-                    { BondDataType.BT_INT64,  BondReflection.MethodInfoOf(() => System.Convert.ToInt64(default(string), default(IFormatProvider))) },
-                    { BondDataType.BT_FLOAT,  BondReflection.MethodInfoOf(() => System.Convert.ToSingle(default(string), default(IFormatProvider))) },
-                    { BondDataType.BT_DOUBLE, BondReflection.MethodInfoOf(() => System.Convert.ToDouble(default(string), default(IFormatProvider))) }
+                    { BondDataType.BT_BOOL,   Reflection.MethodInfoOf(() => System.Convert.ToBoolean(default(string), default(IFormatProvider))) },
+                    { BondDataType.BT_UINT8,  Reflection.MethodInfoOf(() => System.Convert.ToByte(default(string), default(IFormatProvider))) },
+                    { BondDataType.BT_UINT16, Reflection.MethodInfoOf(() => System.Convert.ToUInt16(default(string), default(IFormatProvider))) },
+                    { BondDataType.BT_UINT32, Reflection.MethodInfoOf(() => System.Convert.ToUInt32(default(string), default(IFormatProvider))) },
+                    { BondDataType.BT_UINT64, Reflection.MethodInfoOf(() => System.Convert.ToUInt64(default(string), default(IFormatProvider))) },
+                    { BondDataType.BT_INT8,   Reflection.MethodInfoOf(() => System.Convert.ToSByte(default(string), default(IFormatProvider))) },
+                    { BondDataType.BT_INT16,  Reflection.MethodInfoOf(() => System.Convert.ToInt16(default(string), default(IFormatProvider))) },
+                    { BondDataType.BT_INT32,  Reflection.MethodInfoOf(() => System.Convert.ToInt32(default(string), default(IFormatProvider))) },
+                    { BondDataType.BT_INT64,  Reflection.MethodInfoOf(() => System.Convert.ToInt64(default(string), default(IFormatProvider))) },
+                    { BondDataType.BT_FLOAT,  Reflection.MethodInfoOf(() => System.Convert.ToSingle(default(string), default(IFormatProvider))) },
+                    { BondDataType.BT_DOUBLE, Reflection.MethodInfoOf(() => System.Convert.ToDouble(default(string), default(IFormatProvider))) }
                 };
 
         public static Expression Convert(Expression valueAsString, BondDataType type)

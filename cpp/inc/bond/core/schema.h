@@ -65,17 +65,17 @@ inline BondDataType RuntimeSchema::GetTypeId() const
 }
 
 
-template <typename Writer>
+template <typename Protocols = BuiltInProtocols, typename Writer>
 inline void Serialize(const RuntimeSchema& schema, Writer& output)
 {
-    Apply(SerializeTo(output), schema.GetSchema());
+    Apply<Protocols>(SerializeTo<Protocols>(output), schema.GetSchema());
 }
 
 
-template <typename Writer>
+template <typename Protocols = BuiltInProtocols, typename Writer>
 inline void Marshal(const RuntimeSchema& schema, Writer& output)
 {
-    Apply(MarshalTo(output), schema.GetSchema());
+    Apply<Protocols>(MarshalTo<Protocols>(output), schema.GetSchema());
 }
 
 class InitSchemaDef;
@@ -133,10 +133,10 @@ namespace detail
         static SchemaDef NewSchemaDef()
         {
             // SchemaDef for unknown types: struct with no fields
-            SchemaDef schema;
-            schema.root.id = BT_STRUCT;
-            schema.structs.resize(1);
-            return schema;
+            SchemaDef s;
+            s.root.id = BT_STRUCT;
+            s.structs.resize(1);
+            return s;
         }
 
     private:

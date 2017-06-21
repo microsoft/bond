@@ -1,0 +1,16 @@
+namespace examples.comm_static_library
+
+struct PingRequest
+{
+    0: string Payload;
+}
+
+struct PingResponse
+{
+    0: string Payload;
+}
+
+service PingPong
+{
+    PingResponse Ping(PingRequest);
+}
