@@ -28,7 +28,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-bondCodegen {
+compileBond {
     bondfiles '../../idl/bond/core/bond.bond',
               '../../idl/bond/core/bond_const.bond'
     options '-n', 'bond=com.microsoft.bond'

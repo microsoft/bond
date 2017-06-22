@@ -2,15 +2,21 @@ package com.microsoft.bond.gradle
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskAction
 
-class BondCodegen extends DefaultTask {
+abstract class BondCodegen extends DefaultTask {
+    // main/test codegen is separate and identical except for a few params.
+    abstract String dependentTaskName()
+    abstract SourceSet dependentSourceSet()
+    abstract String bondSrcRootPath()
+    abstract String outputDirName()
+
     List<String> gbcBaseArgv = ['gbc', 'java']
-    File defaultBondRoot = project.file('src/main/bond')
+    File bondSrcRoot = project.file(bondSrcRootPath())
 
     @Input
     List<String> gbcOptions = []
@@ -19,17 +25,17 @@ class BondCodegen extends DefaultTask {
     Set<File> allBondfiles = defaultBondfiles()
 
     @OutputDirectory
-    File outputDir = project.file("${project.buildDir.canonicalPath}/generated-bond-src")
+    File outputDir = project.file("${project.buildDir.canonicalPath}/" + outputDirName())
 
     BondCodegen() {
         // Assumes we are being called from a Java or Java-inherited
         // (e.g., Kotlin) context.
-        project.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME).dependsOn this
+        project.tasks.getByName(dependentTaskName()).dependsOn(this)
 
         // Needs to happen regardless of whether gradle decides we're up-to-date.
         // We can do this in the constructor for now, but if we expose the
         // ability to change our output dir, this has to happen there.
-        project.sourceSets.main.java.srcDir outputDir.canonicalPath
+        dependentSourceSet().java.srcDir(outputDir.canonicalPath)
     }
 
     def options(Object... optionList) {
@@ -41,8 +47,8 @@ class BondCodegen extends DefaultTask {
     private def defaultBondfiles() {
         Set<File> defaultBondfiles = []
 
-        if (defaultBondRoot.exists()) {
-            project.fileTree(defaultBondRoot) {
+        if (bondSrcRoot.exists()) {
+            project.fileTree(bondSrcRoot) {
                 include '**/*.bond'
             }.each { bondfile ->
                 defaultBondfiles.add(bondfile)
@@ -61,7 +67,6 @@ class BondCodegen extends DefaultTask {
     @TaskAction
     def codegen() {
         if (allBondfiles.empty) {
-            project.logger.warn("bond codegen enabled, but no bondfiles detected or configured")
             return
         }
 
