@@ -34,15 +34,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" scope="PROVIDED">
-      <library name="Gradle: gradle-installation-beacon-3.5">
-        <CLASSES>
-          <root url="jar:///usr/local/Cellar/gradle/3.5/libexec/lib/gradle-installation-beacon-3.5.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
       <library name="Gradle: groovy-all-2.4.10">
         <CLASSES>
@@ -61,15 +52,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library name="Gradle: gradle-installation-beacon-3.5">
-        <CLASSES>
-          <root url="jar:///usr/local/Cellar/gradle/3.5/libexec/lib/gradle-installation-beacon-3.5.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library name="Gradle: groovy-all-2.4.10">
         <CLASSES>
@@ -83,15 +65,6 @@
       <library name="Gradle: gradle-api-3.5">
         <CLASSES>
           <root url="jar://$USER_HOME$/.gradle/caches/3.5/generated-gradle-jars/gradle-api-3.5.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library name="Gradle: gradle-installation-beacon-3.5">
-        <CLASSES>
-          <root url="jar:///usr/local/Cellar/gradle/3.5/libexec/lib/gradle-installation-beacon-3.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
