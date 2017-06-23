@@ -1,5 +1,5 @@
 # Cabal build artifacts
-dist
-.cabal-sandbox
+dist/
+.cabal-sandbox/
 cabal.sandbox.config
 .stack-work/

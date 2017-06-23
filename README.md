@@ -42,11 +42,10 @@ The Bond repository uses Git submodules and should be cloned with the
 git clone --recursive https://github.com/Microsoft/bond.git
 ```
 
-In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and
-cabal-install 1.18+) and Boost (1.58+). Bond's C++ library requires some
-C++11 features (currently limited to those supported bv Visual C++ 2013).
-(Note: Boost 1.59 may not work with Bond Comm due to some bugs in that
-version of the Boost ASIO library).
+In order to build Bond you will need CMake (3.1+), [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install) and
+Boost (1.58+). Bond's C++ library requires some C++11 features (currently
+limited to those supported bv Visual C++ 2013). (Note: Boost 1.59 may not
+work with Bond Comm due to some bugs in that version of the Boost ASIO library).
 
 Following are specific instructions for building on various platforms.
 
@@ -63,13 +62,8 @@ sudo apt-get install \
     clang \
     cmake \
     zlib1g-dev \
-    ghc \
-    cabal-install \
     libboost-dev \
     libboost-thread-dev
-
-cabal update
-cabal install cabal-install
 ```
 
 In the root `bond` directory run:
@@ -99,8 +93,6 @@ sudo apt-get install \
     libtool \
     python2.7-dev
 
-cabal install happy
-
 cd build # or wherever you ran CMake before
 cmake .. -DBOND_ENABLE_COMM=TRUE -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package
 ```
@@ -123,20 +115,12 @@ packages using Homebrew ([http://brew.sh/](http://brew.sh/)):
 ```bash
 brew install \
     cmake \
-    ghc \
-    cabal-install \
+    haskell-stack \
     boost \
     boost-python
 ```
 
 (boost-python is optional and only needed for Python support.)
-
-Update the cabal package database and install `happy` (only needed for tests):
-
-```bash
-cabal update
-cabal install happy
-```
 
 Bond can be built on OS X using either standard \*nix makefiles or Xcode. In
 order to generate and build from makefiles, in the root `bond` directory run:
@@ -187,7 +171,7 @@ Install the following tools:
 - Visual Studio 2013 or 2015
     - Visual Studio 2015 is required to build C# Bond from source
 - CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
-- Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
+- Haskell Stack ([https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows](https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows))
 - .NET Core SDK ([https://www.microsoft.com/net/core](https://www.microsoft.com/net/core#windows))
 
 If you are building on a network behind a proxy, set the environment variable
@@ -195,12 +179,6 @@ If you are building on a network behind a proxy, set the environment variable
 
 ```bash
 set HTTP_PROXY=http://your-proxy-name:80
-```
-
-Update the cabal package database:
-
-```bash
-cabal update
 ```
 
 Now you are ready to build the C# 4.0/4.5 version of Bond. Open the solution

@@ -6,9 +6,9 @@ os:
     - linux
 cache:
     directories:
-        - compiler/.cabal-sandbox
         - cs/packages
-        - /home/travis/.ccache
+        - $HOME/.ccache
+        - $HOME/.stack
 env:
     - FLAVOR="cs"
     - FLAVOR="cpp-core" BOOST="1.64.0"
@@ -21,32 +21,29 @@ env:
     - FLAVOR="cpp-comm" BOOST="1.63.0"
     - FLAVOR="cpp-grpc" BOOST="1.64.0"
     - FLAVOR="cpp-grpc" BOOST="1.63.0"
-    - FLAVOR="hs" GHC_VERSION="7.8.4"
-    - FLAVOR="hs" GHC_VERSION="7.6.3"
+    - FLAVOR="hs"
 addons:
   apt:
     sources:
         - ubuntu-toolchain-r-test
-        - hvr-ghc
     packages:
         - g++-4.8
-        - cabal-install-1.22
-        - ghc-7.8.4
-        - ghc-7.6.3
-        - ghc
         - ccache
         - wget
 
 before_install:
+    - mkdir -p ~/.local/bin
+    - export PATH=$HOME/.local/bin:$PATH
+    - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
     # linux prereqisite packages
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then wget --no-check-certificate https://www.cmake.org/files/v3.2/cmake-3.2.3-Linux-x86_64.tar.gz; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then tar -xf cmake-3.2.3-Linux-x86_64.tar.gz; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PWD/cmake-3.2.3-Linux-x86_64/bin:$PATH; fi
     # set defaults
-    - if [ "$CXX" == "" ]; then echo "Setting default $CXX"; export CXX="clang++"; fi
-    - if [ "$CC" == "" ]; then echo "Setting default $CC"; export CC="clang"; fi
-    - if [ "$BOOST" == "" ]; then echo "Setting default $BOOST"; export BOOST=1.63.0; fi
+    - if [ "$CXX" == "" ]; then echo "Setting default \$CXX"; export CXX="clang++"; fi
+    - if [ "$CC" == "" ]; then echo "Setting default \$CC"; export CC="clang"; fi
+    - if [ "$BOOST" == "" ]; then echo "Setting default \$BOOST"; export BOOST=1.63.0; fi
     # pull down our boost binaries
     - export BOOST_ARCHIVE=boost-$BOOST.tar.xz
     - wget https://bondboostbinaries.blob.core.windows.net/bondboostbinaries/$BOOST_ARCHIVE -O /tmp/$BOOST_ARCHIVE
@@ -62,9 +59,6 @@ before_install:
     - echo "CC=$CC"
     # nunit installation
     - if [ "$FLAVOR" == "cs" ]; then travis_retry nuget install NUnit.Runners -version 2.6.4; fi
-    - export PATH=/opt/cabal/1.22/bin:/opt/ghc/${GHC_VERSION}/bin:$PATH
-    - cabal update
-    - cabal install happy Cabal
 
 before_script:
     # restore nuget packages for solution
@@ -74,7 +68,8 @@ script:
     - mkdir build && cd build
 
     - if [ "$FLAVOR" == "cs" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_COMM=FALSE -DBOND_ENABLE_GRPC=FALSE ..; fi
-    - if [ "$FLAVOR" == "cs" ]; then make --jobs 2 DESTDIR=$HOME install; fi
+    - if [ "$FLAVOR" == "cs" ]; then make gbc; fi
+    - if [ "$FLAVOR" == "cs" ]; then make DESTDIR=$HOME install; fi
     - if [ "$FLAVOR" == "cs" ]; then cd ..; fi
     - if [ "$FLAVOR" == "cs" ]; then export BOND_COMPILER_PATH=$HOME/usr/local/bin; fi
     - if [ "$FLAVOR" == "cs" ]; then xbuild /p:Configuration=Debug cs/cs.sln; fi
