@@ -82,6 +82,18 @@ get a compiler error. To fix, remove the `<Writer>` part:
 
 * **Breaking change** The deprecated type `Bond.BondReflection` has been
   removed. The type `Bond.Reflection` should be used instead.
+* **Breaking change** Bond assemblies are now
+  [strong-name signed](https://msdn.microsoft.com/en-us/library/wd40t7ad(v=vs.110).aspx)
+  with the
+  [bond.snk](https://github.com/Microsoft/bond/blob/82c97e12621eeb906d1bd46e3abba9da14289c61/cs/build/internal/bond.snk)
+  key in the repository instead of with a Microsoft key. This allows anyone
+  to produce compatible assemblies, not just Microsoft. Official
+  distribution of Bond will continue to be
+  [Authenticode signed](https://msdn.microsoft.com/en-us/library/ms537361(v=vs.85).aspx)
+  with a Microsoft certificate.
+  [Issue #414](https://github.com/Microsoft/bond/issues/414)
+    * The new public key for assemblies is now
+      `00240000048000009400000006020000002400005253413100040000010001000d504ac18b4b149d2f7b0059b482f9b6d44d39059e6a96ff0a2a52678b5cfd8567cc67254132cd2debb5b95f6a1206a15c6f8ddac137c6c3ef4995f28c359acaa683a90995c8f08df7ce0aaa8836d331a344a514c443f112f80bf2ebed40ccb32d7df63c09b0d7bef80aecdc23ec200a458d4f8bafbcdeb9bf5ba111fbbd4787`
 
 ## 5.3.1: 2017-04-25 ##
 
