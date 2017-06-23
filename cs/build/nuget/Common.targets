@@ -34,6 +34,8 @@
     </BondImportDirectory>
   </ItemDefinitionGroup>
 
+  <!-- Let Visual Studio know about the BondCodegen item so it can display
+       it in the UI as a potential action for files. -->
   <ItemGroup>
     <AvailableItemName Include="BondCodegen" />
   </ItemGroup>
@@ -53,17 +55,21 @@
     <UpToDateCheckInput Include="$(_BondExe)" />
   </ItemGroup>
 
-  <!--
+  <!-- BondCodegenCs - transform .bond files into .cs files
 
-    * BondCodegenCs - transform .bond files into .cs files
-    *    If we use output transforms from BondCodegen to the resulting targets we can get partial/minimal rebuilds
-    *    on change, but this doesn't reflect the internal import logic of bond.  A change to common.bond would
-    *    only rebuild common*cs, not all the others that import common.bond.  Without a bond parser prepass we
-    *    must rebuild all .bond files when any of them change.  We force that by putting a non-transform output
-    *    (bondcodegen.done) in the list so IFF any input changes, then all inputs rebuild since MSBuild can't
-    *    know what should create the unmapped output item and so can't be selective.
-    *    NOTE - this still won't catch changes to files outside declared BondCodegen elements.
-  -->
+       If we were to use an output transform from BondCodegen to the
+       resulting .cs files we could get partial/minimal rebuilds on changes,
+       but this behavior doesn't reflect the internal import logic of Bond.
+       A change to common.bond would only rebuild common*cs, not all the
+       other files that import common.bond. Without a Bond parser prepass we
+       must rebuild all .bond files when any of them change. We force that
+       by putting a non-transform output (bondcodegen.done) in the list so
+       if any input changes, then all inputs rebuild since MSBuild can't
+       know what should create the unmapped output item and so can't be
+       selective.
+
+       NOTE: This still won't catch changes to files imported outside the
+       BondCodegen item. -->
   <Target Name="BondCodegenCs"
           Inputs="$(_BondExe);@(BondCodegen)"
           Outputs="$(BondOutputDirectory)\bondcodegen.done;@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_types.cs')"
