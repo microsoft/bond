@@ -38,7 +38,23 @@
     <AvailableItemName Include="BondCodegen" />
   </ItemGroup>
 
+  <!-- Attempt to find gbc in a platform-agnostic way. -->
+  <PropertyGroup>
+    <_BondExe>gbc</_BondExe>
+    <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc.exe')">$(BOND_COMPILER_PATH)\gbc.exe</_BondExe>
+    <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc')">$(BOND_COMPILER_PATH)\gbc</_BondExe>
+  </PropertyGroup>
+
+  <!-- Some versions of Visual Studio have an additional up-to-date check
+       that is performed on a subset of files before invoking MSBuild. We
+       need to add gbc as an input to the Visual Studio up-to-date check as
+       well. -->
+  <ItemGroup>
+    <UpToDateCheckInput Include="$(_BondExe)" />
+  </ItemGroup>
+
   <!--
+
     * BondCodegenCs - transform .bond files into .cs files
     *    If we use output transforms from BondCodegen to the resulting targets we can get partial/minimal rebuilds
     *    on change, but this doesn't reflect the internal import logic of bond.  A change to common.bond would
@@ -49,7 +65,7 @@
     *    NOTE - this still won't catch changes to files outside declared BondCodegen elements.
   -->
   <Target Name="BondCodegenCs"
-          Inputs="@(BondCodegen)"
+          Inputs="$(_BondExe);@(BondCodegen)"
           Outputs="$(BondOutputDirectory)\bondcodegen.done;@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_types.cs')"
           BeforeTargets="CoreCompile"
           Condition="'@(BondCodegen)' != ''">
@@ -61,11 +77,8 @@
 
     <!-- just for a simpler commandline read -->
     <PropertyGroup>
-      <_BondExe>gbc</_BondExe>
-      <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc.exe')">"$(BOND_COMPILER_PATH)\gbc.exe"</_BondExe>
-      <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc')">"$(BOND_COMPILER_PATH)\gbc"</_BondExe>
       <_BondImportDirs>--import-dir="$(BOND_INCLUDE_PATH)" @(BondImportDirectory -> '--import-dir=&quot;%(Identity)\.&quot;',' ')</_BondImportDirs>
-      <_BondCommand>$(_BondExe) $(BondCodegenMode) $(_BondImportDirs) --jobs=-2 --namespace=bond=Bond --output-dir="$(BondOutputDirectory)\."</_BondCommand>
+      <_BondCommand>&quot;$(_BondExe)&quot; $(BondCodegenMode) $(_BondImportDirs) --jobs=-2 --namespace=bond=Bond --output-dir="$(BondOutputDirectory)\."</_BondCommand>
     </PropertyGroup>
 
     <!-- We'll optimize to generate in a single command where possible -->
