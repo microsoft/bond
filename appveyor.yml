@@ -18,6 +18,8 @@
     clone_depth: 15
 
     environment:
+        global:
+            STACK_ROOT: "c:\\sr"
         BOND_TOKEN:
             secure: MdnZ86SpR3+/fVz2u31blV83LH6juiobrvO/l1Ak4zG7ykxtvfUI/Vd4l7etYB4J
         # The slowest configurations should come first to help reduce
@@ -83,9 +85,6 @@
               BOND_ARCH: 64
               BOND_BOOST: 58
               BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
-            - BOND_BUILD: C#
-              BOND_OUTPUT: Fields
-              BOND_CONFIG: Fields
     install:
         - ps: >-
             if (($env:BOND_BUILD -eq 'C++') -or ($env:BOND_BUILD -eq 'Python')) {
@@ -111,7 +110,7 @@
                 $env:BOOST_LIBRARYDIR = "C:/Libraries/boost_1_${env:BOND_BOOST}_0/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
             }
 
-            choco install haskellplatform -version 2014.2.0.0 -y
+            choco install haskell-stack -y
 
             # choco install updated the path, so re-read them from the registry and reset $env:path
 
@@ -120,8 +119,6 @@
             $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
 
             $env:Path = "$machinePath;$userPath"
-
-            cabal update
 
             if ($env:BOND_BUILD -eq "Doc") {
 
@@ -154,7 +151,7 @@
 
     cache:
         - cs\packages -> cs\test\core\packages.config
-        - compiler\.cabal-sandbox -> compiler\bond.cabal
+        - "c:\\sr"
 
     before_build:
         - ps: >-

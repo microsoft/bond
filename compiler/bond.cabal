@@ -79,17 +79,16 @@ library
 test-suite gbc-tests
   type:             exitcode-stdio-1.0
   hs-source-dirs:   tests, .
-  main-is:          Main.hs
-  other-modules:    Tests.Codegen
+  main-is:          TestMain.hs
+  other-modules:    IO
+                    Options
+                    Tests.Codegen
                     Tests.Codegen.Util
                     Tests.Syntax
   ghc-options:      -threaded -Wall
   build-depends:    bond,
                     aeson >= 0.7.0.6 && < 0.12.0.0,
                     aeson-pretty == 0.7.2,
-                    -- pinned to a lower version pending resolution of
-                    -- https://github.com/feuerbach/ansi-terminal/issues/22
-                    ansi-terminal < 0.6.3,
                     base >= 4.5 && < 5,
                     bytestring >= 0.10,
                     cmdargs >= 0.10.10,
