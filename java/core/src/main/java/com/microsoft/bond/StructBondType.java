@@ -44,7 +44,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     // Note that #2 doesn't distinguish between generic and non-generic types, by abstracting the type builder
     // for all types, with empty generic type argument list for non-generic types. On the contrary, #1 has
     // that distinction since it's intended for public API and needs to be convenient (i.e. it's not elegant
-    // to ask client code to "build" an invariant non-generic type.
+    // to ask client code to "build" an invariant non-generic type).
     private static final ConcurrentHashMap<
             Class<? extends BondSerializable>,
             StructBondTypeBuilder<? extends BondSerializable>> structTypeBuilderRegistry =

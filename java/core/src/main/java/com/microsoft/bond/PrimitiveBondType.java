@@ -10,7 +10,7 @@ import java.util.HashMap;
  * All subclasses should implement the Singleton pattern and thus this base class implements non-overridable
  * {@link #hashCode()} and {@link #equals(Object)} methods that delegate to the identity of the implementation
  * class.
- z * @param <TPrimitive> the class of the primitive value
+ * @param <TPrimitive> the class of the primitive value
  */
 public abstract class PrimitiveBondType<TPrimitive> extends BondType<TPrimitive> {
 

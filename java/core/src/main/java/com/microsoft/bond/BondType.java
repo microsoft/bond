@@ -27,7 +27,7 @@ public abstract class BondType<T> {
     // or user-defined generic structs. The implementation of type descriptors and generated classes makes sure
     // that there exists only one copy of each type descriptor (excluding short-lived temporary objects).
     //
-    // Type descriptor caching is based on identity of a type descriptor, implemented by the equals and hadhCode
+    // Type descriptor caching is based on identity of a type descriptor, implemented by the equals and hashCode
     // methods, and which consists of the following two items:
     // 1. The Java class that implements the type descriptor (and thus inherits from BondType). The class
     //    identity alone is sufficient for type descriptors of non-generic Bond type since these are singletons.
@@ -159,8 +159,9 @@ public abstract class BondType<T> {
     /**
      * Returns the default value of this type as a shared instance for immutable primitive types
      * or a new instance for all other types. For non-nullable structs and containers this method
-     * returns an initialized value equivalent to invoking the public constructor. For nullable
-     * values this method always returns null.
+     * returns an initialized value equivalent to invoking the public parameterless constructor
+     * for collections and non-generic structs, or the public single-argument constructor for generic
+     * structs. For nullable values this method always returns null.
      *
      * @return the default initialized value of this type
      */
