@@ -1,9 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-// Even though this file is compiled conditionally, the #if is necessary to unconfuse resharper
-#if !NET40
-
 namespace Bond.Internal.Reflection
 {
     using System;
@@ -59,5 +56,3 @@ namespace Bond.Internal.Reflection
         }
     }
 }
-
-#endif

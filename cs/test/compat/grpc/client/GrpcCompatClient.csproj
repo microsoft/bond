@@ -9,7 +9,6 @@
     <RootNamespace>GrpcCompatClient</RootNamespace>
     <AssemblyName>GrpcCompatClient</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Grpc.Core">

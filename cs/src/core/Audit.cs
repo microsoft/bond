@@ -20,9 +20,7 @@ namespace Bond
             throw new ArgumentException(message);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static void ArgNotNull(object value, string paramName)
         {
             if (value == null)
@@ -31,9 +29,7 @@ namespace Bond
             }
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static void ArgRule(bool invariant, string message)
         {
             if (!invariant)

@@ -9,7 +9,6 @@
     <RootNamespace>Bond.Grpc</RootNamespace>
     <AssemblyName>Bond.Grpc</AssemblyName>
     <BondRedistributable>true</BondRedistributable>
-    <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Marshaller.cs" />

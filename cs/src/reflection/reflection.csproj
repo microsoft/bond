@@ -13,7 +13,6 @@
   <ItemGroup>
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="Reflection.cs" />
-    <Compile Include="Reflection40.cs" Condition="'$(TargetFrameworkVersion)' == 'v4.0'" />
     <Compile Include="Reflection45.cs" Condition="'$(TargetFrameworkVersion)' == 'v4.5'" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />

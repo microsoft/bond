@@ -80,6 +80,8 @@ get a compiler error. To fix, remove the `<Writer>` part:
 
 ### C# ###
 
+* **Breaking change** Support for .NET 4.0 has been dropped from the
+  [supported frameworks](https://microsoft.github.io/bond/manual/bond_cs.html#frameworks-targeted).
 * **Breaking change** The deprecated type `Bond.BondReflection` has been
   removed. The type `Bond.Reflection` should be used instead.
 * **Breaking change** Bond assemblies are now

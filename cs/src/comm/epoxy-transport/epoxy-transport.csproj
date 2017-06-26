@@ -9,7 +9,6 @@
     <RootNamespace>Bond.Comm.Epoxy</RootNamespace>
     <AssemblyName>Bond.Comm.Epoxy</AssemblyName>
     <BondRedistributable>true</BondRedistributable>
-    <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
     <BondImportDirectory Include="..\interfaces" />

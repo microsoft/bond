@@ -26,11 +26,6 @@
          files, but there doesn't seem to be a good way to reference
          dependent packages from MSBuild targets. Instead, we duplicate the
          files in this package. They're pretty small. -->
-    <file target="build\net40" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
-    <file target="build\net40" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
-    <file target="build\net40" src="cs\build\nuget\Common.props" />
-    <file target="build\net40" src="cs\build\nuget\Common.targets" />
-
     <file target="build\net45" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
     <file target="build\net45" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
     <file target="build\net45" src="cs\build\nuget\Common.props" />

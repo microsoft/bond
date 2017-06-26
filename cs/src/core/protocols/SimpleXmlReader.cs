@@ -48,17 +48,13 @@ namespace Bond.Protocols
             get { return reader.NamespaceURI; }
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void Read()
         {
             reader.Read();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void Skip()
         {
             reader.Skip();
