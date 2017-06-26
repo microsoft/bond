@@ -847,8 +847,6 @@ how to achieve the best performance.
     amortized. The canonical use case for an untagged protocol is record-based
     data storage.
 
-6. Using .NET 4.5 will give better performance than 4.0.
-
 Runtime schema
 ==============
 
@@ -1528,16 +1526,16 @@ namespace).
 
 This table lists which frameworks are targeted by the Bond assemblies.
 
-This table is accurate for Bond NuGet packages 5.1.0 and later and Bond Comm
-0.9.0 and later.
+This table is accurate for Bond NuGet packages 6.0.0 and later and Bond Comm
+0.12.0 and later.
 
 | Assembly                 | .NET 4.0 | .NET 4.5 | Profile78 | .NET Standard 1.0 | .NET Standard 1.3 | .NET Standard 1.6 |
 |--------------------------|----------|----------|-----------|-------------------|-------------------|-------------------|
-| Bond.Attributes.dll      | Yes      | Yes      | Yes       | Yes               | ←                 | Yes               |
-| Bond.Reflection.dll      | Yes      | Yes      | Yes       | Yes               | ←                 | Yes               |
-| Bond.dll                 | Yes      | Yes      | Yes       | Yes               | ←                 | Yes               |
-| Bond.JSON.dll            | Yes      | Yes      | No        | Yes               | ←                 | Yes               |
-| Bond.IO.dll              | Win only | Win only | No        | No                | Win only          | Win only          |
+| Bond.Attributes.dll      | No       | Yes      | Yes       | Yes               | ←                 | Yes               |
+| Bond.Reflection.dll      | No       | Yes      | Yes       | Yes               | ←                 | Yes               |
+| Bond.dll                 | No       | Yes      | Yes       | Yes               | ←                 | Yes               |
+| Bond.JSON.dll            | No       | Yes      | No        | Yes               | ←                 | Yes               |
+| Bond.IO.dll              | No       | Win only | No        | No                | Win only          | Win only          |
 | Bond.Comm.Interfaces.dll | No       | Yes      | Yes       | ←                 | ←                 | ←                 |
 | Bond.Comm.Layers.dll     | No       | Yes      | Yes       | ←                 | ←                 | ←                 |
 | Bond.Comm.Services.dll   | No       | Yes      | Yes       | ←                 | ←                 | ←                 |

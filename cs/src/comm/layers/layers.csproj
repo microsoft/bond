@@ -10,7 +10,6 @@
     <RootNamespace>Bond.Comm.Layers</RootNamespace>
     <AssemblyName>Bond.Comm.Layers</AssemblyName>
     <BondRedistributable>true</BondRedistributable>
-    <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="LayerStack.cs" />

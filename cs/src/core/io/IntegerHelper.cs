@@ -326,49 +326,37 @@ namespace Bond.IO
             return result;
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static UInt16 EncodeZigzag16(Int16 value)
         {
             return (UInt16)((value << 1) ^ (value >> (sizeof(Int16) * 8 - 1)));
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static UInt32 EncodeZigzag32(Int32 value)
         {
             return (UInt32)((value << 1) ^ (value >> (sizeof(Int32) * 8 - 1)));
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static UInt64 EncodeZigzag64(Int64 value)
         {
             return (UInt64)((value << 1) ^ (value >> (sizeof(Int64) * 8 - 1)));
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static Int16 DecodeZigzag16(UInt16 value)
         {
             return (Int16)((value >> 1) ^ (-(value & 1)));
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static Int32 DecodeZigzag32(UInt32 value)
         {
             return (Int32)((value >> 1) ^ (-(value & 1)));
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static Int64 DecodeZigzag64(UInt64 value)
         {
             return (Int64)((value >> 1) ^ (UInt64)(-(Int64)(value & 1)));

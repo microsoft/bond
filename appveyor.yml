@@ -295,9 +295,6 @@
 
             if ($env:BOND_BUILD -eq "C#") {
 
-                nunit-console-x86 /framework:net-4.0 /labels "cs\test\core\bin\debug\net40\${env:BOND_OUTPUT}\Bond.UnitTest.dll" cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
-                if (-not $?) { throw "tests failed" }
-
                 nunit-console-x86 /framework:net-4.5 /labels "cs\test\core\bin\debug\net45\${env:BOND_OUTPUT}\Bond.UnitTest.dll" cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
                 if (-not $?) { throw "tests failed" }
 

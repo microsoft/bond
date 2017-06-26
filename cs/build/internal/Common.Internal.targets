@@ -18,6 +18,5 @@
   </ItemGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetPath);@(FileToCopy)" DestinationFolder="$(BOND_BINARY_PATH)\$(BuildFramework)" Condition="'$(BondRedistributable)' == 'true'" />
-    <MSBuild Condition="'$(BuildFramework)' == 'net45' And '$(OS)' != 'Unix' And '$(DontBuildNet40)' != 'true'" Projects="$(MSBuildProjectFile)" Properties="BuildFramework=net40" RunEachTargetSeparately="true"  />
   </Target>
 </Project>

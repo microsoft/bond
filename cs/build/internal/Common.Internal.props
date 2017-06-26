@@ -12,11 +12,6 @@
   <PropertyGroup Condition="'$(BuildFramework)' == ''">
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <BuildFramework>net45</BuildFramework>
-    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(BuildFramework)' == 'net40'">
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <DefineConstants>$(DefineConstants);NET40</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>bin\$(BuildType)\$(BuildFramework)</OutputPath>

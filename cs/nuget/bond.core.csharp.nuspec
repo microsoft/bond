@@ -24,19 +24,6 @@
         <tags>Bond .NET C# serialization</tags>
     </metadata>
     <files>
-        <file target="lib\net40" src="net40\Bond.Attributes.dll" />
-        <file target="lib\net40" src="net40\Bond.Attributes.pdb" />
-        <file target="lib\net40" src="net40\Bond.Attributes.xml" />
-        <file target="lib\net40" src="net40\Bond.IO.dll" />
-        <file target="lib\net40" src="net40\Bond.IO.pdb" />
-        <file target="lib\net40" src="net40\Bond.IO.xml" />
-        <file target="lib\net40" src="net40\Bond.Reflection.dll" />
-        <file target="lib\net40" src="net40\Bond.Reflection.pdb" />
-        <file target="lib\net40" src="net40\Bond.Reflection.xml" />
-        <file target="lib\net40" src="net40\Bond.dll" />
-        <file target="lib\net40" src="net40\Bond.pdb" />
-        <file target="lib\net40" src="net40\Bond.xml" />
-
         <file target="lib\net45" src="net45\Bond.Attributes.dll" />
         <file target="lib\net45" src="net45\Bond.Attributes.pdb" />
         <file target="lib\net45" src="net45\Bond.Attributes.xml" />

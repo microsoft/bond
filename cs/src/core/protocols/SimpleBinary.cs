@@ -85,9 +85,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write protocol magic number and version
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteVersion()
         {
             output.WriteUInt16(Magic);
@@ -97,34 +95,22 @@ namespace Bond.Protocols
         #region Complex Types
 
         #region Unused in tagged protocol
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldBegin(BondDataType type, ushort id, Metadata metadata) { }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldEnd() { }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteStructBegin(Metadata metadata) { }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBaseBegin(Metadata metadata) { }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteStructEnd() { }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBaseEnd() { }
 
         #endregion
@@ -135,9 +121,7 @@ namespace Bond.Protocols
         /// <param name="dataType">Type of the field</param>
         /// <param name="id">Identifier of the field</param>
         /// <param name="metadata">Metadata of the field</param>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldOmitted(BondDataType dataType, ushort id, Metadata metadata)
         {
             // Simple doesn't support omitting fields so instead we write the default value
@@ -200,9 +184,7 @@ namespace Bond.Protocols
         /// </summary>
         /// <param name="count">Number of elements in the container</param>
         /// <param name="elementType">Type of the elements</param>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteContainerBegin(int count, BondDataType elementType)
         {
             WriteLength(count);
@@ -214,9 +196,7 @@ namespace Bond.Protocols
         /// <param name="count">Number of elements in the container</param>
         /// <param name="keyType">Type of the keys</param>
         /// /// <param name="valueType">Type of the values</param>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteContainerBegin(int count, BondDataType keyType, BondDataType valueType)
         {
             WriteLength(count);
@@ -225,9 +205,7 @@ namespace Bond.Protocols
         /// <summary>
         /// End writing a container
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteContainerEnd() { }
 
         #endregion
@@ -236,9 +214,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an UInt8
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt8(Byte value)
         {
             output.WriteUInt8(value);
@@ -247,9 +223,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an UInt16
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt16(UInt16 value)
         {
             output.WriteUInt16(value);
@@ -258,9 +232,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an UInt32
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt32(UInt32 value)
         {
             output.WriteUInt32(value);
@@ -269,9 +241,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an UInt64
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt64(UInt64 value)
         {
             output.WriteUInt64(value);
@@ -280,9 +250,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write array of bytes verbatim
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBytes(ArraySegment<byte> data)
         {
             output.WriteBytes(data);
@@ -291,9 +259,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an Int8
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt8(SByte value)
         {
             output.WriteUInt8(unchecked((Byte)value));
@@ -302,9 +268,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an Int16
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt16(Int16 value)
         {
             output.WriteUInt16(unchecked((UInt16) value));
@@ -313,9 +277,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an Int32
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt32(Int32 value)
         {
             output.WriteUInt32(unchecked((UInt32)value));
@@ -324,9 +286,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an Int64
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt64(Int64 value)
         {
             output.WriteUInt64(unchecked((UInt64)value));
@@ -335,9 +295,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write a float
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFloat(float value)
         {
             output.WriteFloat(value);
@@ -346,9 +304,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write a double
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteDouble(double value)
         {
             output.WriteDouble(value);
@@ -356,9 +312,7 @@ namespace Bond.Protocols
 
         /// <summary> write bool, extending the stream if necessary and possible
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBool(bool value)
         {
             output.WriteUInt8((byte)(value ? 1 : 0));
@@ -367,9 +321,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write a UTF-8 string
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteString(string value)
         {
             if (value.Length == 0)
@@ -387,9 +339,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write a UTF-16 string
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteWString(string value)
         {
             if (value.Length == 0)
@@ -404,9 +354,7 @@ namespace Bond.Protocols
         }
         #endregion
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         void WriteLength(int value)
         {
             if (version == 2)
@@ -429,17 +377,13 @@ namespace Bond.Protocols
             this.version = version;
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         SimpleBinaryReader<I> ICloneable<SimpleBinaryReader<I>>.Clone()
         {
             return new SimpleBinaryReader<I>(input.Clone(), version);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         IClonableUntaggedProtocolReader ICloneable<IClonableUntaggedProtocolReader>.Clone()
         {
             return (this as ICloneable<SimpleBinaryReader<I>>).Clone();
@@ -447,9 +391,7 @@ namespace Bond.Protocols
 
         #region Complex types
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public bool ReadFieldOmitted()
         {
             return false;
@@ -460,9 +402,7 @@ namespace Bond.Protocols
         /// </summary>
         /// <returns>Number of elements</returns>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public int ReadContainerBegin()
         {
             return ReadLength();
@@ -472,9 +412,7 @@ namespace Bond.Protocols
         /// End reading a container
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void ReadContainerEnd()
         {}
 
@@ -486,17 +424,13 @@ namespace Bond.Protocols
         /// Read an UInt8
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public byte ReadUInt8()
         {
             return input.ReadUInt8();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipUInt8()
         {
             input.SkipBytes(1);
@@ -506,17 +440,13 @@ namespace Bond.Protocols
         /// Read an UInt16
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public ushort ReadUInt16()
         {
             return input.ReadUInt16();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipUInt16()
         {
             input.SkipBytes(2);
@@ -526,17 +456,13 @@ namespace Bond.Protocols
         /// Read an UInt32
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public uint ReadUInt32()
         {
             return input.ReadUInt32();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipUInt32()
         {
             input.SkipBytes(4);
@@ -546,17 +472,13 @@ namespace Bond.Protocols
         /// Read an UInt64
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public UInt64 ReadUInt64()
         {
             return input.ReadUInt64();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipUInt64()
         {
             input.SkipBytes(8);
@@ -566,17 +488,13 @@ namespace Bond.Protocols
         /// Read an Int8
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public sbyte ReadInt8()
         {
             return unchecked((sbyte)input.ReadUInt8());
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipInt8()
         {
             input.SkipBytes(1);
@@ -586,17 +504,13 @@ namespace Bond.Protocols
         /// Read an Int16
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public short ReadInt16()
         {
             return unchecked((short)input.ReadUInt16());
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipInt16()
         {
             input.SkipBytes(2);
@@ -606,17 +520,13 @@ namespace Bond.Protocols
         /// Read an Int32
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public int ReadInt32()
         {
             return unchecked((int)input.ReadUInt32());
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipInt32()
         {
             input.SkipBytes(4);
@@ -626,17 +536,13 @@ namespace Bond.Protocols
         /// Read an Int64
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public Int64 ReadInt64()
         {
             return unchecked((Int64)input.ReadUInt64());
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipInt64()
         {
             input.SkipBytes(8);
@@ -646,17 +552,13 @@ namespace Bond.Protocols
         /// Read an bool
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public bool ReadBool()
         {
             return input.ReadUInt8() != 0;
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipBool()
         {
             input.SkipBytes(1);
@@ -666,17 +568,13 @@ namespace Bond.Protocols
         /// Read an float
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public float ReadFloat()
         {
             return input.ReadFloat();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipFloat()
         {
             input.SkipBytes(4);
@@ -686,17 +584,13 @@ namespace Bond.Protocols
         /// Read an double
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public double ReadDouble()
         {
             return input.ReadDouble();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipDouble()
         {
             input.SkipBytes(8);
@@ -706,18 +600,14 @@ namespace Bond.Protocols
         /// Read a UTF-8 string
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public String ReadString()
         {
             var length = ReadLength();
             return length == 0 ? string.Empty : input.ReadString(Encoding.UTF8, length);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipString()
         {
             input.SkipBytes(ReadLength());
@@ -727,18 +617,14 @@ namespace Bond.Protocols
         /// Read a UTF-16 string
         /// </summary>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public string ReadWString()
         {
             var length = ReadLength();
             return length == 0 ? string.Empty : input.ReadString(Encoding.Unicode, length << 1);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipWString()
         {
             input.SkipBytes(ReadLength() << 1);
@@ -749,17 +635,13 @@ namespace Bond.Protocols
         /// </summary>
         /// <param name="count">Number of bytes to read</param>
         /// <exception cref="EndOfStreamException"/>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public ArraySegment<byte> ReadBytes(int count)
         {
             return input.ReadBytes(count);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void SkipBytes(int count)
         {
             input.SkipBytes(count);
@@ -767,9 +649,7 @@ namespace Bond.Protocols
 
         #endregion
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         int ReadLength()
         {
             return (int)((version == 2) ? input.ReadVarUInt32() : input.ReadUInt32());

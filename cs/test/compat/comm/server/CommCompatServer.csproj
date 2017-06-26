@@ -9,7 +9,6 @@
     <RootNamespace>CommCompatServer</RootNamespace>
     <AssemblyName>CommCompatServer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
