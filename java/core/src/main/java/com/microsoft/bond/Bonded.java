@@ -19,7 +19,8 @@ public class Bonded<T extends BondSerializable> implements IBonded<T> {
 
     @Override
     public void serialize(ProtocolWriter writer) throws IOException {
-        value.serialize(writer);
+        // TODO: implement serialization/deserialization of Bonded types
+        throw new UnsupportedOperationException();
     }
 
     @Override

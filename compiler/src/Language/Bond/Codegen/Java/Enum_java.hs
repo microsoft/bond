@@ -30,7 +30,7 @@ package #{javaPackage};
 
     typeDefinition Enum {..} = [lt|
 #{Java.generatedClassAnnotations}
-public final class #{declName} implements com.microsoft.bond.BondEnum, java.lang.Comparable<#{declName}> {
+public final class #{declName} implements com.microsoft.bond.BondEnum<#{declName}> {
 
     public static final class Values {
         private Values() {}
@@ -38,28 +38,42 @@ public final class #{declName} implements com.microsoft.bond.BondEnum, java.lang
         #{newlineSep 2 constantIntValueDecl enumConstantsWithInt}
     }
 
+    private static final class EnumBondTypeImpl extends com.microsoft.bond.EnumBondType<#{declName}> {
+
+        @Override
+        public java.lang.Class<#{declName}> getValueClass() { return #{declName}.class; }
+
+        @Override
+        public final #{declName} getEnumValue(int value) { return get(value); }
+    }
+
+    public static final com.microsoft.bond.EnumBondType<#{declName}> BOND_TYPE = new EnumBondTypeImpl();
+
     #{newlineSep 1 constantObjectDecl enumConstantsWithInt}
 
     public final int value;
 
-    private final String label;
+    private final java.lang.String label;
 
     private #{declName}(int value, String label) { this.value = value; this.label = label; }
 
     @Override
-    public int getValue() { return this.value; }
+    public final int getValue() { return this.value; }
 
     @Override
-    public int compareTo(#{declName} o) { return this.value < o.value ? -1 : (this.value > o.value ? 1 : 0); }
+    public final com.microsoft.bond.EnumBondType<#{declName}> getBondType() { return BOND_TYPE; }
 
     @Override
-    public boolean equals(Object other) { return (other instanceof #{declName}) && (this.value == ((#{declName}) other).value); }
+    public final int compareTo(#{declName} o) { return this.value < o.value ? -1 : (this.value > o.value ? 1 : 0); }
 
     @Override
-    public int hashCode() { return this.value; }
+    public final boolean equals(java.lang.Object other) { return (other instanceof #{declName}) && (this.value == ((#{declName}) other).value); }
 
     @Override
-    public String toString() { return this.label != null ? this.label : ("#{declName}(" + String.valueOf(this.value) + ")"); }
+    public final int hashCode() { return this.value; }
+
+    @Override
+    public final java.lang.String toString() { return this.label != null ? this.label : ("#{declName}(" + String.valueOf(this.value) + ")"); }
 
     public static #{declName} get(int value) {
         switch (value) {
