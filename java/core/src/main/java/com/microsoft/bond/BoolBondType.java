@@ -25,11 +25,12 @@ public final class BoolBondType extends PrimitiveBondType<Boolean> {
      */
     public static final String TYPE_NAME = "bool";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final BoolBondType INSTANCE = new BoolBondType();
 
     private BoolBondType() {
-        super(BoolBondType.class);
     }
 
     @Override

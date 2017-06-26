@@ -8,7 +8,7 @@ import com.microsoft.bond.*;
 /**
  * Bond enum type used for testing, hand-crafted to match generated code.
  */
-public final class MyEnum implements BondEnum, Comparable<MyEnum> {
+public final class MyEnum implements BondEnum<MyEnum> {
 
     // defines constants
     public static final class Values {
@@ -26,6 +26,20 @@ public final class MyEnum implements BondEnum, Comparable<MyEnum> {
         public static final int Black = 8;
     }
 
+    // type descriptor implementation
+    private static final class EnumBondTypeImpl extends EnumBondType<MyEnum> {
+
+        @Override
+        public java.lang.Class<MyEnum> getValueClass() {
+            return MyEnum.class;
+        }
+
+        @Override
+        public final MyEnum getEnumValue(int value) {
+            return get(value);
+        }
+    }
+
     public static final MyEnum White = new MyEnum(Values.White, "White");
     public static final MyEnum Yellow = new MyEnum(Values.Yellow, "Yellow");
     public static final MyEnum Orange = new MyEnum(Values.Orange, "Orange");
@@ -35,38 +49,11 @@ public final class MyEnum implements BondEnum, Comparable<MyEnum> {
     public static final MyEnum Brown = new MyEnum(Values.Brown, "Brown");
     public static final MyEnum Black = new MyEnum(Values.Black, "Black");
 
-    // type descriptor class
-    private static final class EnumType extends EnumBondType<MyEnum> {
-
-        // retrieves singleton, called by the enclosing class
-        private static EnumType getInstance() {
-            // makes sure the type is registered as an enum and thus can be
-            // accessed by calling static methods of the BonType class
-            return (EnumType) registerEnumTypeWithCaching(MyEnum.class, new EnumType());
-        }
-
-        @Override
-        public Class<MyEnum> getValueClass() {
-            return null;
-        }
-
-        // accessible only by the enclosing class
-        private EnumType() {
-            super(EnumType.class);
-        }
-
-        @Override
-        public final MyEnum getEnumValue(int value) {
-            return MyEnum.get(value);
-        }
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // Bond enum static members
     ///////////////////////////////////////////////////////////////////////////
 
-    // type descriptors of this enum type
-    public static final EnumBondType<MyEnum> struct = EnumType.getInstance();
+    public static final EnumBondType<MyEnum> BOND_TYPE = new EnumBondTypeImpl();
 
     public static MyEnum get(int value) {
         switch (value) {
@@ -106,6 +93,11 @@ public final class MyEnum implements BondEnum, Comparable<MyEnum> {
     @Override
     public final int getValue() {
         return this.value;
+    }
+
+    @Override
+    public final EnumBondType<MyEnum> getBondType() {
+        return BOND_TYPE;
     }
 
     @Override

@@ -20,11 +20,12 @@ public final class StringBondType extends PrimitiveBondType<String> {
      */
     public static final String TYPE_NAME = "string";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final StringBondType INSTANCE = new StringBondType();
 
     private StringBondType() {
-        super(StringBondType.class);
     }
 
     @Override

@@ -27,11 +27,12 @@ public final class DoubleBondType extends PrimitiveBondType<Double> {
      */
     public static final String TYPE_NAME = "double";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final DoubleBondType INSTANCE = new DoubleBondType();
 
     private DoubleBondType() {
-        super(DoubleBondType.class);
     }
 
     @Override

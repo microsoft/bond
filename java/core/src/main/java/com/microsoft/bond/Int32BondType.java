@@ -25,11 +25,12 @@ public final class Int32BondType extends PrimitiveBondType<Integer> {
      */
     public static final String TYPE_NAME = "int32";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final Int32BondType INSTANCE = new Int32BondType();
 
     private Int32BondType() {
-        super(Int32BondType.class);
     }
 
     @Override

@@ -6,20 +6,23 @@ package com.microsoft.bond;
 import java.io.IOException;
 
 /**
- * Partially implements the {@link BondType} contract for Bond enum data types.
- * Leaves some implementation details to generated subclasses specific to the
- * enum type.
+ * Partially implements the {@link BondType} contract for generated Bond enum data types.
+ * Leaves the rest of implementation details to generated subclasses specific to the enum type,
+ * which are private classes nested within the enum class and implement the Singleton pattern.
  * @param <TEnum> the class of the enum value
  */
-public abstract class EnumBondType<TEnum extends BondEnum> extends PrimitiveBondType<TEnum> {
+public abstract class EnumBondType<TEnum extends BondEnum<TEnum>> extends PrimitiveBondType<TEnum> {
+
+    // the default value of the enum type is cached inside the singleton class descriptor,
+    // since the generated enum class may not cache it if there is no declared constant for it
+    private final TEnum defaultValue;
 
     /**
-     * Used by generated subclasses to instantiate the type descriptor.
-     *
-     * @param thisClass the class implementing the type descriptor for the enum
+     * Used by generated subclasses (and only by generated sublclasses) to instantiate the type descriptor.
      */
-    protected EnumBondType(Class<? extends EnumBondType<TEnum>> thisClass) {
-        super(thisClass);
+    protected EnumBondType() {
+        // a default for enum type is the enum value with the underlying integer set to 0
+        this.defaultValue = this.getEnumValue(0);
     }
 
     @Override
@@ -30,13 +33,13 @@ public abstract class EnumBondType<TEnum extends BondEnum> extends PrimitiveBond
 
     @Override
     public final String getName() {
-        // rely on generated class
+        // rely on the generated class
         return this.getValueClass().getSimpleName();
     }
 
     @Override
     public final String getQualifiedName() {
-        // rely on generated class
+        // rely on the generated class
         return this.getValueClass().getName();
     }
 
@@ -47,15 +50,14 @@ public abstract class EnumBondType<TEnum extends BondEnum> extends PrimitiveBond
 
     @Override
     protected final TEnum newDefaultValue() {
-        // a default for enum type is the enum value with the underlying integer set to 0
-        return this.getEnumValue(0);
+        return this.defaultValue;
     }
 
     /**
      * Returns an enum value for the given integer.
      *
      * @param value an integer value
-     * @return the enum value corresponding to the argument
+     * @return the enum value corresponding to the argument, never null
      */
     public abstract TEnum getEnumValue(int value);
 

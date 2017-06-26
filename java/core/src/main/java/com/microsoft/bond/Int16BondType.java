@@ -25,11 +25,12 @@ public final class Int16BondType extends PrimitiveBondType<Short> {
      */
     public static final String TYPE_NAME = "int16";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final Int16BondType INSTANCE = new Int16BondType();
 
     private Int16BondType() {
-        super(Int16BondType.class);
     }
 
     @Override

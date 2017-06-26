@@ -18,11 +18,11 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     public static final String TYPE_NAME = "bonded";
 
     private final StructBondType<TStruct> valueType;
+    private final int precomputedHashCode;
 
-    // restrict instantiation to the current package
     BondedBondType(StructBondType<TStruct> valueType) {
-        super(-valueType.hashCode());
         this.valueType = valueType;
+        this.precomputedHashCode = -valueType.hashCode();
     }
 
     /**
@@ -103,7 +103,7 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
             SerializationContext context,
             Bonded<TStruct> value,
             StructBondType.StructField<Bonded<TStruct>> field) throws IOException {
-        // struct fields are never omitted
+        // struct (bonded) fields are never omitted
         context.writer.writeFieldBegin(BondDataType.BT_STRUCT, field.getId(), field);
         try {
             this.serializeValue(context, value);
@@ -134,10 +134,19 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     }
 
     @Override
-    final boolean equalsInternal(BondType<?> obj) {
-        // the caller makes sure that the class of the argument is the same as the class of this object
-        BondedBondType that = (BondedBondType) obj;
-        return this.valueType.equals(that.valueType);
+    public final int hashCode() {
+        return this.precomputedHashCode;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj instanceof BondedBondType<?>) {
+            BondedBondType<?> that = (BondedBondType<?>) obj;
+            return this.precomputedHashCode == that.precomputedHashCode &&
+                    this.valueType.equals(that.valueType);
+        } else {
+            return false;
+        }
     }
 
     @Override

@@ -8,7 +8,9 @@ package com.microsoft.bond;
  */
 public final class GenericTypeSpecialization {
 
-    // accessible to StructBondType
+    /**
+     * Array of generic type arguments.
+     */
     final BondType<?>[] genericTypeArguments;
 
     /**
@@ -18,6 +20,15 @@ public final class GenericTypeSpecialization {
      */
     public GenericTypeSpecialization(BondType<?>... genericTypeArguments) {
         this.genericTypeArguments = genericTypeArguments;
+    }
+
+    /**
+     * Gets the number of generic type arguments.
+     *
+     * @return the number of generic type arguments
+     */
+    public final int size() {
+        return this.genericTypeArguments.length;
     }
 
     /**

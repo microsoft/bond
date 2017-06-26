@@ -24,15 +24,6 @@ final class Throw {
         throw new InvalidBondDataException(message, cause);
     }
 
-    // general entry point to raise a data exception on value comparison
-    static void raiseIllegalArgumentException(
-            Exception cause,
-            String format,
-            Object... args) throws InvalidBondDataException {
-        String message = String.format(LOCALE, format, args);
-        throw new IllegalArgumentException(message, cause);
-    }
-
     // raises a data exception on (se)serialization of a struct field with details to identify the field;
     // this exception should be the at the top of exception chains caused by Bond data errors when (de)serializing
     static void raiseStructFieldSerializationError(
@@ -108,7 +99,7 @@ final class Throw {
 
     // raised when encountering a non-nullable value of a field or a collection element that is set to null,
     // this exception should be chained to another exception that indicates the field or the collection element
-    static void raiseNonNullableValueSetTuNullError(
+    static void raiseNonNullableValueSetToNullError(
             String typeName) throws InvalidBondDataException {
         raiseInvalidDataError(
                 null,

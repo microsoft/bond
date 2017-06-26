@@ -25,7 +25,7 @@ public final class Serializer<TStruct extends BondSerializable> {
         ArgumentHelper.ensureNotNull(obj, "obj");
         ArgumentHelper.ensureNotNull(writer, "writer");
         @SuppressWarnings("unchecked")
-        StructBondType<TStruct> struct = (StructBondType<TStruct>) obj.getStruct();
+        StructBondType<TStruct> struct = (StructBondType<TStruct>) obj.getBondType();
         struct.serialize(obj, writer);
     }
 }

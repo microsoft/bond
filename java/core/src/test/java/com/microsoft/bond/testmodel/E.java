@@ -26,92 +26,96 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class E<U> extends D implements BondSerializable {
 
-    // implementation of the type descriptor resolver
-    public static final class StructResolver extends StructBondTypeResolver<E> {
+    // public definition of the type descriptor builder for generic type
+    public static abstract class GenericBondTypeBuilder {
 
-        // public type resolver method customized to the generic type parameters
-        public final <U> Struct<U> resolve(BondType<U> U) {
-            ArgumentHelper.ensureNotNull(U, "U");
-            Struct<U> type = (Struct<U>) this.resolveUninitialized(U);
-            ensureInitialized(type);
-            return type;
+        // hide constructor to prevent subclassing outside of the current scope
+        private GenericBondTypeBuilder() {
         }
 
-        @Override
-        protected Struct resolveUninitialized(BondType<?>... genericTypeArguments) {
-            BondType<?> U = getCachedType(genericTypeArguments[0]);
-            GenericTypeSpecialization specialization = new GenericTypeSpecialization(U);
-            StructBondType<? super E> base = (D.Struct) getCachedType(new D.Struct());
-            Struct struct = new Struct(base, specialization);
-            return (Struct) getCachedType(struct);
-        }
+        // public API to make an instance of a generic type
+        public abstract <U> StructBondType<E<U>> makeGenericType(BondType<U> U);
     }
 
-    // implementation of the type descriptor
-    public static final class Struct<U> extends StructBondType<E<U>> {
+    // private implementation of the type descriptor
+    private static final class StructBondTypeImpl<U> extends StructBondType<E<U>> {
+
+        // private implementation of the type descriptor builder
+        static final class StructBondTypeBuilderImpl extends StructBondTypeBuilder<E> {
+
+            // called by the public method to make an instance of a generic type
+            final <U> StructBondType<E<U>> makeGenericType(BondType<U> U) {
+                ArgumentHelper.ensureNotNull(U, "U");
+                return (StructBondTypeImpl<U>) (StructBondType) this.getInitializedFromCache(U);
+            }
+
+            @Override
+            public final int getGenericTypeParameterCount() {
+                return 1;
+            }
+
+            @Override
+            protected final StructBondType<E> buildNewInstance(BondType<?>[] genericTypeArguments) {
+                BondType<?> U = genericTypeArguments[0];
+                GenericTypeSpecialization genericTypeSpecialization = new GenericTypeSpecialization(U);
+                return new StructBondTypeImpl(genericTypeSpecialization);
+            }
+
+            // registration method
+            static void register() {
+                registerStructType(E.class, new StructBondTypeBuilderImpl());
+            }
+        }
 
         // field descriptors for each field in the struct
-        private StructField<U> u;
-        private StructField<E<U>> neu;
-        private StructField<List<E<U>>> lneu;
-        private StructField<List<E<U>>> nlneu;
+        private ObjectStructField<U> u;
+        private ObjectStructField<E<U>> neu;
+        private ObjectStructField<List<E<U>>> lneu;
+        private ObjectStructField<List<E<U>>> nlneu;
 
-        // restrict instantiation to the enclosing class and its members
-        private Struct(StructBondType<? super E> base, GenericTypeSpecialization specialization) {
-            super(Struct.class, base, specialization);
+        StructBondTypeImpl(GenericTypeSpecialization genericTypeSpecialization) {
+            super(genericTypeSpecialization);
         }
 
         @Override
         protected final void initialize() {
-            BondType<U> __type_U = this.getGenericSpecialization().getGenericTypeArgument(0);
+            BondType<U> U = this.getGenericSpecialization().getGenericTypeArgument(0);
 
             // initialize field descriptor
             this.u = new ObjectStructField<U>(
                     this,
-                    __type_U,
+                    U,
                     1,
                     "u",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_neu__1 =
-                    resolveUninitializedWithCaching(new E.StructResolver(), __type_U);
             this.neu = new ObjectStructField<E<U>>(
                     this,
-                    BondType.nullableOf((StructBondType<E<U>>) __spec_neu__1),
+                    nullableOf((StructBondType<E<U>>) (StructBondType<?>) getStructType(E.class, U)),
                     2,
                     "neu",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_lneu__1 =
-                    resolveUninitializedWithCaching(new E.StructResolver(), __type_U);
             this.lneu = new ObjectStructField<List<E<U>>>(
                     this,
-                    BondType.listOf(
-                            BondType.nullableOf((StructBondType<E<U>>) __spec_neu__1)),
+                    listOf(nullableOf((StructBondType<E<U>>) (StructBondType<?>) getStructType(E.class, U))),
                     3,
                     "lneu",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_nlneu__1 =
-                    resolveUninitializedWithCaching(new E.StructResolver(), __type_U);
             this.nlneu = new ObjectStructField<List<E<U>>>(
                     this,
-                    BondType.nullableOf(
-                            BondType.listOf(
-                                    BondType.nullableOf((StructBondType<E<U>>) __spec_neu__1))),
+                    nullableOf(listOf(nullableOf((StructBondType<E<U>>) (StructBondType<?>) getStructType(E.class, U)))),
                     5,
                     "nlneu",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize struct descriptor
-            super.initializeFields(
+            super.initializeBaseAndFields(
+                    getStructType(D.class),
                     this.u,
                     this.neu,
                     this.lneu,
@@ -121,8 +125,7 @@ public class E<U> extends D implements BondSerializable {
 
         @Override
         public final Class<E<U>> getValueClass() {
-            Class clazz = E.class;
-            return (Class<E<U>>) clazz;
+            return (Class<E<U>>) (Class<?>) E.class;
         }
 
         @Override
@@ -131,17 +134,15 @@ public class E<U> extends D implements BondSerializable {
         }
 
         @Override
-        protected final void serializeStructFields(
-                SerializationContext context, E<U> value) throws IOException {
-            this.u.serializeObject(context, value.u);
-            this.neu.serializeObject(context, value.neu);
-            this.lneu.serializeObject(context, value.lneu);
-            this.nlneu.serializeObject(context, value.nlneu);
+        protected final void serializeStructFields(SerializationContext context, E<U> value) throws IOException {
+            this.u.serialize(context, value.u);
+            this.neu.serialize(context, value.neu);
+            this.lneu.serialize(context, value.lneu);
+            this.nlneu.serialize(context, value.nlneu);
         }
 
         @Override
-        protected final void deserializeStructFields(
-                TaggedDeserializationContext context, E<U> value) throws IOException {
+        protected final void deserializeStructFields(TaggedDeserializationContext context, E<U> value) throws IOException {
             boolean __has_u = false;
             boolean __has_neu = false;
             boolean __has_lneu = false;
@@ -149,35 +150,36 @@ public class E<U> extends D implements BondSerializable {
             while (readField(context)) {
                 switch (context.readFieldResult.id) {
                     case 1:
-                        value.u = this.u.deserializeObject(context, __has_u);
+                        value.u = this.u.deserialize(context, __has_u);
                         __has_u = true;
                         break;
                     case 2:
-                        value.neu = this.neu.deserializeObject(context, __has_neu);
+                        value.neu = this.neu.deserialize(context, __has_neu);
                         __has_neu = true;
                         break;
                     case 3:
-                        value.lneu = this.lneu.deserializeObject(context, __has_lneu);
+                        value.lneu = this.lneu.deserialize(context, __has_lneu);
                         __has_lneu = true;
                         break;
                     case 4:
-                        value.nlneu = this.nlneu.deserializeObject(context, __has_nlneu);
+                        value.nlneu = this.nlneu.deserialize(context, __has_nlneu);
                         __has_nlneu = true;
                         break;
                 }
             }
 
-            this.u.verifyDeserializedField(__has_u);
-            this.neu.verifyDeserializedField(__has_neu);
-            this.lneu.verifyDeserializedField(__has_lneu);
-            this.nlneu.verifyDeserializedField(__has_nlneu);
+            this.u.verifyDeserialized(__has_u);
+            this.neu.verifyDeserialized(__has_neu);
+            this.lneu.verifyDeserialized(__has_lneu);
+            this.nlneu.verifyDeserialized(__has_nlneu);
         }
 
-        private void initializeFieldValues(E<U> value) {
-            value.u = this.u.initializeObject();
-            value.neu = this.neu.initializeObject();
-            value.lneu = this.lneu.initializeObject();
-            value.nlneu = this.nlneu.initializeObject();
+        @Override
+        public final void initializeStructFields(E<U> value) {
+            value.u = this.u.initialize();
+            value.neu = this.neu.initialize();
+            value.lneu = this.lneu.initialize();
+            value.nlneu = this.nlneu.initialize();
         }
     }
 
@@ -185,15 +187,32 @@ public class E<U> extends D implements BondSerializable {
     // Bond class static members
     ///////////////////////////////////////////////////////////////////////////
 
-    // resolver for type descriptors of this generic struct type
-    public static final StructResolver struct = new StructResolver();
+    // builder for type descriptors of this generic struct type
+    public static final GenericBondTypeBuilder BOND_TYPE = new GenericBondTypeBuilder() {
+        final StructBondTypeImpl.StructBondTypeBuilderImpl builder =
+                new StructBondTypeImpl.StructBondTypeBuilderImpl();
+
+        @Override
+        public final <U> StructBondType<E<U>> makeGenericType(BondType<U> U) {
+            return this.builder.makeGenericType(U);
+        }
+    };
+
+    // class initialization method (also invoked in static class initializer)
+    public static void initializeBondType() {
+        StructBondTypeImpl.StructBondTypeBuilderImpl.register();
+    }
+
+    static {
+        initializeBondType();
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Bond class instance members
     ///////////////////////////////////////////////////////////////////////////
 
-    // handle to the type specialization
-    private final Struct<U> __struct;
+    // type specialization (added for every generic type)
+    private final StructBondTypeImpl<U> __genericType;
 
     // struct fields
     public U u;
@@ -201,19 +220,16 @@ public class E<U> extends D implements BondSerializable {
     public List<E<U>> lneu;
     public List<E<U>> nlneu;
 
-    // constructor that takes type specialization (cached)
-    public E(Struct<U> struct) {
-        this.__struct = struct;
-        struct.initializeFieldValues(this);
-    }
-
-    // constructor that takes individual type parameters
-    public E(BondType<U> U) {
-        this(struct.resolve(U));
+    // the only constructor which takes the generic type specialization
+    public E(StructBondType<E<U>> genericType) {
+        super();
+        ArgumentHelper.ensureNotNull(genericType, "genericType");
+        this.__genericType = (StructBondTypeImpl<U>) genericType;
+        this.__genericType.initializeStructFields(this);
     }
 
     @Override
-    public StructBondType<? extends BondSerializable> getStruct() {
-        return this.__struct;
+    public StructBondType<? extends BondSerializable> getBondType() {
+        return this.__genericType;
     }
 }

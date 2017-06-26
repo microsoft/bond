@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
- * Implements the {@link BondType} contract for nullable container data types.
+ * Implements the {@link BondType} contract for "nullable" container data types.
  * @param <TValue> the class of the underlying value
  */
 public final class NullableBondType<TValue> extends BondType<TValue> {
@@ -18,11 +18,11 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
     public static final String TYPE_NAME = "nullable";
 
     private final BondType<TValue> valueType;
+    private final int precomputedHashCode;
 
-    // restrict instantiation to the current package
     NullableBondType(BondType<TValue> valueType) {
-        super(~(valueType.hashCode()));
         this.valueType = valueType;
+        this.precomputedHashCode = multiplyAndShiftForHashCodeComputation(valueType.hashCode(), 3, 1);
     }
 
     /**
@@ -153,14 +153,24 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
     }
 
     @Override
-    final boolean equalsInternal(BondType<?> obj) {
-        // the caller makes sure that the class of the argument is the same as the class of this object
-        NullableBondType that = (NullableBondType) obj;
-        return this.valueType.equals(that.valueType);
+    public final int hashCode() {
+        return this.precomputedHashCode;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj instanceof NullableBondType<?>) {
+            NullableBondType<?> that = (NullableBondType<?>) obj;
+            return this.precomputedHashCode == that.precomputedHashCode &&
+                    this.valueType.equals(that.valueType);
+        } else {
+            return false;
+        }
     }
 
     @Override
     final TypeDef createSchemaTypeDef(HashMap<StructBondType<?>, StructDefOrdinalTuple> structDefMap) {
+        // initialize only with non-default values
         TypeDef typeDef = new TypeDef();
         typeDef.id = this.getBondDataType();
         typeDef.element = this.valueType.createSchemaTypeDef(structDefMap);

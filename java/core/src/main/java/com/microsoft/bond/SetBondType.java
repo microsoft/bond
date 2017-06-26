@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Implements the {@link BondType} contract for set container data types.
+ * Implements the {@link BondType} contract for "set" container data types.
  * @param <TElement> the class of the element values
  */
 public final class SetBondType<TElement> extends BondType<Set<TElement>> {
@@ -20,11 +20,11 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
     public static final String TYPE_NAME = "set";
 
     private final PrimitiveBondType<TElement> elementType;
+    private final int precomputedHashCode;
 
-    // restrict instantiation to the current package
     SetBondType(PrimitiveBondType<TElement> elementType) {
-        super(multiplyAndShift(elementType.hashCode(), 5));
         this.elementType = elementType;
+        this.precomputedHashCode = multiplyAndShiftForHashCodeComputation(elementType.hashCode(), 5, 3);
     }
 
     /**
@@ -175,14 +175,24 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
     }
 
     @Override
-    final boolean equalsInternal(BondType<?> obj) {
-        // the caller makes sure that the class of the argument is the same as the class of this object
-        SetBondType that = (SetBondType) obj;
-        return this.elementType.equals(that.elementType);
+    public final int hashCode() {
+        return this.precomputedHashCode;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj instanceof SetBondType<?>) {
+            SetBondType<?> that = (SetBondType<?>) obj;
+            return this.precomputedHashCode == that.precomputedHashCode &&
+                    this.elementType.equals(that.elementType);
+        } else {
+            return false;
+        }
     }
 
     @Override
     final TypeDef createSchemaTypeDef(HashMap<StructBondType<?>, StructDefOrdinalTuple> structDefMap) {
+        // initialize only with non-default values
         TypeDef typeDef = new TypeDef();
         typeDef.id = this.getBondDataType();
         typeDef.element = this.elementType.createSchemaTypeDef(structDefMap);

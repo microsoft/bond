@@ -25,84 +25,85 @@ import java.io.IOException;
 @SuppressWarnings("unchecked")
 public class D extends C implements BondSerializable {
 
-    // implementation of the type descriptor
-    public static final class Struct extends StructBondType<D> {
+    // private implementation of the type descriptor
+    private static final class StructBondTypeImpl extends StructBondType<D> {
 
-        // retrieves singleton, called by the enclosing class
-        private static Struct getInstance() {
-            Struct instance = (Struct) getCachedType(new Struct());
-            instance.ensureInitialized();
-            return instance;
+        // private implementation of the type descriptor builder
+        static final class StructBondTypeBuilderImpl extends StructBondTypeBuilder<D> {
+
+            @Override
+            public final int getGenericTypeParameterCount() {
+                return 0;
+            }
+
+            @Override
+            protected final StructBondType<D> buildNewInstance(BondType<?>[] genericTypeArguments) {
+                return new StructBondTypeImpl();
+            }
+
+            // registration method
+            static void register() {
+                registerStructType(D.class, new StructBondTypeBuilderImpl());
+            }
         }
 
         // field descriptors for each field in the struct
-        private StructField<A<D, D>> nad;
-        private StructField<B<D>> nbd;
-        private StructField<C> nc;
-        private StructField<D> nd;
-        private StructField<E<D>> ned;
+        private ObjectStructField<A<D, D>> nad;
+        private ObjectStructField<B<D>> nbd;
+        private ObjectStructField<C> nc;
+        private ObjectStructField<D> nd;
+        private ObjectStructField<E<D>> ned;
 
-        // restrict instantiation to the enclosing class and its members
-        public Struct() {
-            super(Struct.class, (C.Struct) getCachedType(new C.Struct()), null);
+        StructBondTypeImpl() {
+            super(null);
         }
 
         @Override
         protected final void initialize() {
 
             // initialize field descriptor
-            StructBondType __spec_nad__1 =
-                    resolveUninitializedWithCaching(new A.StructResolver(), new D.Struct(), new D.Struct());
             this.nad = new ObjectStructField<A<D, D>>(
                     this,
-                    BondType.nullableOf((StructBondType<A<D, D>>) __spec_nad__1),
+                    nullableOf((StructBondType<A<D, D>>) (StructBondType<?>) getStructType(A.class, getStructType(D.class), getStructType(D.class))),
                     1,
                     "nad",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_nbd__1 =
-                    resolveUninitializedWithCaching(new B.StructResolver(), new D.Struct());
             this.nbd = new ObjectStructField<B<D>>(
                     this,
-                    BondType.nullableOf((StructBondType<B<D>>) __spec_nbd__1),
+                    nullableOf((StructBondType<B<D>>) (StructBondType<?>) getStructType(B.class, getStructType(D.class))),
                     2,
                     "nbd",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.nc = new ObjectStructField<C>(
                     this,
-                    BondType.nullableOf(new C.Struct()),
+                    nullableOf((StructBondType<C>) (StructBondType<?>) getStructType(C.class)),
                     3,
                     "nc",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.nd = new ObjectStructField<D>(
                     this,
-                    BondType.nullableOf(new D.Struct()),
+                    nullableOf((StructBondType<D>) (StructBondType<?>) getStructType(D.class)),
                     4,
                     "nd",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_ned__1 =
-                    resolveUninitializedWithCaching(new E.StructResolver(), new D.Struct());
             this.ned = new ObjectStructField<E<D>>(
                     this,
-                    BondType.nullableOf((StructBondType<E<D>>) __spec_ned__1),
+                    nullableOf((StructBondType<E<D>>) (StructBondType<?>) getStructType(E.class, getStructType(D.class))),
                     5,
                     "ned",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize struct descriptor
-            super.initializeFields(
+            super.initializeBaseAndFields(
+                    getStructType(C.class),
                     this.nad,
                     this.nbd,
                     this.nc,
@@ -113,8 +114,7 @@ public class D extends C implements BondSerializable {
 
         @Override
         public final Class<D> getValueClass() {
-            Class clazz = D.class;
-            return (Class<D>) clazz;
+            return D.class;
         }
 
         @Override
@@ -123,18 +123,16 @@ public class D extends C implements BondSerializable {
         }
 
         @Override
-        protected final void serializeStructFields(
-                SerializationContext context, D value) throws IOException {
-            this.nad.serializeObject(context, value.nad);
-            this.nbd.serializeObject(context, value.nbd);
-            this.nc.serializeObject(context, value.nc);
-            this.nd.serializeObject(context, value.nd);
-            this.ned.serializeObject(context, value.ned);
+        protected final void serializeStructFields(SerializationContext context, D value) throws IOException {
+            this.nad.serialize(context, value.nad);
+            this.nbd.serialize(context, value.nbd);
+            this.nc.serialize(context, value.nc);
+            this.nd.serialize(context, value.nd);
+            this.ned.serialize(context, value.ned);
         }
 
         @Override
-        protected final void deserializeStructFields(
-                TaggedDeserializationContext context, D value) throws IOException {
+        protected final void deserializeStructFields(TaggedDeserializationContext context, D value) throws IOException {
             boolean __has_nad = false;
             boolean __has_nbd = false;
             boolean __has_nc = false;
@@ -143,41 +141,42 @@ public class D extends C implements BondSerializable {
             while (readField(context)) {
                 switch (context.readFieldResult.id) {
                     case 1:
-                        value.nad = this.nad.deserializeObject(context, __has_nad);
+                        value.nad = this.nad.deserialize(context, __has_nad);
                         __has_nad = true;
                         break;
                     case 2:
-                        value.nbd = this.nbd.deserializeObject(context, __has_nbd);
+                        value.nbd = this.nbd.deserialize(context, __has_nbd);
                         __has_nbd = true;
                         break;
                     case 3:
-                        value.nc = this.nc.deserializeObject(context, __has_nc);
+                        value.nc = this.nc.deserialize(context, __has_nc);
                         __has_nc = true;
                         break;
                     case 4:
-                        value.nd = this.nd.deserializeObject(context, __has_nd);
+                        value.nd = this.nd.deserialize(context, __has_nd);
                         __has_nd = true;
                         break;
                     case 5:
-                        value.ned = this.ned.deserializeObject(context, __has_ned);
+                        value.ned = this.ned.deserialize(context, __has_ned);
                         __has_ned = true;
                         break;
                 }
             }
 
-            this.nad.verifyDeserializedField(__has_nad);
-            this.nbd.verifyDeserializedField(__has_nbd);
-            this.nc.verifyDeserializedField(__has_nc);
-            this.nd.verifyDeserializedField(__has_nd);
-            this.ned.verifyDeserializedField(__has_ned);
+            this.nad.verifyDeserialized(__has_nad);
+            this.nbd.verifyDeserialized(__has_nbd);
+            this.nc.verifyDeserialized(__has_nc);
+            this.nd.verifyDeserialized(__has_nd);
+            this.ned.verifyDeserialized(__has_ned);
         }
 
-        private void initializeFieldValues(D value) {
-            value.nad = this.nad.initializeObject();
-            value.nbd = this.nbd.initializeObject();
-            value.nc = this.nc.initializeObject();
-            value.nd = this.nd.initializeObject();
-            value.ned = this.ned.initializeObject();
+        @Override
+        public final void initializeStructFields(D value) {
+            value.nad = this.nad.initialize();
+            value.nbd = this.nbd.initialize();
+            value.nc = this.nc.initialize();
+            value.nd = this.nd.initialize();
+            value.ned = this.ned.initialize();
         }
     }
 
@@ -185,8 +184,18 @@ public class D extends C implements BondSerializable {
     // Bond class static members
     ///////////////////////////////////////////////////////////////////////////
 
-    // type descriptors of this struct type
-    public static final Struct struct = Struct.getInstance();
+    // the type descriptor of this struct type
+    public static final StructBondType<D> BOND_TYPE =
+            new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+
+    // class initialization method (also invoked in static class initializer)
+    public static void initializeBondType() {
+        StructBondTypeImpl.StructBondTypeBuilderImpl.register();
+    }
+
+    static {
+        initializeBondType();
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Bond class instance members
@@ -199,14 +208,14 @@ public class D extends C implements BondSerializable {
     public D nd;
     public E<D> ned;
 
-    // the parameterless constructor
+    // the constructor
     public D() {
         super();
-        struct.initializeFieldValues(this);
+        ((StructBondTypeImpl) BOND_TYPE).initializeStructFields(this);
     }
 
     @Override
-    public StructBondType<? extends BondSerializable> getStruct() {
-        return struct;
+    public StructBondType<? extends BondSerializable> getBondType() {
+        return BOND_TYPE;
     }
 }

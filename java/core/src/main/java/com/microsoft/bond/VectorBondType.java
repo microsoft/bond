@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Implements the {@link BondType} contract for (contiguous) vector container data types.
+ * Implements the {@link BondType} contract for (contiguous) "vector" container data types.
  * @param <TElement> the class of the element values
  */
 public final class VectorBondType<TElement> extends BondType<List<TElement>> {
@@ -20,11 +20,11 @@ public final class VectorBondType<TElement> extends BondType<List<TElement>> {
     public static final String TYPE_NAME = "vector";
 
     private final BondType<TElement> elementType;
+    private final int precomputedHashCode;
 
-    // restrict instantiation to the current package
     VectorBondType(BondType<TElement> elementType) {
-        super(multiplyAndShift(elementType.hashCode(), 3));
         this.elementType = elementType;
+        this.precomputedHashCode = multiplyAndShiftForHashCodeComputation(elementType.hashCode(), 3, 1);
     }
 
     /**
@@ -181,14 +181,24 @@ public final class VectorBondType<TElement> extends BondType<List<TElement>> {
     }
 
     @Override
-    final boolean equalsInternal(BondType<?> obj) {
-        // the caller makes sure that the class of the argument is the same as the class of this object
-        VectorBondType that = (VectorBondType) obj;
-        return this.elementType.equals(that.elementType);
+    public final int hashCode() {
+        return this.precomputedHashCode;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj instanceof VectorBondType<?>) {
+            VectorBondType<?> that = (VectorBondType<?>) obj;
+            return this.precomputedHashCode == that.precomputedHashCode &&
+                    this.elementType.equals(that.elementType);
+        } else {
+            return false;
+        }
     }
 
     @Override
     final TypeDef createSchemaTypeDef(HashMap<StructBondType<?>, StructDefOrdinalTuple> structDefMap) {
+        // initialize only with non-default values
         TypeDef typeDef = new TypeDef();
         typeDef.id = this.getBondDataType();
         typeDef.element = this.elementType.createSchemaTypeDef(structDefMap);

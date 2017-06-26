@@ -25,11 +25,12 @@ public final class UInt8BondType extends PrimitiveBondType<Byte> {
      */
     public static final String TYPE_NAME = "uint8";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final UInt8BondType INSTANCE = new UInt8BondType();
 
     private UInt8BondType() {
-        super(UInt8BondType.class);
     }
 
     @Override

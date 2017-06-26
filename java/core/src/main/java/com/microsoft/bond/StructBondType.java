@@ -6,91 +6,148 @@ package com.microsoft.bond;
 import com.microsoft.bond.protocol.*;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Partially implements the {@link BondType} contract for struct data types.
- * Leaves some implementation details to subclasses specific to the a particular
- * struct type, which are generated together with the struct type.
+ * Partially implements the {@link BondType} contract for generated Bond struct data types.
+ * Leaves the rest of implementation details to generated subclasses specific to the struct type,
+ * which are generated private classes nested within the struct classes.
  * @param <TStruct> the class of the struct value
  */
 public abstract class StructBondType<TStruct extends BondSerializable>
         extends BondType<TStruct> implements StructMetadata {
 
-    // set by the constructor
-    private final StructBondType<? super TStruct> baseStructType;
+    // The registry of all loaded struct type builders, for generic and non-generic generated struct types.
+    // Entries are added by static initializeBondType methods of the generated struct types which is called
+    // by the static class initializer and can also be called manually if the static class initializer hasn't
+    // completed yet (which happens with circular class dependencies).
+    //
+    // This registry's purpose is to provide an alternative solution to obtain a type descriptor for a struct
+    // type, that can be used when executing generated code initializing fields of struct type descriptors.
+    // An alternative solution is necessary since the user-facing solution of accessing public static fields
+    // BOND_TYPE doesn't work when running as part of initialization of a generated class (the static fields
+    // may not be set yet). Thus, there are two approaches to get a Bond type descriptor for a user-defined
+    // generated struct:
+    // 1. [public-facing API used by all user code] Use the public static field BOND_TYPE which is:
+    //    (a) The type descriptor, for struct types that do not declare generic type parameters. or
+    //    (b) A builder of type descriptor that takes generic type arguments and returns an instance
+    //        of the type descriptor, for struct types that declare generic type parameters.
+    // 2. [private API used only by generated initialization code] Use the protected method getStructType
+    //    that returns the type descriptor given the Class and generic type arguments (empty for non-generic
+    //    types. This method relies on the registry of struct type builders, and will initialize the class
+    //    (thus executing its registration) if necessary.
+    //
+    // Note that #2 doesn't distinguish between generic and non-generic types, by abstracting the type builder
+    // for all types, with empty generic type argument list for non-generic types. On the contrary, #1 has
+    // that distinction since it's intended for public API and needs to be convenient (i.e. it's not elegant
+    // to ask client code to "build" an invariant non-generic type.
+    private static final ConcurrentHashMap<
+            Class<? extends BondSerializable>,
+            StructBondTypeBuilder<? extends BondSerializable>> structTypeBuilderRegistry =
+            new ConcurrentHashMap<
+                    Class<? extends BondSerializable>,
+                    StructBondTypeBuilder<? extends BondSerializable>>();
+
+    private static final String BOND_TYPE_INITIALIZATION_METHOD_NAME = "initializeBondType";
+
+    // The global initialization lock, used to initialize type descriptors.
+    // Global locking is necessary to avoid deadlocks when multiple threads initialize generated classes
+    // that reference each other. The contention for this lock is generally not expected to be a problem because:
+    // 1. A lock is acquired only once per type descriptor object when it is actually initialized. This is
+    //    achieved by double-checked locking in the ensureInitialized method.
+    // 2. Due to type caching, there is at most one lock acqusition for each type (or each specialization of
+    //    a generic type), which is constrained by the application. Note that temporary type descriptors
+    //    are used only to lookup the cached equivalent and are themselves not initialized.
+    private static final Object initializationLock = new Object();
+
+    // set by the constructor (part of the object identity)
     private final GenericTypeSpecialization genericTypeSpecialization;
+    private final int precomputedHashCode;
 
     // set by the initialization method instead of the constructor since may have cyclic dependencies
+    private StructBondType<? super TStruct> baseStructType;
     private StructField<?>[] structFields;
 
-    private boolean isInitialized = false;
+    // indicates whether this instance is initialized, thread-safe (atomic) read and write from/to memory
+    private volatile boolean isInitialized = false;
+
+    // indicates whether this instance is currently being initialized by the thread holding the global lock;
+    // the flag is used to prevent a thread from re-entering initialization method due to cyclic references
+    private boolean isCurrentlyInitializing = false;
 
     /**
      * Used by generated subclasses to instantiate the type descriptor.
      *
-     * @param baseStructType            the type descriptor of the base struct or null if it doesn't exist
      * @param genericTypeSpecialization specialization of a generic struct or null if not a generic struct
      */
-    protected StructBondType(
-            Class<? extends StructBondType> thisClass,
-            StructBondType<? super TStruct> baseStructType,
-            GenericTypeSpecialization genericTypeSpecialization) {
-        super(thisClass.hashCode() + ((genericTypeSpecialization == null) ? 0 : genericTypeSpecialization.hashCode()));
-        this.baseStructType = baseStructType;
+    protected StructBondType(GenericTypeSpecialization genericTypeSpecialization) {
         this.genericTypeSpecialization = genericTypeSpecialization;
+        precomputedHashCode = this.getClass().hashCode() +
+                (genericTypeSpecialization == null ? 0 : genericTypeSpecialization.hashCode());
     }
 
     /**
-     * Used by generated subclasses to initialize fields of the type descriptor.
-     * Field types may refer back to the declaring struct which causes cyclic dependencies,
-     * and therefore this initialization is separated from the constructor.
+     * Used by generated subclasses to initialize the base struct reference and fields of the type descriptor.
+     * Field types (including fields of the base struct) may refer back to the declaring struct which causes
+     * cyclic dependencies, and therefore this initialization is separated from the constructor.
      *
-     * @param structFields an array of descriptors of the declared fields of the struct (excluding inherited)
+     * @param baseStructType the type descriptor of the base struct or null if it doesn't exist
+     * @param structFields   an array of descriptors of the declared fields of the struct (excluding inherited)
      */
-    protected final void initializeFields(
+    protected final void initializeBaseAndFields(
+            StructBondType<? super TStruct> baseStructType,
             StructField<?>... structFields) {
+        this.baseStructType = baseStructType;
         this.structFields = structFields;
     }
 
     /**
-     * Called from generated code to make sure the type descriptor is initialized
-     * as well as all its referenced struct types.
+     * Called from generated code to make sure the type descriptor is initialized.
      */
-    protected synchronized final void ensureInitialized() {
+    protected final void ensureInitialized() {
+        // double-checked locking to make sure initialization happens only one in a single thread;
+        // the contention is restricted since there is at most one initialization per each distinct
+        // non-generic struct type or per each distinct specialization of a generic struct type
         if (!this.isInitialized) {
-            this.initialize();
+            synchronized (initializationLock) {
+                if (!this.isInitialized) {
+                    // enter initialization only if not already initializing by the current thread
+                    // (which already holds the lock and hence can be the only initializing thread)
+                    if (!this.isCurrentlyInitializing) {
+                        try {
+                            // mark this object as currently being initialized, so that this thread
+                            // does not re-enter initialization when there is a cyclic type reference
+                            this.isCurrentlyInitializing = true;
 
-            // mark as initialized before recursive calls
-            this.isInitialized = true;
-
-            // recurse to the base struct if any
-            if (this.baseStructType != null) {
-                baseStructType.ensureInitialized();
-            }
-
-            // recurse to generic type arguments if any
-            if (this.genericTypeSpecialization != null) {
-                for (BondType genericTypeArgument : this.genericTypeSpecialization.genericTypeArguments) {
-                    if (genericTypeArgument instanceof StructBondType) {
-                        ((StructBondType) genericTypeArgument).ensureInitialized();
+                            // initialize (call generated method which initializes struct type fields
+                            // and then calls initializeBaseAndFields) and mark this instance as
+                            // initialized (using a volatile variable), so that from this point on
+                            // every thread will skip initialization and lock acquisition
+                            this.initialize();
+                            this.isInitialized = true;
+                        } finally {
+                            // clean up after the current thread so that if the initialize method
+                            // threw an exception and the object was not successfully initialized
+                            // then some other thread can still try to initialize
+                            //
+                            // Please note that the initialize methods do not throw any exceptions
+                            // under normal circumstances, and if they throw something then it is
+                            // almost certainly a fatal error (e.g. OutOfMemory or ThreadDeath).
+                            this.isCurrentlyInitializing = false;
+                        }
                     }
-                }
-            }
-
-            // recurse to fields
-            for (StructField structField : this.structFields) {
-                if (structField.fieldType instanceof StructBondType) {
-                    ((StructBondType) structField.fieldType).ensureInitialized();
                 }
             }
         }
     }
 
     /**
-     * Implemented by generated subclasses to initialize the type descriptor.
+     * Implemented by generated subclasses to initialize the type descriptor, speficially initialize the
+     * fields and then call {@link #initializeBaseAndFields(StructBondType, StructField[])}.
      */
     protected abstract void initialize();
 
@@ -98,6 +155,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      * Used by generated subclasses to serialize declared fields of this struct, excluding inherited fields.
      *
      * @param context contains the runtime context of the serialization
+     * @param value   the value to serialize from
      * @throws IOException if an I/O error occurred
      */
     protected abstract void serializeStructFields(
@@ -107,10 +165,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      * Used by generated subclasses to deserialize declared fields of this struct, excluding inherited fields.
      *
      * @param context contains the runtime context of the deserialization
+     * @param value   the value to deserialize into
      * @throws IOException if an I/O error occurred
      */
     protected abstract void deserializeStructFields(
             TaggedDeserializationContext context, TStruct value) throws IOException;
+
+    /**
+     * Used by generated subclasses to initialize declared fields of this struct, excluding inherited fields.
+     *
+     * @param value the value to initialize
+     */
+    protected abstract void initializeStructFields(TStruct value);
 
     /**
      * Gets the generic specialization or null if not generic struct.
@@ -213,17 +279,16 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         this.verifyNonNullableValueIsNotSetToNull(value);
         context.writer.writeStructBegin(this);
         if (this.baseStructType != null) {
-            this.baseStructType.serializeValueHelperForBase(context, value);
+            this.baseStructType.serializeValueAsBase(context, value);
         }
         this.serializeStructFields(context, value);
         context.writer.writeStructEnd();
     }
 
-    // recursive helper
-    private void serializeValueHelperForBase(
+    private void serializeValueAsBase(
             SerializationContext context, TStruct value) throws IOException {
         if (this.baseStructType != null) {
-            this.baseStructType.serializeValueHelperForBase(context, value);
+            this.baseStructType.serializeValueAsBase(context, value);
         }
         context.writer.writeBaseBegin(this);
         this.serializeStructFields(context, value);
@@ -235,18 +300,17 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         TStruct value = this.newDefaultValue();
         context.reader.readStructBegin();
         if (this.baseStructType != null) {
-            this.baseStructType.deserializeValueHelperForBase(context, value);
+            this.baseStructType.deserializeValueAsBase(context, value);
         }
         this.deserializeStructFields(context, value);
         context.reader.readStructEnd();
         return value;
     }
 
-    // recursive helper
-    private void deserializeValueHelperForBase(
+    private void deserializeValueAsBase(
             TaggedDeserializationContext context, TStruct value) throws IOException {
         if (this.baseStructType != null) {
-            this.baseStructType.deserializeValueHelperForBase(context, value);
+            this.baseStructType.deserializeValueAsBase(context, value);
         }
         context.reader.readBaseBegin();
         this.deserializeStructFields(context, value);
@@ -290,17 +354,32 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     @Override
-    final boolean equalsInternal(BondType<?> obj) {
-        // the caller makes sure that the class of the argument is the same as the class of this object
-        StructBondType that = (StructBondType) obj;
-        if (this.genericTypeSpecialization != null) {
-            return this.genericTypeSpecialization.equals(that.genericTypeSpecialization);
+    public final int hashCode() {
+        return this.precomputedHashCode;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj instanceof StructBondType<?>) {
+            StructBondType<?> that = (StructBondType<?>) obj;
+            return this.precomputedHashCode == that.precomputedHashCode &&
+                    this.getClass().equals(that.getClass()) &&
+                    (this.genericTypeSpecialization == null ?
+                            that.genericTypeSpecialization == null :
+                            this.genericTypeSpecialization.equals(that.genericTypeSpecialization));
+
         } else {
-            return that.genericTypeSpecialization == null;
+            return false;
         }
     }
 
-    // private top-level serialization entry point
+    /**
+     * Serializes an object into the given protocol writer.
+     *
+     * @param obj    the object to serialize
+     * @param writer the protocol writer to write into
+     * @throws IOException if an I/O error occurred
+     */
     void serialize(TStruct obj, ProtocolWriter writer) throws IOException {
         // first pass
         if (writer instanceof TwoPassProtocolWriter) {
@@ -316,7 +395,13 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         this.serializeValue(context, obj);
     }
 
-    // private top-level deserialization entry point
+    /**
+     * Deserializes an object from the given tagged protocol reader.
+     *
+     * @param reader the protocol reader to read from
+     * @return deserialized object
+     * @throws IOException if an I/O error occurred
+     */
     TStruct deserialize(TaggedProtocolReader reader) throws IOException {
         TaggedDeserializationContext context = new TaggedDeserializationContext(reader);
         return this.deserializeValue(context);
@@ -357,24 +442,6 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         return statusValue != BondDataType.BT_STOP.value && statusValue != BondDataType.BT_STOP_BASE.value;
     }
 
-    /**
-     * Resolves generic type arguments and caches the result in the type cache.
-     *
-     * @param resolver             type resolver
-     * @param genericTypeArguments generic type arguments
-     * @param <TStruct>            the class of the struct value
-     * @return a cached uninitialized type descriptor
-     */
-    protected static <TStruct extends BondSerializable> StructBondType<TStruct> resolveUninitializedWithCaching(
-            StructBondTypeResolver<TStruct> resolver, BondType<?>... genericTypeArguments) {
-        BondType<?>[] cachedGenericTypeArguments = new BondType[genericTypeArguments.length];
-        for (int i = 0; i < genericTypeArguments.length; ++i) {
-            cachedGenericTypeArguments[i] = typeCache.get(genericTypeArguments[i]);
-        }
-        StructBondType<TStruct> type = resolver.resolveUninitialized(cachedGenericTypeArguments);
-        return (StructBondType<TStruct>) BondType.typeCache.get(type);
-    }
-
     private void initializeSchemaStructDef(
             StructDef structDef, HashMap<StructBondType<?>, StructDefOrdinalTuple> structDefMap) {
         structDef.metadata.name = this.getName();
@@ -393,7 +460,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     private void initializeSchemaVariantWithDefaultValue(Variant variant, StructField field) {
-        variant.nothing = field.isDefaultNothing;
+        variant.nothing = field.isDefaultNothing();
         switch (field.fieldType.getBondDataType().value) {
             case BondDataType.Values.BT_UINT8:
             case BondDataType.Values.BT_UINT16:
@@ -434,8 +501,132 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
+     * Registers a struct type builder from generated code.
+     *
+     * @param clazz             the struct class
+     * @param structTypeBuilder type builder for the given struct type
+     * @param <TStruct>         the Bond struct value class
+     */
+    protected static <TStruct extends BondSerializable> void registerStructType(
+            Class<TStruct> clazz, StructBondTypeBuilder<TStruct> structTypeBuilder) {
+        structTypeBuilderRegistry.putIfAbsent(clazz, structTypeBuilder);
+    }
+
+    /**
+     * Gets a type descriptor for a struct represented by a particular generated class.
+     * This method is used when initializing struct type descriptors, so that a particular
+     * type descriptor may access a type descriptor of another type. This method is the only
+     * accessor to a struct type descriptor that is used in generated code when initializing
+     * struct type descriptors (generic type arguments, the base, or fields) and since the
+     * type descriptor is returns is always initialized, there's the invariant condition that
+     * all cached struct type descriptors are initialized.
+     *
+     * @param clazz                the struct class
+     * @param genericTypeArguments the generic type arguments in the declaration order
+     * @param <TStruct>            the Bond struct value class
+     * @return a type descriptor instance
+     */
+    protected static <TStruct extends BondSerializable> StructBondType<TStruct> getStructType(
+            Class<TStruct> clazz,
+            BondType<?>... genericTypeArguments) {
+        StructBondTypeBuilder<?> structTypeBuilder = structTypeBuilderRegistry.get(clazz);
+        if (structTypeBuilder == null) {
+            // the type builder is not found in the registry, which could be due to the following two reasons:
+            // 1. The type builder class hasn't been registered yet, which means that the struct class
+            //    (whose generated static initializer does this registration) hasn't been initialized yet, or
+            // 2. The struct class was not generated by the same code generator, which should never happen
+            //    since this method is protected and intended to be called only from generated code
+            try {
+                // Class initialization may not be enough since the class may already be in the middle of
+                // initialization, where is needed to initialize a referenced class that had a circular
+                // reference back to it. Therefore, call the static initialization method
+                Method typeInitMethod = clazz.getMethod(BOND_TYPE_INITIALIZATION_METHOD_NAME);
+                typeInitMethod.invoke(null);
+            } catch (Exception e) {
+                // if there is an error, then the class implemenation is invalid
+                throw new RuntimeException(
+                        "Unexpected program state: invalid struct implementation: " + clazz.getName(),
+                        e);
+            }
+
+            // at this point the class initialization should register the struct type builder;
+            // if it's still not registered then the struct class initialization is not doing what
+            // it should (although the initialization method exists and was successfully invoked),
+            // so the conclusion is that it's not generated per our expectations
+            structTypeBuilder = structTypeBuilderRegistry.get(clazz);
+            if (structTypeBuilder == null) {
+                throw new RuntimeException(
+                        "Unexpected program state: invalid struct implementation: " + clazz.getName());
+            }
+        }
+
+        // make sure the generic type argument count matches the expected count;
+        // since this should be called only be generated code, this must be always the case
+        if (structTypeBuilder.getGenericTypeParameterCount() != genericTypeArguments.length) {
+            throw new RuntimeException(
+                    "Unexpected program state: generic argument count mismatch: " + clazz.getName() +
+                            ", expected: " + structTypeBuilder.getGenericTypeParameterCount() +
+                            ", actual: " + genericTypeArguments.length);
+        }
+
+        // build, cache, and initialize the type descriptor
+        @SuppressWarnings("unchecked")
+        StructBondType<TStruct> structType =
+                (StructBondType<TStruct>) structTypeBuilder.getInitializedFromCache(genericTypeArguments);
+        return structType;
+    }
+
+    /**
+     * Responsible for building and caching Bond struct types with generic type parameters. Please note
+     * that a {@link StructBondType} instance for a generic type can exist only when all generic type
+     * parameters are bound. This class is responsible for this binding: it takes the generic type
+     * arguments and instantiates a new {@link StructBondType} instance representing a specialization
+     * of the generic type. As a special case, it can instantiate new type descriptors for non-generic
+     * types (for which the list of generic type arguments is null).
+     *
+     * @param <TStruct> the class of the struct value
+     */
+    protected static abstract class StructBondTypeBuilder<TStruct extends BondSerializable> {
+
+        /**
+         * Gets the number of generic type parameters or (as a special case) 0 for non-generic types.
+         *
+         * @return the number of generic type parameters
+         */
+        public abstract int getGenericTypeParameterCount();
+
+        /**
+         * Creates a new instance of type descriptor that is neither initialized nor cached. This instance
+         * is used to locate the cached instance (or will be cached itself if no cached instance exists yet).
+         *
+         * @param genericTypeArguments generic type arguments
+         * @return new uninitialized uncached type descriptor instance
+         */
+        protected abstract StructBondType<TStruct> buildNewInstance(BondType<?>[] genericTypeArguments);
+
+        /**
+         * Returns an initialized instance of the struct type descriptor from the cache,
+         * building/caching/initializing it if necessary.
+         *
+         * @param genericTypeArguments generic type arguments
+         * @return new initialized type descriptor instance (cached)
+         */
+        public final StructBondType<TStruct> getInitializedFromCache(BondType<?>... genericTypeArguments) {
+            StructBondType<TStruct> cacheKey = this.buildNewInstance(genericTypeArguments);
+            StructBondType<TStruct> cachedType = (StructBondType<TStruct>) getCachedType(cacheKey);
+            cachedType.ensureInitialized();
+            return cachedType;
+        }
+    }
+
+    /**
      * A descriptor of a single field in a struct declaration that encapsulates the details
      * of that field behavior such as initialization, serialization and deserialization.
+     * This class is the root of the class hierarchy for various Bond types (primitives and objects)
+     * as well as for whether the field defaults to "nothing" (i.e. needs a "Something" wrapper).
+     * The purpose of this class hierarchy is that field initialization/serialization/deserialization
+     * code can just call initialize/serialize/deserialize method without any regard to the field type,
+     * which is setup in the struct type descriptor's {@see StructBondType#initialize} method.
      *
      * @param <TField> the class of the field value, using corresponding wrappers for primitive types
      */
@@ -447,22 +638,19 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         final short id;
         final String name;
         final Modifier modifier;
-        final boolean isDefaultNothing;
 
-        // used by codegen (and subclasses)
-        public StructField(
+        // restrict subclasses to nested classes only
+        private StructField(
                 StructBondType<?> structType,
                 BondType<TField> fieldType,
                 int id,
                 String name,
-                Modifier modifier,
-                boolean isDefaultNothing) {
+                Modifier modifier) {
             this.structType = structType;
             this.fieldType = fieldType;
             this.id = (short) id;
             this.name = name;
             this.modifier = modifier;
-            this.isDefaultNothing = isDefaultNothing;
         }
 
         /**
@@ -499,15 +687,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         @Override
-        public final boolean isDefaultNothing() {
-            return this.isDefaultNothing;
-        }
-
-        @Override
-        public final TField getDefaultValue() {
-            // the default value is the value that we initialize fields with
-            return this.initializeObject();
-        }
+        public abstract TField getDefaultValue();
 
         /**
          * Codegen helper to verify deserialized field.
@@ -516,47 +696,13 @@ public abstract class StructBondType<TStruct extends BondSerializable>
          * @return true if the argument is false and the field needs to be set to the default value
          * @throws InvalidBondDataException if the field is required and was not set
          */
-        public final boolean verifyDeserializedField(boolean isFieldSet) throws InvalidBondDataException {
+        public final boolean verifyDeserialized(boolean isFieldSet) throws InvalidBondDataException {
             if (!isFieldSet && this.modifier.value == Modifier.Required.value) {
                 // throws
                 Throw.raiseRequiredStructFieldIsMissingDeserializationError(this);
             }
             // indicate to the generated code that the field needs to be set to the default value
             return !isFieldSet;
-        }
-
-        // codegen helper - initialization
-        public abstract TField initializeObject();
-
-        // codegen helper - initialization
-        public final SomethingObject<TField> initializeSomethingObject() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeObject(
-                SerializationContext context, TField value) throws IOException {
-            this.fieldType.serializeField(context, value, this);
-        }
-
-        // codegen helper - serialization
-        public final void serializeSomethingObject(
-                SerializationContext context, SomethingObject<TField> value) throws IOException {
-            this.fieldType.serializeSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final TField deserializeObject(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
-            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
-            return this.fieldType.deserializeField(context, this);
-        }
-
-        // codegen helper - deserialization
-        public final SomethingObject<TField> deserializeSomethingObject(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
-            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
-            return this.fieldType.deserializeSomethingField(context, this);
         }
 
         final void verifyFieldWasNotYetDeserialized(
@@ -572,86 +718,177 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for general object data types.
-     * The default value is not explicitly set on the field but rather is determined
-     * by the field's type.
+     * Implements the {@link StructField} contract for fields of general object data types
+     * (i.e. any field that is not of a Java primitive type, string, or an enum) that are
+     * not defaulting to "nothing". The default value is not explicitly set on the field
+     * but rather is determined by the field's type.
      */
     protected static final class ObjectStructField<TField> extends StructField<TField> {
 
-        // used by codegen
         public ObjectStructField(
                 StructBondType<?> structType,
                 BondType<TField> fieldType,
                 int id,
                 String name,
-                Modifier modifier,
-                boolean isDefaultNothing) {
-            super(structType, fieldType, id, name, modifier, isDefaultNothing);
+                Modifier modifier) {
+            super(structType, fieldType, id, name, modifier);
         }
 
-        // codegen helper - initialization
         @Override
-        public final TField initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final TField getDefaultValue() {
+            return this.initialize();
+        }
+
+        public final TField initialize() {
             return this.fieldType.newDefaultValue();
+        }
+
+        public final void serialize(
+                SerializationContext context, TField value) throws IOException {
+            this.fieldType.serializeField(context, value, this);
+        }
+
+        public final TField deserialize(
+                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
+            return this.fieldType.deserializeField(context, this);
         }
     }
 
     /**
-     * Implements the {@link StructField} contract for the uint8 primitive data type.
+     * Implements the {@link StructField} contract for fields of general object data types
+     * (i.e. any field that is not of a Java primitive type, string, or an enum) that are
+     * defaulting to "nothing". The default value for such fields is null (meaning "nothing").
+     */
+    protected static final class SomethingObjectStructField<TField> extends StructField<TField> {
+
+        public SomethingObjectStructField(
+                StructBondType<?> structType,
+                BondType<TField> fieldType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, fieldType, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final TField getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingObject<TField> initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingObject<TField> value) throws IOException {
+            this.fieldType.serializeSomethingField(context, value, this);
+        }
+
+        public final SomethingObject<TField> deserialize(
+                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
+            return this.fieldType.deserializeSomethingField(context, this);
+        }
+    }
+
+    /**
+     * Implements the {@link StructField} contract for fields of the uint8 primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class UInt8StructField extends StructField<Byte> {
 
         private final byte defaultValue;
 
-        // used by codegen
         public UInt8StructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 byte defaultValue) {
-            super(structType, BondTypes.UINT8, id, name, modifier, isDefaultNothing);
+            super(structType, BondTypes.UINT8, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public UInt8StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, id, name, modifier, UInt8BondType.DEFAULT_VALUE_AS_PRIMITIVE);
+        }
+
         @Override
-        public final Byte initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final Byte getDefaultValue() {
+            // box
+            return this.initialize();
+        }
+
+        public final byte initialize() {
             return this.defaultValue;
         }
 
-        // codegen helper - initialization
-        public final byte initializeUInt8() {
-            return this.defaultValue;
-        }
-
-        // codegen helper - initialization
-        public final SomethingByte initializeSomethingUInt8() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeUInt8(
+        public final void serialize(
                 SerializationContext context, byte value) throws IOException {
             UInt8BondType.serializePrimitiveField(context, value, this);
         }
 
-        // codegen helper - serialization
-        public final void serializeSomethingUInt8(
-                SerializationContext context, SomethingByte value) throws IOException {
-            UInt8BondType.serializePrimitiveSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final byte deserializeUInt8(
+        public final byte deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt8BondType.deserializePrimitiveField(context, this);
         }
+    }
 
-        // codegen helper - deserialization
-        public final SomethingByte deserializeSomethingUInt8(
+    /**
+     * Implements the {@link StructField} contract for fields of the uint8 primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingUInt8StructField extends StructField<Byte> {
+
+        public SomethingUInt8StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.UINT8, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final Byte getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingByte initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingByte value) throws IOException {
+            UInt8BondType.serializePrimitiveSomethingField(context, value, this);
+        }
+
+        public final SomethingByte deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt8BondType.deserializePrimitiveSomethingField(context, this);
@@ -659,61 +896,92 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for the uint16 primitive data type.
+     * Implements the {@link StructField} contract for fields of the uint16 primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class UInt16StructField extends StructField<Short> {
 
         private final short defaultValue;
 
-        // used by codegen
         public UInt16StructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 short defaultValue) {
-            super(structType, BondTypes.UINT16, id, name, modifier, isDefaultNothing);
+            super(structType, BondTypes.UINT16, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public UInt16StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, id, name, modifier, UInt16BondType.DEFAULT_VALUE_AS_PRIMITIVE);
+        }
+
         @Override
-        public final Short initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final Short getDefaultValue() {
+            // box
+            return this.initialize();
+        }
+
+        public final short initialize() {
             return this.defaultValue;
         }
 
-        // codegen helper - initialization
-        public final short initializeUInt16() {
-            return this.defaultValue;
-        }
-
-        // codegen helper - initialization
-        public final SomethingShort initializeSomethingUInt16() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeUInt16(
+        public final void serialize(
                 SerializationContext context, short value) throws IOException {
             UInt16BondType.serializePrimitiveField(context, value, this);
         }
 
-        // codegen helper - serialization
-        public final void serializeSomethingUInt16(
-                SerializationContext context, SomethingShort value) throws IOException {
-            UInt16BondType.serializePrimitiveSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final short deserializeUInt16(
+        public final short deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt16BondType.deserializePrimitiveField(context, this);
         }
+    }
 
-        // codegen helper - deserialization
-        public final SomethingShort deserializeSomethingUInt16(
+    /**
+     * Implements the {@link StructField} contract for fields of the uint16 primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingUInt16StructField extends StructField<Short> {
+
+        public SomethingUInt16StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.UINT16, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final Short getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingShort initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingShort value) throws IOException {
+            UInt16BondType.serializePrimitiveSomethingField(context, value, this);
+        }
+
+        public final SomethingShort deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt16BondType.deserializePrimitiveSomethingField(context, this);
@@ -721,61 +989,92 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for the uint32 primitive data type.
+     * Implements the {@link StructField} contract for fields of the uint32 primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class UInt32StructField extends StructField<Integer> {
 
         private final int defaultValue;
 
-        // used by codegen
         public UInt32StructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 int defaultValue) {
-            super(structType, BondTypes.UINT32, id, name, modifier, isDefaultNothing);
+            super(structType, BondTypes.UINT32, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public UInt32StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, id, name, modifier, UInt32BondType.DEFAULT_VALUE_AS_PRIMITIVE);
+        }
+
         @Override
-        public final Integer initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final Integer getDefaultValue() {
+            // box
+            return this.initialize();
+        }
+
+        public final int initialize() {
             return this.defaultValue;
         }
 
-        // codegen helper - initialization
-        public final int initializeUInt32() {
-            return this.defaultValue;
-        }
-
-        // codegen helper - initialization
-        public final SomethingInteger initializeSomethingUInt32() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeUInt32(
+        public final void serialize(
                 SerializationContext context, int value) throws IOException {
             UInt32BondType.serializePrimitiveField(context, value, this);
         }
 
-        // codegen helper - serialization
-        public final void serializeSomethingUInt32(
-                SerializationContext context, SomethingInteger value) throws IOException {
-            UInt32BondType.serializePrimitiveSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final int deserializeUInt32(
+        public final int deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt32BondType.deserializePrimitiveField(context, this);
         }
+    }
 
-        // codegen helper - deserialization
-        public final SomethingInteger deserializeSomethingUInt32(
+    /**
+     * Implements the {@link StructField} contract for fields of the uint32 primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingUInt32StructField extends StructField<Integer> {
+
+        public SomethingUInt32StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.UINT32, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final Integer getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingInteger initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingInteger value) throws IOException {
+            UInt32BondType.serializePrimitiveSomethingField(context, value, this);
+        }
+
+        public final SomethingInteger deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt32BondType.deserializePrimitiveSomethingField(context, this);
@@ -783,61 +1082,92 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for the uint64 primitive data type.
+     * Implements the {@link StructField} contract for fields of the uint64 primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class UInt64StructField extends StructField<Long> {
 
         private final long defaultValue;
 
-        // used by codegen
         public UInt64StructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 long defaultValue) {
-            super(structType, BondTypes.UINT64, id, name, modifier, isDefaultNothing);
+            super(structType, BondTypes.UINT64, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public UInt64StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, id, name, modifier, UInt64BondType.DEFAULT_VALUE_AS_PRIMITIVE);
+        }
+
         @Override
-        public final Long initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final Long getDefaultValue() {
+            // box
+            return this.initialize();
+        }
+
+        public final long initialize() {
             return this.defaultValue;
         }
 
-        // codegen helper - initialization
-        public final long initializeUInt64() {
-            return this.defaultValue;
-        }
-
-        // codegen helper - initialization
-        public final SomethingLong initializeSomethingUInt64() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeUInt64(
+        public final void serialize(
                 SerializationContext context, long value) throws IOException {
             UInt64BondType.serializePrimitiveField(context, value, this);
         }
 
-        // codegen helper - serialization
-        public final void serializeSomethingUInt64(
-                SerializationContext context, SomethingLong value) throws IOException {
-            UInt64BondType.serializePrimitiveSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final long deserializeUInt64(
+        public final long deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt64BondType.deserializePrimitiveField(context, this);
         }
+    }
 
-        // codegen helper - deserialization
-        public final SomethingLong deserializeSomethingUInt64(
+    /**
+     * Implements the {@link StructField} contract for fields of the uint64 primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingUInt64StructField extends StructField<Long> {
+
+        public SomethingUInt64StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.UINT64, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final Long getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingLong initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingLong value) throws IOException {
+            UInt64BondType.serializePrimitiveSomethingField(context, value, this);
+        }
+
+        public final SomethingLong deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt64BondType.deserializePrimitiveSomethingField(context, this);
@@ -845,61 +1175,92 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for the int8 primitive data type.
+     * Implements the {@link StructField} contract for fields of the int8 primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class Int8StructField extends StructField<Byte> {
 
         private final byte defaultValue;
 
-        // used by codegen
         public Int8StructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 byte defaultValue) {
-            super(structType, BondTypes.INT8, id, name, modifier, isDefaultNothing);
+            super(structType, BondTypes.INT8, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public Int8StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, id, name, modifier, Int8BondType.DEFAULT_VALUE_AS_PRIMITIVE);
+        }
+
         @Override
-        public final Byte initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final Byte getDefaultValue() {
+            // box
+            return this.initialize();
+        }
+
+        public final byte initialize() {
             return this.defaultValue;
         }
 
-        // codegen helper - initialization
-        public final byte initializeInt8() {
-            return this.defaultValue;
-        }
-
-        // codegen helper - initialization
-        public final SomethingByte initializeSomethingInt8() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeInt8(
+        public final void serialize(
                 SerializationContext context, byte value) throws IOException {
             Int8BondType.serializePrimitiveField(context, value, this);
         }
 
-        // codegen helper - serialization
-        public final void serializeSomethingInt8(
-                SerializationContext context, SomethingByte value) throws IOException {
-            Int8BondType.serializePrimitiveSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final byte deserializeInt8(
+        public final byte deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int8BondType.deserializePrimitiveField(context, this);
         }
+    }
 
-        // codegen helper - deserialization
-        public final SomethingByte deserializeSomethingInt8(
+    /**
+     * Implements the {@link StructField} contract for fields of the int8 primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingInt8StructField extends StructField<Byte> {
+
+        public SomethingInt8StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.INT8, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final Byte getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingByte initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingByte value) throws IOException {
+            Int8BondType.serializePrimitiveSomethingField(context, value, this);
+        }
+
+        public final SomethingByte deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int8BondType.deserializePrimitiveSomethingField(context, this);
@@ -907,61 +1268,92 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for the int16 primitive data type.
+     * Implements the {@link StructField} contract for fields of the int16 primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class Int16StructField extends StructField<Short> {
 
         private final short defaultValue;
 
-        // used by codegen
         public Int16StructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 short defaultValue) {
-            super(structType, BondTypes.INT16, id, name, modifier, isDefaultNothing);
+            super(structType, BondTypes.INT16, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public Int16StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, id, name, modifier, Int16BondType.DEFAULT_VALUE_AS_PRIMITIVE);
+        }
+
         @Override
-        public final Short initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final Short getDefaultValue() {
+            // box
+            return this.initialize();
+        }
+
+        public final short initialize() {
             return this.defaultValue;
         }
 
-        // codegen helper - initialization
-        public final short initializeInt16() {
-            return this.defaultValue;
-        }
-
-        // codegen helper - initialization
-        public final SomethingShort initializeSomethingInt16() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeInt16(
+        public final void serialize(
                 SerializationContext context, short value) throws IOException {
             Int16BondType.serializePrimitiveField(context, value, this);
         }
 
-        // codegen helper - serialization
-        public final void serializeSomethingInt16(
-                SerializationContext context, SomethingShort value) throws IOException {
-            Int16BondType.serializePrimitiveSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final short deserializeInt16(
+        public final short deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int16BondType.deserializePrimitiveField(context, this);
         }
+    }
 
-        // codegen helper - deserialization
-        public final SomethingShort deserializeSomethingInt16(
+    /**
+     * Implements the {@link StructField} contract for fields of the int16 primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingInt16StructField extends StructField<Short> {
+
+        public SomethingInt16StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.INT16, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final Short getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingShort initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingShort value) throws IOException {
+            Int16BondType.serializePrimitiveSomethingField(context, value, this);
+        }
+
+        public final SomethingShort deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int16BondType.deserializePrimitiveSomethingField(context, this);
@@ -969,61 +1361,92 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for the int32 primitive data type.
+     * Implements the {@link StructField} contract for fields of the int32 primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class Int32StructField extends StructField<Integer> {
 
         private final int defaultValue;
 
-        // used by codegen
         public Int32StructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 int defaultValue) {
-            super(structType, BondTypes.INT32, id, name, modifier, isDefaultNothing);
+            super(structType, BondTypes.INT32, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public Int32StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, id, name, modifier, Int32BondType.DEFAULT_VALUE_AS_PRIMITIVE);
+        }
+
         @Override
-        public final Integer initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final Integer getDefaultValue() {
+            // box
+            return this.initialize();
+        }
+
+        public final int initialize() {
             return this.defaultValue;
         }
 
-        // codegen helper - initialization
-        public final int initializeInt32() {
-            return this.defaultValue;
-        }
-
-        // codegen helper - initialization
-        public final SomethingInteger initializeSomethingInt32() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeInt32(
+        public final void serialize(
                 SerializationContext context, int value) throws IOException {
             Int32BondType.serializePrimitiveField(context, value, this);
         }
 
-        // codegen helper - serialization
-        public final void serializeSomethingInt32(
-                SerializationContext context, SomethingInteger value) throws IOException {
-            Int32BondType.serializePrimitiveSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final int deserializeInt32(
+        public final int deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int32BondType.deserializePrimitiveField(context, this);
         }
+    }
 
-        // codegen helper - deserialization
-        public final SomethingInteger deserializeSomethingInt32(
+    /**
+     * Implements the {@link StructField} contract for fields of the int32 primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingInt32StructField extends StructField<Integer> {
+
+        public SomethingInt32StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.INT32, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final Integer getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingInteger initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingInteger value) throws IOException {
+            Int32BondType.serializePrimitiveSomethingField(context, value, this);
+        }
+
+        public final SomethingInteger deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int32BondType.deserializePrimitiveSomethingField(context, this);
@@ -1031,61 +1454,92 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for the int64 primitive data type.
+     * Implements the {@link StructField} contract for fields of the int64 primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class Int64StructField extends StructField<Long> {
 
         private final long defaultValue;
 
-        // used by codegen
         public Int64StructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 long defaultValue) {
-            super(structType, BondTypes.INT64, id, name, modifier, isDefaultNothing);
+            super(structType, BondTypes.INT64, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public Int64StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, id, name, modifier, Int64BondType.DEFAULT_VALUE_AS_PRIMITIVE);
+        }
+
         @Override
-        public final Long initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final Long getDefaultValue() {
+            // box
+            return this.initialize();
+        }
+
+        public final long initialize() {
             return this.defaultValue;
         }
 
-        // codegen helper - initialization
-        public final long initializeInt64() {
-            return this.defaultValue;
-        }
-
-        // codegen helper - initialization
-        public final SomethingLong initializeSomethingInt64() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeInt64(
+        public final void serialize(
                 SerializationContext context, long value) throws IOException {
             Int64BondType.serializePrimitiveField(context, value, this);
         }
 
-        // codegen helper - serialization
-        public final void serializeSomethingInt64(
-                SerializationContext context, SomethingLong value) throws IOException {
-            Int64BondType.serializePrimitiveSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final long deserializeInt64(
+        public final long deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int64BondType.deserializePrimitiveField(context, this);
         }
+    }
 
-        // codegen helper - deserialization
-        public final SomethingLong deserializeSomethingInt64(
+    /**
+     * Implements the {@link StructField} contract for fields of the int64 primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingInt64StructField extends StructField<Long> {
+
+        public SomethingInt64StructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.INT64, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final Long getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingLong initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingLong value) throws IOException {
+            Int64BondType.serializePrimitiveSomethingField(context, value, this);
+        }
+
+        public final SomethingLong deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int64BondType.deserializePrimitiveSomethingField(context, this);
@@ -1093,61 +1547,92 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for the bool primitive data type.
+     * Implements the {@link StructField} contract for fields of the bool primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class BoolStructField extends StructField<Boolean> {
 
         private final boolean defaultValue;
 
-        // used by codegen
         public BoolStructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 boolean defaultValue) {
-            super(structType, BondTypes.BOOL, id, name, modifier, isDefaultNothing);
+            super(structType, BondTypes.BOOL, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public BoolStructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, id, name, modifier, BoolBondType.DEFAULT_VALUE_AS_PRIMITIVE);
+        }
+
         @Override
-        public final Boolean initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final Boolean getDefaultValue() {
+            // box
+            return this.initialize();
+        }
+
+        public final boolean initialize() {
             return this.defaultValue;
         }
 
-        // codegen helper - initialization
-        public final boolean initializeBool() {
-            return this.defaultValue;
-        }
-
-        // codegen helper - initialization
-        public final SomethingBoolean initializeSomethingBool() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeBool(
+        public final void serialize(
                 SerializationContext context, boolean value) throws IOException {
             BoolBondType.serializePrimitiveField(context, value, this);
         }
 
-        // codegen helper - serialization
-        public final void serializeSomethingBool(
-                SerializationContext context, SomethingBoolean value) throws IOException {
-            BoolBondType.serializePrimitiveSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final boolean deserializeBool(
+        public final boolean deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return BoolBondType.deserializePrimitiveField(context, this);
         }
+    }
 
-        // codegen helper - deserialization
-        public final SomethingBoolean deserializeSomethingBool(
+    /**
+     * Implements the {@link StructField} contract for fields of the bool primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingBoolStructField extends StructField<Boolean> {
+
+        public SomethingBoolStructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.BOOL, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final Boolean getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingBoolean initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingBoolean value) throws IOException {
+            BoolBondType.serializePrimitiveSomethingField(context, value, this);
+        }
+
+        public final SomethingBoolean deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return BoolBondType.deserializePrimitiveSomethingField(context, this);
@@ -1155,61 +1640,92 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for the float primitive data type.
+     * Implements the {@link StructField} contract for fields of the float primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class FloatStructField extends StructField<Float> {
 
         private final float defaultValue;
 
-        // used by codegen
         public FloatStructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 float defaultValue) {
-            super(structType, BondTypes.FLOAT, id, name, modifier, isDefaultNothing);
+            super(structType, BondTypes.FLOAT, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public FloatStructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, id, name, modifier, FloatBondType.DEFAULT_VALUE_AS_PRIMITIVE);
+        }
+
         @Override
-        public final Float initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final Float getDefaultValue() {
+            // box
+            return this.initialize();
+        }
+
+        public final float initialize() {
             return this.defaultValue;
         }
 
-        // codegen helper - initialization
-        public final float initializeFloat() {
-            return this.defaultValue;
-        }
-
-        // codegen helper - initialization
-        public final SomethingFloat initializeSomethingFloat() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeFloat(
+        public final void serialize(
                 SerializationContext context, float value) throws IOException {
             FloatBondType.serializePrimitiveField(context, value, this);
         }
 
-        // codegen helper - serialization
-        public final void serializeSomethingFloat(
-                SerializationContext context, SomethingFloat value) throws IOException {
-            FloatBondType.serializePrimitiveSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final float deserializeFloat(
+        public final float deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return FloatBondType.deserializePrimitiveField(context, this);
         }
+    }
 
-        // codegen helper - deserialization
-        public final SomethingFloat deserializeSomethingFloat(
+    /**
+     * Implements the {@link StructField} contract for fields of the float primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingFloatStructField extends StructField<Float> {
+
+        public SomethingFloatStructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.FLOAT, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final Float getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingFloat initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingFloat value) throws IOException {
+            FloatBondType.serializePrimitiveSomethingField(context, value, this);
+        }
+
+        public final SomethingFloat deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return FloatBondType.deserializePrimitiveSomethingField(context, this);
@@ -1217,61 +1733,92 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for the double primitive data type.
+     * Implements the {@link StructField} contract for fields of the double primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class DoubleStructField extends StructField<Double> {
 
         private final double defaultValue;
 
-        // used by codegen
         public DoubleStructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 double defaultValue) {
-            super(structType, BondTypes.DOUBLE, id, name, modifier, isDefaultNothing);
+            super(structType, BondTypes.DOUBLE, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public DoubleStructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, id, name, modifier, DoubleBondType.DEFAULT_VALUE_AS_PRIMITIVE);
+        }
+
         @Override
-        public final Double initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final Double getDefaultValue() {
+            // box
+            return this.initialize();
+        }
+
+        public final double initialize() {
             return this.defaultValue;
         }
 
-        // codegen helper - initialization
-        public final double initializeDouble() {
-            return this.defaultValue;
-        }
-
-        // codegen helper - initialization
-        public final SomethingDouble initializeSomethingDouble() {
-            return null;
-        }
-
-        // codegen helper - serialization
-        public final void serializeDouble(
+        public final void serialize(
                 SerializationContext context, double value) throws IOException {
             DoubleBondType.serializePrimitiveField(context, value, this);
         }
 
-        // codegen helper - serialization
-        public final void serializeSomethingDouble(
-                SerializationContext context, SomethingDouble value) throws IOException {
-            DoubleBondType.serializePrimitiveSomethingField(context, value, this);
-        }
-
-        // codegen helper - deserialization
-        public final double deserializeDouble(
+        public final double deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return DoubleBondType.deserializePrimitiveField(context, this);
         }
+    }
 
-        // codegen helper - deserialization
-        public final SomethingDouble deserializeSomethingDouble(
+    /**
+     * Implements the {@link StructField} contract for fields of the double primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingDoubleStructField extends StructField<Double> {
+
+        public SomethingDoubleStructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.DOUBLE, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final Double getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingDouble initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingDouble value) throws IOException {
+            DoubleBondType.serializePrimitiveSomethingField(context, value, this);
+        }
+
+        public final SomethingDouble deserialize(
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return DoubleBondType.deserializePrimitiveSomethingField(context, this);
@@ -1279,81 +1826,285 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for the string primitive data type.
+     * Implements the {@link StructField} contract for fields of the string primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class StringStructField extends StructField<String> {
 
         private final String defaultValue;
+
+        public StringStructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier,
+                String defaultValue) {
+            super(structType, BondTypes.STRING, id, name, modifier);
+            this.defaultValue = defaultValue;
+        }
 
         // used by codegen
         public StringStructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
-                Modifier modifier,
-                boolean isDefaultNothing,
-                String defaultValue) {
-            super(structType, BondTypes.STRING, id, name, modifier, isDefaultNothing);
-            this.defaultValue = defaultValue;
+                Modifier modifier) {
+            this(structType, id, name, modifier, StringBondType.DEFAULT_VALUE_AS_OBJECT);
         }
 
-        // codegen helper - initialization
         @Override
-        public final String initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final String getDefaultValue() {
+            return this.initialize();
+        }
+
+        public final String initialize() {
             return this.defaultValue;
+        }
+
+        public final void serialize(
+                SerializationContext context, String value) throws IOException {
+            this.fieldType.serializeField(context, value, this);
+        }
+
+        public final String deserialize(
+                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
+            return this.fieldType.deserializeField(context, this);
         }
     }
 
     /**
-     * Implements the {@link StructField} contract for the wstring primitive data type.
+     * Implements the {@link StructField} contract for fields of the string primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingStringStructField extends StructField<String> {
+
+        public SomethingStringStructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.STRING, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final String getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingObject<String> initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingObject<String> value) throws IOException {
+            this.fieldType.serializeSomethingField(context, value, this);
+        }
+
+        public final SomethingObject<String> deserialize(
+                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
+            return this.fieldType.deserializeSomethingField(context, this);
+        }
+    }
+
+    /**
+     * Implements the {@link StructField} contract for fields of the string primitive data type
+     * that are not defaulting to "nothing".
      */
     protected static final class WStringStructField extends StructField<String> {
 
         private final String defaultValue;
+
+        public WStringStructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier,
+                String defaultValue) {
+            super(structType, BondTypes.WSTRING, id, name, modifier);
+            this.defaultValue = defaultValue;
+        }
 
         // used by codegen
         public WStringStructField(
                 StructBondType<?> structType,
                 int id,
                 String name,
-                Modifier modifier,
-                boolean isDefaultNothing,
-                String defaultValue) {
-            super(structType, BondTypes.WSTRING, id, name, modifier, isDefaultNothing);
-            this.defaultValue = defaultValue;
+                Modifier modifier) {
+            this(structType, id, name, modifier, WStringBondType.DEFAULT_VALUE_AS_OBJECT);
         }
 
-        // codegen helper - initialization
         @Override
-        public final String initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final String getDefaultValue() {
+            return this.initialize();
+        }
+
+        public final String initialize() {
             return this.defaultValue;
+        }
+
+        public final void serialize(
+                SerializationContext context, String value) throws IOException {
+            this.fieldType.serializeField(context, value, this);
+        }
+
+        public final String deserialize(
+                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
+            return this.fieldType.deserializeField(context, this);
         }
     }
 
     /**
-     * Implements the {@link StructField} contract for enum data types.
+     * Implements the {@link StructField} contract for fields of the string primitive data type
+     * that are defaulting to "nothing".
      */
-    protected static final class EnumStructField<TEnum extends BondEnum> extends StructField<TEnum> {
+    protected static final class SomethingWStringStructField extends StructField<String> {
+
+        // used by codegen
+        public SomethingWStringStructField(
+                StructBondType<?> structType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, BondTypes.WSTRING, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final String getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingObject<String> initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingObject<String> value) throws IOException {
+            this.fieldType.serializeSomethingField(context, value, this);
+        }
+
+        public final SomethingObject<String> deserialize(
+                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
+            return this.fieldType.deserializeSomethingField(context, this);
+        }
+    }
+
+    /**
+     * Implements the {@link StructField} contract for fields of the string primitive data type
+     * that are not defaulting to "nothing".
+     */
+    protected static final class EnumStructField<TEnum extends BondEnum<TEnum>> extends StructField<TEnum> {
 
         private final TEnum defaultValue;
 
-        // used by codegen
         public EnumStructField(
                 StructBondType<?> structType,
                 EnumBondType<TEnum> fieldType,
                 int id,
                 String name,
                 Modifier modifier,
-                boolean isDefaultNothing,
                 TEnum defaultValue) {
-            super(structType, fieldType, id, name, modifier, isDefaultNothing);
+            super(structType, fieldType, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
-        // codegen helper - initialization
+        public EnumStructField(
+                StructBondType<?> structType,
+                EnumBondType<TEnum> fieldType,
+                int id,
+                String name,
+                Modifier modifier) {
+            this(structType, fieldType, id, name, modifier, fieldType.newDefaultValue());
+        }
+
         @Override
-        public final TEnum initializeObject() {
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final TEnum getDefaultValue() {
+            return this.initialize();
+        }
+
+        public final TEnum initialize() {
             return this.defaultValue;
+        }
+
+        public final void serialize(
+                SerializationContext context, TEnum value) throws IOException {
+            this.fieldType.serializeField(context, value, this);
+        }
+
+        public final TEnum deserialize(
+                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
+            return this.fieldType.deserializeField(context, this);
+        }
+    }
+
+    /**
+     * Implements the {@link StructField} contract for fields of the string primitive data type
+     * that are defaulting to "nothing".
+     */
+    protected static final class SomethingEnumStructField<TEnum extends BondEnum<TEnum>> extends StructField<TEnum> {
+
+        // used by codegen
+        public SomethingEnumStructField(
+                StructBondType<?> structType,
+                EnumBondType<TEnum> fieldType,
+                int id,
+                String name,
+                Modifier modifier) {
+            super(structType, fieldType, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return true;
+        }
+
+        @Override
+        public final TEnum getDefaultValue() {
+            return null;
+        }
+
+        public final SomethingObject<String> initialize() {
+            return null;
+        }
+
+        public final void serialize(
+                SerializationContext context, SomethingObject<TEnum> value) throws IOException {
+            this.fieldType.serializeSomethingField(context, value, this);
+        }
+
+        public final SomethingObject<TEnum> deserialize(
+                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
+            return this.fieldType.deserializeSomethingField(context, this);
         }
     }
 }

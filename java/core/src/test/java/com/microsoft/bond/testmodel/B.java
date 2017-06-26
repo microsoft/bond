@@ -31,152 +31,142 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class B<T> extends A<String, T> implements BondSerializable {
 
-    // implementation of the type descriptor resolver
-    public static final class StructResolver extends StructBondTypeResolver<B> {
+    // public definition of the type descriptor builder for generic type
+    public static abstract class GenericBondTypeBuilder {
 
-        // register a struct resolver instance so that it can be
-        // retrieved by calling static methods of the BondType class
-        static {
-            registerStructType(B.class, new StructResolver());
+        // hide constructor to prevent subclassing outside of the current scope
+        private GenericBondTypeBuilder() {
         }
 
-        // public type resolver method customized to the generic type parameters
-        public final <T> Struct<T> resolve(BondType<T> T) {
-            ArgumentHelper.ensureNotNull(T, "T");
-            return (Struct<T>) (StructBondType) this.resolveAndInitialize(T);
-        }
-
-        @Override
-        protected final Struct resolveUninitialized(BondType<?>... genericTypeArguments) {
-            BondType<?> T = getCachedType(genericTypeArguments[0]);
-            GenericTypeSpecialization specialization = new GenericTypeSpecialization(T);
-            StructBondType<? super B> base = resolveUninitializedWithCaching(new A.StructResolver(), BondTypes.STRING, T);
-            return (Struct) getCachedType(new Struct(base, specialization));
-        }
+        // public API to make an instance of a generic type
+        public abstract <T> StructBondType<B<T>> makeGenericType(BondType<T> T);
     }
 
-    // implementation of the type descriptor
-    public static final class Struct<T> extends StructBondType<B<T>> {
+    // private implementation of the type descriptor
+    private static final class StructBondTypeImpl<T> extends StructBondType<B<T>> {
+
+        // private implementation of the type descriptor builder
+        static final class StructBondTypeBuilderImpl extends StructBondTypeBuilder<B> {
+
+            // called by the public method to make an instance of a generic type
+            final <T> StructBondType<B<T>> makeGenericType(BondType<T> T) {
+                ArgumentHelper.ensureNotNull(T, "T");
+                return (StructBondTypeImpl<T>) (StructBondType) this.getInitializedFromCache(T);
+            }
+
+            @Override
+            public final int getGenericTypeParameterCount() {
+                return 1;
+            }
+
+            @Override
+            protected final StructBondType<B> buildNewInstance(BondType<?>[] genericTypeArguments) {
+                BondType<?> T = genericTypeArguments[0];
+                GenericTypeSpecialization genericTypeSpecialization = new GenericTypeSpecialization(T);
+                return new StructBondTypeImpl(genericTypeSpecialization);
+            }
+
+            // registration method
+            static void register() {
+                registerStructType(B.class, new StructBondTypeBuilderImpl());
+            }
+        }
 
         // field descriptors for each field in the struct
-        private StructField<T> t;
-        private StructField<A<T, T>> at;
-        private StructField<B<T>> nbt;
-        private StructField<E<T>> net;
-        private StructField<List<T>> lt1;
-        private StructField<List<List<T>>> lt2;
-        private StructField<List<List<List<T>>>> lt3;
-        private StructField<List<List<List<List<T>>>>> lt4;
-        private StructField<List<List<List<List<List<T>>>>>> lt5;
+        private ObjectStructField<T> t;
+        private ObjectStructField<A<T, T>> at;
+        private ObjectStructField<B<T>> nbt;
+        private ObjectStructField<E<T>> net;
+        private ObjectStructField<List<T>> lt1;
+        private ObjectStructField<List<List<T>>> lt2;
+        private ObjectStructField<List<List<List<T>>>> lt3;
+        private ObjectStructField<List<List<List<List<T>>>>> lt4;
+        private ObjectStructField<List<List<List<List<List<T>>>>>> lt5;
 
         // restrict instantiation to the enclosing class and its members
-        private Struct(StructBondType<? super B> base, GenericTypeSpecialization specialization) {
-            super(Struct.class, base, specialization);
+        private StructBondTypeImpl(GenericTypeSpecialization genericTypeSpecialization) {
+            super(genericTypeSpecialization);
         }
 
         @Override
         protected final void initialize() {
-            BondType<T> __type_T = this.getGenericSpecialization().getGenericTypeArgument(0);
+            BondType<T> T = this.getGenericSpecialization().getGenericTypeArgument(0);
 
             // initialize field descriptor
             this.t = new ObjectStructField<T>(
                     this,
-                    __type_T,
+                    T,
                     1,
                     "t",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_at__1 =
-                    resolveUninitializedWithCaching(new A.StructResolver(), __type_T, __type_T);
             this.at = new ObjectStructField<A<T, T>>(
                     this,
-                    (StructBondType<A<T, T>>) __spec_at__1,
+                    (StructBondType<A<T, T>>) (StructBondType<?>) getStructType(A.class, T, T),
                     2,
                     "at",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_nbt__1 =
-                    resolveUninitializedWithCaching(new B.StructResolver(), __type_T);
             this.nbt = new ObjectStructField<B<T>>(
                     this,
-                    BondType.nullableOf((StructBondType<B<T>>) __spec_nbt__1),
+                    nullableOf((StructBondType<B<T>>) (StructBondType<?>) getStructType(B.class, T)),
                     3,
                     "nbt",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_net__1 =
-                    resolveUninitializedWithCaching(new E.StructResolver(), __type_T);
             this.net = new ObjectStructField<E<T>>(
                     this,
-                    BondType.nullableOf((StructBondType<E<T>>) __spec_net__1),
+                    nullableOf((StructBondType<E<T>>) (StructBondType<?>) getStructType(E.class, T)),
                     4,
                     "net",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.lt1 = new ObjectStructField<List<T>>(
                     this,
-                    BondType.listOf(__type_T),
+                    listOf(T),
                     5,
                     "lt1",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.lt2 = new ObjectStructField<List<List<T>>>(
                     this,
-                    BondType.listOf(
-                            BondType.listOf(__type_T)),
+                    listOf(listOf(T)),
                     6,
                     "lt2",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.lt3 = new ObjectStructField<List<List<List<T>>>>(
                     this,
-                    BondType.listOf(
-                            BondType.listOf(
-                                    BondType.listOf(__type_T))),
+                    listOf(listOf(listOf(T))),
                     7,
                     "lt3",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.lt4 = new ObjectStructField<List<List<List<List<T>>>>>(
                     this,
-                    BondType.listOf(
-                            BondType.listOf(
-                                    BondType.listOf(
-                                            BondType.listOf(__type_T)))),
+                    listOf(listOf(listOf(listOf(T)))),
                     8,
                     "lt4",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.lt5 = new ObjectStructField<List<List<List<List<List<T>>>>>>(
                     this,
-                    BondType.listOf(
-                            BondType.listOf(
-                                    BondType.listOf(
-                                            BondType.listOf(
-                                                    BondType.listOf(__type_T))))),
+                    listOf(listOf(listOf(listOf(listOf(T))))),
                     9,
                     "lt5",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize struct descriptor
-            super.initializeFields(
+            super.initializeBaseAndFields(
+                    getStructType(A.class, BondTypes.STRING, T),
                     this.t,
                     this.at,
                     this.nbt,
@@ -191,8 +181,7 @@ public class B<T> extends A<String, T> implements BondSerializable {
 
         @Override
         public final Class<B<T>> getValueClass() {
-            Class clazz = B.class;
-            return (Class<B<T>>) clazz;
+            return (Class<B<T>>) (Class<?>) B.class;
         }
 
         @Override
@@ -201,22 +190,20 @@ public class B<T> extends A<String, T> implements BondSerializable {
         }
 
         @Override
-        protected final void serializeStructFields(
-                SerializationContext context, B<T> value) throws IOException {
-            this.t.serializeObject(context, value.t);
-            this.at.serializeObject(context, value.at);
-            this.nbt.serializeObject(context, value.nbt);
-            this.net.serializeObject(context, value.net);
-            this.lt1.serializeObject(context, value.lt1);
-            this.lt2.serializeObject(context, value.lt2);
-            this.lt3.serializeObject(context, value.lt3);
-            this.lt4.serializeObject(context, value.lt4);
-            this.lt5.serializeObject(context, value.lt5);
+        protected final void serializeStructFields(SerializationContext context, B<T> value) throws IOException {
+            this.t.serialize(context, value.t);
+            this.at.serialize(context, value.at);
+            this.nbt.serialize(context, value.nbt);
+            this.net.serialize(context, value.net);
+            this.lt1.serialize(context, value.lt1);
+            this.lt2.serialize(context, value.lt2);
+            this.lt3.serialize(context, value.lt3);
+            this.lt4.serialize(context, value.lt4);
+            this.lt5.serialize(context, value.lt5);
         }
 
         @Override
-        protected final void deserializeStructFields(
-                TaggedDeserializationContext context, B<T> value) throws IOException {
+        protected final void deserializeStructFields(TaggedDeserializationContext context, B<T> value) throws IOException {
             boolean __has_t = false;
             boolean __has_at = false;
             boolean __has_nbt = false;
@@ -229,65 +216,66 @@ public class B<T> extends A<String, T> implements BondSerializable {
             while (readField(context)) {
                 switch (context.readFieldResult.id) {
                     case 1:
-                        value.t = this.t.deserializeObject(context, __has_t);
+                        value.t = this.t.deserialize(context, __has_t);
                         __has_t = true;
                         break;
                     case 2:
-                        value.at = this.at.deserializeObject(context, __has_at);
+                        value.at = this.at.deserialize(context, __has_at);
                         __has_at = true;
                         break;
                     case 3:
-                        value.nbt = this.nbt.deserializeObject(context, __has_nbt);
+                        value.nbt = this.nbt.deserialize(context, __has_nbt);
                         __has_nbt = true;
                         break;
                     case 4:
-                        value.net = this.net.deserializeObject(context, __has_net);
+                        value.net = this.net.deserialize(context, __has_net);
                         __has_net = true;
                         break;
                     case 5:
-                        value.lt1 = this.lt1.deserializeObject(context, __has_lt1);
+                        value.lt1 = this.lt1.deserialize(context, __has_lt1);
                         __has_lt1 = true;
                         break;
                     case 6:
-                        value.lt2 = this.lt2.deserializeObject(context, __has_lt2);
+                        value.lt2 = this.lt2.deserialize(context, __has_lt2);
                         __has_lt2 = true;
                         break;
                     case 7:
-                        value.lt3 = this.lt3.deserializeObject(context, __has_lt3);
+                        value.lt3 = this.lt3.deserialize(context, __has_lt3);
                         __has_lt3 = true;
                         break;
                     case 8:
-                        value.lt4 = this.lt4.deserializeObject(context, __has_lt4);
+                        value.lt4 = this.lt4.deserialize(context, __has_lt4);
                         __has_lt4 = true;
                         break;
                     case 9:
-                        value.lt5 = this.lt5.deserializeObject(context, __has_lt5);
+                        value.lt5 = this.lt5.deserialize(context, __has_lt5);
                         __has_lt5 = true;
                         break;
                 }
             }
 
-            this.t.verifyDeserializedField(__has_t);
-            this.at.verifyDeserializedField(__has_at);
-            this.nbt.verifyDeserializedField(__has_nbt);
-            this.net.verifyDeserializedField(__has_net);
-            this.lt1.verifyDeserializedField(__has_lt1);
-            this.lt2.verifyDeserializedField(__has_lt2);
-            this.lt3.verifyDeserializedField(__has_lt3);
-            this.lt4.verifyDeserializedField(__has_lt4);
-            this.lt5.verifyDeserializedField(__has_lt5);
+            this.t.verifyDeserialized(__has_t);
+            this.at.verifyDeserialized(__has_at);
+            this.nbt.verifyDeserialized(__has_nbt);
+            this.net.verifyDeserialized(__has_net);
+            this.lt1.verifyDeserialized(__has_lt1);
+            this.lt2.verifyDeserialized(__has_lt2);
+            this.lt3.verifyDeserialized(__has_lt3);
+            this.lt4.verifyDeserialized(__has_lt4);
+            this.lt5.verifyDeserialized(__has_lt5);
         }
 
-        private void initializeFieldValues(B<T> value) {
-            value.t = this.t.initializeObject();
-            value.at = this.at.initializeObject();
-            value.nbt = this.nbt.initializeObject();
-            value.net = this.net.initializeObject();
-            value.lt1 = this.lt1.initializeObject();
-            value.lt2 = this.lt2.initializeObject();
-            value.lt3 = this.lt3.initializeObject();
-            value.lt4 = this.lt4.initializeObject();
-            value.lt5 = this.lt5.initializeObject();
+        @Override
+        public final void initializeStructFields(B<T> value) {
+            value.t = this.t.initialize();
+            value.at = this.at.initialize();
+            value.nbt = this.nbt.initialize();
+            value.net = this.net.initialize();
+            value.lt1 = this.lt1.initialize();
+            value.lt2 = this.lt2.initialize();
+            value.lt3 = this.lt3.initialize();
+            value.lt4 = this.lt4.initialize();
+            value.lt5 = this.lt5.initialize();
         }
     }
 
@@ -295,15 +283,38 @@ public class B<T> extends A<String, T> implements BondSerializable {
     // Bond class static members
     ///////////////////////////////////////////////////////////////////////////
 
-    // resolver for type descriptors of this generic struct type
-    public static final StructResolver struct = new StructResolver();
+    // builder for type descriptors of this generic struct type
+    public static final GenericBondTypeBuilder BOND_TYPE = new GenericBondTypeBuilder() {
+        final StructBondTypeImpl.StructBondTypeBuilderImpl builder =
+                new StructBondTypeImpl.StructBondTypeBuilderImpl();
+
+        @Override
+        public final <T> StructBondType<B<T>> makeGenericType(BondType<T> T) {
+            return this.builder.makeGenericType(T);
+        }
+    };
+
+    // class initialization method (also invoked in static class initializer)
+    public static void initializeBondType() {
+        StructBondTypeImpl.StructBondTypeBuilderImpl.register();
+    }
+
+    static {
+        initializeBondType();
+    }
+
+    // static helper for constructor, that catches null argument before calling super()
+    private static <T> StructBondType<A<String, T>> getBaseType(StructBondType<B<T>> genericType) {
+        ArgumentHelper.ensureNotNull(genericType, "genericType");
+        return (StructBondType<A<String, T>>) genericType.getBaseStructType();
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Bond class instance members
     ///////////////////////////////////////////////////////////////////////////
 
-    // handle to the type specialization
-    private final Struct<T> __struct;
+    // type specialization (added for every generic type)
+    private final StructBondTypeImpl<T> __genericType;
 
     // struct fields
     public T t;
@@ -316,26 +327,15 @@ public class B<T> extends A<String, T> implements BondSerializable {
     public List<List<List<List<T>>>> lt4;
     public List<List<List<List<List<T>>>>> lt5;
 
-    // constructor that takes type specialization (cached)
-    public B(Struct<T> struct) {
-        super(getBase(struct));
-        this.__struct = struct;
-        struct.initializeFieldValues(this);
-    }
-
-    // private helper to check constructor argument
-    private static <T> A.Struct<String, T> getBase(Struct<T> struct) {
-        ArgumentHelper.ensureNotNull(struct, "struct");
-        return (A.Struct) struct.getBaseStructType();
-    }
-
-    // constructor that takes individual type parameters
-    public B(BondType<T> T) {
-        this(struct.resolve(T));
+    // the only constructor which takes the generic type specialization
+    public B(StructBondType<B<T>> genericType) {
+        super(getBaseType(genericType));
+        this.__genericType = (StructBondTypeImpl<T>) genericType;
+        this.__genericType.initializeStructFields(this);
     }
 
     @Override
-    public StructBondType<? extends BondSerializable> getStruct() {
-        return this.__struct;
+    public StructBondType<? extends BondSerializable> getBondType() {
+        return this.__genericType;
     }
 }

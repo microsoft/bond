@@ -20,11 +20,12 @@ public final class WStringBondType extends PrimitiveBondType<String> {
      */
     public static final String TYPE_NAME = "wstring";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final WStringBondType INSTANCE = new WStringBondType();
 
     private WStringBondType() {
-        super(WStringBondType.class);
     }
 
     @Override

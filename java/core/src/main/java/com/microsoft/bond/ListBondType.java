@@ -4,13 +4,12 @@
 package com.microsoft.bond;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Implements the {@link BondType} contract for (linked) list container data types.
+ * Implements the {@link BondType} contract for (linked) "list" container data types.
  * @param <TElement> the class of the element values
  */
 public final class ListBondType<TElement> extends BondType<List<TElement>> {
@@ -21,11 +20,11 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
     public static final String TYPE_NAME = "list";
 
     private final BondType<TElement> elementType;
+    private final int precomputedHashCode;
 
-    // restrict instantiation to the current package
     ListBondType(BondType<TElement> elementType) {
-        super(multiplyAndShift(elementType.hashCode(), 3));
         this.elementType = elementType;
+        this.precomputedHashCode = multiplyAndShiftForHashCodeComputation(elementType.hashCode(), 3, 2);
     }
 
     /**
@@ -175,14 +174,24 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
     }
 
     @Override
-    final boolean equalsInternal(BondType<?> obj) {
-        // the caller makes sure that the class of the argument is the same as the class of this object
-        ListBondType that = (ListBondType) obj;
-        return this.elementType.equals(that.elementType);
+    public final int hashCode() {
+        return this.precomputedHashCode;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj instanceof ListBondType<?>) {
+            ListBondType<?> that = (ListBondType<?>) obj;
+            return this.precomputedHashCode == that.precomputedHashCode &&
+                    this.elementType.equals(that.elementType);
+        } else {
+            return false;
+        }
     }
 
     @Override
     final TypeDef createSchemaTypeDef(HashMap<StructBondType<?>, StructDefOrdinalTuple> structDefMap) {
+        // initialize only with non-default values
         TypeDef typeDef = new TypeDef();
         typeDef.id = this.getBondDataType();
         typeDef.element = this.elementType.createSchemaTypeDef(structDefMap);

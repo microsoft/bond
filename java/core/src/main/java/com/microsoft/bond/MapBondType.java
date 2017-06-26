@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Implements the {@link BondType} contract for map container data types.
+ * Implements the {@link BondType} contract for "map" container data types.
  * @param <TKey> the class of the map keys
  * @param <TValue> the class of the mapped values
  */
@@ -21,12 +21,13 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
 
     private final PrimitiveBondType<TKey> keyType;
     private final BondType<TValue> valueType;
+    private final int precomputedHashCode;
 
-    // restrict instantiation to the current package
     MapBondType(PrimitiveBondType<TKey> keyType, BondType<TValue> valueType) {
-        super(multiplyAndShift(keyType.hashCode(), 5) ^ multiplyAndShift(valueType.hashCode(), 3));
         this.keyType = keyType;
         this.valueType = valueType;
+        this.precomputedHashCode = multiplyAndShiftForHashCodeComputation(keyType.hashCode(), 5, 3) +
+                multiplyAndShiftForHashCodeComputation(valueType.hashCode(), 7, 3);
     }
 
     /**
@@ -208,14 +209,24 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
     }
 
     @Override
-    final boolean equalsInternal(BondType<?> obj) {
-        // the caller makes sure that the class of the argument is the same as the class of this object
-        MapBondType that = (MapBondType) obj;
-        return this.keyType.equals(that.keyType) && this.valueType.equals(that.valueType);
+    public final int hashCode() {
+        return this.precomputedHashCode;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj instanceof MapBondType<?, ?>) {
+            MapBondType<?, ?> that = (MapBondType<?, ?>) obj;
+            return this.precomputedHashCode == that.precomputedHashCode &&
+                    this.keyType.equals(that.keyType) && this.valueType.equals(that.valueType);
+        } else {
+            return false;
+        }
     }
 
     @Override
     final TypeDef createSchemaTypeDef(HashMap<StructBondType<?>, StructDefOrdinalTuple> structDefMap) {
+        // initialize only with non-default values
         TypeDef typeDef = new TypeDef();
         typeDef.id = this.getBondDataType();
         typeDef.element = this.valueType.createSchemaTypeDef(structDefMap);

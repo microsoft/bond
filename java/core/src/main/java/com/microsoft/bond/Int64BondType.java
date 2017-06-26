@@ -25,11 +25,12 @@ public final class Int64BondType extends PrimitiveBondType<Long> {
      */
     public static final String TYPE_NAME = "int64";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final Int64BondType INSTANCE = new Int64BondType();
 
     private Int64BondType() {
-        super(Int64BondType.class);
     }
 
     @Override

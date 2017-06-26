@@ -25,11 +25,12 @@ public final class UInt64BondType extends PrimitiveBondType<Long> {
      */
     public static final String TYPE_NAME = "uint64";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final UInt64BondType INSTANCE = new UInt64BondType();
 
     private UInt64BondType() {
-        super(UInt64BondType.class);
     }
 
     @Override

@@ -4,15 +4,16 @@
 package com.microsoft.bond;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Implements the {@link BondType} contract for the Bond "blob" data type.
  */
-public final class BlobBondType extends PrimitiveBondType<byte[]> {
+public final class BlobBondType extends BondType<byte[]> {
 
     /**
      * The default of values of this type.
-     * An iimutable value because it is empty.
+     * An immutable singleton value (empty).
      */
     public static final byte[] DEFAULT_VALUE = new byte[0];
 
@@ -21,11 +22,12 @@ public final class BlobBondType extends PrimitiveBondType<byte[]> {
      */
     public static final String TYPE_NAME = "blob";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final BlobBondType INSTANCE = new BlobBondType();
 
     private BlobBondType() {
-        super(BlobBondType.class);
     }
 
     @Override
@@ -51,6 +53,21 @@ public final class BlobBondType extends PrimitiveBondType<byte[]> {
 
     @Override
     public final Class<byte[]> getPrimitiveValueClass() {
+        return null;
+    }
+
+    @Override
+    public final boolean isNullableType() {
+        return false;
+    }
+
+    @Override
+    public final boolean isGenericType() {
+        return false;
+    }
+
+    @Override
+    public final BondType<?>[] getGenericTypeArguments() {
         return null;
     }
 
@@ -120,5 +137,26 @@ public final class BlobBondType extends PrimitiveBondType<byte[]> {
             Throw.raiseStructFieldSerializationError(true, field, e, null);
         }
         return value;
+    }
+
+    @Override
+    public final int hashCode() {
+        // since the class is a singleton, delegate to the identity of the implementation class
+        return this.getClass().hashCode();
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        // since the class is a singleton, delegate to the identity of the implementation class
+        return obj != null && this.getClass() == obj.getClass();
+    }
+
+    @Override
+    final TypeDef createSchemaTypeDef(HashMap<StructBondType<?>, StructDefOrdinalTuple> structDefMap) {
+        // initialize only with non-default values
+        TypeDef typeDef = new TypeDef();
+        typeDef.id = this.getBondDataType();
+        typeDef.element = BondTypes.UINT8.createSchemaTypeDef(structDefMap);
+        return typeDef;
     }
 }

@@ -25,41 +25,37 @@ import java.io.IOException;
 @SuppressWarnings("unchecked")
 public class C extends B<Double> implements BondSerializable {
 
-    // implementation of the type descriptor resolver (private since the class is not generic)
-    private static final class StructResolver extends StructBondTypeResolver<C> {
+    // private implementation of the type descriptor
+    private static final class StructBondTypeImpl extends StructBondType<C> {
 
-        // register a struct resolver instance so that it can be
-        // retrieved by calling static methods of the BondType class
-        static {
-            registerStructType(C.class, new StructResolver());
-        }
+        // private implementation of the type descriptor builder
+        static final class StructBondTypeBuilderImpl extends StructBondTypeBuilder<C> {
 
-        @Override
-        protected StructBondType<C> resolveUninitialized(BondType<?>[] genericTypeArguments) {
-            return (Struct) getCachedType(new Struct());
-        }
-    }
+            @Override
+            public final int getGenericTypeParameterCount() {
+                return 0;
+            }
 
-    // implementation of the type descriptor
-    public static final class Struct extends StructBondType<C> {
+            @Override
+            protected final StructBondType<C> buildNewInstance(BondType<?>[] genericTypeArguments) {
+                return new StructBondTypeImpl();
+            }
 
-        // retrieves singleton, called by the enclosing class
-        private static Struct getInstance() {
-            Struct instance = (Struct) getCachedType(new Struct());
-            instance.ensureInitialized();
-            return instance;
+            // registration method
+            static void register() {
+                registerStructType(C.class, new StructBondTypeBuilderImpl());
+            }
         }
 
         // field descriptors for each field in the struct
         private Int32StructField i32;
         private Int64StructField i64;
-        private StructField<B<String>> bs1;
-        private StructField<B<B<String>>> bs2;
-        private StructField<B<B<B<String>>>> bs3;
+        private ObjectStructField<B<String>> bs1;
+        private ObjectStructField<B<B<String>>> bs2;
+        private ObjectStructField<B<B<B<String>>>> bs3;
 
-        // restrict instantiation to the enclosing class and its members
-        public Struct() {
-            super(Struct.class, resolveUninitializedWithCaching(new B.StructResolver(), BondTypes.DOUBLE), null);
+        StructBondTypeImpl() {
+            super(null);
         }
 
         @Override
@@ -71,7 +67,6 @@ public class C extends B<Double> implements BondSerializable {
                     1,
                     "i32",
                     Modifier.Optional,
-                    false,
                     0);
 
             // initialize field descriptor
@@ -80,50 +75,35 @@ public class C extends B<Double> implements BondSerializable {
                     2,
                     "i64",
                     Modifier.Optional,
-                    false,
                     0L);
 
             // initialize field descriptor
-            StructBondType __spec_bs1__1 =
-                    resolveUninitializedWithCaching(new B.StructResolver(), BondTypes.STRING);
             this.bs1 = new ObjectStructField<B<String>>(
                     this,
-                    (StructBondType<B<String>>) __spec_bs1__1,
+                    (StructBondType<B<String>>) (StructBondType<?>) getStructType(B.class, BondTypes.STRING),
                     3,
                     "bs1",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_bs2__1 =
-                    resolveUninitializedWithCaching(new B.StructResolver(), BondTypes.STRING);
-            StructBondType __spec_bs2__2 =
-                    resolveUninitializedWithCaching(new B.StructResolver(), __spec_bs2__1);
             this.bs2 = new ObjectStructField<B<B<String>>>(
                     this,
-                    (StructBondType<B<B<String>>>) __spec_bs2__2,
+                    (StructBondType<B<B<String>>>) (StructBondType<?>) getStructType(B.class, getStructType(B.class, BondTypes.STRING)),
                     4,
                     "bs2",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_bs3__1 =
-                    resolveUninitializedWithCaching(new B.StructResolver(), BondTypes.STRING);
-            StructBondType __spec_bs3__2 =
-                    resolveUninitializedWithCaching(new B.StructResolver(), __spec_bs3__1);
-            StructBondType __spec_bs3__3 =
-                    resolveUninitializedWithCaching(new B.StructResolver(), __spec_bs3__2);
             this.bs3 = new ObjectStructField<B<B<B<String>>>>(
                     this,
-                    (StructBondType<B<B<B<String>>>>) __spec_bs3__3,
+                    (StructBondType<B<B<B<String>>>>) (StructBondType<?>) getStructType(B.class, getStructType(B.class, getStructType(B.class, BondTypes.STRING))),
                     5,
                     "bs3",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize struct descriptor
-            super.initializeFields(
+            super.initializeBaseAndFields(
+                    getStructType(B.class, BondTypes.DOUBLE),
                     this.i32,
                     this.i64,
                     this.bs1,
@@ -134,7 +114,7 @@ public class C extends B<Double> implements BondSerializable {
 
         @Override
         public final Class<C> getValueClass() {
-            return (Class<C>) (Class<?>) C.class;
+            return C.class;
         }
 
         @Override
@@ -143,18 +123,16 @@ public class C extends B<Double> implements BondSerializable {
         }
 
         @Override
-        protected final void serializeStructFields(
-                SerializationContext context, C value) throws IOException {
-            this.i32.serializeInt32(context, value.i32);
-            this.i64.serializeInt64(context, value.i64);
-            this.bs1.serializeObject(context, value.bs1);
-            this.bs2.serializeObject(context, value.bs2);
-            this.bs3.serializeObject(context, value.bs3);
+        protected final void serializeStructFields(SerializationContext context, C value) throws IOException {
+            this.i32.serialize(context, value.i32);
+            this.i64.serialize(context, value.i64);
+            this.bs1.serialize(context, value.bs1);
+            this.bs2.serialize(context, value.bs2);
+            this.bs3.serialize(context, value.bs3);
         }
 
         @Override
-        protected final void deserializeStructFields(
-                TaggedDeserializationContext context, C value) throws IOException {
+        protected final void deserializeStructFields(TaggedDeserializationContext context, C value) throws IOException {
             boolean __has_i32 = false;
             boolean __has_i64 = false;
             boolean __has_bs1 = false;
@@ -163,41 +141,42 @@ public class C extends B<Double> implements BondSerializable {
             while (readField(context)) {
                 switch (context.readFieldResult.id) {
                     case 1:
-                        value.i32 = this.i32.deserializeInt32(context, __has_i32);
+                        value.i32 = this.i32.deserialize(context, __has_i32);
                         __has_i32 = true;
                         break;
                     case 2:
-                        value.i64 = this.i64.deserializeInt64(context, __has_i64);
+                        value.i64 = this.i64.deserialize(context, __has_i64);
                         __has_i64 = true;
                         break;
                     case 3:
-                        value.bs1 = this.bs1.deserializeObject(context, __has_bs1);
+                        value.bs1 = this.bs1.deserialize(context, __has_bs1);
                         __has_bs1 = true;
                         break;
                     case 4:
-                        value.bs2 = this.bs2.deserializeObject(context, __has_bs2);
+                        value.bs2 = this.bs2.deserialize(context, __has_bs2);
                         __has_bs2 = true;
                         break;
                     case 5:
-                        value.bs3 = this.bs3.deserializeObject(context, __has_bs3);
+                        value.bs3 = this.bs3.deserialize(context, __has_bs3);
                         __has_bs3 = true;
                         break;
                 }
             }
 
-            this.i32.verifyDeserializedField(__has_i32);
-            this.i64.verifyDeserializedField(__has_i64);
-            this.bs1.verifyDeserializedField(__has_bs1);
-            this.bs2.verifyDeserializedField(__has_bs2);
-            this.bs3.verifyDeserializedField(__has_bs3);
+            this.i32.verifyDeserialized(__has_i32);
+            this.i64.verifyDeserialized(__has_i64);
+            this.bs1.verifyDeserialized(__has_bs1);
+            this.bs2.verifyDeserialized(__has_bs2);
+            this.bs3.verifyDeserialized(__has_bs3);
         }
 
-        private void initializeFieldValues(C value) {
-            value.i32 = this.i32.initializeInt32();
-            value.i64 = this.i64.initializeInt64();
-            value.bs1 = this.bs1.initializeObject();
-            value.bs2 = this.bs2.initializeObject();
-            value.bs3 = this.bs3.initializeObject();
+        @Override
+        public final void initializeStructFields(C value) {
+            value.i32 = this.i32.initialize();
+            value.i64 = this.i64.initialize();
+            value.bs1 = this.bs1.initialize();
+            value.bs2 = this.bs2.initialize();
+            value.bs3 = this.bs3.initialize();
         }
     }
 
@@ -205,8 +184,18 @@ public class C extends B<Double> implements BondSerializable {
     // Bond class static members
     ///////////////////////////////////////////////////////////////////////////
 
-    // type descriptors of this struct type
-    public static final Struct struct = Struct.getInstance();
+    // the type descriptor of this struct type
+    public static final StructBondType<C> BOND_TYPE =
+            new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+
+    // class initialization method (also invoked in static class initializer)
+    public static void initializeBondType() {
+        StructBondTypeImpl.StructBondTypeBuilderImpl.register();
+    }
+
+    static {
+        initializeBondType();
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Bond class instance members
@@ -219,9 +208,14 @@ public class C extends B<Double> implements BondSerializable {
     public B<B<String>> bs2;
     public B<B<B<String>>> bs3;
 
-    // the parameterless constructor
+    // the constructor
     public C() {
-        super((B.Struct<Double>) (B.Struct) struct.getBaseStructType());
-        struct.initializeFieldValues(this);
+        super((StructBondType<B<Double>>) BOND_TYPE.getBaseStructType());
+        ((StructBondTypeImpl) BOND_TYPE).initializeStructFields(this);
+    }
+
+    @Override
+    public StructBondType<? extends BondSerializable> getBondType() {
+        return BOND_TYPE;
     }
 }

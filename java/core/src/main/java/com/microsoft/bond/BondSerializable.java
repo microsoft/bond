@@ -4,15 +4,15 @@
 package com.microsoft.bond;
 
 /**
- * Denotes a Bond enumeration type.
+ * Denotes a Bond struct type.
  * All generated Bond struct classes implement this interface.
  */
 public interface BondSerializable {
 
     /**
-     * Returns the type descriptor object for the current struct.
+     * Returns the {@link BondType} type descriptor for the current struct type.
      *
-     * @return the type descriptor object
+     * @return the type descriptor
      */
-    StructBondType<? extends BondSerializable> getStruct();
+    StructBondType<? extends BondSerializable> getBondType();
 }

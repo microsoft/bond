@@ -27,11 +27,12 @@ public final class FloatBondType extends PrimitiveBondType<Float> {
      */
     public static final String TYPE_NAME = "float";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final FloatBondType INSTANCE = new FloatBondType();
 
     private FloatBondType() {
-        super(FloatBondType.class);
     }
 
     @Override

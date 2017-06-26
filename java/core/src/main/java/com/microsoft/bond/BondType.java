@@ -12,38 +12,52 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Represents a type in the Bond type system and implements behavior specific to that type, such as
- * schema inference, initialization, serialization and deserialization. A Bond type cane be a primitive,
- * a struct, a specialization of a generic type (including containers, nullable, or generic Bond structs).
+ * A type descriptor in the Bond type system that implements behavior specific to a particular type, such
+ * as schema inference, initialization, serialization and deserialization. A Bond type can be a primitive,
+ * an enum, a struct, or a specialization of a generic type (including containers, nullable, or generic
+ * Bond structs). Each Bond type is associated with a single {@link Class} instance of the value, although
+ * multiple Bond types can use the same value class (e.g. specializations of a generic type, or using the
+ * same Java type to represent multiple primitive types in Bond such as signed vs. unsigned integers).
  * @param <T> the class of the value
  */
 public abstract class BondType<T> {
 
-    // The global type cache
-    static final TypeCache typeCache = new TypeCache();
+    // The global type cache, which maps a Bond type descriptor to itself and is used to cache type descriptor
+    // objects. Caching helps reducing memory footprint when working with generic types such as lists, nullables,
+    // or user-defined generic structs. The implementation of type descriptors and generated classes makes sure
+    // that there exists only one copy of each type descriptor (excluding short-lived temporary objects).
+    //
+    // Type descriptor caching is based on identity of a type descriptor, implemented by the equals and hadhCode
+    // methods, and which consists of the following two items:
+    // 1. The Java class that implements the type descriptor (and thus inherits from BondType). The class
+    //    identity alone is sufficient for type descriptors of non-generic Bond type since these are singletons.
+    // 2. For specializations of generic types, the list of type descriptors for the generic type arguments. Due
+    //    to Java type erasure, a Class object alone can't provide information on the generic type arguments and
+    //    hence this additional list is necessary to precisely identify a type.
+    //
+    // Type descriptors for native Bond non-generic types (primitive types and Blob) do not need to be cached
+    // since they are accessible from public static fields defined in the BondTypes class. The same is true about
+    // generated enum types, whose type descriptors are accessible from public static fields of the generated enum
+    // class. Therefore the type cache doesn't contain these type descriptors and implementation makes sure they
+    // are never added to the cache (to slightly reduce cache footprint and a chance of hash collisions).
+    //
+    // Type descriptors for non-generic generated struct types are also accessible from public static fields
+    // in their classes and it can be argued as above that they also do not need to be cached. However, these
+    // static fields are not used during initialization of struct type descriptors since they may not yet be
+    // initialized (e.g. a struct type may reference itself through a nullable field). Therefore, these type
+    // descriptors are obtained using protected StructBondType.getStructType method which uses the type cache,
+    // meaning that type descriptors for non-generic generated struct types are still cached.
+    //
+    // Type descriptors of all generic type specializations (either Bond native types or generated user-defined
+    // types) are always cached. Methods such as nullableOf, listOf, or makeGenericType always return a cached
+    // instance of the type descriptor.
+    private static final ConcurrentHashMap<BondType<?>, BondType<?>> typeCache =
+            new ConcurrentHashMap<BondType<?>, BondType<?>>();
 
-    // Registry of struct type resolvers; entries are added by static class initializers
-    private static final ConcurrentHashMap<
-            Class<? extends BondSerializable>,
-            StructBondTypeResolver<? extends BondSerializable>> structTypeResolverRegistry =
-            new ConcurrentHashMap<
-                    Class<? extends BondSerializable>,
-                    StructBondTypeResolver<? extends BondSerializable>>();
-
-    // Registry of enum types; entries are added by static class initializers
-    private static final ConcurrentHashMap<
-            Class<? extends BondEnum>,
-            EnumBondType<? extends BondEnum>> enumTypeRegistry =
-            new ConcurrentHashMap<
-                    Class<? extends BondEnum>,
-                    EnumBondType<? extends BondEnum>>();
-
-    // precomputed hash code helps to speed up object retrieval from the type cache
-    private final int precomputedHashCode;
-
-    // restrict subclasses to the current package
-    BondType(int precomputedHashCode) {
-        this.precomputedHashCode = precomputedHashCode;
+    /**
+     * Package-private constructor (extending BondType hierarchy by user code is not supported).
+     */
+    BondType() {
     }
 
     /**
@@ -94,7 +108,11 @@ public abstract class BondType<T> {
     /**
      * Gets the {@link Class} instance for the values (objects) of this type.
      * The actual class of a value of this Bond type may not be the same as the returned class,
-     * but its is always assignable to it (i.e. a subclass or a Java primitive type).
+     * but it is always assignable to it (i.e. a subclass or a Java primitive type).
+     * For Bond types that are represented by Java primitive types, this method returns
+     * the class of the boxed value (e.g. {@link Long} for int64. To get the class object
+     * that actually represents the Java primitive type (i.e. {@link Long#TYPE} for int64),
+     * use methog {@link #getPrimitiveValueClass()} instead.
      *
      * @return the class object
      */
@@ -103,7 +121,9 @@ public abstract class BondType<T> {
     /**
      * Gets the {@link Class} instance for the Java primitive values (non-objects) of this type
      * or null if a Java primitive type does not exist. This method complements the
-     * {@link BondType#getValueClass()} method which returns the classes for object instances.
+     * {@link #getValueClass()} method which returns the classes for object instances.
+     * Thus, for example, this method returns {@link Long#TYPE} for Bond int64 data type whereas
+     * the other method returns the class object for the {@link Long} boxed type.
      *
      * @return the class object for a primitive type or null if a primitive type doesn't exists
      */
@@ -111,31 +131,36 @@ public abstract class BondType<T> {
 
     /**
      * Gets a value indicating whether values of this type can be assigned to null.
+     * In Bond, only values explicitly declared as nullable can be assigned to the null value.
      *
      * @return whether value of this type can be assigned to null
      */
     public abstract boolean isNullableType();
 
     /**
-     * Indicates whether this type is a generic type that is specialized with one or more generic type arguments.
+     * Indicates whether this type is a generic type (either a native Bond container or a user-defined struct)
+     * that is specialized with one or more generic type arguments. This method returns true if and only if
+     * the {@link #isGenericType()} method returns a non-empty array with one or more elements.
      *
      * @return true if this type is a specialization of a generic type
      */
     public abstract boolean isGenericType();
 
     /**
-     * Gets a new array instance containing the type descriptors of the generic type arguments or null
-     * if this type is not a specialization of a generic type.
+     * Gets a new array instance containing the type descriptors of one or more generic type arguments or null
+     * if this type is not a specialization of a generic type. This method returns null if the type is not
+     * generic (i.e. if the {@link #isGenericType() returns false). Please note that this method never returns
+     * an empty array since a generic type must have at least one unbound generic type parameter.
      *
-     * @return an array containing the descriptors of the generic type arguments or null
+     * @return an array containing the descriptors of the generic type arguments or null if not a generic type
      */
     public abstract BondType<?>[] getGenericTypeArguments();
 
     /**
      * Returns the default value of this type as a shared instance for immutable primitive types
      * or a new instance for all other types. For non-nullable structs and containers this method
-     * returns an initialized value equivalent to invoking the default constructor. For nullable
-     * values this method returns null.
+     * returns an initialized value equivalent to invoking the public constructor. For nullable
+     * values this method always returns null.
      *
      * @return the default initialized value of this type
      */
@@ -143,33 +168,36 @@ public abstract class BondType<T> {
 
     /**
      * Serializes a value of this type into a protocol writer.
-     * This method is not recommended for Java primitive (non-object) types. To serialize primitive
-     * values use the static helper method defined in each singleton class for a primitive type.
+     * This method is intended for objects and is not suitable for Java primitive (non-object) types
+     * since its argument is an object and would to be boxed. To serialize primitive values use the
+     * static helper method defined in each singleton class for a primitive Java type.
      *
      * @param context contains the runtime context of the serialization
-     * @param value   the value to serialize
+     * @param value   the value to serialize (boxed if necessary)
      * @throws IOException if an I/O error occurred
      */
     protected abstract void serializeValue(SerializationContext context, T value) throws IOException;
 
     /**
      * Deserializes a value of this type from a tagged protocol reader.
-     * This method is not recommended for Java primitive (non-object) types. To deserialize primitive
-     * values use the static helper method defined in each singleton class for a primitive type.
+     * This method is intended for objects and is not suitable for Java primitive (non-object) types
+     * since its return value is an object and would to be unboxed. To deserialize primitive values use
+     * the static helper method defined in each singleton class for a primitive Java type.
      *
      * @param context contains the runtime context of the deserialization
-     * @return the deserialized value
+     * @return the deserialized value (boxed if necessary)
      * @throws IOException if an I/O error occurred
      */
     protected abstract T deserializeValue(TaggedDeserializationContext context) throws IOException;
 
     /**
      * Serializes a struct field of this type into a protocol writer, including field metadata.
-     * This method is not recommended for fields with Java primitive (non-object) types. To serialize fields with
-     * primitive values use the static helper method defined in each singleton class for a primitive type.
+     * This method is intended for objects and is not suitable for fields with Java primitive (non-object)
+     * types since its argument is an object and would to be boxed. To serialize fields with primitive
+     * values use the static helper method defined in each singleton class for a primitive type.
      *
      * @param context contains the runtime context of the serialization
-     * @param value   the value to serialize
+     * @param value   the value to serialize (boxed if necessary)
      * @param field   descriptor of the field
      * @throws IOException if an I/O error occurred
      */
@@ -180,9 +208,10 @@ public abstract class BondType<T> {
 
     /**
      * Serializes a struct field of this type with "nothing" as the default value into a protocol writer,
-     * including field metadata.
-     * This method is not recommended for fields with Java primitive (non-object) types. To serialize fields with
-     * primitive values use the static helper method defined in each singleton class for a primitive type.
+     * including field metadata. This method is intended for objects and is not suitable for fields with Java
+     * primitive (non-object) types since its argument is a generic {@link SomethingObject} for objects instead
+     * of more specific implementation for Java primitive types. To serialize fields with primitive values use
+     * the static helper method defined in each singleton class for a primitive type.
      *
      * @param context contains the runtime context of the serialization
      * @param value   the value to serialize
@@ -202,12 +231,13 @@ public abstract class BondType<T> {
      * Deserializes a struct field of this type from a tagged protocol reader, excluding field metadata
      * which is assumed to be already deserialized earlier and whose value is available in the
      * {@link TaggedDeserializationContext#readFieldResult} field of the passed context argument.
-     * This method is not recommended for fields with Java primitive (non-object) types. To deserialize fields with
-     * primitive values use the static helper method defined in each singleton class for a primitive type.
+     * This method is intended for objects and is not suitable for fields with Java primitive (non-object)
+     * types since its return value is an object and would to be unboxed. To deserialize fields with primitive
+     * values use the static helper method defined in each singleton class for a primitive type.
      *
      * @param context contains the runtime context of the deserialization
      * @param field   descriptor of the field
-     * @return the deserialized value
+     * @return the deserialized value (boxed if necessary)
      * @throws IOException if an I/O error occurred
      */
     protected abstract T deserializeField(
@@ -218,8 +248,10 @@ public abstract class BondType<T> {
      * Deserializes a struct field of this type with "nothing" as the default value from a tagged protocol reader,
      * excluding field metadata which is assumed to be already deserialized earlier and whose value is available
      * in the {@link TaggedDeserializationContext#readFieldResult} field of the passed context argument.
-     * This method is not recommended for fields with Java primitive (non-object) types. To deserialize fields with
-     * primitive values use the static helper method defined in each singleton class for a primitive type.
+     * This method is intended for objects and is not suitable for fields with Java primitive (non-object)
+     * types since its return value is a generic {@link SomethingObject} for objects instead of more specific
+     * implementation for Java primitive types. To deserialize fields with primitive values use the static
+     * helper method defined in each singleton class for a primitive type.
      *
      * @param context contains the runtime context of the deserialization
      * @param field   descriptor of the field
@@ -232,44 +264,27 @@ public abstract class BondType<T> {
         return Something.wrap(this.deserializeField(context, field));
     }
 
-    @Override
-    public final int hashCode() {
-        return this.precomputedHashCode;
+    /**
+     * Helper for container subclasses to compute hash code as a value multipled by
+     * a number and then having its bits shifted to the right by a certain number.
+     * @param value a value
+     * @param multiplier multiplier
+     * @param bitsShifted number of bits shifted
+     * @return result
+     */
+    static int multiplyAndShiftForHashCodeComputation(int value, int multiplier, int bitsShifted) {
+        return (value * multiplier) ^ (value >>> (32 - bitsShifted));
     }
-
-    @Override
-    public final boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        } else if (obj == null) {
-            return false;
-        } else if (this.getClass() != obj.getClass()) {
-            return false;
-        } else {
-            BondType<?> that = (BondType<?>) obj;
-            if (this.precomputedHashCode != that.precomputedHashCode) {
-                return false;
-            } else {
-                return this.equalsInternal(that);
-            }
-        }
-    }
-
-    // helper for subclasses to compute hash code
-    static int multiplyAndShift(int value, int n) {
-        return (value * n) ^ (value >>> (32 - n));
-    }
-
-    // implemented by subclasses to test type decriptors for equality
-    // (the argument is not null and can be safely cast to the actual subclass)
-    abstract boolean equalsInternal(BondType<?> obj);
 
     @Override
     public final String toString() {
         return this.getFullName();
     }
 
-    // contains tuple (struct def, zero-based position it was discovered when traversing type tree)
+    /**
+     * Used when building {@link SchemaDef} objects. Contains tuple (struct def, zero-based position
+     * as it was discovered when traversing type tree).
+     */
     static final class StructDefOrdinalTuple {
         final StructDef structDef;
         final int ordinal;
@@ -280,24 +295,41 @@ public abstract class BondType<T> {
         }
     }
 
-    // a helper to create schema; initializes a new type def instance and
-    // maintains a hash map of all distinct struct defs discovered so far
+    /**
+     * A helper to create schema that initializes a new type def instance and maintains a hash map
+     * of all distinct struct defs discovered so far.
+     * @param structDefMap maps struct bond types to their struct defs
+     * @return a new type def for the current Bond type
+     */
     abstract TypeDef createSchemaTypeDef(HashMap<StructBondType<?>, StructDefOrdinalTuple> structDefMap);
 
-    // validates non-nullable value
+    /**
+     * Checks if the argument value is null and throws an exception of it is.
+     * This method adds the information about the current type to the exception thrown,
+     * which signifies that the value was expected to be of the current type but was null.
+     * @param value the value
+     * @throws InvalidBondDataException if the value is null
+     */
     final void verifyNonNullableValueIsNotSetToNull(
-            Object value) throws InvalidBondDataException {
+            T value) throws InvalidBondDataException {
         if (value == null) {
-            Throw.raiseNonNullableValueSetTuNullError(this.getFullName());
+            Throw.raiseNonNullableValueSetToNullError(this.getFullName());
         }
     }
 
-    // validates field during serialization
+    /**
+     * Checks if the argument value is null and throws an exception of it is.
+     * This method adds the information about the current type and the given field to the exception thrown,
+     * which signifies that the value of the field was expected to be of the current type but was null.
+     * @param value the value
+     * @param field the field
+     * @throws InvalidBondDataException if the value is null
+     */
     final void verifySerializedNonNullableFieldIsNotSetToNull(
-            Object value,
-            StructBondType.StructField<?> field) throws InvalidBondDataException {
+            T value,
+            StructBondType.StructField<T> field) throws InvalidBondDataException {
         // delegate to the value verification method and chain the thrown exception (if any);
-        // this approach lets to preserve the original exception pertaining to the null value,
+        // this approach lets us preserve the original exception pertaining to the null value,
         // wrapped by the exception specifically pertaining to the failure to serialize a field
         try {
             this.verifyNonNullableValueIsNotSetToNull(value);
@@ -317,7 +349,7 @@ public abstract class BondType<T> {
     public static <TValue> NullableBondType<TValue> nullableOf(
             BondType<TValue> valueType) {
         ArgumentHelper.ensureNotNull(valueType, "valueType");
-        return (NullableBondType<TValue>) typeCache.get(new NullableBondType<TValue>(valueType));
+        return (NullableBondType<TValue>) getCachedType(new NullableBondType<TValue>(valueType));
     }
 
     /**
@@ -330,7 +362,7 @@ public abstract class BondType<T> {
     public static <TStruct extends BondSerializable> BondedBondType<TStruct> bondedOf(
             StructBondType<TStruct> valueType) {
         ArgumentHelper.ensureNotNull(valueType, "valueType");
-        return (BondedBondType<TStruct>) typeCache.get(new BondedBondType<TStruct>(valueType));
+        return (BondedBondType<TStruct>) getCachedType(new BondedBondType<TStruct>(valueType));
     }
 
     /**
@@ -343,7 +375,7 @@ public abstract class BondType<T> {
     public static <TElement> VectorBondType<TElement> vectorOf(
             BondType<TElement> elementType) {
         ArgumentHelper.ensureNotNull(elementType, "elementType");
-        return (VectorBondType<TElement>) typeCache.get(new VectorBondType<TElement>(elementType));
+        return (VectorBondType<TElement>) getCachedType(new VectorBondType<TElement>(elementType));
     }
 
     /**
@@ -356,7 +388,7 @@ public abstract class BondType<T> {
     public static <TElement> ListBondType<TElement> listOf(
             BondType<TElement> elementType) {
         ArgumentHelper.ensureNotNull(elementType, "elementType");
-        return (ListBondType<TElement>) typeCache.get(new ListBondType<TElement>(elementType));
+        return (ListBondType<TElement>) getCachedType(new ListBondType<TElement>(elementType));
     }
 
     /**
@@ -369,11 +401,11 @@ public abstract class BondType<T> {
     public static <TElement> SetBondType<TElement> setOf(
             PrimitiveBondType<TElement> elementType) {
         ArgumentHelper.ensureNotNull(elementType, "elementType");
-        return (SetBondType<TElement>) typeCache.get(new SetBondType<TElement>(elementType));
+        return (SetBondType<TElement>) getCachedType(new SetBondType<TElement>(elementType));
     }
 
     /**
-     * Gets a type descriptor that denotes a generic Bond "map" container type.
+     * Gets a type descriptor for the Bond "map" container type.
      *
      * @param keyType   a type descriptor for the map key class
      * @param valueType a type descriptor for the mapped values class
@@ -385,104 +417,25 @@ public abstract class BondType<T> {
             PrimitiveBondType<TKey> keyType, BondType<TValue> valueType) {
         ArgumentHelper.ensureNotNull(keyType, "keyType");
         ArgumentHelper.ensureNotNull(valueType, "valueType");
-        return (MapBondType<TKey, TValue>) typeCache.get(new MapBondType<TKey, TValue>(keyType, valueType));
-    }
-
-    /**
-     * Retrieves type resolver for the given struct class, or null if none exists.
-     *
-     * @param clazz     the struct class
-     * @param <TStruct> the Bond struct value class
-     * @return type resolver or null
-     */
-    public static <TStruct extends BondSerializable> StructBondType<TStruct> getStructType(
-            Class<TStruct> clazz, BondType<?>... genericTypeArguments) {
-        ArgumentHelper.ensureNotNull(clazz, "clazz");
-        ArgumentHelper.ensureNotNull(genericTypeArguments, "genericTypeArguments");
-        @SuppressWarnings("unchecked")
-        StructBondTypeResolver<TStruct> structTypeResolver =
-                (StructBondTypeResolver<TStruct>) structTypeResolverRegistry.get(clazz);
-        if (structTypeResolver != null) {
-            return structTypeResolver.resolveAndInitialize(genericTypeArguments);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Registers a struct type resolver from generated code.
-     *
-     * @param clazz              the struct class
-     * @param structTypeResolver type resolver for the given struct type
-     * @param <TStruct>          the Bond struct value class
-     */
-    protected static <TStruct extends BondSerializable> void registerStructType(
-            Class<TStruct> clazz, StructBondTypeResolver<TStruct> structTypeResolver) {
-        structTypeResolverRegistry.put(clazz, structTypeResolver);
-    }
-
-    /**
-     * Retrieves type descriptor for the given enum class, or null if none exists.
-     *
-     * @param clazz   the enum class
-     * @param <TEnum> the Bond enum value class
-     * @return type descriptor or null
-     */
-    public static <TEnum extends BondEnum> EnumBondType<TEnum> getEnumType(Class<TEnum> clazz) {
-        ArgumentHelper.ensureNotNull(clazz, "clazz");
-        @SuppressWarnings("unchecked")
-        EnumBondType<TEnum> enumType = (EnumBondType<TEnum>) enumTypeRegistry.get(clazz);
-        return enumType;
-    }
-
-    /**
-     * Registers an enum type from generated code, also caching it in the type cache.
-     *
-     * @param clazz    the enum class
-     * @param enumType type descriptor for the given enum type
-     * @param <TEnum>  the Bond enum value class
-     * @return cached instance of the enum type descriptor
-     */
-    protected static <TEnum extends BondEnum> EnumBondType<TEnum> registerEnumTypeWithCaching(
-            Class<TEnum> clazz, EnumBondType<TEnum> enumType) {
-        EnumBondType<TEnum> cachedEnumType = (EnumBondType<TEnum>) typeCache.get(enumType);
-        enumTypeRegistry.put(clazz, cachedEnumType);
-        return cachedEnumType;
+        return (MapBondType<TKey, TValue>) getCachedType(new MapBondType<TKey, TValue>(keyType, valueType));
     }
 
     /**
      * Returns a cached type descriptor that is equal to the argument, or caches the argument otherwise.
+     * The method returns a non-null reference to the type descriptor that is equal to the argument
+     * (or the same as the argument if called for the first time with that class).
      *
      * @param type the type descriptor
      * @param <T>  the Bond value class
-     * @return a cached type descriptor
+     * @return a cached type descriptor, never null
      */
     protected static <T> BondType<T> getCachedType(BondType<T> type) {
-        return BondType.typeCache.get(type);
-    }
-
-    // Implements type cache
-    static final class TypeCache {
-
-        // maps a bond type descriptor to itself; used as the primary cache of bond type descriptors
-        private final ConcurrentHashMap<BondType<?>, BondType<?>> typeCache =
-                new ConcurrentHashMap<BondType<?>, BondType<?>>();
-
-        /**
-         * Returns a cached type descriptor that is equal to the argument, or caches the argument otherwise.
-         *
-         * @param type the type descriptor
-         * @param <T>  the Bond value class
-         * @return a cached type descriptor
-         */
-        final <T> BondType<T> get(BondType<T> type) {
-            @SuppressWarnings("unchecked")
-            BondType<T> cachedValue = (BondType<T>) this.typeCache.putIfAbsent(type, type);
-            if (cachedValue == null) {
-                cachedValue = type;
-            }
-            return cachedValue;
+        @SuppressWarnings("unchecked")
+        BondType<T> cachedValue = (BondType<T>) typeCache.putIfAbsent(type, type);
+        if (cachedValue == null) {
+            cachedValue = type;
         }
+        return cachedValue;
     }
 
     /**

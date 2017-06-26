@@ -40,9 +40,11 @@ package #{javaPackage};
 #{Java.generatedClassAnnotations}
 public class #{declName}#{params}#{maybe interface baseClass structBase} {
 
+    public static final com.microsoft.bond.StructBondType<#{declName}> BOND_TYPE = null;
+
     @Override
-    public StructBondType<? extends BondSerializable> getStruct() {
-        return null;
+    public com.microsoft.bond.StructBondType<? extends BondSerializable> getBondType() {
+        return BOND_TYPE;
     }
 
     #{doubleLineSep 1 publicField structFields}

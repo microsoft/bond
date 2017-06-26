@@ -18,17 +18,17 @@ public class Tests {
     @Test
     @SuppressWarnings("unchecked")
     public void testSerializeDeserialize() throws Exception {
-        E<Boolean> obj = new E<Boolean>(BondTypes.BOOL);
+        E<Boolean> obj = new E<Boolean>(E.BOND_TYPE.makeGenericType(BondTypes.BOOL));
         obj.bs1.t = "obj.bs1.t";
         obj.bs1.ny = "obj.bs1.ny";
-        obj.bs1.at = new A<String, String>(A.struct.resolve(BondTypes.STRING, BondTypes.STRING));
+        obj.bs1.at = new A<String, String>(A.BOND_TYPE.makeGenericType(BondTypes.STRING, BondTypes.STRING));
         obj.bs1.at.lx.add("obj.bs1.at.lx[0]");
         obj.bs1.at.lx.add("obj.bs1.at.lx[1]");
         obj.bs1.at.lx.add("obj.bs1.at.lx[2]");
-        obj.bs1.at.nax32 = new A<String, Integer>(A.struct.resolve(BondTypes.STRING, BondTypes.INT32));
+        obj.bs1.at.nax32 = new A<String, Integer>(A.BOND_TYPE.makeGenericType(BondTypes.STRING, BondTypes.INT32));
         obj.bs1.at.nax32.lx.add("obj.bs1.at.nax32.lx[0]");
         obj.bs1.at.nax32.lx.add("obj.bs1.at.nax32.lx[1]");
-        obj.bs1.at.nax32.nax32 = new A<String, Integer>(A.struct.resolve(BondTypes.STRING, BondTypes.INT32));
+        obj.bs1.at.nax32.nax32 = new A<String, Integer>(A.BOND_TYPE.makeGenericType(BondTypes.STRING, BondTypes.INT32));
         obj.bs1.at.nax32.nax32.lx.add("obj.bs1.at.nax32.nax32.lx[0]");
         obj.bs1.at.nax32.nax32.nax32 = null;
         obj.bs1.at.nax32.nax32.ly.add(0);
@@ -36,12 +36,12 @@ public class Tests {
         obj.bs1.at.nax32.nax32.ly.add(2);
         obj.bs1.at.nax32.nax32.ly.add(3);
         obj.bs1.at.nax32.nax32.ly.add(4);
-        obj.bs1.at.nax32.nax32.nay64 = new A<Integer, Long>(A.struct.resolve(BondTypes.INT32, BondTypes.INT64));
+        obj.bs1.at.nax32.nax32.nay64 = new A<Integer, Long>(A.BOND_TYPE.makeGenericType(BondTypes.INT32, BondTypes.INT64));
         obj.bs1.at.nax32.nax32.nay64.ly.add(Long.MAX_VALUE);
         obj.bs1.at.nax32.nax32.nay64.ly.add(Long.MIN_VALUE);
 
-        byte[] bytes = serialize(obj, (StructBondType<? super E<Boolean>>) obj.getStruct());
-        E<Boolean> deserializedObj = deserialize(bytes, (StructBondType<E<Boolean>>) obj.getStruct());
+        byte[] bytes = serialize(obj, (StructBondType<? super E<Boolean>>) obj.getBondType());
+        E<Boolean> deserializedObj = deserialize(bytes, (StructBondType<E<Boolean>>) obj.getBondType());
 
         TestHelper.assertStructMemberwiseEquals(obj, deserializedObj);
     }

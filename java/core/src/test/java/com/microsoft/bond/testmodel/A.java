@@ -33,157 +33,153 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class A<X, Y> implements BondSerializable {
 
-    // implementation of the type descriptor resolver
-    public static final class StructResolver extends StructBondTypeResolver<A> {
+    // public definition of the type descriptor builder for generic type
+    public static abstract class GenericBondTypeBuilder {
 
-        // register a struct resolver instance so that it can be
-        // retrieved by calling static methods of the BondType class
-        static {
-            registerStructType(A.class, new StructResolver());
+        // hide constructor to prevent subclassing outside of the current scope
+        private GenericBondTypeBuilder() {
         }
 
-        // public type resolver method customized to the generic type parameters
-        public final <X, Y> Struct<X, Y> resolve(BondType<X> X, BondType<Y> Y) {
-            ArgumentHelper.ensureNotNull(X, "X");
-            ArgumentHelper.ensureNotNull(Y, "Y");
-            return (Struct<X, Y>) (StructBondType) this.resolveAndInitialize(X, Y);
-        }
-
-        @Override
-        protected Struct resolveUninitialized(BondType<?>... genericTypeArguments) {
-            BondType<?> X = getCachedType(genericTypeArguments[0]);
-            BondType<?> Y = getCachedType(genericTypeArguments[1]);
-            GenericTypeSpecialization specialization = new GenericTypeSpecialization(X, Y);
-            Struct struct = new Struct(specialization);
-            return (Struct) getCachedType(struct);
-        }
+        // public API to make an instance of a generic type
+        public abstract <X, Y> StructBondType<A<X, Y>> makeGenericType(BondType<X> X, BondType<Y> Y);
     }
 
-    // implementation of the type descriptor
-    public static final class Struct<X, Y> extends StructBondType<A<X, Y>> {
+    // private implementation of the type descriptor
+    private static final class StructBondTypeImpl<X, Y> extends StructBondType<A<X, Y>> {
+
+        // private implementation of the type descriptor builder
+        static final class StructBondTypeBuilderImpl extends StructBondTypeBuilder<A> {
+
+            // called by the public method to make an instance of a generic type
+            final <X, Y> StructBondType<A<X, Y>> makeGenericType(BondType<X> X, BondType<Y> Y) {
+                ArgumentHelper.ensureNotNull(X, "X");
+                ArgumentHelper.ensureNotNull(Y, "Y");
+                return (StructBondTypeImpl<X, Y>) (StructBondType) this.getInitializedFromCache(X, Y);
+            }
+
+            @Override
+            public final int getGenericTypeParameterCount() {
+                return 2;
+            }
+
+            @Override
+            protected final StructBondType<A> buildNewInstance(BondType<?>[] genericTypeArguments) {
+                BondType<?> X = genericTypeArguments[0];
+                BondType<?> Y = genericTypeArguments[1];
+                GenericTypeSpecialization genericTypeSpecialization = new GenericTypeSpecialization(X, Y);
+                return new StructBondTypeImpl(genericTypeSpecialization);
+            }
+
+            // registration method
+            static void register() {
+                registerStructType(A.class, new StructBondTypeBuilderImpl());
+            }
+        }
 
         // field descriptors for each field in the struct
-        private StructField<X> x;
-        private StructField<Y> y;
-        private StructField<X> nx;
-        private StructField<Y> ny;
-        private StructField<B<X>> nbx;
-        private StructField<B<Y>> nby;
-        private StructField<List<X>> lx;
-        private StructField<List<Y>> ly;
-        private StructField<A<X, Integer>> nax32;
-        private StructField<A<Y, Long>> nay64;
+        private ObjectStructField<X> x;
+        private ObjectStructField<Y> y;
+        private ObjectStructField<X> nx;
+        private ObjectStructField<Y> ny;
+        private ObjectStructField<B<X>> nbx;
+        private ObjectStructField<B<Y>> nby;
+        private ObjectStructField<List<X>> lx;
+        private ObjectStructField<List<Y>> ly;
+        private ObjectStructField<A<X, Integer>> nax32;
+        private ObjectStructField<A<Y, Long>> nay64;
 
-        // restrict instantiation to the enclosing class and its members
-        private Struct(GenericTypeSpecialization specialization) {
-            super(Struct.class, null, specialization);
+        StructBondTypeImpl(GenericTypeSpecialization genericTypeSpecialization) {
+            super(genericTypeSpecialization);
         }
 
         @Override
         protected final void initialize() {
-            BondType<X> __type_X = this.getGenericSpecialization().getGenericTypeArgument(0);
-            BondType<Y> __type_Y = this.getGenericSpecialization().getGenericTypeArgument(1);
+            BondType<X> X = this.getGenericSpecialization().getGenericTypeArgument(0);
+            BondType<Y> Y = this.getGenericSpecialization().getGenericTypeArgument(1);
 
             // initialize field descriptor
             this.x = new ObjectStructField<X>(
                     this,
-                    __type_X,
+                    X,
                     0,
                     "x",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.y = new ObjectStructField<Y>(
                     this,
-                    __type_Y,
+                    Y,
                     1,
                     "y",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.nx = new ObjectStructField<X>(
                     this,
-                    BondType.nullableOf(__type_X),
+                    nullableOf(X),
                     2,
                     "nx",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.ny = new ObjectStructField<Y>(
                     this,
-                    BondType.nullableOf(__type_Y),
+                    nullableOf(Y),
                     3,
                     "ny",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_nbx__1 =
-                    resolveUninitializedWithCaching(new B.StructResolver(), __type_X);
             this.nbx = new ObjectStructField<B<X>>(
                     this,
-                    BondType.nullableOf((StructBondType<B<X>>) __spec_nbx__1),
+                    nullableOf((StructBondType<B<X>>) (StructBondType<?>) getStructType(B.class, X)),
                     4,
                     "nbx",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_nby__1 =
-                    resolveUninitializedWithCaching(new B.StructResolver(), __type_Y);
             this.nby = new ObjectStructField<B<Y>>(
                     this,
-                    BondType.nullableOf((StructBondType<B<Y>>) __spec_nby__1),
+                    nullableOf((StructBondType<B<Y>>) (StructBondType<?>) getStructType(B.class, Y)),
                     5,
                     "nby",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.lx = new ObjectStructField<List<X>>(
                     this,
-                    BondType.listOf(__type_X),
+                    listOf(X),
                     6,
                     "lx",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
             this.ly = new ObjectStructField<List<Y>>(
                     this,
-                    BondType.listOf(__type_Y),
+                    listOf(Y),
                     7,
                     "ly",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_nax32__1 =
-                    resolveUninitializedWithCaching(new A.StructResolver(), __type_X, BondTypes.INT32);
             this.nax32 = new ObjectStructField<A<X, Integer>>(
                     this,
-                    BondType.nullableOf((StructBondType<A<X, Integer>>) __spec_nax32__1),
+                    nullableOf((StructBondType<A<X, Integer>>) (StructBondType<?>) getStructType(A.class, X, BondTypes.INT32)),
                     8,
                     "nax32",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize field descriptor
-            StructBondType __spec_nay64__1 =
-                    resolveUninitializedWithCaching(new A.StructResolver(), __type_Y, BondTypes.INT64);
             this.nay64 = new ObjectStructField<A<Y, Long>>(
                     this,
-                    BondType.nullableOf((StructBondType<A<Y, Long>>) __spec_nay64__1),
+                    nullableOf((StructBondType<A<Y, Long>>) (StructBondType<?>) getStructType(A.class, Y, BondTypes.INT64)),
                     9,
                     "nay64",
-                    Modifier.Optional,
-                    false);
+                    Modifier.Optional);
 
             // initialize struct descriptor
-            super.initializeFields(
+            super.initializeBaseAndFields(
+                    null,
                     this.x,
                     this.y,
                     this.nx,
@@ -208,23 +204,21 @@ public class A<X, Y> implements BondSerializable {
         }
 
         @Override
-        protected final void serializeStructFields(
-                SerializationContext context, A<X, Y> value) throws IOException {
-            this.x.serializeObject(context, value.x);
-            this.y.serializeObject(context, value.y);
-            this.nx.serializeObject(context, value.nx);
-            this.ny.serializeObject(context, value.ny);
-            this.nbx.serializeObject(context, value.nbx);
-            this.nby.serializeObject(context, value.nby);
-            this.lx.serializeObject(context, value.lx);
-            this.ly.serializeObject(context, value.ly);
-            this.nax32.serializeObject(context, value.nax32);
-            this.nay64.serializeObject(context, value.nay64);
+        protected final void serializeStructFields(SerializationContext context, A<X, Y> value) throws IOException {
+            this.x.serialize(context, value.x);
+            this.y.serialize(context, value.y);
+            this.nx.serialize(context, value.nx);
+            this.ny.serialize(context, value.ny);
+            this.nbx.serialize(context, value.nbx);
+            this.nby.serialize(context, value.nby);
+            this.lx.serialize(context, value.lx);
+            this.ly.serialize(context, value.ly);
+            this.nax32.serialize(context, value.nax32);
+            this.nay64.serialize(context, value.nay64);
         }
 
         @Override
-        protected final void deserializeStructFields(
-                TaggedDeserializationContext context, A<X, Y> value) throws IOException {
+        protected final void deserializeStructFields(TaggedDeserializationContext context, A<X, Y> value) throws IOException {
             boolean __has_x = false;
             boolean __has_y = false;
             boolean __has_nx = false;
@@ -238,71 +232,72 @@ public class A<X, Y> implements BondSerializable {
             while (readField(context)) {
                 switch (context.readFieldResult.id) {
                     case 0:
-                        value.x = this.x.deserializeObject(context, __has_x);
+                        value.x = this.x.deserialize(context, __has_x);
                         __has_x = true;
                         break;
                     case 1:
-                        value.y = this.y.deserializeObject(context, __has_y);
+                        value.y = this.y.deserialize(context, __has_y);
                         __has_y = true;
                         break;
                     case 2:
-                        value.nx = this.nx.deserializeObject(context, __has_nx);
+                        value.nx = this.nx.deserialize(context, __has_nx);
                         __has_nx = true;
                         break;
                     case 3:
-                        value.ny = this.ny.deserializeObject(context, __has_ny);
+                        value.ny = this.ny.deserialize(context, __has_ny);
                         __has_ny = true;
                         break;
                     case 4:
-                        value.nbx = this.nbx.deserializeObject(context, __has_nbx);
+                        value.nbx = this.nbx.deserialize(context, __has_nbx);
                         __has_nbx = true;
                         break;
                     case 5:
-                        value.nby = this.nby.deserializeObject(context, __has_nby);
+                        value.nby = this.nby.deserialize(context, __has_nby);
                         __has_nby = true;
                         break;
                     case 6:
-                        value.lx = this.lx.deserializeObject(context, __has_lx);
+                        value.lx = this.lx.deserialize(context, __has_lx);
                         __has_lx = true;
                         break;
                     case 7:
-                        value.ly = this.ly.deserializeObject(context, __has_ly);
+                        value.ly = this.ly.deserialize(context, __has_ly);
                         __has_ly = true;
                         break;
                     case 8:
-                        value.nax32 = this.nax32.deserializeObject(context, __has_nax32);
+                        value.nax32 = this.nax32.deserialize(context, __has_nax32);
                         __has_nax32 = true;
                         break;
                     case 9:
-                        value.nay64 = this.nay64.deserializeObject(context, __has_nay64);
+                        value.nay64 = this.nay64.deserialize(context, __has_nay64);
                         __has_nay64 = true;
                         break;
                 }
             }
 
-            this.x.verifyDeserializedField(__has_x);
-            this.y.verifyDeserializedField(__has_y);
-            this.nx.verifyDeserializedField(__has_nx);
-            this.ny.verifyDeserializedField(__has_ny);
-            this.nbx.verifyDeserializedField(__has_nbx);
-            this.nby.verifyDeserializedField(__has_nby);
-            this.lx.verifyDeserializedField(__has_lx);
-            this.ly.verifyDeserializedField(__has_ly);
-            this.nax32.verifyDeserializedField(__has_nax32);
-            this.nay64.verifyDeserializedField(__has_nay64);
+            this.x.verifyDeserialized(__has_x);
+            this.y.verifyDeserialized(__has_y);
+            this.nx.verifyDeserialized(__has_nx);
+            this.ny.verifyDeserialized(__has_ny);
+            this.nbx.verifyDeserialized(__has_nbx);
+            this.nby.verifyDeserialized(__has_nby);
+            this.lx.verifyDeserialized(__has_lx);
+            this.ly.verifyDeserialized(__has_ly);
+            this.nax32.verifyDeserialized(__has_nax32);
+            this.nay64.verifyDeserialized(__has_nay64);
         }
 
-        private void initializeFieldValues(A<X, Y> value) {
-            value.x = this.x.initializeObject();
-            value.y = this.y.initializeObject();
-            value.nx = this.nx.initializeObject();
-            value.ny = this.ny.initializeObject();
-            value.nbx = this.nbx.initializeObject();
-            value.nby = this.nby.initializeObject();
-            value.lx = this.lx.initializeObject();
-            value.ly = this.ly.initializeObject();
-            value.nax32 = this.nax32.initializeObject();
-            value.nay64 = this.nay64.initializeObject();
+        @Override
+        public final void initializeStructFields(A<X, Y> value) {
+            value.x = this.x.initialize();
+            value.y = this.y.initialize();
+            value.nx = this.nx.initialize();
+            value.ny = this.ny.initialize();
+            value.nbx = this.nbx.initialize();
+            value.nby = this.nby.initialize();
+            value.lx = this.lx.initialize();
+            value.ly = this.ly.initialize();
+            value.nax32 = this.nax32.initialize();
+            value.nay64 = this.nay64.initialize();
         }
     }
 
@@ -310,15 +305,32 @@ public class A<X, Y> implements BondSerializable {
     // Bond class static members
     ///////////////////////////////////////////////////////////////////////////
 
-    // resolver for type descriptors of this generic struct type
-    public static final StructResolver struct = new StructResolver();
+    // builder for type descriptors of this generic struct type
+    public static final GenericBondTypeBuilder BOND_TYPE = new GenericBondTypeBuilder() {
+        final StructBondTypeImpl.StructBondTypeBuilderImpl builder =
+                new StructBondTypeImpl.StructBondTypeBuilderImpl();
+
+        @Override
+        public final <X, Y> StructBondType<A<X, Y>> makeGenericType(BondType<X> X, BondType<Y> Y) {
+            return this.builder.makeGenericType(X, Y);
+        }
+    };
+
+    // class initialization method (also invoked in static class initializer)
+    public static void initializeBondType() {
+        StructBondTypeImpl.StructBondTypeBuilderImpl.register();
+    }
+
+    static {
+        initializeBondType();
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Bond class instance members
     ///////////////////////////////////////////////////////////////////////////
 
-    // handle to the type specialization
-    private final Struct<X, Y> __struct;
+    // type specialization (added for every generic type)
+    private final StructBondTypeImpl<X, Y> __genericType;
 
     // struct fields
     public X x;
@@ -332,20 +344,16 @@ public class A<X, Y> implements BondSerializable {
     public A<X, Integer> nax32;
     public A<Y, Long> nay64;
 
-    // constructor that takes type specialization (cached)
-    public A(Struct<X, Y> struct) {
-        ArgumentHelper.ensureNotNull(struct, "struct");
-        this.__struct = struct;
-        struct.initializeFieldValues(this);
-    }
-
-    // constructor that takes individual type parameters
-    public A(BondType<X> X, BondType<Y> Y) {
-        this(struct.resolve(X, Y));
+    // the only constructor which takes the generic type specialization
+    public A(StructBondType<A<X, Y>> genericType) {
+        super();
+        ArgumentHelper.ensureNotNull(genericType, "genericType");
+        this.__genericType = (StructBondTypeImpl<X, Y>) genericType;
+        this.__genericType.initializeStructFields(this);
     }
 
     @Override
-    public StructBondType<? extends BondSerializable> getStruct() {
-        return this.__struct;
+    public StructBondType<? extends BondSerializable> getBondType() {
+        return this.__genericType;
     }
 }

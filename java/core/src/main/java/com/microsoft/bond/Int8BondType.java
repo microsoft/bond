@@ -25,11 +25,12 @@ public final class Int8BondType extends PrimitiveBondType<Byte> {
      */
     public static final String TYPE_NAME = "int8";
 
-    // singleton, public access is via constants in the BondTypes class
+    /**
+     * Singleton, public access is via constants in the BondTypes class.
+     */
     static final Int8BondType INSTANCE = new Int8BondType();
 
     private Int8BondType() {
-        super(Int8BondType.class);
     }
 
     @Override

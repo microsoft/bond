@@ -81,22 +81,4 @@ public final class BondTypes {
      * A singleton type descriptor for the Bond "blob" data type.
      */
     public static final BlobBondType BLOB = BlobBondType.INSTANCE;
-
-    static {
-        // cache primitive types for consistency
-        BondType.typeCache.get(UINT8);
-        BondType.typeCache.get(UINT16);
-        BondType.typeCache.get(UINT32);
-        BondType.typeCache.get(UINT64);
-        BondType.typeCache.get(INT8);
-        BondType.typeCache.get(INT16);
-        BondType.typeCache.get(INT32);
-        BondType.typeCache.get(INT64);
-        BondType.typeCache.get(BOOL);
-        BondType.typeCache.get(FLOAT);
-        BondType.typeCache.get(DOUBLE);
-        BondType.typeCache.get(STRING);
-        BondType.typeCache.get(WSTRING);
-        BondType.typeCache.get(BLOB);
-    }
 }
