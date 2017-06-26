@@ -22,7 +22,7 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
 
     NullableBondType(BondType<TValue> valueType) {
         this.valueType = valueType;
-        this.precomputedHashCode = multiplyAndShiftForHashCodeComputation(valueType.hashCode(), 3, 1);
+        this.precomputedHashCode = HashCode.computeHashCodeForNullableContainer(valueType);
     }
 
     /**

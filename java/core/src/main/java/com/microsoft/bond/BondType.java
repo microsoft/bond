@@ -265,18 +265,6 @@ public abstract class BondType<T> {
         return Something.wrap(this.deserializeField(context, field));
     }
 
-    /**
-     * Helper for container subclasses to compute hash code as a value multipled by
-     * a number and then having its bits shifted to the right by a certain number.
-     * @param value a value
-     * @param multiplier multiplier
-     * @param bitsShifted number of bits shifted
-     * @return result
-     */
-    static int multiplyAndShiftForHashCodeComputation(int value, int multiplier, int bitsShifted) {
-        return (value * multiplier) ^ (value >>> (32 - bitsShifted));
-    }
-
     @Override
     public final String toString() {
         return this.getFullName();

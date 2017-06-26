@@ -26,8 +26,7 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
     MapBondType(PrimitiveBondType<TKey> keyType, BondType<TValue> valueType) {
         this.keyType = keyType;
         this.valueType = valueType;
-        this.precomputedHashCode = multiplyAndShiftForHashCodeComputation(keyType.hashCode(), 5, 3) +
-                multiplyAndShiftForHashCodeComputation(valueType.hashCode(), 7, 3);
+        this.precomputedHashCode = HashCode.computeHashCodeForMapContainer(keyType, valueType);
     }
 
     /**

@@ -24,7 +24,7 @@ public final class VectorBondType<TElement> extends BondType<List<TElement>> {
 
     VectorBondType(BondType<TElement> elementType) {
         this.elementType = elementType;
-        this.precomputedHashCode = multiplyAndShiftForHashCodeComputation(elementType.hashCode(), 3, 1);
+        this.precomputedHashCode = HashCode.computeHashCodeForVectorContainer(elementType);
     }
 
     /**

@@ -24,7 +24,7 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
 
     SetBondType(PrimitiveBondType<TElement> elementType) {
         this.elementType = elementType;
-        this.precomputedHashCode = multiplyAndShiftForHashCodeComputation(elementType.hashCode(), 5, 3);
+        this.precomputedHashCode = HashCode.computeHashCodeForSetContainer(elementType);
     }
 
     /**

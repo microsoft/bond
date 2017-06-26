@@ -22,7 +22,7 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
 
     BondedBondType(StructBondType<TStruct> valueType) {
         this.valueType = valueType;
-        this.precomputedHashCode = -valueType.hashCode();
+        this.precomputedHashCode =HashCode.computeHashCodeForBondedContainer(valueType);
     }
 
     /**

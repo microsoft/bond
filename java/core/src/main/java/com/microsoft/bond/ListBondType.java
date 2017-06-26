@@ -24,7 +24,7 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
 
     ListBondType(BondType<TElement> elementType) {
         this.elementType = elementType;
-        this.precomputedHashCode = multiplyAndShiftForHashCodeComputation(elementType.hashCode(), 3, 2);
+        this.precomputedHashCode = HashCode.computeHashCodeForListContainer(elementType);
     }
 
     /**
