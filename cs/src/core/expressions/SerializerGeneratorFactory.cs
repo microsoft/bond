@@ -6,6 +6,7 @@ namespace Bond.Expressions
     using System;
     using System.Globalization;
     using System.Linq.Expressions;
+    using System.Reflection;
     using Bond.Internal.Reflection;
 
     internal static class SerializerGeneratorFactory<R, W>
@@ -33,7 +34,7 @@ namespace Bond.Expressions
                 }
                 else
                 {
-                    if (!attribute.Type.IsGenericType() || attribute.Type.GetGenericParameters().Length != 2)
+                    if (!attribute.Type.IsGenericType() || attribute.Type.GetTypeInfo().GenericTypeParameters.Length != 2)
                     {
                         throw new InvalidOperationException(
                             "Serializer generator is expected to be a generic type with two type parameters.");

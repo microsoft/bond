@@ -6,6 +6,7 @@ namespace Bond.Expressions
     using System;
     using System.Globalization;
     using System.Linq.Expressions;
+    using System.Reflection;
     using Bond.Protocols;
     using Bond.Internal.Reflection;
 
@@ -62,7 +63,7 @@ namespace Bond.Expressions
                 else
                 {
                     var genericParserType = attribute.ParserType;
-                    if (!genericParserType.IsGenericType() || genericParserType.GetGenericParameters().Length != 1)
+                    if (!genericParserType.IsGenericType() || genericParserType.GetTypeInfo().GenericTypeParameters.Length != 1)
                     {
                         throw new InvalidOperationException(
                             "Parser type is expected to be a generic type with one type param for Reader.");

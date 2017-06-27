@@ -4,7 +4,7 @@
 namespace Bond.Expressions
 {
     using System.Linq.Expressions;
-    using Bond.Internal.Reflection;
+    using System.Reflection;
 
     internal static class DataExpression
     {
@@ -12,10 +12,10 @@ namespace Bond.Expressions
         // in the type, ignoring inherited members.
         public static MemberExpression PropertyOrField(Expression expression, string name)
         {
-            var property = expression.Type.GetDeclaredProperty(name);
+            var property = expression.Type.GetTypeInfo().GetDeclaredProperty(name);
             return (property != null) ?
                 Expression.Property(expression, property) :
-                Expression.Field(expression, expression.Type.GetField(name));
+                Expression.Field(expression, expression.Type.GetTypeInfo().GetDeclaredField(name));
         }
     }
 }
