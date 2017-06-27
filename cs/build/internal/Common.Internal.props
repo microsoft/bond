@@ -29,6 +29,11 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)bond.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <!--Set the version number for auto-generation from the environment
+         variable. -->
+    <BondVersionNum Condition=" '$(BondVersionNum)' == '' and '$(BOND_CORE_VERSION)' != '' ">$(BOND_CORE_VERSION)</BondVersionNum>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' != 'Release|AnyCPU'">
