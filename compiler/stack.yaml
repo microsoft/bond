@@ -15,7 +15,7 @@
 # resolver:
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
-resolver: lts-6.29
+resolver: lts-6.35
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -52,7 +52,7 @@ extra-package-dbs: []
 #
 # Require a specific version of stack, using version ranges
 # require-stack-version: -any # Default
-# require-stack-version: ">=1.2"
+# require-stack-version: ">=1.4"
 #
 # Override the architecture used by stack, especially useful on Windows
 # arch: i386
