@@ -170,7 +170,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <h2 id="dependencies">Dependencies</h2>
 <p>The Bond repository uses Git submodules and should be cloned with the <code>--recursive</code> flag:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> clone --recursive https://github.com/Microsoft/bond.git</code></pre></div>
-<p>In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and cabal-install 1.18+) and Boost (1.58+). Bond’s C++ library requires some C++11 features (currently limited to those supported bv Visual C++ 2013). (Note: Boost 1.59 may not work with Bond Comm due to some bugs in that version of the Boost ASIO library).</p>
+<p>In order to build Bond you will need CMake (3.1+), <a href="https://docs.haskellstack.org/en/stable/README/#how-to-install">Haskell Stack</a> and Boost (1.58+). Bond’s C++ library requires some C++11 features (currently limited to those supported bv Visual C++ 2013). (Note: Boost 1.59 may not work with Bond Comm due to some bugs in that version of the Boost ASIO library).</p>
 <p>Following are specific instructions for building on various platforms.</p>
 <h3 id="linux">Linux</h3>
 <p>Bond can be built with Clang (3.4+) or GNU C++ (4.7+). We recommend the latest version of Clang as it’s much faster with template-heavy code like Bond.</p>
@@ -179,13 +179,8 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
     clang \
     cmake \
     zlib1g-dev \
-    ghc \
-    cabal-install \
     libboost-dev \
-    libboost-thread-dev
-
-<span class="ex">cabal</span> update
-<span class="ex">cabal</span> install cabal-install</code></pre></div>
+    libboost-thread-dev</code></pre></div>
 <p>In the root <code>bond</code> directory run:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build
@@ -203,8 +198,6 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
     libtool \
     python2.7-dev
 
-<span class="ex">cabal</span> install happy
-
 <span class="bu">cd</span> build <span class="co"># or wherever you ran CMake before</span>
 <span class="fu">cmake</span> .. -DBOND_ENABLE_COMM=TRUE -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package</code></pre></div>
 <p>Running the following command in the build directory will build and execute all the tests and examples:</p>
@@ -214,14 +207,10 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>Install Xcode and then run the following command to install the required packages using Homebrew (<a href="http://brew.sh/" class="uri">http://brew.sh/</a>):</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">brew</span> install \
     cmake \
-    ghc \
-    cabal-install \
+    haskell-stack \
     boost \
     boost-python</code></pre></div>
 <p>(boost-python is optional and only needed for Python support.)</p>
-<p>Update the cabal package database and install <code>happy</code> (only needed for tests):</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">cabal</span> update
-<span class="ex">cabal</span> install happy</code></pre></div>
 <p>Bond can be built on OS X using either standard *nix makefiles or Xcode. In order to generate and build from makefiles, in the root <code>bond</code> directory run:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build
@@ -246,13 +235,11 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li>Visual Studio 2015 is required to build C# Bond from source</li>
 </ul></li>
 <li>CMake (<a href="http://www.cmake.org/download/" class="uri">http://www.cmake.org/download/</a>)</li>
-<li>Haskell Platform (<a href="http://haskell.org/platform/" class="uri">http://haskell.org/platform/</a>)</li>
+<li>Haskell Stack (<a href="https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows" class="uri">https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows</a>)</li>
 <li>.NET Core SDK (<a href="https://www.microsoft.com/net/core#windows">https://www.microsoft.com/net/core</a>)</li>
 </ul>
 <p>If you are building on a network behind a proxy, set the environment variable <code>HTTP_PROXY</code>, e.g.:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="va">HTTP_PROXY=</span>http://your-proxy-name:80</code></pre></div>
-<p>Update the cabal package database:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">cabal</span> update</code></pre></div>
 <p>Now you are ready to build the C# 4.0/4.5 version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio and build as usual. The C# unit tests can also be run from within the solution.</p>
 <p>To build the .NET Core version of Bond, run the build script. The <code>-Test</code> switch is used to run the unit tests as well.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">.</span>\cs\dnc\build -Test</code></pre></div>
