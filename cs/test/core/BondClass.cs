@@ -1,8 +1,8 @@
 ﻿namespace UnitTest
 {
     using System.Collections.Generic;
+    using System.Reflection;
     using Bond;
-    using Bond.Internal.Reflection;
 
     [Schema, Attribute("xmlns", "urn:UnitTest.BondClass")]
     class BondClass<T>
@@ -17,7 +17,7 @@
 
         public override bool Equals(object that)
         {
-            var thatField = that.GetType().GetField("field");
+            var thatField = that.GetType().GetTypeInfo().GetDeclaredField("field");
             return field.IsEqual<object, object>(thatField.GetValue(that));
         }
             
@@ -40,7 +40,7 @@
         {
             if (that is BondClass<T2>)
             {
-                var thatField = that.GetType().GetField("field");
+                var thatField = that.GetType().GetTypeInfo().GetDeclaredField("field");
                 return field.IsEqual<object, object>(thatField.GetValue(that));
             }
 
