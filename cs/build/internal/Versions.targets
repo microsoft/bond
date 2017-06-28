@@ -23,12 +23,20 @@
 
   <PropertyGroup>
     <_Bond_GeneratedAssemblyInfoPath>$(IntermediateOutputPath)AssemblyInfo_Generated.cs</_Bond_GeneratedAssemblyInfoPath>
+    <!-- Create a property for the DevVersions file path OUTSIDE of the
+         Choose. Mono's xbuild evaluates Choose differently than MSBuild,
+         and using $(MSBuildThisFileDirectory) inside of the Choose ends up
+         resolving to the importing project, not the imported project. This
+         works around that difference by evaluating
+         $(MSBuildThisFileDirectory) outside of the Choose and then
+         referring to it inside. -->
+    <_DevVersionsPath>$(MSBuildThisFileDirectory)DevVersions.cs</_DevVersionsPath>
   </PropertyGroup>
 
   <Choose>
     <When Condition=" '$(BondVersionNum)' == '' ">
       <ItemGroup>
-        <Compile Include="$(MSBuildThisFileDirectory)DevVersions.cs" />
+        <Compile Include="$(_DevVersionsPath)" />
       </ItemGroup>
     </When>
     <When Condition="$(BondVersionNum.IndexOf(&quot;-&quot;)) &gt; -1">
