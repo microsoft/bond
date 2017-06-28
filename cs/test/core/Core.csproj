@@ -34,6 +34,7 @@
     <Compile Include="AttributesTests.cs" />
     <Compile Include="BondClass.cs" />
     <Compile Include="BondedTests.cs" />
+    <Compile Include="JsonSerializationTests.cs" />
     <Compile Include="CloningTests.cs" />
     <Compile Include="CustomBondedTests.cs" />
     <Compile Include="DeserializerControlsTests.cs" />
@@ -54,7 +55,8 @@
     <Compile Include="TypeAliasTests.cs" />
     <Compile Include="ProtocolTests.cs" />
     <Compile Include="Util.cs" />
-    <Compile Include="XmlTests.cs" />
+    <Compile Include="XmlParsingTests.cs" />
+    <Compile Include="XmlSerializationTests.cs" />
     <BondCodegen Include="Aliases.bond">
       <Options>$(BondOptions) --using="Lazy=Lazy&lt;{0}&gt;" --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[] --using="CustomList=UnitTest.Aliases.SomeCustomList&lt;{0}&gt;"</Options>
     </BondCodegen>
