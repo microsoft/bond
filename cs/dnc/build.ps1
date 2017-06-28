@@ -50,6 +50,9 @@ param
     [switch]
     $Test = $false,
 
+    [string]
+    $Version = "",
+
     [ValidateSet("quiet", "minimal", "normal", "detailed")]
     [string]
     $Verbosity = "minimal",
@@ -96,9 +99,24 @@ try
         throw "Building GBC failed."
     }
 
+    mkdir -Force gen
+
+    if ([string]::IsNullOrWhiteSpace($Version)) {
+        Copy-Item '..\build\internal\DevVersions.cs' '.\gen\AssemblyInfo_Generated.cs'
+        if (-not $?) {
+            throw "Version copy failed"
+        }
+    } else {
+        $genFullPath = (Resolve-Path gen\).Path
+        msbuild $script:msb_common /p:BondVersionNum=$Version "/p:IntermediateOutputPath=$genFullPath\" '..\build\internal\Versions.targets'
+        if (-not $?) {
+            throw "Version generation failed"
+        }
+    }
+
     msbuild $script:msb_common /p:Configuration=$Configuration 'dirs.proj'
     if (-not $?) {
-        throw "Code generation failed."
+        throw "Bond code generation failed."
     }
 
     dotnet restore --verbosity (ComputeDotNetRestoreVerbosity)

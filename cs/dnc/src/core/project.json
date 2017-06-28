@@ -12,6 +12,7 @@
                 "../../../src/core/io/safe/*.cs",
                 "../../../src/core/properties/*.cs",
                 "../../../src/core/protocols/*.cs",
+                "../../gen/AssemblyInfo_Generated.cs",
                 "gen/bond_const_types.cs",
                 "gen/bond_types.cs"
             ]

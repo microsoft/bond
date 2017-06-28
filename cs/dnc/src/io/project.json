@@ -6,7 +6,8 @@
         "compile": {
             "include": [
                 "../../../src/io/unsafe/*.cs",
-                "../../../src/io/properties/*.cs"
+                "../../../src/io/properties/*.cs",
+                "../../gen/AssemblyInfo_Generated.cs"
             ]
         },
         "debugType": "portable",

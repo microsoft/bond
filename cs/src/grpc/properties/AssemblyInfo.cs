@@ -7,5 +7,3 @@ using System.Reflection;
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Bond")]
 [assembly: AssemblyCopyright("Copyright (C) Microsoft. All rights reserved.")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]

@@ -5,7 +5,8 @@
         "compile": {
             "include": [
                 "../../../src/attributes/*.cs",
-                "../../../src/attributes/properties/*.cs"
+                "../../../src/attributes/properties/*.cs",
+                "../../gen/AssemblyInfo_Generated.cs"
             ]
         },
         "debugType": "portable",
