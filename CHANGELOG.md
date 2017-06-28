@@ -102,6 +102,9 @@ get a compiler error. To fix, remove the `<Writer>` part:
   versions.
 * The codegen MSBuild targets will now re-run codegen if gbc itself has been
   changed.
+* Fixed a bug where JSON and XML protocols would permit the serialization of
+  non-nullable string fields that were set to null instead of throwing a
+  NullReferenceException. [Issue #417](https://github.com/Microsoft/bond/issues/417)
 
 ## 5.3.1: 2017-04-25 ##
 

@@ -10,7 +10,7 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class XmlTests
+    public class XmlParsingTests
     {
         static readonly XmlReaderSettings xmlReaderSettings =
             new XmlReaderSettings
@@ -602,7 +602,7 @@ World</_str>
         }
 
         [Test]
-        public void XmlParing_Recursive()
+        public void XmlParsing_Recursive()
         {
             const string xml = @"
 <Tree>

@@ -212,12 +212,32 @@ namespace Bond.Protocols
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteString(string value)
         {
+            // Other protocols depend on expressions such as value.Count to
+            // throw an NRE if we've been asked to serialize a non-nullable
+            // string field that is set to null. Implementations of
+            // System.Xml.XmlWriter may successfully serialize it, so we need
+            // to check and throw explicitly before that.
+            if (value == null)
+            {
+                throw new NullReferenceException(
+                   "Attempted to serialize a null string. This may indicate a non-nullable string field that was set to null.");
+            }
             writer.WriteValue(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteWString(string value)
         {
+            // Other protocols depend on expressions such as value.Count to
+            // throw an NRE if we've been asked to serialize a non-nullable
+            // string field that is set to null. Implementations of
+            // System.Xml.XmlWriter may successfully serialize it, so we need
+            // to check and throw explicitly before that.
+            if (value == null)
+            {
+                throw new NullReferenceException(
+                   "Attempted to serialize a null string. This may indicate a non-nullable string field that was set to null.");
+            }
             writer.WriteValue(value);
         }
         #endregion
