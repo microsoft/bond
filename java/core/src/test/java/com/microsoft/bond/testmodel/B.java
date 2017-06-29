@@ -61,9 +61,7 @@ public class B<T> extends A<String, T> implements BondSerializable {
 
             @Override
             protected final StructBondType<B> buildNewInstance(BondType<?>[] genericTypeArguments) {
-                BondType<?> T = genericTypeArguments[0];
-                GenericTypeSpecialization genericTypeSpecialization = new GenericTypeSpecialization(T);
-                return new StructBondTypeImpl(genericTypeSpecialization);
+                return new StructBondTypeImpl(new GenericTypeSpecialization(genericTypeArguments));
             }
 
             // registration method
@@ -303,12 +301,6 @@ public class B<T> extends A<String, T> implements BondSerializable {
         initializeBondType();
     }
 
-    // static helper for constructor, that catches null argument before calling super()
-    private static <T> StructBondType<A<String, T>> getBaseType(StructBondType<B<T>> genericType) {
-        ArgumentHelper.ensureNotNull(genericType, "genericType");
-        return (StructBondType<A<String, T>>) genericType.getBaseStructType();
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // Bond class instance members
     ///////////////////////////////////////////////////////////////////////////
@@ -329,7 +321,7 @@ public class B<T> extends A<String, T> implements BondSerializable {
 
     // the only constructor which takes the generic type specialization
     public B(StructBondType<B<T>> genericType) {
-        super(getBaseType(genericType));
+        super((StructBondType<A<String, T>>)ArgumentHelper.ensureNotNull(genericType, "genericType").getBaseStructType());
         this.__genericType = (StructBondTypeImpl<T>) genericType;
         this.__genericType.initializeStructFields(this);
     }

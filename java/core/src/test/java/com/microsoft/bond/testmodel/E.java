@@ -56,9 +56,7 @@ public class E<U> extends D implements BondSerializable {
 
             @Override
             protected final StructBondType<E> buildNewInstance(BondType<?>[] genericTypeArguments) {
-                BondType<?> U = genericTypeArguments[0];
-                GenericTypeSpecialization genericTypeSpecialization = new GenericTypeSpecialization(U);
-                return new StructBondTypeImpl(genericTypeSpecialization);
+                return new StructBondTypeImpl(new GenericTypeSpecialization(genericTypeArguments));
             }
 
             // registration method
