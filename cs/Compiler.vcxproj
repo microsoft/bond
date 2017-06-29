@@ -33,8 +33,6 @@ call cmake $(ProjectDir)\..\compiler -Wno-dev
 if %errorlevel% neq 0 goto :cmEnd
 call cmake --build $(OutDir) --target gbc
 if %errorlevel% neq 0 goto :cmEnd
-copy $(OutDir)\build\gbc\gbc.exe $(ProjectDir)\tools\
-if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 :cmErrorLevel
@@ -81,4 +79,7 @@ if %errorlevel% neq 0 goto :VCEnd
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Grpc_cs.hs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(OutDir)\build\gbc\gbc.exe" DestinationFolder="$(ProjectDir)\tools\" />
+  </Target>
 </Project>

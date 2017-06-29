@@ -976,6 +976,12 @@ namespace UnitTest
                 return DeserializeTagged<To>(reader);
             });
 
+#if SUPPORTS_BIGINTEGER
+            const bool hasBigInteger = true;
+#else
+            const bool hasBigInteger = false;
+#endif
+
             // Simple doesn't support omitting fields
             if (typeof(From) != typeof(Nothing) && typeof(From) != typeof(GenericsWithNothing))
             {
@@ -999,9 +1005,10 @@ namespace UnitTest
                 if (!AnyField<From>(Reflection.IsBonded))
                 {
                     streamTranscode(SerializeSP, TranscodeSPXml<From>, DeserializeXml<To>);
-                
-                    // NewtonSoft JSON doesn't support uint64
-                    if (typeof (From) != typeof (MaxUInt64))
+
+                    // NewtonSoft JSON doesn't fully support uint64 in portable profile, so we skip
+                    // MaxUInt64 type where BigInteger isn't avaiable
+                    if (hasBigInteger || (typeof(From) != typeof (MaxUInt64)))
                     {
                         streamTranscode(SerializeSP, TranscodeSPJson<From>, DeserializeJson<To>);
                     }
@@ -1024,8 +1031,9 @@ namespace UnitTest
                 streamTranscode(SerializeCB, TranscodeCBXml<From>, DeserializeXml<To>);
                 streamTranscode(SerializeFB, TranscodeFBXml<From>, DeserializeXml<To>);
 
-                // NewtonSoft JSON doesn't support uint64
-                if (typeof (From) != typeof (MaxUInt64))
+                // NewtonSoft JSON doesn't fully support uint64 in portable profile, so we skip
+                // MaxUInt64 type where BigInteger isn't avaiable
+                if (hasBigInteger || (typeof (From) != typeof (MaxUInt64)))
                 {
                     streamRoundtrip(SerializeJson, DeserializeJson<To>);
                     streamTranscode(SerializeCB, TranscodeCBJson<From>, DeserializeJson<To>);

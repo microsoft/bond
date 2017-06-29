@@ -31,6 +31,9 @@ different versioning scheme, following the Haskell community's
 ### C# ###
 
 * Reflection.IsBonded now recognizes custom IBonded implementations.
+* Use Newtonsoft's JSON.NET BigInteger support -- when available -- to
+  handle the full range of uint64 values in the SimpleJson protocol (.NET
+  4.5 or greater, .NET Standard 1.6 or greater).
 
 ## 6.0.0: 2017-06-29  ##
 * `gbc` & compiler library: 0.10.0.0

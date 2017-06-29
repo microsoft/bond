@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <BuildFramework Condition="'$(Configuration)' == 'Net45'">net45</BuildFramework>
-  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup Condition="'$(BuildNonportable)' == 'true'">
+    <BuildFramework>net45-nonportable</BuildFramework>
+    <DefineConstants>$(DefineConstants);SUPPORTS_BIGINTEGER</DefineConstants>
+  </PropertyGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
     <ProjectGuid>{FF056B62-225A-47BC-B177-550FADDA4B41}</ProjectGuid>
@@ -14,13 +15,13 @@
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <DependentOutputPath>$(OutputPath)</DependentOutputPath>
+    <OrigOutputPath>$(OutputPath)</OrigOutputPath>
+    <DependentOutputPath>bin\$(BuildType)\net45</DependentOutputPath>
+    <HasNonportableVersion>true</HasNonportableVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <IntermediateOutputPath>$(IntermediateOutputPath)\Properties\</IntermediateOutputPath>
     <OutputPath>$(OutputPath)\Properties\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Net45' ">
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Fields' ">
     <IntermediateOutputPath>$(IntermediateOutputPath)\Fields\</IntermediateOutputPath>
@@ -91,8 +92,11 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json" Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
+    <Reference Include="Newtonsoft.Json" Condition="'$(BuildFramework)' == 'net45'">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json" Condition="'$(BuildFramework)' == 'net45-nonportable'">
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -109,7 +113,7 @@
       <HintPath>..\..\src\io\$(DependentOutputPath)\Bond.IO.dll</HintPath>
     </Reference>
     <Reference Include="Bond.JSON">
-      <HintPath>..\..\src\json\$(DependentOutputPath)\Bond.JSON.dll</HintPath>
+      <HintPath>..\..\src\json\$(OrigOutputPath)\Bond.JSON.dll</HintPath> <!-- Intentionally not DependentOutputPath to match BuildFramework-->
     </Reference>
   </ItemGroup>
   <ItemGroup>
