@@ -5,7 +5,8 @@
         "compile": {
             "include": [
                 "../../../src/reflection/*.cs",
-                "../../../src/reflection/properties/*.cs"
+                "../../../src/reflection/properties/*.cs",
+                "../../gen/AssemblyInfo_Generated.cs"
             ]
         },
         "debugType": "portable",

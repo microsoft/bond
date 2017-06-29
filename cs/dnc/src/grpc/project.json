@@ -5,7 +5,8 @@
         "compile": {
             "include": [
                 "../../../src/grpc/*.cs",
-                "../../../src/grpc/properties/*.cs"
+                "../../../src/grpc/properties/*.cs",
+                "../../gen/AssemblyInfo_Generated.cs"
             ]
         },
         "debugType": "portable",

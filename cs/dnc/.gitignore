@@ -1,4 +1,5 @@
 *.nuget.props
 *.nuget.targets
 *project.lock.json
+/gen/
 TestResult.xml

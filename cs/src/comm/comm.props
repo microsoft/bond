@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Common.Internal.props sets BondVersionNum based on the core
+         version. For Comm assemblies, we need to reset this based on a
+         different environment variable.-->
+    <BondVersionNum Condition=" '$(BOND_COMM_VERSION)' != '' ">$(BOND_COMM_VERSION)</BondVersionNum>
+  </PropertyGroup>
+</Project>
