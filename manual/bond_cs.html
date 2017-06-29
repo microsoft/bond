@@ -756,7 +756,6 @@ exampleSerializer.<span class="fu">Serialize</span>(src, writer);
 <pre><code>buffer.Position = 0;</code></pre></li>
 <li><p>Choose the right protocol</p>
 <p>The Fast Binary protocol is a little faster than Compact Binary, although the difference is not big. Untagged protocols like Simple Binary can provide much better performance (up to 4 times faster for some schemas). They are most applicable in scenarios where runtime schema of the data is available during deserialization and the same schema applies to many instances of the data, so that the cost of creating the <a href="#deserializer"><code>Deserializer</code></a> can be amortized. The canonical use case for an untagged protocol is record-based data storage.</p></li>
-<li><p>Using .NET 4.5 will give better performance than 4.0.</p></li>
 </ol>
 <h1 id="runtime-schema">Runtime schema</h1>
 <p>Some generic applications may need to work with Bond schemas unknown at compile-time. In order to address such scenarios Bond defines a type <code>SchemaDef</code> to represent schemas at runtime. Applications can obtain an instance of <code>SchemaDef</code> for a particular type using the <code>Schema</code> class:</p>
@@ -1400,7 +1399,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <p>Bond.IO.dll (which provides the types in the Bond.IO.Unsafe namespace) is currently Windows-only, as it relies on some Win32 APIs. To stay cross-platform, only use the types from Bond.dll (in the Bond.IO.Safe namespace).</p>
 <h2 id="frameworks-targeted">Frameworks targeted</h2>
 <p>This table lists which frameworks are targeted by the Bond assemblies.</p>
-<p>This table is accurate for Bond NuGet packages 5.1.0 and later and Bond Comm 0.9.0 and later.</p>
+<p>This table is accurate for Bond NuGet packages 6.0.0 and later and Bond Comm 0.12.0 and later.</p>
 <table style="width:100%;">
 <colgroup>
 <col width="22%" />
@@ -1425,7 +1424,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 <tbody>
 <tr class="odd">
 <td>Bond.Attributes.dll</td>
-<td>Yes</td>
+<td>No</td>
 <td>Yes</td>
 <td>Yes</td>
 <td>Yes</td>
@@ -1434,7 +1433,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 </tr>
 <tr class="even">
 <td>Bond.Reflection.dll</td>
-<td>Yes</td>
+<td>No</td>
 <td>Yes</td>
 <td>Yes</td>
 <td>Yes</td>
@@ -1443,7 +1442,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 </tr>
 <tr class="odd">
 <td>Bond.dll</td>
-<td>Yes</td>
+<td>No</td>
 <td>Yes</td>
 <td>Yes</td>
 <td>Yes</td>
@@ -1452,7 +1451,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 </tr>
 <tr class="even">
 <td>Bond.JSON.dll</td>
-<td>Yes</td>
+<td>No</td>
 <td>Yes</td>
 <td>No</td>
 <td>Yes</td>
@@ -1461,7 +1460,7 @@ stream.<span class="fu">Position</span> = <span class="dv">0</span>;
 </tr>
 <tr class="odd">
 <td>Bond.IO.dll</td>
-<td>Win only</td>
+<td>No</td>
 <td>Win only</td>
 <td>No</td>
 <td>No</td>
