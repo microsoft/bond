@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Bond.CSharp.5.3.1\build\Bond.CSharp.props" Condition="Exists('..\packages\Bond.CSharp.5.3.1\build\Bond.CSharp.props')" />
+  <Import Project="..\packages\Bond.CSharp.6.0.0\build\Bond.CSharp.props" Condition="Exists('..\packages\Bond.CSharp.6.0.0\build\Bond.CSharp.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -12,12 +12,12 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\build\internal\bond.snk</AssemblyOriginatorKeyFile>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,48 +37,51 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bond, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Bond.Core.CSharp.5.3.1\lib\net45\Bond.dll</HintPath>
+    <Reference Include="Bond, Version=6.0.0.100, Culture=neutral, PublicKeyToken=87e9ead25a117286, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bond.Core.CSharp.6.0.0\lib\net45\Bond.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Bond.Attributes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Bond.Core.CSharp.5.3.1\lib\net45\Bond.Attributes.dll</HintPath>
+    <Reference Include="Bond.Attributes, Version=6.0.0.100, Culture=neutral, PublicKeyToken=87e9ead25a117286, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bond.Core.CSharp.6.0.0\lib\net45\Bond.Attributes.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Bond.IO, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Bond.Core.CSharp.5.3.1\lib\net45\Bond.IO.dll</HintPath>
+    <Reference Include="Bond.IO, Version=6.0.0.100, Culture=neutral, PublicKeyToken=87e9ead25a117286, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bond.Core.CSharp.6.0.0\lib\net45\Bond.IO.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Bond.JSON, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Bond.Runtime.CSharp.5.3.1\lib\net45\Bond.JSON.dll</HintPath>
+    <Reference Include="Bond.JSON, Version=6.0.0.100, Culture=neutral, PublicKeyToken=87e9ead25a117286, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bond.Runtime.CSharp.6.0.0\lib\net45\Bond.JSON.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Bond.Reflection, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Bond.Core.CSharp.5.3.1\lib\net45\Bond.Reflection.dll</HintPath>
+    <Reference Include="Bond.Reflection, Version=6.0.0.100, Culture=neutral, PublicKeyToken=87e9ead25a117286, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bond.Core.CSharp.6.0.0\lib\net45\Bond.Reflection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
   </ItemGroup>
   <ItemGroup>
     <BondImportDirectory Include="..\test\core\import dir with spaces\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NuGetTestReflection.cs" />
     <Compile Include="..\test\core\AttributesTests.cs" />
     <Compile Include="..\test\core\BondClass.cs" />
     <Compile Include="..\test\core\BondedTests.cs" />
     <Compile Include="..\test\core\CloningTests.cs" />
+    <Compile Include="..\test\core\CustomBondedTests.cs" />
+    <Compile Include="..\test\core\DeserializerControlsTests.cs" />
     <Compile Include="..\test\core\EnumString.cs" />
     <Compile Include="..\test\core\Equal.cs" />
     <Compile Include="..\test\core\GenericsTests.cs" />
+    <Compile Include="..\test\core\GuidConversionTests.cs" />
     <Compile Include="..\test\core\InterfaceTests.cs" />
     <Compile Include="..\test\core\JsonParsingTests.cs" />
+    <Compile Include="..\test\core\JsonSerializationTests.cs" />
     <Compile Include="..\test\core\MetaInitializationTests.cs" />
     <Compile Include="..\test\core\Partial.cs" />
     <Compile Include="..\test\core\Properties\AssemblyInfo.cs" />
@@ -90,7 +93,8 @@
     <Compile Include="..\test\core\Structs.cs" />
     <Compile Include="..\test\core\TypeAliasTests.cs" />
     <Compile Include="..\test\core\Util.cs" />
-    <Compile Include="..\test\core\XmlTests.cs" />
+    <Compile Include="..\test\core\XmlParsingTests.cs" />
+    <Compile Include="..\test\core\XmlSerializationTests.cs" />
     <BondCodegen Include="..\test\core\Aliases.bond">
       <Options>--using="Lazy=Lazy&lt;{0}&gt;" --using="CustomList=UnitTest.Aliases.SomeCustomList&lt;{0}&gt;" --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]"</Options>
     </BondCodegen>
@@ -137,8 +141,8 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Bond.CSharp.5.3.1\build\Bond.CSharp.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Bond.CSharp.5.3.1\build\Bond.CSharp.props'))" />
-    <Error Condition="!Exists('..\packages\Bond.CSharp.5.3.1\build\Bond.CSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Bond.CSharp.5.3.1\build\Bond.CSharp.targets'))" />
+    <Error Condition="!Exists('..\packages\Bond.CSharp.6.0.0\build\Bond.CSharp.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Bond.CSharp.6.0.0\build\Bond.CSharp.props'))" />
+    <Error Condition="!Exists('..\packages\Bond.CSharp.6.0.0\build\Bond.CSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Bond.CSharp.6.0.0\build\Bond.CSharp.targets'))" />
   </Target>
-  <Import Project="..\packages\Bond.CSharp.5.3.1\build\Bond.CSharp.targets" Condition="Exists('..\packages\Bond.CSharp.5.3.1\build\Bond.CSharp.targets')" />
+  <Import Project="..\packages\Bond.CSharp.6.0.0\build\Bond.CSharp.targets" Condition="Exists('..\packages\Bond.CSharp.6.0.0\build\Bond.CSharp.targets')" />
 </Project>

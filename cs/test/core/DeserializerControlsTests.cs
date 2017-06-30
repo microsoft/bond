@@ -133,7 +133,14 @@
                 var writer = new SimpleBinaryWriter<OutputBuffer>(output);
                 Serialize.To(writer, obj);
 
-                var input = new InputStream(new MemoryStream(output.buffer));
+                var input =
+                    new InputStream(
+                        new MemoryStream(
+                            output.Data.Array,
+                            output.Data.Offset,
+                            output.Data.Count,
+                            writable: false,
+                            publiclyVisible: true));
                 var reader = new SimpleBinaryReader<InputStream>(input);
                 T obj2 = Deserialize<T>.From(reader);
 
@@ -146,7 +153,14 @@
                 var writer = new CompactBinaryWriter<OutputBuffer>(output);
                 Serialize.To(writer, obj);
 
-                var input = new InputStream(new MemoryStream(output.buffer));
+                var input =
+                    new InputStream(
+                        new MemoryStream(
+                            output.Data.Array,
+                            output.Data.Offset,
+                            output.Data.Count,
+                            writable: false,
+                            publiclyVisible: true));
                 var reader = new CompactBinaryReader<InputStream>(input);
                 T obj2 = new Deserializer<CompactBinaryReader<InputStream>>(typeof(T)).Deserialize<T>(reader);
 
