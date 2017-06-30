@@ -11,17 +11,19 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Unreleased ##
-* `gbc` & compiler library: TBD
-* IDL core version: TBD
-* IDL comm version: TBD
-* C++ version: TBD (major bump needed)
-* C# NuGet version: (major bump needed)
-* C# Comm NuGet version: (minor bump needed, dependencies updated)
+## 6.0.0: 2017-06-29  ##
+* `gbc` & compiler library: 0.10.0.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: TBD 6.0.0
+* C# NuGet version: 6.0.0
+* C# Comm NuGet version: 0.12.0
 
 ### `gbc` and Bond compiler library ###
 
 * IDL support for service inheritance syntax
+    * **Breaking change** In the Bond Haskell library, the `Service` type
+      has a new field `serviceBase`.
 * C++ codegen now generates
   [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
   of `bond::Apply` instead of overloads.
@@ -62,11 +64,11 @@ different versioning scheme, following the Haskell community's
 * Initial support for sending
   [Bond objects over gRPC](https://microsoft.github.io/bond/manual/bond_over_grpc.html)
   has been added.
-* The `bond::Apply` function now has a uniform signature. Call sites for
-the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
-`Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
-get a compiler error. To fix, remove the `<Writer>` part:
-`bond::Apply(marshaler, value)`.
+* The `bond::Apply` function now has a uniform signature. Call sites for the
+  `Marshaler<Writer>` transform overload that were _mistakenly_ passing
+  `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will
+  now get a compiler error. To fix, remove the `<Writer>` part:
+  `bond::Apply(marshaler, value)`.
 * Fixed a bug that caused serialization using
   `CompactBinaryWriter<OutputCounter>` (to get the expected length of
   serializing with compact binary) to produced bogus results.
@@ -104,7 +106,8 @@ get a compiler error. To fix, remove the `<Writer>` part:
   changed.
 * Fixed a bug where JSON and XML protocols would permit the serialization of
   non-nullable string fields that were set to null instead of throwing a
-  NullReferenceException. [Issue #417](https://github.com/Microsoft/bond/issues/417)
+  NullReferenceException.
+  [Issue #417](https://github.com/Microsoft/bond/issues/417)
 
 ## 5.3.1: 2017-04-25 ##
 
