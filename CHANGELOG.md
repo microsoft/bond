@@ -101,7 +101,7 @@ different versioning scheme, following the Haskell community's
 * **Breaking change** Bond assemblies now have assembly and file versions
   that correspond to their NuGet package version. Strong name identities
   will now change release-over-release in line with the NuGet package
-  versions.
+  versions. [Issue #325](https://github.com/Microsoft/bond/issues/325)
 * The codegen MSBuild targets will now re-run codegen if gbc itself has been
   changed.
 * Fixed a bug where JSON and XML protocols would permit the serialization of
