@@ -110,7 +110,9 @@ namespace Bond
             if (type.IsGenericType())
             {
                 var definition = type.GetGenericTypeDefinition();
-                return definition == typeof(IBonded<>) || definition == typeof(Tag.bonded<>);
+                return definition == typeof(IBonded<>)
+                    || definition == typeof(Tag.bonded<>)
+                    || definition.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IBonded));
             }
 
             return false;
