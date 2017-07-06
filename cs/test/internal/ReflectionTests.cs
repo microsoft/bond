@@ -4,9 +4,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using Bond;
-    using NUnit.Framework;
-    using Bond.Tag;
     using Bond.Internal.Reflection;
+    using Bond.IO.Safe;
+    using Bond.Protocols;
+    using Bond.Tag;
+    using NUnit.Framework;
 
     [TestFixture]
     public class ReflectionTests
@@ -24,7 +26,7 @@
         }
 
         [Test]
-        public void GenericSchemaType()
+        public void Reflection_GenericSchemaType()
         {
             GenericSchemaStructTest<int>();
             GenericSchemaStructTest<float>();
@@ -33,21 +35,21 @@
         }
 
         [Test]
-        public void FindMethodFromObject()
+        public void Reflection_FindMethodFromObject()
         {
             Assert.AreEqual("ReadStructBegin", ReflectionExtensions.FindMethod(typeof(ReaderA), "ReadStructBegin", new Type[0]).Name);
             Assert.AreEqual(typeof(ReaderA), ReflectionExtensions.FindMethod(typeof(ReaderA), "ReadStructBegin", new Type[0]).DeclaringType);
         }
 
         [Test]
-        public void FindMethodFromInterface()
+        public void Reflection_FindMethodFromInterface()
         {
             Assert.AreEqual("ReadStructBegin", ReflectionExtensions.FindMethod(typeof(IReaderA), "ReadStructBegin", new Type[0]).Name);
             Assert.AreEqual(typeof(IReaderA), ReflectionExtensions.FindMethod(typeof(IReaderA), "ReadStructBegin", new Type[0]).DeclaringType);
         }
 
         [Test]
-        public void MultipleMethodsImplementedException()
+        public void Reflection_MultipleMethodsImplementedException()
         {
             Assert.That(() => ReflectionExtensions.FindMethod(typeof(IReaderAB), "ReadStructBegin", new Type[0]),
                 Throws.TypeOf<System.Reflection.AmbiguousMatchException>()
@@ -57,7 +59,7 @@
         // We test on the SchemaFields instead of the RuntimeSchema, because, for now, the list sub
         // type is not part of Bond.TypeDef
         [Test]
-        public void DifferentiateBetweenListAndNullable()
+        public void Reflection_DifferentiateBetweenListAndNullable()
         {
             var schemaFields = typeof(ListVsNullable).GetSchemaFields();
 
@@ -90,10 +92,24 @@
             }
         }
 
+        [Test]
+        public void Reflection_IsBonded()
+        {
+            Assert.IsTrue(Reflection.IsBonded(typeof(Bonded<>)));
+            Assert.IsTrue(Reflection.IsBonded(typeof(Bonded<BasicTypes>)));
+            Assert.IsTrue(Reflection.IsBonded(typeof(BondedVoid<>)));
+            Assert.IsTrue(Reflection.IsBonded(typeof(BondedVoid<CompactBinaryReader<InputBuffer>>)));
+            Assert.IsTrue(Reflection.IsBonded(typeof(CustomBonded<>)));
+            Assert.IsTrue(Reflection.IsBonded(typeof(CustomBonded<BasicTypes>)));
+
+            Assert.IsFalse(Reflection.IsBonded(typeof(int)));
+            Assert.IsFalse(Reflection.IsBonded(typeof(BasicTypes)));
+        }
+
         // We test on the SchemaFields instead of the RuntimeSchema, because, for now, the list sub
         // type is not part of Bond.TypeDef
         [Test]
-        public void EnsureUnknownSeqIDLType()
+        public void Reflection_EnsureUnknownSeqIDLType()
         {
             var schemaFields = typeof(BasicTypes).GetSchemaFields();
 
@@ -216,5 +232,31 @@
                 throw new NotImplementedException();
             }
         }
+
+        class CustomBonded<T> : IBonded
+        {
+            readonly IBonded<T> _instance;
+
+            public CustomBonded(IBonded<T> instance)
+            {
+                _instance = instance;
+            }
+
+            public void Serialize<W>(W writer)
+            {
+                _instance.Serialize<W>(writer);
+            }
+
+            public U Deserialize<U>()
+            {
+                return _instance.Deserialize<U>();
+            }
+
+            public IBonded<U> Convert<U>()
+            {
+                return _instance.Convert<U>();
+            }
+        }
+
     }
 }
