@@ -42,7 +42,7 @@ public class C extends B<Double> implements BondSerializable {
             }
 
             // registration method
-            static void register() {
+            private static void register() {
                 registerStructType(C.class, new StructBondTypeBuilderImpl());
             }
         }
@@ -80,7 +80,7 @@ public class C extends B<Double> implements BondSerializable {
             // initialize field descriptor
             this.bs1 = new ObjectStructField<B<String>>(
                     this,
-                    (StructBondType<B<String>>) (StructBondType<?>) getStructType(B.class, BondTypes.STRING),
+                    (StructBondType<B<String>>) getStructType(B.class, BondTypes.STRING),
                     3,
                     "bs1",
                     Modifier.Optional);
@@ -88,7 +88,7 @@ public class C extends B<Double> implements BondSerializable {
             // initialize field descriptor
             this.bs2 = new ObjectStructField<B<B<String>>>(
                     this,
-                    (StructBondType<B<B<String>>>) (StructBondType<?>) getStructType(B.class, getStructType(B.class, BondTypes.STRING)),
+                    (StructBondType<B<B<String>>>) getStructType(B.class, getStructType(B.class, BondTypes.STRING)),
                     4,
                     "bs2",
                     Modifier.Optional);
@@ -96,14 +96,14 @@ public class C extends B<Double> implements BondSerializable {
             // initialize field descriptor
             this.bs3 = new ObjectStructField<B<B<B<String>>>>(
                     this,
-                    (StructBondType<B<B<B<String>>>>) (StructBondType<?>) getStructType(B.class, getStructType(B.class, getStructType(B.class, BondTypes.STRING))),
+                    (StructBondType<B<B<B<String>>>>) getStructType(B.class, getStructType(B.class, getStructType(B.class, BondTypes.STRING))),
                     5,
                     "bs3",
                     Modifier.Optional);
 
             // initialize struct descriptor
             super.initializeBaseAndFields(
-                    getStructType(B.class, BondTypes.DOUBLE),
+                    (StructBondType<B<Double>>) getStructType(B.class, BondTypes.DOUBLE),
                     this.i32,
                     this.i64,
                     this.bs1,

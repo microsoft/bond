@@ -51,10 +51,11 @@ public class A<X, Y> implements BondSerializable {
         static final class StructBondTypeBuilderImpl extends StructBondTypeBuilder<A> {
 
             // called by the public method to make an instance of a generic type
-            final <X, Y> StructBondType<A<X, Y>> makeGenericType(BondType<X> X, BondType<Y> Y) {
+            private <X, Y> StructBondType<A<X, Y>> makeGenericType(BondType<X> X, BondType<Y> Y) {
                 ArgumentHelper.ensureNotNull(X, "X");
                 ArgumentHelper.ensureNotNull(Y, "Y");
-                return (StructBondTypeImpl<X, Y>) (StructBondType) this.getInitializedFromCache(X, Y);
+                StructBondType<?> structBondType = this.getInitializedFromCache(X, Y);
+                return (StructBondTypeImpl<X, Y>) structBondType;
             }
 
             @Override
@@ -64,14 +65,11 @@ public class A<X, Y> implements BondSerializable {
 
             @Override
             protected final StructBondType<A> buildNewInstance(BondType<?>[] genericTypeArguments) {
-                BondType<?> X = genericTypeArguments[0];
-                BondType<?> Y = genericTypeArguments[1];
-                GenericTypeSpecialization genericTypeSpecialization = new GenericTypeSpecialization(X, Y);
-                return new StructBondTypeImpl(genericTypeSpecialization);
+                return new StructBondTypeImpl(new GenericTypeSpecialization(genericTypeArguments));
             }
 
             // registration method
-            static void register() {
+            private static void register() {
                 registerStructType(A.class, new StructBondTypeBuilderImpl());
             }
         }
@@ -132,7 +130,7 @@ public class A<X, Y> implements BondSerializable {
             // initialize field descriptor
             this.nbx = new ObjectStructField<B<X>>(
                     this,
-                    nullableOf((StructBondType<B<X>>) (StructBondType<?>) getStructType(B.class, X)),
+                    nullableOf((StructBondType<B<X>>) getStructType(B.class, X)),
                     4,
                     "nbx",
                     Modifier.Optional);
@@ -140,7 +138,7 @@ public class A<X, Y> implements BondSerializable {
             // initialize field descriptor
             this.nby = new ObjectStructField<B<Y>>(
                     this,
-                    nullableOf((StructBondType<B<Y>>) (StructBondType<?>) getStructType(B.class, Y)),
+                    nullableOf((StructBondType<B<Y>>) getStructType(B.class, Y)),
                     5,
                     "nby",
                     Modifier.Optional);
@@ -164,7 +162,7 @@ public class A<X, Y> implements BondSerializable {
             // initialize field descriptor
             this.nax32 = new ObjectStructField<A<X, Integer>>(
                     this,
-                    nullableOf((StructBondType<A<X, Integer>>) (StructBondType<?>) getStructType(A.class, X, BondTypes.INT32)),
+                    nullableOf((StructBondType<A<X, Integer>>) getStructType(A.class, X, BondTypes.INT32)),
                     8,
                     "nax32",
                     Modifier.Optional);
@@ -172,7 +170,7 @@ public class A<X, Y> implements BondSerializable {
             // initialize field descriptor
             this.nay64 = new ObjectStructField<A<Y, Long>>(
                     this,
-                    nullableOf((StructBondType<A<Y, Long>>) (StructBondType<?>) getStructType(A.class, Y, BondTypes.INT64)),
+                    nullableOf((StructBondType<A<Y, Long>>) getStructType(A.class, Y, BondTypes.INT64)),
                     9,
                     "nay64",
                     Modifier.Optional);

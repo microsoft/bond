@@ -523,11 +523,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      *
      * @param clazz                the struct class
      * @param genericTypeArguments the generic type arguments in the declaration order
-     * @param <TStruct>            the Bond struct value class
      * @return a type descriptor instance
      */
-    protected static <TStruct extends BondSerializable> StructBondType<TStruct> getStructType(
-            Class<TStruct> clazz,
+    protected static StructBondType<? extends BondSerializable> getStructType(
+            Class<? extends BondSerializable> clazz,
             BondType<?>... genericTypeArguments) {
         StructBondTypeBuilder<?> structTypeBuilder = structTypeBuilderRegistry.get(clazz);
         if (structTypeBuilder == null) {
@@ -570,10 +569,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         // build, cache, and initialize the type descriptor
-        @SuppressWarnings("unchecked")
-        StructBondType<TStruct> structType =
-                (StructBondType<TStruct>) structTypeBuilder.getInitializedFromCache(genericTypeArguments);
-        return structType;
+        return structTypeBuilder.getInitializedFromCache(genericTypeArguments);
     }
 
     /**

@@ -73,9 +73,6 @@ library
                     Language.Bond.Codegen.Cs.Util
                     Language.Bond.Codegen.Java.Class_java
                     Language.Bond.Codegen.Java.Enum_java
-                    Language.Bond.Codegen.Java.Schema
-                    Language.Bond.Codegen.Java.SerializationMethods
-                    Language.Bond.Codegen.Java.StaticFields
                     Language.Bond.Codegen.Java.Util
                     Language.Bond.Lexer
                     Language.Bond.Syntax.Internal
