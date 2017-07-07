@@ -156,6 +156,18 @@ tests = testGroup "Compiler tests"
                     "generic_service"
                 ]
             ]
+        , testGroup "Java"
+            [ verifyJavaCodegen "attributes"
+            , verifyJavaCodegen "basic_types"
+            , verifyJavaCodegen "bond_meta"
+            , verifyJavaCodegen "complex_types"
+            , verifyJavaCodegen "defaults"
+            , verifyJavaCodegen "empty"
+            , verifyJavaCodegen "field_modifiers"
+            , verifyJavaCodegen "generics"
+            , verifyJavaCodegen "inheritance"
+            , verifyJavaCodegen "aliases"
+            ]
         ]
     ]
 

@@ -140,7 +140,8 @@ codeGen options typeMapping templates file = do
         LTIO.writeFile (outputDir </> fileName) content
 
 -- Java's class-per-file and package-as-path requirements make it difficult to
--- share code with languages where we can just emit bondfile_types.foo.
+-- share code with languages where there is a known set of generated files for
+-- each bondfile.
 javaCodegen :: Options -> IO ()
 javaCodegen Java {..} = do
     namespaceMapping <- parseNamespaceMappings namespace

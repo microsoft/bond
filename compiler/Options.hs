@@ -58,6 +58,7 @@ data Options
         { files :: [FilePath]
         , import_dir :: [FilePath]
         , output_dir :: FilePath
+        , using :: [String]
         , namespace :: [String]
         , jobs :: Maybe Int
         , no_banner :: Bool
@@ -103,7 +104,7 @@ cs = Cs
 
 java :: Options
 java = Java
-    {
+    { using = def &= typ "MAPPING" &= name "u" &= help "Currently unimplemented and ignored for Java"
     } &=
     name "java" &=
     help "Generate Java code"
