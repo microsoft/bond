@@ -7,8 +7,6 @@ struct C;
 struct D;
 struct E<U>;
 
-struct NotHere;
-
 struct A<X, Y>
 {
     0 : X x;
@@ -21,16 +19,6 @@ struct A<X, Y>
     7 : list<Y> ly;
     8 : nullable<A<X, int32>> nax32;
     9 : nullable<A<Y, int64>> nay64;
-
-    100: uint8 uint8_def = 0;
-    101: uint8 uint8_min = 0;
-    102: uint8 uint8_max = 255;
-
-    110: int8 int8_def = 0;
-    111: int8 int8_min = -128;
-    112: int8 int8_max = 127;
-
-    1000: list<int8> uuu;
 }
 
 struct B<T> : A<string, T>

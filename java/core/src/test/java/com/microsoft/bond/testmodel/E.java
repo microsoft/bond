@@ -44,9 +44,10 @@ public class E<U> extends D implements BondSerializable {
         static final class StructBondTypeBuilderImpl extends StructBondTypeBuilder<E> {
 
             // called by the public method to make an instance of a generic type
-            final <U> StructBondType<E<U>> makeGenericType(BondType<U> U) {
+            private <U> StructBondType<E<U>> makeGenericType(BondType<U> U) {
                 ArgumentHelper.ensureNotNull(U, "U");
-                return (StructBondTypeImpl<U>) (StructBondType) this.getInitializedFromCache(U);
+                StructBondType<?> structBondType = this.getInitializedFromCache(U);
+                return (StructBondTypeImpl<U>) structBondType;
             }
 
             @Override
@@ -60,7 +61,7 @@ public class E<U> extends D implements BondSerializable {
             }
 
             // registration method
-            static void register() {
+            private static void register() {
                 registerStructType(E.class, new StructBondTypeBuilderImpl());
             }
         }
@@ -90,7 +91,7 @@ public class E<U> extends D implements BondSerializable {
             // initialize field descriptor
             this.neu = new ObjectStructField<E<U>>(
                     this,
-                    nullableOf((StructBondType<E<U>>) (StructBondType<?>) getStructType(E.class, U)),
+                    nullableOf((StructBondType<E<U>>) getStructType(E.class, U)),
                     2,
                     "neu",
                     Modifier.Optional);
@@ -98,7 +99,7 @@ public class E<U> extends D implements BondSerializable {
             // initialize field descriptor
             this.lneu = new ObjectStructField<List<E<U>>>(
                     this,
-                    listOf(nullableOf((StructBondType<E<U>>) (StructBondType<?>) getStructType(E.class, U))),
+                    listOf(nullableOf((StructBondType<E<U>>) getStructType(E.class, U))),
                     3,
                     "lneu",
                     Modifier.Optional);
@@ -106,14 +107,14 @@ public class E<U> extends D implements BondSerializable {
             // initialize field descriptor
             this.nlneu = new ObjectStructField<List<E<U>>>(
                     this,
-                    nullableOf(listOf(nullableOf((StructBondType<E<U>>) (StructBondType<?>) getStructType(E.class, U)))),
+                    nullableOf(listOf(nullableOf((StructBondType<E<U>>) getStructType(E.class, U)))),
                     5,
                     "nlneu",
                     Modifier.Optional);
 
             // initialize struct descriptor
             super.initializeBaseAndFields(
-                    getStructType(D.class),
+                    (StructBondType<D>) getStructType(D.class),
                     this.u,
                     this.neu,
                     this.lneu,

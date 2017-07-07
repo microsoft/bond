@@ -42,7 +42,7 @@ public class D extends C implements BondSerializable {
             }
 
             // registration method
-            static void register() {
+            private static void register() {
                 registerStructType(D.class, new StructBondTypeBuilderImpl());
             }
         }
@@ -64,7 +64,7 @@ public class D extends C implements BondSerializable {
             // initialize field descriptor
             this.nad = new ObjectStructField<A<D, D>>(
                     this,
-                    nullableOf((StructBondType<A<D, D>>) (StructBondType<?>) getStructType(A.class, getStructType(D.class), getStructType(D.class))),
+                    nullableOf((StructBondType<A<D, D>>) getStructType(A.class, getStructType(D.class), getStructType(D.class))),
                     1,
                     "nad",
                     Modifier.Optional);
@@ -72,7 +72,7 @@ public class D extends C implements BondSerializable {
             // initialize field descriptor
             this.nbd = new ObjectStructField<B<D>>(
                     this,
-                    nullableOf((StructBondType<B<D>>) (StructBondType<?>) getStructType(B.class, getStructType(D.class))),
+                    nullableOf((StructBondType<B<D>>) getStructType(B.class, getStructType(D.class))),
                     2,
                     "nbd",
                     Modifier.Optional);
@@ -80,7 +80,7 @@ public class D extends C implements BondSerializable {
             // initialize field descriptor
             this.nc = new ObjectStructField<C>(
                     this,
-                    nullableOf((StructBondType<C>) (StructBondType<?>) getStructType(C.class)),
+                    nullableOf((StructBondType<C>) getStructType(C.class)),
                     3,
                     "nc",
                     Modifier.Optional);
@@ -88,7 +88,7 @@ public class D extends C implements BondSerializable {
             // initialize field descriptor
             this.nd = new ObjectStructField<D>(
                     this,
-                    nullableOf((StructBondType<D>) (StructBondType<?>) getStructType(D.class)),
+                    nullableOf((StructBondType<D>) getStructType(D.class)),
                     4,
                     "nd",
                     Modifier.Optional);
@@ -96,14 +96,14 @@ public class D extends C implements BondSerializable {
             // initialize field descriptor
             this.ned = new ObjectStructField<E<D>>(
                     this,
-                    nullableOf((StructBondType<E<D>>) (StructBondType<?>) getStructType(E.class, getStructType(D.class))),
+                    nullableOf((StructBondType<E<D>>) getStructType(E.class, getStructType(D.class))),
                     5,
                     "ned",
                     Modifier.Optional);
 
             // initialize struct descriptor
             super.initializeBaseAndFields(
-                    getStructType(C.class),
+                    (StructBondType<C>) getStructType(C.class),
                     this.nad,
                     this.nbd,
                     this.nc,

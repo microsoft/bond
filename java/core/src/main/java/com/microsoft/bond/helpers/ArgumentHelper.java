@@ -18,7 +18,7 @@ public final class ArgumentHelper {
      * @param argument the argument to check
      * @param name     the name of the argument
      * @param <T>      the type of the value
-     * @return the value, as instance of the same type
+     * @return the argument value
      * @throws IllegalArgumentException if the argument is null
      */
     public static <T> T ensureNotNull(T argument, String name) {

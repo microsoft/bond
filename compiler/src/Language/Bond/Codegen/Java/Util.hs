@@ -10,6 +10,7 @@ module Language.Bond.Codegen.Java.Util
     , isPrimitiveNonEnumBondType
     , isPrimitiveBondType
     , isGenericBondStructType
+    , ifThenElse
     ) where
 
 import Prelude
@@ -64,3 +65,8 @@ isPrimitiveBondType t = isPrimitiveNonEnumBondType t
 isGenericBondStructType :: Type -> Bool
 isGenericBondStructType (BT_UserDefined Struct {..} _) = not (null declParams)
 isGenericBondStructType _ = False
+
+-- takes a predicate and two texts and outputs one based on predicate
+ifThenElse :: Bool -> Text -> Text -> Text
+ifThenElse True thenCondition _ = thenCondition
+ifThenElse False _ elseCondition = elseCondition
