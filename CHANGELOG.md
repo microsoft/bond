@@ -16,12 +16,12 @@ different versioning scheme, following the Haskell community's
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: TBD
-* C# NuGet version: TBD  (major bump needed)
+* C# NuGet version: TBD  (bug fix bump needed)
 * C# Comm NuGet version: TBD
 
 ### C# ###
 
-* **Breaking change** Reflection.IsBonded now recognizes custom IBonded
+* Reflection.IsBonded now recognizes custom IBonded
 implementations.
 
 ## 6.0.0: 2017-06-29  ##
