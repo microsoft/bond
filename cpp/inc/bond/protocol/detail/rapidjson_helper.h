@@ -279,19 +279,26 @@ template <typename T>
 typename boost::enable_if<is_wstring<T> >::type
 Read(const rapidjson::Value& value, T& var)
 {
-    const std::basic_string<uint16_t> str =
-        boost::locale::conv::utf_to_utf<uint16_t>(
-            value.GetString(),
-            value.GetString() + value.GetStringLength(),
-            boost::locale::conv::stop);
+    try
+    {
+        const std::basic_string<uint16_t> str =
+            boost::locale::conv::utf_to_utf<uint16_t>(
+                value.GetString(),
+                value.GetString() + value.GetStringLength(),
+                boost::locale::conv::stop);
 
-    const size_t length = str.size();
-    resize_string(var, static_cast<uint32_t>(length));
+        const size_t length = str.size();
+        resize_string(var, static_cast<uint32_t>(length));
 
-    std::copy(
-        str.begin(),
-        str.end(),
-        make_checked_array_iterator(string_data(var), length));
+        std::copy(
+            str.begin(),
+            str.end(),
+            make_checked_array_iterator(string_data(var), length));
+    }
+    catch (const boost::locale::conv::conversion_error &)
+    {
+        UnicodeConversionException();
+    }
 }
 
 
