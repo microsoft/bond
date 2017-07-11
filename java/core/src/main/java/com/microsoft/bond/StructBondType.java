@@ -799,6 +799,47 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
+     * Implements the {@link StructField} contract for bonded fields. The default value is not
+     * explicitly set on the field but rather is determined by the field's type.
+     */
+    protected static final class BondedStructField<TField extends BondSerializable> extends StructField<IBonded<TField>> {
+
+        public BondedStructField(
+            StructBondType<?> structType,
+            BondType<IBonded<TField>> fieldType,
+            int id,
+            String name,
+            Modifier modifier) {
+            super(structType, fieldType, id, name, modifier);
+        }
+
+        @Override
+        public final boolean isDefaultNothing() {
+            return false;
+        }
+
+        @Override
+        public final IBonded<TField> getDefaultValue() {
+            return this.initialize();
+        }
+
+        public final IBonded<TField> initialize() {
+            return this.fieldType.newDefaultValue();
+        }
+
+        public final void serialize(
+            SerializationContext context, IBonded<TField> value) throws IOException {
+            this.fieldType.serializeField(context, value, this);
+        }
+
+        public final IBonded<TField> deserialize(
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
+            return this.fieldType.deserializeField(context, this);
+        }
+    }
+
+    /**
      * Implements the {@link StructField} contract for fields of the uint8 primitive data type
      * that are not defaulting to "nothing".
      */
@@ -2088,7 +2129,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return null;
         }
 
-        public final SomethingObject<String> initialize() {
+        public final SomethingObject<TEnum> initialize() {
             return null;
         }
 

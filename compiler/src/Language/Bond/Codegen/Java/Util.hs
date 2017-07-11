@@ -23,11 +23,7 @@ import Language.Bond.Codegen.Util()
 
 -- returns the fully qualified name for a declaration
 qualifiedDeclaredTypeName :: MappingContext -> Declaration -> String
-qualifiedDeclaredTypeName java d@Struct {..}  = intercalate "." $ getDeclNamespace java d ++ [declName]
-qualifiedDeclaredTypeName java d@Enum {..}  = intercalate "." $ getDeclNamespace java d ++ [declName]
-qualifiedDeclaredTypeName java d@Forward {..}  = intercalate "." $ getDeclNamespace java d ++ [declName]
-qualifiedDeclaredTypeName java d@Alias {..}  = intercalate "." $ getDeclNamespace java d ++ [declName]
-qualifiedDeclaredTypeName java d@Service {..}  = intercalate "." $ getDeclNamespace java d ++ [declName]
+qualifiedDeclaredTypeName java d  = intercalate "." $ getDeclNamespace java d ++ [declName d]
 
 -- returns the Java annotations for a generated class
 generatedClassAnnotations :: Text

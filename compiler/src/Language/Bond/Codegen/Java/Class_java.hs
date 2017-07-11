@@ -53,9 +53,10 @@ structFieldDescriptorTypeName java = typeName
         typeName BT_String = [lt|com.microsoft.bond.StructBondType.StringStructField|]
         typeName (BT_Maybe BT_WString) = [lt|com.microsoft.bond.StructBondType.SomethingWStringStructField|]
         typeName BT_WString = [lt|com.microsoft.bond.StructBondType.WStringStructField|]
-        typeName (BT_Maybe (BT_UserDefined e@Enum {..} _)) = [lt|com.microsoft.bond.StructBondType.SomethingEnumStructField<#{qualifiedDeclaredTypeName java e}>|]
-        typeName (BT_UserDefined e@Enum {..} _) = [lt|com.microsoft.bond.StructBondType.EnumStructField<#{qualifiedDeclaredTypeName java e}>|]
+        typeName (BT_Maybe (BT_UserDefined e@Enum {} _)) = [lt|com.microsoft.bond.StructBondType.SomethingEnumStructField<#{qualifiedDeclaredTypeName java e}>|]
+        typeName (BT_UserDefined e@Enum {} _) = [lt|com.microsoft.bond.StructBondType.EnumStructField<#{qualifiedDeclaredTypeName java e}>|]
         typeName (BT_Maybe t) = [lt|com.microsoft.bond.StructBondType.SomethingObjectStructField<#{(getTypeName java) t}>|]
+        typeName (BT_Bonded t) = [lt|com.microsoft.bond.StructBondType.BondedStructField<#{(getTypeName java) t}>|]
         typeName t = [lt|com.microsoft.bond.StructBondType.ObjectStructField<#{(getTypeName java) t}>|]
 
 
@@ -184,8 +185,7 @@ structFieldDescriptorInitTypeExpr _ t = error $ "invalid declaration type for st
 
 -- given struct base type, returns a type descriptor expression
 structBaseDescriptorInitStructExpr :: MappingContext -> Maybe Type -> Text
-structBaseDescriptorInitStructExpr _ Nothing = [lt|null|]
-structBaseDescriptorInitStructExpr java (Just t) = structFieldDescriptorInitTypeExpr java t
+structBaseDescriptorInitStructExpr java t = maybe [lt|null|] (structFieldDescriptorInitTypeExpr java) t
 
 
 -- given struct class name and generic type parameters, builds text for GenericBondTypeBuilder abstract class

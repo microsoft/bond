@@ -10,7 +10,7 @@ import java.util.HashMap;
  * Implements the {@link BondType} contract for bonded container data type.
  * @param <TStruct> the class of the underlying struct value
  */
-public final class BondedBondType<TStruct extends BondSerializable> extends BondType<Bonded<TStruct>> {
+public final class BondedBondType<TStruct extends BondSerializable> extends BondType<IBonded<TStruct>> {
 
     /**
      * The name of the type as it appears in Bond schemas.
@@ -50,15 +50,15 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     }
 
     @Override
-    public final Class<Bonded<TStruct>> getValueClass() {
+    public final Class<IBonded<TStruct>> getValueClass() {
         // can't do direct cast
         @SuppressWarnings("unchecked")
-        Class<Bonded<TStruct>> valueClass = (Class<Bonded<TStruct>>) (Class<?>) Bonded.class;
+        Class<IBonded<TStruct>> valueClass = (Class<IBonded<TStruct>>) (Class<?>) IBonded.class;
         return valueClass;
     }
 
     @Override
-    public final Class<Bonded<TStruct>> getPrimitiveValueClass() {
+    public final Class<IBonded<TStruct>> getPrimitiveValueClass() {
         return null;
     }
 
@@ -83,7 +83,7 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     }
 
     @Override
-    protected final void serializeValue(SerializationContext context, Bonded<TStruct> value) throws IOException {
+    protected final void serializeValue(SerializationContext context, IBonded<TStruct> value) throws IOException {
         this.verifyNonNullableValueIsNotSetToNull(value);
 
         // TODO: complete serialization story for bonded
@@ -101,8 +101,8 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     @Override
     protected final void serializeField(
             SerializationContext context,
-            Bonded<TStruct> value,
-            StructBondType.StructField<Bonded<TStruct>> field) throws IOException {
+            IBonded<TStruct> value,
+            StructBondType.StructField<IBonded<TStruct>> field) throws IOException {
         // struct (bonded) fields are never omitted
         context.writer.writeFieldBegin(BondDataType.BT_STRUCT, field.getId(), field);
         try {
@@ -115,9 +115,9 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     }
 
     @Override
-    protected final Bonded<TStruct> deserializeField(
+    protected final IBonded<TStruct> deserializeField(
             TaggedDeserializationContext context,
-            StructBondType.StructField<Bonded<TStruct>> field) throws IOException {
+            StructBondType.StructField<IBonded<TStruct>> field) throws IOException {
         // since bonded applies only to structs, a bonded value may be deserialized only from BT_STRUCT
         if (context.readFieldResult.type.value != BondDataType.BT_STRUCT.value) {
             // throws

@@ -1,11 +1,9 @@
 package com.microsoft.bond.compat;
 
-import com.microsoft.bond.protocol.CompactBinaryReader;
-import com.microsoft.bond.protocol.CompactBinaryWriter;
-import com.microsoft.bond.protocol.FastBinaryReader;
-import com.microsoft.bond.protocol.FastBinaryWriter;
-import com.microsoft.bond.protocol.ProtocolWriter;
-import com.microsoft.bond.protocol.TaggedProtocolReader;
+import com.microsoft.bond.Deserializer;
+import com.microsoft.bond.Serializer;
+import com.microsoft.bond.StructBondType;
+import com.microsoft.bond.protocol.*;
 import unittest.compat.Compat;
 
 import java.io.FileInputStream;
@@ -61,7 +59,9 @@ public class CompatDriver {
         }
 
         final Compat compat = new Compat();
-        compat.deserialize(reader);
-        compat.serialize(writer);
+        final Serializer<Compat> serializer = new Serializer<>();
+        final Deserializer<Compat> deserializer = new Deserializer<>((StructBondType<Compat>) compat.getBondType());
+        deserializer.deserialize(reader);
+        serializer.serialize(compat, writer);
     }
 }
