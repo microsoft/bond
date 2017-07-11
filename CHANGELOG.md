@@ -15,9 +15,14 @@ different versioning scheme, following the Haskell community's
 * `gbc` & compiler library: TBD
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD
+* C++ version: TBD (bug fix bump needed)
 * C# NuGet version: TBD  (bug fix bump needed)
 * C# Comm NuGet version: TBD
+
+### C++ ###
+
+* When Unicode conversion fails during JSON deserialization to wstring, throw a 
+  Bond CoreException instead of a Boost exception.
 
 ### C# ###
 

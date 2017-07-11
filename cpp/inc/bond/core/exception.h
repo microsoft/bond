@@ -105,7 +105,14 @@ BOND_NORETURN inline void RapidJsonException(const char* error, size_t offset)
         "JSON parser error: " << error << " at offset " << offset);
 }
 
- 
+
+BOND_NORETURN inline void UnicodeConversionException(void)
+{
+    BOND_THROW(CoreException,
+        "Unicode conversion exception");
+}
+
+
 struct StreamException
     : Exception
 {
