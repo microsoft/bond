@@ -179,7 +179,7 @@ set (BOND_LIBRARIES_INSTALL_CPP
     CACHE BOOL "If TRUE, the generated .cpp files for the Bond libraries will be installed under src/ as part of the INSTALL target.")
 
 set (BOND_ENABLE_COMM
-    "TRUE"
+    "FALSE"
     CACHE BOOL "If FALSE, then do not build Comm")
 
 set (BOND_SKIP_GBC_TESTS
