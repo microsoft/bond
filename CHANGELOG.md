@@ -23,6 +23,10 @@ different versioning scheme, following the Haskell community's
 
 * When Unicode conversion fails during JSON deserialization to wstring, a
   bond::CoreException is now thrown instead of a Boost exception.
+* When SimpleJSON deserializes a map key with no matching value, a
+  bond::CoreException is now thrown.
+* When SimpleJSON deserializes a map key of non-primitive type, a
+  bond::CoreException is now thrown.
 
 ### C# ###
 
