@@ -11,11 +11,24 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased  ##
+* `gbc` & compiler library: TBD
+* IDL core version: TBD
+* IDL comm version: TBD
+* C++ version: TBD
+* C# NuGet version: TBD  (bug fix bump needed)
+* C# Comm NuGet version: TBD
+
+### C# ###
+
+* Reflection.IsBonded now recognizes custom IBonded
+implementations.
+
 ## 6.0.0: 2017-06-29  ##
 * `gbc` & compiler library: 0.10.0.0
 * IDL core version: 2.0
 * IDL comm version: 1.2
-* C++ version: TBD 6.0.0
+* C++ version: 6.0.0
 * C# NuGet version: 6.0.0
 * C# Comm NuGet version: 0.12.0
 

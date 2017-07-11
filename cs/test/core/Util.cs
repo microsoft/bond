@@ -996,7 +996,7 @@ namespace UnitTest
                 streamTranscode(SerializeSP, TranscodeSPFB<From>, DeserializeFB<To>);
 
                 // Pull parser doesn't support bonded<T>
-                if (AnyField<From>(Reflection.IsBonded))
+                if (!AnyField<From>(Reflection.IsBonded))
                 {
                     streamTranscode(SerializeSP, TranscodeSPXml<From>, DeserializeXml<To>);
                 
@@ -1017,8 +1017,8 @@ namespace UnitTest
                 streamMarshalSchema(MarshalSP);
             }
 
-            // Pull parser doesn't supprot bonded<T>
-            if (AnyField<From>(Reflection.IsBonded))
+            // Pull parser doesn't support bonded<T>
+            if (!AnyField<From>(Reflection.IsBonded))
             {
                 streamRoundtrip(SerializeXml, DeserializeXml<To>);
                 streamTranscode(SerializeCB, TranscodeCBXml<From>, DeserializeXml<To>);

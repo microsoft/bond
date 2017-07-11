@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Reflection;
     using Bond;
     using NUnit.Framework;
 
@@ -301,6 +302,7 @@
         public void AliasBonded()
         {
             var from = new BondedAlias {lazy = new Lazy<Foo>(UnitTest.Random.Init<Foo>())};
+            Assert.IsTrue(Reflection.IsBonded(typeof(Lazy<Foo>)));
             TestTypeAliases(from);
         }
 
@@ -308,6 +310,7 @@
         public void AliasGenericBonded()
         {
             var from = new GenericBondedAlias<Foo> { lazy = new Lazy<Foo>(UnitTest.Random.Init<Foo>()) };
+            Assert.IsTrue(Reflection.IsBonded(typeof(Lazy<Foo>)));
             TestTypeAliases(from);
         }
 
