@@ -120,6 +120,7 @@ ensureNotNullArgument argName = [lt|com.microsoft.bond.helpers.ArgumentHelper.en
 -- the constructors are overloaded to take explicit default value or take none (i.e. use the implicit default)
 fieldDefaultValueInitParamExpr :: MappingContext -> Type -> Maybe Default -> Text
 fieldDefaultValueInitParamExpr _ _ Nothing = mempty
+fieldDefaultValueInitParamExpr _ (BT_Maybe _) _ = mempty
 fieldDefaultValueInitParamExpr _ _ (Just (DefaultBool val)) = if val
     then [lt|, true|]
     else [lt|, false|]
@@ -132,11 +133,13 @@ fieldDefaultValueInitParamExpr _ BT_UInt16 (Just (DefaultInteger val)) = [lt|, (
 fieldDefaultValueInitParamExpr _ BT_UInt32 (Just (DefaultInteger val)) = [lt|, #{val}|]
 fieldDefaultValueInitParamExpr _ BT_UInt64 (Just (DefaultInteger val)) = [lt|, #{val}L|]
 fieldDefaultValueInitParamExpr _ BT_Float (Just (DefaultFloat val)) = [lt|, #{val}F|]
+fieldDefaultValueInitParamExpr _ BT_Float (Just (DefaultInteger val)) = [lt|, (float)#{val}|]
 fieldDefaultValueInitParamExpr _ BT_Double (Just (DefaultFloat val)) = [lt|, #{val}D|]
+fieldDefaultValueInitParamExpr _ BT_Double (Just (DefaultInteger val)) = [lt|, (double)#{val}|]
 fieldDefaultValueInitParamExpr _ BT_String (Just (DefaultString val)) = [lt|, "#{val}"|]
 fieldDefaultValueInitParamExpr _ BT_WString (Just (DefaultString val)) = [lt|, "#{val}"|]
-fieldDefaultValueInitParamExpr java(BT_UserDefined e@Enum {..} _) (Just (DefaultEnum val)) = [lt|, #{qualifiedDeclaredTypeName java e}.#{val}|]
-fieldDefaultValueInitParamExpr _ t _ = error $ "invalid declaration type for fieldDefaultValueInitParamExpr: " ++ show t
+fieldDefaultValueInitParamExpr java (BT_UserDefined e@Enum {..} _) (Just (DefaultEnum val)) = [lt|, #{qualifiedDeclaredTypeName java e}.#{val}|]
+fieldDefaultValueInitParamExpr _ t d = error $ "invalid declaration type for fieldDefaultValueInitParamExpr: " ++ show t ++ " with default " ++ show d
 
 
 -- given a struct name and type parameters, and type, returns a type descriptor expression for the field, used in initialization of struct field descriptors
@@ -246,24 +249,22 @@ makeStructBondTypeMember_initialize java declParams structFields structBase = [l
         }|]
     where
         typeArgVarDeclList = newlineBeginSep 3 typeArgVarDecl indexedDeclParams
-            where
-                typeArgVarDecl (index, typeParam) = [lt|#{typeParamVarDecl typeParam} = this.getGenericSpecialization().getGenericTypeArgument(#{index});|]
-                indexedDeclParams = zip [0 :: Int ..] declParams
+        typeArgVarDecl (index, typeParam) = [lt|#{typeParamVarDecl typeParam} = this.getGenericSpecialization().getGenericTypeArgument(#{index});|]
+        indexedDeclParams = zip [0 :: Int ..] declParams
+
         fieldDescriptorInitList = newlineBeginSep 3 fieldDescriptorInit structFields
-            where
-                fieldDescriptorInit Field {..} = [lt|this.#{fieldName} = new #{structFieldDescriptorTypeName java fieldType}(#{constructorParams});|]
-                    where
-                        constructorParams = [lt|this#{fieldTypeParam}, #{fieldOrdinal}, "#{fieldName}", #{modifierConstantName fieldModifier}#{fieldDefaultValueParam}|]
-                                where
-                                    fieldTypeParam = if isGenericStructFieldDescriptor fieldType
-                                        then [lt|, #{structFieldDescriptorInitTypeExpr java fieldType}|]
-                                        else mempty
-                                    fieldDefaultValueParam = fieldDefaultValueInitParamExpr java fieldType fieldDefault
+        fieldDescriptorInit Field {..} = [lt|this.#{fieldName} = new #{structFieldDescriptorTypeName java fieldType}(#{constructorParams});|]
+          where
+            constructorParams = [lt|this#{fieldTypeParam}, #{fieldOrdinal}, "#{fieldName}", #{modifierConstantName fieldModifier}#{fieldDefaultValueParam}|]
+            fieldTypeParam = if isGenericStructFieldDescriptor fieldType
+                then [lt|, #{structFieldDescriptorInitTypeExpr java fieldType}|]
+                else mempty
+            fieldDefaultValueParam = fieldDefaultValueInitParamExpr java fieldType fieldDefault
+
         baseTypeDescriptorParam = structBaseDescriptorInitStructExpr java structBase
         fieldTypeDescriptorParamsSeparator = ifThenElse (null structFields) mempty [lt|, |]
         fieldTypeDescriptorParams = sepBy ", " structFieldReference structFields
-            where
-                structFieldReference Field {..} = [lt|this.#{fieldName}|]
+        structFieldReference Field {..} = [lt|this.#{fieldName}|]
 
 
 -- given struct class name, generic type parameters, and struct fields, builds text for implementation of
@@ -293,10 +294,11 @@ makeStructBondTypeMember_deserializeStructFields declName declParams structField
                 methodParamDecl = [lt|com.microsoft.bond.BondType.TaggedDeserializationContext context, #{typeNameWithParams declName declParams} value|]
                 declareLocalVariable Field {..} = [lt|boolean __has_#{fieldName} = false;|]
                 deserializeField Field {..} = [lt|#{switchCasePart}#{newLine 6}#{deserializePart}#{newLine 7}#{setBooleanPart}#{newLine 7}break;|]
-                    where
-                        switchCasePart = [lt|case #{fieldOrdinal}:|]
-                        deserializePart = [lt|value.#{fieldName} = this.#{fieldName}.deserialize(context, __has_#{fieldName});|]
-                        setBooleanPart = [lt|__has_#{fieldName} = true;|]
+                  where
+                    switchCasePart = [lt|case #{fieldOrdinal}:|]
+                    deserializePart = [lt|value.#{fieldName} = this.#{fieldName}.deserialize(context, __has_#{fieldName});|]
+                    setBooleanPart = [lt|__has_#{fieldName} = true;|]
+
                 verifyField Field {..} = [lt|this.#{fieldName}.verifyDeserialized(__has_#{fieldName});|]
 
 
