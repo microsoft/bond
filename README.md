@@ -71,7 +71,7 @@ In the root `bond` directory run:
 ```bash
 mkdir build
 cd build
-cmake .. -DBOND_ENABLE_COMM=FALSE -DBOND_ENABLE_GRPC=FALSE
+cmake .. -DBOND_ENABLE_GRPC=FALSE -DBOND_ENABLE_COMM=FALSE
 make
 sudo make install
 ```
@@ -94,7 +94,7 @@ sudo apt-get install \
     python2.7-dev
 
 cd build # or wherever you ran CMake before
-cmake .. -DBOND_ENABLE_COMM=TRUE -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package
+cmake .. -DBOND_ENABLE_GRPC=TRUE -DBOND_ENABLE_COMM=TRUE -DgRPC_ZLIB_PROVIDER=package
 ```
 
 Running the following command in the build directory will build and execute all
@@ -211,22 +211,14 @@ pre-built libraries are only needed for unit tests, Python, gRPC, and Comm
 support. If Boost or Python libraries are not found on the system, then some
 tests and examples will not be built.
 
-To build Bond's gRPC++ integration from source, some of
-[gRPC's prerequisites](https://github.com/grpc/grpc/blob/master/INSTALL.md#building-using-cmake-with-boringssl)
-are also needed:
-
-```bash
-choco install activeperl golang ninja yasm
-```
-
-In order to generate a solution to build the C++ and Python versions with Visual
+In order to generate a solution to build the Bond Core C++ and Python with Visual
 Studio 2015 run the following commands from the root `bond` directory:
 
 ```bash
 mkdir build
 cd build
 set PreferredToolArchitecture=x64
-cmake -G "Visual Studio 14 2015 Win64" ..
+cmake -DBOND_ENABLE_GRPC=FALSE -DBOND_ENABLE_COMM=FALSE -G "Visual Studio 14 2015 Win64" ..
 ```
 
 Setting `PreferredToolArchitecture=x64` selects the 64-bit toolchain which
@@ -247,6 +239,21 @@ In order to build and execute the unit tests and examples run:
 
 ```bash
 cmake --build . --target check -- /maxcpucount:8
+```
+
+To build Bond's gRPC++ integration from source, some of
+[gRPC's prerequisites](https://github.com/grpc/grpc/blob/master/INSTALL.md#building-using-cmake-with-boringssl)
+are also needed:
+
+```bash
+choco install activeperl golang ninja yasm
+```
+
+You will also need to enable gRPC in the `cmake` configuration step by running the following
+in the `build` directory from above and then following the other `cmake` commands above:
+
+```bash
+cmake -DBOND_ENABLE_GRPC=TRUE -DBOND_ENABLE_COMM=FALSE -G "Visual Studio 14 2015 Win64" ..
 ```
 
 ## Contributing
