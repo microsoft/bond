@@ -716,8 +716,8 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     /**
      * Implements the {@link StructField} contract for fields of general object data types
      * (i.e. any field that is not of a Java primitive type, string, or an enum) that are
-     * not defaulting to "nothing". The default value is not explicitly set on the field
-     * but rather is determined by the field's type.
+     * not defaulting to "nothing". Since these field types cannot have explicit default
+     * values, there is no constructor that takes a default value.
      */
     protected static final class ObjectStructField<TField> extends StructField<TField> {
 
@@ -799,8 +799,8 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     /**
-     * Implements the {@link StructField} contract for bonded fields. The default value is not
-     * explicitly set on the field but rather is determined by the field's type.
+     * Implements the {@link StructField} contract for bonded fields. Since these field types
+     * cannot have explicit default values, there is no constructor that takes a default value.
      */
     protected static final class BondedStructField<TField extends BondSerializable> extends StructField<IBonded<TField>> {
 
