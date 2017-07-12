@@ -4,7 +4,6 @@
 package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
-import com.microsoft.bond.Metadata;
 import com.microsoft.bond.ProtocolType;
 
 import java.io.IOException;
@@ -12,7 +11,7 @@ import java.io.OutputStream;
 
 /**
  * Implements Fast Binary serialization.
- * Refer to {@link https://microsoft.github.io/bond/reference/cpp/fast__binary_8h_source.html} for details.
+ * Refer to {@see https://microsoft.github.io/bond/reference/cpp/fast__binary_8h_source.html} for details.
  */
 public final class FastBinaryWriter implements ProtocolWriter {
 
@@ -42,7 +41,7 @@ public final class FastBinaryWriter implements ProtocolWriter {
     }
 
     @Override
-    public void writeStructBegin(final Metadata metadata) throws IOException {
+    public void writeStructBegin(final StructMetadata metadata) throws IOException {
     }
 
     @Override
@@ -51,7 +50,7 @@ public final class FastBinaryWriter implements ProtocolWriter {
     }
 
     @Override
-    public void writeBaseBegin(final Metadata metadata) throws IOException {
+    public void writeBaseBegin(final StructMetadata metadata) throws IOException {
     }
 
     @Override
@@ -60,7 +59,8 @@ public final class FastBinaryWriter implements ProtocolWriter {
     }
 
     @Override
-    public void writeFieldBegin(final BondDataType type, final int id, final Metadata metadata) throws IOException {
+    public void writeFieldBegin(
+            final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
         writer.writeInt8((byte) type.value);
         writer.writeInt16((short) id);
     }
@@ -70,7 +70,8 @@ public final class FastBinaryWriter implements ProtocolWriter {
     }
 
     @Override
-    public void writeFieldOmitted(final BondDataType type, final int id, final Metadata metadata) throws IOException {
+    public void writeFieldOmitted(
+            final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
     }
 
     @Override

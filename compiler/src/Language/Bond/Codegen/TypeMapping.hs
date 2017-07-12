@@ -232,7 +232,7 @@ javaBoxedTypeMapping = TypeMapping
     (Just Java)
     ""
     "."
-    javaBox
+    javaBoxedType
     id
     javaTypeMapping
     javaBoxedTypeMapping
@@ -477,21 +477,8 @@ csTypeAnnotation m t@(BT_UserDefined a@Alias {..} args)
 csTypeAnnotation _ (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> commaSepTypeNames args)
 csTypeAnnotation m t = m t
 
--- Java type mapping
-javaBox :: Type -> TypeNameBuilder
-javaBox BT_Int8 = pure "Byte"
-javaBox BT_Int16 = pure "Short"
-javaBox BT_Int32 = pure "Integer"
-javaBox BT_Int64 = pure "Long"
-javaBox BT_UInt8 = pure "Byte"
-javaBox BT_UInt16 = pure "Short"
-javaBox BT_UInt32 = pure "Integer"
-javaBox BT_UInt64 = pure "Long"
-javaBox BT_Float = pure "Float"
-javaBox BT_Double = pure "Double"
-javaBox BT_Bool = pure "Boolean"
-javaBox bt = javaType bt
 
+-- Java type mapping
 javaType :: Type -> TypeNameBuilder
 javaType BT_Int8 = pure "byte"
 javaType BT_Int16 = pure "short"
@@ -504,20 +491,47 @@ javaType BT_UInt64 = pure "long"
 javaType BT_Float = pure "float"
 javaType BT_Double = pure "double"
 javaType BT_Bool = pure "boolean"
-javaType BT_String = pure "String"
-javaType BT_WString = pure "String"
-javaType BT_MetaName = pure "String"
-javaType BT_MetaFullName = pure "String"
+javaType BT_String = pure "java.lang.String"
+javaType BT_WString = pure "java.lang.String"
+javaType BT_MetaName = pure "java.lang.String"
+javaType BT_MetaFullName = pure "java.lang.String"
 javaType BT_Blob = pure "byte[]"
 javaType (BT_IntTypeArg x) = pureText x
-javaType (BT_Maybe type_) = javaType (BT_Nullable type_)
-javaType (BT_Nullable element) = javaBox element
-javaType (BT_List element) = "java.util.List<" <>> elementTypeName element <<> ">"
-javaType (BT_Vector element) = "java.util.List<" <>> elementTypeName element <<> ">"
-javaType (BT_Set element) = "java.util.Set<" <>> elementTypeName element <<> ">"
-javaType (BT_Map key value) = "java.util.Map<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> ">"
+javaType (BT_Maybe BT_Int8) = pure "com.microsoft.bond.SomethingByte"
+javaType (BT_Maybe BT_Int16) = pure "com.microsoft.bond.SomethingShort"
+javaType (BT_Maybe BT_Int32) = pure "com.microsoft.bond.SomethingInteger"
+javaType (BT_Maybe BT_Int64) = pure "com.microsoft.bond.SomethingLong"
+javaType (BT_Maybe BT_UInt8) = pure "com.microsoft.bond.SomethingByte"
+javaType (BT_Maybe BT_UInt16) = pure "com.microsoft.bond.SomethingShort"
+javaType (BT_Maybe BT_UInt32) = pure "com.microsoft.bond.SomethingInteger"
+javaType (BT_Maybe BT_UInt64) = pure "com.microsoft.bond.SomethingLong"
+javaType (BT_Maybe BT_Float) = pure "com.microsoft.bond.SomethingFloat"
+javaType (BT_Maybe BT_Double) = pure "com.microsoft.bond.SomethingDouble"
+javaType (BT_Maybe BT_Bool) = pure "com.microsoft.bond.SomethingBool"
+javaType (BT_Maybe fieldType) = "com.microsoft.bond.SomethingObject<" <>> javaBoxedType fieldType <<> ">"
+javaType (BT_Nullable elementType) = javaBoxedType elementType
+javaType (BT_List elementType) = "java.util.List<" <>> elementTypeName elementType <<> ">"
+javaType (BT_Vector elementType) = "java.util.List<" <>> elementTypeName elementType <<> ">"
+javaType (BT_Set elementType) = "java.util.Set<" <>> elementTypeName elementType <<> ">"
+javaType (BT_Map keyType valueType) = "java.util.Map<" <>> elementTypeName keyType <<>> ", " <>> elementTypeName valueType <<> ">"
 javaType (BT_TypeParam param) = pureText $ paramName param
-javaType (BT_Bonded type_) = "com.microsoft.bond.IBonded<" <>> javaBox type_ <<> ">"
+javaType (BT_Bonded structType) = "com.microsoft.bond.IBonded<" <>> javaBoxedType structType <<> ">"
 javaType (BT_UserDefined Alias {} _) = error "Java codegen does not support aliases"
 javaType (BT_UserDefined decl args) =
-    declTypeName decl <<>> (angles <$> localWith (const javaBoxedTypeMapping) (commaSepTypeNames args))
+    declQualifiedTypeName decl <<>> (angles <$> localWith (const javaBoxedTypeMapping) (commaSepTypeNames args))
+
+-- Java type mapping to a reference type with primitive types boxed
+javaBoxedType :: Type -> TypeNameBuilder
+javaBoxedType BT_Int8 = pure "java.lang.Byte"
+javaBoxedType BT_Int16 = pure "java.lang.Short"
+javaBoxedType BT_Int32 = pure "java.lang.Integer"
+javaBoxedType BT_Int64 = pure "java.lang.Long"
+javaBoxedType BT_UInt8 = pure "java.lang.Byte"
+javaBoxedType BT_UInt16 = pure "java.lang.Short"
+javaBoxedType BT_UInt32 = pure "java.lang.Integer"
+javaBoxedType BT_UInt64 = pure "java.lang.Long"
+javaBoxedType BT_Float = pure "java.lang.Float"
+javaBoxedType BT_Double = pure "java.lang.Double"
+javaBoxedType BT_Bool = pure "java.lang.Boolean"
+javaBoxedType t = javaType t
+

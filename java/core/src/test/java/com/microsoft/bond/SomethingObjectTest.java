@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.bond;
 
 import org.junit.Test;
@@ -23,7 +26,7 @@ public class SomethingObjectTest {
     @Test
     public void testConstructorAndMethods() {
         for (Object testValue : testValues) {
-            SomethingObject testObject = new SomethingObject(testValue);
+            SomethingObject<Object> testObject = new SomethingObject<Object>(testValue);
             assertEquals(testValue, testObject.getValue());
             Object newTestValue = String.valueOf(testValue) + "/";
             testObject.setValue(newTestValue);
@@ -36,11 +39,11 @@ public class SomethingObjectTest {
         // 3 copies of each value, plus some other types
         ArrayList<Object> testObjects = new ArrayList<Object>();
         for (Object testValue : testValues) {
-            testObjects.add(new SomethingObject(testValue));
-            testObjects.add(new SomethingObject(testValue));
-            testObjects.add(new SomethingObject(testValue));
-            testObjects.add(new SomethingObject(new SomethingObject(testValue)));
-            testObjects.add(new SomethingObject(null));
+            testObjects.add(new SomethingObject<Object>(testValue));
+            testObjects.add(new SomethingObject<Object>(testValue));
+            testObjects.add(new SomethingObject<Object>(testValue));
+            testObjects.add(new SomethingObject<Object>(new SomethingObject<Object>(testValue)));
+            testObjects.add(new SomethingObject<Object>(null));
             testObjects.add("");
         }
 
