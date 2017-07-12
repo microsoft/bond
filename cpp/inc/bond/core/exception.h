@@ -5,6 +5,8 @@
 
 #include "detail/string_stream.h"
 #include <bond/core/bond_types.h>
+#include <boost/locale/encoding_utf.hpp>
+#include <boost/utility/enable_if.hpp>
 
 #define BOND_THROW(x, y)  throw x((::bond::detail::basic_string_stream<1024>() << y).content());
 
@@ -55,11 +57,43 @@ BOND_NORETURN inline void MergerContainerException(uint32_t payload, uint32_t ob
 }
 
 
+BOND_NORETURN inline void InvalidKeyTypeException()
+{
+    BOND_THROW(CoreException,
+        "Map key type not valid");
+}
+
+
+namespace detail
+{
+    template <typename Key>
+    BOND_NORETURN inline void ElementNotFoundExceptionHelper(const Key& key, typename boost::enable_if<is_wstring<Key>>::type* = nullptr)
+    {
+        try
+        {
+            BOND_THROW(CoreException,
+                "Map element not found: key: " <<
+                    boost::locale::conv::utf_to_utf<char>(string_data(key), string_data(key) +string_length(key),  boost::locale::conv::stop));
+        }
+        catch (boost::locale::conv::conversion_error &)
+        {
+            BOND_THROW(CoreException, "Map element not found: key: <bad wstring>");
+        }
+    }
+
+    template <typename Key>
+    BOND_NORETURN inline void ElementNotFoundExceptionHelper(const Key& key, typename boost::disable_if<is_wstring<Key>>::type* = nullptr)
+    {
+        BOND_THROW(CoreException,
+            "Map element not found: key: " << key);
+    }
+}
+
+
 template <typename Key>
 BOND_NORETURN inline void ElementNotFoundException(const Key& key)
 {
-    BOND_THROW(CoreException,
-          "Map element not found: key: " << key);
+    detail::ElementNotFoundExceptionHelper(key);
 }
 
 
@@ -105,7 +139,14 @@ BOND_NORETURN inline void RapidJsonException(const char* error, size_t offset)
         "JSON parser error: " << error << " at offset " << offset);
 }
 
- 
+
+BOND_NORETURN inline void UnicodeConversionException()
+{
+    BOND_THROW(CoreException,
+        "Unicode conversion exception");
+}
+
+
 struct StreamException
     : Exception
 {

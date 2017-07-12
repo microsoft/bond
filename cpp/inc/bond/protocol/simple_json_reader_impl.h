@@ -150,8 +150,19 @@ DeserializeMap(X& var, BondDataType keyType, const T& element, SimpleJsonReader<
         {
             detail::Read(*it, key);
         }
+        else
+        {
+            bond::InvalidKeyTypeException();
+        }
 
-        SimpleJsonReader<Buffer> input(reader, *++it);
+        ++it;
+
+        if (it == end)
+        {
+            bond::ElementNotFoundException(key);
+        }
+
+        SimpleJsonReader<Buffer> input(reader, *it);
 
         if (value_type.ComplexTypeMatch(*it))
             detail::MakeValue(input, element).template Deserialize<Protocols>(mapped_at(var, key));

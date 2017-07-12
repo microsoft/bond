@@ -41,7 +41,8 @@ public:
         return *this;
     }
 
-    basic_string_stream& operator<<(const std::string& str)
+    template<typename T, typename A>
+    basic_string_stream& operator<<(const std::basic_string<char, T, A>& str)
     {
         write(str.begin(), str.end());
         return *this;
