@@ -200,6 +200,8 @@
 
                 msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
+                if (-not $?) { throw "cs compat build failed" }
+
                 mkdir build
 
                 cd build
