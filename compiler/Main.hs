@@ -148,8 +148,8 @@ codeGen options typeMapping templates file = do
                                     let (suffix, code) = template mappingContext baseName imports declarations
                                     let fileName = baseName ++ suffix
                                     createDirectoryIfMissing True outputDir
-                                    let content = if (no_banner options) then code else (commonHeader "//" fileName <> code)
-                                    L.writeFile (outputDir </> fileName) content
+                                    let content = if (no_banner options) then code else (commonHeader "//" file fileName <> code)
+                                    LTIO.writeFile (outputDir </> fileName) content
 
 -- Java's class-per-file and package-as-path requirements make it difficult to
 -- share code with languages where there is a known set of generated files for
