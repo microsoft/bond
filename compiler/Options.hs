@@ -38,6 +38,10 @@ data Options
         , export_attribute :: Maybe String
         , jobs :: Maybe Int
         , no_banner :: Bool
+        , core_enabled :: Bool
+        , comm_enabled :: Bool
+        , grpc_enabled :: Bool
+        , service_inheritance_enabled :: Bool
         }
     | Cs
         { files :: [FilePath]
@@ -53,6 +57,7 @@ data Options
         , structs_enabled :: Bool
         , comm_enabled :: Bool
         , grpc_enabled :: Bool
+        , service_inheritance_enabled :: Bool
         }
     | Java
         { files :: [FilePath]
@@ -69,6 +74,7 @@ data Options
         , output_dir :: FilePath
         , jobs :: Maybe Int
         , runtime_schema :: Bool
+        , service_inheritance_enabled :: Bool
         }
       deriving (Show, Data, Typeable)
 
@@ -86,6 +92,10 @@ cpp = Cpp
     , export_attribute = def &= typ "ATTRIBUTE" &= explicit &= name "apply-attribute" &= name "export-attribute" &= help "Prefix declarations for library export with the specified C++ attribute/declspec. apply-attribute is a deprecated synonym."
     , jobs = def &= opt "0" &= typ "NUM" &= name "j" &= help "Run NUM jobs simultaneously (or '$ncpus' if no NUM is not given)"
     , no_banner = def &= help "Omit the banner at the top of generated files"
+    , core_enabled = True &= explicit &= name "core" &= help "Generate core serialization definitions (true by default, --core=false to disable)"
+    , comm_enabled = False &= explicit &= name "comm" &= help "Generate comm definitions"
+    , grpc_enabled = False &= explicit &= name "grpc" &= help "Generate gRPC definitions"
+    , service_inheritance_enabled = False &= explicit &= name "enable-service-inheritance" &= help "Enable service inheritance syntax in IDL"
     } &=
     name "c++" &=
     help "Generate C++ code"

@@ -18,59 +18,87 @@
     clone_depth: 15
 
     environment:
+        global:
+            STACK_ROOT: "c:\\sr"
         BOND_TOKEN:
             secure: MdnZ86SpR3+/fVz2u31blV83LH6juiobrvO/l1Ak4zG7ykxtvfUI/Vd4l7etYB4J
+        # The slowest configurations should come first to help reduce
+        # overall completion time since we run multiple configurations in
+        # parallel.
         matrix:
+              # C++ Core build and tests (Visual C++ 2013)
+            - BOND_BUILD: C++
+              BOND_VS: "Visual Studio 12 2013"
+              BOND_VS_NUM: 12
+              BOND_ARCH: 32
+              BOND_BOOST: 58
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_GBC_TESTS=TRUE"
+              # C++ Core build and tests
+            - BOND_BUILD: C++
+              BOND_VS: "Visual Studio 14 2015"
+              BOND_VS_NUM: 14
+              BOND_ARCH: 64
+              BOND_BOOST: 60
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
             - BOND_BUILD: "C# .NET Core"
               BOND_CONFIG: Debug
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 64
-              BOND_BOOST: 60
-              BOND_CMAKE_FLAGS: "-DBOND_CORE_ONLY=TRUE"
             - BOND_BUILD: Doc
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
               BOND_CONFIG: Fields
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 64
-              BOND_BOOST: 60
-              BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
             - BOND_BUILD: Python
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 32
               BOND_BOOST: 60
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: Python
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
               BOND_BOOST: 63
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
+              # C++ Comm build and tests
             - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 12 2013"
-              BOND_VS_NUM: 12
-              BOND_ARCH: 32
-              BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_CORE_ONLY=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
+              BOND_VS: "Visual Studio 14 2015"
+              BOND_VS_NUM: 14
+              BOND_ARCH: 64
+              BOND_BOOST: 63
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=TRUE;-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
+              # C++ gRPC build and tests
+            - BOND_BUILD: C++
+              BOND_VS: "Visual Studio 14 2015"
+              BOND_VS_NUM: 14
+              BOND_ARCH: 64
+              BOND_BOOST: 63
+              BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
+              # C++ Comm build and tests (Visual C++ 2013)
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 12 2013"
               BOND_VS_NUM: 12
               BOND_ARCH: 64
               BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
-
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=TRUE;-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
     install:
         - ps: >-
-            git submodule update --init
+            if (($env:BOND_BUILD -eq 'C++') -or ($env:BOND_BUILD -eq 'Python')) {
+
+                git submodule update --init thirdparty\rapidjson
+
+                # If gRPC is not disabled, init gRPC and its dependencies
+
+                if (($env:BOND_BUILD -eq 'C++') -and (-not ($env:BOND_CMAKE_FLAGS -match '-DBOND_ENABLE_GRPC=FALSE'))) {
+                    git submodule update --init --recursive thirdparty\grpc
+                }
+
+            }
 
             if ($env:BOND_BOOST -eq 56) {
                 # Hard-coded Boost path per https://www.appveyor.com/docs/installed-software#languages-libraries-frameworks
+
                 $env:BOOST_ROOT = "C:/Libraries/boost"
                 $env:BOOST_LIBRARYDIR = "C:/Libraries/boost/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
             }
@@ -79,7 +107,7 @@
                 $env:BOOST_LIBRARYDIR = "C:/Libraries/boost_1_${env:BOND_BOOST}_0/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
             }
 
-            choco install haskellplatform -version 2014.2.0.0 -y
+            choco install haskell-stack -y
 
             # choco install updated the path, so re-read them from the registry and reset $env:path
 
@@ -88,8 +116,6 @@
             $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
 
             $env:Path = "$machinePath;$userPath"
-
-            cabal update
 
             if ($env:BOND_BUILD -eq "Doc") {
 
@@ -105,9 +131,24 @@
 
             }
 
+            if (($env:BOND_BUILD -eq 'C++') -and (-not ($env:BOND_CMAKE_FLAGS -match '-DBOND_ENABLE_GRPC=FALSE'))) {
+
+                # We're building C++ and gRPC isn't disabled, so we need
+                # gRPC dependencies.
+
+                choco install yasm -y
+
+                $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+
+                $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
+
+                $env:Path = "$machinePath;$userPath"
+
+            }
+
     cache:
         - cs\packages -> cs\test\core\packages.config
-        - compiler\.cabal-sandbox -> compiler\bond.cabal
+        - "c:\\sr"
 
     before_build:
         - ps: >-
@@ -132,6 +173,7 @@
             if ($env:BOND_BUILD -eq "Python" -Or $env:BOND_BUILD -eq "C++") {
 
                 # Make sure we have Python27-64 before any other version
+
                 if ($env:BOND_ARCH -eq 64) {
                     $env:Path = "C:\Python27-x64\scripts;C:\Python27-x64\;${env:Path}"
                 }
@@ -150,13 +192,21 @@
 
             if ($env:BOND_BUILD -eq "C++") {
 
-                msbuild cs\cs.sln /verbosity:minimal /target:Tests\Compat /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                # We don't always need all of these compat tests--depending
+                # on what part of C++ we're building--but they're pretty
+                # fast to build, so build them all.
+
+                $compatTests = ('Tests\CommCompatClient', 'Tests\CommCompatServer', 'Tests\Compat', 'Tests\GrpcCompatClient', 'Tests\GrpcCompatServer')
+
+                msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
                 mkdir build
 
                 cd build
 
-                cmake $cmakeFlags -G $cmakeGenerator ..
+                cmake $cmakeFlags -G $cmakeGenerator .. 2>cmake_stderr.log
+
+                Get-Content cmake_stderr.log
 
             }
 
@@ -245,13 +295,10 @@
 
             if ($env:BOND_BUILD -eq "C#") {
 
-                nunit-console-x86 /framework:net-4.0 /labels "cs\test\core\bin\debug\net40\${env:BOND_OUTPUT}\Bond.UnitTest.dll" cs\test\internal\bin\debug\net40\Bond.InternalTest.dll
-                if (-not $?) { throw "tests failed" }
-
                 nunit-console-x86 /framework:net-4.5 /labels "cs\test\core\bin\debug\net45\${env:BOND_OUTPUT}\Bond.UnitTest.dll" cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
                 if (-not $?) { throw "tests failed" }
 
-                & examples\cs\comm\grpc_pingpong\bin\Debug\pingpong.exe
+                & examples\cs\grpc\pingpong\bin\Debug\pingpong.exe
                 if (-not $?) { throw "tests failed" }
 
                 # We need to investigate why these tests are failing in AppVeyor, but not locally.

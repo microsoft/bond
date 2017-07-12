@@ -2,6 +2,7 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\internal\Common.Internal.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\comm.props" />
   <PropertyGroup>
     <ProjectGuid>{5F6CBC77-8FB5-4644-BAB5-F8E62792266E}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -9,7 +10,6 @@
     <RootNamespace>Bond.Comm.Layers</RootNamespace>
     <AssemblyName>Bond.Comm.Layers</AssemblyName>
     <BondRedistributable>true</BondRedistributable>
-    <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="LayerStack.cs" />

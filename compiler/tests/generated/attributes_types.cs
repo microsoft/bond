@@ -19,7 +19,7 @@ namespace tests
 
     [global::Bond.Attribute("EnumAttribute1", "one")]
     [global::Bond.Attribute("EnumAttribute2", "two")]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.9.0.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
     public enum Enum
     {
         Value1,
@@ -28,7 +28,7 @@ namespace tests
     [global::Bond.Attribute("StructAttribute1", "one")]
     [global::Bond.Attribute("StructAttribute2", "two")]
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.9.0.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
     public partial class Foo
     {
         [global::Bond.Attribute("FieldAttribute1", "one")]

@@ -28,10 +28,6 @@
         </dependencies>
     </metadata>
     <files>
-        <file target="lib\net40" src="net40\Bond.JSON.dll" />
-        <file target="lib\net40" src="net40\Bond.JSON.pdb" />
-        <file target="lib\net40" src="net40\Bond.JSON.xml" />
-
         <file target="lib\net45" src="net45\Bond.JSON.dll" />
         <file target="lib\net45" src="net45\Bond.JSON.pdb" />
         <file target="lib\net45" src="net45\Bond.JSON.xml" />

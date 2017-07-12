@@ -1,0 +1,17 @@
+namespace unittest.compat
+
+[help("-s SERVER_EXE -c CLIENT_EXE [options]")]
+struct Options
+{
+    [help("show this help text")]
+    [abbr("?")]
+    0: bool help;
+
+    [help("server exe to invoke")]
+    [abbr("s")]
+    10: string server_exe;
+
+    [help("client exe to invoke")]
+    [abbr("c")]
+    20: string client_exe;
+};

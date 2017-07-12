@@ -3,52 +3,53 @@
 #include "precompiled.h"
 #include "container_extensibility.h"
 
-namespace unittest
-{
 
-template <typename T, size_t N, typename S>
-bool operator==(const std::array<T, N>& left, const S& right)
+template <typename Protocols, typename T, size_t N, typename S>
+bool Compare(const std::array<T, N>& left, const S& right)
 {
-    for (typename S::size_type i = 0; i < right.length(); ++i)
-        if (left[i] != static_cast<T>(right[i]))
+    for (typename S::size_type i = 0; i < right.size(); ++i)
+        if (!Compare<Protocols>(left[i], static_cast<T>(right[i])))
             return false;
 
     return true;
 }
 
-inline bool operator==(const WithStaticString& custom, const BondStruct<string>& standard)
+template <typename Protocols>
+bool Compare(const WithStaticString& custom, const BondStruct<string>& standard)
 {
-    return custom.field == standard.field;
+    return Compare<Protocols>(custom.field, standard.field);
 }
 
-inline bool operator==(const BondStruct<string>& standard, const WithStaticString& custom)
+template <typename Protocols>
+bool Compare(const BondStruct<string>& standard, const WithStaticString& custom)
 {
-    return custom.field == standard.field;
+    return Compare<Protocols>(custom.field, standard.field);
 }
 
-inline bool operator==(const WithStaticWString& custom, const BondStruct<wstring>& standard)
+template <typename Protocols>
+bool Compare(const WithStaticWString& custom, const BondStruct<wstring>& standard)
 {
-    return custom.field == standard.field;
+    return Compare<Protocols>(custom.field, standard.field);
 }
 
-inline bool operator==(const BondStruct<wstring>& standard, const WithStaticWString& custom)
+template <typename Protocols>
+bool Compare(const BondStruct<wstring>& standard, const WithStaticWString& custom)
 {
-    return custom.field == standard.field;
+    return Compare<Protocols>(custom.field, standard.field);
 }
 
-template <typename T>
-inline bool operator==(const WithSimpleList<T>& custom, const BondStruct<list<T> >& standard)
+template <typename Protocols, typename T>
+bool Compare(const WithSimpleList<T>& custom, const BondStruct<list<T> >& standard)
 {
-    return Equal(custom.field, standard.field);
+    return Equal<Protocols>(custom.field, standard.field);
 }
 
-template <typename T>
-inline bool operator==(const BondStruct<list<T> >& standard, const WithSimpleList<T>& custom)
+template <typename Protocols, typename T>
+bool Compare(const BondStruct<list<T> >& standard, const WithSimpleList<T>& custom)
 {
-    return Equal(custom.field, standard.field);
+    return Equal<Protocols>(custom.field, standard.field);
 }
 
-} // namespace unittest
 
 template <typename Reader, typename Writer>
 struct SimpleListTest

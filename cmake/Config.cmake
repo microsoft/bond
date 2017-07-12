@@ -42,7 +42,7 @@ if (MSVC)
     # Our minimum required version of CMake doesn't have GREATER_EQUAL, so
     # we invert a less-than comparison instead. CMake 3.7 added
     # GREATER_EQUAL.
-    if (NOT (MSVC_VERSION LESS 1900))
+    if (NOT (MSVC_VERSION LESS 1910))
       add_compile_options (/permissive-)
     endif()
 
@@ -54,25 +54,39 @@ if (WIN32)
 
     # If C# has been built we will also run C# compatibility tests
     find_program (BOND_CSHARP_COMPAT_TEST Bond.CompatibilityTest.exe
-        PATH_SUFFIXES net40 net45
+        PATH_SUFFIXES net45
         NO_DEFAULT_PATH
         PATHS
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/core/bin/debug"
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/core/bin/retail")
 
     find_program (BOND_CSHARP_COMM_COMPAT_SERVER CommCompatServer.exe
-        PATH_SUFFIXES net40 net45
+        PATH_SUFFIXES net45
         NO_DEFAULT_PATH
         PATHS
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/server/bin/debug"
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/server/bin/retail")
 
     find_program (BOND_CSHARP_COMM_COMPAT_CLIENT CommCompatClient.exe
-        PATH_SUFFIXES net40 net45
+        PATH_SUFFIXES net45
         NO_DEFAULT_PATH
         PATHS
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/client/bin/debug"
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/client/bin/retail")
+
+    find_program (BOND_CSHARP_GRPC_COMPAT_SERVER GrpcCompatServer.exe
+        PATH_SUFFIXES net45
+        NO_DEFAULT_PATH
+        PATHS
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/server/bin/debug"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/server/bin/retail")
+
+    find_program (BOND_CSHARP_GRPC_COMPAT_CLIENT GrpcCompatClient.exe
+        PATH_SUFFIXES net45
+        NO_DEFAULT_PATH
+        PATHS
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/client/bin/debug"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/client/bin/retail")
 endif()
 
 # find Java libraries and programs
@@ -173,9 +187,9 @@ set (BOND_LIBRARIES_INSTALL_CPP
     "FALSE"
     CACHE BOOL "If TRUE, the generated .cpp files for the Bond libraries will be installed under src/ as part of the INSTALL target.")
 
-set (BOND_CORE_ONLY
+set (BOND_ENABLE_COMM
     "FALSE"
-    CACHE BOOL "If TRUE, then only build the Bond Core")
+    CACHE BOOL "If FALSE, then do not build Comm")
 
 set (BOND_SKIP_GBC_TESTS
     "FALSE"
@@ -185,6 +199,6 @@ set (BOND_SKIP_CORE_TESTS
     "FALSE"
     CACHE BOOL "If TRUE, then skip Bond Core tests and examples")
 
-if ((NOT BOND_CORE_ONLY) AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
-    message(FATAL_ERROR "BOND_CORE_ONLY is FALSE but compiler specified does not support C++11 standard")
+if (((BOND_ENABLE_COMM) OR (BOND_ENABLE_GRPC)) AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
+    message(FATAL_ERROR "BOND_ENABLE_COMM and/or BOND_ENABLE_GRPC is TRUE but compiler specified does not support C++11 standard")
 endif()

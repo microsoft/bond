@@ -68,9 +68,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write protocol magic number and version
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteVersion()
         {
         }
@@ -80,9 +78,7 @@ namespace Bond.Protocols
         /// Start writing a struct
         /// </summary>
         /// <param name="metadata">Schema metadata</param>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteStructBegin(Metadata metadata)
         {
             LinkedListNode<UInt32> frameNode = lengths.AddLast(0);
@@ -92,9 +88,7 @@ namespace Bond.Protocols
         /// <summary>
         /// End writing a struct
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteStructEnd()
         {
             CounterStackFrame frame = counterStack.Peek();
@@ -113,18 +107,14 @@ namespace Bond.Protocols
         /// Start writing a base struct
         /// </summary>
         /// <param name="metadata">Base schema metadata</param>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBaseBegin(Metadata metadata)
         { }
 
         /// <summary>
         /// End writing a base struct
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBaseEnd()
         {
             AddBytes(1);
@@ -136,9 +126,7 @@ namespace Bond.Protocols
         /// <param name="type">Type of the field</param>
         /// <param name="id">Identifier of the field</param>
         /// <param name="metadata">Metadata of the field</param>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldBegin(BondDataType type, ushort id, Metadata metadata)
         {
             if (id <= 5)
@@ -161,9 +149,7 @@ namespace Bond.Protocols
         /// <param name="dataType">Type of the field</param>
         /// <param name="id">Identifier of the field</param>
         /// <param name="metadata">Metadata of the field</param>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldOmitted(BondDataType dataType, ushort id, Metadata metadata)
         { }
 
@@ -171,9 +157,7 @@ namespace Bond.Protocols
         /// <summary>
         /// End writing a field
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldEnd()
         { }
 
@@ -182,9 +166,7 @@ namespace Bond.Protocols
         /// </summary>
         /// <param name="count">Number of elements in the container</param>
         /// <param name="elementType">Type of the elements</param>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteContainerBegin(int count, BondDataType elementType)
         {
             if (count < 7)
@@ -204,9 +186,7 @@ namespace Bond.Protocols
         /// <param name="count">Number of elements in the container</param>
         /// <param name="keyType">Type of the keys</param>
         /// <param name="valueType">Type of the values</param>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteContainerBegin(int count, BondDataType keyType, BondDataType valueType)
         {
             AddBytes(2);
@@ -216,18 +196,14 @@ namespace Bond.Protocols
         /// <summary>
         /// End writing a container
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteContainerEnd()
         { }
 
         /// <summary>
         /// Write array of bytes verbatim
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBytes(ArraySegment<byte> data)
         {
             AddBytes(data.Count);
@@ -239,9 +215,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an UInt8
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt8(byte value)
         {
             AddBytes(1);
@@ -250,9 +224,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an UInt16
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt16(UInt16 value)
         {
             AddVarUInt16(value);
@@ -261,9 +233,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an UInt16
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt32(UInt32 value)
         {
             AddVarUInt32(value);
@@ -272,9 +242,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an UInt64
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt64(UInt64 value)
         {
             AddVarUInt64(value);
@@ -283,9 +251,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an Int8
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt8(SByte value)
         {
             AddBytes(1);
@@ -294,9 +260,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an Int16
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt16(Int16 value)
         {
             AddVarUInt16(IntegerHelper.EncodeZigzag16(value));
@@ -305,9 +269,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an Int32
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt32(Int32 value)
         {
             AddVarUInt32(IntegerHelper.EncodeZigzag32(value));
@@ -316,9 +278,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write an Int64
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt64(Int64 value)
         {
             AddVarUInt64(IntegerHelper.EncodeZigzag64(value));
@@ -327,9 +287,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write a float
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFloat(float value)
         {
             AddBytes(4);
@@ -338,9 +296,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write a double
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteDouble(double value)
         {
             AddBytes(8);
@@ -349,9 +305,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write a bool
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBool(bool value)
         {
             AddBytes(1);
@@ -360,9 +314,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write a UTF-8 string
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteString(string value)
         {
             int size = Encoding.UTF8.GetByteCount(value);
@@ -373,9 +325,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write a UTF-16 string
         /// </summary>
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteWString(string value)
         {
             AddVarUInt32((uint)value.Length);

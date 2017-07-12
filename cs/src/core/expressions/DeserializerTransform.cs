@@ -558,7 +558,7 @@ namespace Bond.Expressions
             }
             else if (schemaType.IsGenericType())
             {
-                schemaType = schemaType.GetGenericTypeDefinition().MakeGenericType(type.GetGenericArguments());
+                schemaType = schemaType.GetGenericTypeDefinition().MakeGenericType(type.GetTypeInfo().GenericTypeArguments);
             }
             else if (schemaType.IsArray)
             {

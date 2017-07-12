@@ -53,59 +53,45 @@ namespace Bond.Protocols
 
         #region Struct
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteStructBegin(Metadata metadata)
         {
             writer.WriteStartElement(metadata.GetXmlName());
             PushNamespace(metadata);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBaseBegin(Metadata metadata)
         {
             PushNamespace(metadata);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteStructEnd()
         {
             PopNamespace();
             writer.WriteEndElement();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBaseEnd()
         {
             PopNamespace();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldBegin(BondDataType dataType, ushort id, Metadata metadata)
         {
             writer.WriteStartElement(Prefix, metadata.name, null);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldEnd()
         {
             writer.WriteEndElement();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldOmitted(BondDataType dataType, ushort id, Metadata metadata)
         { }
 
@@ -113,37 +99,27 @@ namespace Bond.Protocols
 
         #region Containers
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteContainerBegin(int count, BondDataType elementType)
         { }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteContainerBegin(int count, BondDataType keyType, BondDataType valueType)
         { }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteContainerEnd()
         { }
 
         #region ITextProtocolWriter
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif     
         public void WriteItemBegin()
         {
             writer.WriteStartElement("Item");
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif        
         public void WriteItemEnd()
         {
             writer.WriteEndElement();
@@ -155,81 +131,61 @@ namespace Bond.Protocols
 
         #region Scalars
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt8(sbyte value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt16(short value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt32(int value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt64(long value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt8(byte value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt16(ushort value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt32(uint value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt64(ulong value)
         {
             writer.WriteValue(value.ToString());
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFloat(float value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteDouble(double value)
         {
             writer.WriteValue(value);
@@ -247,27 +203,41 @@ namespace Bond.Protocols
             }
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBool(bool value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteString(string value)
         {
+            // Other protocols depend on expressions such as value.Count to
+            // throw an NRE if we've been asked to serialize a non-nullable
+            // string field that is set to null. Implementations of
+            // System.Xml.XmlWriter may successfully serialize it, so we need
+            // to check and throw explicitly before that.
+            if (value == null)
+            {
+                throw new NullReferenceException(
+                   "Attempted to serialize a null string. This may indicate a non-nullable string field that was set to null.");
+            }
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteWString(string value)
         {
+            // Other protocols depend on expressions such as value.Count to
+            // throw an NRE if we've been asked to serialize a non-nullable
+            // string field that is set to null. Implementations of
+            // System.Xml.XmlWriter may successfully serialize it, so we need
+            // to check and throw explicitly before that.
+            if (value == null)
+            {
+                throw new NullReferenceException(
+                   "Attempted to serialize a null string. This may indicate a non-nullable string field that was set to null.");
+            }
             writer.WriteValue(value);
         }
         #endregion

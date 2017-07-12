@@ -106,15 +106,6 @@ of `nothing`](bond_cpp.html#default-value-of-nothing), e.g.:
         0: string str = nothing;
     }
 
-Caveat: `blob`, `nullable<blob>` and `blob = nothing` are all represented as
-an `ArraySegment<byte>` in the generated C# code. The default value for all
-three is `default(ArraySegment<byte>)` (in which the `Array` field is
-`null`). An empty `ArraySegment<byte>` (in which the `Array` field is not
-`null` but the `Count` is 0) is treated as a non-default value, so it will
-not be omitted for optional fields. This behavior will be changing in a
-future release, to align it with how other types are handled and how
-nullable/nothing fields are handled in other languages.
-
 Code generation can be customized by passing one or more of the following
 command line options to `gbc`:
 
@@ -318,6 +309,160 @@ Some best practices and other considerations to keep in mind:
   break text-based protocols like [SimpleJsonProtocol](#simple-json)
 - `required` should be used sparingly and only with careful consideration
 
+Default values
+==============
+
+Fields of a Bond defined struct always have a default value, either
+explicitly specified in the .bond file, or the implicit default.
+
+The implicit default is
+
+* `false` for `bool` fields
+* 0 for arithmetic types
+* empty for string/containers
+* `null` for [nullable type](#nullable-types)
+* for struct and `bonded` fields, an instance of a struct in which all of
+  the fields are initialized to their default values, recursively
+
+There is no implicit default for enum fields: they must have an explicit
+default value in the .bond file.
+
+Explicit default values (other than [`nothing`](#default-value-of-nothing))
+may not be specified for `nullable` or container fields. Struct and `bonded`
+fields may not have an explicit default value. They always use their
+implicit default values.
+
+The default values of fields matter because this is what an application will
+see after deserialization for any optional field that wasn't present in the
+payload (e.g. when the payload was created from an older version of the
+schema).
+
+Additionally, some protocols can omit
+[`optional` non-struct fields](bond_cpp.html#required-fields) set to their
+default values, reducing payload size.
+
+Default value of `nothing`
+==========================
+
+Sometimes it is necessary to distinguish between any of the possible values
+of a field and absence of a value. To support such scenarios Bond allows
+non-struct fields' default values to be explicitly set to `nothing` [^1]:
+
+    struct AboutNothing
+    {
+        0: uint16 n = nothing;
+        1: string name = nothing;
+        2: list<float> floats = nothing;
+    }
+
+Setting a field's default to `nothing` doesn't affect the schema type of the
+field, however it may affect what type the field is mapped to in the
+generated code. The reason why is pretty obvious: some types such as
+`ushort` just can't represent absence of a value. In C# reference types
+already have a way to represent absence of value: `null`. For these types
+specifying a default of `nothing` doesn't change the field type in the
+generated code. For C# value types such as `UInt16`, the generated code will
+use
+[C# Nullable types](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/nullable-types/)
+(e.g. `UInt16?`).
+
+The fact that setting the default value of a field to `nothing` doesn't
+affect the field's schema type has an important consequence: the default
+value of the field doesn't have a serialized representation. What this means
+in practice depends on whether the field is `optional` or `required`.
+Optional fields set to `nothing` are usually omitted during serialization
+[^2], just like for any other default values.
+[Required fields](bond_cpp.html#required-fields), by definition, can never
+be omitted. Since `nothing` has no serialized representation, an attempt to
+serialize an object with required fields set to `nothing` will result in a
+runtime exception. If a null value needs to be represented in the serialized
+form, then a default of `nothing` is the wrong choice and a
+[nullable type](#nullable-types) should be used instead.
+
+
+[^1]: In Bond there is no concept of a default value for structs and thus a
+default of `nothing` can't be set for fields of struct types or `bonded<T>`.
+
+[^2]: Some protocols might not support omitting optional fields (e.g. Simple
+Protocol). In such cases an attempt to serialize an object with field(s) set
+to `nothing` will result in a runtime exception.
+
+
+Nullable types
+==============
+
+For any type in the Bond meta-schema, `nullable<T>` defines a nullable type.
+A nullable type can store all the same values as its base type plus one
+additional value: `null`.
+
+    struct Nullables
+    {
+        0: nullable<bool>         b; // can be true, false, or null
+        1: list<nullable<string>> l; // can be a (possibly empty) list or null
+    }
+
+The default value for a field of a nullable type is always implicitly set to
+`null`. Explicit default values for nullable fields are not supported.
+
+In C# reference types already have a way to represent `null`: `null`. For
+these types `nullable<T>` and `T` will have the same type in the generated
+code. For C# value types such as `UInt16`, the generated code will use
+[C# Nullable types](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/nullable-types/)
+(e.g. `bool?`).
+
+Caveat: `blob`, `nullable<blob>` and `blob = nothing` are all represented as
+an `ArraySegment<byte>` in the generated C# code. The C# default value for
+all three is `default(ArraySegment<byte>)` (in which the `Array` field is
+`null`). An empty `ArraySegment<byte>` (in which the `Array` field is not
+`null` but the `Count` is 0) is treated as a non-default value, so it will
+not be omitted for optional fields. This behavior will be changing in a
+future release, to align it with how other types are handled and how
+nullable/nothing fields are handled in other languages.
+
+Since a nullable type must represent the additional value of `null`, its
+serialized representation necessarily incurs some overhead compared to the
+base type. Often it is more efficient to avoid using a nullable type and
+instead to designate one of the normal values to handle the special case
+that otherwise would be represented by `null`. For example _empty_ is
+usually a good choice for string and container types and 0 for arithmetic
+types. Another option that may sometimes be appropriate is setting the
+default value of a non-struct field to
+[`nothing`](#default-value-of-nothing). Struct fields can have neither an
+explicit default value nor be set to `nothing`, so `nullable` needs to be
+used if `null` semantics are needed for these fields.
+
+The canonical scenario where a nullable type is the right choice is
+recursive structures. For example here's how Bond `TypeDef` struct is
+defined:
+
+    struct TypeDef
+    {
+        // Type identifier
+        0: BondDataType id = BT_STRUCT;
+
+        // Index of struct definition in SchemaDef.structs when id == BT_STRUCT
+        1: uint16 struct_def = 0;
+
+        // Type definition for:
+        //  list elements (id == BT_LIST),
+        //  set elements (id == BT_SET),
+        //  or mapped value (id == BT_MAP)
+        2: nullable<TypeDef> element;
+
+        // Type definition for map key when id == BT_MAP
+        3: nullable<TypeDef> key;
+
+        // True if the type is bonded<T>; used only when id == BT_STRUCT
+        4: bool bonded_type;
+    }
+
+The `TypeDef` struct is used to represent the type of a field in a Bond
+schema. If the type is a container such as a list or map, the type
+definition becomes recursive. For example, a list type definition contains
+the type of the list element which of course itself can be a container of
+elements of some other type, and so on, until the recursion is terminated
+with a `null` value for the `element` and `key` fields.
+
 Protocols
 =========
 
@@ -354,7 +499,7 @@ scenarios.
 Implemented in `CompactBinaryReader` and `CompactBinaryWriter` classes.
 Version 2 of Compact Binary adds length prefix for structs. This enables
 deserialization of [`bonded<T>`](#understanding-bondedt) and skipping of
-unknown struct fields in constant time. The trade-off is double pass encoding,
+unknown fields in constant time. The trade-off is double pass encoding,
 resulting in up to 30% slower serialization performance.
 
 See also [Compact Binary encoding reference][compact_binary_format_reference].
@@ -701,8 +846,6 @@ how to achieve the best performance.
     that the cost of creating the [`Deserializer`](#deserializer) can be
     amortized. The canonical use case for an untagged protocol is record-based
     data storage.
-
-6. Using .NET 4.5 will give better performance than 4.0.
 
 Runtime schema
 ==============
@@ -1383,16 +1526,16 @@ namespace).
 
 This table lists which frameworks are targeted by the Bond assemblies.
 
-This table is accurate for Bond NuGet packages 5.1.0 and later and Bond Comm
-0.9.0 and later.
+This table is accurate for Bond NuGet packages 6.0.0 and later and Bond Comm
+0.12.0 and later.
 
 | Assembly                 | .NET 4.0 | .NET 4.5 | Profile78 | .NET Standard 1.0 | .NET Standard 1.3 | .NET Standard 1.6 |
 |--------------------------|----------|----------|-----------|-------------------|-------------------|-------------------|
-| Bond.Attributes.dll      | Yes      | Yes      | Yes       | Yes               | ←                 | Yes               |
-| Bond.Reflection.dll      | Yes      | Yes      | Yes       | Yes               | ←                 | Yes               |
-| Bond.dll                 | Yes      | Yes      | Yes       | Yes               | ←                 | Yes               |
-| Bond.JSON.dll            | Yes      | Yes      | No        | Yes               | ←                 | Yes               |
-| Bond.IO.dll              | Win only | Win only | No        | No                | Win only          | Win only          |
+| Bond.Attributes.dll      | No       | Yes      | Yes       | Yes               | ←                 | Yes               |
+| Bond.Reflection.dll      | No       | Yes      | Yes       | Yes               | ←                 | Yes               |
+| Bond.dll                 | No       | Yes      | Yes       | Yes               | ←                 | Yes               |
+| Bond.JSON.dll            | No       | Yes      | No        | Yes               | ←                 | Yes               |
+| Bond.IO.dll              | No       | Win only | No        | No                | Win only          | Win only          |
 | Bond.Comm.Interfaces.dll | No       | Yes      | Yes       | ←                 | ←                 | ←                 |
 | Bond.Comm.Layers.dll     | No       | Yes      | Yes       | ←                 | ←                 | ←                 |
 | Bond.Comm.Services.dll   | No       | Yes      | Yes       | ←                 | ←                 | ←                 |

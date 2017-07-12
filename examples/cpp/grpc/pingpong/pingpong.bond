@@ -1,0 +1,31 @@
+namespace pingpong;
+
+struct PingRequest
+{
+    0: string name;
+}
+
+struct PingReply
+{
+    0: string message;
+}
+
+service DoublePing
+{
+    PingReply Ping(PingRequest);
+
+    PingReply PingNoPayload();
+
+    nothing PingNoResponse(PingRequest);
+
+    void PingVoid();
+
+    nothing PingEventVoid();
+
+    PingReply PingShouldThrow(PingRequest);
+}
+
+service PingPong<RequestType>
+{
+    PingReply Ping(RequestType);
+}

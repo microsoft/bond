@@ -12,11 +12,6 @@
   <PropertyGroup Condition="'$(BuildFramework)' == ''">
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <BuildFramework>net45</BuildFramework>
-    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(BuildFramework)' == 'net40'">
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <DefineConstants>$(DefineConstants);NET40</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>bin\$(BuildType)\$(BuildFramework)</OutputPath>
@@ -26,6 +21,13 @@
     <NoWarn>1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)bond.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!--Set the version number for auto-generation from the environment
+         variable. -->
+    <BondVersionNum Condition=" '$(BondVersionNum)' == '' and '$(BOND_CORE_VERSION)' != '' ">$(BOND_CORE_VERSION)</BondVersionNum>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
   </PropertyGroup>
@@ -43,16 +45,5 @@
     <DefineConstants>$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(DELAY_SIGN_KEY) == ''">
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)bond.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(DELAY_SIGN_KEY) != ''">
-    <DelaySign>true</DelaySign>
-    <SignAssembly>true</SignAssembly>
-    <KeyFile>$(DELAY_SIGN_KEY)</KeyFile>
-    <AssemblyOriginatorKeyFile>$(DELAY_SIGN_KEY)</AssemblyOriginatorKeyFile>
-    <DefineConstants>$(DefineConstants);DELAY_SIGN</DefineConstants>
   </PropertyGroup>
 </Project>

@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\internal\Common.Internal.props" />
+  <PropertyGroup>
+    <ProjectGuid>{D82898E8-4695-4233-98C6-1B3624241A2D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GrpcCompatClient</RootNamespace>
+    <AssemblyName>GrpcCompatClient</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Grpc.Core">
+      <HintPath>..\..\..\..\packages\Grpc.Core.1.3.0\lib\net45\Grpc.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Interactive.Async">
+      <HintPath>..\..\..\..\packages\System.Interactive.Async.3.1.1\lib\net45\System.Interactive.Async.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Bond">
+      <HintPath>..\..\..\..\$(OutputPath)\Bond.dll</HintPath>
+    </Reference>
+    <Reference Include="Bond.Attributes">
+      <HintPath>..\..\..\..\$(OutputPath)\Bond.Attributes.dll</HintPath>
+    </Reference>
+    <ProjectReference Include="..\..\..\..\src\grpc\grpc.csproj">
+      <Project>{af03bae6-2470-4e1b-a683-3ebdcdc595fa}</Project>
+      <Name>grpc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\shared\GrpcCompatShared.csproj">
+      <Project>{8FC5BF4E-6932-48FC-AA57-3D5F43130699}</Project>
+      <Name>GrpcCompatShared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\internal\Common.Internal.targets" />
+  <Import Project="..\..\..\..\packages\Grpc.Core.1.3.0\build\net45\Grpc.Core.targets" Condition="Exists('..\..\..\..\packages\Grpc.Core.1.3.0\build\net45\Grpc.Core.targets')" />
+</Project>

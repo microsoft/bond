@@ -9,7 +9,6 @@
     <RootNamespace>Bond.Grpc</RootNamespace>
     <AssemblyName>Bond.Grpc</AssemblyName>
     <BondRedistributable>true</BondRedistributable>
-    <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Marshaller.cs" />
@@ -27,13 +26,13 @@
     <Reference Include="Bond.IO">
       <HintPath>..\io\$(OutputPath)\Bond.IO.dll</HintPath>
     </Reference>
-    <Reference Include="Grpc.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d754f35622e28bad, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Grpc.Core.1.1.0\lib\net45\Grpc.Core.dll</HintPath>
+    <Reference Include="Grpc.Core">
+      <HintPath>..\..\packages\Grpc.Core.1.3.0\lib\net45\Grpc.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
-  <Import Project="..\..\packages\Grpc.Core.1.1.0\build\net45\Grpc.Core.targets" Condition="Exists('..\..\packages\Grpc.Core.1.1.0\build\net45\Grpc.Core.targets')" />
+  <Import Project="..\..\packages\Grpc.Core.1.3.0\build\net45\Grpc.Core.targets" Condition="Exists('..\..\packages\Grpc.Core.1.3.0\build\net45\Grpc.Core.targets')" />
 </Project>

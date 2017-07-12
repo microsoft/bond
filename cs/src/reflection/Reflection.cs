@@ -54,7 +54,7 @@ namespace Bond.Internal.Reflection
 
         public static MethodInfo FindMethod(this Type type, string name, params Type[] paramTypes)
         {
-            var methods = type.GetDeclaredMethods(name);
+            var methods = type.GetTypeInfo().GetDeclaredMethods(name);
 
             var result = (
                 from method in methods
@@ -67,7 +67,7 @@ namespace Bond.Internal.Reflection
             {
                 if (type.IsInterface())
                 {
-                    var interfaces = type.GetInterfaces();
+                    var interfaces = type.GetTypeInfo().ImplementedInterfaces;
                     var matchedMethods = interfaces.Select(x => x.FindMethod(name, paramTypes)).Where(x => x != null).ToList();
 
                     if (matchedMethods.Count > 1)
@@ -92,7 +92,7 @@ namespace Bond.Internal.Reflection
 
         public static MethodInfo ResolveMethod(this Type type, string name, params Type[] argumentTypes)
         {
-            var methods = type.GetDeclaredMethods(name);
+            var methods = type.GetTypeInfo().GetDeclaredMethods(name);
             var typeArgs = new Type[0];
 
             foreach (var method in methods)
@@ -112,9 +112,9 @@ namespace Bond.Internal.Reflection
 
                     if (param.IsGenericType() && arg.IsGenericType() &&
                         param.GetGenericTypeDefinition() == arg.GetGenericTypeDefinition() &&
-                        param.GetGenericArguments().All(p => p.IsGenericParameter))
+                        param.GetTypeInfo().GenericTypeArguments.All(p => p.IsGenericParameter))
                     {
-                        typeArgs = arg.GetGenericArguments();
+                        typeArgs = arg.GetTypeInfo().GenericTypeArguments;
                         continue;
                     }
                     break;
@@ -133,7 +133,7 @@ namespace Bond.Internal.Reflection
 
         public static ConstructorInfo GetConstructor(this Type type, params Type[] paramTypes)
         {
-            var methods = type.GetDeclaredConstructors();
+            var methods = type.GetTypeInfo().DeclaredConstructors;
 
             return (
                 from method in methods
@@ -146,7 +146,7 @@ namespace Bond.Internal.Reflection
 
         public static PropertyInfo GetDeclaredProperty(this Type type, string name, Type returnType)
         {
-            var property = type.GetDeclaredProperty(name);
+            var property = type.GetTypeInfo().GetDeclaredProperty(name);
             return (property != null && property.PropertyType == returnType) ? property : null;
         }
 
@@ -157,13 +157,13 @@ namespace Bond.Internal.Reflection
 
         static Type MakeGenericTypeFrom(this Type genericType, Type concreteType)
         {
-            var typeArguments = concreteType.GetGenericArguments();
+            var typeArguments = concreteType.GetTypeInfo().GenericTypeArguments;
             if (concreteType.IsArray)
             {
                 typeArguments = new[] { concreteType.GetElementType() };
             }
 
-            var typeParameters = genericType.GetGenericParameters();
+            var typeParameters = genericType.GetTypeInfo().GenericTypeParameters;
 
             if (typeArguments.Length == 2 && typeParameters.Length == 1)
                 typeArguments = new[] { typeof(KeyValuePair<,>).MakeGenericType(typeArguments) };

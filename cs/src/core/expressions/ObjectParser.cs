@@ -161,7 +161,7 @@ namespace Bond.Expressions
 
             if (value.Type.IsGenericType())
             {
-                if (typeof(IList<>).MakeGenericType(value.Type.GetGenericArguments()[0]).IsAssignableFrom(value.Type))
+                if (typeof(IList<>).MakeGenericType(value.Type.GetTypeInfo().GenericTypeArguments[0]).IsAssignableFrom(value.Type))
                     return ListContainer(itemHandler);
 
                 if (typeof(LinkedList<>) == value.Type.GetGenericTypeDefinition())
@@ -301,7 +301,7 @@ namespace Bond.Expressions
         {
             Debug.Assert(schemaType.IsBondContainer());
 
-            var nodeType = typeof(LinkedListNode<>).MakeGenericType(value.Type.GetGenericArguments()[0]);
+            var nodeType = typeof(LinkedListNode<>).MakeGenericType(value.Type.GetTypeInfo().GenericTypeArguments[0]);
             var node = Expression.Variable(nodeType, "node");
             var item = Expression.Property(node, "Value");
             var next = Expression.NotEqual(

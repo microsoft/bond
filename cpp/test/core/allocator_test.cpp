@@ -23,7 +23,7 @@ TEST_CASE_BEGIN(AllocatorTest)
 
         Reader reader(data);
         bond::Deserialize(reader, *to);
-        UT_AssertIsTrue(*from == *to);
+        UT_Compare(*from, *to);
 
         boost::shared_ptr<T> x = boost::allocate_shared<T>(alloc, alloc);
         boost::shared_ptr<T> y = boost::allocate_shared<T>(alloc, alloc);
@@ -32,7 +32,7 @@ TEST_CASE_BEGIN(AllocatorTest)
         
         y->swap(*to);
         
-        UT_AssertIsTrue(*x == *y);
+        UT_Compare(*x, *y);
     }
 
     // Runtime-time deserialize
@@ -43,7 +43,7 @@ TEST_CASE_BEGIN(AllocatorTest)
         bond::bonded<void> bonded(reader, bond::GetRuntimeSchema<T>());
 
         bonded.Deserialize(*to);
-        UT_AssertIsTrue(*from == *to);
+        UT_Compare(*from, *to);
     }
 }
 TEST_CASE_END

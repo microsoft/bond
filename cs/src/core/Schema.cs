@@ -141,8 +141,8 @@ namespace Bond
                     else
                     {
                         var schemaT = typeof (Schema<>).MakeGenericType(type);
-                        var metadataProp = schemaT.GetDeclaredProperty("Metadata");
-                        var fieldsProp = schemaT.GetDeclaredProperty("Fields");
+                        var metadataProp = schemaT.GetTypeInfo().GetDeclaredProperty("Metadata");
+                        var fieldsProp = schemaT.GetTypeInfo().GetDeclaredProperty("Fields");
                         typeDef.struct_def = GetStructDef(
                             type,
                             metadataProp.GetValue(null) as Metadata,

@@ -44,6 +44,7 @@ module Language.Bond.Codegen.Templates
       -- ** C++ Comm
     , comm_h
     , comm_cpp
+    , grpc_h
       -- ** C#
     , FieldMapping(..)
     , StructMapping(..)
@@ -68,6 +69,7 @@ import Language.Bond.Codegen.Cpp.Types_cpp
 import Language.Bond.Codegen.Cpp.Types_h
 import Language.Bond.Codegen.Cpp.Comm_cpp
 import Language.Bond.Codegen.Cpp.Comm_h
+import Language.Bond.Codegen.Cpp.Grpc_h
 import Language.Bond.Codegen.Cs.Types_cs
 import Language.Bond.Codegen.Cs.Comm_cs
 import Language.Bond.Codegen.Cs.Grpc_cs

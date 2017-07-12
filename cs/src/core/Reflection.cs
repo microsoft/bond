@@ -43,13 +43,13 @@ namespace Bond
         /// </summary>
         public static IEnumerable<ISchemaField> GetSchemaFields(this Type type)
         {
-            var fields = from fieldInfo in type.GetDeclaredFields().Where(f => f.IsPublic)
+            var fields = from fieldInfo in type.GetTypeInfo().DeclaredFields.Where(f => f.IsPublic)
                          let idAttr = fieldInfo.GetAttribute<IdAttribute>()
                          where idAttr != null
                          select new Field(fieldInfo, idAttr.Value) as ISchemaField;
 
             var properties =
-                from propertyInfo in type.GetDeclaredProperties()
+                from propertyInfo in type.GetTypeInfo().DeclaredProperties
                 let idAttr = propertyInfo.GetAttribute<IdAttribute>()
                 where idAttr != null
                 select new Property(propertyInfo, idAttr.Value) as ISchemaField;
@@ -64,7 +64,7 @@ namespace Bond
         public static Type GetValueType(this Type type)
         {
             if (type.IsBondNullable() || type.IsBonded())
-                return type.GetGenericArguments()[0];
+                return type.GetTypeInfo().GenericTypeArguments[0];
 
             if (type.IsArray)
                 return type.GetElementType();
@@ -74,6 +74,7 @@ namespace Bond
 
             return type.GetMethod(typeof(IEnumerable<>), "GetEnumerator")
                 .ReturnType
+                .GetTypeInfo()
                 .GetDeclaredProperty("Current")
                 .PropertyType;
         }
@@ -83,7 +84,7 @@ namespace Bond
         /// </summary>
         public static KeyValuePair<Type, Type> GetKeyValueType(this Type type)
         {
-            var types = GetValueType(type).GetGenericArguments();
+            var types = GetValueType(type).GetTypeInfo().GenericTypeArguments;
 
             if (types.Length != 2)
             {
@@ -109,7 +110,9 @@ namespace Bond
             if (type.IsGenericType())
             {
                 var definition = type.GetGenericTypeDefinition();
-                return definition == typeof(IBonded<>) || definition == typeof(Tag.bonded<>);
+                return definition == typeof(IBonded<>)
+                    || definition == typeof(Tag.bonded<>)
+                    || definition.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IBonded));
             }
 
             return false;
@@ -180,7 +183,7 @@ namespace Bond
             if (!type.IsGenericType())
                 return false;
 
-            return typeof(ISet<>).MakeGenericType(type.GetGenericArguments()[0]).IsAssignableFrom(type);
+            return typeof(ISet<>).MakeGenericType(type.GetTypeInfo().GenericTypeArguments[0]).IsAssignableFrom(type);
         }
 
         /// <summary>
@@ -309,14 +312,14 @@ namespace Bond
             {
                 // Get all base interfaces. In case if an inheritance chain longer than 2, this returns all 
                 // the base interfaces flattened in no particular order, so we have to find the direct parent.
-                var baseInterfaces = type.GetInterfaces()
+                var baseInterfaces = type.GetTypeInfo().ImplementedInterfaces
                     .Where(t => t.GetAttribute<SchemaAttribute>() != null).ToArray();
 
                 for (var i = 0; i < baseInterfaces.Length; i++)
                 {
                     var baseInterface = baseInterfaces[i];
                     var indirectBaseInterfacesCount =
-                        baseInterface.GetInterfaces()
+                        baseInterface.GetTypeInfo().ImplementedInterfaces
                         .Count(t => t.GetAttribute<SchemaAttribute>() != null);
 
                     if (indirectBaseInterfacesCount == baseInterfaces.Length - 1)
@@ -641,7 +644,7 @@ namespace Bond
             if (!type.IsGenericType())
                 return name;
 
-            var args = type.GetGenericArguments();
+            var args = type.GetTypeInfo().GenericTypeArguments;
             var builder = new StringBuilder(name, args.Length * 64);
 
             builder.Append("<");
@@ -710,12 +713,12 @@ namespace Bond
                 }
                 else
                 {
-                    memberTypeArguments = memberType.GetGenericArguments();
+                    memberTypeArguments = memberType.GetTypeInfo().GenericTypeArguments;
                 }
 
                 return schemaGenericType.MakeGenericType(Enumerable.Zip(
                     memberTypeArguments,
-                    schemaType.GetGenericArguments(), 
+                    schemaType.GetTypeInfo().GenericTypeArguments,
                     ResolveTypeArgumentTags).ToArray());
             }
 
@@ -739,14 +742,14 @@ namespace Bond
             if (schemaType.IsGenericType())
             {
                 return schemaType.GetGenericTypeDefinition().MakeGenericType(
-                    schemaType.GetGenericArguments().Select(type =>
+                    schemaType.GetTypeInfo().GenericTypeArguments.Select(type =>
                     {
                         if (type.IsGenericType())
                         {
                             var genericType = type.GetGenericTypeDefinition();
                             if (genericType == typeof(Tag.nullable<>))
                             {
-                                var nullableValue = type.GetGenericArguments()[0];
+                                var nullableValue = type.GetTypeInfo().GenericTypeArguments[0];
                                 return nullableValue.IsClass() || nullableValue.IsBondBlob()
                                     ? nullableValue.GetObjectType()
                                     : typeof(Nullable<>).MakeGenericType(nullableValue.GetObjectType());
@@ -754,7 +757,7 @@ namespace Bond
 
                             if (genericType == typeof(Tag.bonded<>))
                             {
-                                return typeof(IBonded<>).MakeGenericType(type.GetGenericArguments()[0].GetObjectType());
+                                return typeof(IBonded<>).MakeGenericType(type.GetTypeInfo().GenericTypeArguments[0].GetObjectType());
                             }
                         }
 

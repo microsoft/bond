@@ -22,31 +22,11 @@
                 "publicSign": true
             }
         },
-        "debug-delay": {
-            "buildOptions": {
-                "define": [
-                    "DELAY_SIGN"
-                ],
-                "delaySign": true,
-                "keyFile": "../../../keys/delay-sign.snk",
-                "optimize": true
-            }
-        },
         "release": {
             "buildOptions": {
                 "keyFile": "../../../../build/internal/bond.snk",
                 "optimize": true,
                 "publicSign": true
-            }
-        },
-        "release-delay": {
-            "buildOptions": {
-                "define": [
-                    "DELAY_SIGN"
-                ],
-                "delaySign": true,
-                "keyFile": "../../../keys/delay-sign.snk",
-                "optimize": true
             }
         }
     },

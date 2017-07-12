@@ -29,13 +29,13 @@ auto ReadBlob(Reader& reader)
 }
 
 
-template <typename T, typename Writer>
+template <typename Protocols, typename T, typename Writer>
 void MarshalToBlob(const T& obj, Writer& writer)
 {
     auto output = CreateOutputBuffer(writer.GetBuffer());
     CompactBinaryWriter<decltype(output)> cbw(output);
 
-    Marshal(obj, cbw);
+    Marshal<Protocols>(obj, cbw);
     auto data = std::move(output).GetBuffer();
 
     writer.Write(static_cast<uint32_t>(data.size()));

@@ -38,52 +38,38 @@ namespace Bond.Protocols
 
         #region Struct
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteStructBegin(Metadata metadata)
         {
             writer.WriteStartObject();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteStructEnd()
         {
             writer.WriteEndObject();
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBaseBegin(Metadata metadata)
         {}
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBaseEnd()
         {}
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldBegin(BondDataType type, ushort id, Metadata metadata)
         {
             string name;
             writer.WritePropertyName(metadata.attributes.TryGetValue(NameAttribute, out name) ? name : metadata.name);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldEnd()
         {}
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFieldOmitted(BondDataType type, ushort id, Metadata metadata)
         {}
 
@@ -110,9 +96,7 @@ namespace Bond.Protocols
 
         #region Scalars
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteBool(bool value)
         {
             writer.WriteValue(value);
@@ -127,99 +111,95 @@ namespace Bond.Protocols
             }
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteDouble(double value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteFloat(float value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt16(short value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt32(int value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt64(long value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteInt8(sbyte value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-        public void WriteString(string value)
-        {
-            writer.WriteValue(value);
-        }
-
-#if NET45
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt16(ushort value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt32(uint value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt64(ulong value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteUInt8(byte value)
         {
             writer.WriteValue(value);
         }
 
-#if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        public void WriteString(string value)
+        {
+            // Other protocols depend on expressions such as value.Count to
+            // throw an NRE if we've been asked to serialize a non-nullable
+            // string field that is set to null. Newtonsoft.Json will
+            // successfully serialize it as a JSON null (the unquoted text
+            // null), so we need to check and throw explicitly before that.
+            if (value == null)
+            {
+                throw new NullReferenceException(
+                   "Attempted to serialize a null string. This may indicate a non-nullable string field that was set to null.");
+            }
+            writer.WriteValue(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteWString(string value)
         {
+            // Other protocols depend on expressions such as value.Count to
+            // throw an NRE if we've been asked to serialize a non-nullable
+            // string field that is set to null. Newtonsoft.Json will
+            // successfully serialize it as a JSON null (the unquoted text
+            // null), so we need to check and throw explicitly before that.
+            if (value == null)
+            {
+                throw new NullReferenceException(
+                    "Attempted to serialize a null string. This may indicate a non-nullable string field that was set to null.");
+            }
             writer.WriteValue(value);
         }
 

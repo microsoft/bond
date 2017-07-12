@@ -1,11 +1,9 @@
 #pragma once
 
 #include <bond/core/customize.h>
+#include <bond/core/protocol.h>
 #include <bond/protocol/compact_binary.h>
 #include <bond/stream/input_buffer.h>
-
-#include <boost/mpl/joint_view.hpp>
-#include <boost/mpl/list.hpp>
 
 #include "untagged_protocol.h"
 
@@ -128,31 +126,8 @@ namespace unit_test
 
 namespace bond
 {
-    // Add TestReader to the list of protocols used by Bond
-    template <> struct
-    customize<protocols>
-    {
-        template <typename T> struct
-        modify
-        {
-             typedef typename boost::mpl::joint_view<
-                boost::mpl::list<
-                    unit_test::TestReader<InputBuffer>,
-                    unit_test::TestReader<unit_test::CustomInputBuffer>,
-                    UntaggedProtocolReader<InputBuffer>
-                >::type,
-                T
-            >::type type;
-        };
-    };
+    BOND_DEFINE_BUFFER_MAGIC(unit_test::CustomInputBuffer, 0x4243 /*CB*/);
 
-    // Protocols are disabled by default and we leave TestReader disabled
-    // and enable it only in custom_protocol.cpp and UntaggedProtocolReader
-    // in pass_through.cpp.
-}
-
-namespace bond
-{
     template <typename Buffer> struct 
     is_protocol_enabled<UntaggedProtocolReader<Buffer> >
         : std::true_type {};

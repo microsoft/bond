@@ -137,7 +137,7 @@ private:
 
 
     template <typename T, typename Transform>
-    typename boost::enable_if_c<detail::is_reader<Input>::value && !is_nested_field<T>::value
+    typename boost::enable_if_c<is_reader<Input>::value && !is_nested_field<T>::value
                              && !is_fast_path_field<T, Transform>::value, bool>::type
     NextField(const T&, const Transform& transform)
     {
@@ -146,7 +146,7 @@ private:
 
 
     template <typename T, typename Transform>
-    typename boost::enable_if_c<detail::is_reader<Input>::value && !is_nested_field<T>::value
+    typename boost::enable_if_c<is_reader<Input>::value && !is_nested_field<T>::value
                              && is_fast_path_field<T, Transform>::value, bool>::type
     NextField(const T& field, const Transform& transform)
     {
@@ -155,7 +155,7 @@ private:
 
 
     template <typename T, typename Transform>
-    typename boost::enable_if_c<detail::is_reader<Input>::value && is_nested_field<T>::value
+    typename boost::enable_if_c<is_reader<Input>::value && is_nested_field<T>::value
                              && !is_fast_path_field<T, Transform>::value, bool>::type
     NextField(const T&, const Transform& transform)
     {
@@ -164,7 +164,7 @@ private:
 
 
     template <typename T, typename Transform>
-    typename boost::enable_if_c<detail::is_reader<Input>::value && is_nested_field<T>::value
+    typename boost::enable_if_c<is_reader<Input>::value && is_nested_field<T>::value
                              && is_fast_path_field<T, Transform>::value, bool>::type
     NextField(const T& field, const Transform& transform)
     {
@@ -173,7 +173,7 @@ private:
 
 
     template <typename T, typename Transform>
-    typename boost::disable_if<detail::is_reader<Input, T>, bool>::type
+    typename boost::disable_if<is_reader<Input, T>, bool>::type
     NextField(const T&, const Transform& transform)
     {
         return transform.Field(T::id, T::metadata, T::GetVariable(_input));
@@ -498,8 +498,8 @@ private:
     }
 
 
-    template <typename T>
-    bool UnknownField(uint16_t, BondDataType type, const To<T>&)
+    template <typename T, typename Protocols, typename Validator>
+    bool UnknownField(uint16_t, BondDataType type, const To<T, Protocols, Validator>&)
     {
         _input.Skip(type);
         return false;

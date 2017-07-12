@@ -1,0 +1,16 @@
+namespace helloworld;
+
+struct HelloRequest
+{
+    0: string name;
+}
+
+struct HelloReply
+{
+    0: string message;
+}
+
+service Greeter
+{
+    HelloReply SayHello(HelloRequest);
+}

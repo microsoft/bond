@@ -9,10 +9,6 @@ The configuration to build. Valid values are:
 - debug
 - release
 
-.PARAMETER DelaySignKey
-
-The optional delay sign key to use.
-
 .PARAMETER Test
 
 Whether to run the tests.
@@ -39,10 +35,9 @@ This will build just the debug configuration.
 
 .EXAMPLE
 
-PS c:\src\bond> .\cs\dnc\build.ps1 -Configuration release -DelaySignKey c:\src\private\delay-key.snk -Test
+PS c:\src\bond> .\cs\dnc\build.ps1 -Configuration release -Test
 
-This will build the release configuration, delay sign it with the specified
-key, and run all the test projects.
+This will build the release configuration and run all the test projects.
 
 #>
 [CmdletBinding()]
@@ -52,11 +47,11 @@ param
     [string]
     $Configuration = "debug",
 
-    [string]
-    $DelaySignKey = "",
-
     [switch]
     $Test = $false,
+
+    [string]
+    $Version = "",
 
     [ValidateSet("quiet", "minimal", "normal", "detailed")]
     [string]
@@ -99,31 +94,29 @@ try
     $script:script_dir = Split-Path -LiteralPath $PSCommandPath
     Push-Location -Path (Split-Path -LiteralPath $PSCommandPath) -StackName bond_dnc_build
 
-    # The dotnet configurations have a -delay if we use delay signing. We
-    # also need to copy the key to the fixed location.
-    $script:dotnet_cfg = $Configuration
-    if ($DelaySignKey) {
-        mkdir -Force 'keys'
-        if (-not $?) {
-            throw "Could not create directory '$script:script_dir\keys'"
-        }
-
-        Copy-Item -Force $DelaySignKey '.\keys\delay-sign.snk'
-        if (-not $?) {
-            throw "Copying delay sign key '$DelaySignKey' to '$script:script_dir\keys\delay-sign.snk' failed"
-        }
-
-        $script:dotnet_cfg += "-delay"
-    }
-
     msbuild $script:msb_common /p:Configuration=$Configuration /p:Platform=Win32 '..\Compiler.vcxproj'
     if (-not $?) {
         throw "Building GBC failed."
     }
 
+    mkdir -Force gen
+
+    if ([string]::IsNullOrWhiteSpace($Version)) {
+        Copy-Item '..\build\internal\DevVersions.cs' '.\gen\AssemblyInfo_Generated.cs'
+        if (-not $?) {
+            throw "Version copy failed"
+        }
+    } else {
+        $genFullPath = (Resolve-Path gen\).Path
+        msbuild $script:msb_common /p:BondVersionNum=$Version "/p:IntermediateOutputPath=$genFullPath\" '..\build\internal\Versions.targets'
+        if (-not $?) {
+            throw "Version generation failed"
+        }
+    }
+
     msbuild $script:msb_common /p:Configuration=$Configuration 'dirs.proj'
     if (-not $?) {
-        throw "Code generation failed."
+        throw "Bond code generation failed."
     }
 
     dotnet restore --verbosity (ComputeDotNetRestoreVerbosity)
@@ -137,7 +130,7 @@ try
     # are built.
     #
     # See also: https://github.com/dotnet/cli/issues/2639
-    dotnet build --configuration $script:dotnet_cfg `
+    dotnet build --configuration $Configuration `
       '.\src\attributes\project.json' `
       '.\src\reflection\project.json' `
       '.\src\core\project.json' `
@@ -165,14 +158,14 @@ try
         @{'source'='reflection'; 'files'='Bond.Reflection.*'}
     )
 
-    $script:publish_dir = "bin\$script:dotnet_cfg\"
+    $script:publish_dir = "bin\$Configuration\"
     mkdir -Force $script:publish_dir
     if (-not $?) {
         throw "Creating of publish directory '$script:publish_dir' failed"
     }
 
     $script:to_publish | foreach {
-        $source_xcopy_path = "src\$($psitem.source)\bin\$script:dotnet_cfg\*$($psitem.files)"
+        $source_xcopy_path = "src\$($psitem.source)\bin\$Configuration\*$($psitem.files)"
         xcopy /i /s /y $source_xcopy_path $script:publish_dir
         if (-not $?) {
             throw "Copying files '$source_xcopy_path' failed"
@@ -186,7 +179,7 @@ try
           Select-Object -Unique
 
         $testProjectJsonPaths | foreach {
-            dotnet test --no-build --configuration $script:dotnet_cfg $psitem
+            dotnet test --no-build --configuration $Configuration $psitem
             if (-not $?) {
                 throw "Tests failed for $psitem"
             }

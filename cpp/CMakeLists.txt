@@ -5,8 +5,13 @@ set (core_schemas
 set (schemas)
 list (APPEND schemas ${core-schemas})
 
+if (BOND_ENABLE_COMM)
+    set(comm-flag COMM)
+endif()
+
 add_bond_codegen (${core_schemas}
     ENUM_HEADER
+    ${comm-flag}
     OUTPUT_DIR ${BOND_GENERATED}/bond/core)
 
 # Generate again into intermediate dir so that we can build libraries
@@ -18,6 +23,7 @@ add_bond_codegen (${core_schemas}
 # in a clean build, leading to collisions in multi-processor build.
 add_bond_codegen (${core_schemas}
     ENUM_HEADER
+    ${comm-flag}
     OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/core)
 
 file (GLOB core_headers "inc/bond/core/*.h")
@@ -51,7 +57,7 @@ list (APPEND headers
     ${protocol_detail_headers}
     ${stream_headers})
 
-if (NOT BOND_CORE_ONLY)
+if (BOND_ENABLE_COMM)
     set (comm_schemas
         ${BOND_IDL}/bond/comm/comm.bond
         ${BOND_IDL}/bond/comm/transport/packet.bond
@@ -101,7 +107,7 @@ if (NOT BOND_CORE_ONLY)
         ${comm_layers_headers}
         ${comm_transport_headers}
         ${comm_transport_detail_headers})
-endif(NOT BOND_CORE_ONLY)
+endif(BOND_ENABLE_COMM)
 
 source_group ("generated" FILES ${generated_files})
 
@@ -137,7 +143,7 @@ install (TARGETS bond bond_apply
 
 install (DIRECTORY ${BOND_IDL}/bond/core DESTINATION include/bond)
 
-if (NOT BOND_CORE_ONLY)
+if (BOND_ENABLE_COMM)
     install (DIRECTORY ${BOND_IDL}/bond/comm DESTINATION include/bond)
 endif()
 

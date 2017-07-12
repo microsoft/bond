@@ -68,10 +68,8 @@ namespace Bond.Protocols
         {
             get { return reader.LinePosition; }
         }
-        
-#if NET45
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void Read()
         {
             eof = !reader.Read();

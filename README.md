@@ -20,13 +20,16 @@ are preserved for transition purposes.**
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
-For details, see the User's Manuals for
-[C++](https://Microsoft.github.io/bond/manual/bond_cpp.html),
-[C#](https://Microsoft.github.io/bond/manual/bond_cs.html) and
-[Python](https://Microsoft.github.io/bond/manual/bond_py.html), and the
-documentation of the compiler
-[tool](https://microsoft.github.io/bond/manual/compiler.html) and
-[library](https://hackage.haskell.org/package/bond).
+For details, see the User's Manuals:
+
+* [C++](https://Microsoft.github.io/bond/manual/bond_cpp.html)
+* [C#](https://Microsoft.github.io/bond/manual/bond_cs.html)
+* [Python](https://Microsoft.github.io/bond/manual/bond_py.html)
+* [Bond-over-gRPC](https://Microsoft.github.io/bond/manual/bond_over_grpc.html)
+* [`gbc`, the Bond compiler/codegen tool](https://microsoft.github.io/bond/manual/compiler.html)
+    * See also
+      [the compiler library](https://hackage.haskell.org/package/bond) that
+      powers `gbc`.
 
 For a discussion how Bond compares to similar frameworks see [Why Bond](https://Microsoft.github.io/bond/why_bond.html).
 
@@ -39,11 +42,10 @@ The Bond repository uses Git submodules and should be cloned with the
 git clone --recursive https://github.com/Microsoft/bond.git
 ```
 
-In order to build Bond you will need CMake (3.1+), Haskell (ghc 7.4+ and
-cabal-install 1.18+) and Boost (1.58+). Bond's C++ library requires some
-C++11 features (currently limited to those supported bv Visual C++ 2013).
-(Note: Boost 1.59 may not work with Bond Comm due to some bugs in that
-version of the Boost ASIO library).
+In order to build Bond you will need CMake (3.1+), [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install) and
+Boost (1.58+). Bond's C++ library requires some C++11 features (currently
+limited to those supported bv Visual C++ 2013). (Note: Boost 1.59 may not
+work with Bond Comm due to some bugs in that version of the Boost ASIO library).
 
 Following are specific instructions for building on various platforms.
 
@@ -60,13 +62,8 @@ sudo apt-get install \
     clang \
     cmake \
     zlib1g-dev \
-    ghc \
-    cabal-install \
     libboost-dev \
     libboost-thread-dev
-
-cabal update
-cabal install cabal-install
 ```
 
 In the root `bond` directory run:
@@ -74,7 +71,7 @@ In the root `bond` directory run:
 ```bash
 mkdir build
 cd build
-cmake ..
+cmake .. -DBOND_ENABLE_GRPC=FALSE
 make
 sudo make install
 ```
@@ -82,17 +79,22 @@ sudo make install
 The `build` directory is just an example. Any directory can be used as the build
 destination.
 
-In order to build all the C++ and Python tests and examples, a few more
-packages are needed:
+In order to build all the C++ and Python tests and examples, as well as
+Bond-over-gRPC, a few more packages are needed, and CMake needs to be run with
+different options:
 
 ```bash
 sudo apt-get install \
-    python2.7-dev \
+    autoconf \
+    build-essential \
     libboost-date-time-dev \
+    libboost-python-dev \
     libboost-test-dev \
-    libboost-python-dev
+    libtool \
+    python2.7-dev
 
-cabal install happy
+cd build # or wherever you ran CMake before
+cmake .. -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package
 ```
 
 Running the following command in the build directory will build and execute all
@@ -113,20 +115,12 @@ packages using Homebrew ([http://brew.sh/](http://brew.sh/)):
 ```bash
 brew install \
     cmake \
-    ghc \
-    cabal-install \
+    haskell-stack \
     boost \
     boost-python
 ```
 
 (boost-python is optional and only needed for Python support.)
-
-Update the cabal package database and install `happy` (only needed for tests):
-
-```bash
-cabal update
-cabal install happy
-```
 
 Bond can be built on OS X using either standard \*nix makefiles or Xcode. In
 order to generate and build from makefiles, in the root `bond` directory run:
@@ -170,14 +164,14 @@ cmake .. \
 
 ### Windows
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/Microsoft/bond?svg=true&branch=master)](https://ci.appveyor.com/project/MicrosoftBond/bond/branch/master)
+[![Build Status](https://ci.appveyor.com/api/projects/status/7xd2a54x9cwco314/branch/master?svg=true)](https://ci.appveyor.com/project/MicrosoftBond/bond/branch/master)
 
 Install the following tools:
 
 - Visual Studio 2013 or 2015
     - Visual Studio 2015 is required to build C# Bond from source
 - CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
-- Haskell Platform ([http://haskell.org/platform/](http://haskell.org/platform/))
+- Haskell Stack ([https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows](https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows))
 - .NET Core SDK ([https://www.microsoft.com/net/core](https://www.microsoft.com/net/core#windows))
 
 If you are building on a network behind a proxy, set the environment variable
@@ -185,12 +179,6 @@ If you are building on a network behind a proxy, set the environment variable
 
 ```bash
 set HTTP_PROXY=http://your-proxy-name:80
-```
-
-Update the cabal package database:
-
-```bash
-cabal update
 ```
 
 Now you are ready to build the C# 4.0/4.5 version of Bond. Open the solution
@@ -219,18 +207,18 @@ set BOOST_LIBRARYDIR=D:\boost_1_58_0\lib64-msvc-14.0
 ```
 
 The core Bond library and most examples only require Boost headers. The
-pre-built libraries are only needed for unit tests and Python support. If Boost
-or Python libraries are not found on the system, then some tests and examples will
-not be built.
+pre-built libraries are only needed for unit tests, Python, gRPC, and Comm
+support. If Boost or Python libraries are not found on the system, then some
+tests and examples will not be built.
 
-In order to generate a solution to build the C++ and Python versions with Visual
+In order to generate a solution to build the Bond Core C++ and Python with Visual
 Studio 2015 run the following commands from the root `bond` directory:
 
 ```bash
 mkdir build
 cd build
 set PreferredToolArchitecture=x64
-cmake -G "Visual Studio 14 2015 Win64" ..
+cmake -DBOND_ENABLE_GRPC=FALSE -G "Visual Studio 14 2015 Win64" ..
 ```
 
 Setting `PreferredToolArchitecture=x64` selects the 64-bit toolchain which
@@ -251,6 +239,21 @@ In order to build and execute the unit tests and examples run:
 
 ```bash
 cmake --build . --target check -- /maxcpucount:8
+```
+
+To build Bond's gRPC++ integration from source, some of
+[gRPC's prerequisites](https://github.com/grpc/grpc/blob/master/INSTALL.md#building-using-cmake-with-boringssl)
+are also needed:
+
+```bash
+choco install activeperl golang ninja yasm
+```
+
+You will also need to enable gRPC in the `cmake` configuration step by running the following
+in the `build` directory from above and then following the other `cmake` commands above:
+
+```bash
+cmake -DBOND_ENABLE_GRPC=TRUE -G "Visual Studio 14 2015 Win64" ..
 ```
 
 ## Contributing

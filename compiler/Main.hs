@@ -6,7 +6,9 @@
 import System.Environment (getArgs, withArgs)
 import System.Directory
 import System.FilePath
+import Data.Maybe
 import Data.Monoid
+import qualified Data.Foldable as F
 import Control.Monad
 import Prelude
 import Control.Concurrent.Async
@@ -30,7 +32,7 @@ type Template = MappingContext -> String -> [Import] -> [Declaration] -> (String
 main :: IO()
 main = do
     args <- getArgs
-    options <- (if null args then withArgs ["--help"] else id) getOptions
+    options <- (if null args then withArgs ["--help=all"] else id) getOptions
     setJobs $ jobs options
     case options of
         Cpp {..}    -> cppCodegen options
@@ -77,16 +79,7 @@ writeSchema _ = error "writeSchema: impossible happened."
 cppCodegen :: Options -> IO()
 cppCodegen options@Cpp {..} = do
     let typeMapping = maybe cppTypeMapping cppCustomAllocTypeMapping allocator
-    concurrentlyFor_ files $ codeGen options typeMapping $
-        [ reflection_h export_attribute
-        , types_h header enum_header allocator
-        , types_cpp
-        , apply_h applyProto export_attribute
-        , apply_cpp applyProto
-        , comm_h export_attribute
-        , comm_cpp
-        ] <>
-        [ enum_h | enum_header]
+    concurrentlyFor_ files $ codeGen options typeMapping templates
   where
     applyProto = map snd $ filter (enabled apply) protocols
     enabled a p = null a || fst p `elem` a
@@ -99,6 +92,19 @@ cppCodegen options@Cpp {..} = do
         , (Simple,  ProtocolReader " ::bond::SimpleBinaryReader< ::bond::InputBuffer>")
         , (Simple,  ProtocolWriter " ::bond::SimpleBinaryWriter< ::bond::OutputBuffer>")
         ]
+    templates = concat $ map snd $ filter fst codegen_templates
+    codegen_templates = [ (core_enabled, core_files)
+                        , (comm_enabled, [comm_h export_attribute, comm_cpp])
+                        , (grpc_enabled, [grpc_h export_attribute])
+                        ]
+    core_files = [
+          reflection_h export_attribute
+        , types_h header enum_header allocator
+        , types_cpp
+        , apply_h applyProto export_attribute
+        , apply_cpp applyProto
+        ] <>
+        [ enum_h | enum_header]
 cppCodegen _ = error "cppCodegen: impossible happened."
 
 csCodegen :: Options -> IO()
@@ -120,6 +126,12 @@ csCodegen options@Cs {..} = do
                         ]
 csCodegen _ = error "csCodegen: impossible happened."
 
+anyServiceInheritance :: [Declaration] -> Bool
+anyServiceInheritance = getAny . F.foldMap serviceWithBase
+  where
+    serviceWithBase Service{..} = Any $ isJust serviceBase
+    serviceWithBase _ = Any False
+
 codeGen :: Options -> TypeMapping -> [Template] -> FilePath -> IO ()
 codeGen options typeMapping templates file = do
     let outputDir = output_dir options
@@ -128,16 +140,16 @@ codeGen options typeMapping templates file = do
     namespaceMapping <- parseNamespaceMappings $ namespace options
     (Bond imports namespaces declarations) <- parseFile (import_dir options) file
     let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
-    forM_ templates $ \template -> do
-        let (suffix, code) = template mappingContext baseName imports declarations
-        let fileName = baseName ++ suffix
-        createDir outputDir
-        let { content =
-            if (no_banner options)
-            then code
-            else (commonHeader "//" file fileName <> code)
-        }
-        LTIO.writeFile (outputDir </> fileName) content
+    case (anyServiceInheritance declarations, service_inheritance_enabled options, grpc_enabled options, comm_enabled options) of
+        (True, False, _, _)   -> fail "Use --enable-service-inheritance to enable service inheritance syntax."
+        (True, True, True, _) -> fail "Service inheritance is not supported in gRPC codegen."
+        (True, True, _, True) -> fail "Service inheritance is not supported in Comm codegen."
+        _                     -> forM_ templates $ \template -> do
+                                    let (suffix, code) = template mappingContext baseName imports declarations
+                                    let fileName = baseName ++ suffix
+                                    createDirectoryIfMissing True outputDir
+                                    let content = if (no_banner options) then code else (commonHeader "//" fileName <> code)
+                                    L.writeFile (outputDir </> fileName) content
 
 -- Java's class-per-file and package-as-path requirements make it difficult to
 -- share code with languages where there is a known set of generated files for

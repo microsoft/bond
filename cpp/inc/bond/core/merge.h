@@ -14,18 +14,18 @@ namespace bond
 {
 
 
-template <typename T, typename Writer>
+template <typename T, typename Writer, typename Protocols = BuiltInProtocols>
 class Merger
     : public Serializer<Writer>
 {
 public:
     typedef T FastPathType;
 
-    using Serializer<Writer>::Base;
-    using Serializer<Writer>::Field;
-    using Serializer<Writer>::Write;
-    using Serializer<Writer>::OmittedField;
-    using Serializer<Writer>::Container;
+    using Serializer<Writer, Protocols>::Base;
+    using Serializer<Writer, Protocols>::Field;
+    using Serializer<Writer, Protocols>::Write;
+    using Serializer<Writer, Protocols>::OmittedField;
+    using Serializer<Writer, Protocols>::Container;
 
     Merger(const T& var, Writer& output, bool base = false)
         : Serializer<Writer>(output, base),
@@ -33,16 +33,16 @@ public:
     {}
 
     template <typename Pass0>
-    Merger<T, Pass0> Rebind(Pass0& pass0) const
+    Merger<T, Pass0, Protocols> Rebind(Pass0& pass0) const
     {
-        return Merger<T, Pass0>(_var, pass0);
+        return Merger<T, Pass0, Protocols>(_var, pass0);
     }
 
     template <typename X, typename Reader>
     typename boost::enable_if<has_schema<X>, bool>::type
     Base(const bonded<X, Reader>& value) const
     {
-        return Apply(Merger<typename schema<T>::type::base, Writer>(_var, _output, true), value);
+        return Apply<Protocols>(Merger<typename schema<T>::type::base, Writer, Protocols>(_var, _output, true), value);
     }
 
     
@@ -100,14 +100,14 @@ public:
 
 
 protected:
-    using Serializer<Writer>::_output;
+    using Serializer<Writer, Protocols>::_output;
 
 
 private:
     template <typename U, typename X>
     void Merge(const U& var, const X& value) const
     {
-        Apply(Merger<U, Writer>(var, _output), value);
+        Apply<Protocols>(Merger<U, Writer, Protocols>(var, _output), value);
     }
 
     
@@ -138,7 +138,7 @@ private:
         
         while (size--)
         {
-            key.Deserialize(k);
+            key.template Deserialize<Protocols>(k);
 
             Write(k);
             

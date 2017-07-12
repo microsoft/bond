@@ -7,6 +7,7 @@ namespace Bond.Expressions
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Reflection;
     using Bond.Internal.Reflection;
 
     internal class TypeAlias
@@ -28,7 +29,7 @@ namespace Bond.Expressions
                 leftType.IsGenericType() &&
                 leftType.GetGenericTypeDefinition() == typeof (Nullable<>))
             {
-                leftType = leftType.GetGenericArguments()[0];
+                leftType = leftType.GetTypeInfo().GenericTypeArguments[0];
             }
 
             var value = Convert(right, leftType);
@@ -48,7 +49,7 @@ namespace Bond.Expressions
                 value.Type.IsGenericType() &&
                 value.Type.GetGenericTypeDefinition() == typeof (Nullable<>))
             {
-                value = Expression.Convert(value, value.Type.GetGenericArguments()[0]);
+                value = Expression.Convert(value, value.Type.GetTypeInfo().GenericTypeArguments[0]);
             }
 
             if (type != value.Type)

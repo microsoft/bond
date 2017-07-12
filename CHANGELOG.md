@@ -11,16 +11,40 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Unreleased ##
+## Unreleased  ##
 * `gbc` & compiler library: TBD
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD (major bump needed)
-* C# NuGet version: TBD
+* C++ version: TBD (bug fix bump needed)
+* C# NuGet version: TBD  (bug fix bump needed)
 * C# Comm NuGet version: TBD
+
+### C++ ###
+
+* When Unicode conversion fails during JSON deserialization to wstring, a
+  bond::CoreException is now thrown instead of a Boost exception.
+* When SimpleJSON deserializes a map key with no matching value, a
+  bond::CoreException is now thrown.
+* When SimpleJSON deserializes a map key of non-primitive type, a
+  bond::CoreException is now thrown.
+
+### C# ###
+
+* Reflection.IsBonded now recognizes custom IBonded implementations.
+
+## 6.0.0: 2017-06-29  ##
+* `gbc` & compiler library: 0.10.0.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 6.0.0
+* C# NuGet version: 6.0.0
+* C# Comm NuGet version: 0.12.0
 
 ### `gbc` and Bond compiler library ###
 
+* IDL support for service inheritance syntax
+    * **Breaking change** In the Bond Haskell library, the `Service` type
+      has a new field `serviceBase`.
 * C++ codegen now generates
   [extern templates](http://en.cppreference.com/w/cpp/language/function_template)
   of `bond::Apply` instead of overloads.
@@ -53,11 +77,19 @@ different versioning scheme, following the Haskell community's
       and
       [the bf example](https://github.com/Microsoft/bond/commit/11beaf5319639e4bdee96a25f95154e4fed93a75#diff-bdda0f39d99280d4858b4453906eea17)
       for more details.
-* The `bond::Apply` function now has a uniform signature. Call sites for
-the `Marshaler<Writer>` transform overload that were _mistakenly_ passing
-`Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will now
-get a compiler error. To fix, remove the `<Writer>` part:
-`bond::Apply(marshaler, value)`.
+* **Breaking change** The `bond::customize<protocols>` has been removed. All the
+  public APIs that require a protocol list (e.g. `bond::Marshal`) now accept
+  an extra template argument `Protocols` which defaults to `bond::BuiltInProtocols`.
+  Custom input streams now require `bond::type_id<>` to be specialized with a
+  unique magic number. For more details please see [the bf example](https://github.com/Microsoft/bond/tree/master/examples/cpp/core/bf).
+* Initial support for sending
+  [Bond objects over gRPC](https://microsoft.github.io/bond/manual/bond_over_grpc.html)
+  has been added.
+* The `bond::Apply` function now has a uniform signature. Call sites for the
+  `Marshaler<Writer>` transform overload that were _mistakenly_ passing
+  `Writer` explicitly (e.g. `bond::Apply<Writer>(marshaler, value)`) will
+  now get a compiler error. To fix, remove the `<Writer>` part:
+  `bond::Apply(marshaler, value)`.
 * Fixed a bug that caused serialization using
   `CompactBinaryWriter<OutputCounter>` (to get the expected length of
   serializing with compact binary) to produced bogus results.
@@ -66,8 +98,37 @@ get a compiler error. To fix, remove the `<Writer>` part:
   support which was broken for some scenarios.
 * For Visual C++ 2017 compability, RapidJSON v1.0.0 or newer is now
   required. The RapidJSON submodule that Bond uses by default has been
-  updated to v1.0.0.
+  updated to v1.1.0 due to a warning from clang in earlier versions.
 * C++ codegen hides FieldTemplate details, shortening symbol names.
+
+### C# ###
+
+* **Breaking change** Support for .NET 4.0 has been dropped from the
+  [supported frameworks](https://microsoft.github.io/bond/manual/bond_cs.html#frameworks-targeted).
+* **Breaking change** The deprecated type `Bond.BondReflection` has been
+  removed. The type `Bond.Reflection` should be used instead.
+* **Breaking change** Bond assemblies are now
+  [strong-name signed](https://msdn.microsoft.com/en-us/library/wd40t7ad(v=vs.110).aspx)
+  with the
+  [bond.snk](https://github.com/Microsoft/bond/blob/82c97e12621eeb906d1bd46e3abba9da14289c61/cs/build/internal/bond.snk)
+  key in the repository instead of with a Microsoft key. This allows anyone
+  to produce compatible assemblies, not just Microsoft. Official
+  distribution of Bond will continue to be
+  [Authenticode signed](https://msdn.microsoft.com/en-us/library/ms537361(v=vs.85).aspx)
+  with a Microsoft certificate.
+  [Issue #414](https://github.com/Microsoft/bond/issues/414)
+    * The new public key for assemblies is now
+      `00240000048000009400000006020000002400005253413100040000010001000d504ac18b4b149d2f7b0059b482f9b6d44d39059e6a96ff0a2a52678b5cfd8567cc67254132cd2debb5b95f6a1206a15c6f8ddac137c6c3ef4995f28c359acaa683a90995c8f08df7ce0aaa8836d331a344a514c443f112f80bf2ebed40ccb32d7df63c09b0d7bef80aecdc23ec200a458d4f8bafbcdeb9bf5ba111fbbd4787`
+* **Breaking change** Bond assemblies now have assembly and file versions
+  that correspond to their NuGet package version. Strong name identities
+  will now change release-over-release in line with the NuGet package
+  versions. [Issue #325](https://github.com/Microsoft/bond/issues/325)
+* The codegen MSBuild targets will now re-run codegen if gbc itself has been
+  changed.
+* Fixed a bug where JSON and XML protocols would permit the serialization of
+  non-nullable string fields that were set to null instead of throwing a
+  NullReferenceException.
+  [Issue #417](https://github.com/Microsoft/bond/issues/417)
 
 ## 5.3.1: 2017-04-25 ##
 

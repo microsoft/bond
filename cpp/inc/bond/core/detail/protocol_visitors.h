@@ -8,13 +8,15 @@
 #include <bond/stream/input_buffer.h>
 #include <bond/stream/output_buffer.h>
 #include <bond/core/traits.h>
+#include <bond/core/null.h>
+
 
 namespace bond
 {
 
 class RuntimeSchema;
 
-template <typename Writer>
+template <typename Writer, typename Protocols>
 class Serializer;
 
 namespace detail
@@ -24,8 +26,7 @@ namespace detail
 // It is used to dispatch to appropriate protocol at runtime.
 template <typename T, typename Schema, typename Transform>
 class _Parser
-    : public boost::static_visitor<bool>,
-      boost::noncopyable
+    : boost::noncopyable
 {
 public:
     _Parser(const Transform& transform, const Schema& schema)
@@ -51,11 +52,11 @@ public:
         return false;
     }
 
-    template <typename Reader, typename Writer>
+    template <typename Reader, typename Writer, typename Protocols>
     static
     typename boost::enable_if_c<is_protocol_same<Reader, Writer>::value
                              && protocol_has_multiple_versions<Reader>::value, bool>::type
-    Apply(const Serializer<Writer>& transform, Reader& reader, const Schema& schema, bool base)
+    Apply(const Serializer<Writer, Protocols>& transform, Reader& reader, const Schema& schema, bool base)
     {
         if (is_protocol_version_same(reader, transform._output))
             return FastPassThrough(reader, transform._output, schema);
@@ -63,11 +64,11 @@ public:
             return typename Reader::Parser(reader, base).Apply(transform, schema);
     }
 
-    template <typename Reader, typename Writer>
+    template <typename Reader, typename Writer, typename Protocols>
     static
     typename boost::enable_if_c<is_protocol_same<Reader, Writer>::value
                              && !protocol_has_multiple_versions<Reader>::value, bool>::type
-    Apply(const Serializer<Writer>& transform, Reader& reader, const Schema& schema, bool base)
+    Apply(const Serializer<Writer, Protocols>& transform, Reader& reader, const Schema& schema, bool base)
     {
         BOOST_VERIFY(!base);
         // Triggering the following assert means that bond::enable_protocol_versions trait is 
@@ -154,72 +155,96 @@ protected:
 
 
 template <typename Reader, typename T>
-inline void Skip(Reader& reader, const T& bonded)
+inline void Skip(Reader& reader, const bonded<T, Reader&>& bonded)
 {
     reader.Skip(bonded);
 }
 
+
+template <typename T, template <typename BufferT, typename MarshaledBondedProtocolsT> class Reader, typename Buffer, typename MarshaledBondedProtocols>
+inline void Skip(const bonded<T, Reader<Buffer, MarshaledBondedProtocols>&>& bonded)
+{
+    // Skip the structure field-by-field by applying Null transform
+    Apply<MarshaledBondedProtocols>(Null(), bonded);
+}
+
+
 template <typename Reader, typename T>
-BOND_NO_INLINE void Skip(Reader& reader, const T& bonded, const std::nothrow_t&)
+BOND_NO_INLINE void Skip(Reader& reader, const bonded<T, Reader&>& bonded, const std::nothrow_t&)
 {
     try
     {
-        reader.Skip(bonded);
+        Skip(reader, bonded);
     }
     catch(...)
-    {
-    }
+    {}
 }
 
 
 template <typename T>
-inline void Skip(ProtocolReader& /*reader*/, const T& /*bonded*/)
+inline void Skip(ProtocolReader& /*reader*/, const bonded<T>& /*bonded*/)
 {
     // Not skipping for outer structures
 }
 
 
 template <typename T>
-inline void Skip(ProtocolReader& /*reader*/, const T& /*bonded*/, const std::nothrow_t&)
+inline void Skip(ProtocolReader& /*reader*/, const bonded<T>& /*bonded*/, const std::nothrow_t&)
 {
     // Not skipping for outer structures
 }
 
 
-template <typename T, typename Transform, typename Reader, typename Schema>
+template <typename T, typename Protocols, typename Transform, typename Reader, typename Schema>
 inline bool Parse(const Transform& transform, Reader& reader, const Schema& schema, const RuntimeSchema* runtime_schema, bool base)
 {
     BOOST_VERIFY(!runtime_schema);
     return Parser<T, Schema, Transform>::Apply(transform, reader, schema, base);
 }
 
-template <typename T, typename Transform, typename Schema>
+template <typename T, typename Protocols, typename Transform, typename Schema>
 inline bool Parse(const Transform& transform, ProtocolReader reader, const Schema& schema, const RuntimeSchema* runtime_schema, bool base)
 {
     BOOST_VERIFY(!base);
+
+    boost::optional<bool> result;
     
     if (runtime_schema)
     {
         // Use named variable to avoid gcc silently copying objects (which
         // causes build break, because Parser<> is non-copyable).
         Parser<void, RuntimeSchema, Transform> parser(transform, *runtime_schema);
-        return boost::apply_visitor(parser, reader.value);
+        result = reader.template Visit<Protocols
+#if defined(BOND_NO_CXX14_RETURN_TYPE_DEDUCTION) || defined(BOND_NO_CXX14_GENERIC_LAMBDAS)
+            , bool
+#endif
+            >(parser);
     }
     else
     {
         // Use named variable to avoid gcc silently copying objects (which
         // causes build break, because Parser<> is non-copyable).
         Parser<T, Schema, Transform> parser(transform, schema);
-        return boost::apply_visitor(parser, reader.value);
+        result = reader.template Visit<Protocols
+#if defined(BOND_NO_CXX14_RETURN_TYPE_DEDUCTION) || defined(BOND_NO_CXX14_GENERIC_LAMBDAS)
+            , bool
+#endif
+            >(parser);
     }
+
+    if (result)
+    {
+        return result.get();
+    }
+
+    UnknownProtocolException();
 }
 
 
 // Visitor which updates in-situ bonded<T> payload by merging it with an object.
 template <typename T, typename Buffer>
 class InsituMerge
-    : public boost::static_visitor<>,
-      boost::noncopyable
+    : boost::noncopyable
 {
 public:
     InsituMerge(const T& var, ProtocolReader& reader)
@@ -261,10 +286,17 @@ private:
 };
 
 
-template <typename Buffer = OutputBuffer, typename T>
+template <typename Protocols, typename Buffer = OutputBuffer, typename T>
 inline void Merge(const T& var, ProtocolReader& reader)
 {
-    boost::apply_visitor(InsituMerge<T, Buffer>(var, reader), reader.value);
+    if (!reader.template Visit<Protocols
+#if defined(BOND_NO_CXX14_RETURN_TYPE_DEDUCTION) || defined(BOND_NO_CXX14_GENERIC_LAMBDAS)
+        , void
+#endif
+        >(InsituMerge<T, Buffer>(var, reader)))
+    {
+        UnknownProtocolException();
+    }
 }
 
 

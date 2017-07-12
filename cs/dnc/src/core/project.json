@@ -12,6 +12,7 @@
                 "../../../src/core/io/safe/*.cs",
                 "../../../src/core/properties/*.cs",
                 "../../../src/core/protocols/*.cs",
+                "../../gen/AssemblyInfo_Generated.cs",
                 "gen/bond_const_types.cs",
                 "gen/bond_types.cs"
             ]
@@ -31,31 +32,11 @@
                 "publicSign": true
             }
         },
-        "debug-delay": {
-            "buildOptions": {
-                "define": [
-                    "DELAY_SIGN"
-                ],
-                "delaySign": true,
-                "keyFile": "../../keys/delay-sign.snk",
-                "optimize": true
-            }
-        },
         "release": {
             "buildOptions": {
                 "keyFile": "../../../build/internal/bond.snk",
                 "optimize": true,
                 "publicSign": true
-            }
-        },
-        "release-delay": {
-            "buildOptions": {
-                "define": [
-                    "DELAY_SIGN"
-                ],
-                "delaySign": true,
-                "keyFile": "../../keys/delay-sign.snk",
-                "optimize": true
             }
         }
     },

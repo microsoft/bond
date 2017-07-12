@@ -289,11 +289,10 @@ namespace UnitTest
                     if (typeDefinition == typeof(CustomBonded<>))
                     {
                         var arg = arguments[0]; // CustomBondedVoid<R>
-#if NETCOREAPP1_0
-                        Type[] genericArgs = Bond.Internal.Reflection.Reflection45.GetGenericArguments(type);
-#else
-                        Type[] genericArgs = type.GetGenericArguments();
-#endif
+
+                        Type[] genericArgs = type.GetTypeInfo().GenericTypeArguments;
+                        Assert.IsNotEmpty(genericArgs);
+
                         var bondedConvert = typeof(IBonded).GetMethod("Convert").MakeGenericMethod(genericArgs);
 
                         return Expression.ConvertChecked(Expression.Call(arg, bondedConvert), type);

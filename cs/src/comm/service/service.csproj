@@ -2,6 +2,7 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\internal\Portable.Internal.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\comm.props" />
   <PropertyGroup>
     <ProjectGuid>{79D2423A-87C8-44A2-89C2-2FA94521747E}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -9,7 +10,6 @@
     <RootNamespace>Bond.Comm.Service</RootNamespace>
     <AssemblyName>Bond.Comm.Service</AssemblyName>
     <BondRedistributable>true</BondRedistributable>
-    <DontBuildNet40>true</DontBuildNet40>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="properties\AssemblyInfo.cs" />
