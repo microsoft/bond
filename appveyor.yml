@@ -32,14 +32,14 @@
               BOND_VS_NUM: 12
               BOND_ARCH: 32
               BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_GBC_TESTS=TRUE"
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_GBC_TESTS=TRUE"
               # C++ Core build and tests
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
               BOND_BOOST: 60
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE"
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
@@ -54,34 +54,34 @@
               BOND_VS_NUM: 14
               BOND_ARCH: 32
               BOND_BOOST: 60
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE"
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: Python
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
               BOND_BOOST: 63
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_ENABLE_GRPC=FALSE"
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
               # C++ Comm build and tests
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
               BOND_BOOST: 63
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=TRUE;-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
               # C++ gRPC build and tests
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
               BOND_BOOST: 63
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
+              BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
               # C++ Comm build and tests (Visual C++ 2013)
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 12 2013"
               BOND_VS_NUM: 12
               BOND_ARCH: 64
               BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
+              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=TRUE;-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
     install:
         - ps: >-
             if (($env:BOND_BUILD -eq 'C++') -or ($env:BOND_BUILD -eq 'Python')) {

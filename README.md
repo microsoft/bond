@@ -71,7 +71,7 @@ In the root `bond` directory run:
 ```bash
 mkdir build
 cd build
-cmake .. -DBOND_ENABLE_GRPC=FALSE -DBOND_ENABLE_COMM=FALSE
+cmake .. -DBOND_ENABLE_GRPC=FALSE
 make
 sudo make install
 ```
@@ -80,8 +80,8 @@ The `build` directory is just an example. Any directory can be used as the build
 destination.
 
 In order to build all the C++ and Python tests and examples, as well as
-Bond-over-gRPC and Bond Comm, a few more packages are needed, and CMake
-needs to be run with different options:
+Bond-over-gRPC, a few more packages are needed, and CMake needs to be run with
+different options:
 
 ```bash
 sudo apt-get install \
@@ -94,7 +94,7 @@ sudo apt-get install \
     python2.7-dev
 
 cd build # or wherever you ran CMake before
-cmake .. -DBOND_ENABLE_GRPC=TRUE -DBOND_ENABLE_COMM=TRUE -DgRPC_ZLIB_PROVIDER=package
+cmake .. -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package
 ```
 
 Running the following command in the build directory will build and execute all
@@ -218,7 +218,7 @@ Studio 2015 run the following commands from the root `bond` directory:
 mkdir build
 cd build
 set PreferredToolArchitecture=x64
-cmake -DBOND_ENABLE_GRPC=FALSE -DBOND_ENABLE_COMM=FALSE -G "Visual Studio 14 2015 Win64" ..
+cmake -DBOND_ENABLE_GRPC=FALSE -G "Visual Studio 14 2015 Win64" ..
 ```
 
 Setting `PreferredToolArchitecture=x64` selects the 64-bit toolchain which
@@ -253,7 +253,7 @@ You will also need to enable gRPC in the `cmake` configuration step by running t
 in the `build` directory from above and then following the other `cmake` commands above:
 
 ```bash
-cmake -DBOND_ENABLE_GRPC=TRUE -DBOND_ENABLE_COMM=FALSE -G "Visual Studio 14 2015 Win64" ..
+cmake -DBOND_ENABLE_GRPC=TRUE -G "Visual Studio 14 2015 Win64" ..
 ```
 
 ## Contributing
