@@ -18,5 +18,6 @@
   </ItemGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetPath);@(FileToCopy)" DestinationFolder="$(BOND_BINARY_PATH)\$(BuildFramework)" Condition="'$(BondRedistributable)' == 'true'" />
+    <MSBuild Condition="'$(BuildFramework)' == 'net45' and ('$(HasNonportableVersion)' == 'true')" Projects="$(MSBuildProjectFile)" Properties="BuildNonportable=true" RunEachTargetSeparately="true"  />
   </Target>
 </Project>

@@ -49,7 +49,7 @@
                 _uint8 = byte.MaxValue,
                 _uint16 = ushort.MaxValue,
                 _uint32 = uint.MaxValue,
-                // Note: not ulong.MaxValue because NewtonSoft JSON doesn't support it
+                // Note: not ulong.MaxValue because NewtonSoft JSON doesn't support it in portable profile
                 _uint64 = long.MaxValue
             });
 
