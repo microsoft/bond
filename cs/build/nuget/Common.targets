@@ -42,9 +42,9 @@
 
   <!-- Attempt to find gbc in a platform-agnostic way. -->
   <PropertyGroup>
-    <_BondExe>gbc</_BondExe>
-    <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc.exe')">$(BOND_COMPILER_PATH)\gbc.exe</_BondExe>
-    <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc')">$(BOND_COMPILER_PATH)\gbc</_BondExe>
+    <_PreExistingBondExe></_PreExistingBondExe>
+    <_PreExistingBondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc.exe')">$(BOND_COMPILER_PATH)\gbc.exe</_PreExistingBondExe>
+    <_PreExistingBondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc')">$(BOND_COMPILER_PATH)\gbc</_PreExistingBondExe>
   </PropertyGroup>
 
   <!-- Some versions of Visual Studio have an additional up-to-date check
@@ -52,7 +52,7 @@
        need to add gbc as an input to the Visual Studio up-to-date check as
        well. -->
   <ItemGroup>
-    <UpToDateCheckInput Include="$(_BondExe)" />
+    <UpToDateCheckInput Include="$(_PreExistingBondExe)" />
   </ItemGroup>
 
   <!-- BondCodegenCs - transform .bond files into .cs files
@@ -71,7 +71,7 @@
        NOTE: This still won't catch changes to files imported outside the
        BondCodegen item. -->
   <Target Name="BondCodegenCs"
-          Inputs="$(_BondExe);@(BondCodegen)"
+          Inputs="$(_PreExistingBondExe);@(BondCodegen)"
           Outputs="$(BondOutputDirectory)\bondcodegen.done;@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_types.cs')"
           BeforeTargets="CoreCompile"
           Condition="'@(BondCodegen)' != ''">
@@ -83,6 +83,9 @@
 
     <!-- just for a simpler commandline read -->
     <PropertyGroup>
+      <_BondExe>gbc</_BondExe>
+      <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc.exe')">$(BOND_COMPILER_PATH)\gbc.exe</_BondExe>
+      <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc')">$(BOND_COMPILER_PATH)\gbc</_BondExe>
       <_BondImportDirs>--import-dir="$(BOND_INCLUDE_PATH)" @(BondImportDirectory -> '--import-dir=&quot;%(Identity)\.&quot;',' ')</_BondImportDirs>
       <_BondCommand>&quot;$(_BondExe)&quot; $(BondCodegenMode) $(_BondImportDirs) --jobs=-2 --namespace=bond=Bond --output-dir="$(BondOutputDirectory)\."</_BondCommand>
     </PropertyGroup>
