@@ -1,514 +1,263 @@
 
 package tests;
 
-
 @javax.annotation.Generated("gbc")
 public class Foo implements com.microsoft.bond.BondSerializable {
-
-    public static final com.microsoft.bond.SchemaDef SCHEMA = new com.microsoft.bond.SchemaDef();
-    public static final com.microsoft.bond.StructDef STRUCT_DEF = new com.microsoft.bond.StructDef();
     
-    private static boolean schemaInitialized = false;
+    private static final class StructBondTypeImpl extends com.microsoft.bond.StructBondType<Foo> {
+        
+        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<Foo> {
+            
+            @Override
+            public final int getGenericTypeParameterCount() {
+                return 0;
+            }
 
-    public static synchronized void initSchema() {
-        if (schemaInitialized) { return; }
+            @Override
+            protected final com.microsoft.bond.StructBondType<Foo> buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
+                return new StructBondTypeImpl(null);
+            }
+
+            static void register() {
+                registerStructType(Foo.class, new StructBondTypeBuilderImpl());
+            }
+        }
 
         
 
-        SCHEMA.root.id = com.microsoft.bond.BondDataType.BT_STRUCT;
-        SCHEMA.root.struct_def = 0;
-        SCHEMA.root.element = null;
-        SCHEMA.root.key = null;
-        SCHEMA.root.bonded_type = false;
-
-        STRUCT_DEF.metadata.name = "Foo";
-        STRUCT_DEF.metadata.qualified_name = "tests.Foo";
-        STRUCT_DEF.metadata.modifier = com.microsoft.bond.Modifier.Optional;
+        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+            super(genericTypeSpecialization);
+        }
         
-        // TODO: .base_def
-        SCHEMA.structs.add(0, STRUCT_DEF);
+        @Override
+        protected final void initialize() {
+            super.initializeBaseAndFields(null);
+        }
 
+        @Override
+        public final java.lang.Class<Foo> getValueClass() {
+            return (java.lang.Class<Foo>) (java.lang.Class) Foo.class;
+        }
+
+        @Override
+        public final Foo newInstance() {
+            return new Foo();
+        }
         
-
-        schemaInitialized = true;
+        @Override
+        protected final void serializeStructFields(com.microsoft.bond.BondType.SerializationContext context, Foo value) throws java.io.IOException {
+        }
+        
+        @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, Foo value) throws java.io.IOException {
+            while (this.readField(context)) {
+                switch (context.readFieldResult.id) {
+                }
+            }
+        }
+        
+        @Override
+        protected final void initializeStructFields(Foo value) {
+        }
     }
 
-    public static com.microsoft.bond.SchemaDef getSchema() {
-        initSchema();
-        return SCHEMA;
+    public static final com.microsoft.bond.StructBondType<Foo> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+
+    public static void initializeBondType() {
+        StructBondTypeImpl.StructBondTypeBuilderImpl.register();
     }
 
-    public static com.microsoft.bond.StructDef getStructDef() {
-        initSchema();
-        return STRUCT_DEF;
+    static {
+        initializeBondType();
     }
     
 
-    private final com.microsoft.bond.protocol.TaggedProtocolReader.ReadFieldResult __readFieldResult = new com.microsoft.bond.protocol.TaggedProtocolReader.ReadFieldResult();
-    private final com.microsoft.bond.protocol.TaggedProtocolReader.ReadContainerResult __readContainerResult = new com.microsoft.bond.protocol.TaggedProtocolReader.ReadContainerResult();
+    
 
     
+    public Foo() {
+        super();
+        ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
+    };
+
 
     @Override
-    public void serialize(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        initSchema();
-
-        writer.writeStructBegin(SCHEMA.structs.get(0).metadata);
-        this.serializeFields(writer);
-        writer.writeStructEnd();
-    }
-
-    @Override
-    public void deserialize(com.microsoft.bond.protocol.TaggedProtocolReader reader) throws java.io.IOException {
-        initSchema();
-
-        reader.readStructBegin();
-        this.deserializeFields(reader);
-        reader.readStructEnd();
-    }
-
-    protected void serializeFields(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        
-        
-    }
-
-    protected void deserializeFields(com.microsoft.bond.protocol.TaggedProtocolReader reader) throws java.io.IOException {
-        
-        
-    }
-
-    @Override
-    public void marshal(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        writer.writeVersion();
-        serialize(writer);
+    public com.microsoft.bond.StructBondType<? extends com.microsoft.bond.BondSerializable> getBondType() {
+        return BOND_TYPE;
     }
 }
 
 package tests;
 
-
 @javax.annotation.Generated("gbc")
 public class ComplexTypes implements com.microsoft.bond.BondSerializable {
-
-    public static final com.microsoft.bond.SchemaDef SCHEMA = new com.microsoft.bond.SchemaDef();
-    public static final com.microsoft.bond.StructDef STRUCT_DEF = new com.microsoft.bond.StructDef();
-    private static final com.microsoft.bond.FieldDef li8_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef sb_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef vb_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef nf_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef msws_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef bfoo_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static boolean schemaInitialized = false;
-
-    public static synchronized void initSchema() {
-        if (schemaInitialized) { return; }
-
+    
+    private static final class StructBondTypeImpl extends com.microsoft.bond.StructBondType<ComplexTypes> {
         
+        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<ComplexTypes> {
+            
+            @Override
+            public final int getGenericTypeParameterCount() {
+                return 0;
+            }
 
-        SCHEMA.root.id = com.microsoft.bond.BondDataType.BT_STRUCT;
-        SCHEMA.root.struct_def = 0;
-        SCHEMA.root.element = null;
-        SCHEMA.root.key = null;
-        SCHEMA.root.bonded_type = false;
+            @Override
+            protected final com.microsoft.bond.StructBondType<ComplexTypes> buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
+                return new StructBondTypeImpl(null);
+            }
 
-        STRUCT_DEF.metadata.name = "ComplexTypes";
-        STRUCT_DEF.metadata.qualified_name = "tests.ComplexTypes";
-        STRUCT_DEF.metadata.modifier = com.microsoft.bond.Modifier.Optional;
+            static void register() {
+                registerStructType(ComplexTypes.class, new StructBondTypeBuilderImpl());
+            }
+        }
+
+        private com.microsoft.bond.StructBondType.ObjectStructField<java.util.List<java.lang.Byte>> li8;
+
+        private com.microsoft.bond.StructBondType.ObjectStructField<java.util.Set<java.lang.Boolean>> sb;
+
+        private com.microsoft.bond.StructBondType.ObjectStructField<java.util.List<byte[]>> vb;
+
+        private com.microsoft.bond.StructBondType.ObjectStructField<java.lang.Float> nf;
+
+        private com.microsoft.bond.StructBondType.ObjectStructField<java.util.Map<java.lang.String, java.lang.String>> msws;
+
+        private com.microsoft.bond.StructBondType.BondedStructField<tests.Foo> bfoo;
+
+        private com.microsoft.bond.StructBondType.ObjectStructField<java.util.Map<java.lang.Double, java.util.List<java.util.List<com.microsoft.bond.IBonded<tests.Bar>>>>> m;
+
+        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+            super(genericTypeSpecialization);
+        }
         
-        // TODO: .base_def
-        SCHEMA.structs.add(0, STRUCT_DEF);
+        @Override
+        protected final void initialize() {
+            this.li8 = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.List<java.lang.Byte>>(this, listOf(com.microsoft.bond.BondTypes.INT8), 0, "li8", com.microsoft.bond.Modifier.Optional);
+            this.sb = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.Set<java.lang.Boolean>>(this, setOf(com.microsoft.bond.BondTypes.BOOL), 1, "sb", com.microsoft.bond.Modifier.Optional);
+            this.vb = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.List<byte[]>>(this, vectorOf(com.microsoft.bond.BondTypes.BLOB), 2, "vb", com.microsoft.bond.Modifier.Optional);
+            this.nf = new com.microsoft.bond.StructBondType.ObjectStructField<java.lang.Float>(this, nullableOf(com.microsoft.bond.BondTypes.FLOAT), 3, "nf", com.microsoft.bond.Modifier.Optional);
+            this.msws = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.Map<java.lang.String, java.lang.String>>(this, mapOf(com.microsoft.bond.BondTypes.STRING, com.microsoft.bond.BondTypes.WSTRING), 4, "msws", com.microsoft.bond.Modifier.Optional);
+            this.bfoo = new com.microsoft.bond.StructBondType.BondedStructField<tests.Foo>(this, bondedOf((com.microsoft.bond.StructBondType<tests.Foo>) getStructType(tests.Foo.class)), 5, "bfoo", com.microsoft.bond.Modifier.Optional);
+            this.m = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.Map<java.lang.Double, java.util.List<java.util.List<com.microsoft.bond.IBonded<tests.Bar>>>>>(this, mapOf(com.microsoft.bond.BondTypes.DOUBLE, listOf(vectorOf(nullableOf(bondedOf((com.microsoft.bond.StructBondType<tests.Bar>) getStructType(tests.Bar.class)))))), 6, "m", com.microsoft.bond.Modifier.Optional);
+            super.initializeBaseAndFields(null, this.li8, this.sb, this.vb, this.nf, this.msws, this.bfoo, this.m);
+        }
 
-        li8_FIELD_DEF.metadata.name = "li8";
-        li8_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
+        @Override
+        public final java.lang.Class<ComplexTypes> getValueClass() {
+            return (java.lang.Class<ComplexTypes>) (java.lang.Class) ComplexTypes.class;
+        }
+
+        @Override
+        public final ComplexTypes newInstance() {
+            return new ComplexTypes();
+        }
         
-        li8_FIELD_DEF.id = 0;
-        li8_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_LIST;
-        li8_FIELD_DEF.type.struct_def = 0;
-        li8_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        li8_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_INT8;
-        li8_FIELD_DEF.type.element.struct_def = 0;
-        li8_FIELD_DEF.type.element.element = null;
-        li8_FIELD_DEF.type.element.key = null;
-        li8_FIELD_DEF.type.element.bonded_type = false;
-        li8_FIELD_DEF.type.key = null;
-        li8_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(li8_FIELD_DEF);
-
-        sb_FIELD_DEF.metadata.name = "sb";
-        sb_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
+        @Override
+        protected final void serializeStructFields(com.microsoft.bond.BondType.SerializationContext context, ComplexTypes value) throws java.io.IOException {
+            this.li8.serialize(context, value.li8);
+            this.sb.serialize(context, value.sb);
+            this.vb.serialize(context, value.vb);
+            this.nf.serialize(context, value.nf);
+            this.msws.serialize(context, value.msws);
+            this.bfoo.serialize(context, value.bfoo);
+            this.m.serialize(context, value.m);
+        }
         
-        sb_FIELD_DEF.id = 1;
-        sb_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_SET;
-        sb_FIELD_DEF.type.struct_def = 0;
-        sb_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        sb_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_BOOL;
-        sb_FIELD_DEF.type.element.struct_def = 0;
-        sb_FIELD_DEF.type.element.element = null;
-        sb_FIELD_DEF.type.element.key = null;
-        sb_FIELD_DEF.type.element.bonded_type = false;
-        sb_FIELD_DEF.type.key = null;
-        sb_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(sb_FIELD_DEF);
-
-        vb_FIELD_DEF.metadata.name = "vb";
-        vb_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
+        @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, ComplexTypes value) throws java.io.IOException {
+            boolean __has_li8 = false;
+            boolean __has_sb = false;
+            boolean __has_vb = false;
+            boolean __has_nf = false;
+            boolean __has_msws = false;
+            boolean __has_bfoo = false;
+            boolean __has_m = false;
+            while (this.readField(context)) {
+                switch (context.readFieldResult.id) {
+                    case 0:
+                        value.li8 = this.li8.deserialize(context, __has_li8);
+                            __has_li8 = true;
+                            break;
+                    case 1:
+                        value.sb = this.sb.deserialize(context, __has_sb);
+                            __has_sb = true;
+                            break;
+                    case 2:
+                        value.vb = this.vb.deserialize(context, __has_vb);
+                            __has_vb = true;
+                            break;
+                    case 3:
+                        value.nf = this.nf.deserialize(context, __has_nf);
+                            __has_nf = true;
+                            break;
+                    case 4:
+                        value.msws = this.msws.deserialize(context, __has_msws);
+                            __has_msws = true;
+                            break;
+                    case 5:
+                        value.bfoo = this.bfoo.deserialize(context, __has_bfoo);
+                            __has_bfoo = true;
+                            break;
+                    case 6:
+                        value.m = this.m.deserialize(context, __has_m);
+                            __has_m = true;
+                            break;
+                }
+            }
+            this.li8.verifyDeserialized(__has_li8);
+            this.sb.verifyDeserialized(__has_sb);
+            this.vb.verifyDeserialized(__has_vb);
+            this.nf.verifyDeserialized(__has_nf);
+            this.msws.verifyDeserialized(__has_msws);
+            this.bfoo.verifyDeserialized(__has_bfoo);
+            this.m.verifyDeserialized(__has_m);
+        }
         
-        vb_FIELD_DEF.id = 2;
-        vb_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_LIST;
-        vb_FIELD_DEF.type.struct_def = 0;
-        vb_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        vb_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_LIST;
-        vb_FIELD_DEF.type.element.struct_def = 0;
-        vb_FIELD_DEF.type.element.element = null;
-        vb_FIELD_DEF.type.element.key = null;
-        vb_FIELD_DEF.type.element.bonded_type = false;
-        vb_FIELD_DEF.type.key = null;
-        vb_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(vb_FIELD_DEF);
-
-        nf_FIELD_DEF.metadata.name = "nf";
-        nf_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        nf_FIELD_DEF.id = 3;
-        nf_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_LIST;
-        nf_FIELD_DEF.type.struct_def = 0;
-        nf_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        nf_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_FLOAT;
-        nf_FIELD_DEF.type.element.struct_def = 0;
-        nf_FIELD_DEF.type.element.element = null;
-        nf_FIELD_DEF.type.element.key = null;
-        nf_FIELD_DEF.type.element.bonded_type = false;
-        nf_FIELD_DEF.type.key = null;
-        nf_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(nf_FIELD_DEF);
-
-        msws_FIELD_DEF.metadata.name = "msws";
-        msws_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        msws_FIELD_DEF.id = 4;
-        msws_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_MAP;
-        msws_FIELD_DEF.type.struct_def = 0;
-        msws_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        msws_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_WSTRING;
-        msws_FIELD_DEF.type.element.struct_def = 0;
-        msws_FIELD_DEF.type.element.element = null;
-        msws_FIELD_DEF.type.element.key = null;
-        msws_FIELD_DEF.type.element.bonded_type = false;
-        msws_FIELD_DEF.type.key = new com.microsoft.bond.TypeDef();
-        msws_FIELD_DEF.type.key.id = com.microsoft.bond.BondDataType.BT_STRING;
-        msws_FIELD_DEF.type.key.struct_def = 0;
-        msws_FIELD_DEF.type.key.element = null;
-        msws_FIELD_DEF.type.key.key = null;
-        msws_FIELD_DEF.type.key.bonded_type = false;
-        msws_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(msws_FIELD_DEF);
-
-        bfoo_FIELD_DEF.metadata.name = "bfoo";
-        bfoo_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        bfoo_FIELD_DEF.id = 5;
-        bfoo_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        bfoo_FIELD_DEF.type.struct_def = 0;
-        bfoo_FIELD_DEF.type.element = null;
-        bfoo_FIELD_DEF.type.key = null;
-        bfoo_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(bfoo_FIELD_DEF);
-
-        m_FIELD_DEF.metadata.name = "m";
-        m_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_FIELD_DEF.id = 6;
-        m_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_MAP;
-        m_FIELD_DEF.type.struct_def = 0;
-        m_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_LIST;
-        m_FIELD_DEF.type.element.struct_def = 0;
-        m_FIELD_DEF.type.element.element = new com.microsoft.bond.TypeDef();
-        m_FIELD_DEF.type.element.element.id = com.microsoft.bond.BondDataType.BT_LIST;
-        m_FIELD_DEF.type.element.element.struct_def = 0;
-        m_FIELD_DEF.type.element.element.element = new com.microsoft.bond.TypeDef();
-        m_FIELD_DEF.type.element.element.element.id = com.microsoft.bond.BondDataType.BT_LIST;
-        m_FIELD_DEF.type.element.element.element.struct_def = 0;
-        m_FIELD_DEF.type.element.element.element.element = new com.microsoft.bond.TypeDef();
-        m_FIELD_DEF.type.element.element.element.element.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_FIELD_DEF.type.element.element.element.element.struct_def = 0;
-        m_FIELD_DEF.type.element.element.element.element.element = null;
-        m_FIELD_DEF.type.element.element.element.element.key = null;
-        m_FIELD_DEF.type.element.element.element.element.bonded_type = false;
-        m_FIELD_DEF.type.element.element.element.key = null;
-        m_FIELD_DEF.type.element.element.element.bonded_type = false;
-        m_FIELD_DEF.type.element.element.key = null;
-        m_FIELD_DEF.type.element.element.bonded_type = false;
-        m_FIELD_DEF.type.element.key = null;
-        m_FIELD_DEF.type.element.bonded_type = false;
-        m_FIELD_DEF.type.key = new com.microsoft.bond.TypeDef();
-        m_FIELD_DEF.type.key.id = com.microsoft.bond.BondDataType.BT_DOUBLE;
-        m_FIELD_DEF.type.key.struct_def = 0;
-        m_FIELD_DEF.type.key.element = null;
-        m_FIELD_DEF.type.key.key = null;
-        m_FIELD_DEF.type.key.bonded_type = false;
-        m_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_FIELD_DEF);
-
-        schemaInitialized = true;
+        @Override
+        protected final void initializeStructFields(ComplexTypes value) {
+            value.li8 = this.li8.initialize();
+            value.sb = this.sb.initialize();
+            value.vb = this.vb.initialize();
+            value.nf = this.nf.initialize();
+            value.msws = this.msws.initialize();
+            value.bfoo = this.bfoo.initialize();
+            value.m = this.m.initialize();
+        }
     }
 
-    public static com.microsoft.bond.SchemaDef getSchema() {
-        initSchema();
-        return SCHEMA;
+    public static final com.microsoft.bond.StructBondType<ComplexTypes> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+
+    public static void initializeBondType() {
+        StructBondTypeImpl.StructBondTypeBuilderImpl.register();
     }
 
-    public static com.microsoft.bond.StructDef getStructDef() {
-        initSchema();
-        return STRUCT_DEF;
+    static {
+        initializeBondType();
     }
     
 
-    private final com.microsoft.bond.protocol.TaggedProtocolReader.ReadFieldResult __readFieldResult = new com.microsoft.bond.protocol.TaggedProtocolReader.ReadFieldResult();
-    private final com.microsoft.bond.protocol.TaggedProtocolReader.ReadContainerResult __readContainerResult = new com.microsoft.bond.protocol.TaggedProtocolReader.ReadContainerResult();
+    public java.util.List<java.lang.Byte> li8;
 
-    public java.util.List<Byte> li8 = new java.util.LinkedList();
+    public java.util.Set<java.lang.Boolean> sb;
 
-    public java.util.Set<Boolean> sb = new java.util.HashSet();
+    public java.util.List<byte[]> vb;
 
-    public java.util.List<byte[]> vb = new java.util.ArrayList();
+    public java.lang.Float nf;
 
-    public Float nf = null;
+    public java.util.Map<java.lang.String, java.lang.String> msws;
 
-    public java.util.Map<String, String> msws = new java.util.HashMap();
+    public com.microsoft.bond.IBonded<tests.Foo> bfoo;
 
-    public com.microsoft.bond.IBonded<Foo> bfoo = new com.microsoft.bond.Bonded<Foo>(new Foo());
+    public java.util.Map<java.lang.Double, java.util.List<java.util.List<com.microsoft.bond.IBonded<tests.Bar>>>> m;
 
-    public java.util.Map<Double, java.util.List<java.util.List<com.microsoft.bond.IBonded<Bar>>>> m = new java.util.HashMap();
+    
+    public ComplexTypes() {
+        super();
+        ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
+    };
 
-    @Override
-    public void serialize(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        initSchema();
-
-        writer.writeStructBegin(SCHEMA.structs.get(0).metadata);
-        this.serializeFields(writer);
-        writer.writeStructEnd();
-    }
 
     @Override
-    public void deserialize(com.microsoft.bond.protocol.TaggedProtocolReader reader) throws java.io.IOException {
-        initSchema();
-
-        reader.readStructBegin();
-        this.deserializeFields(reader);
-        reader.readStructEnd();
-    }
-
-    protected void serializeFields(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_LIST, 0, li8_FIELD_DEF.metadata);
-        writer.writeContainerBegin(this.li8.size(), com.microsoft.bond.BondDataType.BT_INT8);
-        for (byte e0 : this.li8) {
-            writer.writeInt8(e0);
-        }
-        writer.writeContainerEnd();
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_SET, 1, sb_FIELD_DEF.metadata);
-        writer.writeContainerBegin(this.sb.size(), com.microsoft.bond.BondDataType.BT_BOOL);
-        for (boolean e0 : this.sb) {
-            writer.writeBool(e0);
-        }
-        writer.writeContainerEnd();
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_LIST, 2, vb_FIELD_DEF.metadata);
-        writer.writeContainerBegin(this.vb.size(), com.microsoft.bond.BondDataType.BT_LIST);
-        for (byte[] e0 : this.vb) {
-            writer.writeContainerBegin(e0.length, com.microsoft.bond.BondDataType.BT_INT8);
-        writer.writeBytes(e0);
-        writer.writeContainerEnd();
-        }
-        writer.writeContainerEnd();
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_LIST, 3, nf_FIELD_DEF.metadata);
-        if (this.nf == null) {
-            writer.writeContainerBegin(0, com.microsoft.bond.BondDataType.BT_FLOAT);
-        } else {
-            writer.writeContainerBegin(1, com.microsoft.bond.BondDataType.BT_FLOAT);
-            writer.writeFloat(this.nf);
-        }
-        writer.writeContainerEnd();
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_MAP, 4, msws_FIELD_DEF.metadata);
-        writer.writeContainerBegin(this.msws.size(), com.microsoft.bond.BondDataType.BT_STRING, com.microsoft.bond.BondDataType.BT_WSTRING);
-        for (java.util.Map.Entry<String, String> e0 : this.msws.entrySet()) {
-            writer.writeString(e0.getKey());
-            writer.writeWString(e0.getValue());
-        }
-        writer.writeContainerEnd();
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 5, bfoo_FIELD_DEF.metadata);
-        this.bfoo.serialize(writer);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_MAP, 6, m_FIELD_DEF.metadata);
-        writer.writeContainerBegin(this.m.size(), com.microsoft.bond.BondDataType.BT_DOUBLE, com.microsoft.bond.BondDataType.BT_LIST);
-        for (java.util.Map.Entry<Double, java.util.List<java.util.List<com.microsoft.bond.IBonded<Bar>>>> e0 : this.m.entrySet()) {
-            writer.writeDouble(e0.getKey());
-            writer.writeContainerBegin(e0.getValue().size(), com.microsoft.bond.BondDataType.BT_LIST);
-        for (java.util.List<com.microsoft.bond.IBonded<Bar>> e1 : e0.getValue()) {
-            writer.writeContainerBegin(e1.size(), com.microsoft.bond.BondDataType.BT_LIST);
-        for (com.microsoft.bond.IBonded<Bar> e2 : e1) {
-            if (e2 == null) {
-            writer.writeContainerBegin(0, com.microsoft.bond.BondDataType.BT_UNAVAILABLE);
-        } else {
-            writer.writeContainerBegin(1, com.microsoft.bond.BondDataType.BT_UNAVAILABLE);
-            e2.serialize(writer);
-        }
-        writer.writeContainerEnd();
-        }
-        writer.writeContainerEnd();
-        }
-        writer.writeContainerEnd();
-        }
-        writer.writeContainerEnd();
-        writer.writeFieldEnd();
-        
-    }
-
-    protected void deserializeFields(com.microsoft.bond.protocol.TaggedProtocolReader reader) throws java.io.IOException {
-        
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        reader.readListBegin(this.__readContainerResult);
-        {
-            long count0 = this.__readContainerResult.count;
-            for (long i0 = 0; i0 < count0; i0++) {
-                byte e0 = 0;
-                e0 = reader.readInt8();
-                this.li8.add(e0);
-            }
-        }
-        reader.readContainerEnd();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        reader.readListBegin(this.__readContainerResult);
-        {
-            long count0 = this.__readContainerResult.count;
-            for (long i0 = 0; i0 < count0; i0++) {
-                boolean e0 = false;
-                e0 = reader.readBool();
-                this.sb.add(e0);
-            }
-        }
-        reader.readContainerEnd();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        reader.readListBegin(this.__readContainerResult);
-        {
-            long count0 = this.__readContainerResult.count;
-            for (long i0 = 0; i0 < count0; i0++) {
-                byte[] e0 = new byte[0];
-                reader.readListBegin(this.__readContainerResult);
-        e0 = reader.readBytes(__readContainerResult.count);
-        reader.readContainerEnd();
-                this.vb.add(e0);
-            }
-        }
-        reader.readContainerEnd();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        reader.readListBegin(this.__readContainerResult);
-        if (this.__readContainerResult.count == 0) {
-            this.nf = null;
-        } else {
-            this.nf = reader.readFloat();
-        }
-        reader.readContainerEnd();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        reader.readMapBegin(__readContainerResult);
-        {
-            long count0 = __readContainerResult.count;
-            for (long i0 = 0; i0 < count0; i0++) {
-                String k0 = "";
-                String v0 = "";
-                k0 = reader.readString();
-                v0 = reader.readWString();
-                this.msws.put(k0, v0);
-            }
-        }
-        reader.readContainerEnd();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        {
-            final Foo t = new Foo();
-            t.deserialize(reader);
-            this.bfoo = new com.microsoft.bond.Bonded<Foo>(t);
-        }
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        reader.readMapBegin(__readContainerResult);
-        {
-            long count0 = __readContainerResult.count;
-            for (long i0 = 0; i0 < count0; i0++) {
-                double k0 = 0.0;
-                java.util.List<java.util.List<com.microsoft.bond.IBonded<Bar>>> v0 = new java.util.LinkedList();
-                k0 = reader.readDouble();
-                reader.readListBegin(this.__readContainerResult);
-        {
-            long count1 = this.__readContainerResult.count;
-            for (long i1 = 0; i1 < count1; i1++) {
-                java.util.List<com.microsoft.bond.IBonded<Bar>> e1 = new java.util.ArrayList();
-                reader.readListBegin(this.__readContainerResult);
-        {
-            long count2 = this.__readContainerResult.count;
-            for (long i2 = 0; i2 < count2; i2++) {
-                com.microsoft.bond.IBonded<Bar> e2 = null;
-                reader.readListBegin(this.__readContainerResult);
-        if (this.__readContainerResult.count == 0) {
-            e2 = null;
-        } else {
-            {
-            final Bar t = new Bar();
-            t.deserialize(reader);
-            e2 = new com.microsoft.bond.Bonded<Bar>(t);
-        }
-        }
-        reader.readContainerEnd();
-                e1.add(e2);
-            }
-        }
-        reader.readContainerEnd();
-                v0.add(e1);
-            }
-        }
-        reader.readContainerEnd();
-                this.m.put(k0, v0);
-            }
-        }
-        reader.readContainerEnd();
-        reader.readFieldEnd();
-        
-    }
-
-    @Override
-    public void marshal(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        writer.writeVersion();
-        serialize(writer);
+    public com.microsoft.bond.StructBondType<? extends com.microsoft.bond.BondSerializable> getBondType() {
+        return BOND_TYPE;
     }
 }

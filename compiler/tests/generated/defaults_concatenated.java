@@ -3,7 +3,7 @@ package tests;
 
 
 @javax.annotation.Generated("gbc")
-public final class EnumType1 implements com.microsoft.bond.BondEnum, java.lang.Comparable<EnumType1> {
+public final class EnumType1 implements com.microsoft.bond.BondEnum<EnumType1> {
 
     public static final class Values {
         private Values() {}
@@ -21,6 +21,17 @@ public final class EnumType1 implements com.microsoft.bond.BondEnum, java.lang.C
         public static final int UInt32Max = 4294967295;
     }
 
+    private static final class EnumBondTypeImpl extends com.microsoft.bond.EnumBondType<EnumType1> {
+
+        @Override
+        public java.lang.Class<EnumType1> getValueClass() { return EnumType1.class; }
+
+        @Override
+        public final EnumType1 getEnumValue(int value) { return get(value); }
+    }
+
+    public static final com.microsoft.bond.EnumBondType<EnumType1> BOND_TYPE = new EnumBondTypeImpl();
+
     public static final EnumType1 EnumValue1 = new EnumType1(Values.EnumValue1, "EnumValue1");
     public static final EnumType1 EnumValue2 = new EnumType1(Values.EnumValue2, "EnumValue2");
     public static final EnumType1 EnumValue3 = new EnumType1(Values.EnumValue3, "EnumValue3");
@@ -35,24 +46,27 @@ public final class EnumType1 implements com.microsoft.bond.BondEnum, java.lang.C
 
     public final int value;
 
-    private final String label;
+    private final java.lang.String label;
 
     private EnumType1(int value, String label) { this.value = value; this.label = label; }
 
     @Override
-    public int getValue() { return this.value; }
+    public final int getValue() { return this.value; }
 
     @Override
-    public int compareTo(EnumType1 o) { return this.value < o.value ? -1 : (this.value > o.value ? 1 : 0); }
+    public final com.microsoft.bond.EnumBondType<EnumType1> getBondType() { return BOND_TYPE; }
 
     @Override
-    public boolean equals(Object other) { return (other instanceof EnumType1) && (this.value == ((EnumType1) other).value); }
+    public final int compareTo(EnumType1 o) { return this.value < o.value ? -1 : (this.value > o.value ? 1 : 0); }
 
     @Override
-    public int hashCode() { return this.value; }
+    public final boolean equals(java.lang.Object other) { return (other instanceof EnumType1) && (this.value == ((EnumType1) other).value); }
 
     @Override
-    public String toString() { return this.label != null ? this.label : ("EnumType1(" + String.valueOf(this.value) + ")"); }
+    public final int hashCode() { return this.value; }
+
+    @Override
+    public final java.lang.String toString() { return this.label != null ? this.label : ("EnumType1(" + String.valueOf(this.value) + ")"); }
 
     public static EnumType1 get(int value) {
         switch (value) {
@@ -73,978 +87,552 @@ public final class EnumType1 implements com.microsoft.bond.BondEnum, java.lang.C
 
 package tests;
 
-
 @javax.annotation.Generated("gbc")
 public class Foo implements com.microsoft.bond.BondSerializable {
-
-    public static final com.microsoft.bond.SchemaDef SCHEMA = new com.microsoft.bond.SchemaDef();
-    public static final com.microsoft.bond.StructDef STRUCT_DEF = new com.microsoft.bond.StructDef();
-    private static final com.microsoft.bond.FieldDef m_bool_1_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_bool_2_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_bool_3_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_str_1_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_str_2_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_int8_4_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_int8_5_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_int16_4_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_int16_5_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_int32_4_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_int32_max_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_int64_4_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_int64_max_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_uint8_2_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_uint8_3_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_uint16_2_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_uint16_3_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_uint32_3_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_uint32_max_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_uint64_3_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_uint64_max_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_double_3_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_double_4_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_double_5_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_float_3_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_float_4_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_float_7_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_enum1_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_enum2_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_enum3_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_enum_int32min_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_enum_int32max_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_enum_uint32_min_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_enum_uint32_max_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_wstr_1_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static final com.microsoft.bond.FieldDef m_wstr_2_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static boolean schemaInitialized = false;
-
-    public static synchronized void initSchema() {
-        if (schemaInitialized) { return; }
-
+    
+    private static final class StructBondTypeImpl extends com.microsoft.bond.StructBondType<Foo> {
         
+        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<Foo> {
+            
+            @Override
+            public final int getGenericTypeParameterCount() {
+                return 0;
+            }
 
-        SCHEMA.root.id = com.microsoft.bond.BondDataType.BT_STRUCT;
-        SCHEMA.root.struct_def = 0;
-        SCHEMA.root.element = null;
-        SCHEMA.root.key = null;
-        SCHEMA.root.bonded_type = false;
+            @Override
+            protected final com.microsoft.bond.StructBondType<Foo> buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
+                return new StructBondTypeImpl(null);
+            }
 
-        STRUCT_DEF.metadata.name = "Foo";
-        STRUCT_DEF.metadata.qualified_name = "tests.Foo";
-        STRUCT_DEF.metadata.modifier = com.microsoft.bond.Modifier.Optional;
+            static void register() {
+                registerStructType(Foo.class, new StructBondTypeBuilderImpl());
+            }
+        }
+
+        private com.microsoft.bond.StructBondType.BoolStructField m_bool_1;
+
+        private com.microsoft.bond.StructBondType.BoolStructField m_bool_2;
+
+        private com.microsoft.bond.StructBondType.SomethingBoolStructField m_bool_3;
+
+        private com.microsoft.bond.StructBondType.StringStructField m_str_1;
+
+        private com.microsoft.bond.StructBondType.SomethingStringStructField m_str_2;
+
+        private com.microsoft.bond.StructBondType.Int8StructField m_int8_4;
+
+        private com.microsoft.bond.StructBondType.SomethingInt8StructField m_int8_5;
+
+        private com.microsoft.bond.StructBondType.Int16StructField m_int16_4;
+
+        private com.microsoft.bond.StructBondType.SomethingInt16StructField m_int16_5;
+
+        private com.microsoft.bond.StructBondType.SomethingInt32StructField m_int32_4;
+
+        private com.microsoft.bond.StructBondType.Int32StructField m_int32_max;
+
+        private com.microsoft.bond.StructBondType.SomethingInt64StructField m_int64_4;
+
+        private com.microsoft.bond.StructBondType.Int64StructField m_int64_max;
+
+        private com.microsoft.bond.StructBondType.UInt8StructField m_uint8_2;
+
+        private com.microsoft.bond.StructBondType.SomethingUInt8StructField m_uint8_3;
+
+        private com.microsoft.bond.StructBondType.UInt16StructField m_uint16_2;
+
+        private com.microsoft.bond.StructBondType.SomethingUInt16StructField m_uint16_3;
+
+        private com.microsoft.bond.StructBondType.SomethingUInt32StructField m_uint32_3;
+
+        private com.microsoft.bond.StructBondType.UInt32StructField m_uint32_max;
+
+        private com.microsoft.bond.StructBondType.SomethingUInt64StructField m_uint64_3;
+
+        private com.microsoft.bond.StructBondType.UInt64StructField m_uint64_max;
+
+        private com.microsoft.bond.StructBondType.SomethingDoubleStructField m_double_3;
+
+        private com.microsoft.bond.StructBondType.DoubleStructField m_double_4;
+
+        private com.microsoft.bond.StructBondType.DoubleStructField m_double_5;
+
+        private com.microsoft.bond.StructBondType.SomethingFloatStructField m_float_3;
+
+        private com.microsoft.bond.StructBondType.FloatStructField m_float_4;
+
+        private com.microsoft.bond.StructBondType.FloatStructField m_float_7;
+
+        private com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1> m_enum1;
+
+        private com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1> m_enum2;
+
+        private com.microsoft.bond.StructBondType.SomethingEnumStructField<tests.EnumType1> m_enum3;
+
+        private com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1> m_enum_int32min;
+
+        private com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1> m_enum_int32max;
+
+        private com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1> m_enum_uint32_min;
+
+        private com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1> m_enum_uint32_max;
+
+        private com.microsoft.bond.StructBondType.WStringStructField m_wstr_1;
+
+        private com.microsoft.bond.StructBondType.SomethingWStringStructField m_wstr_2;
+
+        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+            super(genericTypeSpecialization);
+        }
         
-        // TODO: .base_def
-        SCHEMA.structs.add(0, STRUCT_DEF);
+        @Override
+        protected final void initialize() {
+            this.m_bool_1 = new com.microsoft.bond.StructBondType.BoolStructField(this, 0, "m_bool_1", com.microsoft.bond.Modifier.Optional, true);
+            this.m_bool_2 = new com.microsoft.bond.StructBondType.BoolStructField(this, 1, "m_bool_2", com.microsoft.bond.Modifier.Optional, false);
+            this.m_bool_3 = new com.microsoft.bond.StructBondType.SomethingBoolStructField(this, 2, "m_bool_3", com.microsoft.bond.Modifier.Optional);
+            this.m_str_1 = new com.microsoft.bond.StructBondType.StringStructField(this, 3, "m_str_1", com.microsoft.bond.Modifier.Optional, "default string value");
+            this.m_str_2 = new com.microsoft.bond.StructBondType.SomethingStringStructField(this, 4, "m_str_2", com.microsoft.bond.Modifier.Optional);
+            this.m_int8_4 = new com.microsoft.bond.StructBondType.Int8StructField(this, 5, "m_int8_4", com.microsoft.bond.Modifier.Optional, (byte)-127);
+            this.m_int8_5 = new com.microsoft.bond.StructBondType.SomethingInt8StructField(this, 6, "m_int8_5", com.microsoft.bond.Modifier.Optional);
+            this.m_int16_4 = new com.microsoft.bond.StructBondType.Int16StructField(this, 7, "m_int16_4", com.microsoft.bond.Modifier.Optional, (short)-32767);
+            this.m_int16_5 = new com.microsoft.bond.StructBondType.SomethingInt16StructField(this, 8, "m_int16_5", com.microsoft.bond.Modifier.Optional);
+            this.m_int32_4 = new com.microsoft.bond.StructBondType.SomethingInt32StructField(this, 9, "m_int32_4", com.microsoft.bond.Modifier.Optional);
+            this.m_int32_max = new com.microsoft.bond.StructBondType.Int32StructField(this, 10, "m_int32_max", com.microsoft.bond.Modifier.Optional, 2147483647);
+            this.m_int64_4 = new com.microsoft.bond.StructBondType.SomethingInt64StructField(this, 11, "m_int64_4", com.microsoft.bond.Modifier.Optional);
+            this.m_int64_max = new com.microsoft.bond.StructBondType.Int64StructField(this, 12, "m_int64_max", com.microsoft.bond.Modifier.Optional, 9223372036854775807L);
+            this.m_uint8_2 = new com.microsoft.bond.StructBondType.UInt8StructField(this, 13, "m_uint8_2", com.microsoft.bond.Modifier.Optional, (byte)255);
+            this.m_uint8_3 = new com.microsoft.bond.StructBondType.SomethingUInt8StructField(this, 14, "m_uint8_3", com.microsoft.bond.Modifier.Optional);
+            this.m_uint16_2 = new com.microsoft.bond.StructBondType.UInt16StructField(this, 15, "m_uint16_2", com.microsoft.bond.Modifier.Optional, (short)65535);
+            this.m_uint16_3 = new com.microsoft.bond.StructBondType.SomethingUInt16StructField(this, 16, "m_uint16_3", com.microsoft.bond.Modifier.Optional);
+            this.m_uint32_3 = new com.microsoft.bond.StructBondType.SomethingUInt32StructField(this, 17, "m_uint32_3", com.microsoft.bond.Modifier.Optional);
+            this.m_uint32_max = new com.microsoft.bond.StructBondType.UInt32StructField(this, 18, "m_uint32_max", com.microsoft.bond.Modifier.Optional, 4294967295);
+            this.m_uint64_3 = new com.microsoft.bond.StructBondType.SomethingUInt64StructField(this, 19, "m_uint64_3", com.microsoft.bond.Modifier.Optional);
+            this.m_uint64_max = new com.microsoft.bond.StructBondType.UInt64StructField(this, 20, "m_uint64_max", com.microsoft.bond.Modifier.Optional, 18446744073709551615L);
+            this.m_double_3 = new com.microsoft.bond.StructBondType.SomethingDoubleStructField(this, 21, "m_double_3", com.microsoft.bond.Modifier.Optional);
+            this.m_double_4 = new com.microsoft.bond.StructBondType.DoubleStructField(this, 22, "m_double_4", com.microsoft.bond.Modifier.Optional, -123.456789D);
+            this.m_double_5 = new com.microsoft.bond.StructBondType.DoubleStructField(this, 23, "m_double_5", com.microsoft.bond.Modifier.Optional, -0.0D);
+            this.m_float_3 = new com.microsoft.bond.StructBondType.SomethingFloatStructField(this, 24, "m_float_3", com.microsoft.bond.Modifier.Optional);
+            this.m_float_4 = new com.microsoft.bond.StructBondType.FloatStructField(this, 25, "m_float_4", com.microsoft.bond.Modifier.Optional, 2.71828183F);
+            this.m_float_7 = new com.microsoft.bond.StructBondType.FloatStructField(this, 26, "m_float_7", com.microsoft.bond.Modifier.Optional, 0.0F);
+            this.m_enum1 = new com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1>(this, tests.EnumType1.BOND_TYPE, 27, "m_enum1", com.microsoft.bond.Modifier.Optional, tests.EnumType1.EnumValue1);
+            this.m_enum2 = new com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1>(this, tests.EnumType1.BOND_TYPE, 28, "m_enum2", com.microsoft.bond.Modifier.Optional, tests.EnumType1.EnumValue3);
+            this.m_enum3 = new com.microsoft.bond.StructBondType.SomethingEnumStructField<tests.EnumType1>(this, tests.EnumType1.BOND_TYPE, 29, "m_enum3", com.microsoft.bond.Modifier.Optional);
+            this.m_enum_int32min = new com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1>(this, tests.EnumType1.BOND_TYPE, 30, "m_enum_int32min", com.microsoft.bond.Modifier.Optional, tests.EnumType1.Int32Min);
+            this.m_enum_int32max = new com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1>(this, tests.EnumType1.BOND_TYPE, 31, "m_enum_int32max", com.microsoft.bond.Modifier.Optional, tests.EnumType1.Int32Max);
+            this.m_enum_uint32_min = new com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1>(this, tests.EnumType1.BOND_TYPE, 32, "m_enum_uint32_min", com.microsoft.bond.Modifier.Optional, tests.EnumType1.UInt32Min);
+            this.m_enum_uint32_max = new com.microsoft.bond.StructBondType.EnumStructField<tests.EnumType1>(this, tests.EnumType1.BOND_TYPE, 33, "m_enum_uint32_max", com.microsoft.bond.Modifier.Optional, tests.EnumType1.UInt32Max);
+            this.m_wstr_1 = new com.microsoft.bond.StructBondType.WStringStructField(this, 34, "m_wstr_1", com.microsoft.bond.Modifier.Optional, "default wstring value");
+            this.m_wstr_2 = new com.microsoft.bond.StructBondType.SomethingWStringStructField(this, 35, "m_wstr_2", com.microsoft.bond.Modifier.Optional);
+            super.initializeBaseAndFields(null, this.m_bool_1, this.m_bool_2, this.m_bool_3, this.m_str_1, this.m_str_2, this.m_int8_4, this.m_int8_5, this.m_int16_4, this.m_int16_5, this.m_int32_4, this.m_int32_max, this.m_int64_4, this.m_int64_max, this.m_uint8_2, this.m_uint8_3, this.m_uint16_2, this.m_uint16_3, this.m_uint32_3, this.m_uint32_max, this.m_uint64_3, this.m_uint64_max, this.m_double_3, this.m_double_4, this.m_double_5, this.m_float_3, this.m_float_4, this.m_float_7, this.m_enum1, this.m_enum2, this.m_enum3, this.m_enum_int32min, this.m_enum_int32max, this.m_enum_uint32_min, this.m_enum_uint32_max, this.m_wstr_1, this.m_wstr_2);
+        }
 
-        m_bool_1_FIELD_DEF.metadata.name = "m_bool_1";
-        m_bool_1_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
+        @Override
+        public final java.lang.Class<Foo> getValueClass() {
+            return (java.lang.Class<Foo>) (java.lang.Class) Foo.class;
+        }
+
+        @Override
+        public final Foo newInstance() {
+            return new Foo();
+        }
         
-        m_bool_1_FIELD_DEF.id = 0;
-        m_bool_1_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_BOOL;
-        m_bool_1_FIELD_DEF.type.struct_def = 0;
-        m_bool_1_FIELD_DEF.type.element = null;
-        m_bool_1_FIELD_DEF.type.key = null;
-        m_bool_1_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_bool_1_FIELD_DEF);
-
-        m_bool_2_FIELD_DEF.metadata.name = "m_bool_2";
-        m_bool_2_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
+        @Override
+        protected final void serializeStructFields(com.microsoft.bond.BondType.SerializationContext context, Foo value) throws java.io.IOException {
+            this.m_bool_1.serialize(context, value.m_bool_1);
+            this.m_bool_2.serialize(context, value.m_bool_2);
+            this.m_bool_3.serialize(context, value.m_bool_3);
+            this.m_str_1.serialize(context, value.m_str_1);
+            this.m_str_2.serialize(context, value.m_str_2);
+            this.m_int8_4.serialize(context, value.m_int8_4);
+            this.m_int8_5.serialize(context, value.m_int8_5);
+            this.m_int16_4.serialize(context, value.m_int16_4);
+            this.m_int16_5.serialize(context, value.m_int16_5);
+            this.m_int32_4.serialize(context, value.m_int32_4);
+            this.m_int32_max.serialize(context, value.m_int32_max);
+            this.m_int64_4.serialize(context, value.m_int64_4);
+            this.m_int64_max.serialize(context, value.m_int64_max);
+            this.m_uint8_2.serialize(context, value.m_uint8_2);
+            this.m_uint8_3.serialize(context, value.m_uint8_3);
+            this.m_uint16_2.serialize(context, value.m_uint16_2);
+            this.m_uint16_3.serialize(context, value.m_uint16_3);
+            this.m_uint32_3.serialize(context, value.m_uint32_3);
+            this.m_uint32_max.serialize(context, value.m_uint32_max);
+            this.m_uint64_3.serialize(context, value.m_uint64_3);
+            this.m_uint64_max.serialize(context, value.m_uint64_max);
+            this.m_double_3.serialize(context, value.m_double_3);
+            this.m_double_4.serialize(context, value.m_double_4);
+            this.m_double_5.serialize(context, value.m_double_5);
+            this.m_float_3.serialize(context, value.m_float_3);
+            this.m_float_4.serialize(context, value.m_float_4);
+            this.m_float_7.serialize(context, value.m_float_7);
+            this.m_enum1.serialize(context, value.m_enum1);
+            this.m_enum2.serialize(context, value.m_enum2);
+            this.m_enum3.serialize(context, value.m_enum3);
+            this.m_enum_int32min.serialize(context, value.m_enum_int32min);
+            this.m_enum_int32max.serialize(context, value.m_enum_int32max);
+            this.m_enum_uint32_min.serialize(context, value.m_enum_uint32_min);
+            this.m_enum_uint32_max.serialize(context, value.m_enum_uint32_max);
+            this.m_wstr_1.serialize(context, value.m_wstr_1);
+            this.m_wstr_2.serialize(context, value.m_wstr_2);
+        }
         
-        m_bool_2_FIELD_DEF.id = 1;
-        m_bool_2_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_BOOL;
-        m_bool_2_FIELD_DEF.type.struct_def = 0;
-        m_bool_2_FIELD_DEF.type.element = null;
-        m_bool_2_FIELD_DEF.type.key = null;
-        m_bool_2_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_bool_2_FIELD_DEF);
-
-        m_bool_3_FIELD_DEF.metadata.name = "m_bool_3";
-        m_bool_3_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
+        @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, Foo value) throws java.io.IOException {
+            boolean __has_m_bool_1 = false;
+            boolean __has_m_bool_2 = false;
+            boolean __has_m_bool_3 = false;
+            boolean __has_m_str_1 = false;
+            boolean __has_m_str_2 = false;
+            boolean __has_m_int8_4 = false;
+            boolean __has_m_int8_5 = false;
+            boolean __has_m_int16_4 = false;
+            boolean __has_m_int16_5 = false;
+            boolean __has_m_int32_4 = false;
+            boolean __has_m_int32_max = false;
+            boolean __has_m_int64_4 = false;
+            boolean __has_m_int64_max = false;
+            boolean __has_m_uint8_2 = false;
+            boolean __has_m_uint8_3 = false;
+            boolean __has_m_uint16_2 = false;
+            boolean __has_m_uint16_3 = false;
+            boolean __has_m_uint32_3 = false;
+            boolean __has_m_uint32_max = false;
+            boolean __has_m_uint64_3 = false;
+            boolean __has_m_uint64_max = false;
+            boolean __has_m_double_3 = false;
+            boolean __has_m_double_4 = false;
+            boolean __has_m_double_5 = false;
+            boolean __has_m_float_3 = false;
+            boolean __has_m_float_4 = false;
+            boolean __has_m_float_7 = false;
+            boolean __has_m_enum1 = false;
+            boolean __has_m_enum2 = false;
+            boolean __has_m_enum3 = false;
+            boolean __has_m_enum_int32min = false;
+            boolean __has_m_enum_int32max = false;
+            boolean __has_m_enum_uint32_min = false;
+            boolean __has_m_enum_uint32_max = false;
+            boolean __has_m_wstr_1 = false;
+            boolean __has_m_wstr_2 = false;
+            while (this.readField(context)) {
+                switch (context.readFieldResult.id) {
+                    case 0:
+                        value.m_bool_1 = this.m_bool_1.deserialize(context, __has_m_bool_1);
+                            __has_m_bool_1 = true;
+                            break;
+                    case 1:
+                        value.m_bool_2 = this.m_bool_2.deserialize(context, __has_m_bool_2);
+                            __has_m_bool_2 = true;
+                            break;
+                    case 2:
+                        value.m_bool_3 = this.m_bool_3.deserialize(context, __has_m_bool_3);
+                            __has_m_bool_3 = true;
+                            break;
+                    case 3:
+                        value.m_str_1 = this.m_str_1.deserialize(context, __has_m_str_1);
+                            __has_m_str_1 = true;
+                            break;
+                    case 4:
+                        value.m_str_2 = this.m_str_2.deserialize(context, __has_m_str_2);
+                            __has_m_str_2 = true;
+                            break;
+                    case 5:
+                        value.m_int8_4 = this.m_int8_4.deserialize(context, __has_m_int8_4);
+                            __has_m_int8_4 = true;
+                            break;
+                    case 6:
+                        value.m_int8_5 = this.m_int8_5.deserialize(context, __has_m_int8_5);
+                            __has_m_int8_5 = true;
+                            break;
+                    case 7:
+                        value.m_int16_4 = this.m_int16_4.deserialize(context, __has_m_int16_4);
+                            __has_m_int16_4 = true;
+                            break;
+                    case 8:
+                        value.m_int16_5 = this.m_int16_5.deserialize(context, __has_m_int16_5);
+                            __has_m_int16_5 = true;
+                            break;
+                    case 9:
+                        value.m_int32_4 = this.m_int32_4.deserialize(context, __has_m_int32_4);
+                            __has_m_int32_4 = true;
+                            break;
+                    case 10:
+                        value.m_int32_max = this.m_int32_max.deserialize(context, __has_m_int32_max);
+                            __has_m_int32_max = true;
+                            break;
+                    case 11:
+                        value.m_int64_4 = this.m_int64_4.deserialize(context, __has_m_int64_4);
+                            __has_m_int64_4 = true;
+                            break;
+                    case 12:
+                        value.m_int64_max = this.m_int64_max.deserialize(context, __has_m_int64_max);
+                            __has_m_int64_max = true;
+                            break;
+                    case 13:
+                        value.m_uint8_2 = this.m_uint8_2.deserialize(context, __has_m_uint8_2);
+                            __has_m_uint8_2 = true;
+                            break;
+                    case 14:
+                        value.m_uint8_3 = this.m_uint8_3.deserialize(context, __has_m_uint8_3);
+                            __has_m_uint8_3 = true;
+                            break;
+                    case 15:
+                        value.m_uint16_2 = this.m_uint16_2.deserialize(context, __has_m_uint16_2);
+                            __has_m_uint16_2 = true;
+                            break;
+                    case 16:
+                        value.m_uint16_3 = this.m_uint16_3.deserialize(context, __has_m_uint16_3);
+                            __has_m_uint16_3 = true;
+                            break;
+                    case 17:
+                        value.m_uint32_3 = this.m_uint32_3.deserialize(context, __has_m_uint32_3);
+                            __has_m_uint32_3 = true;
+                            break;
+                    case 18:
+                        value.m_uint32_max = this.m_uint32_max.deserialize(context, __has_m_uint32_max);
+                            __has_m_uint32_max = true;
+                            break;
+                    case 19:
+                        value.m_uint64_3 = this.m_uint64_3.deserialize(context, __has_m_uint64_3);
+                            __has_m_uint64_3 = true;
+                            break;
+                    case 20:
+                        value.m_uint64_max = this.m_uint64_max.deserialize(context, __has_m_uint64_max);
+                            __has_m_uint64_max = true;
+                            break;
+                    case 21:
+                        value.m_double_3 = this.m_double_3.deserialize(context, __has_m_double_3);
+                            __has_m_double_3 = true;
+                            break;
+                    case 22:
+                        value.m_double_4 = this.m_double_4.deserialize(context, __has_m_double_4);
+                            __has_m_double_4 = true;
+                            break;
+                    case 23:
+                        value.m_double_5 = this.m_double_5.deserialize(context, __has_m_double_5);
+                            __has_m_double_5 = true;
+                            break;
+                    case 24:
+                        value.m_float_3 = this.m_float_3.deserialize(context, __has_m_float_3);
+                            __has_m_float_3 = true;
+                            break;
+                    case 25:
+                        value.m_float_4 = this.m_float_4.deserialize(context, __has_m_float_4);
+                            __has_m_float_4 = true;
+                            break;
+                    case 26:
+                        value.m_float_7 = this.m_float_7.deserialize(context, __has_m_float_7);
+                            __has_m_float_7 = true;
+                            break;
+                    case 27:
+                        value.m_enum1 = this.m_enum1.deserialize(context, __has_m_enum1);
+                            __has_m_enum1 = true;
+                            break;
+                    case 28:
+                        value.m_enum2 = this.m_enum2.deserialize(context, __has_m_enum2);
+                            __has_m_enum2 = true;
+                            break;
+                    case 29:
+                        value.m_enum3 = this.m_enum3.deserialize(context, __has_m_enum3);
+                            __has_m_enum3 = true;
+                            break;
+                    case 30:
+                        value.m_enum_int32min = this.m_enum_int32min.deserialize(context, __has_m_enum_int32min);
+                            __has_m_enum_int32min = true;
+                            break;
+                    case 31:
+                        value.m_enum_int32max = this.m_enum_int32max.deserialize(context, __has_m_enum_int32max);
+                            __has_m_enum_int32max = true;
+                            break;
+                    case 32:
+                        value.m_enum_uint32_min = this.m_enum_uint32_min.deserialize(context, __has_m_enum_uint32_min);
+                            __has_m_enum_uint32_min = true;
+                            break;
+                    case 33:
+                        value.m_enum_uint32_max = this.m_enum_uint32_max.deserialize(context, __has_m_enum_uint32_max);
+                            __has_m_enum_uint32_max = true;
+                            break;
+                    case 34:
+                        value.m_wstr_1 = this.m_wstr_1.deserialize(context, __has_m_wstr_1);
+                            __has_m_wstr_1 = true;
+                            break;
+                    case 35:
+                        value.m_wstr_2 = this.m_wstr_2.deserialize(context, __has_m_wstr_2);
+                            __has_m_wstr_2 = true;
+                            break;
+                }
+            }
+            this.m_bool_1.verifyDeserialized(__has_m_bool_1);
+            this.m_bool_2.verifyDeserialized(__has_m_bool_2);
+            this.m_bool_3.verifyDeserialized(__has_m_bool_3);
+            this.m_str_1.verifyDeserialized(__has_m_str_1);
+            this.m_str_2.verifyDeserialized(__has_m_str_2);
+            this.m_int8_4.verifyDeserialized(__has_m_int8_4);
+            this.m_int8_5.verifyDeserialized(__has_m_int8_5);
+            this.m_int16_4.verifyDeserialized(__has_m_int16_4);
+            this.m_int16_5.verifyDeserialized(__has_m_int16_5);
+            this.m_int32_4.verifyDeserialized(__has_m_int32_4);
+            this.m_int32_max.verifyDeserialized(__has_m_int32_max);
+            this.m_int64_4.verifyDeserialized(__has_m_int64_4);
+            this.m_int64_max.verifyDeserialized(__has_m_int64_max);
+            this.m_uint8_2.verifyDeserialized(__has_m_uint8_2);
+            this.m_uint8_3.verifyDeserialized(__has_m_uint8_3);
+            this.m_uint16_2.verifyDeserialized(__has_m_uint16_2);
+            this.m_uint16_3.verifyDeserialized(__has_m_uint16_3);
+            this.m_uint32_3.verifyDeserialized(__has_m_uint32_3);
+            this.m_uint32_max.verifyDeserialized(__has_m_uint32_max);
+            this.m_uint64_3.verifyDeserialized(__has_m_uint64_3);
+            this.m_uint64_max.verifyDeserialized(__has_m_uint64_max);
+            this.m_double_3.verifyDeserialized(__has_m_double_3);
+            this.m_double_4.verifyDeserialized(__has_m_double_4);
+            this.m_double_5.verifyDeserialized(__has_m_double_5);
+            this.m_float_3.verifyDeserialized(__has_m_float_3);
+            this.m_float_4.verifyDeserialized(__has_m_float_4);
+            this.m_float_7.verifyDeserialized(__has_m_float_7);
+            this.m_enum1.verifyDeserialized(__has_m_enum1);
+            this.m_enum2.verifyDeserialized(__has_m_enum2);
+            this.m_enum3.verifyDeserialized(__has_m_enum3);
+            this.m_enum_int32min.verifyDeserialized(__has_m_enum_int32min);
+            this.m_enum_int32max.verifyDeserialized(__has_m_enum_int32max);
+            this.m_enum_uint32_min.verifyDeserialized(__has_m_enum_uint32_min);
+            this.m_enum_uint32_max.verifyDeserialized(__has_m_enum_uint32_max);
+            this.m_wstr_1.verifyDeserialized(__has_m_wstr_1);
+            this.m_wstr_2.verifyDeserialized(__has_m_wstr_2);
+        }
         
-        m_bool_3_FIELD_DEF.id = 2;
-        m_bool_3_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_bool_3_FIELD_DEF.type.struct_def = 0;
-        m_bool_3_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_bool_3_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_BOOL;
-        m_bool_3_FIELD_DEF.type.element.struct_def = 0;
-        m_bool_3_FIELD_DEF.type.element.element = null;
-        m_bool_3_FIELD_DEF.type.element.key = null;
-        m_bool_3_FIELD_DEF.type.element.bonded_type = false;
-        m_bool_3_FIELD_DEF.type.key = null;
-        m_bool_3_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_bool_3_FIELD_DEF);
-
-        m_str_1_FIELD_DEF.metadata.name = "m_str_1";
-        m_str_1_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_str_1_FIELD_DEF.id = 3;
-        m_str_1_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_STRING;
-        m_str_1_FIELD_DEF.type.struct_def = 0;
-        m_str_1_FIELD_DEF.type.element = null;
-        m_str_1_FIELD_DEF.type.key = null;
-        m_str_1_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_str_1_FIELD_DEF);
-
-        m_str_2_FIELD_DEF.metadata.name = "m_str_2";
-        m_str_2_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_str_2_FIELD_DEF.id = 4;
-        m_str_2_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_str_2_FIELD_DEF.type.struct_def = 0;
-        m_str_2_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_str_2_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_STRING;
-        m_str_2_FIELD_DEF.type.element.struct_def = 0;
-        m_str_2_FIELD_DEF.type.element.element = null;
-        m_str_2_FIELD_DEF.type.element.key = null;
-        m_str_2_FIELD_DEF.type.element.bonded_type = false;
-        m_str_2_FIELD_DEF.type.key = null;
-        m_str_2_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_str_2_FIELD_DEF);
-
-        m_int8_4_FIELD_DEF.metadata.name = "m_int8_4";
-        m_int8_4_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_int8_4_FIELD_DEF.id = 5;
-        m_int8_4_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_INT8;
-        m_int8_4_FIELD_DEF.type.struct_def = 0;
-        m_int8_4_FIELD_DEF.type.element = null;
-        m_int8_4_FIELD_DEF.type.key = null;
-        m_int8_4_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_int8_4_FIELD_DEF);
-
-        m_int8_5_FIELD_DEF.metadata.name = "m_int8_5";
-        m_int8_5_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_int8_5_FIELD_DEF.id = 6;
-        m_int8_5_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_int8_5_FIELD_DEF.type.struct_def = 0;
-        m_int8_5_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_int8_5_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_INT8;
-        m_int8_5_FIELD_DEF.type.element.struct_def = 0;
-        m_int8_5_FIELD_DEF.type.element.element = null;
-        m_int8_5_FIELD_DEF.type.element.key = null;
-        m_int8_5_FIELD_DEF.type.element.bonded_type = false;
-        m_int8_5_FIELD_DEF.type.key = null;
-        m_int8_5_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_int8_5_FIELD_DEF);
-
-        m_int16_4_FIELD_DEF.metadata.name = "m_int16_4";
-        m_int16_4_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_int16_4_FIELD_DEF.id = 7;
-        m_int16_4_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_INT16;
-        m_int16_4_FIELD_DEF.type.struct_def = 0;
-        m_int16_4_FIELD_DEF.type.element = null;
-        m_int16_4_FIELD_DEF.type.key = null;
-        m_int16_4_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_int16_4_FIELD_DEF);
-
-        m_int16_5_FIELD_DEF.metadata.name = "m_int16_5";
-        m_int16_5_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_int16_5_FIELD_DEF.id = 8;
-        m_int16_5_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_int16_5_FIELD_DEF.type.struct_def = 0;
-        m_int16_5_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_int16_5_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_INT16;
-        m_int16_5_FIELD_DEF.type.element.struct_def = 0;
-        m_int16_5_FIELD_DEF.type.element.element = null;
-        m_int16_5_FIELD_DEF.type.element.key = null;
-        m_int16_5_FIELD_DEF.type.element.bonded_type = false;
-        m_int16_5_FIELD_DEF.type.key = null;
-        m_int16_5_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_int16_5_FIELD_DEF);
-
-        m_int32_4_FIELD_DEF.metadata.name = "m_int32_4";
-        m_int32_4_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_int32_4_FIELD_DEF.id = 9;
-        m_int32_4_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_int32_4_FIELD_DEF.type.struct_def = 0;
-        m_int32_4_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_int32_4_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_INT32;
-        m_int32_4_FIELD_DEF.type.element.struct_def = 0;
-        m_int32_4_FIELD_DEF.type.element.element = null;
-        m_int32_4_FIELD_DEF.type.element.key = null;
-        m_int32_4_FIELD_DEF.type.element.bonded_type = false;
-        m_int32_4_FIELD_DEF.type.key = null;
-        m_int32_4_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_int32_4_FIELD_DEF);
-
-        m_int32_max_FIELD_DEF.metadata.name = "m_int32_max";
-        m_int32_max_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_int32_max_FIELD_DEF.id = 10;
-        m_int32_max_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_INT32;
-        m_int32_max_FIELD_DEF.type.struct_def = 0;
-        m_int32_max_FIELD_DEF.type.element = null;
-        m_int32_max_FIELD_DEF.type.key = null;
-        m_int32_max_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_int32_max_FIELD_DEF);
-
-        m_int64_4_FIELD_DEF.metadata.name = "m_int64_4";
-        m_int64_4_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_int64_4_FIELD_DEF.id = 11;
-        m_int64_4_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_int64_4_FIELD_DEF.type.struct_def = 0;
-        m_int64_4_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_int64_4_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_INT64;
-        m_int64_4_FIELD_DEF.type.element.struct_def = 0;
-        m_int64_4_FIELD_DEF.type.element.element = null;
-        m_int64_4_FIELD_DEF.type.element.key = null;
-        m_int64_4_FIELD_DEF.type.element.bonded_type = false;
-        m_int64_4_FIELD_DEF.type.key = null;
-        m_int64_4_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_int64_4_FIELD_DEF);
-
-        m_int64_max_FIELD_DEF.metadata.name = "m_int64_max";
-        m_int64_max_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_int64_max_FIELD_DEF.id = 12;
-        m_int64_max_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_INT64;
-        m_int64_max_FIELD_DEF.type.struct_def = 0;
-        m_int64_max_FIELD_DEF.type.element = null;
-        m_int64_max_FIELD_DEF.type.key = null;
-        m_int64_max_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_int64_max_FIELD_DEF);
-
-        m_uint8_2_FIELD_DEF.metadata.name = "m_uint8_2";
-        m_uint8_2_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_uint8_2_FIELD_DEF.id = 13;
-        m_uint8_2_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UINT8;
-        m_uint8_2_FIELD_DEF.type.struct_def = 0;
-        m_uint8_2_FIELD_DEF.type.element = null;
-        m_uint8_2_FIELD_DEF.type.key = null;
-        m_uint8_2_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_uint8_2_FIELD_DEF);
-
-        m_uint8_3_FIELD_DEF.metadata.name = "m_uint8_3";
-        m_uint8_3_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_uint8_3_FIELD_DEF.id = 14;
-        m_uint8_3_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_uint8_3_FIELD_DEF.type.struct_def = 0;
-        m_uint8_3_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_uint8_3_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_UINT8;
-        m_uint8_3_FIELD_DEF.type.element.struct_def = 0;
-        m_uint8_3_FIELD_DEF.type.element.element = null;
-        m_uint8_3_FIELD_DEF.type.element.key = null;
-        m_uint8_3_FIELD_DEF.type.element.bonded_type = false;
-        m_uint8_3_FIELD_DEF.type.key = null;
-        m_uint8_3_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_uint8_3_FIELD_DEF);
-
-        m_uint16_2_FIELD_DEF.metadata.name = "m_uint16_2";
-        m_uint16_2_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_uint16_2_FIELD_DEF.id = 15;
-        m_uint16_2_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UINT16;
-        m_uint16_2_FIELD_DEF.type.struct_def = 0;
-        m_uint16_2_FIELD_DEF.type.element = null;
-        m_uint16_2_FIELD_DEF.type.key = null;
-        m_uint16_2_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_uint16_2_FIELD_DEF);
-
-        m_uint16_3_FIELD_DEF.metadata.name = "m_uint16_3";
-        m_uint16_3_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_uint16_3_FIELD_DEF.id = 16;
-        m_uint16_3_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_uint16_3_FIELD_DEF.type.struct_def = 0;
-        m_uint16_3_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_uint16_3_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_UINT16;
-        m_uint16_3_FIELD_DEF.type.element.struct_def = 0;
-        m_uint16_3_FIELD_DEF.type.element.element = null;
-        m_uint16_3_FIELD_DEF.type.element.key = null;
-        m_uint16_3_FIELD_DEF.type.element.bonded_type = false;
-        m_uint16_3_FIELD_DEF.type.key = null;
-        m_uint16_3_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_uint16_3_FIELD_DEF);
-
-        m_uint32_3_FIELD_DEF.metadata.name = "m_uint32_3";
-        m_uint32_3_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_uint32_3_FIELD_DEF.id = 17;
-        m_uint32_3_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_uint32_3_FIELD_DEF.type.struct_def = 0;
-        m_uint32_3_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_uint32_3_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_UINT32;
-        m_uint32_3_FIELD_DEF.type.element.struct_def = 0;
-        m_uint32_3_FIELD_DEF.type.element.element = null;
-        m_uint32_3_FIELD_DEF.type.element.key = null;
-        m_uint32_3_FIELD_DEF.type.element.bonded_type = false;
-        m_uint32_3_FIELD_DEF.type.key = null;
-        m_uint32_3_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_uint32_3_FIELD_DEF);
-
-        m_uint32_max_FIELD_DEF.metadata.name = "m_uint32_max";
-        m_uint32_max_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_uint32_max_FIELD_DEF.id = 18;
-        m_uint32_max_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UINT32;
-        m_uint32_max_FIELD_DEF.type.struct_def = 0;
-        m_uint32_max_FIELD_DEF.type.element = null;
-        m_uint32_max_FIELD_DEF.type.key = null;
-        m_uint32_max_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_uint32_max_FIELD_DEF);
-
-        m_uint64_3_FIELD_DEF.metadata.name = "m_uint64_3";
-        m_uint64_3_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_uint64_3_FIELD_DEF.id = 19;
-        m_uint64_3_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_uint64_3_FIELD_DEF.type.struct_def = 0;
-        m_uint64_3_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_uint64_3_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_UINT64;
-        m_uint64_3_FIELD_DEF.type.element.struct_def = 0;
-        m_uint64_3_FIELD_DEF.type.element.element = null;
-        m_uint64_3_FIELD_DEF.type.element.key = null;
-        m_uint64_3_FIELD_DEF.type.element.bonded_type = false;
-        m_uint64_3_FIELD_DEF.type.key = null;
-        m_uint64_3_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_uint64_3_FIELD_DEF);
-
-        m_uint64_max_FIELD_DEF.metadata.name = "m_uint64_max";
-        m_uint64_max_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_uint64_max_FIELD_DEF.id = 20;
-        m_uint64_max_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UINT64;
-        m_uint64_max_FIELD_DEF.type.struct_def = 0;
-        m_uint64_max_FIELD_DEF.type.element = null;
-        m_uint64_max_FIELD_DEF.type.key = null;
-        m_uint64_max_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_uint64_max_FIELD_DEF);
-
-        m_double_3_FIELD_DEF.metadata.name = "m_double_3";
-        m_double_3_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_double_3_FIELD_DEF.id = 21;
-        m_double_3_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_double_3_FIELD_DEF.type.struct_def = 0;
-        m_double_3_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_double_3_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_DOUBLE;
-        m_double_3_FIELD_DEF.type.element.struct_def = 0;
-        m_double_3_FIELD_DEF.type.element.element = null;
-        m_double_3_FIELD_DEF.type.element.key = null;
-        m_double_3_FIELD_DEF.type.element.bonded_type = false;
-        m_double_3_FIELD_DEF.type.key = null;
-        m_double_3_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_double_3_FIELD_DEF);
-
-        m_double_4_FIELD_DEF.metadata.name = "m_double_4";
-        m_double_4_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_double_4_FIELD_DEF.id = 22;
-        m_double_4_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_DOUBLE;
-        m_double_4_FIELD_DEF.type.struct_def = 0;
-        m_double_4_FIELD_DEF.type.element = null;
-        m_double_4_FIELD_DEF.type.key = null;
-        m_double_4_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_double_4_FIELD_DEF);
-
-        m_double_5_FIELD_DEF.metadata.name = "m_double_5";
-        m_double_5_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_double_5_FIELD_DEF.id = 23;
-        m_double_5_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_DOUBLE;
-        m_double_5_FIELD_DEF.type.struct_def = 0;
-        m_double_5_FIELD_DEF.type.element = null;
-        m_double_5_FIELD_DEF.type.key = null;
-        m_double_5_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_double_5_FIELD_DEF);
-
-        m_float_3_FIELD_DEF.metadata.name = "m_float_3";
-        m_float_3_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_float_3_FIELD_DEF.id = 24;
-        m_float_3_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_float_3_FIELD_DEF.type.struct_def = 0;
-        m_float_3_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_float_3_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_FLOAT;
-        m_float_3_FIELD_DEF.type.element.struct_def = 0;
-        m_float_3_FIELD_DEF.type.element.element = null;
-        m_float_3_FIELD_DEF.type.element.key = null;
-        m_float_3_FIELD_DEF.type.element.bonded_type = false;
-        m_float_3_FIELD_DEF.type.key = null;
-        m_float_3_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_float_3_FIELD_DEF);
-
-        m_float_4_FIELD_DEF.metadata.name = "m_float_4";
-        m_float_4_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_float_4_FIELD_DEF.id = 25;
-        m_float_4_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_FLOAT;
-        m_float_4_FIELD_DEF.type.struct_def = 0;
-        m_float_4_FIELD_DEF.type.element = null;
-        m_float_4_FIELD_DEF.type.key = null;
-        m_float_4_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_float_4_FIELD_DEF);
-
-        m_float_7_FIELD_DEF.metadata.name = "m_float_7";
-        m_float_7_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_float_7_FIELD_DEF.id = 26;
-        m_float_7_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_FLOAT;
-        m_float_7_FIELD_DEF.type.struct_def = 0;
-        m_float_7_FIELD_DEF.type.element = null;
-        m_float_7_FIELD_DEF.type.key = null;
-        m_float_7_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_float_7_FIELD_DEF);
-
-        m_enum1_FIELD_DEF.metadata.name = "m_enum1";
-        m_enum1_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_enum1_FIELD_DEF.id = 27;
-        m_enum1_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_INT32;
-        m_enum1_FIELD_DEF.type.struct_def = 0;
-        m_enum1_FIELD_DEF.type.element = null;
-        m_enum1_FIELD_DEF.type.key = null;
-        m_enum1_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_enum1_FIELD_DEF);
-
-        m_enum2_FIELD_DEF.metadata.name = "m_enum2";
-        m_enum2_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_enum2_FIELD_DEF.id = 28;
-        m_enum2_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_INT32;
-        m_enum2_FIELD_DEF.type.struct_def = 0;
-        m_enum2_FIELD_DEF.type.element = null;
-        m_enum2_FIELD_DEF.type.key = null;
-        m_enum2_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_enum2_FIELD_DEF);
-
-        m_enum3_FIELD_DEF.metadata.name = "m_enum3";
-        m_enum3_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_enum3_FIELD_DEF.id = 29;
-        m_enum3_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_enum3_FIELD_DEF.type.struct_def = 0;
-        m_enum3_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_enum3_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_INT32;
-        m_enum3_FIELD_DEF.type.element.struct_def = 0;
-        m_enum3_FIELD_DEF.type.element.element = null;
-        m_enum3_FIELD_DEF.type.element.key = null;
-        m_enum3_FIELD_DEF.type.element.bonded_type = false;
-        m_enum3_FIELD_DEF.type.key = null;
-        m_enum3_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_enum3_FIELD_DEF);
-
-        m_enum_int32min_FIELD_DEF.metadata.name = "m_enum_int32min";
-        m_enum_int32min_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_enum_int32min_FIELD_DEF.id = 30;
-        m_enum_int32min_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_INT32;
-        m_enum_int32min_FIELD_DEF.type.struct_def = 0;
-        m_enum_int32min_FIELD_DEF.type.element = null;
-        m_enum_int32min_FIELD_DEF.type.key = null;
-        m_enum_int32min_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_enum_int32min_FIELD_DEF);
-
-        m_enum_int32max_FIELD_DEF.metadata.name = "m_enum_int32max";
-        m_enum_int32max_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_enum_int32max_FIELD_DEF.id = 31;
-        m_enum_int32max_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_INT32;
-        m_enum_int32max_FIELD_DEF.type.struct_def = 0;
-        m_enum_int32max_FIELD_DEF.type.element = null;
-        m_enum_int32max_FIELD_DEF.type.key = null;
-        m_enum_int32max_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_enum_int32max_FIELD_DEF);
-
-        m_enum_uint32_min_FIELD_DEF.metadata.name = "m_enum_uint32_min";
-        m_enum_uint32_min_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_enum_uint32_min_FIELD_DEF.id = 32;
-        m_enum_uint32_min_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_INT32;
-        m_enum_uint32_min_FIELD_DEF.type.struct_def = 0;
-        m_enum_uint32_min_FIELD_DEF.type.element = null;
-        m_enum_uint32_min_FIELD_DEF.type.key = null;
-        m_enum_uint32_min_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_enum_uint32_min_FIELD_DEF);
-
-        m_enum_uint32_max_FIELD_DEF.metadata.name = "m_enum_uint32_max";
-        m_enum_uint32_max_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_enum_uint32_max_FIELD_DEF.id = 33;
-        m_enum_uint32_max_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_INT32;
-        m_enum_uint32_max_FIELD_DEF.type.struct_def = 0;
-        m_enum_uint32_max_FIELD_DEF.type.element = null;
-        m_enum_uint32_max_FIELD_DEF.type.key = null;
-        m_enum_uint32_max_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_enum_uint32_max_FIELD_DEF);
-
-        m_wstr_1_FIELD_DEF.metadata.name = "m_wstr_1";
-        m_wstr_1_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_wstr_1_FIELD_DEF.id = 34;
-        m_wstr_1_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_WSTRING;
-        m_wstr_1_FIELD_DEF.type.struct_def = 0;
-        m_wstr_1_FIELD_DEF.type.element = null;
-        m_wstr_1_FIELD_DEF.type.key = null;
-        m_wstr_1_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_wstr_1_FIELD_DEF);
-
-        m_wstr_2_FIELD_DEF.metadata.name = "m_wstr_2";
-        m_wstr_2_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        
-        m_wstr_2_FIELD_DEF.id = 35;
-        m_wstr_2_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_UNAVAILABLE;
-        m_wstr_2_FIELD_DEF.type.struct_def = 0;
-        m_wstr_2_FIELD_DEF.type.element = new com.microsoft.bond.TypeDef();
-        m_wstr_2_FIELD_DEF.type.element.id = com.microsoft.bond.BondDataType.BT_WSTRING;
-        m_wstr_2_FIELD_DEF.type.element.struct_def = 0;
-        m_wstr_2_FIELD_DEF.type.element.element = null;
-        m_wstr_2_FIELD_DEF.type.element.key = null;
-        m_wstr_2_FIELD_DEF.type.element.bonded_type = false;
-        m_wstr_2_FIELD_DEF.type.key = null;
-        m_wstr_2_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(m_wstr_2_FIELD_DEF);
-
-        schemaInitialized = true;
+        @Override
+        protected final void initializeStructFields(Foo value) {
+            value.m_bool_1 = this.m_bool_1.initialize();
+            value.m_bool_2 = this.m_bool_2.initialize();
+            value.m_bool_3 = this.m_bool_3.initialize();
+            value.m_str_1 = this.m_str_1.initialize();
+            value.m_str_2 = this.m_str_2.initialize();
+            value.m_int8_4 = this.m_int8_4.initialize();
+            value.m_int8_5 = this.m_int8_5.initialize();
+            value.m_int16_4 = this.m_int16_4.initialize();
+            value.m_int16_5 = this.m_int16_5.initialize();
+            value.m_int32_4 = this.m_int32_4.initialize();
+            value.m_int32_max = this.m_int32_max.initialize();
+            value.m_int64_4 = this.m_int64_4.initialize();
+            value.m_int64_max = this.m_int64_max.initialize();
+            value.m_uint8_2 = this.m_uint8_2.initialize();
+            value.m_uint8_3 = this.m_uint8_3.initialize();
+            value.m_uint16_2 = this.m_uint16_2.initialize();
+            value.m_uint16_3 = this.m_uint16_3.initialize();
+            value.m_uint32_3 = this.m_uint32_3.initialize();
+            value.m_uint32_max = this.m_uint32_max.initialize();
+            value.m_uint64_3 = this.m_uint64_3.initialize();
+            value.m_uint64_max = this.m_uint64_max.initialize();
+            value.m_double_3 = this.m_double_3.initialize();
+            value.m_double_4 = this.m_double_4.initialize();
+            value.m_double_5 = this.m_double_5.initialize();
+            value.m_float_3 = this.m_float_3.initialize();
+            value.m_float_4 = this.m_float_4.initialize();
+            value.m_float_7 = this.m_float_7.initialize();
+            value.m_enum1 = this.m_enum1.initialize();
+            value.m_enum2 = this.m_enum2.initialize();
+            value.m_enum3 = this.m_enum3.initialize();
+            value.m_enum_int32min = this.m_enum_int32min.initialize();
+            value.m_enum_int32max = this.m_enum_int32max.initialize();
+            value.m_enum_uint32_min = this.m_enum_uint32_min.initialize();
+            value.m_enum_uint32_max = this.m_enum_uint32_max.initialize();
+            value.m_wstr_1 = this.m_wstr_1.initialize();
+            value.m_wstr_2 = this.m_wstr_2.initialize();
+        }
     }
 
-    public static com.microsoft.bond.SchemaDef getSchema() {
-        initSchema();
-        return SCHEMA;
+    public static final com.microsoft.bond.StructBondType<Foo> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+
+    public static void initializeBondType() {
+        StructBondTypeImpl.StructBondTypeBuilderImpl.register();
     }
 
-    public static com.microsoft.bond.StructDef getStructDef() {
-        initSchema();
-        return STRUCT_DEF;
+    static {
+        initializeBondType();
     }
     
 
-    private final com.microsoft.bond.protocol.TaggedProtocolReader.ReadFieldResult __readFieldResult = new com.microsoft.bond.protocol.TaggedProtocolReader.ReadFieldResult();
-    private final com.microsoft.bond.protocol.TaggedProtocolReader.ReadContainerResult __readContainerResult = new com.microsoft.bond.protocol.TaggedProtocolReader.ReadContainerResult();
+    public boolean m_bool_1;
 
-    public boolean m_bool_1 = true;
+    public boolean m_bool_2;
 
-    public boolean m_bool_2 = false;
+    public com.microsoft.bond.SomethingBool m_bool_3;
 
-    public Boolean m_bool_3 = null;
+    public java.lang.String m_str_1;
 
-    public String m_str_1 = "default string value";
+    public com.microsoft.bond.SomethingObject<java.lang.String> m_str_2;
 
-    public String m_str_2 = null;
+    public byte m_int8_4;
 
-    public byte m_int8_4 = -127;
+    public com.microsoft.bond.SomethingByte m_int8_5;
 
-    public Byte m_int8_5 = null;
+    public short m_int16_4;
 
-    public short m_int16_4 = -32767;
+    public com.microsoft.bond.SomethingShort m_int16_5;
 
-    public Short m_int16_5 = null;
+    public com.microsoft.bond.SomethingInteger m_int32_4;
 
-    public Integer m_int32_4 = null;
+    public int m_int32_max;
 
-    public int m_int32_max = 2147483647;
+    public com.microsoft.bond.SomethingLong m_int64_4;
 
-    public Long m_int64_4 = null;
+    public long m_int64_max;
 
-    public long m_int64_max = 9223372036854775807L;
+    public byte m_uint8_2;
 
-    public byte m_uint8_2 = 255;
+    public com.microsoft.bond.SomethingByte m_uint8_3;
 
-    public Byte m_uint8_3 = null;
+    public short m_uint16_2;
 
-    public short m_uint16_2 = 65535;
+    public com.microsoft.bond.SomethingShort m_uint16_3;
 
-    public Short m_uint16_3 = null;
+    public com.microsoft.bond.SomethingInteger m_uint32_3;
 
-    public Integer m_uint32_3 = null;
+    public int m_uint32_max;
 
-    public int m_uint32_max = 4294967295L;
+    public com.microsoft.bond.SomethingLong m_uint64_3;
 
-    public Long m_uint64_3 = null;
+    public long m_uint64_max;
 
-    public long m_uint64_max = 18446744073709551615L;
+    public com.microsoft.bond.SomethingDouble m_double_3;
 
-    public Double m_double_3 = null;
+    public double m_double_4;
 
-    public double m_double_4 = -123.456789;
+    public double m_double_5;
 
-    public double m_double_5 = -0.0;
+    public com.microsoft.bond.SomethingFloat m_float_3;
 
-    public Float m_float_3 = null;
+    public float m_float_4;
 
-    public float m_float_4 = 2.71828183f;
+    public float m_float_7;
 
-    public float m_float_7 = 0.0f;
+    public tests.EnumType1 m_enum1;
 
-    public EnumType1 m_enum1 = EnumType1.EnumValue1;
+    public tests.EnumType1 m_enum2;
 
-    public EnumType1 m_enum2 = EnumType1.EnumValue3;
+    public com.microsoft.bond.SomethingObject<tests.EnumType1> m_enum3;
 
-    public EnumType1 m_enum3 = null;
+    public tests.EnumType1 m_enum_int32min;
 
-    public EnumType1 m_enum_int32min = EnumType1.Int32Min;
+    public tests.EnumType1 m_enum_int32max;
 
-    public EnumType1 m_enum_int32max = EnumType1.Int32Max;
+    public tests.EnumType1 m_enum_uint32_min;
 
-    public EnumType1 m_enum_uint32_min = EnumType1.UInt32Min;
+    public tests.EnumType1 m_enum_uint32_max;
 
-    public EnumType1 m_enum_uint32_max = EnumType1.UInt32Max;
+    public java.lang.String m_wstr_1;
 
-    public String m_wstr_1 = "default wstring value";
+    public com.microsoft.bond.SomethingObject<java.lang.String> m_wstr_2;
 
-    public String m_wstr_2 = null;
+    
+    public Foo() {
+        super();
+        ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
+    };
 
-    @Override
-    public void serialize(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        initSchema();
-
-        writer.writeStructBegin(SCHEMA.structs.get(0).metadata);
-        this.serializeFields(writer);
-        writer.writeStructEnd();
-    }
 
     @Override
-    public void deserialize(com.microsoft.bond.protocol.TaggedProtocolReader reader) throws java.io.IOException {
-        initSchema();
-
-        reader.readStructBegin();
-        this.deserializeFields(reader);
-        reader.readStructEnd();
-    }
-
-    protected void serializeFields(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_BOOL, 0, m_bool_1_FIELD_DEF.metadata);
-        writer.writeBool(this.m_bool_1);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_BOOL, 1, m_bool_2_FIELD_DEF.metadata);
-        writer.writeBool(this.m_bool_2);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 2, m_bool_3_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_STRING, 3, m_str_1_FIELD_DEF.metadata);
-        writer.writeString(this.m_str_1);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 4, m_str_2_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_INT8, 5, m_int8_4_FIELD_DEF.metadata);
-        writer.writeInt8(this.m_int8_4);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 6, m_int8_5_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_INT16, 7, m_int16_4_FIELD_DEF.metadata);
-        writer.writeInt16(this.m_int16_4);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 8, m_int16_5_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 9, m_int32_4_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_INT32, 10, m_int32_max_FIELD_DEF.metadata);
-        writer.writeInt32(this.m_int32_max);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 11, m_int64_4_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_INT64, 12, m_int64_max_FIELD_DEF.metadata);
-        writer.writeInt64(this.m_int64_max);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UINT8, 13, m_uint8_2_FIELD_DEF.metadata);
-        writer.writeUInt8(this.m_uint8_2);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 14, m_uint8_3_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UINT16, 15, m_uint16_2_FIELD_DEF.metadata);
-        writer.writeUInt16(this.m_uint16_2);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 16, m_uint16_3_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 17, m_uint32_3_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UINT32, 18, m_uint32_max_FIELD_DEF.metadata);
-        writer.writeUInt32(this.m_uint32_max);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 19, m_uint64_3_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UINT64, 20, m_uint64_max_FIELD_DEF.metadata);
-        writer.writeUInt64(this.m_uint64_max);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 21, m_double_3_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_DOUBLE, 22, m_double_4_FIELD_DEF.metadata);
-        writer.writeDouble(this.m_double_4);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_DOUBLE, 23, m_double_5_FIELD_DEF.metadata);
-        writer.writeDouble(this.m_double_5);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 24, m_float_3_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_FLOAT, 25, m_float_4_FIELD_DEF.metadata);
-        writer.writeFloat(this.m_float_4);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_FLOAT, 26, m_float_7_FIELD_DEF.metadata);
-        writer.writeFloat(this.m_float_7);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_INT32, 27, m_enum1_FIELD_DEF.metadata);
-        writer.writeInt32(this.m_enum1.value);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_INT32, 28, m_enum2_FIELD_DEF.metadata);
-        writer.writeInt32(this.m_enum2.value);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 29, m_enum3_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_INT32, 30, m_enum_int32min_FIELD_DEF.metadata);
-        writer.writeInt32(this.m_enum_int32min.value);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_INT32, 31, m_enum_int32max_FIELD_DEF.metadata);
-        writer.writeInt32(this.m_enum_int32max.value);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_INT32, 32, m_enum_uint32_min_FIELD_DEF.metadata);
-        writer.writeInt32(this.m_enum_uint32_min.value);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_INT32, 33, m_enum_uint32_max_FIELD_DEF.metadata);
-        writer.writeInt32(this.m_enum_uint32_max.value);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_WSTRING, 34, m_wstr_1_FIELD_DEF.metadata);
-        writer.writeWString(this.m_wstr_1);
-        writer.writeFieldEnd();
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_UNAVAILABLE, 35, m_wstr_2_FIELD_DEF.metadata);
-        // FIXME: Not implemented.
-        writer.writeFieldEnd();
-        
-    }
-
-    protected void deserializeFields(com.microsoft.bond.protocol.TaggedProtocolReader reader) throws java.io.IOException {
-        
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_bool_1 = reader.readBool();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_bool_2 = reader.readBool();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_str_1 = reader.readString();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_int8_4 = reader.readInt8();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_int16_4 = reader.readInt16();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_int32_max = reader.readInt32();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_int64_max = reader.readInt64();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_uint8_2 = reader.readUInt8();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_uint16_2 = reader.readUInt16();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_uint32_max = reader.readUInt32();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_uint64_max = reader.readUInt64();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_double_4 = reader.readDouble();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_double_5 = reader.readDouble();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_float_4 = reader.readFloat();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_float_7 = reader.readFloat();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_enum1 = EnumType1.get(reader.readInt32());
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_enum2 = EnumType1.get(reader.readInt32());
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_enum_int32min = EnumType1.get(reader.readInt32());
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_enum_int32max = EnumType1.get(reader.readInt32());
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_enum_uint32_min = EnumType1.get(reader.readInt32());
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_enum_uint32_max = EnumType1.get(reader.readInt32());
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.m_wstr_1 = reader.readWString();
-        reader.readFieldEnd();
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        // FIXME: Not implemented.
-        reader.readFieldEnd();
-        
-    }
-
-    @Override
-    public void marshal(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        writer.writeVersion();
-        serialize(writer);
+    public com.microsoft.bond.StructBondType<? extends com.microsoft.bond.BondSerializable> getBondType() {
+        return BOND_TYPE;
     }
 }

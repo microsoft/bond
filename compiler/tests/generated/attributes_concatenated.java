@@ -3,7 +3,7 @@ package tests;
 
 
 @javax.annotation.Generated("gbc")
-public final class Enum implements com.microsoft.bond.BondEnum, java.lang.Comparable<Enum> {
+public final class Enum implements com.microsoft.bond.BondEnum<Enum> {
 
     public static final class Values {
         private Values() {}
@@ -11,28 +11,42 @@ public final class Enum implements com.microsoft.bond.BondEnum, java.lang.Compar
         public static final int Value1 = 0;
     }
 
+    private static final class EnumBondTypeImpl extends com.microsoft.bond.EnumBondType<Enum> {
+
+        @Override
+        public java.lang.Class<Enum> getValueClass() { return Enum.class; }
+
+        @Override
+        public final Enum getEnumValue(int value) { return get(value); }
+    }
+
+    public static final com.microsoft.bond.EnumBondType<Enum> BOND_TYPE = new EnumBondTypeImpl();
+
     public static final Enum Value1 = new Enum(Values.Value1, "Value1");
 
     public final int value;
 
-    private final String label;
+    private final java.lang.String label;
 
     private Enum(int value, String label) { this.value = value; this.label = label; }
 
     @Override
-    public int getValue() { return this.value; }
+    public final int getValue() { return this.value; }
 
     @Override
-    public int compareTo(Enum o) { return this.value < o.value ? -1 : (this.value > o.value ? 1 : 0); }
+    public final com.microsoft.bond.EnumBondType<Enum> getBondType() { return BOND_TYPE; }
 
     @Override
-    public boolean equals(Object other) { return (other instanceof Enum) && (this.value == ((Enum) other).value); }
+    public final int compareTo(Enum o) { return this.value < o.value ? -1 : (this.value > o.value ? 1 : 0); }
 
     @Override
-    public int hashCode() { return this.value; }
+    public final boolean equals(java.lang.Object other) { return (other instanceof Enum) && (this.value == ((Enum) other).value); }
 
     @Override
-    public String toString() { return this.label != null ? this.label : ("Enum(" + String.valueOf(this.value) + ")"); }
+    public final int hashCode() { return this.value; }
+
+    @Override
+    public final java.lang.String toString() { return this.label != null ? this.label : ("Enum(" + String.valueOf(this.value) + ")"); }
 
     public static Enum get(int value) {
         switch (value) {
@@ -44,105 +58,97 @@ public final class Enum implements com.microsoft.bond.BondEnum, java.lang.Compar
 
 package tests;
 
-
 @javax.annotation.Generated("gbc")
 public class Foo implements com.microsoft.bond.BondSerializable {
-
-    public static final com.microsoft.bond.SchemaDef SCHEMA = new com.microsoft.bond.SchemaDef();
-    public static final com.microsoft.bond.StructDef STRUCT_DEF = new com.microsoft.bond.StructDef();
-    private static final com.microsoft.bond.FieldDef f_FIELD_DEF = new com.microsoft.bond.FieldDef();
-    private static boolean schemaInitialized = false;
-
-    public static synchronized void initSchema() {
-        if (schemaInitialized) { return; }
-
+    
+    private static final class StructBondTypeImpl extends com.microsoft.bond.StructBondType<Foo> {
         
+        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<Foo> {
+            
+            @Override
+            public final int getGenericTypeParameterCount() {
+                return 0;
+            }
 
-        SCHEMA.root.id = com.microsoft.bond.BondDataType.BT_STRUCT;
-        SCHEMA.root.struct_def = 0;
-        SCHEMA.root.element = null;
-        SCHEMA.root.key = null;
-        SCHEMA.root.bonded_type = false;
+            @Override
+            protected final com.microsoft.bond.StructBondType<Foo> buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
+                return new StructBondTypeImpl(null);
+            }
 
-        STRUCT_DEF.metadata.name = "Foo";
-        STRUCT_DEF.metadata.qualified_name = "tests.Foo";
-        STRUCT_DEF.metadata.modifier = com.microsoft.bond.Modifier.Optional;
-        STRUCT_DEF.metadata.attributes.put("StructAttribute1", "one");
-        STRUCT_DEF.metadata.attributes.put("StructAttribute2", "two");
-        // TODO: .base_def
-        SCHEMA.structs.add(0, STRUCT_DEF);
+            static void register() {
+                registerStructType(Foo.class, new StructBondTypeBuilderImpl());
+            }
+        }
 
-        f_FIELD_DEF.metadata.name = "f";
-        f_FIELD_DEF.metadata.qualified_name = "";
-        // TODO: .metadata.qualifier
-        f_FIELD_DEF.metadata.attributes.put("FieldAttribute1", "one");
-        f_FIELD_DEF.metadata.attributes.put("FieldAttribute2", "two");
-        f_FIELD_DEF.id = 0;
-        f_FIELD_DEF.type.id = com.microsoft.bond.BondDataType.BT_STRING;
-        f_FIELD_DEF.type.struct_def = 0;
-        f_FIELD_DEF.type.element = null;
-        f_FIELD_DEF.type.key = null;
-        f_FIELD_DEF.type.bonded_type = false;
-        STRUCT_DEF.fields.add(f_FIELD_DEF);
+        private com.microsoft.bond.StructBondType.StringStructField f;
 
-        schemaInitialized = true;
+        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+            super(genericTypeSpecialization);
+        }
+        
+        @Override
+        protected final void initialize() {
+            this.f = new com.microsoft.bond.StructBondType.StringStructField(this, 0, "f", com.microsoft.bond.Modifier.Optional);
+            super.initializeBaseAndFields(null, this.f);
+        }
+
+        @Override
+        public final java.lang.Class<Foo> getValueClass() {
+            return (java.lang.Class<Foo>) (java.lang.Class) Foo.class;
+        }
+
+        @Override
+        public final Foo newInstance() {
+            return new Foo();
+        }
+        
+        @Override
+        protected final void serializeStructFields(com.microsoft.bond.BondType.SerializationContext context, Foo value) throws java.io.IOException {
+            this.f.serialize(context, value.f);
+        }
+        
+        @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, Foo value) throws java.io.IOException {
+            boolean __has_f = false;
+            while (this.readField(context)) {
+                switch (context.readFieldResult.id) {
+                    case 0:
+                        value.f = this.f.deserialize(context, __has_f);
+                            __has_f = true;
+                            break;
+                }
+            }
+            this.f.verifyDeserialized(__has_f);
+        }
+        
+        @Override
+        protected final void initializeStructFields(Foo value) {
+            value.f = this.f.initialize();
+        }
     }
 
-    public static com.microsoft.bond.SchemaDef getSchema() {
-        initSchema();
-        return SCHEMA;
+    public static final com.microsoft.bond.StructBondType<Foo> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+
+    public static void initializeBondType() {
+        StructBondTypeImpl.StructBondTypeBuilderImpl.register();
     }
 
-    public static com.microsoft.bond.StructDef getStructDef() {
-        initSchema();
-        return STRUCT_DEF;
+    static {
+        initializeBondType();
     }
     
 
-    private final com.microsoft.bond.protocol.TaggedProtocolReader.ReadFieldResult __readFieldResult = new com.microsoft.bond.protocol.TaggedProtocolReader.ReadFieldResult();
-    private final com.microsoft.bond.protocol.TaggedProtocolReader.ReadContainerResult __readContainerResult = new com.microsoft.bond.protocol.TaggedProtocolReader.ReadContainerResult();
+    public java.lang.String f;
 
-    public String f = "";
+    
+    public Foo() {
+        super();
+        ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
+    };
 
-    @Override
-    public void serialize(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        initSchema();
-
-        writer.writeStructBegin(SCHEMA.structs.get(0).metadata);
-        this.serializeFields(writer);
-        writer.writeStructEnd();
-    }
 
     @Override
-    public void deserialize(com.microsoft.bond.protocol.TaggedProtocolReader reader) throws java.io.IOException {
-        initSchema();
-
-        reader.readStructBegin();
-        this.deserializeFields(reader);
-        reader.readStructEnd();
-    }
-
-    protected void serializeFields(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        
-        
-        writer.writeFieldBegin(com.microsoft.bond.BondDataType.BT_STRING, 0, f_FIELD_DEF.metadata);
-        writer.writeString(this.f);
-        writer.writeFieldEnd();
-        
-    }
-
-    protected void deserializeFields(com.microsoft.bond.protocol.TaggedProtocolReader reader) throws java.io.IOException {
-        
-        
-        reader.readFieldBegin(this.__readFieldResult);
-        this.f = reader.readString();
-        reader.readFieldEnd();
-        
-    }
-
-    @Override
-    public void marshal(com.microsoft.bond.protocol.ProtocolWriter writer) throws java.io.IOException {
-        writer.writeVersion();
-        serialize(writer);
+    public com.microsoft.bond.StructBondType<? extends com.microsoft.bond.BondSerializable> getBondType() {
+        return BOND_TYPE;
     }
 }
