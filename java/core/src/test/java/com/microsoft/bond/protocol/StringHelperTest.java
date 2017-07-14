@@ -40,7 +40,7 @@ public class StringHelperTest {
                 });
 
         testStringEncodingDecoding(
-                "單元測試",
+                "\u55ae\u5143\u6e2c\u8a66",
                 new byte[]{
                         (byte) 0xE5, (byte) 0x96, (byte) 0xAE,
                         (byte) 0xE5, (byte) 0x85, (byte) 0x83,
@@ -49,7 +49,7 @@ public class StringHelperTest {
                 });
 
         testStringEncodingDecoding(
-                "ユニットテスト",
+                "\u30e6\u30cb\u30c3\u30c8\u30c6\u30b9\u30c8",
                 new byte[]{
                         (byte) 0xE3, (byte) 0x83, (byte) 0xA6,
                         (byte) 0xE3, (byte) 0x83, (byte) 0x8B,
@@ -61,7 +61,7 @@ public class StringHelperTest {
                 });
 
         testStringEncodingDecoding(
-                "ਯੂਨਿਟ ਟੈਸਟ",
+                "\u0a2f\u0a42\u0a28\u0a3f\u0a1f \u0a1f\u0a48\u0a38\u0a1f",
                 new byte[]{
                         (byte) 0xE0, (byte) 0xA8, (byte) 0xAF,
                         (byte) 0xE0, (byte) 0xA9, (byte) 0x82,
@@ -76,7 +76,7 @@ public class StringHelperTest {
                 });
 
         testStringEncodingDecoding(
-                "модульный тест",
+                "\u043c\u043e\u0434\u0443\u043b\u044c\u043d\u044b\u0439 \u0442\u0435\u0441\u0442",
                 new byte[]{
                         (byte) 0xD0, (byte) 0xBC,
                         (byte) 0xD0, (byte) 0xBE,
@@ -95,7 +95,7 @@ public class StringHelperTest {
                 });
 
         testStringEncodingDecoding(
-                "Kiểm tra đơn vị",
+                "Ki\u1ec3m tra \u0111\u01a1n v\u1ecb",
                 new byte[]{
                         (byte) 0x4B,
                         (byte) 0x69,
@@ -115,7 +115,7 @@ public class StringHelperTest {
                 });
 
         testStringEncodingDecoding(
-                "ünite testi",
+                "\u00fcnite testi",
                 new byte[]{
                         (byte) 0xC3, (byte) 0xBC,
                         (byte) 0x6E,
@@ -131,7 +131,7 @@ public class StringHelperTest {
                 });
 
         testStringEncodingDecoding(
-                "ერთეული გამოცდა",
+                "\u10d4\u10e0\u10d7\u10d4\u10e3\u10da\u10d8 \u10d2\u10d0\u10db\u10dd\u10ea\u10d3\u10d0",
                 new byte[]{
                         (byte) 0xE1, (byte) 0x83, (byte) 0x94,
                         (byte) 0xE1, (byte) 0x83, (byte) 0xA0,
@@ -151,7 +151,7 @@ public class StringHelperTest {
                 });
 
         testStringEncodingDecoding(
-                "מבחן יחידה",
+                "\u05de\u05d1\u05d7\u05df \u05d9\u05d7\u05d9\u05d3\u05d4",
                 new byte[]{
                         (byte) 0xD7, (byte) 0x9E,
                         (byte) 0xD7, (byte) 0x91,
@@ -166,7 +166,7 @@ public class StringHelperTest {
                 });
 
         testStringEncodingDecoding(
-                "اختبار الوحدة",
+                "\u0627\u062e\u062a\u0628\u0627\u0631 \u0627\u0644\u0648\u062d\u062f\u0629",
                 new byte[]{
                         (byte) 0xD8, (byte) 0xA7,
                         (byte) 0xD8, (byte) 0xAE,
@@ -215,7 +215,7 @@ public class StringHelperTest {
                 });
 
         testWStringEncodingDecoding(
-                "單元測試",
+                "\u55ae\u5143\u6e2c\u8a66",
                 new byte[]{
                         (byte) 0xAE, (byte) 0x55,
                         (byte) 0x43, (byte) 0x51,
@@ -224,7 +224,7 @@ public class StringHelperTest {
                 });
 
         testWStringEncodingDecoding(
-                "ユニットテスト",
+                "\u30e6\u30cb\u30c3\u30c8\u30c6\u30b9\u30c8",
                 new byte[]{
                         (byte) 0xE6, (byte) 0x30,
                         (byte) 0xCB, (byte) 0x30,
@@ -236,7 +236,7 @@ public class StringHelperTest {
                 });
 
         testWStringEncodingDecoding(
-                "ਯੂਨਿਟ ਟੈਸਟ",
+                "\u0a2f\u0a42\u0a28\u0a3f\u0a1f \u0a1f\u0a48\u0a38\u0a1f",
                 new byte[]{
                         (byte) 0x2F, (byte) 0x0A,
                         (byte) 0x42, (byte) 0x0A,
@@ -251,7 +251,7 @@ public class StringHelperTest {
                 });
 
         testWStringEncodingDecoding(
-                "модульный тест",
+                "\u043c\u043e\u0434\u0443\u043b\u044c\u043d\u044b\u0439 \u0442\u0435\u0441\u0442",
                 new byte[]{
                         (byte) 0x3C, (byte) 0x04,
                         (byte) 0x3E, (byte) 0x04,
@@ -270,7 +270,7 @@ public class StringHelperTest {
                 });
 
         testWStringEncodingDecoding(
-                "Kiểm tra đơn vị",
+                "Ki\u1ec3m tra \u0111\u01a1n v\u1ecb",
                 new byte[]{
                         (byte) 0x4B, (byte) 0x00,
                         (byte) 0x69, (byte) 0x00,
@@ -290,7 +290,7 @@ public class StringHelperTest {
                 });
 
         testWStringEncodingDecoding(
-                "ünite testi",
+                "\u00fcnite testi",
                 new byte[]{
                         (byte) 0xFC, (byte) 0x00,
                         (byte) 0x6E, (byte) 0x00,
@@ -306,7 +306,7 @@ public class StringHelperTest {
                 });
 
         testWStringEncodingDecoding(
-                "ერთეული გამოცდა",
+                "\u10d4\u10e0\u10d7\u10d4\u10e3\u10da\u10d8 \u10d2\u10d0\u10db\u10dd\u10ea\u10d3\u10d0",
                 new byte[]{
                         (byte) 0xD4, (byte) 0x10,
                         (byte) 0xE0, (byte) 0x10,
@@ -326,7 +326,7 @@ public class StringHelperTest {
                 });
 
         testWStringEncodingDecoding(
-                "מבחן יחידה",
+                "\u05de\u05d1\u05d7\u05df \u05d9\u05d7\u05d9\u05d3\u05d4",
                 new byte[]{
                         (byte) 0xDE, (byte) 0x05,
                         (byte) 0xD1, (byte) 0x05,
@@ -341,7 +341,7 @@ public class StringHelperTest {
                 });
 
         testWStringEncodingDecoding(
-                "اختبار الوحدة",
+                "\u0627\u062e\u062a\u0628\u0627\u0631 \u0627\u0644\u0648\u062d\u062f\u0629",
                 new byte[]{
                         (byte) 0x27, (byte) 0x06,
                         (byte) 0x2E, (byte) 0x06,
