@@ -109,10 +109,11 @@ namespace Bond.IO.Unsafe
             // ton of memory ahead of time.
             if ((count > buffer.Length && (count - buffer.Length > ActiveAllocationChunk)))
             {
-                // Calculate number of temp buffers - 1 in case difference is
-                // exactly multiple of chunk size. If it's exactly a
-                // multiple, we need one fewer temp buffers, as we'll read
-                // the last chunk directly into the final buffer, below.
+                // Calculate number of temp buffers; we round down since the
+                // last chunk is read directly into final buffer. Note:
+                // Difference is adjusted by -1 to round down correctly in
+                // cases where the difference is exactly a multiple of the
+                // allocation chunk size.
                 int numTempBuffers = (count - buffer.Length - 1) / ActiveAllocationChunk;
 
                 tempBuffers = new byte[numTempBuffers][];

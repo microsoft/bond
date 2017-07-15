@@ -14,6 +14,7 @@
     /// concrete implementation for each IInputStream implementation we want
     /// to test.
     /// </summary>
+    [TestFixture]
     public abstract class IInputStreamTestsBase<TInputStream>
         where TInputStream : IInputStream, ICloneable<TInputStream>
     {
@@ -213,7 +214,6 @@
         }
     }
 
-    [TestFixture]
     public class UnsafeInputBufferTests : IInputStreamTestsBase<Bond.IO.Unsafe.InputBuffer>
     {
         protected override Bond.IO.Unsafe.InputBuffer MakeInputStream(ArraySegment<byte> buffer)
@@ -222,7 +222,6 @@
         }
     }
 
-    [TestFixture]
     public class UnsafeInputBufferOffsetTests : IInputStreamTestsBase<Bond.IO.Unsafe.InputBuffer>
     {
         protected override Bond.IO.Unsafe.InputBuffer MakeInputStream(ArraySegment<byte> buffer)
@@ -231,7 +230,6 @@
         }
     }
 
-    [TestFixture]
     public class SafeInputBufferTests : IInputStreamTestsBase<Bond.IO.Safe.InputBuffer>
     {
         protected override Bond.IO.Safe.InputBuffer MakeInputStream(ArraySegment<byte> buffer)
@@ -240,7 +238,6 @@
         }
     }
 
-    [TestFixture]
     public class SafeInputBufferOffsetTests : IInputStreamTestsBase<Bond.IO.Safe.InputBuffer>
     {
         protected override Bond.IO.Safe.InputBuffer MakeInputStream(ArraySegment<byte> buffer)
@@ -249,7 +246,6 @@
         }
     }
 
-    [TestFixture]
     public class InputPointerTests : IInputStreamTestsBase<InputPointer>
     {
         GCHandle? pinnedBuffer;
@@ -337,7 +333,6 @@
         }
     }
 
-    [TestFixture]
     public class InputStreamTests : InputStreamTestsBase
     {
         protected override InputStream MakeInputStream(ArraySegment<byte> buffer)
@@ -352,7 +347,6 @@
         }
     }
 
-    [TestFixture]
     public class NonSeekableInputStreamTests : InputStreamTestsBase
     {
         protected override InputStream MakeInputStream(ArraySegment<byte> buffer)
