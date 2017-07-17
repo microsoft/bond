@@ -390,9 +390,9 @@ public final class TaggedBinaryTestHelper {
                         writeDoubleField(w, 5.12, 60, skipTests);
                         writeDoubleField(w, -1001, 61, skipTests);
                         writeStringField(w, "", 70, skipTests);
-                        writeStringField(w, "Привет World!", 71, skipTests);
+                        writeStringField(w, "\u041f\u0440\u0438\u0432\u0435\u0442 World!", 71, skipTests);
                         writeWStringField(w, "", 80, skipTests);
-                        writeWStringField(w, "Привет World!", 81, skipTests);
+                        writeWStringField(w, "\u041f\u0440\u0438\u0432\u0435\u0442 World!", 81, skipTests);
                         writeStructEnd(w, skipTests);
                     }
                 },
@@ -423,9 +423,9 @@ public final class TaggedBinaryTestHelper {
                         readDoubleFieldAndVerify(r, 5.12, 60);
                         readDoubleFieldAndVerify(r, -1001, 61);
                         readStringFieldAndVerify(r, "", 70);
-                        readStringFieldAndVerify(r, "Привет World!", 71);
+                        readStringFieldAndVerify(r, "\u041f\u0440\u0438\u0432\u0435\u0442 World!", 71);
                         readWStringFieldAndVerify(r, "", 80);
-                        readWStringFieldAndVerify(r, "Привет World!", 81);
+                        readWStringFieldAndVerify(r, "\u041f\u0440\u0438\u0432\u0435\u0442 World!", 81);
                         readFieldAndVerifyStructEnd(r);
                     }
                 });
