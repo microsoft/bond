@@ -79,7 +79,7 @@ public final class BlobBondType extends BondType<byte[]> {
     @Override
     protected final void serializeValue(SerializationContext context, byte[] value) throws IOException {
         this.verifyNonNullableValueIsNotSetToNull(value);
-        context.writer.writeContainerBegin(value.length, BondDataType.BT_UINT8);
+        context.writer.writeContainerBegin(value.length, BondDataType.BT_INT8);
         context.writer.writeBytes(value);
         context.writer.writeContainerEnd();
     }
@@ -87,12 +87,12 @@ public final class BlobBondType extends BondType<byte[]> {
     @Override
     protected final byte[] deserializeValue(TaggedDeserializationContext context) throws IOException {
         context.reader.readListBegin(context.readContainerResult);
-        if (context.readContainerResult.elementType.value != BondDataType.BT_UINT8.value) {
+        if (context.readContainerResult.elementType.value != BondDataType.BT_INT8.value) {
             // throws
             Throw.raiseContainerElementTypeIsNotCompatibleDeserializationError(
                     "element",
                     context.readContainerResult.elementType,
-                    BondDataType.BT_UINT8,
+                    BondDataType.BT_INT8,
                     this.getFullName());
         }
         byte[] value = context.reader.readBytes(context.readContainerResult.count);
@@ -156,7 +156,7 @@ public final class BlobBondType extends BondType<byte[]> {
         // initialize only with non-default values
         TypeDef typeDef = new TypeDef();
         typeDef.id = this.getBondDataType();
-        typeDef.element = BondTypes.UINT8.createSchemaTypeDef(structDefMap);
+        typeDef.element = BondTypes.INT8.createSchemaTypeDef(structDefMap);
         return typeDef;
     }
 }
