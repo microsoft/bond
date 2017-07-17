@@ -147,8 +147,12 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
                     this.valueType.getBondDataType(),
                     this.getFullName());
         }
+
+        // store count in a local variable since readContainerResult may be modified
+        // if there are nested containers and thus can't be used inside the loop
+        int count = context.readContainerResult.count;
         Map<TKey, TValue> value = newDefaultValue();
-        for (int i = 0; i < context.readContainerResult.count; ++i) {
+        for (int i = 0; i < count; ++i) {
             TKey mapEntryKey = null;
             try {
                 mapEntryKey = this.keyType.deserializeValue(context);
