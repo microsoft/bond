@@ -127,8 +127,12 @@ public final class VectorBondType<TElement> extends BondType<List<TElement>> {
                     this.elementType.getBondDataType(),
                     this.getFullName());
         }
-        List<TElement> value = newDefaultValue(context.readContainerResult.count);
-        for (int i = 0; i < context.readContainerResult.count; ++i) {
+
+        // store count in a local variable since readContainerResult may be modified
+        // if there are nested containers and thus can't be used inside the loop
+        int count = context.readContainerResult.count;
+        List<TElement> value = newDefaultValue(count);
+        for (int i = 0; i < count; ++i) {
             try {
                 TElement element = this.elementType.deserializeValue(context);
                 value.add(element);

@@ -121,8 +121,12 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
                     this.elementType.getBondDataType(),
                     this.getFullName());
         }
+
+        // store count in a local variable since readContainerResult may be modified
+        // if there are nested containers and thus can't be used inside the loop
+        int count = context.readContainerResult.count;
         Set<TElement> value = this.newDefaultValue();
-        for (int i = 0; i < context.readContainerResult.count; ++i) {
+        for (int i = 0; i < count; ++i) {
             try {
                 TElement element = this.elementType.deserializeValue(context);
                 value.add(element);
