@@ -1,0 +1,37 @@
+group 'com.microsoft.bond'
+version '1.0'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.microsoft.bond:gradle:+'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.microsoft.bond.gradle'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile files('../../../../java/core/build/libs/bond-5.0.0.jar')
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+compileBond {
+    bondfiles 'serialization.bond'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.microsoft.bond.examples.Serialization'
+    }
+}
