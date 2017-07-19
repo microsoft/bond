@@ -515,7 +515,7 @@ javaType (BT_Vector elementType) = "java.util.List<" <>> elementTypeName element
 javaType (BT_Set elementType) = "java.util.Set<" <>> elementTypeName elementType <<> ">"
 javaType (BT_Map keyType valueType) = "java.util.Map<" <>> elementTypeName keyType <<>> ", " <>> elementTypeName valueType <<> ">"
 javaType (BT_TypeParam param) = pureText $ paramName param
-javaType (BT_Bonded structType) = "com.microsoft.bond.IBonded<" <>> javaBoxedType structType <<> ">"
+javaType (BT_Bonded structType) = "com.microsoft.bond.Bonded<" <>> javaBoxedType structType <<> ">"
 javaType (BT_UserDefined Alias {} _) = error "Java codegen does not support aliases"
 javaType (BT_UserDefined decl args) =
     declQualifiedTypeName decl <<>> (angles <$> localWith (const javaBoxedTypeMapping) (commaSepTypeNames args))
