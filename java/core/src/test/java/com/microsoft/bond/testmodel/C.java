@@ -178,6 +178,15 @@ public class C extends B<Double> implements BondSerializable {
             value.bs2 = this.bs2.initialize();
             value.bs3 = this.bs3.initialize();
         }
+
+        @Override
+        protected void cloneStructFields(C fromValue, C toValue) {
+            toValue.i32 = this.i32.clone(fromValue.i32);
+            toValue.i64 = this.i64.clone(fromValue.i64);
+            toValue.bs1 = this.bs1.clone(fromValue.bs1);
+            toValue.bs2 = this.bs2.clone(fromValue.bs2);
+            toValue.bs3 = this.bs3.clone(fromValue.bs3);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////

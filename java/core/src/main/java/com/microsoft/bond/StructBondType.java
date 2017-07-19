@@ -179,6 +179,14 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected abstract void initializeStructFields(TStruct value);
 
     /**
+     * Used by generated subclasses to memberwise-copy declared fields of this struct, excluding inherited fields.
+     *
+     * @param fromValue the value to copy from
+     * @param toValue   the value to copy to
+     */
+    protected abstract void cloneStructFields(TStruct fromValue, TStruct toValue);
+
+    /**
      * Gets the generic specialization or null if not generic struct.
      *
      * @return the generic specialization or null if not generic struct
@@ -265,6 +273,17 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     @Override
     protected final TStruct newDefaultValue() {
         return this.newInstance();
+    }
+
+    @Override
+    protected final TStruct cloneValue(TStruct value) {
+        TStruct clonedValue = this.newInstance();
+        StructBondType<? super TStruct> currentStructType = this;
+        while (currentStructType != null) {
+            currentStructType.cloneStructFields(value, clonedValue);
+            currentStructType = currentStructType.baseStructType;
+        }
+        return clonedValue;
     }
 
     /**
@@ -744,6 +763,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.fieldType.newDefaultValue();
         }
 
+        public final TField clone(TField value) {
+            return this.fieldType.cloneValue(value);
+        }
+
         public final void serialize(
                 SerializationContext context, TField value) throws IOException {
             this.fieldType.serializeField(context, value, this);
@@ -786,6 +809,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return null;
         }
 
+        public final SomethingObject<TField> clone(SomethingObject<TField> value) {
+            return value == null ? null : Something.wrap(this.fieldType.cloneValue(value.value));
+        }
+
         public final void serialize(
                 SerializationContext context, SomethingObject<TField> value) throws IOException {
             this.fieldType.serializeSomethingField(context, value, this);
@@ -795,47 +822,6 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeSomethingField(context, this);
-        }
-    }
-
-    /**
-     * Implements the {@link StructField} contract for bonded fields. Since these field types
-     * cannot have explicit default values, there is no constructor that takes a default value.
-     */
-    protected static final class BondedStructField<TField extends BondSerializable> extends StructField<IBonded<TField>> {
-
-        public BondedStructField(
-            StructBondType<?> structType,
-            BondType<IBonded<TField>> fieldType,
-            int id,
-            String name,
-            Modifier modifier) {
-            super(structType, fieldType, id, name, modifier);
-        }
-
-        @Override
-        public final boolean isDefaultNothing() {
-            return false;
-        }
-
-        @Override
-        public final IBonded<TField> getDefaultValue() {
-            return this.initialize();
-        }
-
-        public final IBonded<TField> initialize() {
-            return this.fieldType.newDefaultValue();
-        }
-
-        public final void serialize(
-            SerializationContext context, IBonded<TField> value) throws IOException {
-            this.fieldType.serializeField(context, value, this);
-        }
-
-        public final IBonded<TField> deserialize(
-            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
-            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
-            return this.fieldType.deserializeField(context, this);
         }
     }
 
@@ -880,6 +866,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final byte clone(byte value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, byte value) throws IOException {
             UInt8BondType.serializePrimitiveField(context, value, this);
@@ -918,6 +908,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingByte initialize() {
             return null;
+        }
+
+        public final SomethingByte clone(SomethingByte value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -973,6 +967,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final short clone(short value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, short value) throws IOException {
             UInt16BondType.serializePrimitiveField(context, value, this);
@@ -1011,6 +1009,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingShort initialize() {
             return null;
+        }
+
+        public final SomethingShort clone(SomethingShort value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -1066,6 +1068,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final int clone(int value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, int value) throws IOException {
             UInt32BondType.serializePrimitiveField(context, value, this);
@@ -1104,6 +1110,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingInteger initialize() {
             return null;
+        }
+
+        public final SomethingInteger clone(SomethingInteger value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -1159,6 +1169,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final long clone(long value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, long value) throws IOException {
             UInt64BondType.serializePrimitiveField(context, value, this);
@@ -1197,6 +1211,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingLong initialize() {
             return null;
+        }
+
+        public final SomethingLong clone(SomethingLong value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -1252,6 +1270,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final byte clone(byte value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, byte value) throws IOException {
             Int8BondType.serializePrimitiveField(context, value, this);
@@ -1290,6 +1312,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingByte initialize() {
             return null;
+        }
+
+        public final SomethingByte clone(SomethingByte value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -1345,6 +1371,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final short clone(short value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, short value) throws IOException {
             Int16BondType.serializePrimitiveField(context, value, this);
@@ -1383,6 +1413,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingShort initialize() {
             return null;
+        }
+
+        public final SomethingShort clone(SomethingShort value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -1438,6 +1472,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final int clone(int value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, int value) throws IOException {
             Int32BondType.serializePrimitiveField(context, value, this);
@@ -1476,6 +1514,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingInteger initialize() {
             return null;
+        }
+
+        public final SomethingInteger clone(SomethingInteger value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -1531,6 +1573,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final long clone(long value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, long value) throws IOException {
             Int64BondType.serializePrimitiveField(context, value, this);
@@ -1569,6 +1615,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingLong initialize() {
             return null;
+        }
+
+        public final SomethingLong clone(SomethingLong value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -1624,6 +1674,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final boolean clone(boolean value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, boolean value) throws IOException {
             BoolBondType.serializePrimitiveField(context, value, this);
@@ -1662,6 +1716,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingBoolean initialize() {
             return null;
+        }
+
+        public final SomethingBoolean clone(SomethingBoolean value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -1717,6 +1775,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final float clone(float value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, float value) throws IOException {
             FloatBondType.serializePrimitiveField(context, value, this);
@@ -1755,6 +1817,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingFloat initialize() {
             return null;
+        }
+
+        public final SomethingFloat clone(SomethingFloat value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -1810,6 +1876,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final double clone(double value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, double value) throws IOException {
             DoubleBondType.serializePrimitiveField(context, value, this);
@@ -1848,6 +1918,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingDouble initialize() {
             return null;
+        }
+
+        public final SomethingDouble clone(SomethingDouble value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -1903,6 +1977,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final String clone(String value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, String value) throws IOException {
             this.fieldType.serializeField(context, value, this);
@@ -1941,6 +2019,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingObject<String> initialize() {
             return null;
+        }
+
+        public final SomethingObject<String> clone(SomethingObject<String> value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -1996,6 +2078,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final String clone(String value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, String value) throws IOException {
             this.fieldType.serializeField(context, value, this);
@@ -2035,6 +2121,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingObject<String> initialize() {
             return null;
+        }
+
+        public final SomethingObject<String> clone(SomethingObject<String> value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(
@@ -2091,6 +2181,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return this.defaultValue;
         }
 
+        public final TEnum clone(TEnum value) {
+            return value;
+        }
+
         public final void serialize(
                 SerializationContext context, TEnum value) throws IOException {
             this.fieldType.serializeField(context, value, this);
@@ -2131,6 +2225,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         public final SomethingObject<TEnum> initialize() {
             return null;
+        }
+
+        public final SomethingObject<TEnum> clone(SomethingObject<TEnum> value) {
+            return value == null ? null : Something.wrap(value.value);
         }
 
         public final void serialize(

@@ -10,7 +10,7 @@ import java.util.HashMap;
  * Implements the {@link BondType} contract for bonded container data type.
  * @param <TStruct> the class of the underlying struct value
  */
-public final class BondedBondType<TStruct extends BondSerializable> extends BondType<IBonded<TStruct>> {
+public final class BondedBondType<TStruct extends BondSerializable> extends BondType<Bonded<TStruct>> {
 
     /**
      * The name of the type as it appears in Bond schemas.
@@ -19,10 +19,12 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
 
     private final StructBondType<TStruct> valueType;
     private final int precomputedHashCode;
+    private final Bonded<TStruct> defaultValue;
 
     BondedBondType(StructBondType<TStruct> valueType) {
         this.valueType = valueType;
         this.precomputedHashCode = HashCode.computeHashCodeForBondedContainer(valueType);
+        this.defaultValue = Bonded.fromObject(this.valueType.newDefaultValue(), this.valueType);
     }
 
     /**
@@ -50,15 +52,15 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     }
 
     @Override
-    public final Class<IBonded<TStruct>> getValueClass() {
+    public final Class<Bonded<TStruct>> getValueClass() {
         // can't do direct cast
         @SuppressWarnings("unchecked")
-        Class<IBonded<TStruct>> valueClass = (Class<IBonded<TStruct>>) (Class<?>) IBonded.class;
+        Class<Bonded<TStruct>> valueClass = (Class<Bonded<TStruct>>) (Class<?>) Bonded.class;
         return valueClass;
     }
 
     @Override
-    public final Class<IBonded<TStruct>> getPrimitiveValueClass() {
+    public final Class<Bonded<TStruct>> getPrimitiveValueClass() {
         return null;
     }
 
@@ -79,30 +81,35 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
 
     @Override
     protected final Bonded<TStruct> newDefaultValue() {
-        return new Bonded<TStruct>(this.valueType.newDefaultValue());
+        // since Bonded is immutable, the default value can be shared
+        return this.defaultValue;
     }
 
     @Override
-    protected final void serializeValue(SerializationContext context, IBonded<TStruct> value) throws IOException {
-        this.verifyNonNullableValueIsNotSetToNull(value);
+    protected final Bonded<TStruct> cloneValue(Bonded<TStruct> value) {
+        // since Bonded is immutable it doesn't need to be explicitly cloned
+        return value;
+    }
 
-        // TODO: complete serialization story for bonded
-        throw new UnsupportedOperationException();
+    @Override
+    protected final void serializeValue(SerializationContext context, Bonded<TStruct> value) throws IOException {
+        this.verifyNonNullableValueIsNotSetToNull(value);
+        value.serialize(context.writer);
     }
 
     @Override
     protected final Bonded<TStruct> deserializeValue(TaggedDeserializationContext context) throws IOException {
         TStruct value = this.valueType.deserializeValue(context);
 
-        // TODO: complete deserialization story for bonded
+        // TODO: complete deserialization story for bonded (need to somehow capture the underlying stream)
         throw new UnsupportedOperationException();
     }
 
     @Override
     protected final void serializeField(
             SerializationContext context,
-            IBonded<TStruct> value,
-            StructBondType.StructField<IBonded<TStruct>> field) throws IOException {
+            Bonded<TStruct> value,
+            StructBondType.StructField<Bonded<TStruct>> field) throws IOException {
         // struct (bonded) fields are never omitted
         context.writer.writeFieldBegin(BondDataType.BT_STRUCT, field.getId(), field);
         try {
@@ -115,9 +122,9 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     }
 
     @Override
-    protected final IBonded<TStruct> deserializeField(
+    protected final Bonded<TStruct> deserializeField(
             TaggedDeserializationContext context,
-            StructBondType.StructField<IBonded<TStruct>> field) throws IOException {
+            StructBondType.StructField<Bonded<TStruct>> field) throws IOException {
         // since bonded applies only to structs, a bonded value may be deserialized only from BT_STRUCT
         if (context.readFieldResult.type.value != BondDataType.BT_STRUCT.value) {
             // throws

@@ -866,18 +866,18 @@ public class CompactBinaryV2ProtocolTest {
                 (byte) 0x8B, (byte) 0xD1, (byte) 0x02,
                 (byte) BondDataType.BT_STOP.value,
 
-                // 10000 : blob (list<uint8>) = {}
+                // 10000 : blob (list<int8>) = {}
                 (byte) (BondDataType.BT_LIST.value | 0xE0),
                 (byte) 10000, (byte) (10000 >>> 8),
                 (byte) (BondDataType.BT_UINT8.value | (1 << 5)),
 
-                // 10001 : blob (list<uint8>) = {0x01}
+                // 10001 : blob (list<int8>) = {0x01}
                 (byte) (BondDataType.BT_LIST.value | 0xE0),
                 (byte) 10001, (byte) (10001 >>> 8),
                 (byte) (BondDataType.BT_UINT8.value | (2 << 5)),
                 (byte) 0x01,
 
-                // 10002 : blob (list<uint8>) = {0x02, 0x03}
+                // 10002 : blob (list<int8>) = {0x02, 0x03}
                 (byte) (BondDataType.BT_LIST.value | 0xE0),
                 (byte) 10002, (byte) (10002 >>> 8),
                 (byte) (BondDataType.BT_UINT8.value | (3 << 5)),

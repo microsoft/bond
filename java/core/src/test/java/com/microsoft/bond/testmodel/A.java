@@ -297,6 +297,20 @@ public class A<X, Y> implements BondSerializable {
             value.nax32 = this.nax32.initialize();
             value.nay64 = this.nay64.initialize();
         }
+
+        @Override
+        protected void cloneStructFields(A<X, Y> fromValue, A<X, Y> toValue) {
+            toValue.x = this.x.clone(fromValue.x);
+            toValue.y = this.y.clone(fromValue.y);
+            toValue.nx = this.nx.clone(fromValue.nx);
+            toValue.ny = this.ny.clone(fromValue.ny);
+            toValue.nbx = this.nbx.clone(fromValue.nbx);
+            toValue.nby = this.nby.clone(fromValue.nby);
+            toValue.lx = this.lx.clone(fromValue.lx);
+            toValue.ly = this.ly.clone(fromValue.ly);
+            toValue.nax32 = this.nax32.clone(fromValue.nax32);
+            toValue.nay64 = this.nay64.clone(fromValue.nay64);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////

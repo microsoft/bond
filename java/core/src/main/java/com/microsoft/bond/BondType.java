@@ -168,6 +168,13 @@ public abstract class BondType<T> {
     protected abstract T newDefaultValue();
 
     /**
+     * Returns a deep clone of the argument value.
+     * @param value the argument value.
+     * @return a deep clone of the argument.
+     */
+    protected abstract T cloneValue(T value);
+
+    /**
      * Serializes a value of this type into a protocol writer.
      * This method is intended for objects and is not suitable for Java primitive (non-object) types
      * since its argument is an object and would to be boxed. To serialize primitive values use the

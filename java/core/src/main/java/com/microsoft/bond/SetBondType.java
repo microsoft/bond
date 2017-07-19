@@ -84,6 +84,15 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
         return this.newInstance();
     }
 
+    @Override
+    protected final Set<TElement> cloneValue(Set<TElement> value) {
+        Set<TElement> clonedValue = this.newDefaultValue();
+        for (TElement element : value) {
+            clonedValue.add(this.elementType.cloneValue(element));
+        }
+        return clonedValue;
+    }
+
     /**
      * Instantiates a new instance of this set type.
      *
