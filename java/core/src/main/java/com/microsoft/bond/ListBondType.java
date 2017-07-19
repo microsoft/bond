@@ -84,6 +84,15 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
         return this.newInstance();
     }
 
+    @Override
+    protected final List<TElement> cloneValue(List<TElement> value) {
+        List<TElement> clonedValue = this.newDefaultValue();
+        for (TElement element : value) {
+            clonedValue.add(this.elementType.cloneValue(element));
+        }
+        return clonedValue;
+    }
+
     /**
      * Instantiates a new instance of this list type.
      *
@@ -98,13 +107,14 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
         this.verifyNonNullableValueIsNotSetToNull(value);
         int count = value.size();
         context.writer.writeContainerBegin(count, this.elementType.getBondDataType());
-        for (int i = 0; i < count; ++i) {
+        int i = 0;
+        for (TElement element : value) {
             try {
-                TElement element = value.get(i);
                 this.elementType.serializeValue(context, element);
             } catch (InvalidBondDataException e) {
                 Throw.raiseListContainerElementSerializationError(false, false, this.getFullName(), i, e, null);
             }
+            ++i;
         }
         context.writer.writeContainerEnd();
     }

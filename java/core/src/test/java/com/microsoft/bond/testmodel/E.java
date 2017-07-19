@@ -180,6 +180,14 @@ public class E<U> extends D implements BondSerializable {
             value.lneu = this.lneu.initialize();
             value.nlneu = this.nlneu.initialize();
         }
+
+        @Override
+        protected void cloneStructFields(E<U> fromValue, E<U> toValue) {
+            toValue.u = this.u.clone(fromValue.u);
+            toValue.neu = this.neu.clone(fromValue.neu);
+            toValue.lneu = this.lneu.clone(fromValue.lneu);
+            toValue.nlneu = this.nlneu.clone(fromValue.nlneu);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////

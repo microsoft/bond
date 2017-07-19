@@ -42,7 +42,7 @@ public final class BlobBondType extends BondType<byte[]> {
 
     @Override
     public final BondDataType getBondDataType() {
-        // a blob is equivalent to list<uint8>
+        // a blob is equivalent to list<int8>
         return BondDataType.BT_LIST;
     }
 
@@ -74,6 +74,11 @@ public final class BlobBondType extends BondType<byte[]> {
     @Override
     protected final byte[] newDefaultValue() {
         return DEFAULT_VALUE;
+    }
+
+    @Override
+    protected final byte[] cloneValue(byte[] value) {
+        return value.clone();
     }
 
     @Override

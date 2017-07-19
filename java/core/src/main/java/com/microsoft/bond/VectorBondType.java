@@ -85,6 +85,15 @@ public final class VectorBondType<TElement> extends BondType<List<TElement>> {
         return this.newInstance();
     }
 
+    @Override
+    protected final List<TElement> cloneValue(List<TElement> value) {
+        List<TElement> clonedValue = newDefaultValue(value.size());
+        for (TElement element : value) {
+            clonedValue.add(this.elementType.cloneValue(element));
+        }
+        return clonedValue;
+    }
+
     /**
      * Instantiates a new instance of this list type.
      *

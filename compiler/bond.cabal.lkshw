@@ -1,0 +1,14 @@
+Version of workspace file format:
+               2
+Time of storage:
+               "Tue Jul 18 14:07:41 Pacific Daylight Time 2017"
+Name of the workspace:
+               "bond.cabal"
+File paths of contained packages:
+               ["bond.cabal"]
+Maybe file path of an active package:
+               Just "bond.cabal"
+Maybe name of an active executable:
+               Nothing
+Version Control System configurations for packages:
+               fromList []

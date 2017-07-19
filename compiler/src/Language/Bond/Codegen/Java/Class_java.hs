@@ -314,6 +314,16 @@ makeStructBondTypeMember_initializeStructFields declName declParams structFields
                 initializeField Field {..} = [lt|value.#{fieldName} = this.#{fieldName}.initialize();|]
 
 
+-- given class name, generic type parameters, and struct fields, builds text for implementation of
+-- the StructBondTypeImpl.copyStructFields method
+makeStructBondTypeMember_cloneStructFields :: String -> [TypeParam] -> [Field] -> Text
+makeStructBondTypeMember_cloneStructFields declName declParams structFields = [lt|
+        @Override
+        protected final void cloneStructFields(#{methodParamDecl}) {#{newlineBeginSep 3 cloneField structFields}
+        }|]
+            where
+                methodParamDecl = [lt|#{typeNameWithParams declName declParams} fromValue, #{typeNameWithParams declName declParams} toValue|]
+                cloneField Field {..} = [lt|toValue.#{fieldName} = this.#{fieldName}.clone(fromValue.#{fieldName});|]
 
 
 -- builds text for anonymous implementation of the GenericBondTypeBuilder abstract class and assignment to the BOND_TYPE variable
@@ -401,6 +411,7 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
         #{makeStructBondTypeMember_serializeStructFields declName declParams structFields}
         #{makeStructBondTypeMember_deserializeStructFields declName declParams structFields}
         #{makeStructBondTypeMember_initializeStructFields declName declParams structFields}
+        #{makeStructBondTypeMember_cloneStructFields declName declParams structFields}
     }
 
     #{bondTypeStaticVariableDecl}

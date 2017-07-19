@@ -82,6 +82,11 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
     }
 
     @Override
+    protected final TValue cloneValue(TValue value) {
+        return value == null ? null : this.valueType.cloneValue(value);
+    }
+
+    @Override
     protected final void serializeValue(SerializationContext context, TValue value) throws IOException {
         if (value == null) {
             context.writer.writeContainerBegin(0, this.valueType.getBondDataType());

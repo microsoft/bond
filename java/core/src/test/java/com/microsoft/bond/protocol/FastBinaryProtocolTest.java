@@ -890,20 +890,20 @@ public class FastBinaryProtocolTest {
                 (byte) 0xBA, (byte) 0xAB,
                 (byte) BondDataType.BT_STOP.value,
 
-                // 10000 : blob (list<uint8>) = {}
+                // 10000 : blob (list<int8>) = {}
                 (byte) BondDataType.BT_LIST.value,
                 (byte) 10000, (byte) (10000 >>> 8),
                 (byte) BondDataType.BT_UINT8.value,
                 (byte) 0,
 
-                // 10001 : blob (list<uint8>) = {0x01}
+                // 10001 : blob (list<int8>) = {0x01}
                 (byte) BondDataType.BT_LIST.value,
                 (byte) 10001, (byte) (10001 >>> 8),
                 (byte) BondDataType.BT_UINT8.value,
                 (byte) 1,
                 (byte) 0x01,
 
-                // 10002 : blob (list<uint8>) = {0x02, 0x03}
+                // 10002 : blob (list<int8>) = {0x02, 0x03}
                 (byte) BondDataType.BT_LIST.value,
                 (byte) 10002, (byte) (10002 >>> 8),
                 (byte) BondDataType.BT_UINT8.value,

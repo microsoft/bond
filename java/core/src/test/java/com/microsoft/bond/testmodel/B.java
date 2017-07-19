@@ -276,6 +276,19 @@ public class B<T> extends A<String, T> implements BondSerializable {
             value.lt4 = this.lt4.initialize();
             value.lt5 = this.lt5.initialize();
         }
+
+        @Override
+        protected void cloneStructFields(B<T> fromValue, B<T> toValue) {
+            toValue.t = this.t.clone(fromValue.t);
+            toValue.at = this.at.clone(fromValue.at);
+            toValue.nbt = this.nbt.clone(fromValue.nbt);
+            toValue.net = this.net.clone(fromValue.net);
+            toValue.lt1 = this.lt1.clone(fromValue.lt1);
+            toValue.lt2 = this.lt2.clone(fromValue.lt2);
+            toValue.lt3 = this.lt3.clone(fromValue.lt3);
+            toValue.lt4 = this.lt4.clone(fromValue.lt4);
+            toValue.lt5 = this.lt5.clone(fromValue.lt5);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////

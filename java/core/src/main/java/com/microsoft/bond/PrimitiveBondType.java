@@ -36,6 +36,11 @@ public abstract class PrimitiveBondType<TPrimitive> extends BondType<TPrimitive>
     }
 
     @Override
+    protected final TPrimitive cloneValue(TPrimitive value) {
+        return value;
+    }
+
+    @Override
     public final int hashCode() {
         // since the class is a singleton, delegate to the identity of the implementation class
         return this.getClass().hashCode();

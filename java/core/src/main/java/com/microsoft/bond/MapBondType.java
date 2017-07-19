@@ -94,6 +94,15 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
         return this.newInstance();
     }
 
+    @Override
+    protected final Map<TKey, TValue> cloneValue(Map<TKey, TValue> value) {
+        Map<TKey, TValue> clonedValue = this.newDefaultValue();
+        for (Map.Entry<TKey, TValue> entry : value.entrySet()) {
+            clonedValue.put(this.keyType.cloneValue(entry.getKey()), this.valueType.cloneValue(entry.getValue()));
+        }
+        return clonedValue;
+    }
+
     /**
      * Instantiates a new instance of this map type.
      *
