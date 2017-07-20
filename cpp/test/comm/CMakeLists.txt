@@ -28,18 +28,36 @@ function (add_unit_test)
     cxx_target_compile_options (AppleClang ${name} PRIVATE -DBOOST_ASIO_HAS_STD_CHRONO)
 endfunction()
 
-
 # Build common code into its own library.
-add_library (comm_test_common EXCLUDE_FROM_ALL "main.cpp" "idl.cpp")
+add_bond_codegen (
+    TARGET comm_test_codegen
+    COMM
+    comm_test_common.bond
+    generic.bond)
+
+add_library (comm_test_common EXCLUDE_FROM_ALL
+    STATIC
+    "main.cpp"
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/comm_test_common_apply.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/comm_test_common_comm.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/comm_test_common_types.cpp
+    # There's nothing in generic_apply.cpp to build, so we omit it.
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/generic_comm.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/generic_types.cpp)
 add_target_to_folder (comm_test_common)
 add_dependencies(comm_test_common comm_test_codegen)
 target_include_directories (comm_test_common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
-target_link_libraries (comm_test_common PRIVATE
+target_compile_definitions (comm_test_common PUBLIC
+        -DBOND_COMPACT_BINARY_PROTOCOL
+        -DBOND_SIMPLE_BINARY_PROTOCOL
+        -DBOND_FAST_BINARY_PROTOCOL)
+target_link_libraries (comm_test_common
+    PUBLIC
+    bond
+    PRIVATE
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-
-add_bond_codegen (TARGET comm_test_codegen comm_test_common.bond COMM)
 
 add_unit_test (async.cpp)
 add_unit_test (basic.cpp)
@@ -47,8 +65,8 @@ add_unit_test (core.cpp)
 add_unit_test (error.cpp)
 add_unit_test (event.cpp event.bond)
 add_unit_test (forward.cpp)
-add_unit_test (generic_service.cpp generic.bond)
-add_unit_test (generic_type.cpp generic.bond)
+add_unit_test (generic_service.cpp)
+add_unit_test (generic_type.cpp)
 add_unit_test (jumbo.cpp)
 add_unit_test (layers.cpp)
 add_unit_test (protocol.cpp)
