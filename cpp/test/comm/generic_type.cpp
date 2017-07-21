@@ -5,6 +5,7 @@
     #pragma warning(disable : 4505) // disable "unreferenced local function has been removed" warning
 #endif
 
+#include <generic_apply.h>
 #include <generic_reflection.h>
 #include <generic_comm.h>
 

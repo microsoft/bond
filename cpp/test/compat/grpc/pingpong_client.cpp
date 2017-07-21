@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 // Include auto-generated files
+#include "pingpong_apply.h"
 #include "pingpong_grpc.h"
 #include "pingpong_reflection.h"
 #include "pingpong_types.h"

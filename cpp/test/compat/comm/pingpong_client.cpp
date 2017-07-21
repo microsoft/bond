@@ -11,6 +11,7 @@
 #include <bond/comm/transport/epoxy.h>
 
 // Include auto-generated files
+#include "pingpong_apply.h"
 #include "pingpong_reflection.h"
 #include "pingpong_comm.h"
 
