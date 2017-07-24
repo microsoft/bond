@@ -81,7 +81,7 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
 
     @Override
     protected final Bonded<TStruct> newDefaultValue() {
-        // since Bonded is immutable, the default value can be shared
+        // since Bonded has to API to expose the mutable struct inside it, the default value can be shared
         return this.defaultValue;
     }
 
