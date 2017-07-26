@@ -341,7 +341,7 @@ public class B<T> extends A<String, T> implements BondSerializable {
     }
 
     @Override
-    public StructBondType<? extends BondSerializable> getBondType() {
+    public StructBondType<? extends B<T>> getBondType() {
         return this.__genericType;
     }
 }

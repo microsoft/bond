@@ -224,7 +224,7 @@ public class D extends C implements BondSerializable {
     }
 
     @Override
-    public StructBondType<? extends BondSerializable> getBondType() {
+    public StructBondType<? extends D> getBondType() {
         return BOND_TYPE;
     }
 }

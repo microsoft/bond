@@ -236,7 +236,7 @@ public class E<U> extends D implements BondSerializable {
     }
 
     @Override
-    public StructBondType<? extends BondSerializable> getBondType() {
+    public StructBondType<? extends E> getBondType() {
         return this.__genericType;
     }
 }
