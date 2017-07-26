@@ -122,60 +122,60 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
                 switch (context.readFieldResult.id) {
                     case 0:
                         value._bool = this._bool.deserialize(context, __has__bool);
-                            __has__bool = true;
-                            break;
+                        __has__bool = true;
+                        break;
                     case 2:
                         value._str = this._str.deserialize(context, __has__str);
-                            __has__str = true;
-                            break;
+                        __has__str = true;
+                        break;
                     case 3:
                         value._wstr = this._wstr.deserialize(context, __has__wstr);
-                            __has__wstr = true;
-                            break;
+                        __has__wstr = true;
+                        break;
                     case 10:
                         value._uint64 = this._uint64.deserialize(context, __has__uint64);
-                            __has__uint64 = true;
-                            break;
+                        __has__uint64 = true;
+                        break;
                     case 11:
                         value._uint16 = this._uint16.deserialize(context, __has__uint16);
-                            __has__uint16 = true;
-                            break;
+                        __has__uint16 = true;
+                        break;
                     case 12:
                         value._uint32 = this._uint32.deserialize(context, __has__uint32);
-                            __has__uint32 = true;
-                            break;
+                        __has__uint32 = true;
+                        break;
                     case 13:
                         value._uint8 = this._uint8.deserialize(context, __has__uint8);
-                            __has__uint8 = true;
-                            break;
+                        __has__uint8 = true;
+                        break;
                     case 14:
                         value._int8 = this._int8.deserialize(context, __has__int8);
-                            __has__int8 = true;
-                            break;
+                        __has__int8 = true;
+                        break;
                     case 15:
                         value._int16 = this._int16.deserialize(context, __has__int16);
-                            __has__int16 = true;
-                            break;
+                        __has__int16 = true;
+                        break;
                     case 16:
                         value._int32 = this._int32.deserialize(context, __has__int32);
-                            __has__int32 = true;
-                            break;
+                        __has__int32 = true;
+                        break;
                     case 17:
                         value._int64 = this._int64.deserialize(context, __has__int64);
-                            __has__int64 = true;
-                            break;
+                        __has__int64 = true;
+                        break;
                     case 18:
                         value._double = this._double.deserialize(context, __has__double);
-                            __has__double = true;
-                            break;
+                        __has__double = true;
+                        break;
                     case 20:
                         value._float = this._float.deserialize(context, __has__float);
-                            __has__float = true;
-                            break;
+                        __has__float = true;
+                        break;
                     case 21:
                         value._blob = this._blob.deserialize(context, __has__blob);
-                            __has__blob = true;
-                            break;
+                        __has__blob = true;
+                        break;
                 }
             }
             this._bool.verifyDeserialized(__has__bool);
@@ -210,6 +210,24 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
             value._double = this._double.initialize();
             value._float = this._float.initialize();
             value._blob = this._blob.initialize();
+        }
+        
+        @Override
+        protected final void cloneStructFields(BasicTypes fromValue, BasicTypes toValue) {
+            toValue._bool = this._bool.clone(fromValue._bool);
+            toValue._str = this._str.clone(fromValue._str);
+            toValue._wstr = this._wstr.clone(fromValue._wstr);
+            toValue._uint64 = this._uint64.clone(fromValue._uint64);
+            toValue._uint16 = this._uint16.clone(fromValue._uint16);
+            toValue._uint32 = this._uint32.clone(fromValue._uint32);
+            toValue._uint8 = this._uint8.clone(fromValue._uint8);
+            toValue._int8 = this._int8.clone(fromValue._int8);
+            toValue._int16 = this._int16.clone(fromValue._int16);
+            toValue._int32 = this._int32.clone(fromValue._int32);
+            toValue._int64 = this._int64.clone(fromValue._int64);
+            toValue._double = this._double.clone(fromValue._double);
+            toValue._float = this._float.clone(fromValue._float);
+            toValue._blob = this._blob.clone(fromValue._blob);
         }
     }
 
@@ -251,7 +269,6 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
     public float _float;
 
     public byte[] _blob;
-
     
     public BasicTypes() {
         super();
@@ -260,7 +277,7 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
 
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends com.microsoft.bond.BondSerializable> getBondType() {
+    public com.microsoft.bond.StructBondType<? extends BasicTypes> getBondType() {
         return BOND_TYPE;
     }
 }

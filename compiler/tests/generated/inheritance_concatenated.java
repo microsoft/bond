@@ -57,8 +57,8 @@ public class Base implements com.microsoft.bond.BondSerializable {
                 switch (context.readFieldResult.id) {
                     case 0:
                         value.x = this.x.deserialize(context, __has_x);
-                            __has_x = true;
-                            break;
+                        __has_x = true;
+                        break;
                 }
             }
             this.x.verifyDeserialized(__has_x);
@@ -67,6 +67,11 @@ public class Base implements com.microsoft.bond.BondSerializable {
         @Override
         protected final void initializeStructFields(Base value) {
             value.x = this.x.initialize();
+        }
+        
+        @Override
+        protected final void cloneStructFields(Base fromValue, Base toValue) {
+            toValue.x = this.x.clone(fromValue.x);
         }
     }
 
@@ -82,7 +87,6 @@ public class Base implements com.microsoft.bond.BondSerializable {
     
 
     public int x;
-
     
     public Base() {
         super();
@@ -91,7 +95,7 @@ public class Base implements com.microsoft.bond.BondSerializable {
 
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends com.microsoft.bond.BondSerializable> getBondType() {
+    public com.microsoft.bond.StructBondType<? extends Base> getBondType() {
         return BOND_TYPE;
     }
 }
@@ -154,8 +158,8 @@ public class Foo extends tests.Base {
                 switch (context.readFieldResult.id) {
                     case 0:
                         value.x = this.x.deserialize(context, __has_x);
-                            __has_x = true;
-                            break;
+                        __has_x = true;
+                        break;
                 }
             }
             this.x.verifyDeserialized(__has_x);
@@ -164,6 +168,11 @@ public class Foo extends tests.Base {
         @Override
         protected final void initializeStructFields(Foo value) {
             value.x = this.x.initialize();
+        }
+        
+        @Override
+        protected final void cloneStructFields(Foo fromValue, Foo toValue) {
+            toValue.x = this.x.clone(fromValue.x);
         }
     }
 
@@ -179,7 +188,6 @@ public class Foo extends tests.Base {
     
 
     public int x;
-
     
     public Foo() {
         super();
@@ -188,7 +196,7 @@ public class Foo extends tests.Base {
 
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends com.microsoft.bond.BondSerializable> getBondType() {
+    public com.microsoft.bond.StructBondType<? extends Foo> getBondType() {
         return BOND_TYPE;
     }
 }

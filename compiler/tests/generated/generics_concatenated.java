@@ -78,12 +78,12 @@ public class Foo<T1, T2> implements com.microsoft.bond.BondSerializable {
                 switch (context.readFieldResult.id) {
                     case 0:
                         value.t2 = this.t2.deserialize(context, __has_t2);
-                            __has_t2 = true;
-                            break;
+                        __has_t2 = true;
+                        break;
                     case 1:
                         value.n = this.n.deserialize(context, __has_n);
-                            __has_n = true;
-                            break;
+                        __has_n = true;
+                        break;
                 }
             }
             this.t2.verifyDeserialized(__has_t2);
@@ -94,6 +94,12 @@ public class Foo<T1, T2> implements com.microsoft.bond.BondSerializable {
         protected final void initializeStructFields(Foo<T1, T2> value) {
             value.t2 = this.t2.initialize();
             value.n = this.n.initialize();
+        }
+        
+        @Override
+        protected final void cloneStructFields(Foo<T1, T2> fromValue, Foo<T1, T2> toValue) {
+            toValue.t2 = this.t2.clone(fromValue.t2);
+            toValue.n = this.n.clone(fromValue.n);
         }
     }
 
@@ -119,7 +125,6 @@ public class Foo<T1, T2> implements com.microsoft.bond.BondSerializable {
     public T2 t2;
 
     public tests.Foo<T1, java.lang.Boolean> n;
-
     
 public Foo(com.microsoft.bond.StructBondType<Foo<T1, T2>> genericType) {
         super();
@@ -129,7 +134,7 @@ public Foo(com.microsoft.bond.StructBondType<Foo<T1, T2>> genericType) {
 
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends com.microsoft.bond.BondSerializable> getBondType() {
+    public com.microsoft.bond.StructBondType<? extends Foo<T1, T2>> getBondType() {
         return this.__genericType;
     }
 }

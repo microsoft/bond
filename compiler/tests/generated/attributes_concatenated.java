@@ -114,8 +114,8 @@ public class Foo implements com.microsoft.bond.BondSerializable {
                 switch (context.readFieldResult.id) {
                     case 0:
                         value.f = this.f.deserialize(context, __has_f);
-                            __has_f = true;
-                            break;
+                        __has_f = true;
+                        break;
                 }
             }
             this.f.verifyDeserialized(__has_f);
@@ -124,6 +124,11 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         @Override
         protected final void initializeStructFields(Foo value) {
             value.f = this.f.initialize();
+        }
+        
+        @Override
+        protected final void cloneStructFields(Foo fromValue, Foo toValue) {
+            toValue.f = this.f.clone(fromValue.f);
         }
     }
 
@@ -139,7 +144,6 @@ public class Foo implements com.microsoft.bond.BondSerializable {
     
 
     public java.lang.String f;
-
     
     public Foo() {
         super();
@@ -148,7 +152,7 @@ public class Foo implements com.microsoft.bond.BondSerializable {
 
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends com.microsoft.bond.BondSerializable> getBondType() {
+    public com.microsoft.bond.StructBondType<? extends Foo> getBondType() {
         return BOND_TYPE;
     }
 }
