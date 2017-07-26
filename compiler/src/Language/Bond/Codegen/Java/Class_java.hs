@@ -13,6 +13,7 @@ import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
+import Language.Bond.Syntax.Util
 import Language.Bond.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
@@ -119,8 +120,6 @@ ensureNotNullArgument argName = [lt|com.microsoft.bond.helpers.ArgumentHelper.en
 -- along with the leading comma; this value is used in initialization of struct field descriptors where
 -- the constructors are overloaded to take explicit default value or take none (i.e. use the implicit default)
 fieldDefaultValueInitParamExpr :: MappingContext -> Type -> Maybe Default -> Text
-fieldDefaultValueInitParamExpr _ _ Nothing = mempty
-fieldDefaultValueInitParamExpr _ (BT_Maybe _) _ = mempty
 fieldDefaultValueInitParamExpr _ _ (Just (DefaultBool val)) = if val
     then [lt|, true|]
     else [lt|, false|]
@@ -139,7 +138,7 @@ fieldDefaultValueInitParamExpr _ BT_Double (Just (DefaultInteger val)) = [lt|, #
 fieldDefaultValueInitParamExpr _ BT_String (Just (DefaultString val)) = [lt|, "#{val}"|]
 fieldDefaultValueInitParamExpr _ BT_WString (Just (DefaultString val)) = [lt|, "#{val}"|]
 fieldDefaultValueInitParamExpr java (BT_UserDefined e@Enum {..} _) (Just (DefaultEnum val)) = [lt|, #{qualifiedDeclaredTypeName java e}.#{val}|]
-fieldDefaultValueInitParamExpr _ t d = error $ "invalid declaration type for fieldDefaultValueInitParamExpr: " ++ show t ++ " with default " ++ show d
+fieldDefaultValueInitParamExpr _ _ _ = mempty
 
 
 -- given a struct name and type parameters, and type, returns a type descriptor expression for the field, used in initialization of struct field descriptors
@@ -176,9 +175,10 @@ structFieldDescriptorInitTypeExpr java (BT_List t) = [lt|listOf(#{structFieldDes
 structFieldDescriptorInitTypeExpr java (BT_Set t) = [lt|setOf(#{structFieldDescriptorInitTypeExpr java t})|]
 structFieldDescriptorInitTypeExpr java (BT_Map k v) = [lt|mapOf(#{structFieldDescriptorInitTypeExpr java k}, #{structFieldDescriptorInitTypeExpr java v})|]
 structFieldDescriptorInitTypeExpr _ (BT_TypeParam param) = [lt|#{paramName param}|]
-structFieldDescriptorInitTypeExpr java (BT_UserDefined e@Enum {..} _) = [lt|#{qualifiedDeclaredTypeName java e}.BOND_TYPE|]
-structFieldDescriptorInitTypeExpr java t@(BT_UserDefined s@Struct {..} params) = [lt|#{structFieldDescriptorInitStructExpr java t (qualifiedDeclaredTypeName java s) params}|]
-structFieldDescriptorInitTypeExpr java t@(BT_UserDefined s@Forward {..} params) = [lt|#{structFieldDescriptorInitStructExpr java t (qualifiedDeclaredTypeName java s) params}|]
+structFieldDescriptorInitTypeExpr java (BT_UserDefined e@Enum {} _) = [lt|#{qualifiedDeclaredTypeName java e}.BOND_TYPE|]
+structFieldDescriptorInitTypeExpr java t@(BT_UserDefined s@Struct {} params) = [lt|#{structFieldDescriptorInitStructExpr java t (qualifiedDeclaredTypeName java s) params}|]
+structFieldDescriptorInitTypeExpr java t@(BT_UserDefined s@Forward {} params) = [lt|#{structFieldDescriptorInitStructExpr java t (qualifiedDeclaredTypeName java s) params}|]
+structFieldDescriptorInitTypeExpr java t@(BT_UserDefined a@Alias {} params) = structFieldDescriptorInitTypeExpr java (resolveAlias a params)
 structFieldDescriptorInitTypeExpr _ t = error $ "invalid declaration type for structFieldDescriptorInitTypeExpr: " ++ show t
 
 
@@ -292,7 +292,7 @@ makeStructBondTypeMember_deserializeStructFields declName declParams structField
             where
                 methodParamDecl = [lt|com.microsoft.bond.BondType.TaggedDeserializationContext context, #{typeNameWithParams declName declParams} value|]
                 declareLocalVariable Field {..} = [lt|boolean __has_#{fieldName} = false;|]
-                deserializeField Field {..} = [lt|#{switchCasePart}#{newLine 6}#{deserializePart}#{newLine 7}#{setBooleanPart}#{newLine 7}break;|]
+                deserializeField Field {..} = [lt|#{switchCasePart}#{newLine 6}#{deserializePart}#{newLine 6}#{setBooleanPart}#{newLine 6}break;|]
                   where
                     switchCasePart = [lt|case #{fieldOrdinal}:|]
                     deserializePart = [lt|value.#{fieldName} = this.#{fieldName}.deserialize(context, __has_#{fieldName});|]
@@ -425,11 +425,10 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
     #{bondTypeDescriptorInstanceVariableDecl}
 
     #{doubleLineSep 1 publicFieldDecl structFields}
-
     #{publicConstructorDecl}
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends com.microsoft.bond.BondSerializable> getBondType() {
+    public com.microsoft.bond.StructBondType<? extends #{typeNameWithParams declName declParams}> getBondType() {
         return #{getBondTypeReturnValue};
     }
 }|]
