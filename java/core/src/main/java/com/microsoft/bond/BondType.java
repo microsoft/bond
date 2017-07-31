@@ -6,6 +6,7 @@ package com.microsoft.bond;
 import com.microsoft.bond.helpers.ArgumentHelper;
 import com.microsoft.bond.protocol.ProtocolWriter;
 import com.microsoft.bond.protocol.TaggedProtocolReader;
+import com.microsoft.bond.protocol.UntaggedProtocolReader;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -197,6 +198,18 @@ public abstract class BondType<T> {
      * @throws IOException if an I/O error occurred
      */
     protected abstract T deserializeValue(TaggedDeserializationContext context) throws IOException;
+
+    /**
+     * Deserializes a value of this type from an untagged protocol reader.
+     * This method is intended for objects and is not suitable for Java primitive (non-object) types
+     * since its return value is an object and would to be unboxed. To deserialize primitive values use
+     * the static helper method defined in each singleton class for a primitive Java type.
+     *
+     * @param context contains the runtime context of the deserialization
+     * @return the deserialized value (boxed if necessary)
+     * @throws IOException if an I/O error occurred
+     */
+    protected abstract T deserializeValue(UntaggedDeserializationContext context) throws IOException;
 
     /**
      * Serializes a struct field of this type into a protocol writer, including field metadata.
@@ -457,6 +470,17 @@ public abstract class BondType<T> {
                 new TaggedProtocolReader.ReadContainerResult();
 
         public TaggedDeserializationContext(TaggedProtocolReader reader) {
+            this.reader = reader;
+        }
+    }
+
+    /**
+     * Contains runtime state of untagged deserialization.
+     */
+    protected static final class UntaggedDeserializationContext {
+        public final UntaggedProtocolReader reader;
+
+        public UntaggedDeserializationContext(UntaggedProtocolReader reader) {
             this.reader = reader;
         }
     }

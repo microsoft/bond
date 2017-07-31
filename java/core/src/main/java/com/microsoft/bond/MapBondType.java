@@ -112,6 +112,12 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
         return new HashMap<TKey, TValue>();
     }
 
+    private static <TKey, TValue> Map<TKey, TValue> newDefaultValue(int initialCapacity) {
+        // custom initial capacity to match element count when deserializing
+        return new HashMap<TKey, TValue>(initialCapacity);
+    }
+
+
     @Override
     protected final void serializeValue(SerializationContext context, Map<TKey, TValue> value) throws IOException {
         this.verifyNonNullableValueIsNotSetToNull(value);
@@ -177,6 +183,28 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
             value.put(mapEntryKey, mapEntryValue);
         }
         context.reader.readContainerEnd();
+        return value;
+    }
+
+    @Override
+    protected final Map<TKey, TValue> deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        final int count = context.reader.readContainerBegin();
+        Map<TKey, TValue> value = newDefaultValue(count);
+        for (int i = 0; i < count; ++i) {
+            TKey mapEntryKey = null;
+            try {
+                mapEntryKey = this.keyType.deserializeValue(context);
+            } catch (InvalidBondDataException e) {
+                Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, null, e, null);
+            }
+            TValue mapEntryValue = null;
+            try {
+                mapEntryValue = this.valueType.deserializeValue(context);
+            } catch (InvalidBondDataException e) {
+                Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, mapEntryKey, e, null);
+            }
+            value.put(mapEntryKey, mapEntryValue);
+        }
         return value;
     }
 

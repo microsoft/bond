@@ -75,6 +75,11 @@ public final class UInt32BondType extends PrimitiveBondType<Integer> {
     }
 
     @Override
+    protected final Integer deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        return deserializePrimitiveValue(context);
+    }
+
+    @Override
     protected final void serializeField(
             SerializationContext context,
             Integer value,
@@ -111,6 +116,18 @@ public final class UInt32BondType extends PrimitiveBondType<Integer> {
      * @throws IOException if an I/O error occurred
      */
     protected static int deserializePrimitiveValue(TaggedDeserializationContext context) throws IOException {
+        return context.reader.readUInt32();
+    }
+
+    /**
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext)} method
+     * for primitive values.
+     *
+     * @param context contains the runtime context of the deserialization
+     * @return the deserialized value
+     * @throws IOException if an I/O error occurred
+     */
+    protected static int deserializePrimitiveValue(UntaggedDeserializationContext context) throws IOException {
         return context.reader.readUInt32();
     }
 

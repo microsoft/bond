@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.microsoft.bond.Something.wrap;
+
 /**
  * Partially implements the {@link BondType} contract for generated Bond struct data types.
  * Leaves the rest of implementation details to generated subclasses specific to the struct type,
@@ -173,6 +175,16 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      */
     protected abstract void deserializeStructFields(
             TaggedDeserializationContext context, TStruct value) throws IOException;
+
+    /**
+     * Used by generated subclasses to deserialize declared fields of this struct, excluding inherited fields.
+     *
+     * @param context contains the runtime context of the deserialization
+     * @param value   the value to deserialize into
+     * @throws IOException if an I/O error occurred
+     */
+    protected abstract void deserializeStructFields(
+        UntaggedDeserializationContext context, TStruct value) throws IOException;
 
     /**
      * Used by generated subclasses to initialize declared fields of this struct, excluding inherited fields.
@@ -346,6 +358,16 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         return value;
     }
 
+    @Override
+    protected final TStruct deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        TStruct value = this.newDefaultValue();
+        if (this.baseStructType != null) {
+            this.baseStructType.deserializeValueAsBase(context, value);
+        }
+        this.deserializeStructFields(context, value);
+        return value;
+    }
+
     private void deserializeValueAsBase(
             TaggedDeserializationContext context, TStruct value) throws IOException {
         if (this.baseStructType != null) {
@@ -354,6 +376,14 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         context.reader.readBaseBegin();
         this.deserializeStructFields(context, value);
         context.reader.readBaseEnd();
+    }
+
+    private void deserializeValueAsBase(
+        UntaggedDeserializationContext context, TStruct value) throws IOException {
+        if (this.baseStructType != null) {
+            this.baseStructType.deserializeValueAsBase(context, value);
+        }
+        this.deserializeStructFields(context, value);
     }
 
     @Override
@@ -443,6 +473,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      */
     TStruct deserialize(TaggedProtocolReader reader) throws IOException {
         TaggedDeserializationContext context = new TaggedDeserializationContext(reader);
+        return this.deserializeValue(context);
+    }
+
+    /**
+     * Deserializes an object from the given untagged protocol reader.
+     *
+     * @param reader the protocol reader to read from
+     * @return deserialized object
+     * @throws IOException if an I/O error occurred
+     */
+    TStruct deserialize(UntaggedProtocolReader reader) throws IOException {
+        UntaggedDeserializationContext context = new UntaggedDeserializationContext(reader);
         return this.deserializeValue(context);
     }
 
@@ -797,6 +839,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeField(context, this);
         }
+
+        public final TField deserialize(UntaggedDeserializationContext context) throws IOException {
+            return this.fieldType.deserializeValue(context);
+        }
     }
 
     /**
@@ -842,6 +888,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeSomethingField(context, this);
+        }
+
+        public final SomethingObject<TField> deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(this.fieldType.deserializeValue(context));
         }
     }
 
@@ -900,6 +950,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt8BondType.deserializePrimitiveField(context, this);
         }
+
+        public final byte deserialize(UntaggedDeserializationContext context) throws IOException {
+            return UInt8BondType.deserializePrimitiveValue(context);
+        }
     }
 
     /**
@@ -943,6 +997,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt8BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingByte deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(UInt8BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1001,6 +1059,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt16BondType.deserializePrimitiveField(context, this);
         }
+
+        public final short deserialize(UntaggedDeserializationContext context) throws IOException {
+            return UInt16BondType.deserializePrimitiveValue(context);
+        }
     }
 
     /**
@@ -1044,6 +1106,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt16BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingShort deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(UInt16BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1102,6 +1168,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt32BondType.deserializePrimitiveField(context, this);
         }
+
+        public final int deserialize(UntaggedDeserializationContext context) throws IOException {
+            return UInt32BondType.deserializePrimitiveValue(context);
+        }
     }
 
     /**
@@ -1145,6 +1215,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt32BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingInteger deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(UInt32BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1203,6 +1277,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt64BondType.deserializePrimitiveField(context, this);
         }
+
+        public final long deserialize(UntaggedDeserializationContext context) throws IOException {
+            return UInt64BondType.deserializePrimitiveValue(context);
+        }
     }
 
     /**
@@ -1246,6 +1324,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt64BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingLong deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(UInt64BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1304,6 +1386,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int8BondType.deserializePrimitiveField(context, this);
         }
+
+        public final byte deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Int8BondType.deserializePrimitiveValue(context);
+        }
     }
 
     /**
@@ -1347,6 +1433,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int8BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingByte deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(Int8BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1405,6 +1495,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int16BondType.deserializePrimitiveField(context, this);
         }
+
+        public final short deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Int16BondType.deserializePrimitiveValue(context);
+        }
     }
 
     /**
@@ -1448,6 +1542,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int16BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingShort deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(Int16BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1506,6 +1604,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int32BondType.deserializePrimitiveField(context, this);
         }
+
+        public final int deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Int32BondType.deserializePrimitiveValue(context);
+        }
     }
 
     /**
@@ -1549,6 +1651,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int32BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingInteger deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(Int32BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1607,6 +1713,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int64BondType.deserializePrimitiveField(context, this);
         }
+
+        public final long deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Int64BondType.deserializePrimitiveValue(context);
+        }
     }
 
     /**
@@ -1650,6 +1760,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int64BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingLong deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(Int64BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1708,6 +1822,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return BoolBondType.deserializePrimitiveField(context, this);
         }
+
+        public final boolean deserialize(UntaggedDeserializationContext context) throws IOException {
+            return BoolBondType.deserializePrimitiveValue(context);
+        }
     }
 
     /**
@@ -1751,6 +1869,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return BoolBondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingBoolean deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(BoolBondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1809,6 +1931,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return FloatBondType.deserializePrimitiveField(context, this);
         }
+
+        public final float deserialize(UntaggedDeserializationContext context) throws IOException {
+            return FloatBondType.deserializePrimitiveValue(context);
+        }
     }
 
     /**
@@ -1848,10 +1974,8 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             FloatBondType.serializePrimitiveSomethingField(context, value, this);
         }
 
-        public final SomethingFloat deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
-            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
-            return FloatBondType.deserializePrimitiveSomethingField(context, this);
+        public final SomethingFloat deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(FloatBondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1910,6 +2034,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return DoubleBondType.deserializePrimitiveField(context, this);
         }
+
+        public final double deserialize(UntaggedDeserializationContext context) throws IOException {
+            return DoubleBondType.deserializePrimitiveValue(context);
+        }
     }
 
     /**
@@ -1953,6 +2081,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return DoubleBondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingDouble deserialize(UntaggedDeserializationContext context) throws IOException {
+            return wrap(DoubleBondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -2011,6 +2143,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeField(context, this);
         }
+
+        public final String deserialize(UntaggedDeserializationContext context) throws IOException {
+            return this.fieldType.deserializeValue(context);
+        }
     }
 
     /**
@@ -2054,6 +2190,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeSomethingField(context, this);
+        }
+
+        public final SomethingObject<String> deserialize(UntaggedDeserializationContext context) throws IOException {
+            return SomethingObject.wrap(this.fieldType.deserializeValue(context));
         }
     }
 
@@ -2112,6 +2252,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeField(context, this);
         }
+
+        public final String deserialize(UntaggedDeserializationContext context) throws IOException {
+            return this.fieldType.deserializeValue(context);
+        }
     }
 
     /**
@@ -2156,6 +2300,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeSomethingField(context, this);
+        }
+
+        public final SomethingObject<String> deserialize(UntaggedDeserializationContext context) throws IOException {
+            return SomethingObject.wrap(this.fieldType.deserializeValue(context));
         }
     }
 
@@ -2215,6 +2363,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeField(context, this);
         }
+
+        public final TEnum deserialize(UntaggedDeserializationContext context) throws IOException {
+            return this.fieldType.deserializeValue(context);
+        }
     }
 
     /**
@@ -2260,6 +2412,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
                 TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeSomethingField(context, this);
+        }
+
+        public final SomethingObject<TEnum> deserialize(UntaggedDeserializationContext context) throws IOException {
+            return SomethingObject.wrap(this.fieldType.deserializeValue(context));
         }
     }
 }

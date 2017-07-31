@@ -285,9 +285,9 @@ makeStructBondTypeMember_serializeStructFields declName declParams structFields 
 
 
 -- given struct class name, generic type parameters, and struct fields, builds text for implementation of
--- the StructBondTypeImpl.deserializeStructFields method
-makeStructBondTypeMember_deserializeStructFields :: String -> [TypeParam] -> [Field] -> Text
-makeStructBondTypeMember_deserializeStructFields declName declParams structFields = [lt|
+-- the StructBondTypeImpl.deserializeStructFields method for TaggedProtocolReaders
+makeStructBondTypeMember_deserializeStructFields_tagged :: String -> [TypeParam] -> [Field] -> Text
+makeStructBondTypeMember_deserializeStructFields_tagged declName declParams structFields = [lt|
         @Override
         protected final void deserializeStructFields(#{methodParamDecl}) throws java.io.IOException {#{newlineBeginSep 3 declareLocalVariable structFields}
             while (this.readField(context)) {
@@ -308,6 +308,18 @@ makeStructBondTypeMember_deserializeStructFields declName declParams structField
                     setBooleanPart = [lt|__has_#{fieldName} = true;|]
 
                 verifyField Field {..} = [lt|this.#{fieldName}.verifyDeserialized(__has_#{fieldName});|]
+
+
+-- given struct class name, generic type parameters, and struct fields, builds text for implementation of
+-- the StructBondTypeImpl.deserializeStructFields method for UntaggedProtocolReaders
+makeStructBondTypeMember_deserializeStructFields_untagged :: String -> [TypeParam] -> [Field] -> Text
+makeStructBondTypeMember_deserializeStructFields_untagged declName declParams structFields = [lt|
+        @Override
+        protected final void deserializeStructFields(#{methodParamDecl}) throws java.io.IOException {#{newlineBeginSep 3 serializeField structFields}
+        }|]
+            where
+                methodParamDecl = [lt|com.microsoft.bond.BondType.UntaggedDeserializationContext context, #{typeNameWithParams declName declParams} value|]
+                serializeField Field {..} = [lt|this.#{fieldName}.deserialize(context);|]
 
 
 -- given class name, generic type parameters, and struct fields, builds text for implementation of
@@ -417,7 +429,8 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
             return new #{typeNameWithParams declName declParams}(#{ifThenElse (null declParams) mempty "this"});
         }
         #{makeStructBondTypeMember_serializeStructFields declName declParams structFields}
-        #{makeStructBondTypeMember_deserializeStructFields declName declParams structFields}
+        #{makeStructBondTypeMember_deserializeStructFields_tagged declName declParams structFields}
+        #{makeStructBondTypeMember_deserializeStructFields_untagged declName declParams structFields}
         #{makeStructBondTypeMember_initializeStructFields declName declParams structFields}
         #{makeStructBondTypeMember_cloneStructFields declName declParams structFields}
     }

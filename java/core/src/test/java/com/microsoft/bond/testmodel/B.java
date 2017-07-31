@@ -268,6 +268,10 @@ public class B<T> extends A<String, T> implements BondSerializable {
         }
 
         @Override
+        protected final void deserializeStructFields(UntaggedDeserializationContext context, B<T> value) throws IOException {
+        }
+
+        @Override
         public final void initializeStructFields(B<T> value) {
             value.t = this.t.initialize();
             value.at = this.at.initialize();

@@ -112,6 +112,14 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     }
 
     @Override
+    protected final Bonded<TStruct> deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        TStruct value = this.valueType.deserializeValue(context);
+
+        // TODO: complete deserialization story for bonded
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     protected final void serializeField(
             SerializationContext context,
             Bonded<TStruct> value,

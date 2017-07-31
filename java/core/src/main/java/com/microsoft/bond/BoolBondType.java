@@ -75,6 +75,11 @@ public final class BoolBondType extends PrimitiveBondType<Boolean> {
     }
 
     @Override
+    protected final Boolean deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        return deserializePrimitiveValue(context);
+    }
+
+    @Override
     protected final void serializeField(
             SerializationContext context,
             Boolean value,
@@ -111,6 +116,18 @@ public final class BoolBondType extends PrimitiveBondType<Boolean> {
      * @throws IOException if an I/O error occurred
      */
     protected static boolean deserializePrimitiveValue(TaggedDeserializationContext context) throws IOException {
+        return context.reader.readBool();
+    }
+
+    /**
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext)} method
+     * for primitive values.
+     *
+     * @param context contains the runtime context of the deserialization
+     * @return the deserialized value
+     * @throws IOException if an I/O error occurred
+     */
+    protected static boolean deserializePrimitiveValue(UntaggedDeserializationContext context) throws IOException {
         return context.reader.readBool();
     }
 
