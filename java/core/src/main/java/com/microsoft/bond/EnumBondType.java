@@ -79,7 +79,8 @@ public abstract class EnumBondType<TEnum extends BondEnum<TEnum>> extends Primit
             StructBondType.StructField<TEnum> field) throws IOException {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
         int intValueToSerialize = value.getValue();
-        if (field.isOptional() && intValueToSerialize == field.getDefaultValue().getValue()) {
+        if (!field.isDefaultNothing() && field.isOptional() &&
+                intValueToSerialize == field.getDefaultValue().getValue()) {
             context.writer.writeFieldOmitted(BondDataType.BT_INT32, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_INT32, field.getId(), field);

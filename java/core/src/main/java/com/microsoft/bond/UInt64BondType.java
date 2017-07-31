@@ -128,7 +128,7 @@ public final class UInt64BondType extends PrimitiveBondType<Long> {
             SerializationContext context,
             long value,
             StructBondType.StructField<Long> field) throws IOException {
-        if (field.isOptional() && (value == field.getDefaultValue())) {
+        if (!field.isDefaultNothing() && field.isOptional() && (value == field.getDefaultValue())) {
             context.writer.writeFieldOmitted(BondDataType.BT_UINT64, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_UINT64, field.getId(), field);

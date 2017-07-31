@@ -130,7 +130,8 @@ public final class FloatBondType extends PrimitiveBondType<Float> {
             SerializationContext context,
             float value,
             StructBondType.StructField<Float> field) throws IOException {
-        if (field.isOptional() && FloatingPointHelper.floatEquals(value, field.getDefaultValue())) {
+        if (!field.isDefaultNothing() && field.isOptional() &&
+                FloatingPointHelper.floatEquals(value, field.getDefaultValue())) {
             context.writer.writeFieldOmitted(BondDataType.BT_FLOAT, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_FLOAT, field.getId(), field);
