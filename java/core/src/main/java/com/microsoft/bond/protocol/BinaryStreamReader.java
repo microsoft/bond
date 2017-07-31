@@ -14,7 +14,7 @@ import java.nio.ByteOrder;
  */
 final class BinaryStreamReader {
 
-    private final InputStream inputStream;
+    final InputStream inputStream;
     private final ByteBuffer endiannessConversionByteBuffer;
 
     BinaryStreamReader(InputStream inputStream) {

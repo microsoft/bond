@@ -98,4 +98,16 @@ final class Cloning {
     static ByteBufferInputStream clone(ByteBufferInputStream stream) {
         return new ByteBufferInputStream(stream.buffer, stream.position, stream.size);
     }
+
+    static InputStream cloneStream(InputStream stream) throws IOException {
+        if (stream instanceof FileInputStream) {
+            return clone((FileInputStream) stream);
+        } else if (stream instanceof ByteBufferInputStream) {
+            return clone((ByteBufferInputStream) stream);
+        } else if (stream instanceof ByteArrayInputStream) {
+            return clone((ByteArrayInputStream) stream);
+        } else {
+            throw new StreamNotCloneableException("Stream is not cloneable: " + stream);
+        }
+    }
 }

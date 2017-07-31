@@ -205,4 +205,12 @@ public interface TaggedProtocolReader {
      * @param type the type
      */
     void skip(BondDataType type) throws IOException;
+
+    /**
+     * Clones this tagged protocol reader.
+     *
+     * @return a clone of this stream
+     * @throws IOException if there was an error cloning this stream
+     */
+    TaggedProtocolReader cloneProtocolReader() throws IOException;
 }

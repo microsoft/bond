@@ -5,91 +5,87 @@ package com.microsoft.bond;
 
 import com.microsoft.bond.helpers.ArgumentHelper;
 import com.microsoft.bond.protocol.ProtocolWriter;
+import com.microsoft.bond.protocol.TaggedProtocolReader;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * A construct representing a Bonded payload of some struct type. If the struct type is known in advance,
- * a Bonded instance may be constrained to that type by specifying the type parameter; otherwise, the
- * type parameter may be left unconstrained (i.e. the constraint is just the {@link BondSerializable}).
+ * A construct representing a Bonded payload of some struct type.
  *
- * @param <T> constraint on the payload type.
+ * @param <T> the struct type of this Bonded instance
  */
 public abstract class Bonded<T extends BondSerializable> {
 
-    private final StructBondType<T> bondType;
-
     /**
-     * Package-private constructor to restrict inheritance to the Bond Core package only.
+     * Creates a new Bonded instance from a protocol reader that is constrained to a given struct type.
      *
-     * @param bondType the type descriptor of the struct type or null if the type is unknown
-     */
-    Bonded(StructBondType<T> bondType) {
-        this.bondType = bondType;
-    }
-
-    /**
-     * Returns the type descriptor of the struct type of this Bonded instance or null if the type if unspecified.
-     *
-     * @return type descriptor or null if unspecified.
-     */
-    public final StructBondType<T> getBondType() {
-        return this.bondType;
-    }
-
-    /**
-     * Creates a new Bonded instance from an input stream that is constrained to a given struct type.
-     *
-     * @param inputStream input stream containing the serialized representation of this Bonded value
-     * @param bondType    the type descriptor of the struct type
-     * @param <T>         the struct type
-     * @return new Bonded instance backed by the stream
+     * @param protocolReader protocol reader containing the serialized representation of this Bonded value
+     * @param bondType       the type descriptor of the struct type
+     * @param <T>            the struct type
+     * @return new Bonded instance backed by the protocol reader
      * @throws IllegalArgumentException if an argument is null
      */
-    public static <T extends BondSerializable> Bonded<T> fromStream(
-            InputStream inputStream, StructBondType<T> bondType) {
-        ArgumentHelper.ensureNotNull(inputStream, "inputStream");
+    public static <T extends BondSerializable> Bonded<T> fromProtocolReader(
+            TaggedProtocolReader protocolReader, StructBondType<T> bondType) {
+        ArgumentHelper.ensureNotNull(protocolReader, "protocolReader");
         ArgumentHelper.ensureNotNull(bondType, "bondType");
-
-        // TODO: return stream-backed implementation with type constraint
-        throw new UnsupportedOperationException();
+        return new TaggedProtocolStreamBonded<T>(protocolReader, bondType);
     }
 
     /**
-     * Creates a new Bonded instance from an input stream that is unconstrained by any struct types.
+     * Creates a new Bonded instance from a protocol reader that is unconstrained by any struct types.
      *
-     * @param inputStream input stream containing the serialized representation of this Bonded value
-     * @return new Bonded instance backed by the stream
+     * @param protocolReader protocol reader containing the serialized representation of this Bonded value
+     * @return new Bonded instance backed by the protocol reader
      * @throws IllegalArgumentException if an argument is null
      */
-    public static Bonded<?> fromStream(InputStream inputStream) {
-        ArgumentHelper.ensureNotNull(inputStream, "inputStream");
-
-        // TODO: return stream-backed implementation without type constraint
-        throw new UnsupportedOperationException();
+    public static Bonded<?> fromProtocolReader(TaggedProtocolReader protocolReader) {
+        ArgumentHelper.ensureNotNull(protocolReader, "protocolReader");
+        return new TaggedProtocolStreamBonded<BondSerializable>(protocolReader, null);
     }
 
     /**
-     * Creates a new Bonded instance from an instance of a struct type.
+     * Creates a new Bonded instance from an instance of a struct type, with the given underlying Bond type.
      *
-     * @param objectInstance
+     * @param objectInstance the object backing this Bonded
      * @param bondType       the type descriptor of the struct type
      * @param <T>            the struct type
      * @return new Bonded instance backed by the object
      * @throws IllegalArgumentException if an argument is null
      */
-    public static <T extends BondSerializable> Bonded<T> fromObject(
-            T objectInstance, StructBondType<T> bondType) {
+    public static <T extends BondSerializable> Bonded<T> fromObject(T objectInstance, StructBondType<T> bondType) {
         ArgumentHelper.ensureNotNull(objectInstance, "objectInstance");
         ArgumentHelper.ensureNotNull(bondType, "bondType");
-
-        // TODO: return object-backed implementation
-        throw new UnsupportedOperationException();
+        return new SpecificTypeObjectBonded<T>(objectInstance, bondType);
     }
 
     /**
-     * Serializes content of the Bonded instance to a protocol writer.
+     * Creates a new Bonded instance from an instance of a struct type, with the underlying Bond type obtained
+     * from the instance by calling the {@link BondSerializable#getBondType()} method.
+     *
+     * @param objectInstance the object backing this Bonded
+     * @param <T>            the struct type
+     * @return new Bonded instance backed by the object
+     * @throws IllegalArgumentException if an argument is null
+     */
+    public static <T extends BondSerializable> Bonded<? extends T> fromObject(T objectInstance) {
+        ArgumentHelper.ensureNotNull(objectInstance, "objectInstance");
+        return new WildcardTypeObjectBonded<T>(objectInstance);
+    }
+
+    /**
+     * Returns the default type descriptor associated with this Bonded instance or null if unspecified.
+     * The type descriptor determines the behavior of this Bonded instance,
+     * such as allowed conversion rules and default serialization/deserialization.
+     *
+     * @return the Bond type descriptor or null if unspecified.
+     */
+    public abstract StructBondType<? extends T> getBondType();
+
+    /**
+     * Serializes content of this Bonded instance to a protocol writer using the default Bond type descriptor.
+     * Throws an exception if there is no default type descriptor associated with this Bonded instance.
      *
      * @param protocolWriter the protocol writer
      * @throws IOException if an I/O error occurred during serialization
@@ -97,14 +93,36 @@ public abstract class Bonded<T extends BondSerializable> {
     public abstract void serialize(ProtocolWriter protocolWriter) throws IOException;
 
     /**
-     * Deserializes content of tbe Bonded instance to an object of the given Bond struct type.
+     * Serializes content of this Bonded instance to a protocol writer using provided Bond type descriptor.
      *
-     * @param toBondType type descriptor for the Bond struct type to deserialize into
-     * @param <U>        the Bond struct type to deserialize into
+     * @param protocolWriter the protocol writer
+     * @param asBondType     type descriptor for the Bond struct type to serialize as
+     * @param <U>            the Bond struct type to serialize as
+     * @throws IOException              if an I/O error occurred during serialization
+     * @throws IllegalArgumentException if an argument is null
+     */
+    public abstract <U extends BondSerializable> void
+    serialize(ProtocolWriter protocolWriter, StructBondType<U> asBondType) throws IOException;
+
+    /**
+     * Deserializes content of tbis Bonded instance as an object of the default Bond struct type.
+     *
      * @return a new instance deserialized from this Bonded
      * @throws IOException if an I/O error occurred during deserialization
      */
-    public abstract <U extends BondSerializable> U deserialize(StructBondType<U> toBondType) throws IOException;
+    public abstract T deserialize() throws IOException;
+
+    /**
+     * Deserializes content of tbis Bonded instance as an object of provided Bond struct type.
+     *
+     * @param asBondType type descriptor for the Bond struct type to deserialize as
+     * @param <U>        the Bond struct type to deserialize as
+     * @return a new instance deserialized from this Bonded
+     * @throws IOException              if an I/O error occurred during deserialization
+     * @throws IllegalArgumentException if an argument is null
+     */
+    public abstract <U extends BondSerializable> U
+    deserialize(StructBondType<U> asBondType) throws IOException;
 
     /**
      * Tries to convert this Bonded to a Bonded constrained to another type, and returns the new Bonded instance if the
