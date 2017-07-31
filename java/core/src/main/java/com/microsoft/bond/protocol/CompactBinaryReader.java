@@ -346,4 +346,10 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
                 return 0;
         }
     }
+
+    @Override
+    public TaggedProtocolReader cloneProtocolReader() throws IOException {
+        InputStream clonedInputStream = Cloning.cloneStream(this.reader.inputStream);
+        return new CompactBinaryReader(clonedInputStream, this.version);
+    }
 }

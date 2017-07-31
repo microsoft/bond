@@ -317,4 +317,10 @@ public final class FastBinaryReader implements TaggedProtocolReader {
                 return 0;
         }
     }
+
+    @Override
+    public TaggedProtocolReader cloneProtocolReader() throws IOException {
+        InputStream clonedInputStream = Cloning.cloneStream(this.reader.inputStream);
+        return new FastBinaryReader(clonedInputStream, this.protocolVersion);
+    }
 }

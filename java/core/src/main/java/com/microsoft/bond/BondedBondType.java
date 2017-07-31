@@ -3,7 +3,10 @@
 
 package com.microsoft.bond;
 
+import com.microsoft.bond.protocol.TaggedProtocolReader;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 /**
@@ -99,10 +102,13 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
 
     @Override
     protected final Bonded<TStruct> deserializeValue(TaggedDeserializationContext context) throws IOException {
-        TStruct value = this.valueType.deserializeValue(context);
-
-        // TODO: complete deserialization story for bonded (need to somehow capture the underlying stream)
-        throw new UnsupportedOperationException();
+        // Clone the input stream (or throw an exception if not cloneable) and initialize a new Bonded instance
+        // backed by the cloned stream. Then skip reading the original stream until the end of the struct, which
+        // is the same number of bytes that would be read by the clone (backing the new Bonded) when deserializing.
+        TaggedProtocolReader protocolReader = context.reader.cloneProtocolReader();
+        Bonded<TStruct> value = Bonded.fromProtocolReader(protocolReader, this.valueType);
+        context.reader.skip(BondDataType.BT_STRUCT);
+        return value;
     }
 
     @Override
