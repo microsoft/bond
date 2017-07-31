@@ -174,6 +174,10 @@ public class C extends B<Double> implements BondSerializable {
         }
 
         @Override
+        protected final void deserializeStructFields(UntaggedDeserializationContext context, C value) throws IOException {
+        }
+
+        @Override
         public final void initializeStructFields(C value) {
             value.i32 = this.i32.initialize();
             value.i64 = this.i64.initialize();

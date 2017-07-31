@@ -154,6 +154,21 @@ public final class VectorBondType<TElement> extends BondType<List<TElement>> {
     }
 
     @Override
+    protected final List<TElement> deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        final int count = context.reader.readContainerBegin();
+        List<TElement> value = newDefaultValue(count);
+        for (int i = 0; i < count; ++i) {
+            try {
+                TElement element = this.elementType.deserializeValue(context);
+                value.add(element);
+            } catch (InvalidBondDataException e) {
+                Throw.raiseListContainerElementSerializationError(true, false, this.getFullName(), i, e, null);
+            }
+        }
+        return value;
+    }
+
+    @Override
     protected final void serializeField(
             SerializationContext context,
             List<TElement> value,

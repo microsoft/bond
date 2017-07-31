@@ -6,7 +6,6 @@ package com.microsoft.bond.testmodel;
 import com.microsoft.bond.*;
 import com.microsoft.bond.helpers.ArgumentHelper;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -286,6 +285,11 @@ public class A<X, Y> implements BondSerializable {
             this.nax32.verifyDeserialized(__has_nax32);
             this.nay64.verifyDeserialized(__has_nay64);
         }
+
+        @Override
+        protected final void deserializeStructFields(UntaggedDeserializationContext context, A<X, Y> value) throws IOException {
+        }
+
 
         @Override
         public final void initializeStructFields(A<X, Y> value) {

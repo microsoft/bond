@@ -75,6 +75,11 @@ public final class UInt8BondType extends PrimitiveBondType<Byte> {
     }
 
     @Override
+    protected final Byte deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        return deserializePrimitiveValue(context);
+    }
+
+    @Override
     protected final void serializeField(
             SerializationContext context,
             Byte value,
@@ -111,6 +116,18 @@ public final class UInt8BondType extends PrimitiveBondType<Byte> {
      * @throws IOException if an I/O error occurred
      */
     protected static byte deserializePrimitiveValue(TaggedDeserializationContext context) throws IOException {
+        return context.reader.readUInt8();
+    }
+
+    /**
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext)} method
+     * for primitive values.
+     *
+     * @param context contains the runtime context of the deserialization
+     * @return the deserialized value
+     * @throws IOException if an I/O error occurred
+     */
+    protected static byte deserializePrimitiveValue(UntaggedDeserializationContext context) throws IOException {
         return context.reader.readUInt8();
     }
 

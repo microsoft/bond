@@ -73,6 +73,11 @@ public abstract class EnumBondType<TEnum extends BondEnum<TEnum>> extends Primit
     }
 
     @Override
+    protected final TEnum deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        return this.getEnumValue(context.reader.readInt32());
+    }
+
+    @Override
     protected final void serializeField(
             SerializationContext context,
             TEnum value,

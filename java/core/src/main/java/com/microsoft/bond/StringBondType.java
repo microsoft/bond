@@ -70,6 +70,11 @@ public final class StringBondType extends PrimitiveBondType<String> {
     }
 
     @Override
+    protected final String deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        return context.reader.readString();
+    }
+
+    @Override
     protected final void serializeField(
             SerializationContext context,
             String value,

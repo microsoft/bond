@@ -77,6 +77,11 @@ public final class FloatBondType extends PrimitiveBondType<Float> {
     }
 
     @Override
+    protected final Float deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        return deserializePrimitiveValue(context);
+    }
+
+    @Override
     protected final void serializeField(
             SerializationContext context,
             Float value,
@@ -113,6 +118,18 @@ public final class FloatBondType extends PrimitiveBondType<Float> {
      * @throws IOException if an I/O error occurred
      */
     protected static float deserializePrimitiveValue(TaggedDeserializationContext context) throws IOException {
+        return context.reader.readFloat();
+    }
+
+    /**
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext)} method
+     * for primitive values.
+     *
+     * @param context contains the runtime context of the deserialization
+     * @return the deserialized value
+     * @throws IOException if an I/O error occurred
+     */
+    protected static float deserializePrimitiveValue(UntaggedDeserializationContext context) throws IOException {
         return context.reader.readFloat();
     }
 

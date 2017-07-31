@@ -177,6 +177,10 @@ public class E<U> extends D implements BondSerializable {
         }
 
         @Override
+        protected final void deserializeStructFields(UntaggedDeserializationContext context, E<U> value) throws IOException {
+        }
+
+        @Override
         public final void initializeStructFields(E<U> value) {
             value.u = this.u.initialize();
             value.neu = this.neu.initialize();

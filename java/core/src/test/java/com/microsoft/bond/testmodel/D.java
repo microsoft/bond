@@ -174,6 +174,10 @@ public class D extends C implements BondSerializable {
         }
 
         @Override
+        protected final void deserializeStructFields(UntaggedDeserializationContext context, D value) throws IOException {
+        }
+
+        @Override
         public final void initializeStructFields(D value) {
             value.nad = this.nad.initialize();
             value.nbd = this.nbd.initialize();
