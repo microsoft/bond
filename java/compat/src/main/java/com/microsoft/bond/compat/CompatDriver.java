@@ -58,10 +58,9 @@ public class CompatDriver {
             System.exit(STATUS_FAILURE);
         }
 
-        final Compat compat = new Compat();
         final Serializer<Compat> serializer = new Serializer<>();
-        final Deserializer<Compat> deserializer = new Deserializer<>((StructBondType<Compat>) compat.getBondType());
-        deserializer.deserialize(reader);
+        final Deserializer<Compat> deserializer = new Deserializer<>((StructBondType<Compat>) Compat.BOND_TYPE);
+        final Compat compat = deserializer.deserialize(reader);
         serializer.serialize(compat, writer);
     }
 }
