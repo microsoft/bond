@@ -128,7 +128,7 @@ public final class BoolBondType extends PrimitiveBondType<Boolean> {
             SerializationContext context,
             boolean value,
             StructBondType.StructField<Boolean> field) throws IOException {
-        if (field.isOptional() && (value == field.getDefaultValue())) {
+        if (!field.isDefaultNothing() && field.isOptional() && (value == field.getDefaultValue())) {
             context.writer.writeFieldOmitted(BondDataType.BT_BOOL, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_BOOL, field.getId(), field);

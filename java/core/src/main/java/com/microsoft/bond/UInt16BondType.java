@@ -128,7 +128,7 @@ public final class UInt16BondType extends PrimitiveBondType<Short> {
             SerializationContext context,
             short value,
             StructBondType.StructField<Short> field) throws IOException {
-        if (field.isOptional() && (value == field.getDefaultValue())) {
+        if (!field.isDefaultNothing() && field.isOptional() && (value == field.getDefaultValue())) {
             context.writer.writeFieldOmitted(BondDataType.BT_UINT16, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_UINT16, field.getId(), field);

@@ -128,7 +128,7 @@ public final class UInt32BondType extends PrimitiveBondType<Integer> {
             SerializationContext context,
             int value,
             StructBondType.StructField<Integer> field) throws IOException {
-        if (field.isOptional() && (value == field.getDefaultValue())) {
+        if (!field.isDefaultNothing() && field.isOptional() && (value == field.getDefaultValue())) {
             context.writer.writeFieldOmitted(BondDataType.BT_UINT32, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_UINT32, field.getId(), field);

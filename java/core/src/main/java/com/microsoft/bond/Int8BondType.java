@@ -128,7 +128,7 @@ public final class Int8BondType extends PrimitiveBondType<Byte> {
             SerializationContext context,
             byte value,
             StructBondType.StructField<Byte> field) throws IOException {
-        if (field.isOptional() && (value == field.getDefaultValue())) {
+        if (!field.isDefaultNothing() && field.isOptional() && (value == field.getDefaultValue())) {
             context.writer.writeFieldOmitted(BondDataType.BT_INT8, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_INT8, field.getId(), field);
