@@ -3,6 +3,7 @@
 
 package com.microsoft.bond;
 
+import com.microsoft.bond.helpers.ArgumentHelper;
 import com.microsoft.bond.protocol.*;
 
 import java.io.IOException;
@@ -292,6 +293,23 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      * @return new struct instance
      */
     public abstract TStruct newInstance();
+
+    /**
+     * Returns a value indicatign whether this type is a subtype of (or the same as) the argument type.
+     * @param other the argument type
+     * @return true if this type is the same type or a subtype of the argument type
+     */
+    public final boolean isSubtypeOf(StructBondType<?> other) {
+        ArgumentHelper.ensureNotNull(other, "other");
+        StructBondType<?> currentType = this;
+        while (currentType != null) {
+            if (currentType.equals(other)) {
+                return true;
+            }
+            currentType = currentType.baseStructType;
+        }
+        return false;
+    }
 
     @Override
     protected final void serializeValue(SerializationContext context, TStruct value) throws IOException {
