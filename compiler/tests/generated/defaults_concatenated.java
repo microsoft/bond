@@ -536,6 +536,46 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
+            this.m_bool_1.deserialize(context);
+            this.m_bool_2.deserialize(context);
+            this.m_bool_3.deserialize(context);
+            this.m_str_1.deserialize(context);
+            this.m_str_2.deserialize(context);
+            this.m_int8_4.deserialize(context);
+            this.m_int8_5.deserialize(context);
+            this.m_int16_4.deserialize(context);
+            this.m_int16_5.deserialize(context);
+            this.m_int32_4.deserialize(context);
+            this.m_int32_max.deserialize(context);
+            this.m_int64_4.deserialize(context);
+            this.m_int64_max.deserialize(context);
+            this.m_uint8_2.deserialize(context);
+            this.m_uint8_3.deserialize(context);
+            this.m_uint16_2.deserialize(context);
+            this.m_uint16_3.deserialize(context);
+            this.m_uint32_3.deserialize(context);
+            this.m_uint32_max.deserialize(context);
+            this.m_uint64_3.deserialize(context);
+            this.m_uint64_max.deserialize(context);
+            this.m_double_3.deserialize(context);
+            this.m_double_4.deserialize(context);
+            this.m_double_5.deserialize(context);
+            this.m_float_3.deserialize(context);
+            this.m_float_4.deserialize(context);
+            this.m_float_7.deserialize(context);
+            this.m_enum1.deserialize(context);
+            this.m_enum2.deserialize(context);
+            this.m_enum3.deserialize(context);
+            this.m_enum_int32min.deserialize(context);
+            this.m_enum_int32max.deserialize(context);
+            this.m_enum_uint32_min.deserialize(context);
+            this.m_enum_uint32_max.deserialize(context);
+            this.m_wstr_1.deserialize(context);
+            this.m_wstr_2.deserialize(context);
+        }
+        
+        @Override
         protected final void initializeStructFields(Foo value) {
             value.m_bool_1 = this.m_bool_1.initialize();
             value.m_bool_2 = this.m_bool_2.initialize();

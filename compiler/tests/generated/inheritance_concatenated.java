@@ -68,6 +68,11 @@ public class Base implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, Base value) throws java.io.IOException {
+            this.x.deserialize(context);
+        }
+        
+        @Override
         protected final void initializeStructFields(Base value) {
             value.x = this.x.initialize();
         }
@@ -169,6 +174,11 @@ public class Foo extends tests.Base {
                 }
             }
             this.x.verifyDeserialized(__has_x);
+        }
+        
+        @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
+            this.x.deserialize(context);
         }
         
         @Override

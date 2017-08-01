@@ -138,6 +138,11 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
+            this.f.deserialize(context);
+        }
+        
+        @Override
         protected final void initializeStructFields(Foo value) {
             value.f = this.f.initialize();
         }
