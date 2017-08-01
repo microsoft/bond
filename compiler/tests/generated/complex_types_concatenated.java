@@ -60,6 +60,10 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
+        }
+        
+        @Override
         protected final void initializeStructFields(Foo value) {
         }
         
@@ -219,6 +223,17 @@ public class ComplexTypes implements com.microsoft.bond.BondSerializable {
             this.msws.verifyDeserialized(__has_msws);
             this.bfoo.verifyDeserialized(__has_bfoo);
             this.m.verifyDeserialized(__has_m);
+        }
+        
+        @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, ComplexTypes value) throws java.io.IOException {
+            this.li8.deserialize(context);
+            this.sb.deserialize(context);
+            this.vb.deserialize(context);
+            this.nf.deserialize(context);
+            this.msws.deserialize(context);
+            this.bfoo.deserialize(context);
+            this.m.deserialize(context);
         }
         
         @Override
