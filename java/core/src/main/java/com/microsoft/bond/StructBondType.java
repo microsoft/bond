@@ -19,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * which are generated private classes nested within the struct classes.
  * @param <TStruct> the class of the struct value
  */
+// This API is consumed by codegen, which static analysis isn't aware of.
+@SuppressWarnings({"unused", "WeakerAccess"})
 public abstract class StructBondType<TStruct extends BondSerializable>
         extends BondType<TStruct> implements StructMetadata {
 
