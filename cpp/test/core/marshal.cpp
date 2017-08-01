@@ -116,7 +116,7 @@ TEST_CASE_BEGIN(MapTo)
         To to;
 
         bond::InputBuffer input(output_buffer.GetBuffer());
-        bond::SelectProtocolAndApply<From>(input, bond::MapTo<To>(to, mappings));
+        bond::SelectProtocolAndApply<From, bond::BuiltInProtocols>(input, bond::MapTo<To>(to, mappings));
 
         UT_Compare(from, to);
     }
