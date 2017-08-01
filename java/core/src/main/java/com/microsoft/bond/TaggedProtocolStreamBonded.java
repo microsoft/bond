@@ -51,6 +51,9 @@ final class TaggedProtocolStreamBonded<T extends BondSerializable> extends Bonde
 
     @Override
     public T deserialize() throws IOException {
+        if (this.bondType == null) {
+            throw new InvalidBondDataException("Cannot deserialize an unknown struct type within a Bonded instance.");
+        }
         TaggedProtocolReader clonedProtocolReader = this.protocolReader.cloneProtocolReader();
         return this.bondType.deserialize(clonedProtocolReader);
     }
