@@ -178,7 +178,7 @@ public abstract class BondType<T> {
     /**
      * Serializes a value of this type into a protocol writer.
      * This method is intended for objects and is not suitable for Java primitive (non-object) types
-     * since its argument is an object and would to be boxed. To serialize primitive values use the
+     * since its argument is an object and would have to be boxed. To serialize primitive values use the
      * static helper method defined in each singleton class for a primitive Java type.
      *
      * @param context contains the runtime context of the serialization
@@ -190,7 +190,7 @@ public abstract class BondType<T> {
     /**
      * Deserializes a value of this type from a tagged protocol reader.
      * This method is intended for objects and is not suitable for Java primitive (non-object) types
-     * since its return value is an object and would to be unboxed. To deserialize primitive values use
+     * since its return value is an object and would have to be unboxed. To deserialize primitive values use
      * the static helper method defined in each singleton class for a primitive Java type.
      *
      * @param context contains the runtime context of the deserialization
@@ -202,7 +202,7 @@ public abstract class BondType<T> {
     /**
      * Deserializes a value of this type from an untagged protocol reader.
      * This method is intended for objects and is not suitable for Java primitive (non-object) types
-     * since its return value is an object and would to be unboxed. To deserialize primitive values use
+     * since its return value is an object and would have to be unboxed. To deserialize primitive values use
      * the static helper method defined in each singleton class for a primitive Java type.
      *
      * @param context contains the runtime context of the deserialization
@@ -214,7 +214,7 @@ public abstract class BondType<T> {
     /**
      * Serializes a struct field of this type into a protocol writer, including field metadata.
      * This method is intended for objects and is not suitable for fields with Java primitive (non-object)
-     * types since its argument is an object and would to be boxed. To serialize fields with primitive
+     * types since its argument is an object and would have to be boxed. To serialize fields with primitive
      * values use the static helper method defined in each singleton class for a primitive type.
      *
      * @param context contains the runtime context of the serialization
@@ -253,7 +253,7 @@ public abstract class BondType<T> {
      * which is assumed to be already deserialized earlier and whose value is available in the
      * {@link TaggedDeserializationContext#readFieldResult} field of the passed context argument.
      * This method is intended for objects and is not suitable for fields with Java primitive (non-object)
-     * types since its return value is an object and would to be unboxed. To deserialize fields with primitive
+     * types since its return value is an object and would have to be unboxed. To deserialize fields with primitive
      * values use the static helper method defined in each singleton class for a primitive type.
      *
      * @param context contains the runtime context of the deserialization
