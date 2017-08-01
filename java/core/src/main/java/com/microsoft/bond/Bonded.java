@@ -106,6 +106,7 @@ public abstract class Bonded<T extends BondSerializable> {
 
     /**
      * Deserializes content of this Bonded instance as an object of the default Bond struct type.
+     * Throws an exception if there is no default type descriptor associated with this Bonded instance.
      *
      * @return a new instance deserialized from this Bonded
      * @throws IOException if an I/O error occurred during deserialization
