@@ -295,7 +295,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     public abstract TStruct newInstance();
 
     /**
-     * Returns a value indicatign whether this type is a subtype of (or the same as) the argument type.
+     * Returns a value indicating whether this type is a subtype of (or the same as) the argument type.
      * @param other the argument type
      * @return true if this type is the same type or a subtype of the argument type
      */
