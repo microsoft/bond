@@ -27,6 +27,9 @@ different versioning scheme, following the Haskell community's
   bond::CoreException is now thrown.
 * When SimpleJSON deserializes a map key of non-primitive type, a
   bond::CoreException is now thrown.
+* Errors from some versions of G++ like "non-template type `Deserialize`
+  used as a template" have been fixed.
+  [Issue #538](https://github.com/Microsoft/bond/issues/538)
 
 ### C# ###
 
