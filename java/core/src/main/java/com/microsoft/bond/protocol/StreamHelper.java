@@ -47,8 +47,6 @@ final class StreamHelper {
         if (inputStream.read(buffer, offset, length) < length) {
             throw new EOFException();
         }
-
-
     }
 
     /**

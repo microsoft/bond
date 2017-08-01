@@ -105,7 +105,7 @@ public abstract class Bonded<T extends BondSerializable> {
     serialize(ProtocolWriter protocolWriter, StructBondType<U> asBondType) throws IOException;
 
     /**
-     * Deserializes content of tbis Bonded instance as an object of the default Bond struct type.
+     * Deserializes content of this Bonded instance as an object of the default Bond struct type.
      *
      * @return a new instance deserialized from this Bonded
      * @throws IOException if an I/O error occurred during deserialization
@@ -113,7 +113,7 @@ public abstract class Bonded<T extends BondSerializable> {
     public abstract T deserialize() throws IOException;
 
     /**
-     * Deserializes content of tbis Bonded instance as an object of provided Bond struct type.
+     * Deserializes content of this Bonded instance as an object of provided Bond struct type.
      *
      * @param asBondType type descriptor for the Bond struct type to deserialize as
      * @param <U>        the Bond struct type to deserialize as
