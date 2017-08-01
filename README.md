@@ -61,6 +61,7 @@ build the core Bond library on Ubuntu 14.04:
 sudo apt-get install \
     clang \
     cmake \
+    haskell-stack \
     zlib1g-dev \
     libboost-dev \
     libboost-thread-dev
