@@ -199,6 +199,10 @@ set (BOND_SKIP_CORE_TESTS
     "FALSE"
     CACHE BOOL "If TRUE, then skip Bond Core tests and examples")
 
+set (BOND_SKIP_COMPAT_TESTS
+    "FALSE"
+    CACHE BOOL "If TRUE, then skip Bond Compat tests")
+
 if (((BOND_ENABLE_COMM) OR (BOND_ENABLE_GRPC)) AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
     message(FATAL_ERROR "BOND_ENABLE_COMM and/or BOND_ENABLE_GRPC is TRUE but compiler specified does not support C++11 standard")
 endif()
