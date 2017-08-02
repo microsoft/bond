@@ -160,6 +160,9 @@ public class D extends C implements BondSerializable {
                         value.ned = this.ned.deserialize(context, __has_ned);
                         __has_ned = true;
                         break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }
 
