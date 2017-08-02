@@ -9,6 +9,7 @@ import java.io.IOException;
  * Reads from serialized payload encoded using an untagged protocol.
  */
 public interface UntaggedProtocolReader {
+
     /**
      * Start reading a container.
      */

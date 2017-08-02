@@ -108,7 +108,9 @@ public final class BlobBondType extends BondType<byte[]> {
     @Override
     protected final byte[] deserializeValue(UntaggedDeserializationContext context) throws IOException {
         final int count = context.reader.readContainerBegin();
-        return context.reader.readBytes(count);
+        final byte[] value = context.reader.readBytes(count);
+        context.reader.readContainerEnd();
+        return value;
     }
 
     @Override

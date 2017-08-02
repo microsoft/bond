@@ -102,12 +102,6 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
         return new HashSet<TElement>();
     }
 
-    private static <TElement> Set<TElement> newDefaultValue(int initialCapacity) {
-        // custom initial capacity to match element count when deserializing
-        return new HashSet<TElement>(initialCapacity);
-    }
-
-
     @Override
     protected final void serializeValue(SerializationContext context, Set<TElement> value) throws IOException {
         this.verifyNonNullableValueIsNotSetToNull(value);
@@ -156,7 +150,7 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
     @Override
     protected final Set<TElement> deserializeValue(UntaggedDeserializationContext context) throws IOException {
         final int count = context.reader.readContainerBegin();
-        Set<TElement> value = newDefaultValue(count);
+        Set<TElement> value = newDefaultValue();
         for (int i = 0; i < count; ++i) {
             try {
                 TElement element = this.elementType.deserializeValue(context);
@@ -165,6 +159,7 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
                 Throw.raiseListContainerElementSerializationError(true, true, this.getFullName(), i, e, null);
             }
         }
+        context.reader.readContainerEnd();
         return value;
     }
 
