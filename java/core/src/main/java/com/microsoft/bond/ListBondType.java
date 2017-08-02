@@ -4,7 +4,6 @@
 package com.microsoft.bond;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -103,11 +102,6 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
         return new LinkedList<TElement>();
     }
 
-    private static <TElement> List<TElement> newDefaultValue(int initialCapacity) {
-        // custom initial capacity to match element count when deserializing
-        return new ArrayList<TElement>(initialCapacity);
-    }
-
     @Override
     protected final void serializeValue(SerializationContext context, List<TElement> value) throws IOException {
         this.verifyNonNullableValueIsNotSetToNull(value);
@@ -156,7 +150,7 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
     @Override
     protected final List<TElement> deserializeValue(UntaggedDeserializationContext context) throws IOException {
         final int count = context.reader.readContainerBegin();
-        List<TElement> value = newDefaultValue(count);
+        List<TElement> value = newDefaultValue();
         for (int i = 0; i < count; ++i) {
             try {
                 TElement element = this.elementType.deserializeValue(context);
@@ -165,6 +159,7 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
                 Throw.raiseListContainerElementSerializationError(true, false, this.getFullName(), i, e, null);
             }
         }
+        context.reader.readContainerEnd();
         return value;
     }
 

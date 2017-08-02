@@ -1974,6 +1974,12 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             FloatBondType.serializePrimitiveSomethingField(context, value, this);
         }
 
+        public final SomethingFloat deserialize(
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
+            return FloatBondType.deserializePrimitiveSomethingField(context, this);
+        }
+
         public final SomethingFloat deserialize(UntaggedDeserializationContext context) throws IOException {
             return wrap(FloatBondType.deserializePrimitiveValue(context));
         }

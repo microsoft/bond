@@ -227,13 +227,13 @@ public class ComplexTypes implements com.microsoft.bond.BondSerializable {
         
         @Override
         protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, ComplexTypes value) throws java.io.IOException {
-            this.li8.deserialize(context);
-            this.sb.deserialize(context);
-            this.vb.deserialize(context);
-            this.nf.deserialize(context);
-            this.msws.deserialize(context);
-            this.bfoo.deserialize(context);
-            this.m.deserialize(context);
+            value.li8 = this.li8.deserialize(context);
+            value.sb = this.sb.deserialize(context);
+            value.vb = this.vb.deserialize(context);
+            value.nf = this.nf.deserialize(context);
+            value.msws = this.msws.deserialize(context);
+            value.bfoo = this.bfoo.deserialize(context);
+            value.m = this.m.deserialize(context);
         }
         
         @Override

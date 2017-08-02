@@ -165,6 +165,7 @@ public final class VectorBondType<TElement> extends BondType<List<TElement>> {
                 Throw.raiseListContainerElementSerializationError(true, false, this.getFullName(), i, e, null);
             }
         }
+        context.reader.readContainerEnd();
         return value;
     }
 

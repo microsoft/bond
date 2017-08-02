@@ -537,42 +537,42 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         
         @Override
         protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
-            this.m_bool_1.deserialize(context);
-            this.m_bool_2.deserialize(context);
-            this.m_bool_3.deserialize(context);
-            this.m_str_1.deserialize(context);
-            this.m_str_2.deserialize(context);
-            this.m_int8_4.deserialize(context);
-            this.m_int8_5.deserialize(context);
-            this.m_int16_4.deserialize(context);
-            this.m_int16_5.deserialize(context);
-            this.m_int32_4.deserialize(context);
-            this.m_int32_max.deserialize(context);
-            this.m_int64_4.deserialize(context);
-            this.m_int64_max.deserialize(context);
-            this.m_uint8_2.deserialize(context);
-            this.m_uint8_3.deserialize(context);
-            this.m_uint16_2.deserialize(context);
-            this.m_uint16_3.deserialize(context);
-            this.m_uint32_3.deserialize(context);
-            this.m_uint32_max.deserialize(context);
-            this.m_uint64_3.deserialize(context);
-            this.m_uint64_max.deserialize(context);
-            this.m_double_3.deserialize(context);
-            this.m_double_4.deserialize(context);
-            this.m_double_5.deserialize(context);
-            this.m_float_3.deserialize(context);
-            this.m_float_4.deserialize(context);
-            this.m_float_7.deserialize(context);
-            this.m_enum1.deserialize(context);
-            this.m_enum2.deserialize(context);
-            this.m_enum3.deserialize(context);
-            this.m_enum_int32min.deserialize(context);
-            this.m_enum_int32max.deserialize(context);
-            this.m_enum_uint32_min.deserialize(context);
-            this.m_enum_uint32_max.deserialize(context);
-            this.m_wstr_1.deserialize(context);
-            this.m_wstr_2.deserialize(context);
+            value.m_bool_1 = this.m_bool_1.deserialize(context);
+            value.m_bool_2 = this.m_bool_2.deserialize(context);
+            value.m_bool_3 = this.m_bool_3.deserialize(context);
+            value.m_str_1 = this.m_str_1.deserialize(context);
+            value.m_str_2 = this.m_str_2.deserialize(context);
+            value.m_int8_4 = this.m_int8_4.deserialize(context);
+            value.m_int8_5 = this.m_int8_5.deserialize(context);
+            value.m_int16_4 = this.m_int16_4.deserialize(context);
+            value.m_int16_5 = this.m_int16_5.deserialize(context);
+            value.m_int32_4 = this.m_int32_4.deserialize(context);
+            value.m_int32_max = this.m_int32_max.deserialize(context);
+            value.m_int64_4 = this.m_int64_4.deserialize(context);
+            value.m_int64_max = this.m_int64_max.deserialize(context);
+            value.m_uint8_2 = this.m_uint8_2.deserialize(context);
+            value.m_uint8_3 = this.m_uint8_3.deserialize(context);
+            value.m_uint16_2 = this.m_uint16_2.deserialize(context);
+            value.m_uint16_3 = this.m_uint16_3.deserialize(context);
+            value.m_uint32_3 = this.m_uint32_3.deserialize(context);
+            value.m_uint32_max = this.m_uint32_max.deserialize(context);
+            value.m_uint64_3 = this.m_uint64_3.deserialize(context);
+            value.m_uint64_max = this.m_uint64_max.deserialize(context);
+            value.m_double_3 = this.m_double_3.deserialize(context);
+            value.m_double_4 = this.m_double_4.deserialize(context);
+            value.m_double_5 = this.m_double_5.deserialize(context);
+            value.m_float_3 = this.m_float_3.deserialize(context);
+            value.m_float_4 = this.m_float_4.deserialize(context);
+            value.m_float_7 = this.m_float_7.deserialize(context);
+            value.m_enum1 = this.m_enum1.deserialize(context);
+            value.m_enum2 = this.m_enum2.deserialize(context);
+            value.m_enum3 = this.m_enum3.deserialize(context);
+            value.m_enum_int32min = this.m_enum_int32min.deserialize(context);
+            value.m_enum_int32max = this.m_enum_int32max.deserialize(context);
+            value.m_enum_uint32_min = this.m_enum_uint32_min.deserialize(context);
+            value.m_enum_uint32_max = this.m_enum_uint32_max.deserialize(context);
+            value.m_wstr_1 = this.m_wstr_1.deserialize(context);
+            value.m_wstr_2 = this.m_wstr_2.deserialize(context);
         }
         
         @Override

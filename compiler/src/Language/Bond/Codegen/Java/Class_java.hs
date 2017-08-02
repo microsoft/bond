@@ -319,7 +319,7 @@ makeStructBondTypeMember_deserializeStructFields_untagged declName declParams st
         }|]
             where
                 methodParamDecl = [lt|com.microsoft.bond.BondType.UntaggedDeserializationContext context, #{typeNameWithParams declName declParams} value|]
-                serializeField Field {..} = [lt|this.#{fieldName}.deserialize(context);|]
+                serializeField Field {..} = [lt|value.#{fieldName} = this.#{fieldName}.deserialize(context);|]
 
 
 -- given class name, generic type parameters, and struct fields, builds text for implementation of

@@ -290,7 +290,6 @@ public class A<X, Y> implements BondSerializable {
         protected final void deserializeStructFields(UntaggedDeserializationContext context, A<X, Y> value) throws IOException {
         }
 
-
         @Override
         public final void initializeStructFields(A<X, Y> value) {
             value.x = this.x.initialize();
