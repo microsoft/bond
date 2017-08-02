@@ -164,6 +164,9 @@ public class E<U> extends D implements BondSerializable {
                         value.nlneu = this.nlneu.deserialize(context, __has_nlneu);
                         __has_nlneu = true;
                         break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }
 

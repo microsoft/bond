@@ -160,6 +160,9 @@ public class C extends B<Double> implements BondSerializable {
                         value.bs3 = this.bs3.deserialize(context, __has_bs3);
                         __has_bs3 = true;
                         break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }
 

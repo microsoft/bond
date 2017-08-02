@@ -269,6 +269,9 @@ public class A<X, Y> implements BondSerializable {
                         value.nay64 = this.nay64.deserialize(context, __has_nay64);
                         __has_nay64 = true;
                         break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }
 

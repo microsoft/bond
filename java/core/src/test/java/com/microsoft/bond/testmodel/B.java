@@ -250,6 +250,9 @@ public class B<T> extends A<String, T> implements BondSerializable {
                         value.lt5 = this.lt5.deserialize(context, __has_lt5);
                         __has_lt5 = true;
                         break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }
 

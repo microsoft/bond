@@ -184,7 +184,7 @@ structFieldDescriptorInitTypeExpr _ (BT_TypeParam param) = [lt|#{paramName param
 structFieldDescriptorInitTypeExpr java (BT_UserDefined e@Enum {} _) = [lt|#{qualifiedDeclaredTypeName java e}.BOND_TYPE|]
 structFieldDescriptorInitTypeExpr java t@(BT_UserDefined s@Struct {} params) = [lt|#{structFieldDescriptorInitStructExpr java t (qualifiedDeclaredTypeName java s) params}|]
 structFieldDescriptorInitTypeExpr java t@(BT_UserDefined s@Forward {} params) = [lt|#{structFieldDescriptorInitStructExpr java t (qualifiedDeclaredTypeName java s) params}|]
-structFieldDescriptorInitTypeExpr java t@(BT_UserDefined a@Alias {} params) = structFieldDescriptorInitTypeExpr java (resolveAlias a params)
+structFieldDescriptorInitTypeExpr java (BT_UserDefined a@Alias {} params) = structFieldDescriptorInitTypeExpr java (resolveAlias a params)
 structFieldDescriptorInitTypeExpr _ t = error $ "invalid declaration type for structFieldDescriptorInitTypeExpr: " ++ show t
 
 
@@ -292,6 +292,9 @@ makeStructBondTypeMember_deserializeStructFields declName declParams structField
         protected final void deserializeStructFields(#{methodParamDecl}) throws java.io.IOException {#{newlineBeginSep 3 declareLocalVariable structFields}
             while (this.readField(context)) {
                 switch (context.readFieldResult.id) {#{newlineBeginSep 5 deserializeField structFields}
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }#{newlineBeginSep 3 verifyField structFields}
         }|]
