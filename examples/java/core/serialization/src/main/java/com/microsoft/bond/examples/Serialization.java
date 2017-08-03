@@ -16,30 +16,28 @@ import examples.serialization.Struct;
 
 public class Serialization {
 
-    private static final int STATUS_FAILURE = 255;
-
     public static void main(final String[] args) throws IOException {
 
-        Struct obj = new Struct();
+        final Struct obj = new Struct();
         obj.n = 0x1000;
         obj.str = "test";
         obj.items = new ArrayList<>(2);
         obj.items.add(3.14D);
         obj.items.add(0D);
 
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        CompactBinaryWriter writer = new CompactBinaryWriter(output, (short) 1);
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        final CompactBinaryWriter writer = new CompactBinaryWriter(output, (short) 1);
 
         final Serializer<Struct> serializer = new Serializer<>();
         serializer.serialize(obj, writer);
 
-        ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+        final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
 
-        CompactBinaryReader reader = new CompactBinaryReader(input, (short) 1);
+        final CompactBinaryReader reader = new CompactBinaryReader(input, (short) 1);
         final Deserializer<Struct> deserializer = new Deserializer<>((StructBondType<Struct>) obj.getBondType());
-        Struct obj2 = deserializer.deserialize(reader);
+        final Struct obj2 = deserializer.deserialize(reader);
 
-        System.exit(obj.equals(obj2) ? 0 : STATUS_FAILURE);
+        assert obj.equals(obj2) : "Roundtrip failed";
     }
 
 }
