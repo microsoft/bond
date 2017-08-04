@@ -15,7 +15,7 @@ public class FloatingPointHelperTest {
         TestHelper.verifyStaticHelperClass(FloatingPointHelper.class);
     }
 
-    private static final float[] distinctFloatValuesTestSet = new float[]{
+    private static final float[] floatTestSet = new float[]{
             Float.NEGATIVE_INFINITY,
             Float.MIN_VALUE,
             Float.MIN_NORMAL,
@@ -34,21 +34,23 @@ public class FloatingPointHelperTest {
 
     @Test
     public void testFloatEqualsAndHashCode() throws Exception {
-        for (int i = 0; i < distinctFloatValuesTestSet.length; ++i) {
-            float a = distinctFloatValuesTestSet[i];
-            for (int j = 0; j < distinctFloatValuesTestSet.length; ++j) {
-                float b = distinctFloatValuesTestSet[j];
-                if (i == j) {
+        for (int i = 0; i < floatTestSet.length; ++i) {
+            float a = floatTestSet[i];
+            for (int j = 0; j < floatTestSet.length; ++j) {
+                float b = floatTestSet[j];
+                if (new Float(a).equals(b)) {
                     assertTrue(FloatingPointHelper.floatEquals(a, b));
                     assertEquals(FloatingPointHelper.floatHashCode(a), FloatingPointHelper.floatHashCode(b));
+                    assertEquals(FloatingPointHelper.floatHashCode(a), new Float(a).hashCode());
                 } else {
+                    new Long(0).hashCode();
                     assertFalse(FloatingPointHelper.floatEquals(a, b));
                 }
             }
         }
     }
 
-    private static final double[] distinctDoubleValuesTestSet = new double[]{
+    private static final double[] doubleTestSet = new double[]{
             Double.NEGATIVE_INFINITY,
             Double.MIN_VALUE,
             Double.MIN_NORMAL,
@@ -67,11 +69,11 @@ public class FloatingPointHelperTest {
 
     @Test
     public void testDoubleEqualsAndHashCode() throws Exception {
-        for (int i = 0; i < distinctDoubleValuesTestSet.length; ++i) {
-            double a = distinctDoubleValuesTestSet[i];
-            for (int j = 0; j < distinctDoubleValuesTestSet.length; ++j) {
-                double b = distinctDoubleValuesTestSet[j];
-                if (i == j) {
+        for (int i = 0; i < doubleTestSet.length; ++i) {
+            double a = doubleTestSet[i];
+            for (int j = 0; j < doubleTestSet.length; ++j) {
+                double b = doubleTestSet[j];
+                if (new Double(a).equals(b)) {
                     assertTrue(FloatingPointHelper.doubleEquals(a, b));
                     assertEquals(FloatingPointHelper.doubleHashCode(a), FloatingPointHelper.doubleHashCode(b));
                 } else {

@@ -101,6 +101,23 @@ public class Base implements com.microsoft.bond.BondSerializable {
         ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Base)) return false;
+        
+        final Base other = (Base) o;
+        if (!(this.x == other.x)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result += x;
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        return result;
+    }
 
     @Override
     public com.microsoft.bond.StructBondType<? extends Base> getBondType() {
@@ -210,6 +227,26 @@ public class Foo extends tests.Base {
         ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Foo)) return false;
+        if (!(super.equals(o))) return false;
+        final Foo other = (Foo) o;
+        if (!(this.x == other.x)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result += super.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += x;
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        return result;
+    }
 
     @Override
     public com.microsoft.bond.StructBondType<? extends Foo> getBondType() {

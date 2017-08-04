@@ -90,6 +90,21 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Foo)) return false;
+        
+        final Foo other = (Foo) o;
+        
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        
+        return result;
+    }
 
     @Override
     public com.microsoft.bond.StructBondType<? extends Foo> getBondType() {
@@ -289,6 +304,47 @@ public class ComplexTypes implements com.microsoft.bond.BondSerializable {
         ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ComplexTypes)) return false;
+        
+        final ComplexTypes other = (ComplexTypes) o;
+        if (!((this.li8 == null && other.li8 == null) || (this.li8 != null && this.li8.equals(other.li8)))) return false;
+        if (!((this.sb == null && other.sb == null) || (this.sb != null && this.sb.equals(other.sb)))) return false;
+        if (!((this.vb == null && other.vb == null) || (this.vb != null && this.vb.equals(other.vb)))) return false;
+        if (!((this.nf == null && other.nf == null) || (this.nf != null && this.nf.equals(other.nf)))) return false;
+        if (!((this.msws == null && other.msws == null) || (this.msws != null && this.msws.equals(other.msws)))) return false;
+        if (!((this.bfoo == null && other.bfoo == null) || (this.bfoo != null && this.bfoo.equals(other.bfoo)))) return false;
+        if (!((this.m == null && other.m == null) || (this.m != null && this.m.equals(other.m)))) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result += li8 == null ? 0 : li8.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += sb == null ? 0 : sb.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += vb == null ? 0 : vb.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += nf == null ? 0 : nf.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += msws == null ? 0 : msws.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += bfoo == null ? 0 : bfoo.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += m == null ? 0 : m.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        return result;
+    }
 
     @Override
     public com.microsoft.bond.StructBondType<? extends ComplexTypes> getBondType() {
