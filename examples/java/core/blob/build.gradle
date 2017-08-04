@@ -16,7 +16,7 @@ apply plugin: 'application'
 apply plugin: 'com.microsoft.bond.gradle'
 
 sourceCompatibility = 1.8
-mainClassName = 'com.microsoft.bond.examples.Serialization'
+mainClassName = 'com.microsoft.bond.examples.Blob'
 applicationDefaultJvmArgs = ['-ea']
 
 repositories {
@@ -28,8 +28,8 @@ dependencies {
 }
 
 compileBond {
-    bondfiles 'src/main/bond/serialization.bond'
-    options '--namespace', 'examples.serialization=com.microsoft.bond.examples.serialization'
+    bondfiles 'src/main/bond/schema.bond'
+    options '--namespace', 'Examples=com.microsoft.bond.examples.blob'
 }
 
 jar {
