@@ -131,6 +131,31 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Foo)) return false;
+        
+        final Foo other = (Foo) o;
+        if (!(this.o == other.o)) return false;
+        if (!(this.r == other.r)) return false;
+        if (!(com.microsoft.bond.helpers.FloatingPointHelper.doubleEquals(this.ro, other.ro))) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result += (o ? 0 : 1);
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += r;
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += com.microsoft.bond.helpers.FloatingPointHelper.doubleHashCode(ro);
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        return result;
+    }
 
     @Override
     public com.microsoft.bond.StructBondType<? extends Foo> getBondType() {

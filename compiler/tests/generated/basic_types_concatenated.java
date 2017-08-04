@@ -296,6 +296,75 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
         ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof BasicTypes)) return false;
+        
+        final BasicTypes other = (BasicTypes) o;
+        if (!(this._bool == other._bool)) return false;
+        if (!((this._str == null && other._str == null) || (this._str != null && this._str.equals(other._str)))) return false;
+        if (!((this._wstr == null && other._wstr == null) || (this._wstr != null && this._wstr.equals(other._wstr)))) return false;
+        if (!(this._uint64 == other._uint64)) return false;
+        if (!(this._uint16 == other._uint16)) return false;
+        if (!(this._uint32 == other._uint32)) return false;
+        if (!(this._uint8 == other._uint8)) return false;
+        if (!(this._int8 == other._int8)) return false;
+        if (!(this._int16 == other._int16)) return false;
+        if (!(this._int32 == other._int32)) return false;
+        if (!(this._int64 == other._int64)) return false;
+        if (!(com.microsoft.bond.helpers.FloatingPointHelper.doubleEquals(this._double, other._double))) return false;
+        if (!(com.microsoft.bond.helpers.FloatingPointHelper.floatEquals(this._float, other._float))) return false;
+        if (!((this._blob == null && other._blob == null) || (this._blob != null && this._blob.equals(other._blob)))) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result += (_bool ? 0 : 1);
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += _str == null ? 0 : _str.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += _wstr == null ? 0 : _wstr.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += _uint64 ^ (_uint64 >>> 32);
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += _uint16;
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += _uint32;
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += _uint8;
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += _int8;
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += _int16;
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += _int32;
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += _int64 ^ (_int64 >>> 32);
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += com.microsoft.bond.helpers.FloatingPointHelper.doubleHashCode(_double);
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += com.microsoft.bond.helpers.FloatingPointHelper.floatHashCode(_float);
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += _blob == null ? 0 : _blob.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        return result;
+    }
 
     @Override
     public com.microsoft.bond.StructBondType<? extends BasicTypes> getBondType() {

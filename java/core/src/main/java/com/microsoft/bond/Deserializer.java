@@ -10,7 +10,7 @@ import com.microsoft.bond.protocol.UntaggedProtocolReader;
 import java.io.IOException;
 
 /**
- * Resposible for deserialization of objects of a particular struct.
+ * Responsible for deserialization of objects of a particular struct.
  * @param <TStruct> the class of the deserialized struct value
  */
 public final class Deserializer<TStruct extends BondSerializable> {

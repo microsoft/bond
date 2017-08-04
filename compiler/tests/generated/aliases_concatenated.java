@@ -124,6 +124,23 @@ public Foo(com.microsoft.bond.StructBondType<Foo<T>> genericType) {
         this.__genericType.initializeStructFields(this);
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Foo)) return false;
+        
+        final Foo other = (Foo) o;
+        if (!((this.aa == null && other.aa == null) || (this.aa != null && this.aa.equals(other.aa)))) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result += aa == null ? 0 : aa.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        return result;
+    }
 
     @Override
     public com.microsoft.bond.StructBondType<? extends Foo<T>> getBondType() {
@@ -303,6 +320,23 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
         ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof WrappingAnEnum)) return false;
+        
+        final WrappingAnEnum other = (WrappingAnEnum) o;
+        if (!((this.aWrappedEnum == null && other.aWrappedEnum == null) || (this.aWrappedEnum != null && this.aWrappedEnum.equals(other.aWrappedEnum)))) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result += aWrappedEnum == null ? 0 : aWrappedEnum.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        return result;
+    }
 
     @Override
     public com.microsoft.bond.StructBondType<? extends WrappingAnEnum> getBondType() {
