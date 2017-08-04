@@ -10,12 +10,12 @@
     {
         public static long Convert(DateTime value, long unused)
         {
-            return value.Ticks;
+            return value.ToUniversalTime().Ticks;
         }
 
         public static DateTime Convert(long value, DateTime unused)
         {
-            return new DateTime(value);
+            return new DateTime(value, DateTimeKind.Utc);
         }
     }
 
@@ -25,8 +25,8 @@
         {
             var src = new Example
             {
-                Now = DateTime.Now,
-                Dates = { new DateTime(2017, 1, 29) }
+                Now = DateTime.UtcNow,
+                Dates = { new DateTime(2017, 1, 29, 0, 0, 0, DateTimeKind.Utc) }
             };
 
             var output = new OutputBuffer();
