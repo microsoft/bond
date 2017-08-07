@@ -48,6 +48,10 @@ different versioning scheme, following the Haskell community's
 [msdn-stream-canseek]: https://msdn.microsoft.com/en-us/library/system.io.stream.canseek(v=vs.110).aspx
 [msdn-stream-seek]: https://msdn.microsoft.com/en-us/library/system.io.stream.seek(v=vs.110).aspx
 
+## 6.0.1 ##
+
+This version was not used.
+
 ## 6.0.0: 2017-06-29  ##
 * `gbc` & compiler library: 0.10.0.0
 * IDL core version: 2.0
