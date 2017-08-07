@@ -1,0 +1,61 @@
+namespace com.microsoft.bond.testmodel
+
+// forward declarations
+struct A<X, Y>;
+struct B<T>;
+struct C;
+struct D;
+struct E<U>;
+
+struct A<X, Y>
+{
+    0 : X x;
+    1 : Y y;
+    2 : nullable<X> nx;
+    3 : nullable<Y> ny;
+    4 : nullable<B<X>> nbx;
+    5 : nullable<B<Y>> nby;
+    6 : list<X> lx;
+    7 : list<Y> ly;
+    8 : nullable<A<X, int32>> nax32;
+    9 : nullable<A<Y, int64>> nay64;
+}
+
+struct B<T> : A<string, T>
+{
+    1 : T t;
+    2 : A<T, T> at;
+    3 : nullable<B<T>> nbt;
+    4 : nullable<E<T>> net;
+    5 : list<T> lt1;
+    6 : list<list<T>> lt2;
+    7 : list<list<list<T>>> lt3;
+    8 : list<list<list<list<T>>>> lt4;
+    9 : list<list<list<list<list<T>>>>> lt5;
+}
+
+struct C : B<double>
+{
+    1 : int32 i32;
+    2 : int64 i64;
+    3 : B<string> bs1;
+    4 : B<B<string>> bs2;
+    5 : B<B<B<string>>> bs3;
+}
+
+struct D : C
+{
+    1 : nullable<A<D, D>> nad;
+    2 : nullable<B<D>> nbd;
+    3 : nullable<C> nc;
+    4 : nullable<D> nd;
+    5 : nullable<E<D>> ned;
+}
+
+struct E<U> : D
+{
+    1 : U u;
+    2 : nullable<E<U>> neu;
+    3 : list<nullable<E<U>>> lneu;
+    4 : nullable<list<nullable<E<U>>>> nlneu;
+}

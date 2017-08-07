@@ -1,0 +1,7 @@
+*/.gradle/
+*/gradle/
+*/gradlew
+*/gradlew.bat
+*/.idea/libraries
+*/.idea/workspace.xml
+*/build/

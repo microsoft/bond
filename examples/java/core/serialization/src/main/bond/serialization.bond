@@ -1,0 +1,8 @@
+namespace examples.serialization
+
+struct Struct
+{
+    0: uint32          n;
+    1: string          str;
+    2: vector<double>  items;
+}

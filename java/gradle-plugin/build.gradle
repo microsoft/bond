@@ -1,0 +1,12 @@
+apply plugin: 'groovy'
+
+group 'com.microsoft.bond'
+version '1.0'
+
+dependencies {
+    compile localGroovy()
+    compile gradleApi()
+}
+
+jar {
+}

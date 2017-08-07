@@ -84,7 +84,7 @@ generatedCodeAttr = [lt|[System.CodeDom.Compiler.GeneratedCode("gbc", "#{showVer
     |]
 
 idl :: MappingContext
-idl = MappingContext idlTypeMapping [] [] []  
+idl = MappingContext idlTypeMapping [] [] []
 
 optionalTypeAttributes :: MappingContext -> Declaration -> Text
 optionalTypeAttributes cs decl =
@@ -98,7 +98,7 @@ optionalTypeAttributes cs decl =
 
 -- Attributes defined by the user in the schema
 schemaAttributes :: Int64 -> [Attribute] -> Text
-schemaAttributes indent = newlineSepEnd indent schemaAttribute
+schemaAttributes indent_ = newlineSepEnd indent_ schemaAttribute
   where
     schemaAttribute Attribute {..} =
         [lt|[global::Bond.Attribute("#{getQualifiedName idl attrName}", "#{attrValue}")]|]

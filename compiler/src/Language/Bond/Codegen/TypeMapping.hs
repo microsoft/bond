@@ -25,6 +25,8 @@ module Language.Bond.Codegen.TypeMapping
     , cppCustomAllocTypeMapping
     , csTypeMapping
     , csCollectionInterfacesTypeMapping
+    , javaTypeMapping
+    , javaBoxedTypeMapping
       -- * Alias mapping
       --
       -- | <https://microsoft.github.io/bond/manual/compiler.html#type-aliases Type aliases>
@@ -212,6 +214,30 @@ csAnnotatedTypeMapping = TypeMapping
     csAnnotatedTypeMapping
     csAnnotatedTypeMapping
 
+-- | The default Java type name mapping.
+javaTypeMapping :: TypeMapping
+javaTypeMapping = TypeMapping
+    (Just Java)
+    ""
+    "."
+    javaType
+    id
+    javaTypeMapping
+    javaBoxedTypeMapping
+    javaTypeMapping
+
+-- | Java type mapping that boxes all primitives.
+javaBoxedTypeMapping :: TypeMapping
+javaBoxedTypeMapping = TypeMapping
+    (Just Java)
+    ""
+    "."
+    javaBoxedType
+    id
+    javaTypeMapping
+    javaBoxedTypeMapping
+    javaTypeMapping
+
 infixr 6 <<>>
 
 (<<>>) :: (Monoid r, Monad m) => m r -> m r -> m r
@@ -243,7 +269,7 @@ typeName t = do
 localWith :: (TypeMapping -> TypeMapping) -> TypeNameBuilder -> TypeNameBuilder
 localWith f = local $ \c -> c { typeMapping = f $ typeMapping c }
 
--- | Builder for nested element types (e.g. list elements) in context of 'TypeNameBuilder' monad. 
+-- | Builder for nested element types (e.g. list elements) in context of 'TypeNameBuilder' monad.
 -- Used to implement 'mapType' function of 'TypeMapping'.
 elementTypeName :: Type -> TypeNameBuilder
 elementTypeName = localWith elementMapping . typeName
@@ -450,4 +476,62 @@ csTypeAnnotation m t@(BT_UserDefined a@Alias {..} args)
    | otherwise = typeName $ resolveAlias a args
 csTypeAnnotation _ (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> commaSepTypeNames args)
 csTypeAnnotation m t = m t
+
+
+-- Java type mapping
+javaType :: Type -> TypeNameBuilder
+javaType BT_Int8 = pure "byte"
+javaType BT_Int16 = pure "short"
+javaType BT_Int32 = pure "int"
+javaType BT_Int64 = pure "long"
+javaType BT_UInt8 = pure "byte"
+javaType BT_UInt16 = pure "short"
+javaType BT_UInt32 = pure "int"
+javaType BT_UInt64 = pure "long"
+javaType BT_Float = pure "float"
+javaType BT_Double = pure "double"
+javaType BT_Bool = pure "boolean"
+javaType BT_String = pure "java.lang.String"
+javaType BT_WString = pure "java.lang.String"
+javaType BT_MetaName = pure "java.lang.String"
+javaType BT_MetaFullName = pure "java.lang.String"
+javaType BT_Blob = pure "byte[]"
+javaType (BT_IntTypeArg x) = pureText x
+javaType (BT_Maybe BT_Int8) = pure "com.microsoft.bond.SomethingByte"
+javaType (BT_Maybe BT_Int16) = pure "com.microsoft.bond.SomethingShort"
+javaType (BT_Maybe BT_Int32) = pure "com.microsoft.bond.SomethingInteger"
+javaType (BT_Maybe BT_Int64) = pure "com.microsoft.bond.SomethingLong"
+javaType (BT_Maybe BT_UInt8) = pure "com.microsoft.bond.SomethingByte"
+javaType (BT_Maybe BT_UInt16) = pure "com.microsoft.bond.SomethingShort"
+javaType (BT_Maybe BT_UInt32) = pure "com.microsoft.bond.SomethingInteger"
+javaType (BT_Maybe BT_UInt64) = pure "com.microsoft.bond.SomethingLong"
+javaType (BT_Maybe BT_Float) = pure "com.microsoft.bond.SomethingFloat"
+javaType (BT_Maybe BT_Double) = pure "com.microsoft.bond.SomethingDouble"
+javaType (BT_Maybe BT_Bool) = pure "com.microsoft.bond.SomethingBool"
+javaType (BT_Maybe fieldType) = "com.microsoft.bond.SomethingObject<" <>> javaBoxedType fieldType <<> ">"
+javaType (BT_Nullable elementType) = javaBoxedType elementType
+javaType (BT_List elementType) = "java.util.List<" <>> elementTypeName elementType <<> ">"
+javaType (BT_Vector elementType) = "java.util.List<" <>> elementTypeName elementType <<> ">"
+javaType (BT_Set elementType) = "java.util.Set<" <>> elementTypeName elementType <<> ">"
+javaType (BT_Map keyType valueType) = "java.util.Map<" <>> elementTypeName keyType <<>> ", " <>> elementTypeName valueType <<> ">"
+javaType (BT_TypeParam param) = pureText $ paramName param
+javaType (BT_Bonded structType) = "com.microsoft.bond.Bonded<" <>> javaBoxedType structType <<> ">"
+javaType (BT_UserDefined a@Alias {} args) = aliasTypeName a args
+javaType (BT_UserDefined decl args) =
+    declQualifiedTypeName decl <<>> (angles <$> localWith (const javaBoxedTypeMapping) (commaSepTypeNames args))
+
+-- Java type mapping to a reference type with primitive types boxed
+javaBoxedType :: Type -> TypeNameBuilder
+javaBoxedType BT_Int8 = pure "java.lang.Byte"
+javaBoxedType BT_Int16 = pure "java.lang.Short"
+javaBoxedType BT_Int32 = pure "java.lang.Integer"
+javaBoxedType BT_Int64 = pure "java.lang.Long"
+javaBoxedType BT_UInt8 = pure "java.lang.Byte"
+javaBoxedType BT_UInt16 = pure "java.lang.Short"
+javaBoxedType BT_UInt32 = pure "java.lang.Integer"
+javaBoxedType BT_UInt64 = pure "java.lang.Long"
+javaBoxedType BT_Float = pure "java.lang.Float"
+javaBoxedType BT_Double = pure "java.lang.Double"
+javaBoxedType BT_Bool = pure "java.lang.Boolean"
+javaBoxedType t = javaType t
 
