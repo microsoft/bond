@@ -3,16 +3,14 @@ package com.microsoft.bond.examples;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import com.microsoft.bond.Deserializer;
 import com.microsoft.bond.Serializer;
-import com.microsoft.bond.StructBondType;
 
 import com.microsoft.bond.protocol.CompactBinaryReader;
 import com.microsoft.bond.protocol.CompactBinaryWriter;
 
-import examples.serialization.Struct;
+import com.microsoft.bond.examples.serialization.Struct;
 
 public class Serialization {
 
@@ -21,7 +19,6 @@ public class Serialization {
         final Struct obj = new Struct();
         obj.n = 0x1000;
         obj.str = "test";
-        obj.items = new ArrayList<>(2);
         obj.items.add(3.14D);
         obj.items.add(0D);
 
@@ -34,7 +31,7 @@ public class Serialization {
         final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
 
         final CompactBinaryReader reader = new CompactBinaryReader(input, (short) 1);
-        final Deserializer<Struct> deserializer = new Deserializer<>((StructBondType<Struct>) obj.getBondType());
+        final Deserializer<Struct> deserializer = new Deserializer<>(Struct.BOND_TYPE);
         final Struct obj2 = deserializer.deserialize(reader);
 
         assert obj.equals(obj2) : "Roundtrip failed";
