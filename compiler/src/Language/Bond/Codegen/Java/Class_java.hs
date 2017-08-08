@@ -60,8 +60,10 @@ structFieldDescriptorTypeName java = typeName
         typeName BT_MetaFullName = [lt|com.microsoft.bond.StructBondType.StringStructField|]
         typeName (BT_Maybe (BT_UserDefined e@Enum {} _)) = [lt|com.microsoft.bond.StructBondType.SomethingEnumStructField<#{qualifiedDeclaredTypeName java e}>|]
         typeName (BT_UserDefined e@Enum {} _) = [lt|com.microsoft.bond.StructBondType.EnumStructField<#{qualifiedDeclaredTypeName java e}>|]
-        typeName (BT_Maybe t) = [lt|com.microsoft.bond.StructBondType.SomethingObjectStructField<#{(getTypeName java) t}>|]
-        typeName t = [lt|com.microsoft.bond.StructBondType.ObjectStructField<#{(getTypeName java) t}>|]
+        typeName (BT_Maybe (BT_UserDefined a@Alias {} args)) = structFieldDescriptorTypeName java (BT_Maybe (resolveAlias a args))
+        typeName (BT_UserDefined a@Alias {} args) = structFieldDescriptorTypeName java (resolveAlias a args)
+        typeName (BT_Maybe t) = [lt|com.microsoft.bond.StructBondType.SomethingObjectStructField<#{getElementTypeName java t}>|]
+        typeName t = [lt|com.microsoft.bond.StructBondType.ObjectStructField<#{getElementTypeName java t}>|]
 
 
 -- given the type of the field, value indicating whether a struct field descriptor type is generic and hence needs an explicit type parameter

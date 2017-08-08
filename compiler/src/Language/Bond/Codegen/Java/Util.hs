@@ -19,6 +19,7 @@ import Data.List (intercalate)
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
+import Language.Bond.Syntax.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util()
 
@@ -53,6 +54,7 @@ isPrimitiveNonEnumBondType BT_String = True
 isPrimitiveNonEnumBondType BT_WString = True
 isPrimitiveNonEnumBondType BT_MetaName = True
 isPrimitiveNonEnumBondType BT_MetaFullName = True
+isPrimitiveNonEnumBondType (BT_UserDefined a@Alias {} args) = isPrimitiveNonEnumBondType (resolveAlias a args)
 isPrimitiveNonEnumBondType _ = False
 
 -- returns a value indicating whether a type is a Bond primitive type or enum
