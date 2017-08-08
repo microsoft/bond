@@ -1,0 +1,42 @@
+group 'com.microsoft.bond'
+version '1.0'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.microsoft.bond:gradle:+'
+    }
+}
+
+apply plugin: 'application'
+apply plugin: 'com.microsoft.bond.gradle'
+
+sourceCompatibility = 1.8
+mainClassName = 'com.microsoft.bond.examples.Imports'
+applicationDefaultJvmArgs = ['-ea']
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile files('../../../../java/core/build/libs/bond-5.0.0.jar')
+}
+
+compileBond {
+    bondfiles 'src/main/bond/schema.bond'
+    options '--namespace', 'Examples=com.microsoft.bond.examples.imports',
+            '--namespace', 'Examples.Common=com.microsoft.bond.examples.imports.common',
+            '--namespace', 'Examples.Common.Protocol=com.microsoft.bond.examples.imports.common.protocol',
+            '--import-dir', 'src/main/bond/common'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
