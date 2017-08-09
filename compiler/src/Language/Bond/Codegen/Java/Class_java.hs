@@ -60,8 +60,10 @@ structFieldDescriptorTypeName java = typeName
         typeName BT_MetaFullName = [lt|com.microsoft.bond.StructBondType.StringStructField|]
         typeName (BT_Maybe (BT_UserDefined e@Enum {} _)) = [lt|com.microsoft.bond.StructBondType.SomethingEnumStructField<#{qualifiedDeclaredTypeName java e}>|]
         typeName (BT_UserDefined e@Enum {} _) = [lt|com.microsoft.bond.StructBondType.EnumStructField<#{qualifiedDeclaredTypeName java e}>|]
-        typeName (BT_Maybe t) = [lt|com.microsoft.bond.StructBondType.SomethingObjectStructField<#{(getTypeName java) t}>|]
-        typeName t = [lt|com.microsoft.bond.StructBondType.ObjectStructField<#{(getTypeName java) t}>|]
+        typeName (BT_Maybe (BT_UserDefined a@Alias {} args)) = structFieldDescriptorTypeName java (BT_Maybe (resolveAlias a args))
+        typeName (BT_UserDefined a@Alias {} args) = structFieldDescriptorTypeName java (resolveAlias a args)
+        typeName (BT_Maybe t) = [lt|com.microsoft.bond.StructBondType.SomethingObjectStructField<#{getElementTypeName java t}>|]
+        typeName t = [lt|com.microsoft.bond.StructBondType.ObjectStructField<#{getElementTypeName java t}>|]
 
 
 -- given the type of the field, value indicating whether a struct field descriptor type is generic and hence needs an explicit type parameter
@@ -131,10 +133,10 @@ fieldDefaultValueInitParamExpr _ BT_Int8 (Just (DefaultInteger val)) = [lt|, (by
 fieldDefaultValueInitParamExpr _ BT_Int16 (Just (DefaultInteger val)) = [lt|, (short)#{val}|]
 fieldDefaultValueInitParamExpr _ BT_Int32 (Just (DefaultInteger val)) = [lt|, #{val}|]
 fieldDefaultValueInitParamExpr _ BT_Int64 (Just (DefaultInteger val)) = [lt|, #{val}L|]
-fieldDefaultValueInitParamExpr _ BT_UInt8 (Just (DefaultInteger val)) = [lt|, (byte)#{val}|]
-fieldDefaultValueInitParamExpr _ BT_UInt16 (Just (DefaultInteger val)) = [lt|, (short)#{val}|]
-fieldDefaultValueInitParamExpr _ BT_UInt32 (Just (DefaultInteger val)) = [lt|, #{val}|]
-fieldDefaultValueInitParamExpr _ BT_UInt64 (Just (DefaultInteger val)) = [lt|, #{val}L|]
+fieldDefaultValueInitParamExpr _ BT_UInt8 (Just (DefaultInteger val)) = [lt|, (byte)#{twosComplement 8 val}|]
+fieldDefaultValueInitParamExpr _ BT_UInt16 (Just (DefaultInteger val)) = [lt|, (short)#{twosComplement 16 val}|]
+fieldDefaultValueInitParamExpr _ BT_UInt32 (Just (DefaultInteger val)) = [lt|, #{twosComplement 32 val}|]
+fieldDefaultValueInitParamExpr _ BT_UInt64 (Just (DefaultInteger val)) = [lt|, #{twosComplement 64 val}L|]
 fieldDefaultValueInitParamExpr _ BT_Float (Just (DefaultFloat val)) = [lt|, #{val}F|]
 fieldDefaultValueInitParamExpr _ BT_Float (Just (DefaultInteger val)) = [lt|, #{val}F|]
 fieldDefaultValueInitParamExpr _ BT_Double (Just (DefaultFloat val)) = [lt|, #{val}D|]
@@ -171,8 +173,6 @@ structFieldDescriptorInitTypeExpr _ BT_Double = [lt|com.microsoft.bond.BondTypes
 structFieldDescriptorInitTypeExpr _ BT_Bool = [lt|com.microsoft.bond.BondTypes.BOOL|]
 structFieldDescriptorInitTypeExpr _ BT_String = [lt|com.microsoft.bond.BondTypes.STRING|]
 structFieldDescriptorInitTypeExpr _ BT_WString = [lt|com.microsoft.bond.BondTypes.WSTRING|]
-structFieldDescriptorInitTypeExpr _ BT_MetaName = [lt|com.microsoft.bond.BondTypes.STRING|]
-structFieldDescriptorInitTypeExpr _ BT_MetaFullName = [lt|com.microsoft.bond.BondTypes.STRING|]
 structFieldDescriptorInitTypeExpr _ BT_Blob = [lt|com.microsoft.bond.BondTypes.BLOB|]
 structFieldDescriptorInitTypeExpr java (BT_Bonded t) = [lt|bondedOf(#{structFieldDescriptorInitTypeExpr java t})|]
 structFieldDescriptorInitTypeExpr java (BT_Nullable t) = [lt|nullableOf(#{structFieldDescriptorInitTypeExpr java t})|]

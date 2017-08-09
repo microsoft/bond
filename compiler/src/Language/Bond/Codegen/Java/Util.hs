@@ -11,6 +11,7 @@ module Language.Bond.Codegen.Java.Util
     , isPrimitiveBondType
     , isGenericBondStructType
     , ifThenElse
+    , twosComplement
     ) where
 
 import Prelude
@@ -18,6 +19,7 @@ import Data.List (intercalate)
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
+import Language.Bond.Syntax.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util()
 
@@ -50,6 +52,9 @@ isPrimitiveNonEnumBondType BT_Double = True
 isPrimitiveNonEnumBondType BT_Bool = True
 isPrimitiveNonEnumBondType BT_String = True
 isPrimitiveNonEnumBondType BT_WString = True
+isPrimitiveNonEnumBondType BT_MetaName = True
+isPrimitiveNonEnumBondType BT_MetaFullName = True
+isPrimitiveNonEnumBondType (BT_UserDefined a@Alias {} args) = isPrimitiveNonEnumBondType (resolveAlias a args)
 isPrimitiveNonEnumBondType _ = False
 
 -- returns a value indicating whether a type is a Bond primitive type or enum
@@ -66,3 +71,9 @@ isGenericBondStructType _ = False
 ifThenElse :: Bool -> Text -> Text -> Text
 ifThenElse True thenCondition _ = thenCondition
 ifThenElse False _ elseCondition = elseCondition
+
+-- takes a bit count and a number and returns its two's complement
+twosComplement :: Integer -> Integer -> Integer
+twosComplement bitCount value = if value < (2 ^ (bitCount - 1))
+    then value
+    else value - (2 ^ bitCount)
