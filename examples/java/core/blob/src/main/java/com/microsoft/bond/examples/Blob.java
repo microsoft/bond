@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 import com.microsoft.bond.Deserializer;
 import com.microsoft.bond.Serializer;
-import com.microsoft.bond.StructBondType;
 import com.microsoft.bond.Something;
 
 import com.microsoft.bond.protocol.CompactBinaryReader;
@@ -39,7 +38,7 @@ public class Blob {
         final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
 
         final CompactBinaryReader reader = new CompactBinaryReader(input, (short) 1);
-        final Deserializer<Example> deserializer = new Deserializer<>((StructBondType<Example>) obj.getBondType());
+        final Deserializer<Example> deserializer = new Deserializer<>(Example.BOND_TYPE);
         final Example obj2 = deserializer.deserialize(reader);
 
         assert obj.equals(obj2) : "Roundtrip failed";
