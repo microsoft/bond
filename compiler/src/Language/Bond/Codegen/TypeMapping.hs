@@ -44,6 +44,7 @@ module Language.Bond.Codegen.TypeMapping
       -- * Name builders
     , getTypeName
     , getInstanceTypeName
+    , getElementTypeName
     , getAnnotatedTypeName
     , getDeclTypeName
     , getQualifiedName
@@ -126,6 +127,10 @@ getTypeName c t = fix' $ runReader (typeName t) c
 -- latter is an interface.
 getInstanceTypeName :: MappingContext -> Type -> Builder
 getInstanceTypeName c t = runReader (instanceTypeName t) c
+
+-- | Builds the name to be used when instantiating an element 'Type'.
+getElementTypeName :: MappingContext -> Type -> Builder
+getElementTypeName c t = runReader (elementTypeName t) c
 
 -- | Builds the annotated name of a 'Type'. The type annotations are used to
 -- express type information about a Bond type that doesn't directly map to
@@ -329,6 +334,17 @@ aliasTypeName a args = do
     fragment (Fragment s) = pureText s
     fragment (Placeholder i) = typeName $ args !! i
 
+-- | Builder for the type alias element name in context of 'TypeNameBuilder' monad.
+aliasElementTypeName :: Declaration -> [Type] -> TypeNameBuilder
+aliasElementTypeName a args = do
+    ctx <- ask
+    case findAliasMapping ctx a of
+        Just AliasMapping {..} -> foldr ((<<>>) . fragment) (pure mempty) aliasTemplate
+        Nothing -> elementTypeName $ resolveAlias a args
+  where
+    fragment (Fragment s) = pureText s
+    fragment (Placeholder i) = elementTypeName $ args !! i
+
 -- IDL type mapping
 idlType :: Type -> TypeNameBuilder
 idlType BT_Int8 = pure "int8"
@@ -507,7 +523,9 @@ javaType (BT_Maybe BT_UInt32) = pure "com.microsoft.bond.SomethingInteger"
 javaType (BT_Maybe BT_UInt64) = pure "com.microsoft.bond.SomethingLong"
 javaType (BT_Maybe BT_Float) = pure "com.microsoft.bond.SomethingFloat"
 javaType (BT_Maybe BT_Double) = pure "com.microsoft.bond.SomethingDouble"
-javaType (BT_Maybe BT_Bool) = pure "com.microsoft.bond.SomethingBool"
+javaType (BT_Maybe BT_Bool) = pure "com.microsoft.bond.SomethingBoolean"
+javaType (BT_UserDefined a@Alias {} args) = javaType (resolveAlias a args)
+javaType (BT_Maybe (BT_UserDefined a@Alias {} args)) = javaType (BT_Maybe (resolveAlias a args))
 javaType (BT_Maybe fieldType) = "com.microsoft.bond.SomethingObject<" <>> javaBoxedType fieldType <<> ">"
 javaType (BT_Nullable elementType) = javaBoxedType elementType
 javaType (BT_List elementType) = "java.util.List<" <>> elementTypeName elementType <<> ">"
@@ -516,7 +534,6 @@ javaType (BT_Set elementType) = "java.util.Set<" <>> elementTypeName elementType
 javaType (BT_Map keyType valueType) = "java.util.Map<" <>> elementTypeName keyType <<>> ", " <>> elementTypeName valueType <<> ">"
 javaType (BT_TypeParam param) = pureText $ paramName param
 javaType (BT_Bonded structType) = "com.microsoft.bond.Bonded<" <>> javaBoxedType structType <<> ">"
-javaType (BT_UserDefined a@Alias {} args) = aliasTypeName a args
 javaType (BT_UserDefined decl args) =
     declQualifiedTypeName decl <<>> (angles <$> localWith (const javaBoxedTypeMapping) (commaSepTypeNames args))
 
@@ -533,5 +550,6 @@ javaBoxedType BT_UInt64 = pure "java.lang.Long"
 javaBoxedType BT_Float = pure "java.lang.Float"
 javaBoxedType BT_Double = pure "java.lang.Double"
 javaBoxedType BT_Bool = pure "java.lang.Boolean"
+javaBoxedType (BT_UserDefined a@Alias {} args) = aliasElementTypeName a args
 javaBoxedType t = javaType t
 
