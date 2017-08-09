@@ -128,7 +128,7 @@ getTypeName c t = fix' $ runReader (typeName t) c
 getInstanceTypeName :: MappingContext -> Type -> Builder
 getInstanceTypeName c t = runReader (instanceTypeName t) c
 
--- todo
+-- | Builds the name to be used when instantiating an element 'Type'.
 getElementTypeName :: MappingContext -> Type -> Builder
 getElementTypeName c t = runReader (elementTypeName t) c
 
