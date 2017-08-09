@@ -4,8 +4,8 @@
 package com.microsoft.bond;
 
 import com.microsoft.bond.helpers.ArgumentHelper;
-import com.microsoft.bond.protocol.ProtocolWriter;
 import com.microsoft.bond.protocol.TaggedProtocolReader;
+import com.microsoft.bond.protocol.UntaggedProtocolReader;
 
 import java.io.IOException;
 
@@ -35,6 +35,18 @@ public final class Deserializer<TStruct extends BondSerializable> {
      * @throws IOException if an I/O error occurred
      */
     public final TStruct deserialize(TaggedProtocolReader reader) throws IOException {
+        ArgumentHelper.ensureNotNull(reader, "reader");
+        return this.structType.deserialize(reader);
+    }
+
+    /**
+     * Deserializes an object from the given untagged protocol reader.
+     *
+     * @param reader the protocol reader to read from
+     * @return deserialized object
+     * @throws IOException if an I/O error occurred
+     */
+    public final TStruct deserialize(UntaggedProtocolReader reader) throws IOException {
         ArgumentHelper.ensureNotNull(reader, "reader");
         return this.structType.deserialize(reader);
     }

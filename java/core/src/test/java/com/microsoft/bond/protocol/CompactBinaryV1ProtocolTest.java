@@ -763,7 +763,7 @@ public class CompactBinaryV1ProtocolTest {
                 (byte) BondDataType.BT_STRUCT.value,
                 (byte) 0,
 
-                // 1001 : list<struct> = {S1, S2, S3}
+                // 1001 : list<struct> = {S1}
                 //        S1: 0 : int8 = 0xFE
                 (byte) (BondDataType.BT_LIST.value | 0xE0),
                 (byte) 1001, (byte) (1001 >>> 8),
@@ -773,7 +773,7 @@ public class CompactBinaryV1ProtocolTest {
                 (byte) 0xFE,
                 (byte) BondDataType.BT_STOP.value,
 
-                // 1002 : list<struct> = {S1}
+                // 1002 : list<struct> = {S1, S2, S3}
                 //        S1: 0 : int8 = 0xEF
                 //        S2: 1 : int8 = 0xA0
                 //            2 : int8 = 0xA1
