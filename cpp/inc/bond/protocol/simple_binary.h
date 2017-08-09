@@ -60,6 +60,12 @@
 
                             key, mapped     each item encoded according to its type
 
+                                           .-------. .-----------.
+                    bonded                 | count | | marshaled |
+                                           '-------' '-----------'
+                            count           uint32 count of bytes (always fixed-width, even in v2)
+
+                            marshaled       a marshaled payload
 */
 
 namespace bond
