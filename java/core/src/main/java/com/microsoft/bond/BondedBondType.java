@@ -3,10 +3,13 @@
 
 package com.microsoft.bond;
 
+import com.microsoft.bond.protocol.CompactBinaryReader;
+import com.microsoft.bond.protocol.CompactBinaryWriter;
+import com.microsoft.bond.protocol.ProtocolWriter;
 import com.microsoft.bond.protocol.TaggedProtocolReader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 
 /**
@@ -97,7 +100,20 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     @Override
     protected final void serializeValue(SerializationContext context, Bonded<TStruct> value) throws IOException {
         this.verifyNonNullableValueIsNotSetToNull(value);
-        value.serialize(context.writer);
+        if (context.writer.usesMarshaledBonded()) {
+            // We always marshal as Compact v1.
+            final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            // FIXME: Replace with a call to Marshal.
+            final ProtocolWriter marshaledWriter = new CompactBinaryWriter(stream, (short) 1);
+            marshaledWriter.writeVersion();
+            value.serialize(marshaledWriter);
+
+            // Bonded fields are always prefixed with a fixed-width length.
+            context.writer.writeUInt32(stream.size());
+            context.writer.writeBytes(stream.toByteArray());
+        } else {
+            value.serialize(context.writer);
+        }
     }
 
     @Override
@@ -113,10 +129,24 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
 
     @Override
     protected final Bonded<TStruct> deserializeValue(UntaggedDeserializationContext context) throws IOException {
-        TStruct value = this.valueType.deserializeValue(context);
+        // Bonded fields are always marshaled and prefixed with a fixed-width length.
+        final int bondedCount = context.reader.readUInt32();
 
-        // TODO: complete deserialization story for bonded
-        throw new UnsupportedOperationException();
+        // FIXME: Marshaled is not implemented, so we assume Compact v1 for
+        // now. Our implementations only ever produce Compact v1, but the spec
+        // doesn't require it.
+        final int magicAndVersion = context.reader.readUInt32();
+        if (magicAndVersion != 0x00014243) {
+            Throw.raiseInvalidDataError(null, "bonded payload in simple was not compact v1");
+        }
+
+        TaggedProtocolReader protocolReader = new CompactBinaryReader(context.reader.cloneStream(), (short) 1);
+        Bonded<TStruct> value = Bonded.fromProtocolReader(protocolReader, this.valueType);
+
+        // We've read the first four bytes of the bonded field; now skip the marshaled payload.
+        context.reader.skipBytes(bondedCount - 4);
+
+        return value;
     }
 
     @Override

@@ -44,6 +44,11 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
     }
 
     @Override
+    public boolean usesMarshaledBonded() {
+        return false;
+    }
+
+    @Override
     public ProtocolWriter getFirstPassWriter() {
         return this.protocolVersion == 2 ? new FirstPassCounter() : null;
     }
@@ -213,6 +218,11 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
     private final class FirstPassCounter implements ProtocolWriter {
 
         private final LinkedList<StructLength> workingStack = new LinkedList<StructLength>();
+
+        @Override
+        public boolean usesMarshaledBonded() {
+            return false;
+        }
 
         @Override
         public void writeVersion() throws IOException {

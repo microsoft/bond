@@ -4,6 +4,7 @@
 package com.microsoft.bond.protocol;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Reads from serialized payload encoded using an untagged protocol.
@@ -190,4 +191,9 @@ public interface UntaggedProtocolReader {
      * Skip a wstring.
      */
     void skipWString() throws IOException;
+
+    /**
+     * @return a clone of this reader's underlying stream
+     */
+    InputStream cloneStream() throws IOException;
 }

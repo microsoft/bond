@@ -4,6 +4,7 @@
 package com.microsoft.bond.protocol;
 
 import com.microsoft.bond.BondDataType;
+import com.microsoft.bond.BondEnum;
 import com.microsoft.bond.ProtocolType;
 
 import java.io.IOException;
@@ -35,6 +36,11 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
     }
 
     @Override
+    public boolean usesMarshaledBonded() {
+        return true;
+    }
+
+    @Override
     public void writeVersion() throws IOException {
         this.writer.writeInt16((short) MAGIC.value);
         this.writer.writeInt16(this.protocolVersion);
@@ -56,7 +62,13 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
                 writeInt16((Short) metadata.getDefaultValue());
                 break;
             case BondDataType.Values.BT_INT32:
-                writeInt32((Integer) metadata.getDefaultValue());
+                // Could be an int32, could be an enum.
+                final Object def = metadata.getDefaultValue();
+                if (def instanceof BondEnum) {
+                    writeInt32(((BondEnum) def).getValue());
+                } else {
+                    writeInt32((Integer) def);
+                }
                 break;
             case BondDataType.Values.BT_INT64:
                 writeInt64((Long) metadata.getDefaultValue());

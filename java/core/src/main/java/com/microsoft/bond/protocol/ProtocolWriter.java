@@ -13,6 +13,12 @@ import java.io.IOException;
 public interface ProtocolWriter {
 
     /**
+     * @return true if bonded fields in this protocol are marshaled; false if
+     * they are serialized in the same protocol
+     */
+    boolean usesMarshaledBonded();
+
+    /**
      * Write protocol magic number and version.
      */
     void writeVersion() throws IOException;
