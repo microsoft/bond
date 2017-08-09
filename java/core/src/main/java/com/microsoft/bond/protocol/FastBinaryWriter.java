@@ -35,6 +35,11 @@ public final class FastBinaryWriter implements ProtocolWriter {
     }
 
     @Override
+    public boolean usesMarshaledBonded() {
+        return false;
+    }
+
+    @Override
     public void writeVersion() throws IOException {
         writer.writeInt16((short) MAGIC.value);
         writer.writeInt16(this.protocolVersion);

@@ -199,5 +199,10 @@ public final class SimpleBinaryReader implements UntaggedProtocolReader {
         final int codeUnitCount = readLength();
         this.reader.skipBytes(codeUnitCount * 2);
     }
+
+    @Override
+    public InputStream cloneStream() throws IOException {
+        return Cloning.cloneStream(this.reader.inputStream);
+    }
 }
 
