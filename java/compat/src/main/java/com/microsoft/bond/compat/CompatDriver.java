@@ -2,7 +2,6 @@ package com.microsoft.bond.compat;
 
 import com.microsoft.bond.Deserializer;
 import com.microsoft.bond.Serializer;
-import com.microsoft.bond.StructBondType;
 import com.microsoft.bond.protocol.*;
 import unittest.compat.Compat;
 
@@ -33,34 +32,69 @@ public class CompatDriver {
         final FileInputStream input = new FileInputStream(inputFile);
         final FileOutputStream output = new FileOutputStream(outputFile);
 
-        TaggedProtocolReader reader = null;
+        TaggedProtocolReader taggedReader = null;
+        UntaggedProtocolReader untaggedReader = null;
         ProtocolWriter writer = null;
 
-        if (fromProtocol.equals("fast")) {
-            reader = new FastBinaryReader(input, (short) 1);
-        } else if (fromProtocol.equals("compact")) {
-            reader = new CompactBinaryReader(input, (short) 1);
-        } else if (fromProtocol.equals("compact2")) {
-            reader = new CompactBinaryReader(input, (short) 2);
-        } else {
-            System.err.println("Unsupported input protocol: " + fromProtocol);
-            System.exit(STATUS_FAILURE);
+        switch (fromProtocol) {
+            case "fast":
+                taggedReader = new FastBinaryReader(input, (short) 1);
+                break;
+            case "compact":
+                taggedReader = new CompactBinaryReader(input, (short) 1);
+                break;
+            case "compact2":
+                taggedReader = new CompactBinaryReader(input, (short) 2);
+                break;
+            case "simple":
+                untaggedReader = new SimpleBinaryReader(input, (short) 1);
+                break;
+            case "simple2":
+                untaggedReader = new SimpleBinaryReader(input, (short) 2);
+                break;
+            default:
+                System.err.println("Unsupported input protocol: " + fromProtocol);
+                System.exit(STATUS_FAILURE);
         }
 
-        if (toProtocol.equals("fast")) {
-            writer = new FastBinaryWriter(output, (short) 1);
-        } else if (toProtocol.equals("compact")) {
-            writer = new CompactBinaryWriter(output, (short) 1);
-        } else if (toProtocol.equals("compact2")) {
-            writer = new CompactBinaryWriter(output, (short) 2);
-        } else {
-            System.err.println("Unsupported output protocol: " + toProtocol);
-            System.exit(STATUS_FAILURE);
+        switch (toProtocol) {
+            case "fast":
+                writer = new FastBinaryWriter(output, (short) 1);
+                break;
+            case "compact":
+                writer = new CompactBinaryWriter(output, (short) 1);
+                break;
+            case "compact2":
+                writer = new CompactBinaryWriter(output, (short) 2);
+                break;
+            case "simple":
+                writer = new SimpleBinaryWriter(output, (short) 1);
+                break;
+            case "simple2":
+                writer = new SimpleBinaryWriter(output, (short) 2);
+                break;
+            default:
+                System.err.println("Unsupported output protocol: " + toProtocol);
+                System.exit(STATUS_FAILURE);
         }
 
         final Serializer<Compat> serializer = new Serializer<>();
-        final Deserializer<Compat> deserializer = new Deserializer<>((StructBondType<Compat>) Compat.BOND_TYPE);
-        final Compat compat = deserializer.deserialize(reader);
+        final Deserializer<Compat> deserializer = new Deserializer<>(Compat.BOND_TYPE);
+        final Compat compat;
+        switch (fromProtocol) {
+            case "fast":
+            case "compact":
+            case "compact2":
+                compat = deserializer.deserialize(taggedReader);
+                break;
+            case "simple":
+            case "simple2":
+                compat = deserializer.deserialize(untaggedReader);
+                break;
+            default:
+                System.err.println("Unsupported input protocol: " + fromProtocol);
+                System.exit(STATUS_FAILURE); return; // javac doesn't realize System.exit() never returns.
+        }
         serializer.serialize(compat, writer);
     }
 }
