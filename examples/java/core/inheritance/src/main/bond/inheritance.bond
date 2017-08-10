@@ -1,0 +1,11 @@
+namespace examples.inheritance
+
+struct Base
+{
+    1: string str = "base default";
+}
+
+struct Derived : Base
+{
+    1: string str = "derived default";
+}
