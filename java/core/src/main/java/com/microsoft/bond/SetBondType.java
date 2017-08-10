@@ -105,7 +105,7 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
     @Override
     protected final void serializeValue(SerializationContext context, Set<TElement> value) throws IOException {
         this.verifyNonNullableValueIsNotSetToNull(value);
-        int count = value.size();
+        final int count = value.size();
         context.writer.writeContainerBegin(count, this.elementType.getBondDataType());
         int i = 0;
         for (TElement element : value) {
@@ -133,8 +133,8 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
 
         // store count in a local variable since readContainerResult may be modified
         // if there are nested containers and thus can't be used inside the loop
-        int count = context.readContainerResult.count;
-        Set<TElement> value = this.newDefaultValue();
+        final int count = context.readContainerResult.count;
+        final Set<TElement> value = this.newDefaultValue();
         for (int i = 0; i < count; ++i) {
             try {
                 TElement element = this.elementType.deserializeValue(context);
@@ -150,7 +150,7 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
     @Override
     protected final Set<TElement> deserializeValue(UntaggedDeserializationContext context) throws IOException {
         final int count = context.reader.readContainerBegin();
-        Set<TElement> value = newDefaultValue();
+        final Set<TElement> value = newDefaultValue();
         for (int i = 0; i < count; ++i) {
             try {
                 TElement element = this.elementType.deserializeValue(context);
@@ -169,7 +169,7 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
             Set<TElement> value,
             StructBondType.StructField<Set<TElement>> field) throws IOException {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
-        int count = value.size();
+        final int count = value.size();
         if (count == 0 && field.isOptional()) {
             context.writer.writeFieldOmitted(BondDataType.BT_SET, field.getId(), field);
         } else {
