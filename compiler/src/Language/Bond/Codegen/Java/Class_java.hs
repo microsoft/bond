@@ -315,11 +315,11 @@ makeStructBondTypeMember_deserializeStructFields_tagged declName declParams stru
 makeStructBondTypeMember_deserializeStructFields_untagged :: String -> [TypeParam] -> [Field] -> Text
 makeStructBondTypeMember_deserializeStructFields_untagged declName declParams structFields = [lt|
         @Override
-        protected final void deserializeStructFields(#{methodParamDecl}) throws java.io.IOException {#{newlineBeginSep 3 serializeField structFields}
+        protected final void deserializeStructFields(#{methodParamDecl}) throws java.io.IOException {#{newlineBeginSep 3 deserializeField structFields}
         }|]
             where
                 methodParamDecl = [lt|com.microsoft.bond.BondType.UntaggedDeserializationContext context, #{typeNameWithParams declName declParams} value|]
-                serializeField Field {..} = [lt|value.#{fieldName} = this.#{fieldName}.deserialize(context);|]
+                deserializeField Field {..} = [lt|value.#{fieldName} = this.#{fieldName}.deserialize(context);|]
 
 
 -- given class name, generic type parameters, and struct fields, builds text for implementation of
