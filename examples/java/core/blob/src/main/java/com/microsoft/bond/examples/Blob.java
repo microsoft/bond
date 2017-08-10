@@ -12,15 +12,16 @@ import com.microsoft.bond.Something;
 import com.microsoft.bond.protocol.CompactBinaryReader;
 import com.microsoft.bond.protocol.CompactBinaryWriter;
 
+// See build.gradle for namespace mapping
 import com.microsoft.bond.examples.blob.Example;
 
 public class Blob {
 
     public static void main(final String[] args) throws IOException {
 
-        byte[] data = new byte[256];
+        final byte[] data = new byte[256];
         for (int i = 0; i < data.length; i++) {
-            data[i] = (byte)i;
+            data[i] = (byte) i;
         }
 
         final Example obj = new Example();

@@ -28,10 +28,8 @@ dependencies {
 }
 
 compileBond {
-
     bondfiles 'src/main/bond/enumerations.bond'
-
-    options '-n', 'Examples=com.microsoft.bond.examples.enumerations'
+    options '--namespace', 'Examples=com.microsoft.bond.examples.enumerations'
 }
 
 jar {

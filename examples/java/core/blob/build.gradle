@@ -28,10 +28,8 @@ dependencies {
 }
 
 compileBond {
-
     bondfiles 'src/main/bond/schema.bond'
-
-    options '-n', 'Examples=com.microsoft.bond.examples.blob'
+    options '--namespace', 'Examples=com.microsoft.bond.examples.blob'
 }
 
 jar {

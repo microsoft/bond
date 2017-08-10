@@ -28,10 +28,8 @@ dependencies {
 }
 
 compileBond {
-
     bondfiles 'src/main/bond/serialization.bond'
-
-    options '-n', 'examples.serialization=com.microsoft.bond.examples.serialization'
+    options '--namespace', 'examples.serialization=com.microsoft.bond.examples.serialization'
 }
 
 jar {

@@ -10,6 +10,7 @@ import com.microsoft.bond.Serializer;
 import com.microsoft.bond.protocol.CompactBinaryReader;
 import com.microsoft.bond.protocol.CompactBinaryWriter;
 
+// See build.gradle for namespace mapping
 import com.microsoft.bond.examples.imports.Message;
 import com.microsoft.bond.examples.imports.common.Priority;
 

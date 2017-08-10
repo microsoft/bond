@@ -28,13 +28,11 @@ dependencies {
 }
 
 compileBond {
-
     bondfiles 'src/main/bond/schema.bond'
-
-    options '-n', 'Examples=com.microsoft.bond.examples.imports',
-            '-n', 'Examples.Common=com.microsoft.bond.examples.imports.common',
-            '-n', 'Examples.Common.Protocol=com.microsoft.bond.examples.imports.common.protocol',
-            '-i', 'src/main/bond/common'
+    options '--namespace', 'Examples=com.microsoft.bond.examples.imports',
+            '--namespace', 'Examples.Common=com.microsoft.bond.examples.imports.common',
+            '--namespace', 'Examples.Common.Protocol=com.microsoft.bond.examples.imports.common.protocol',
+            '--import-dir', 'src/main/bond/common'
 }
 
 jar {
