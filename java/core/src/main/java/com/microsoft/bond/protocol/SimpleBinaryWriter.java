@@ -74,16 +74,16 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
                 writeInt64((Long) metadata.getDefaultValue());
                 break;
             case BondDataType.Values.BT_UINT8:
-                writeInt8((Byte) metadata.getDefaultValue());
+                writeUInt8((Byte) metadata.getDefaultValue());
                 break;
             case BondDataType.Values.BT_UINT16:
-                writeInt16((Short) metadata.getDefaultValue());
+                writeUInt16((Short) metadata.getDefaultValue());
                 break;
             case BondDataType.Values.BT_UINT32:
-                writeInt32((Integer) metadata.getDefaultValue());
+                writeUInt32((Integer) metadata.getDefaultValue());
                 break;
             case BondDataType.Values.BT_UINT64:
-                writeInt64((Long) metadata.getDefaultValue());
+                writeUInt64((Long) metadata.getDefaultValue());
                 break;
             case BondDataType.Values.BT_FLOAT:
                 writeFloat((Float) metadata.getDefaultValue());
