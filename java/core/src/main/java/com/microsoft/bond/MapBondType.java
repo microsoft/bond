@@ -115,7 +115,7 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
     @Override
     protected final void serializeValue(SerializationContext context, Map<TKey, TValue> value) throws IOException {
         this.verifyNonNullableValueIsNotSetToNull(value);
-        int count = value.size();
+        final int count = value.size();
         context.writer.writeContainerBegin(count, this.keyType.getBondDataType(), this.valueType.getBondDataType());
         int i = 0;
         for (Map.Entry<TKey, TValue> entry : value.entrySet()) {
@@ -159,8 +159,8 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
 
         // store count in a local variable since readContainerResult may be modified
         // if there are nested containers and thus can't be used inside the loop
-        int count = context.readContainerResult.count;
-        Map<TKey, TValue> value = newDefaultValue();
+        final int count = context.readContainerResult.count;
+        final Map<TKey, TValue> value = newDefaultValue();
         for (int i = 0; i < count; ++i) {
             TKey mapEntryKey = null;
             try {
@@ -183,7 +183,7 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
     @Override
     protected final Map<TKey, TValue> deserializeValue(UntaggedDeserializationContext context) throws IOException {
         final int count = context.reader.readContainerBegin();
-        Map<TKey, TValue> value = newDefaultValue();
+        final Map<TKey, TValue> value = newDefaultValue();
         for (int i = 0; i < count; ++i) {
             TKey mapEntryKey = null;
             try {
@@ -209,7 +209,7 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
             Map<TKey, TValue> value,
             StructBondType.StructField<Map<TKey, TValue>> field) throws IOException {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
-        int count = value.size();
+        final int count = value.size();
         if (count == 0 && field.isOptional()) {
             context.writer.writeFieldOmitted(BondDataType.BT_MAP, field.getId(), field);
         } else {
