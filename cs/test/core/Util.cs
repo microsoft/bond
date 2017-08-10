@@ -385,6 +385,19 @@ namespace UnitTest
             output.Flush();
         }
 
+        public static void SerializeCB2Multiple<T>(T obj, Stream stream, uint times)
+        {
+            var output = new OutputStream(stream, 11);
+            var writer = new CompactBinaryWriter<OutputStream>(output, 2);
+
+            for (uint i = 0; i < times; i++)
+            {
+                Serialize.To(writer, obj);
+                Assert.NotNull(writer.GetFirstPassWriter());
+            }
+            output.Flush();
+        }
+
         public static void MarshalCB2<T>(T obj, Stream stream)
         {
             var output = new OutputStream(stream, 11);
