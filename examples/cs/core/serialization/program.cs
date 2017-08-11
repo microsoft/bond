@@ -1,6 +1,5 @@
 ﻿namespace Examples
 {
-    using System.Collections.Generic;
     using System.Diagnostics;
     using Bond;
     using Bond.Protocols;
@@ -16,7 +15,7 @@
             {
                 n = 0x1000,
                 str = "test",
-                items = new List<double> { 3.14, 0}
+                items = { 3.14, 0 }
             };
 
             // OutputBuffer implements the Bond output stream interface on top
