@@ -60,6 +60,9 @@ public final class #{declName} implements com.microsoft.bond.BondEnum<#{declName
     public final int getValue() { return this.value; }
 
     @Override
+    public final String getLabel() { return this.label; }
+
+    @Override
     public final com.microsoft.bond.EnumBondType<#{declName}> getBondType() { return BOND_TYPE; }
 
     @Override
@@ -80,6 +83,14 @@ public final class #{declName} implements com.microsoft.bond.BondEnum<#{declName
             default: return new #{declName}(value, null);
         }
     }
+
+    public static #{declName} valueOf(String str) {
+        if (str == null) {
+            throw new java.lang.IllegalArgumentException("Argument 'str' must not be null.");
+        #{newlineSepEnd 2 parseCaseConstantMapping enumConstants}} else {
+            throw new java.lang.IllegalArgumentException("Invalid '#{declName}' enum value: '" + str + "'.");
+        }
+    }
 }|]
       where
         -- constant object
@@ -93,6 +104,11 @@ public final class #{declName} implements com.microsoft.bond.BondEnum<#{declName
         -- switch cases that map int to object
         switchCaseConstantMapping Constant {..} =
             [lt|case Values.#{constantName}: return #{constantName};|]
+
+        -- parse cases that map string to object
+        parseCaseConstantMapping Constant {..} =
+            [lt|} else if (str.equals("#{constantName}")) {
+            return #{constantName};|]
 
         -- Process constants to make sure every constant value is set (either explicit or auto-generated).
         -- TODO: auto-generation of constant values should be handled earlier, once for all languages.

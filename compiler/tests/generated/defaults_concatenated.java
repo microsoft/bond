@@ -14,11 +14,11 @@ public final class EnumType1 implements com.microsoft.bond.BondEnum<EnumType1> {
         public static final int EnumValue4 = 42;
         public static final int Low = 1;
         public static final int EnumValue5 = -10;
-        public static final int EnumValue6 = 4294967286;
+        public static final int EnumValue6 = -10;
         public static final int Int32Min = -2147483648;
         public static final int Int32Max = 2147483647;
         public static final int UInt32Min = 0;
-        public static final int UInt32Max = 4294967295;
+        public static final int UInt32Max = -1;
     }
 
     private static final class EnumBondTypeImpl extends com.microsoft.bond.EnumBondType<EnumType1> {
@@ -38,7 +38,7 @@ public final class EnumType1 implements com.microsoft.bond.BondEnum<EnumType1> {
     public static final EnumType1 EnumValue4 = new EnumType1(Values.EnumValue4, "EnumValue4");
     public static final EnumType1 Low = new EnumType1(Values.Low, "Low");
     public static final EnumType1 EnumValue5 = EnumValue3;
-    public static final EnumType1 EnumValue6 = new EnumType1(Values.EnumValue6, "EnumValue6");
+    public static final EnumType1 EnumValue6 = EnumValue3;
     public static final EnumType1 Int32Min = new EnumType1(Values.Int32Min, "Int32Min");
     public static final EnumType1 Int32Max = new EnumType1(Values.Int32Max, "Int32Max");
     public static final EnumType1 UInt32Min = new EnumType1(Values.UInt32Min, "UInt32Min");
@@ -52,6 +52,9 @@ public final class EnumType1 implements com.microsoft.bond.BondEnum<EnumType1> {
 
     @Override
     public final int getValue() { return this.value; }
+
+    @Override
+    public final String getLabel() { return this.label; }
 
     @Override
     public final com.microsoft.bond.EnumBondType<EnumType1> getBondType() { return BOND_TYPE; }
@@ -75,12 +78,41 @@ public final class EnumType1 implements com.microsoft.bond.BondEnum<EnumType1> {
             case Values.EnumValue3: return EnumValue3;
             case Values.EnumValue4: return EnumValue4;
             case Values.Low: return Low;
-            case Values.EnumValue6: return EnumValue6;
             case Values.Int32Min: return Int32Min;
             case Values.Int32Max: return Int32Max;
             case Values.UInt32Min: return UInt32Min;
             case Values.UInt32Max: return UInt32Max;
             default: return new EnumType1(value, null);
+        }
+    }
+
+    public static EnumType1 valueOf(String str) {
+        if (str == null) {
+            throw new java.lang.IllegalArgumentException("Argument 'str' must not be null.");
+        } else if (str.equals("EnumValue1")) {
+            return EnumValue1;
+        } else if (str.equals("EnumValue2")) {
+            return EnumValue2;
+        } else if (str.equals("EnumValue3")) {
+            return EnumValue3;
+        } else if (str.equals("EnumValue4")) {
+            return EnumValue4;
+        } else if (str.equals("Low")) {
+            return Low;
+        } else if (str.equals("EnumValue5")) {
+            return EnumValue5;
+        } else if (str.equals("EnumValue6")) {
+            return EnumValue6;
+        } else if (str.equals("Int32Min")) {
+            return Int32Min;
+        } else if (str.equals("Int32Max")) {
+            return Int32Max;
+        } else if (str.equals("UInt32Min")) {
+            return UInt32Min;
+        } else if (str.equals("UInt32Max")) {
+            return UInt32Max;
+        } else {
+            throw new java.lang.IllegalArgumentException("Invalid 'EnumType1' enum value: '" + str + "'.");
         }
     }
 }
@@ -200,14 +232,14 @@ public class Foo implements com.microsoft.bond.BondSerializable {
             this.m_int32_max = new com.microsoft.bond.StructBondType.Int32StructField(this, 10, "m_int32_max", com.microsoft.bond.Modifier.Optional, 2147483647);
             this.m_int64_4 = new com.microsoft.bond.StructBondType.SomethingInt64StructField(this, 11, "m_int64_4", com.microsoft.bond.Modifier.Optional);
             this.m_int64_max = new com.microsoft.bond.StructBondType.Int64StructField(this, 12, "m_int64_max", com.microsoft.bond.Modifier.Optional, 9223372036854775807L);
-            this.m_uint8_2 = new com.microsoft.bond.StructBondType.UInt8StructField(this, 13, "m_uint8_2", com.microsoft.bond.Modifier.Optional, (byte)255);
+            this.m_uint8_2 = new com.microsoft.bond.StructBondType.UInt8StructField(this, 13, "m_uint8_2", com.microsoft.bond.Modifier.Optional, (byte)-1);
             this.m_uint8_3 = new com.microsoft.bond.StructBondType.SomethingUInt8StructField(this, 14, "m_uint8_3", com.microsoft.bond.Modifier.Optional);
-            this.m_uint16_2 = new com.microsoft.bond.StructBondType.UInt16StructField(this, 15, "m_uint16_2", com.microsoft.bond.Modifier.Optional, (short)65535);
+            this.m_uint16_2 = new com.microsoft.bond.StructBondType.UInt16StructField(this, 15, "m_uint16_2", com.microsoft.bond.Modifier.Optional, (short)-1);
             this.m_uint16_3 = new com.microsoft.bond.StructBondType.SomethingUInt16StructField(this, 16, "m_uint16_3", com.microsoft.bond.Modifier.Optional);
             this.m_uint32_3 = new com.microsoft.bond.StructBondType.SomethingUInt32StructField(this, 17, "m_uint32_3", com.microsoft.bond.Modifier.Optional);
-            this.m_uint32_max = new com.microsoft.bond.StructBondType.UInt32StructField(this, 18, "m_uint32_max", com.microsoft.bond.Modifier.Optional, 4294967295);
+            this.m_uint32_max = new com.microsoft.bond.StructBondType.UInt32StructField(this, 18, "m_uint32_max", com.microsoft.bond.Modifier.Optional, -1);
             this.m_uint64_3 = new com.microsoft.bond.StructBondType.SomethingUInt64StructField(this, 19, "m_uint64_3", com.microsoft.bond.Modifier.Optional);
-            this.m_uint64_max = new com.microsoft.bond.StructBondType.UInt64StructField(this, 20, "m_uint64_max", com.microsoft.bond.Modifier.Optional, 18446744073709551615L);
+            this.m_uint64_max = new com.microsoft.bond.StructBondType.UInt64StructField(this, 20, "m_uint64_max", com.microsoft.bond.Modifier.Optional, -1L);
             this.m_double_3 = new com.microsoft.bond.StructBondType.SomethingDoubleStructField(this, 21, "m_double_3", com.microsoft.bond.Modifier.Optional);
             this.m_double_4 = new com.microsoft.bond.StructBondType.DoubleStructField(this, 22, "m_double_4", com.microsoft.bond.Modifier.Optional, -123.456789D);
             this.m_double_5 = new com.microsoft.bond.StructBondType.DoubleStructField(this, 23, "m_double_5", com.microsoft.bond.Modifier.Optional, -0.0D);
@@ -460,6 +492,9 @@ public class Foo implements com.microsoft.bond.BondSerializable {
                         value.m_wstr_2 = this.m_wstr_2.deserialize(context, __has_m_wstr_2);
                         __has_m_wstr_2 = true;
                         break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }
             this.m_bool_1.verifyDeserialized(__has_m_bool_1);
@@ -596,7 +631,7 @@ public class Foo implements com.microsoft.bond.BondSerializable {
 
     public boolean m_bool_2;
 
-    public com.microsoft.bond.SomethingBool m_bool_3;
+    public com.microsoft.bond.SomethingBoolean m_bool_3;
 
     public java.lang.String m_str_1;
 

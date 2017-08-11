@@ -176,6 +176,9 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
                         value._blob = this._blob.deserialize(context, __has__blob);
                         __has__blob = true;
                         break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }
             this._bool.verifyDeserialized(__has__bool);

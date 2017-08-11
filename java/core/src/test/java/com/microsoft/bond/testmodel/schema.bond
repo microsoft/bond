@@ -59,3 +59,15 @@ struct E<U> : D
     3 : list<nullable<E<U>>> lneu;
     4 : nullable<list<nullable<E<U>>>> nlneu;
 }
+
+enum MyEnum
+{
+    White = 1,
+    Yellow = 2,
+    Orange = 3,
+    Purple = 4,
+    Blue = 5,
+    Green = 6,
+    Brown = 7,
+    Black = 8
+}

@@ -59,6 +59,9 @@ public class Base implements com.microsoft.bond.BondSerializable {
                         value.x = this.x.deserialize(context, __has_x);
                         __has_x = true;
                         break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }
             this.x.verifyDeserialized(__has_x);
@@ -159,6 +162,9 @@ public class Foo extends tests.Base {
                     case 0:
                         value.x = this.x.deserialize(context, __has_x);
                         __has_x = true;
+                        break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
                         break;
                 }
             }

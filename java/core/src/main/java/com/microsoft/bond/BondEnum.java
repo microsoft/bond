@@ -18,6 +18,17 @@ public interface BondEnum<TEnum extends BondEnum<TEnum>> extends Comparable<TEnu
     int getValue();
 
     /**
+     * Returns the label of this enum value if specified or null otherwise.
+     * The label is defined as the name of the first declared enum constant assigned to a particular integer value.
+     * Subsequent declarations of constants assigned to the same integer value are interpreted as aliases for the
+     * first declared constant and use its label. Enum values that were not declared do not have a label and this
+     * method returns null for them.
+     *
+     * @return the label if specified or null otherwise
+     */
+    String getLabel();
+
+    /**
      * Returns the {@link BondType} type descriptor for the current enum type.
      *
      * @return the type descriptor

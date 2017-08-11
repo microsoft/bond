@@ -77,6 +77,9 @@ public class Foo implements com.microsoft.bond.BondSerializable {
                         value.ro = this.ro.deserialize(context, __has_ro);
                         __has_ro = true;
                         break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }
             this.o.verifyDeserialized(__has_o);

@@ -78,6 +78,30 @@ public final class MyEnum implements BondEnum<MyEnum> {
         }
     }
 
+    public static MyEnum valueOf(String str) {
+        if (str == null) {
+            throw new IllegalArgumentException("Argument 'str' must not be null.");
+        } else if (str.equals("White")) {
+            return White;
+        } else if (str.equals("Yellow")) {
+            return Yellow;
+        } else if (str.equals("Orange")) {
+            return Orange;
+        } else if (str.equals("Purple")) {
+            return Purple;
+        } else if (str.equals("Blue")) {
+            return Blue;
+        } else if (str.equals("Green")) {
+            return Green;
+        } else if (str.equals("Brown")) {
+            return Brown;
+        } else if (str.equals("Black")) {
+            return Black;
+        } else {
+            throw new IllegalArgumentException("Invalid 'MyEnum' enum value: '" + str + "'.");
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Bond enum instance members
     ///////////////////////////////////////////////////////////////////////////
@@ -94,6 +118,9 @@ public final class MyEnum implements BondEnum<MyEnum> {
     public final int getValue() {
         return this.value;
     }
+
+    @Override
+    public String getLabel() { return this.label; }
 
     @Override
     public final EnumBondType<MyEnum> getBondType() {
