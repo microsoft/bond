@@ -1,0 +1,7 @@
+﻿namespace Examples.Common.Protocol
+
+struct Header
+{
+    0: string Origin;
+    1: string Destination;
+}
