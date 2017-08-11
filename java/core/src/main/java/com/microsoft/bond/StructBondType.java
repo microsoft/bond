@@ -357,18 +357,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         return value;
     }
 
-    @Override
-    protected final TStruct deserializeValue(UntaggedDeserializationContext context) throws IOException {
-        TStruct value = this.newDefaultValue();
-        if (this.baseStructType != null) {
-            this.baseStructType.deserializeValueAsBase(context, value);
-        }
-        this.deserializeStructFields(context, value);
-        return value;
-    }
-
-    private void deserializeValueAsBase(
-        TaggedDeserializationContext context, TStruct value) throws IOException {
+    private void deserializeValueAsBase(TaggedDeserializationContext context, TStruct value) throws IOException {
         if (this.baseStructType != null) {
             this.baseStructType.deserializeValueAsBase(context, value);
         }
@@ -377,10 +366,16 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         context.reader.readBaseEnd();
     }
 
-    private void deserializeValueAsBase(
-        UntaggedDeserializationContext context, TStruct value) throws IOException {
+    @Override
+    protected final TStruct deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        TStruct value = this.newDefaultValue();
+        this.deserializeValue(context, value);
+        return value;
+    }
+
+    private void deserializeValue(UntaggedDeserializationContext context, TStruct value) throws IOException {
         if (this.baseStructType != null) {
-            this.baseStructType.deserializeValueAsBase(context, value);
+            this.baseStructType.deserializeValue(context, value);
         }
         this.deserializeStructFields(context, value);
     }
