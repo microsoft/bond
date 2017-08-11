@@ -21,7 +21,7 @@
                 },
 
                 NullableBlob = new ArraySegment<byte>(data, 20, 10),
-                UninitializeBlob = new ArraySegment<byte>(data, 30, 70)
+                UninitializedBlob = new ArraySegment<byte>(data, 30, 70)
             };
 
             var output = new OutputBuffer();

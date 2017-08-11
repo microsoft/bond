@@ -28,7 +28,7 @@ public class Blob {
         obj.ListOfBlobs.add(Arrays.copyOfRange(data, 0, 10));
         obj.ListOfBlobs.add(Arrays.copyOfRange(data, 10, 20));
         obj.NullableBlob = Arrays.copyOfRange(data, 20, 30);
-        obj.UninitializeBlob = Something.wrap(Arrays.copyOfRange(data, 30, 100));
+        obj.UninitializedBlob = Something.wrap(Arrays.copyOfRange(data, 30, 100));
 
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         final CompactBinaryWriter writer = new CompactBinaryWriter(output, (short) 1);
