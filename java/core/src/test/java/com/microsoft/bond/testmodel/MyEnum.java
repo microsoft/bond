@@ -78,7 +78,7 @@ public final class MyEnum implements BondEnum<MyEnum> {
         }
     }
 
-    public static MyEnum parse(String str) {
+    public static MyEnum valueOf(String str) {
         if (str == null) {
             throw new IllegalArgumentException("Argument 'str' must not be null.");
         } else if (str.equals("White")) {

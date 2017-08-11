@@ -34,6 +34,9 @@ public final class Enum implements com.microsoft.bond.BondEnum<Enum> {
     public final int getValue() { return this.value; }
 
     @Override
+    public final String getLabel() { return this.label; }
+
+    @Override
     public final com.microsoft.bond.EnumBondType<Enum> getBondType() { return BOND_TYPE; }
 
     @Override
@@ -52,6 +55,16 @@ public final class Enum implements com.microsoft.bond.BondEnum<Enum> {
         switch (value) {
             case Values.Value1: return Value1;
             default: return new Enum(value, null);
+        }
+    }
+
+    public static Enum valueOf(String str) {
+        if (str == null) {
+            throw new java.lang.IllegalArgumentException("Argument 'str' must not be null.");
+        } else if (str.equals("Value1")) {
+            return Value1;
+        } else {
+            throw new java.lang.IllegalArgumentException("Invalid 'Enum' enum value: '" + str + "'.");
         }
     }
 }
@@ -115,6 +128,9 @@ public class Foo implements com.microsoft.bond.BondSerializable {
                     case 0:
                         value.f = this.f.deserialize(context, __has_f);
                         __has_f = true;
+                        break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
                         break;
                 }
             }

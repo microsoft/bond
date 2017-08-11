@@ -84,7 +84,7 @@ public final class #{declName} implements com.microsoft.bond.BondEnum<#{declName
         }
     }
 
-    public static #{declName} parse(String str) {
+    public static #{declName} valueOf(String str) {
         if (str == null) {
             throw new java.lang.IllegalArgumentException("Argument 'str' must not be null.");
         #{newlineSepEnd 2 parseCaseConstantMapping enumConstants}} else {

@@ -52,6 +52,9 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, Foo value) throws java.io.IOException {
             while (this.readField(context)) {
                 switch (context.readFieldResult.id) {
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }
         }
@@ -203,6 +206,9 @@ public class ComplexTypes implements com.microsoft.bond.BondSerializable {
                     case 6:
                         value.m = this.m.deserialize(context, __has_m);
                         __has_m = true;
+                        break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
                         break;
                 }
             }

@@ -73,6 +73,9 @@ public class Foo<T> implements com.microsoft.bond.BondSerializable {
                         value.aa = this.aa.deserialize(context, __has_aa);
                         __has_aa = true;
                         break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
+                        break;
                 }
             }
             this.aa.verifyDeserialized(__has_aa);
@@ -158,6 +161,9 @@ public final class EnumToWrap implements com.microsoft.bond.BondEnum<EnumToWrap>
     public final int getValue() { return this.value; }
 
     @Override
+    public final String getLabel() { return this.label; }
+
+    @Override
     public final com.microsoft.bond.EnumBondType<EnumToWrap> getBondType() { return BOND_TYPE; }
 
     @Override
@@ -176,6 +182,16 @@ public final class EnumToWrap implements com.microsoft.bond.BondEnum<EnumToWrap>
         switch (value) {
             case Values.anEnumValue: return anEnumValue;
             default: return new EnumToWrap(value, null);
+        }
+    }
+
+    public static EnumToWrap valueOf(String str) {
+        if (str == null) {
+            throw new java.lang.IllegalArgumentException("Argument 'str' must not be null.");
+        } else if (str.equals("anEnumValue")) {
+            return anEnumValue;
+        } else {
+            throw new java.lang.IllegalArgumentException("Invalid 'EnumToWrap' enum value: '" + str + "'.");
         }
     }
 }
@@ -204,7 +220,7 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
             }
         }
 
-        private com.microsoft.bond.StructBondType.ObjectStructField<tests.EnumToWrap> aWrappedEnum;
+        private com.microsoft.bond.StructBondType.EnumStructField<tests.EnumToWrap> aWrappedEnum;
 
         private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -212,7 +228,7 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
         
         @Override
         protected final void initialize() {
-            this.aWrappedEnum = new com.microsoft.bond.StructBondType.ObjectStructField<tests.EnumToWrap>(this, tests.EnumToWrap.BOND_TYPE, 0, "aWrappedEnum", com.microsoft.bond.Modifier.Optional);
+            this.aWrappedEnum = new com.microsoft.bond.StructBondType.EnumStructField<tests.EnumToWrap>(this, tests.EnumToWrap.BOND_TYPE, 0, "aWrappedEnum", com.microsoft.bond.Modifier.Optional);
             super.initializeBaseAndFields(null, this.aWrappedEnum);
         }
 
@@ -239,6 +255,9 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
                     case 0:
                         value.aWrappedEnum = this.aWrappedEnum.deserialize(context, __has_aWrappedEnum);
                         __has_aWrappedEnum = true;
+                        break;
+                    default:
+                        context.reader.skip(context.readFieldResult.type);
                         break;
                 }
             }
