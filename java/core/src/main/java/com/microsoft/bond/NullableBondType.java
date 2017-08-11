@@ -108,14 +108,10 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
                     this.valueType.getBondDataType(),
                     this.getFullName());
         }
-
-        // store count in a local variable since readContainerResult may be modified
-        // if there are nested containers and thus can't be used inside the loop
-        int count = context.readContainerResult.count;
         TValue value = null;
-        if (count == 1) {
+        if (context.readContainerResult.count == 1) {
             value = this.valueType.deserializeValue(context);
-        } else if (count > 1){
+        } else if (context.readContainerResult.count > 1){
             // throws
             Throw.raiseNullableListValueHasMultipleElementsDeserializationError(this.getFullName());
         }
