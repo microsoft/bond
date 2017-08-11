@@ -49,7 +49,9 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
     @Override
     public void writeFieldOmitted(
             final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
-        assert !metadata.isDefaultNothing();
+        if (metadata.isDefaultNothing()) {
+            throw new IllegalArgumentException("can't omit fields with default = nothing in SimpleBinary");
+        }
 
         switch (type.value) {
             case BondDataType.Values.BT_BOOL:
@@ -101,6 +103,7 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
             case BondDataType.Values.BT_SET:
             case BondDataType.Values.BT_MAP:
                 writeContainerBegin(0, type);
+                writeContainerEnd();
                 break;
             default:
                 throw new IllegalArgumentException("Invalid bondType " + type.toString());

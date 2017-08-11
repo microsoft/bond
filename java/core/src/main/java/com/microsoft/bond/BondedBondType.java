@@ -130,7 +130,7 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     @Override
     protected final Bonded<TStruct> deserializeValue(UntaggedDeserializationContext context) throws IOException {
         // Bonded fields are always marshaled and prefixed with a fixed-width length.
-        final int bondedCount = context.reader.readUInt32();
+        final int bondedLength = context.reader.readUInt32();
 
         // FIXME: Marshaled is not implemented, so we assume Compact v1 for
         // now. Our implementations only ever produce Compact v1, but the spec
@@ -144,7 +144,7 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
         Bonded<TStruct> value = Bonded.fromProtocolReader(protocolReader, this.valueType);
 
         // We've read the first four bytes of the bonded field; now skip the marshaled payload.
-        context.reader.skipBytes(bondedCount - 4);
+        context.reader.skipBytes(bondedLength - 4);
 
         return value;
     }

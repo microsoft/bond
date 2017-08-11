@@ -81,19 +81,10 @@ public class CompatDriver {
         final Serializer<Compat> serializer = new Serializer<>();
         final Deserializer<Compat> deserializer = new Deserializer<>(Compat.BOND_TYPE);
         final Compat compat;
-        switch (fromProtocol) {
-            case "fast":
-            case "compact":
-            case "compact2":
-                compat = deserializer.deserialize(taggedReader);
-                break;
-            case "simple":
-            case "simple2":
-                compat = deserializer.deserialize(untaggedReader);
-                break;
-            default:
-                System.err.println("Unsupported input protocol: " + fromProtocol);
-                System.exit(STATUS_FAILURE); return; // javac doesn't realize System.exit() never returns.
+        if (untaggedReader != null) {
+            compat = deserializer.deserialize(untaggedReader);
+        } else {
+            compat = deserializer.deserialize(taggedReader);
         }
         serializer.serialize(compat, writer);
     }
