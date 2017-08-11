@@ -187,7 +187,7 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
             StructBondType.StructField<Map<TKey, TValue>> field) throws IOException {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
         int count = value.size();
-        if (count == 0 && field.isOptional()) {
+        if (!field.isDefaultNothing() && count == 0 && field.isOptional()) {
             context.writer.writeFieldOmitted(BondDataType.BT_MAP, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_MAP, field.getId(), field);

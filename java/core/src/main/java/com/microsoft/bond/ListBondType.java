@@ -154,7 +154,7 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
             StructBondType.StructField<List<TElement>> field) throws IOException {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
         int count = value.size();
-        if (count == 0 && field.isOptional()) {
+        if (!field.isDefaultNothing() && count == 0 && field.isOptional()) {
             context.writer.writeFieldOmitted(BondDataType.BT_LIST, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_LIST, field.getId(), field);
