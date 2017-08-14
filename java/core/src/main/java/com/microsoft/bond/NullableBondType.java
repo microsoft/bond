@@ -99,7 +99,6 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
 
     @Override
     protected final TValue deserializeValue(TaggedDeserializationContext context) throws IOException {
-        TValue value = null;
         context.reader.readListBegin(context.readContainerResult);
         if (context.readContainerResult.elementType.value != this.valueType.getBondDataType().value) {
             // throws
@@ -109,9 +108,10 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
                     this.valueType.getBondDataType(),
                     this.getFullName());
         }
+        TValue value = null;
         if (context.readContainerResult.count == 1) {
             value = this.valueType.deserializeValue(context);
-        } else {
+        } else if (context.readContainerResult.count > 1){
             // throws
             Throw.raiseNullableListValueHasMultipleElementsDeserializationError(this.getFullName());
         }
@@ -139,7 +139,7 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
             SerializationContext context,
             TValue value,
             StructBondType.StructField<TValue> field) throws IOException {
-        if (value == null && field.isOptional()) {
+        if (!field.isDefaultNothing() && value == null && field.isOptional()) {
             context.writer.writeFieldOmitted(BondDataType.BT_LIST, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_LIST, field.getId(), field);

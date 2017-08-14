@@ -170,7 +170,7 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
             StructBondType.StructField<Set<TElement>> field) throws IOException {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
         final int count = value.size();
-        if (count == 0 && field.isOptional()) {
+        if (!field.isDefaultNothing() && count == 0 && field.isOptional()) {
             context.writer.writeFieldOmitted(BondDataType.BT_SET, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_SET, field.getId(), field);
