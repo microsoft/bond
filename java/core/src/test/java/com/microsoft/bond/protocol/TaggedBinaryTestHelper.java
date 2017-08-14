@@ -8,7 +8,6 @@ import com.microsoft.bond.BondDataType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -123,7 +122,7 @@ public final class TaggedBinaryTestHelper {
 
     /**
      * A tuple of {@see InvokeWriter} and {@see InvokeReader} that form a particular test case for binary protocols.
-     * A specific protocol needs to provide the payload data and {@see ProtocolImplementationFactory} factories,
+     * A specific protocol needs to provide the payload data and {@see ProtocolImplementations} factories,
      * and then call the method {@see testProtocol}.
      */
     public static final class ProtocolTestCase {
@@ -224,7 +223,7 @@ public final class TaggedBinaryTestHelper {
     }
 
     /**
-     * Defines some unseful sequence constants.
+     * Defines some useful sequence constants.
      */
     public static final class LargeSequences {
 

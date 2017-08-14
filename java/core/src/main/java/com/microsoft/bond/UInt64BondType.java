@@ -75,6 +75,11 @@ public final class UInt64BondType extends PrimitiveBondType<Long> {
     }
 
     @Override
+    protected final Long deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        return deserializePrimitiveValue(context);
+    }
+
+    @Override
     protected final void serializeField(
             SerializationContext context,
             Long value,
@@ -111,6 +116,18 @@ public final class UInt64BondType extends PrimitiveBondType<Long> {
      * @throws IOException if an I/O error occurred
      */
     protected static long deserializePrimitiveValue(TaggedDeserializationContext context) throws IOException {
+        return context.reader.readUInt64();
+    }
+
+    /**
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext)} method
+     * for primitive values.
+     *
+     * @param context contains the runtime context of the deserialization
+     * @return the deserialized value
+     * @throws IOException if an I/O error occurred
+     */
+    protected static long deserializePrimitiveValue(UntaggedDeserializationContext context) throws IOException {
         return context.reader.readUInt64();
     }
 

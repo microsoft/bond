@@ -12,14 +12,35 @@
       <excludeFolder url="file://$MODULE_DIR$/../../.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../build" />
     </content>
-    <content url="file://$MODULE_DIR$/../../build/generated-src">
-      <sourceFolder url="file://$MODULE_DIR$/../../build/generated-src" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/../../build/generated-bond-main-src">
+      <sourceFolder url="file://$MODULE_DIR$/../../build/generated-bond-main-src" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../build/generated-bond-test-src">
+      <sourceFolder url="file://$MODULE_DIR$/../../build/generated-bond-test-src" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" scope="PROVIDED">
+      <library name="Gradle: bond-5.0.0">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../core/build/libs/bond-5.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="RUNTIME">
+      <library name="Gradle: bond-5.0.0">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../core/build/libs/bond-5.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" scope="TEST">
       <library name="Gradle: bond-5.0.0">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../../core/build/libs/bond-5.0.0.jar!/" />

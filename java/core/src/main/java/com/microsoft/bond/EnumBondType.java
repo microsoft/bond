@@ -18,7 +18,7 @@ public abstract class EnumBondType<TEnum extends BondEnum<TEnum>> extends Primit
     private final TEnum defaultValue;
 
     /**
-     * Used by generated subclasses (and only by generated sublclasses) to instantiate the type descriptor.
+     * Used by generated subclasses (and only by generated subclasses) to instantiate the type descriptor.
      */
     protected EnumBondType() {
         // a default for enum type is the enum value with the underlying integer set to 0
@@ -69,6 +69,11 @@ public abstract class EnumBondType<TEnum extends BondEnum<TEnum>> extends Primit
 
     @Override
     protected final TEnum deserializeValue(TaggedDeserializationContext context) throws IOException {
+        return this.getEnumValue(context.reader.readInt32());
+    }
+
+    @Override
+    protected final TEnum deserializeValue(UntaggedDeserializationContext context) throws IOException {
         return this.getEnumValue(context.reader.readInt32());
     }
 

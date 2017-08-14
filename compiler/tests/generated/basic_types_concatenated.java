@@ -198,6 +198,24 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, BasicTypes value) throws java.io.IOException {
+            value._bool = this._bool.deserialize(context);
+            value._str = this._str.deserialize(context);
+            value._wstr = this._wstr.deserialize(context);
+            value._uint64 = this._uint64.deserialize(context);
+            value._uint16 = this._uint16.deserialize(context);
+            value._uint32 = this._uint32.deserialize(context);
+            value._uint8 = this._uint8.deserialize(context);
+            value._int8 = this._int8.deserialize(context);
+            value._int16 = this._int16.deserialize(context);
+            value._int32 = this._int32.deserialize(context);
+            value._int64 = this._int64.deserialize(context);
+            value._double = this._double.deserialize(context);
+            value._float = this._float.deserialize(context);
+            value._blob = this._blob.deserialize(context);
+        }
+        
+        @Override
         protected final void initializeStructFields(BasicTypes value) {
             value._bool = this._bool.initialize();
             value._str = this._str.initialize();

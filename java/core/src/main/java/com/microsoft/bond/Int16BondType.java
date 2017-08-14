@@ -75,6 +75,11 @@ public final class Int16BondType extends PrimitiveBondType<Short> {
     }
 
     @Override
+    protected final Short deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        return deserializePrimitiveValue(context);
+    }
+
+    @Override
     protected final void serializeField(
             SerializationContext context,
             Short value,
@@ -111,6 +116,18 @@ public final class Int16BondType extends PrimitiveBondType<Short> {
      * @throws IOException if an I/O error occurred
      */
     protected static short deserializePrimitiveValue(TaggedDeserializationContext context) throws IOException {
+        return context.reader.readInt16();
+    }
+
+    /**
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext)} method
+     * for primitive values.
+     *
+     * @param context contains the runtime context of the deserialization
+     * @return the deserialized value
+     * @throws IOException if an I/O error occurred
+     */
+    protected static short deserializePrimitiveValue(UntaggedDeserializationContext context) throws IOException {
         return context.reader.readInt16();
     }
 

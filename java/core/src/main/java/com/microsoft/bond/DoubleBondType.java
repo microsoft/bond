@@ -77,6 +77,11 @@ public final class DoubleBondType extends PrimitiveBondType<Double> {
     }
 
     @Override
+    protected final Double deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        return deserializePrimitiveValue(context);
+    }
+
+    @Override
     protected final void serializeField(
             SerializationContext context,
             Double value,
@@ -113,6 +118,18 @@ public final class DoubleBondType extends PrimitiveBondType<Double> {
      * @throws IOException if an I/O error occurred
      */
     protected static double deserializePrimitiveValue(TaggedDeserializationContext context) throws IOException {
+        return context.reader.readDouble();
+    }
+
+    /**
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext)} method
+     * for primitive values.
+     *
+     * @param context contains the runtime context of the deserialization
+     * @return the deserialized value
+     * @throws IOException if an I/O error occurred
+     */
+    protected static double deserializePrimitiveValue(UntaggedDeserializationContext context) throws IOException {
         return context.reader.readDouble();
     }
 

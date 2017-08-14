@@ -19,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * which are generated private classes nested within the struct classes.
  * @param <TStruct> the class of the struct value
  */
+// This API is consumed by codegen, which static analysis isn't aware of.
+@SuppressWarnings({"unused", "WeakerAccess"})
 public abstract class StructBondType<TStruct extends BondSerializable>
         extends BondType<TStruct> implements StructMetadata {
 
@@ -47,11 +49,11 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     // that distinction since it's intended for public API and needs to be convenient (i.e. it's not elegant
     // to ask client code to "build" an invariant non-generic type).
     private static final ConcurrentHashMap<
+        Class<? extends BondSerializable>,
+        StructBondTypeBuilder<? extends BondSerializable>> structTypeBuilderRegistry =
+        new ConcurrentHashMap<
             Class<? extends BondSerializable>,
-            StructBondTypeBuilder<? extends BondSerializable>> structTypeBuilderRegistry =
-            new ConcurrentHashMap<
-                    Class<? extends BondSerializable>,
-                    StructBondTypeBuilder<? extends BondSerializable>>();
+            StructBondTypeBuilder<? extends BondSerializable>>();
 
     private static final String BOND_TYPE_INITIALIZATION_METHOD_NAME = "initializeBondType";
 
@@ -88,7 +90,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected StructBondType(GenericTypeSpecialization genericTypeSpecialization) {
         this.genericTypeSpecialization = genericTypeSpecialization;
         precomputedHashCode = this.getClass().hashCode() +
-                (genericTypeSpecialization == null ? 0 : genericTypeSpecialization.hashCode());
+            (genericTypeSpecialization == null ? 0 : genericTypeSpecialization.hashCode());
     }
 
     /**
@@ -100,8 +102,8 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      * @param structFields   an array of descriptors of the declared fields of the struct (excluding inherited)
      */
     protected final void initializeBaseAndFields(
-            StructBondType<? super TStruct> baseStructType,
-            StructField<?>... structFields) {
+        StructBondType<? super TStruct> baseStructType,
+        StructField<?>... structFields) {
         this.baseStructType = baseStructType;
         this.structFields = structFields;
     }
@@ -160,7 +162,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      * @throws IOException if an I/O error occurred
      */
     protected abstract void serializeStructFields(
-            SerializationContext context, TStruct value) throws IOException;
+        SerializationContext context, TStruct value) throws IOException;
 
     /**
      * Used by generated subclasses to deserialize declared fields of this struct, excluding inherited fields.
@@ -170,7 +172,17 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      * @throws IOException if an I/O error occurred
      */
     protected abstract void deserializeStructFields(
-            TaggedDeserializationContext context, TStruct value) throws IOException;
+        TaggedDeserializationContext context, TStruct value) throws IOException;
+
+    /**
+     * Used by generated subclasses to deserialize declared fields of this struct, excluding inherited fields.
+     *
+     * @param context contains the runtime context of the deserialization
+     * @param value   the value to deserialize into
+     * @throws IOException if an I/O error occurred
+     */
+    protected abstract void deserializeStructFields(
+        UntaggedDeserializationContext context, TStruct value) throws IOException;
 
     /**
      * Used by generated subclasses to initialize declared fields of this struct, excluding inherited fields.
@@ -222,7 +234,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     public final SchemaDef buildSchemaDef() {
         SchemaDef schemaDef = new SchemaDef();
         HashMap<StructBondType<?>, StructDefOrdinalTuple> typeDefMap =
-                new HashMap<StructBondType<?>, StructDefOrdinalTuple>();
+            new HashMap<StructBondType<?>, StructDefOrdinalTuple>();
         schemaDef.root = this.createSchemaTypeDef(typeDefMap);
         StructDef[] tempArray = new StructDef[typeDefMap.size()];
         for (Map.Entry<StructBondType<?>, StructDefOrdinalTuple> e : typeDefMap.entrySet()) {
@@ -263,7 +275,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     @Override
     public final BondType<?>[] getGenericTypeArguments() {
         return this.genericTypeSpecialization != null ?
-                this.genericTypeSpecialization.genericTypeArguments.clone() : null;
+            this.genericTypeSpecialization.genericTypeArguments.clone() : null;
     }
 
     @Override
@@ -296,6 +308,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
     /**
      * Returns a value indicating whether this type is a subtype of (or the same as) the argument type.
+     *
      * @param other the argument type
      * @return true if this type is the same type or a subtype of the argument type
      */
@@ -323,7 +336,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     private void serializeValueAsBase(
-            SerializationContext context, TStruct value) throws IOException {
+        SerializationContext context, TStruct value) throws IOException {
         if (this.baseStructType != null) {
             this.baseStructType.serializeValueAsBase(context, value);
         }
@@ -344,8 +357,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         return value;
     }
 
-    private void deserializeValueAsBase(
-            TaggedDeserializationContext context, TStruct value) throws IOException {
+    private void deserializeValueAsBase(TaggedDeserializationContext context, TStruct value) throws IOException {
         if (this.baseStructType != null) {
             this.baseStructType.deserializeValueAsBase(context, value);
         }
@@ -355,10 +367,24 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     @Override
+    protected final TStruct deserializeValue(UntaggedDeserializationContext context) throws IOException {
+        TStruct value = this.newDefaultValue();
+        this.deserializeValue(context, value);
+        return value;
+    }
+
+    private void deserializeValue(UntaggedDeserializationContext context, TStruct value) throws IOException {
+        if (this.baseStructType != null) {
+            this.baseStructType.deserializeValue(context, value);
+        }
+        this.deserializeStructFields(context, value);
+    }
+
+    @Override
     protected final void serializeField(
-            SerializationContext context,
-            TStruct value,
-            StructField<TStruct> field) throws IOException {
+        SerializationContext context,
+        TStruct value,
+        StructField<TStruct> field) throws IOException {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
         // struct fields are never omitted
         context.writer.writeFieldBegin(BondDataType.BT_STRUCT, field.getId(), field);
@@ -373,8 +399,8 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
     @Override
     protected final TStruct deserializeField(
-            TaggedDeserializationContext context,
-            StructField<TStruct> field) throws IOException {
+        TaggedDeserializationContext context,
+        StructField<TStruct> field) throws IOException {
         // a struct value may be deserialized only from BT_STRUCT
         if (context.readFieldResult.type.value != BondDataType.BT_STRUCT.value) {
             // throws
@@ -400,10 +426,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         if (obj instanceof StructBondType<?>) {
             StructBondType<?> that = (StructBondType<?>) obj;
             return this.precomputedHashCode == that.precomputedHashCode &&
-                    this.getClass().equals(that.getClass()) &&
-                    (this.genericTypeSpecialization == null ?
-                            that.genericTypeSpecialization == null :
-                            this.genericTypeSpecialization.equals(that.genericTypeSpecialization));
+                this.getClass().equals(that.getClass()) &&
+                (this.genericTypeSpecialization == null ?
+                    that.genericTypeSpecialization == null :
+                    this.genericTypeSpecialization.equals(that.genericTypeSpecialization));
 
         } else {
             return false;
@@ -444,6 +470,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         return this.deserializeValue(context);
     }
 
+    /**
+     * Deserializes an object from the given untagged protocol reader.
+     *
+     * @param reader the protocol reader to read from
+     * @return deserialized object
+     * @throws IOException if an I/O error occurred
+     */
+    TStruct deserialize(UntaggedProtocolReader reader) throws IOException {
+        UntaggedDeserializationContext context = new UntaggedDeserializationContext(reader);
+        return this.deserializeValue(context);
+    }
+
     @Override
     final TypeDef createSchemaTypeDef(HashMap<StructBondType<?>, StructDefOrdinalTuple> structDefMap) {
         // first need to get the struct def info since need to reference it by the ordinal
@@ -480,7 +518,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     private void initializeSchemaStructDef(
-            StructDef structDef, HashMap<StructBondType<?>, StructDefOrdinalTuple> structDefMap) {
+        StructDef structDef, HashMap<StructBondType<?>, StructDefOrdinalTuple> structDefMap) {
         structDef.metadata.name = this.getName();
         structDef.metadata.qualified_name = this.getFullName();
         if (this.baseStructType != null) {
@@ -545,7 +583,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      * @param <TStruct>         the Bond struct value class
      */
     protected static <TStruct extends BondSerializable> void registerStructType(
-            Class<TStruct> clazz, StructBondTypeBuilder<TStruct> structTypeBuilder) {
+        Class<TStruct> clazz, StructBondTypeBuilder<TStruct> structTypeBuilder) {
         structTypeBuilderRegistry.putIfAbsent(clazz, structTypeBuilder);
     }
 
@@ -563,8 +601,8 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      * @return a type descriptor instance
      */
     protected static StructBondType<? extends BondSerializable> getStructType(
-            Class<? extends BondSerializable> clazz,
-            BondType<?>... genericTypeArguments) {
+        Class<? extends BondSerializable> clazz,
+        BondType<?>... genericTypeArguments) {
         StructBondTypeBuilder<?> structTypeBuilder = structTypeBuilderRegistry.get(clazz);
         if (structTypeBuilder == null) {
             // the type builder is not found in the registry, which could be due to the following two reasons:
@@ -581,8 +619,8 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             } catch (Exception e) {
                 // if there is an error, then the class implemenation is invalid
                 throw new RuntimeException(
-                        "Unexpected program state: invalid struct implementation: " + clazz.getName(),
-                        e);
+                    "Unexpected program state: invalid struct implementation: " + clazz.getName(),
+                    e);
             }
 
             // at this point the class initialization should register the struct type builder;
@@ -592,7 +630,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             structTypeBuilder = structTypeBuilderRegistry.get(clazz);
             if (structTypeBuilder == null) {
                 throw new RuntimeException(
-                        "Unexpected program state: invalid struct implementation: " + clazz.getName());
+                    "Unexpected program state: invalid struct implementation: " + clazz.getName());
             }
         }
 
@@ -600,9 +638,9 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         // since this should be called only be generated code, this must be always the case
         if (structTypeBuilder.getGenericTypeParameterCount() != genericTypeArguments.length) {
             throw new RuntimeException(
-                    "Unexpected program state: generic argument count mismatch: " + clazz.getName() +
-                            ", expected: " + structTypeBuilder.getGenericTypeParameterCount() +
-                            ", actual: " + genericTypeArguments.length);
+                "Unexpected program state: generic argument count mismatch: " + clazz.getName() +
+                    ", expected: " + structTypeBuilder.getGenericTypeParameterCount() +
+                    ", actual: " + genericTypeArguments.length);
         }
 
         // build, cache, and initialize the type descriptor
@@ -674,11 +712,11 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         // restrict subclasses to nested classes only
         private StructField(
-                StructBondType<?> structType,
-                BondType<TField> fieldType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            BondType<TField> fieldType,
+            int id,
+            String name,
+            Modifier modifier) {
             this.structType = structType;
             this.fieldType = fieldType;
             this.id = (short) id;
@@ -739,7 +777,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         final void verifyFieldWasNotYetDeserialized(
-                boolean wasAlreadyDeserialized) throws InvalidBondDataException {
+            boolean wasAlreadyDeserialized) throws InvalidBondDataException {
             if (wasAlreadyDeserialized) {
                 Throw.raiseStructFieldIsPresentMoreThanOnceDeserializationError(this);
             }
@@ -759,11 +797,11 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class ObjectStructField<TField> extends StructField<TField> {
 
         public ObjectStructField(
-                StructBondType<?> structType,
-                BondType<TField> fieldType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            BondType<TField> fieldType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, fieldType, id, name, modifier);
         }
 
@@ -786,14 +824,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, TField value) throws IOException {
+            SerializationContext context, TField value) throws IOException {
             this.fieldType.serializeField(context, value, this);
         }
 
         public final TField deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeField(context, this);
+        }
+
+        public final TField deserialize(UntaggedDeserializationContext context) throws IOException {
+            return this.fieldType.deserializeValue(context);
         }
     }
 
@@ -805,11 +847,11 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingObjectStructField<TField> extends StructField<TField> {
 
         public SomethingObjectStructField(
-                StructBondType<?> structType,
-                BondType<TField> fieldType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            BondType<TField> fieldType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, fieldType, id, name, modifier);
         }
 
@@ -832,14 +874,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingObject<TField> value) throws IOException {
+            SerializationContext context, SomethingObject<TField> value) throws IOException {
             this.fieldType.serializeSomethingField(context, value, this);
         }
 
         public final SomethingObject<TField> deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeSomethingField(context, this);
+        }
+
+        public final SomethingObject<TField> deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(this.fieldType.deserializeValue(context));
         }
     }
 
@@ -852,20 +898,20 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final byte defaultValue;
 
         public UInt8StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                byte defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            byte defaultValue) {
             super(structType, BondTypes.UINT8, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public UInt8StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, UInt8BondType.DEFAULT_VALUE_AS_PRIMITIVE);
         }
 
@@ -889,14 +935,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, byte value) throws IOException {
+            SerializationContext context, byte value) throws IOException {
             UInt8BondType.serializePrimitiveField(context, value, this);
         }
 
         public final byte deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt8BondType.deserializePrimitiveField(context, this);
+        }
+
+        public final byte deserialize(UntaggedDeserializationContext context) throws IOException {
+            return UInt8BondType.deserializePrimitiveValue(context);
         }
     }
 
@@ -907,10 +957,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingUInt8StructField extends StructField<Byte> {
 
         public SomethingUInt8StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.UINT8, id, name, modifier);
         }
 
@@ -933,14 +983,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingByte value) throws IOException {
+            SerializationContext context, SomethingByte value) throws IOException {
             UInt8BondType.serializePrimitiveSomethingField(context, value, this);
         }
 
         public final SomethingByte deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt8BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingByte deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(UInt8BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -953,20 +1007,20 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final short defaultValue;
 
         public UInt16StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                short defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            short defaultValue) {
             super(structType, BondTypes.UINT16, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public UInt16StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, UInt16BondType.DEFAULT_VALUE_AS_PRIMITIVE);
         }
 
@@ -990,14 +1044,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, short value) throws IOException {
+            SerializationContext context, short value) throws IOException {
             UInt16BondType.serializePrimitiveField(context, value, this);
         }
 
         public final short deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt16BondType.deserializePrimitiveField(context, this);
+        }
+
+        public final short deserialize(UntaggedDeserializationContext context) throws IOException {
+            return UInt16BondType.deserializePrimitiveValue(context);
         }
     }
 
@@ -1008,10 +1066,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingUInt16StructField extends StructField<Short> {
 
         public SomethingUInt16StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.UINT16, id, name, modifier);
         }
 
@@ -1034,14 +1092,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingShort value) throws IOException {
+            SerializationContext context, SomethingShort value) throws IOException {
             UInt16BondType.serializePrimitiveSomethingField(context, value, this);
         }
 
         public final SomethingShort deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt16BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingShort deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(UInt16BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1054,20 +1116,20 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final int defaultValue;
 
         public UInt32StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                int defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            int defaultValue) {
             super(structType, BondTypes.UINT32, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public UInt32StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, UInt32BondType.DEFAULT_VALUE_AS_PRIMITIVE);
         }
 
@@ -1091,14 +1153,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, int value) throws IOException {
+            SerializationContext context, int value) throws IOException {
             UInt32BondType.serializePrimitiveField(context, value, this);
         }
 
         public final int deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt32BondType.deserializePrimitiveField(context, this);
+        }
+
+        public final int deserialize(UntaggedDeserializationContext context) throws IOException {
+            return UInt32BondType.deserializePrimitiveValue(context);
         }
     }
 
@@ -1109,10 +1175,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingUInt32StructField extends StructField<Integer> {
 
         public SomethingUInt32StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.UINT32, id, name, modifier);
         }
 
@@ -1135,14 +1201,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingInteger value) throws IOException {
+            SerializationContext context, SomethingInteger value) throws IOException {
             UInt32BondType.serializePrimitiveSomethingField(context, value, this);
         }
 
         public final SomethingInteger deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt32BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingInteger deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(UInt32BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1155,20 +1225,20 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final long defaultValue;
 
         public UInt64StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                long defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            long defaultValue) {
             super(structType, BondTypes.UINT64, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public UInt64StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, UInt64BondType.DEFAULT_VALUE_AS_PRIMITIVE);
         }
 
@@ -1192,14 +1262,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, long value) throws IOException {
+            SerializationContext context, long value) throws IOException {
             UInt64BondType.serializePrimitiveField(context, value, this);
         }
 
         public final long deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt64BondType.deserializePrimitiveField(context, this);
+        }
+
+        public final long deserialize(UntaggedDeserializationContext context) throws IOException {
+            return UInt64BondType.deserializePrimitiveValue(context);
         }
     }
 
@@ -1210,10 +1284,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingUInt64StructField extends StructField<Long> {
 
         public SomethingUInt64StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.UINT64, id, name, modifier);
         }
 
@@ -1236,14 +1310,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingLong value) throws IOException {
+            SerializationContext context, SomethingLong value) throws IOException {
             UInt64BondType.serializePrimitiveSomethingField(context, value, this);
         }
 
         public final SomethingLong deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return UInt64BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingLong deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(UInt64BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1256,20 +1334,20 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final byte defaultValue;
 
         public Int8StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                byte defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            byte defaultValue) {
             super(structType, BondTypes.INT8, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public Int8StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, Int8BondType.DEFAULT_VALUE_AS_PRIMITIVE);
         }
 
@@ -1293,14 +1371,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, byte value) throws IOException {
+            SerializationContext context, byte value) throws IOException {
             Int8BondType.serializePrimitiveField(context, value, this);
         }
 
         public final byte deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int8BondType.deserializePrimitiveField(context, this);
+        }
+
+        public final byte deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Int8BondType.deserializePrimitiveValue(context);
         }
     }
 
@@ -1311,10 +1393,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingInt8StructField extends StructField<Byte> {
 
         public SomethingInt8StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.INT8, id, name, modifier);
         }
 
@@ -1337,14 +1419,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingByte value) throws IOException {
+            SerializationContext context, SomethingByte value) throws IOException {
             Int8BondType.serializePrimitiveSomethingField(context, value, this);
         }
 
         public final SomethingByte deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int8BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingByte deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(Int8BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1357,20 +1443,20 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final short defaultValue;
 
         public Int16StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                short defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            short defaultValue) {
             super(structType, BondTypes.INT16, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public Int16StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, Int16BondType.DEFAULT_VALUE_AS_PRIMITIVE);
         }
 
@@ -1394,14 +1480,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, short value) throws IOException {
+            SerializationContext context, short value) throws IOException {
             Int16BondType.serializePrimitiveField(context, value, this);
         }
 
         public final short deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int16BondType.deserializePrimitiveField(context, this);
+        }
+
+        public final short deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Int16BondType.deserializePrimitiveValue(context);
         }
     }
 
@@ -1412,10 +1502,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingInt16StructField extends StructField<Short> {
 
         public SomethingInt16StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.INT16, id, name, modifier);
         }
 
@@ -1438,14 +1528,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingShort value) throws IOException {
+            SerializationContext context, SomethingShort value) throws IOException {
             Int16BondType.serializePrimitiveSomethingField(context, value, this);
         }
 
         public final SomethingShort deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int16BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingShort deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(Int16BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1458,20 +1552,20 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final int defaultValue;
 
         public Int32StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                int defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            int defaultValue) {
             super(structType, BondTypes.INT32, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public Int32StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, Int32BondType.DEFAULT_VALUE_AS_PRIMITIVE);
         }
 
@@ -1495,14 +1589,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, int value) throws IOException {
+            SerializationContext context, int value) throws IOException {
             Int32BondType.serializePrimitiveField(context, value, this);
         }
 
         public final int deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int32BondType.deserializePrimitiveField(context, this);
+        }
+
+        public final int deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Int32BondType.deserializePrimitiveValue(context);
         }
     }
 
@@ -1513,10 +1611,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingInt32StructField extends StructField<Integer> {
 
         public SomethingInt32StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.INT32, id, name, modifier);
         }
 
@@ -1539,14 +1637,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingInteger value) throws IOException {
+            SerializationContext context, SomethingInteger value) throws IOException {
             Int32BondType.serializePrimitiveSomethingField(context, value, this);
         }
 
         public final SomethingInteger deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int32BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingInteger deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(Int32BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1559,20 +1661,20 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final long defaultValue;
 
         public Int64StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                long defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            long defaultValue) {
             super(structType, BondTypes.INT64, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public Int64StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, Int64BondType.DEFAULT_VALUE_AS_PRIMITIVE);
         }
 
@@ -1596,14 +1698,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, long value) throws IOException {
+            SerializationContext context, long value) throws IOException {
             Int64BondType.serializePrimitiveField(context, value, this);
         }
 
         public final long deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int64BondType.deserializePrimitiveField(context, this);
+        }
+
+        public final long deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Int64BondType.deserializePrimitiveValue(context);
         }
     }
 
@@ -1614,10 +1720,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingInt64StructField extends StructField<Long> {
 
         public SomethingInt64StructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.INT64, id, name, modifier);
         }
 
@@ -1640,14 +1746,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingLong value) throws IOException {
+            SerializationContext context, SomethingLong value) throws IOException {
             Int64BondType.serializePrimitiveSomethingField(context, value, this);
         }
 
         public final SomethingLong deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return Int64BondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingLong deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(Int64BondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1660,20 +1770,20 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final boolean defaultValue;
 
         public BoolStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                boolean defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            boolean defaultValue) {
             super(structType, BondTypes.BOOL, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public BoolStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, BoolBondType.DEFAULT_VALUE_AS_PRIMITIVE);
         }
 
@@ -1697,14 +1807,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, boolean value) throws IOException {
+            SerializationContext context, boolean value) throws IOException {
             BoolBondType.serializePrimitiveField(context, value, this);
         }
 
         public final boolean deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return BoolBondType.deserializePrimitiveField(context, this);
+        }
+
+        public final boolean deserialize(UntaggedDeserializationContext context) throws IOException {
+            return BoolBondType.deserializePrimitiveValue(context);
         }
     }
 
@@ -1715,10 +1829,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingBoolStructField extends StructField<Boolean> {
 
         public SomethingBoolStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.BOOL, id, name, modifier);
         }
 
@@ -1741,14 +1855,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingBoolean value) throws IOException {
+            SerializationContext context, SomethingBoolean value) throws IOException {
             BoolBondType.serializePrimitiveSomethingField(context, value, this);
         }
 
         public final SomethingBoolean deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return BoolBondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingBoolean deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(BoolBondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1761,20 +1879,20 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final float defaultValue;
 
         public FloatStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                float defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            float defaultValue) {
             super(structType, BondTypes.FLOAT, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public FloatStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, FloatBondType.DEFAULT_VALUE_AS_PRIMITIVE);
         }
 
@@ -1798,14 +1916,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, float value) throws IOException {
+            SerializationContext context, float value) throws IOException {
             FloatBondType.serializePrimitiveField(context, value, this);
         }
 
         public final float deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return FloatBondType.deserializePrimitiveField(context, this);
+        }
+
+        public final float deserialize(UntaggedDeserializationContext context) throws IOException {
+            return FloatBondType.deserializePrimitiveValue(context);
         }
     }
 
@@ -1816,10 +1938,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingFloatStructField extends StructField<Float> {
 
         public SomethingFloatStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.FLOAT, id, name, modifier);
         }
 
@@ -1842,14 +1964,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingFloat value) throws IOException {
+            SerializationContext context, SomethingFloat value) throws IOException {
             FloatBondType.serializePrimitiveSomethingField(context, value, this);
         }
 
         public final SomethingFloat deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return FloatBondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingFloat deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(FloatBondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1862,20 +1988,20 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final double defaultValue;
 
         public DoubleStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                double defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            double defaultValue) {
             super(structType, BondTypes.DOUBLE, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public DoubleStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, DoubleBondType.DEFAULT_VALUE_AS_PRIMITIVE);
         }
 
@@ -1899,14 +2025,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, double value) throws IOException {
+            SerializationContext context, double value) throws IOException {
             DoubleBondType.serializePrimitiveField(context, value, this);
         }
 
         public final double deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return DoubleBondType.deserializePrimitiveField(context, this);
+        }
+
+        public final double deserialize(UntaggedDeserializationContext context) throws IOException {
+            return DoubleBondType.deserializePrimitiveValue(context);
         }
     }
 
@@ -1917,10 +2047,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingDoubleStructField extends StructField<Double> {
 
         public SomethingDoubleStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.DOUBLE, id, name, modifier);
         }
 
@@ -1943,14 +2073,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingDouble value) throws IOException {
+            SerializationContext context, SomethingDouble value) throws IOException {
             DoubleBondType.serializePrimitiveSomethingField(context, value, this);
         }
 
         public final SomethingDouble deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return DoubleBondType.deserializePrimitiveSomethingField(context, this);
+        }
+
+        public final SomethingDouble deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(DoubleBondType.deserializePrimitiveValue(context));
         }
     }
 
@@ -1963,21 +2097,21 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final String defaultValue;
 
         public StringStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                String defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            String defaultValue) {
             super(structType, BondTypes.STRING, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         // used by codegen
         public StringStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, StringBondType.DEFAULT_VALUE_AS_OBJECT);
         }
 
@@ -2000,14 +2134,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, String value) throws IOException {
+            SerializationContext context, String value) throws IOException {
             this.fieldType.serializeField(context, value, this);
         }
 
         public final String deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeField(context, this);
+        }
+
+        public final String deserialize(UntaggedDeserializationContext context) throws IOException {
+            return this.fieldType.deserializeValue(context);
         }
     }
 
@@ -2018,10 +2156,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     protected static final class SomethingStringStructField extends StructField<String> {
 
         public SomethingStringStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.STRING, id, name, modifier);
         }
 
@@ -2044,14 +2182,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingObject<String> value) throws IOException {
+            SerializationContext context, SomethingObject<String> value) throws IOException {
             this.fieldType.serializeSomethingField(context, value, this);
         }
 
         public final SomethingObject<String> deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeSomethingField(context, this);
+        }
+
+        public final SomethingObject<String> deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(this.fieldType.deserializeValue(context));
         }
     }
 
@@ -2064,21 +2206,21 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final String defaultValue;
 
         public WStringStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier,
-                String defaultValue) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier,
+            String defaultValue) {
             super(structType, BondTypes.WSTRING, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         // used by codegen
         public WStringStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, id, name, modifier, WStringBondType.DEFAULT_VALUE_AS_OBJECT);
         }
 
@@ -2101,14 +2243,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, String value) throws IOException {
+            SerializationContext context, String value) throws IOException {
             this.fieldType.serializeField(context, value, this);
         }
 
         public final String deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeField(context, this);
+        }
+
+        public final String deserialize(UntaggedDeserializationContext context) throws IOException {
+            return this.fieldType.deserializeValue(context);
         }
     }
 
@@ -2120,10 +2266,10 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         // used by codegen
         public SomethingWStringStructField(
-                StructBondType<?> structType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, BondTypes.WSTRING, id, name, modifier);
         }
 
@@ -2146,14 +2292,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingObject<String> value) throws IOException {
+            SerializationContext context, SomethingObject<String> value) throws IOException {
             this.fieldType.serializeSomethingField(context, value, this);
         }
 
         public final SomethingObject<String> deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeSomethingField(context, this);
+        }
+
+        public final SomethingObject<String> deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(this.fieldType.deserializeValue(context));
         }
     }
 
@@ -2166,22 +2316,22 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         private final TEnum defaultValue;
 
         public EnumStructField(
-                StructBondType<?> structType,
-                EnumBondType<TEnum> fieldType,
-                int id,
-                String name,
-                Modifier modifier,
-                TEnum defaultValue) {
+            StructBondType<?> structType,
+            EnumBondType<TEnum> fieldType,
+            int id,
+            String name,
+            Modifier modifier,
+            TEnum defaultValue) {
             super(structType, fieldType, id, name, modifier);
             this.defaultValue = defaultValue;
         }
 
         public EnumStructField(
-                StructBondType<?> structType,
-                EnumBondType<TEnum> fieldType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            EnumBondType<TEnum> fieldType,
+            int id,
+            String name,
+            Modifier modifier) {
             this(structType, fieldType, id, name, modifier, fieldType.newDefaultValue());
         }
 
@@ -2204,14 +2354,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, TEnum value) throws IOException {
+            SerializationContext context, TEnum value) throws IOException {
             this.fieldType.serializeField(context, value, this);
         }
 
         public final TEnum deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeField(context, this);
+        }
+
+        public final TEnum deserialize(UntaggedDeserializationContext context) throws IOException {
+            return this.fieldType.deserializeValue(context);
         }
     }
 
@@ -2223,11 +2377,11 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
         // used by codegen
         public SomethingEnumStructField(
-                StructBondType<?> structType,
-                EnumBondType<TEnum> fieldType,
-                int id,
-                String name,
-                Modifier modifier) {
+            StructBondType<?> structType,
+            EnumBondType<TEnum> fieldType,
+            int id,
+            String name,
+            Modifier modifier) {
             super(structType, fieldType, id, name, modifier);
         }
 
@@ -2250,14 +2404,18 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final void serialize(
-                SerializationContext context, SomethingObject<TEnum> value) throws IOException {
+            SerializationContext context, SomethingObject<TEnum> value) throws IOException {
             this.fieldType.serializeSomethingField(context, value, this);
         }
 
         public final SomethingObject<TEnum> deserialize(
-                TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
+            TaggedDeserializationContext context, boolean wasAlreadyDeserialized) throws IOException {
             this.verifyFieldWasNotYetDeserialized(wasAlreadyDeserialized);
             return this.fieldType.deserializeSomethingField(context, this);
+        }
+
+        public final SomethingObject<TEnum> deserialize(UntaggedDeserializationContext context) throws IOException {
+            return Something.wrap(this.fieldType.deserializeValue(context));
         }
     }
 }

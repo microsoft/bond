@@ -82,6 +82,11 @@ public class Foo<T> implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, Foo<T> value) throws java.io.IOException {
+            value.aa = this.aa.deserialize(context);
+        }
+        
+        @Override
         protected final void initializeStructFields(Foo<T> value) {
             value.aa = this.aa.initialize();
         }
@@ -262,6 +267,11 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
                 }
             }
             this.aWrappedEnum.verifyDeserialized(__has_aWrappedEnum);
+        }
+        
+        @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, WrappingAnEnum value) throws java.io.IOException {
+            value.aWrappedEnum = this.aWrappedEnum.deserialize(context);
         }
         
         @Override
