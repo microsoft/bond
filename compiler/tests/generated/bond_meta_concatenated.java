@@ -78,6 +78,12 @@ public class HasMetaFields implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
+        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, HasMetaFields value) throws java.io.IOException {
+            value.full_name = this.full_name.deserialize(context);
+            value.name = this.name.deserialize(context);
+        }
+        
+        @Override
         protected final void initializeStructFields(HasMetaFields value) {
             value.full_name = this.full_name.initialize();
             value.name = this.name.initialize();
