@@ -1,0 +1,13 @@
+namespace examples.generics
+
+struct Base<T>
+{
+    0: T x;
+}
+
+struct Struct<T1, T2, T3> : Base<T2>
+{
+    0: T3          n;
+    1: T1          y;
+    2: vector<T2>  items;
+}
