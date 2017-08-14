@@ -3,6 +3,7 @@
 
 namespace Bond
 {
+    using System;
     using System.Diagnostics;
 
     public struct RuntimeSchema
@@ -34,25 +35,37 @@ namespace Bond
 
         public RuntimeSchema GetBaseSchema()
         {
-            Debug.Assert(IsStruct);
+            if (!IsStruct)
+            {
+                throw new InvalidOperationException("cannot get a base of a non-struct " + nameof(RuntimeSchema));
+            }
             return new RuntimeSchema(schemaDef, StructDef.base_def);
         }
 
         public RuntimeSchema GetElementSchema()
         {
-            Debug.Assert(HasValue);
+            if (!HasValue)
+            {
+                throw new InvalidOperationException("cannot get an element of an empty " + nameof(RuntimeSchema));
+            }
             return new RuntimeSchema(schemaDef, typeDef.element);
         }
 
         public RuntimeSchema GetKeySchema()
         {
-            Debug.Assert(HasValue);
+            if (!HasValue)
+            {
+                throw new InvalidOperationException("cannot get a key of an empty " + nameof(RuntimeSchema));
+            }
             return new RuntimeSchema(schemaDef, typeDef.key);
         }
 
         public RuntimeSchema GetFieldSchema(FieldDef field)
         {
-            Debug.Assert(HasValue);
+            if (!HasValue)
+            {
+                throw new InvalidOperationException("cannot get a field of an empty " + nameof(RuntimeSchema));
+            }
             return new RuntimeSchema(schemaDef, field.type);
         }
     }
