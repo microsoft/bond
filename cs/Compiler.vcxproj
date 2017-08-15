@@ -79,6 +79,9 @@ if %errorlevel% neq 0 goto :VCEnd
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Types_cs.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Util.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Grpc_cs.hs" />
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Java\Class_java.hs" />
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Java\Enum_java.hs" />
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Java\Util.hs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

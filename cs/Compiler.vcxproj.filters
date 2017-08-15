@@ -89,6 +89,15 @@
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Grpc_cs.hs">
       <Filter>Bond\Codegen\Cs</Filter>
     </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Java\Class_java.hs">
+      <Filter>Bond\Codegen\Java</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Java\Enum_java.hs">
+      <Filter>Bond\Codegen\Java</Filter>
+    </None>
+    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Java\Util.hs">
+      <Filter>Bond\Codegen\Java</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Bond">
@@ -107,6 +116,9 @@
     </Filter>
     <Filter Include="Bond\Syntax">
       <UniqueIdentifier>{905ABB36-088E-4045-8EA5-7316C8675D60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bond\Codegen\Java">
+      <UniqueIdentifier>{14da474f-b509-4d4b-88b2-8632ae8d4645}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
