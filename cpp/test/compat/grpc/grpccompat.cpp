@@ -12,6 +12,8 @@
 #include <bond/core/cmdargs.h>
 #include <bond/stream/stdio_output_stream.h>
 
+#include <boost/algorithm/string/replace.hpp>
+
 #include "grpccmd_arg_types.h"
 #include "grpccmd_arg_reflection.h"
 
@@ -22,7 +24,9 @@ using namespace unittest::compat;
 FILE* popen_wrapper(const char* command, const char* mode)
 {
 #ifdef _WIN32
-    return _popen(command, mode);
+    std::string escaped_command = command;
+    boost::replace_all(escaped_command, " ", "\" \"");
+    return _popen(escaped_command.c_str(), mode);
 #else
     return popen(command, mode);
 #endif
