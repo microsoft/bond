@@ -303,7 +303,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcCompatShared", "test\co
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "inheritance", "..\examples\cs\core\inheritance\inheritance.csproj", "{881289CA-9C45-4F2B-B7AC-509C0EBAAA7B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2E6E238C-9017-445C-9611-66DA780609BE} = {2E6E238C-9017-445C-9611-66DA780609BE}
+		{43CBBA9B-C4BC-4E64-8733-7B72562D2E91} = {43CBBA9B-C4BC-4E64-8733-7B72562D2E91}
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "schema_view", "..\examples\cs\core\schema_view\schema_view.csproj", "{4FACD9A1-B8AC-4D76-B4B5-B71607EA8F8C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2E6E238C-9017-445C-9611-66DA780609BE} = {2E6E238C-9017-445C-9611-66DA780609BE}
+		{43CBBA9B-C4BC-4E64-8733-7B72562D2E91} = {43CBBA9B-C4BC-4E64-8733-7B72562D2E91}
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "protocol_versions", "..\examples\cs\core\protocol_versions\protocol_versions.csproj", "{B3A51630-DECC-451F-ADE9-CE91BE66E00D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2E6E238C-9017-445C-9611-66DA780609BE} = {2E6E238C-9017-445C-9611-66DA780609BE}
