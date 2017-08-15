@@ -1,0 +1,14 @@
+namespace examples.generic_tree
+
+// For recursive data structures, a forward declaration is needed so Node<T>
+// can refer back to itself.
+struct Node<T>;
+
+struct Node<T>
+{
+    // In order to prevent infinite recursion, a nullable<Node<T>> field
+    // must be used to hold other Nodes.
+    0: nullable<Node<T>> left;
+    1: nullable<Node<T>> right;
+    2: T                 data;
+}
