@@ -75,6 +75,16 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
         }
 
         @Override
+        public final String getName() {
+            return "BasicTypes";
+        }
+
+        @Override
+        public final String getQualifiedName() {
+            return "tests.BasicTypes";
+        }
+
+        @Override
         public final java.lang.Class<BasicTypes> getValueClass() {
             return (java.lang.Class<BasicTypes>) (java.lang.Class) BasicTypes.class;
         }

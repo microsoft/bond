@@ -470,7 +470,7 @@ package #{javaPackage};
         javaPackage = sepBy "." toText $ getNamespace java
 
         -- struct -> Java class
-        typeDefinition Struct {..} = [lt|
+        typeDefinition s@Struct {..} = [lt|
 #{generatedClassAnnotations}
 public class #{typeNameWithParams declName declParams}#{maybe interface baseClass structBase} {
     #{ifThenElse (null declParams) mempty (makeStructMember_GenericBondTypeBuilder declName declParams)}
@@ -483,6 +483,16 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
             super(genericTypeSpecialization);
         }
         #{makeStructBondTypeMember_initialize java declParams structFields structBase}
+
+        @Override
+        public final String getName() {
+            return "#{declName}";
+        }
+
+        @Override
+        public final String getQualifiedName() {
+            return "#{qualifiedDeclaredTypeName java s}";
+        }
 
         @Override
         public final java.lang.Class<#{typeNameWithParams declName declParams}> getValueClass() {

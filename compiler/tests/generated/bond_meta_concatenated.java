@@ -39,6 +39,16 @@ public class HasMetaFields implements com.microsoft.bond.BondSerializable {
         }
 
         @Override
+        public final String getName() {
+            return "HasMetaFields";
+        }
+
+        @Override
+        public final String getQualifiedName() {
+            return "deprecated.bondmeta.HasMetaFields";
+        }
+
+        @Override
         public final java.lang.Class<HasMetaFields> getValueClass() {
             return (java.lang.Class<HasMetaFields>) (java.lang.Class) HasMetaFields.class;
         }

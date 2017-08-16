@@ -55,6 +55,16 @@ public class Foo<T1, T2> implements com.microsoft.bond.BondSerializable {
         }
 
         @Override
+        public final String getName() {
+            return "Foo";
+        }
+
+        @Override
+        public final String getQualifiedName() {
+            return "tests.Foo";
+        }
+
+        @Override
         public final java.lang.Class<Foo<T1, T2>> getValueClass() {
             return (java.lang.Class<Foo<T1, T2>>) (java.lang.Class) Foo.class;
         }
