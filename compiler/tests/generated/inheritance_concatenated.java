@@ -36,6 +36,16 @@ public class Base implements com.microsoft.bond.BondSerializable {
         }
 
         @Override
+        public final String getName() {
+            return "Base";
+        }
+
+        @Override
+        public final String getQualifiedName() {
+            return "tests.Base";
+        }
+
+        @Override
         public final java.lang.Class<Base> getValueClass() {
             return (java.lang.Class<Base>) (java.lang.Class) Base.class;
         }
@@ -159,6 +169,16 @@ public class Foo extends tests.Base {
         protected final void initialize() {
             this.x = new com.microsoft.bond.StructBondType.Int32StructField(this, 0, "x", com.microsoft.bond.Modifier.Optional);
             super.initializeBaseAndFields((com.microsoft.bond.StructBondType<tests.Base>) getStructType(tests.Base.class), this.x);
+        }
+
+        @Override
+        public final String getName() {
+            return "Foo";
+        }
+
+        @Override
+        public final String getQualifiedName() {
+            return "tests.Foo";
         }
 
         @Override

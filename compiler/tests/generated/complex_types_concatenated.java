@@ -35,6 +35,16 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         }
 
         @Override
+        public final String getName() {
+            return "Foo";
+        }
+
+        @Override
+        public final String getQualifiedName() {
+            return "tests.Foo";
+        }
+
+        @Override
         public final java.lang.Class<Foo> getValueClass() {
             return (java.lang.Class<Foo>) (java.lang.Class) Foo.class;
         }
@@ -164,6 +174,16 @@ public class ComplexTypes implements com.microsoft.bond.BondSerializable {
             this.bfoo = new com.microsoft.bond.StructBondType.ObjectStructField<com.microsoft.bond.Bonded<tests.Foo>>(this, bondedOf((com.microsoft.bond.StructBondType<tests.Foo>) getStructType(tests.Foo.class)), 5, "bfoo", com.microsoft.bond.Modifier.Optional);
             this.m = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.Map<java.lang.Double, java.util.List<java.util.List<com.microsoft.bond.Bonded<tests.Bar>>>>>(this, mapOf(com.microsoft.bond.BondTypes.DOUBLE, listOf(vectorOf(nullableOf(bondedOf((com.microsoft.bond.StructBondType<tests.Bar>) getStructType(tests.Bar.class)))))), 6, "m", com.microsoft.bond.Modifier.Optional);
             super.initializeBaseAndFields(null, this.li8, this.sb, this.vb, this.nf, this.msws, this.bfoo, this.m);
+        }
+
+        @Override
+        public final String getName() {
+            return "ComplexTypes";
+        }
+
+        @Override
+        public final String getQualifiedName() {
+            return "tests.ComplexTypes";
         }
 
         @Override

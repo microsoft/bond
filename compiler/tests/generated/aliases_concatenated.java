@@ -50,6 +50,16 @@ public class Foo<T> implements com.microsoft.bond.BondSerializable {
         }
 
         @Override
+        public final String getName() {
+            return "Foo";
+        }
+
+        @Override
+        public final String getQualifiedName() {
+            return "tests.Foo";
+        }
+
+        @Override
         public final java.lang.Class<Foo<T>> getValueClass() {
             return (java.lang.Class<Foo<T>>) (java.lang.Class) Foo.class;
         }
@@ -252,6 +262,16 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
         protected final void initialize() {
             this.aWrappedEnum = new com.microsoft.bond.StructBondType.EnumStructField<tests.EnumToWrap>(this, tests.EnumToWrap.BOND_TYPE, 0, "aWrappedEnum", com.microsoft.bond.Modifier.Optional);
             super.initializeBaseAndFields(null, this.aWrappedEnum);
+        }
+
+        @Override
+        public final String getName() {
+            return "WrappingAnEnum";
+        }
+
+        @Override
+        public final String getQualifiedName() {
+            return "tests.WrappingAnEnum";
         }
 
         @Override

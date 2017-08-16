@@ -246,18 +246,6 @@ public abstract class StructBondType<TStruct extends BondSerializable>
     }
 
     @Override
-    public final String getName() {
-        // rely on generated class
-        return this.getValueClass().getSimpleName();
-    }
-
-    @Override
-    public final String getQualifiedName() {
-        // rely on generated class
-        return this.getValueClass().getName();
-    }
-
-    @Override
     public final BondDataType getBondDataType() {
         return BondDataType.BT_STRUCT;
     }

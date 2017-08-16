@@ -106,6 +106,16 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         }
 
         @Override
+        public final String getName() {
+            return "Foo";
+        }
+
+        @Override
+        public final String getQualifiedName() {
+            return "tests.Foo";
+        }
+
+        @Override
         public final java.lang.Class<Foo> getValueClass() {
             return (java.lang.Class<Foo>) (java.lang.Class) Foo.class;
         }
