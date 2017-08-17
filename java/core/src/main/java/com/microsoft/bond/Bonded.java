@@ -129,11 +129,40 @@ public abstract class Bonded<T extends BondSerializable> {
      * conversion was successful or null otherwise. Please note that a successful conversion of Bonded instance does
      * not promise successful deserialization which may still fail when {@link #deserialize(StructBondType)} is called.
      *
+     * If you need to avoid slicing, see {@link #cast(StructBondType)}.
+     *
      * @param toBondType type descriptor for the Bond struct type to convert to
      * @param <U>        the Bond struct type to convert to
      * @return a new Bonded instance constrained to the given type or null if this conversion is not possible
      */
     public abstract <U extends BondSerializable> Bonded<U> convert(StructBondType<U> toBondType);
+
+    /**
+     * Returns this instance of Bonded, cast to a Bonded constrained to another type. The other type must be assignable
+     * from the current Bond type, and this method will throw if it isn't.
+     *
+     * Note that this preserves the underlying Bond type, meaning that a Bonded&lt;T&gt; that has been cast to a
+     * Bonded&lt;U&gt; will still serialize and deserialize as a T.
+     *
+     * If you need to slice, see {@link #convert(StructBondType)}.
+     *
+     * @param castBondType type descriptor for the Bond struct type to cast to
+     * @param <U>        the Bond struct type to cast to
+     * @return this Bonded instance, cast to the given type
+     * @throws ClassCastException if U is not assignable from T
+     */
+    public <U extends BondSerializable> Bonded<U> cast(StructBondType<U> castBondType) {
+        if (!(getBondType().isSubtypeOf(castBondType))) {
+            final String err = String.format("Bonded<%s> cannot be cast to Bonded<%s>",
+                getBondType().getQualifiedName(), castBondType.getQualifiedName()
+            );
+            throw new ClassCastException(err);
+        }
+
+        @SuppressWarnings("unchecked")
+        final Bonded<U> casted = (Bonded<U>) this;
+        return casted;
+    }
 
     /**
      * Equality on Bonded and Bonded subtypes is always reference equality

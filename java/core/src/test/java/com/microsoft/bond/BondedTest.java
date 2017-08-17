@@ -2,6 +2,10 @@ package com.microsoft.bond;
 
 import com.microsoft.bond.protocol.FastBinaryReader;
 import com.microsoft.bond.protocol.FastBinaryWriter;
+import com.microsoft.bond.test.Base;
+import com.microsoft.bond.test.BondedCollection;
+import com.microsoft.bond.test.Derived;
+import com.microsoft.bond.test.Empty;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -69,5 +73,39 @@ public class BondedTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void covariance() throws IOException {
+        final Derived derivedIn = new Derived();
+        derivedIn.baseInt = 1;
+        derivedIn.derivedInt = 2;
+        final Bonded<? extends Derived> bondedDerivedIn = Bonded.fromObject(derivedIn);
+
+        // Build a struct with a List<Bonded<Base>> and put the Bonded<Derived> into it.
+        final BondedCollection bondedCollectionIn = new BondedCollection();
+        bondedCollectionIn.bondeds.add(bondedDerivedIn.cast(Base.BOND_TYPE));
+
+        // Round-trip and get a Derived back out.
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final FastBinaryWriter writer = new FastBinaryWriter(baos, (short) 1);
+        new Serializer<BondedCollection>().serialize(bondedCollectionIn, writer);
+
+        final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        final FastBinaryReader reader = new FastBinaryReader(bais, (short) 1);
+        final BondedCollection bondedCollectionOut =
+            new Deserializer<BondedCollection>(BondedCollection.BOND_TYPE).deserialize(reader);
+
+        final Derived derivedOut = bondedCollectionOut.bondeds.get(0).deserialize(Derived.BOND_TYPE);
+
+        // Both Base and Derived fields must have made it through.
+        Assert.assertEquals(derivedIn, derivedOut);
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void invalidCastThrows() {
+        final Derived derived = new Derived();
+        final Bonded<? extends Derived> bondedDerived = Bonded.fromObject(derived);
+        bondedDerived.cast(Empty.BOND_TYPE);
     }
 }
