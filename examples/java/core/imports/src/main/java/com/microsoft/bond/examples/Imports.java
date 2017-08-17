@@ -25,14 +25,14 @@ public class Imports {
         src.MessagePayload = 42;
 
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final CompactBinaryWriter writer = new CompactBinaryWriter(output, (short) 1);
+        final CompactBinaryWriter writer = new CompactBinaryWriter(output, 1);
 
         final Serializer<Message> serializer = new Serializer<>();
         serializer.serialize(src, writer);
 
         final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
 
-        final CompactBinaryReader reader = new CompactBinaryReader(input, (short) 1);
+        final CompactBinaryReader reader = new CompactBinaryReader(input, 1);
         final Deserializer<Message> deserializer = new Deserializer<>(Message.BOND_TYPE);
         final Message dst = deserializer.deserialize(reader);
 

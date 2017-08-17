@@ -18,7 +18,7 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
     private final BinaryStreamReader reader;
     private final short version;
 
-    public CompactBinaryReader(InputStream inputStream, short version) {
+    public CompactBinaryReader(final InputStream inputStream, final int version) {
         if (inputStream == null) {
             throw new IllegalArgumentException("Argument stream must not be null");
         }
@@ -28,7 +28,7 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
         }
 
         this.reader = new BinaryStreamReader(inputStream);
-        this.version = version;
+        this.version = (short) version;
     }
 
     private BondDataType readType() throws IOException {

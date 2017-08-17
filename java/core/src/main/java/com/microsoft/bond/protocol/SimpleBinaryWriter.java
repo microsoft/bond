@@ -22,7 +22,7 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
     private final short protocolVersion;
     private final BinaryStreamWriter writer;
 
-    public SimpleBinaryWriter(final OutputStream outputStream, final short protocolVersion) {
+    public SimpleBinaryWriter(final OutputStream outputStream, final int protocolVersion) {
         if (outputStream == null) {
             throw new IllegalArgumentException("Argument stream must not be null");
         }
@@ -32,7 +32,7 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
         }
 
         this.writer = new BinaryStreamWriter(outputStream);
-        this.protocolVersion = protocolVersion;
+        this.protocolVersion = (short) protocolVersion;
     }
 
     @Override

@@ -34,11 +34,11 @@ public class ProtocolVersions {
         {
             // Here, we use CompactBinary v1.
             final ByteArrayOutputStream output = new ByteArrayOutputStream();
-            final CompactBinaryWriter writer = new CompactBinaryWriter(output, (short) 1);
+            final CompactBinaryWriter writer = new CompactBinaryWriter(output, 1);
             serializer.serialize(obj, writer);
 
             final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-            final CompactBinaryReader reader = new CompactBinaryReader(input, (short) 1);
+            final CompactBinaryReader reader = new CompactBinaryReader(input, 1);
             final Struct obj2 = deserializer.deserialize(reader);
 
             assert obj.equals(obj2) : "Roundtrip CBv1 failed";
@@ -47,11 +47,11 @@ public class ProtocolVersions {
         {
             // Here, we use CompactBinary v2.
             final ByteArrayOutputStream output = new ByteArrayOutputStream();
-            final CompactBinaryWriter writer = new CompactBinaryWriter(output, (short) 2);
+            final CompactBinaryWriter writer = new CompactBinaryWriter(output, 2);
             serializer.serialize(obj, writer);
 
             final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-            final CompactBinaryReader reader = new CompactBinaryReader(input, (short) 2);
+            final CompactBinaryReader reader = new CompactBinaryReader(input, 2);
             final Struct obj2 = deserializer.deserialize(reader);
 
             assert obj.equals(obj2) : "Roundtrip CBv2 failed";

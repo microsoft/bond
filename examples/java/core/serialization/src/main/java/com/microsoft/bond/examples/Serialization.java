@@ -23,14 +23,14 @@ public class Serialization {
         obj.items.add(0D);
 
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final CompactBinaryWriter writer = new CompactBinaryWriter(output, (short) 1);
+        final CompactBinaryWriter writer = new CompactBinaryWriter(output, 1);
 
         final Serializer<Struct> serializer = new Serializer<>();
         serializer.serialize(obj, writer);
 
         final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
 
-        final CompactBinaryReader reader = new CompactBinaryReader(input, (short) 1);
+        final CompactBinaryReader reader = new CompactBinaryReader(input, 1);
         final Deserializer<Struct> deserializer = new Deserializer<>(Struct.BOND_TYPE);
         final Struct obj2 = deserializer.deserialize(reader);
 

@@ -20,24 +20,24 @@ public class SimpleBinaryWriterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithZeroProtocolVersion() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        new SimpleBinaryWriter(baos, (short) 0);
+        new SimpleBinaryWriter(baos, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithInvalidProtocolVersion() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        new SimpleBinaryWriter(baos, (short) 3);
+        new SimpleBinaryWriter(baos, 3);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithNullOutputStream() {
-        new SimpleBinaryWriter(null, (short) 1);
+        new SimpleBinaryWriter(null, 1);
     }
 
     @Test
     public void testWriteVersion() {
-        short[] allowedVersions = new short[] { 1, 2 };
-        for (short expectedVersion : allowedVersions) {
+        int[] allowedVersions = new int[] { 1, 2 };
+        for (int expectedVersion : allowedVersions) {
             // write
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             SimpleBinaryWriter w = new SimpleBinaryWriter(baos, expectedVersion);

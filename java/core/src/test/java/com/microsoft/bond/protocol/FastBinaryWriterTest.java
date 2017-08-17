@@ -20,25 +20,25 @@ public class FastBinaryWriterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithZeroProtocolVersion() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        new FastBinaryWriter(baos, (short) 0);
+        new FastBinaryWriter(baos, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithInvalidProtocolVersion() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        new FastBinaryWriter(baos, (short) 2);
+        new FastBinaryWriter(baos, 2);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithNullOutputStream() {
         ByteArrayOutputStream baos = null;
-        new FastBinaryWriter(baos, (short) 1);
+        new FastBinaryWriter(baos, 1);
     }
 
     @Test
     public void testWriteFieldOmittedDoesNotWrite() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        FastBinaryWriter writer = new FastBinaryWriter(baos, (short) 1);
+        FastBinaryWriter writer = new FastBinaryWriter(baos, 1);
         try {
             writer.writeFieldOmitted(null, 0, null);
             assertEquals(0, baos.size());
@@ -49,8 +49,8 @@ public class FastBinaryWriterTest {
 
     @Test
     public void testWriteVersion() {
-        short[] allowedVersions = new short[] { 1 };
-        for (short expectedVersion : allowedVersions) {
+        int[] allowedVersions = new int[] { 1 };
+        for (int expectedVersion : allowedVersions) {
             // write
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             FastBinaryWriter w = new FastBinaryWriter(baos, expectedVersion);

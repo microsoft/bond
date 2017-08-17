@@ -14,17 +14,17 @@ public class SimpleBinaryReaderTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithZeroProtocolVersion() {
         ByteArrayInputStream bais = new ByteArrayInputStream(new byte[0]);
-        new SimpleBinaryReader(bais, (short) 0);
+        new SimpleBinaryReader(bais, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithInvalidProtocolVersion() {
         ByteArrayInputStream bais = new ByteArrayInputStream(new byte[0]);
-        new SimpleBinaryReader(bais, (short) 3);
+        new SimpleBinaryReader(bais, 3);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithNullInputStream() {
-        new SimpleBinaryReader(null, (short) 1);
+        new SimpleBinaryReader(null, 1);
     }
 }
