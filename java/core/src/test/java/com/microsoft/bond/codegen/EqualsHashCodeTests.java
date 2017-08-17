@@ -1,6 +1,6 @@
 package com.microsoft.bond.codegen;
 
-import com.microsoft.bond.test.equality.*;
+import com.microsoft.bond.test.*;
 import org.junit.Assert;
 import org.junit.Test;
 

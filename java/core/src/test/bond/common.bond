@@ -1,0 +1,11 @@
+namespace com.microsoft.bond.test
+
+struct Empty {}
+
+struct Base {
+    0: int32 baseInt;
+}
+
+struct Derived : Base {
+    0: int32 derivedInt;
+}

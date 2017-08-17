@@ -1,14 +1,6 @@
-namespace com.microsoft.bond.test.equality;
+import "common.bond"
 
-struct Empty {}
-
-struct Base {
-    0: int32 baseInt;
-}
-
-struct Derived : Base {
-    0: int32 derivedInt;
-}
+namespace com.microsoft.bond.test
 
 struct Primitives {
     0: int8 iint8;

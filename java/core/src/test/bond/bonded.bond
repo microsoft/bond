@@ -1,0 +1,7 @@
+import "common.bond"
+
+namespace com.microsoft.bond.test
+
+struct BondedCollection {
+    0: list<bonded<Base>> bondeds;
+}
