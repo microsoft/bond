@@ -19,25 +19,25 @@ public class CompactBinaryWriterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithZeroProtocolVersion() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        new CompactBinaryWriter(baos, (short) 0);
+        new CompactBinaryWriter(baos, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithInvalidProtocolVersion() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        new CompactBinaryWriter(baos, (short) 3);
+        new CompactBinaryWriter(baos, 3);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithNullOutputStream() {
         ByteArrayOutputStream baos = null;
-        new CompactBinaryWriter(baos, (short) 1);
+        new CompactBinaryWriter(baos, 1);
     }
 
     @Test
     public void testWriteFieldOmittedDoesNotWrite() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        CompactBinaryWriter writer = new CompactBinaryWriter(baos, (short) 1);
+        CompactBinaryWriter writer = new CompactBinaryWriter(baos, 1);
         try {
             writer.writeFieldOmitted(null, 0, null);
             assertEquals(0, baos.size());
@@ -48,8 +48,8 @@ public class CompactBinaryWriterTest {
 
     @Test
     public void testWriteVersion() {
-        short[] allowedVersions = new short[]{1, 2};
-        for (short expectedVersion : allowedVersions) {
+        int[] allowedVersions = new int[]{1, 2};
+        for (int expectedVersion : allowedVersions) {
             // write
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             CompactBinaryWriter w = new CompactBinaryWriter(baos, expectedVersion);
@@ -76,9 +76,9 @@ public class CompactBinaryWriterTest {
     @Test
     public void testFirstPassWriterExistsOnlyForV2() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        CompactBinaryWriter w1 = new CompactBinaryWriter(baos, (short) 1);
+        CompactBinaryWriter w1 = new CompactBinaryWriter(baos, 1);
         assertNull(w1.getFirstPassWriter());
-        CompactBinaryWriter w2 = new CompactBinaryWriter(baos, (short) 2);
+        CompactBinaryWriter w2 = new CompactBinaryWriter(baos, 2);
         assertNotNull(w2.getFirstPassWriter());
     }
 
@@ -86,7 +86,7 @@ public class CompactBinaryWriterTest {
     public void testFirstWriterWriteVersionPassDoesNotWrite() {
         // write
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        CompactBinaryWriter writer = new CompactBinaryWriter(baos, (short) 2);
+        CompactBinaryWriter writer = new CompactBinaryWriter(baos, 2);
         ProtocolWriter firstPassWriter = writer.getFirstPassWriter();
         assertNotNull(firstPassWriter);
         try {
@@ -101,7 +101,7 @@ public class CompactBinaryWriterTest {
     @Test
     public void testFirstPassWriterWriteFieldOmittedDoesNotWrite() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        CompactBinaryWriter writer = new CompactBinaryWriter(baos, (short) 2);
+        CompactBinaryWriter writer = new CompactBinaryWriter(baos, 2);
         ProtocolWriter firstPassWriter = writer.getFirstPassWriter();
         assertNotNull(firstPassWriter);
         try {

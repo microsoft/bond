@@ -26,7 +26,7 @@ public class Inheritance {
         ((Base)derived).str = "derived base";
         final CompactBinaryReader derivedPayload = new CompactBinaryReader(
             new ByteArrayInputStream(serialize(derived)),
-            (short) 1);
+            1);
 
         // Deserialize Base from payload containing Derived
         final Deserializer<Base> deserializer = new Deserializer<>(Base.BOND_TYPE);
@@ -36,7 +36,7 @@ public class Inheritance {
 
     private static <T extends BondSerializable> byte[] serialize(T obj) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final CompactBinaryWriter writer = new CompactBinaryWriter(output, (short) 1);
+        final CompactBinaryWriter writer = new CompactBinaryWriter(output, 1);
 
         final Serializer<T> serializer = new Serializer<>();
         serializer.serialize(obj, writer);

@@ -104,7 +104,7 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
             // We always marshal as Compact v1.
             final ByteArrayOutputStream stream = new ByteArrayOutputStream();
             // FIXME: Replace with a call to Marshal.
-            final ProtocolWriter marshaledWriter = new CompactBinaryWriter(stream, (short) 1);
+            final ProtocolWriter marshaledWriter = new CompactBinaryWriter(stream, 1);
             marshaledWriter.writeVersion();
             value.serialize(marshaledWriter);
 
@@ -140,7 +140,7 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
             Throw.raiseInvalidDataError(null, "bonded payload in simple was not compact v1");
         }
 
-        TaggedProtocolReader protocolReader = new CompactBinaryReader(context.reader.cloneStream(), (short) 1);
+        TaggedProtocolReader protocolReader = new CompactBinaryReader(context.reader.cloneStream(), 1);
         Bonded<TStruct> value = Bonded.fromProtocolReader(protocolReader, this.valueType);
 
         // We've read the first four bytes of the bonded field; now skip the marshaled payload.

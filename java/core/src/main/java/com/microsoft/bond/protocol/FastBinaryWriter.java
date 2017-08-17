@@ -21,7 +21,7 @@ public final class FastBinaryWriter implements ProtocolWriter {
     private final short protocolVersion;
     private final BinaryStreamWriter writer;
 
-    public FastBinaryWriter(final OutputStream outputStream, final short protocolVersion) {
+    public FastBinaryWriter(final OutputStream outputStream, final int protocolVersion) {
         if (outputStream == null) {
             throw new IllegalArgumentException("Argument stream must not be null");
         }
@@ -31,7 +31,7 @@ public final class FastBinaryWriter implements ProtocolWriter {
         }
 
         this.writer = new BinaryStreamWriter(outputStream);
-        this.protocolVersion = protocolVersion;
+        this.protocolVersion = (short) protocolVersion;
     }
 
     @Override

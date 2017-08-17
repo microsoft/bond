@@ -27,11 +27,11 @@ public class BondedTest {
         guid.Data1 = 0xDEADBEEF;
 
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final FastBinaryWriter writer = new FastBinaryWriter(output, (short) 1);
+        final FastBinaryWriter writer = new FastBinaryWriter(output, 1);
         new Serializer<GUID>().serialize(guid, writer);
 
         final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-        final FastBinaryReader reader = new FastBinaryReader(input, (short) 1);
+        final FastBinaryReader reader = new FastBinaryReader(input, 1);
 
         // Verify our assumption that the test type will be .equals() after a
         // round-trip.

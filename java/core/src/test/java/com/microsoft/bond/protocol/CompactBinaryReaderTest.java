@@ -19,25 +19,25 @@ public class CompactBinaryReaderTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithZeroProtocolVersion() {
         ByteArrayInputStream bais = new ByteArrayInputStream(new byte[0]);
-        new CompactBinaryReader(bais, (short) 0);
+        new CompactBinaryReader(bais, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithInvalidProtocolVersion() {
         ByteArrayInputStream bais = new ByteArrayInputStream(new byte[0]);
-        new CompactBinaryReader(bais, (short) 3);
+        new CompactBinaryReader(bais, 3);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithNullInputStream() {
         ByteArrayInputStream bais = null;
-        new CompactBinaryReader(bais, (short) 1);
+        new CompactBinaryReader(bais, 1);
     }
 
     @Test
     public void testSkipWithInvalidDataType() {
         ByteArrayInputStream bais = new ByteArrayInputStream(new byte[0]);
-        CompactBinaryReader reader = new CompactBinaryReader(bais, (short) 1);
+        CompactBinaryReader reader = new CompactBinaryReader(bais, 1);
         BondDataType dataType = BondDataType.BT_UNAVAILABLE;
         try {
             reader.skip(dataType);

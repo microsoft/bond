@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class SimpleBinaryV1ProtocolTest {
 
-    private static final short PROTOCOL_VERSION = 1;
+    private static final int PROTOCOL_VERSION = 1;
 
     private static final UntaggedBinaryTestHelper.ProtocolImplementations IMPLS =
         new UntaggedBinaryTestHelper.ProtocolImplementations(

@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class FastBinaryProtocolTest {
 
-    private static final short PROTOCOL_VERSION = 1;
+    private static final int PROTOCOL_VERSION = 1;
 
     private static final TaggedBinaryTestHelper.ProtocolImplementationFactory FACTORY =
             new TaggedBinaryTestHelper.ProtocolImplementationFactory(

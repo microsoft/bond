@@ -28,7 +28,7 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
     private final short protocolVersion;
     private final LinkedList<StructLength> structLengths;
 
-    public CompactBinaryWriter(final OutputStream outputStream, final short protocolVersion) {
+    public CompactBinaryWriter(final OutputStream outputStream, final int protocolVersion) {
         if (outputStream == null) {
             throw new IllegalArgumentException("Argument stream must not be null");
         }
@@ -38,7 +38,7 @@ public final class CompactBinaryWriter implements TwoPassProtocolWriter {
         }
 
         this.writer = new BinaryStreamWriter(outputStream);
-        this.protocolVersion = protocolVersion;
+        this.protocolVersion = (short) protocolVersion;
 
         this.structLengths = this.protocolVersion == 2 ? new LinkedList<StructLength>() : null;
     }

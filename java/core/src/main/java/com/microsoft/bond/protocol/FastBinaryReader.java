@@ -18,7 +18,7 @@ public final class FastBinaryReader implements TaggedProtocolReader {
     private final BinaryStreamReader reader;
     private final short protocolVersion;
 
-    public FastBinaryReader(final InputStream inputStream, final short protocolVersion) {
+    public FastBinaryReader(final InputStream inputStream, final int protocolVersion) {
         if (inputStream == null) {
             throw new IllegalArgumentException("Argument stream must not be null");
         }
@@ -28,7 +28,7 @@ public final class FastBinaryReader implements TaggedProtocolReader {
         }
 
         this.reader = new BinaryStreamReader(inputStream);
-        this.protocolVersion = protocolVersion;
+        this.protocolVersion = (short) protocolVersion;
     }
 
     private BondDataType readType() throws IOException {

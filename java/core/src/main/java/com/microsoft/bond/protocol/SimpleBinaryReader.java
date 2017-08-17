@@ -14,7 +14,7 @@ public final class SimpleBinaryReader implements UntaggedProtocolReader {
     private final BinaryStreamReader reader;
     private final short protocolVersion;
 
-    public SimpleBinaryReader(final InputStream inputStream, final short protocolVersion) {
+    public SimpleBinaryReader(final InputStream inputStream, final int protocolVersion) {
         if (inputStream == null) {
             throw new IllegalArgumentException("Argument stream must not be null");
         }
@@ -24,7 +24,7 @@ public final class SimpleBinaryReader implements UntaggedProtocolReader {
         }
 
         this.reader = new BinaryStreamReader(inputStream);
-        this.protocolVersion = protocolVersion;
+        this.protocolVersion = (short) protocolVersion;
     }
 
     private int readLength() throws IOException {

@@ -31,14 +31,14 @@ public class Blob {
         obj.UninitializedBlob = Something.wrap(Arrays.copyOfRange(data, 30, 100));
 
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final CompactBinaryWriter writer = new CompactBinaryWriter(output, (short) 1);
+        final CompactBinaryWriter writer = new CompactBinaryWriter(output, 1);
 
         final Serializer<Example> serializer = new Serializer<>();
         serializer.serialize(obj, writer);
 
         final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
 
-        final CompactBinaryReader reader = new CompactBinaryReader(input, (short) 1);
+        final CompactBinaryReader reader = new CompactBinaryReader(input, 1);
         final Deserializer<Example> deserializer = new Deserializer<>(Example.BOND_TYPE);
         final Example obj2 = deserializer.deserialize(reader);
 
