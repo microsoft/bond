@@ -4,6 +4,7 @@
 #pragma once
 
 #include "simple_json_reader.h"
+#include "boost/lexical_cast.hpp"
 
 namespace bond
 {
@@ -16,21 +17,28 @@ SimpleJsonReader<BufferT>::FindField(uint16_t id, const Metadata& metadata, Bond
 
     if (it != MemberEnd())
     {
-        char ids[6];
         const char* name = detail::FieldName(metadata).c_str();
         detail::JsonTypeMatching jsonType(type, type, is_enum);
 
-#ifdef _MSC_VER
-        _itoa(id, ids, 10);
-#else        
-        sprintf(ids, "%u", id);
-#endif       
-
         // Match member by type of value and either metadata name, or string reprentation of id
         for (rapidjson::Value::ConstMemberIterator end = MemberEnd(); it != end; ++it)
+        {
             if (jsonType.TypeMatch(it->value))
-                if (!strcmp(it->name.GetString(), name) || !strcmp(it->name.GetString(), ids))
+            {
+                if (strcmp(it->name.GetString(), name) == 0)
+                {
+                    // metadata name match
                     return &it->value;
+                }
+
+                uint16_t parsedId;
+                if (boost::conversion::try_lexical_convert(it->name.GetString(), parsedId) && id == parsedId)
+                {
+                    // string id match
+                    return &it->value;
+                }
+            }
+        }
     }
 
     return NULL;
