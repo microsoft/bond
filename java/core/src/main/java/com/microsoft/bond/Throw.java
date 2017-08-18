@@ -113,7 +113,7 @@ final class Throw {
             StructBondType.StructField<?> field) throws InvalidBondDataException {
         raiseInvalidDataError(
                 null,
-                "Unable to serialize a non-optional field '%s' or type '%' since its value is set to nothing.",
+                "Unable to serialize a non-optional field '%s' of type '%s' since its value is set to nothing.",
                 field.getName(),
                 field.getFieldType().getFullName());
     }
