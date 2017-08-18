@@ -170,6 +170,9 @@ public final class BoolBondType extends PrimitiveBondType<Boolean> {
             StructBondType.StructField<Boolean> field) throws IOException {
         if (value != null) {
             serializePrimitiveField(context, value.value, field);
+        } else if (!field.isOptional()) {
+            // throws
+            Throw.raiseNonOptionalFieldValueSetToNothingError(field);
         }
     }
 

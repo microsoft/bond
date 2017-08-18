@@ -173,6 +173,9 @@ public final class DoubleBondType extends PrimitiveBondType<Double> {
             StructBondType.StructField<Double> field) throws IOException {
         if (value != null) {
             serializePrimitiveField(context, value.value, field);
+        } else if (!field.isOptional()) {
+            // throws
+            Throw.raiseNonOptionalFieldValueSetToNothingError(field);
         }
     }
 

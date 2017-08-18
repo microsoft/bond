@@ -170,6 +170,9 @@ public final class Int8BondType extends PrimitiveBondType<Byte> {
             StructBondType.StructField<Byte> field) throws IOException {
         if (value != null) {
             serializePrimitiveField(context, value.value, field);
+        } else if (!field.isOptional()) {
+            // throws
+            Throw.raiseNonOptionalFieldValueSetToNothingError(field);
         }
     }
 

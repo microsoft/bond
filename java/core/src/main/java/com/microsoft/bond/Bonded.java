@@ -92,6 +92,17 @@ public abstract class Bonded<T extends BondSerializable> {
     public abstract void serialize(ProtocolWriter protocolWriter) throws IOException;
 
     /**
+     * Serializes content of this Bonded instance to using the given context and the default Bond type descriptor.
+     * Throws an exception if there is no default type descriptor associated with this Bonded instance.
+     * This method is called when this Bonded is serialized as a field of another object, as opposed to top-level
+     * serializaton. For the top-level serialization, use the public serialize method.
+     *
+     * @param context the serialization context
+     * @throws IOException if an I/O error occurred during serialization
+     */
+    abstract void serialize(BondType.SerializationContext context) throws IOException;
+
+    /**
      * Serializes content of this Bonded instance to a protocol writer using provided Bond type descriptor.
      *
      * @param protocolWriter the protocol writer

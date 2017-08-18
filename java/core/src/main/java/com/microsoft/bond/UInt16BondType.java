@@ -170,6 +170,9 @@ public final class UInt16BondType extends PrimitiveBondType<Short> {
             StructBondType.StructField<Short> field) throws IOException {
         if (value != null) {
             serializePrimitiveField(context, value.value, field);
+        } else if (!field.isOptional()) {
+            // throws
+            Throw.raiseNonOptionalFieldValueSetToNothingError(field);
         }
     }
 

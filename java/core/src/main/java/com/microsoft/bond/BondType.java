@@ -245,6 +245,9 @@ public abstract class BondType<T> {
             StructBondType.StructField<T> field) throws IOException {
         if (value != null) {
             serializeField(context, value.getValue(), field);
+        } else if (!field.isOptional()) {
+            // throws
+            Throw.raiseNonOptionalFieldValueSetToNothingError(field);
         }
     }
 

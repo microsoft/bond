@@ -170,6 +170,9 @@ public final class UInt32BondType extends PrimitiveBondType<Integer> {
             StructBondType.StructField<Integer> field) throws IOException {
         if (value != null) {
             serializePrimitiveField(context, value.value, field);
+        } else if (!field.isOptional()) {
+            // throws
+            Throw.raiseNonOptionalFieldValueSetToNothingError(field);
         }
     }
 
