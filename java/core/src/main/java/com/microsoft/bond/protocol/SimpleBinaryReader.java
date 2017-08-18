@@ -204,5 +204,11 @@ public final class SimpleBinaryReader implements UntaggedProtocolReader {
     public InputStream cloneStream() throws IOException {
         return Cloning.cloneStream(this.reader.inputStream);
     }
+
+    @Override
+    public UntaggedProtocolReader cloneProtocolReader() throws IOException {
+        InputStream clonedInputStream = Cloning.cloneStream(this.reader.inputStream);
+        return new SimpleBinaryReader(clonedInputStream, this.protocolVersion);
+    }
 }
 

@@ -6,9 +6,9 @@ package com.microsoft.bond;
 import com.microsoft.bond.helpers.ArgumentHelper;
 import com.microsoft.bond.protocol.ProtocolWriter;
 import com.microsoft.bond.protocol.TaggedProtocolReader;
+import com.microsoft.bond.protocol.UntaggedProtocolReader;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * A construct representing a Bonded payload of some struct type.
@@ -18,7 +18,7 @@ import java.io.InputStream;
 public abstract class Bonded<T extends BondSerializable> {
 
     /**
-     * Creates a new Bonded instance from a protocol reader that is constrained to a given struct type.
+     * Creates a new Bonded instance from a tagged protocol reader that is constrained to a given struct type.
      *
      * @param protocolReader protocol reader containing the serialized representation of this Bonded value
      * @param bondType       the type descriptor of the struct type
@@ -34,7 +34,7 @@ public abstract class Bonded<T extends BondSerializable> {
     }
 
     /**
-     * Creates a new Bonded instance from a protocol reader that is unconstrained by any struct types.
+     * Creates a new Bonded instance from a tagged protocol reader that is unconstrained by any struct types.
      *
      * @param protocolReader protocol reader containing the serialized representation of this Bonded value
      * @return new Bonded instance backed by the protocol reader
@@ -44,6 +44,36 @@ public abstract class Bonded<T extends BondSerializable> {
         ArgumentHelper.ensureNotNull(protocolReader, "protocolReader");
         return new TaggedProtocolStreamBonded<BondSerializable>(protocolReader, null);
     }
+
+
+    /**
+     * Creates a new Bonded instance from an untagged protocol reader that is constrained to a given struct type.
+     *
+     * @param protocolReader protocol reader containing the serialized representation of this Bonded value
+     * @param bondType       the type descriptor of the struct type
+     * @param <T>            the struct type
+     * @return new Bonded instance backed by the protocol reader
+     * @throws IllegalArgumentException if an argument is null
+     */
+    public static <T extends BondSerializable> Bonded<T> fromProtocolReader(
+            UntaggedProtocolReader protocolReader, StructBondType<T> bondType) {
+        ArgumentHelper.ensureNotNull(protocolReader, "protocolReader");
+        ArgumentHelper.ensureNotNull(bondType, "bondType");
+        return new UntaggedProtocolStreamBonded<T>(protocolReader, bondType);
+    }
+
+    /**
+     * Creates a new Bonded instance from an untagged protocol reader that is unconstrained by any struct types.
+     *
+     * @param protocolReader protocol reader containing the serialized representation of this Bonded value
+     * @return new Bonded instance backed by the protocol reader
+     * @throws IllegalArgumentException if an argument is null
+     */
+    public static Bonded<?> fromProtocolReader(UntaggedProtocolReader protocolReader) {
+        ArgumentHelper.ensureNotNull(protocolReader, "protocolReader");
+        return new UntaggedProtocolStreamBonded<BondSerializable>(protocolReader, null);
+    }
+
 
     /**
      * Creates a new Bonded instance from an instance of a struct type, with the given underlying Bond type.

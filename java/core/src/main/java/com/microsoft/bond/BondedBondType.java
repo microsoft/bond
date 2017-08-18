@@ -10,6 +10,7 @@ import com.microsoft.bond.protocol.TaggedProtocolReader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 /**
@@ -103,10 +104,8 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
         if (context.writer.usesMarshaledBonded()) {
             // We always marshal as Compact v1.
             final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            // FIXME: Replace with a call to Marshal.
             final ProtocolWriter marshaledWriter = new CompactBinaryWriter(stream, (short) 1);
-            marshaledWriter.writeVersion();
-            value.serialize(marshaledWriter);
+            Marshal.marshal(value, marshaledWriter);
 
             // Bonded fields are always prefixed with a fixed-width length.
             context.writer.writeUInt32(stream.size());
@@ -131,21 +130,9 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     protected final Bonded<TStruct> deserializeValue(UntaggedDeserializationContext context) throws IOException {
         // Bonded fields are always marshaled and prefixed with a fixed-width length.
         final int bondedLength = context.reader.readUInt32();
-
-        // FIXME: Marshaled is not implemented, so we assume Compact v1 for
-        // now. Our implementations only ever produce Compact v1, but the spec
-        // doesn't require it.
-        final int magicAndVersion = context.reader.readUInt32();
-        if (magicAndVersion != 0x00014243) {
-            Throw.raiseInvalidDataError(null, "bonded payload in simple was not compact v1");
-        }
-
-        TaggedProtocolReader protocolReader = new CompactBinaryReader(context.reader.cloneStream(), (short) 1);
-        Bonded<TStruct> value = Bonded.fromProtocolReader(protocolReader, this.valueType);
-
-        // We've read the first four bytes of the bonded field; now skip the marshaled payload.
-        context.reader.skipBytes(bondedLength - 4);
-
+        final InputStream clonedInputStream = context.reader.cloneStream();
+        final Bonded<TStruct> value = Unmarshal.unmarshal(clonedInputStream, this.valueType);
+        context.reader.skipBytes(bondedLength);
         return value;
     }
 
