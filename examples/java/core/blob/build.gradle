@@ -16,7 +16,7 @@ apply plugin: 'application'
 apply plugin: 'com.microsoft.bond.gradle'
 
 sourceCompatibility = 1.8
-mainClassName = 'com.microsoft.bond.examples.Blob'
+mainClassName = 'com.microsoft.bond.examples.BlobExample'
 applicationDefaultJvmArgs = ['-ea']
 
 repositories {

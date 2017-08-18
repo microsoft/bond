@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import com.microsoft.bond.Blob;
 import com.microsoft.bond.Deserializer;
 import com.microsoft.bond.Serializer;
 import com.microsoft.bond.Something;
@@ -15,7 +16,7 @@ import com.microsoft.bond.protocol.CompactBinaryWriter;
 // See build.gradle for namespace mapping
 import com.microsoft.bond.examples.blob.Example;
 
-public class Blob {
+public class BlobExample {
 
     public static void main(final String[] args) throws IOException {
 
@@ -25,10 +26,10 @@ public class Blob {
         }
 
         final Example obj = new Example();
-        obj.ListOfBlobs.add(Arrays.copyOfRange(data, 0, 10));
-        obj.ListOfBlobs.add(Arrays.copyOfRange(data, 10, 20));
-        obj.NullableBlob = Arrays.copyOfRange(data, 20, 30);
-        obj.UninitializedBlob = Something.wrap(Arrays.copyOfRange(data, 30, 100));
+        obj.ListOfBlobs.add(new Blob(Arrays.copyOfRange(data, 0, 10)));
+        obj.ListOfBlobs.add(new Blob(Arrays.copyOfRange(data, 10, 20)));
+        obj.NullableBlob = new Blob(Arrays.copyOfRange(data, 20, 30));
+        obj.UninitializedBlob = Something.wrap(new Blob(Arrays.copyOfRange(data, 30, 100)));
 
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         final CompactBinaryWriter writer = new CompactBinaryWriter(output, 1);
