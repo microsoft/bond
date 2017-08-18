@@ -535,10 +535,10 @@ protected:
 
         for (int begin = 0; i < static_cast<int>(formated.length()); begin += 80, i = begin + 79 - indent)
         {
-            while (i >= begin && !isspace(formated[i]))
+            while (i >= begin && !isspace(static_cast<int>(formated[i])))
                 --i;
 
-            while (i < static_cast<int>(formated.length()) && isspace(formated[i]))
+            while (i < static_cast<int>(formated.length()) && isspace(static_cast<int>(formated[i])))
                 ++i;
 
             formated.insert(i, begin + 80 - i, ' ');

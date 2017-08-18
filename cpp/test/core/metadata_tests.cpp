@@ -146,7 +146,7 @@ public:
         bond::Metadata  metadata_copy = metadata;
         char            name[100];
 
-        sprintf(name, "%s%d", _name, id);
+        sprintf(name, "%s%u", _name, id);
 
         UT_AssertIsTrue(metadata_copy.name == name);
         UT_AssertIsTrue(metadata_copy.name == metadata_copy.attributes["field_name"]);
