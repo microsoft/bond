@@ -171,6 +171,23 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Foo)) return false;
+        
+        final Foo other = (Foo) o;
+        if (!((this.f == null && other.f == null) || (this.f != null && this.f.equals(other.f)))) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result += f == null ? 0 : f.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        return result;
+    }
 
     @Override
     public com.microsoft.bond.StructBondType<? extends Foo> getBondType() {

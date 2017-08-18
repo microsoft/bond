@@ -141,6 +141,27 @@ public Foo(com.microsoft.bond.StructBondType<Foo<T1, T2>> genericType) {
         this.__genericType.initializeStructFields(this);
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Foo)) return false;
+        
+        final Foo other = (Foo) o;
+        if (!((this.t2 == null && other.t2 == null) || (this.t2 != null && this.t2.equals(other.t2)))) return false;
+        if (!((this.n == null && other.n == null) || (this.n != null && this.n.equals(other.n)))) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result += t2 == null ? 0 : t2.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += n == null ? 0 : n.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        return result;
+    }
 
     @Override
     public com.microsoft.bond.StructBondType<? extends Foo<T1, T2>> getBondType() {

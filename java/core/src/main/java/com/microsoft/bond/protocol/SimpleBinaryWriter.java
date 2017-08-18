@@ -49,6 +49,13 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
     @Override
     public void writeFieldOmitted(
             final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
+        // Simple doesn't support omitting fields, so we need to explicitly write the default values
+        // for optional fields.
+        //
+        // Fields that are = nothing have no default, so it is an unrecoverable error to attempt to
+        // serialize such a field if it is actually set to nothing (e.g., a SomethingObject which is
+        // null).
+
         if (metadata.isDefaultNothing()) {
             throw new IllegalArgumentException("can't omit fields with default = nothing in SimpleBinary");
         }

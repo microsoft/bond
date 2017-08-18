@@ -394,6 +394,71 @@ public #{declName}(com.microsoft.bond.StructBondType<#{declName}<#{paramList}>> 
             else mempty
 
 
+-- builds text for Object.equals(Object) override
+object_equals :: String -> [Field] -> Maybe Type -> Text
+object_equals declName fields structBase = [lt|@Override
+    public boolean equals(Object o) {
+        if (!(o instanceof #{declName})) return false;
+        #{compareBase structBase}
+        final #{declName} other = (#{declName}) o;
+        #{newlineSep 2 compareField fields}
+        return true;
+    }
+|]
+    where
+        compareBase (Just _)     = [lt|if (!(super.equals(o))) return false;|]
+        compareBase Nothing      = mempty
+        compareField Field {..}  = [lt|if (!(#{equalsMember fieldType fieldName})) return false;|]
+        equalsMember BT_Float f  = [lt|com.microsoft.bond.helpers.FloatingPointHelper.floatEquals(this.#{f}, other.#{f})|]
+        equalsMember BT_Double f = [lt|com.microsoft.bond.helpers.FloatingPointHelper.doubleEquals(this.#{f}, other.#{f})|]
+        equalsMember BT_Bool f    = [lt|this.#{f} == other.#{f}|]
+        equalsMember BT_Int8 f    = [lt|this.#{f} == other.#{f}|]
+        equalsMember BT_Int16 f   = [lt|this.#{f} == other.#{f}|]
+        equalsMember BT_Int32 f   = [lt|this.#{f} == other.#{f}|]
+        equalsMember BT_Int64 f   = [lt|this.#{f} == other.#{f}|]
+        equalsMember BT_UInt8 f   = [lt|this.#{f} == other.#{f}|]
+        equalsMember BT_UInt16 f  = [lt|this.#{f} == other.#{f}|]
+        equalsMember BT_UInt32 f  = [lt|this.#{f} == other.#{f}|]
+        equalsMember BT_UInt64 f  = [lt|this.#{f} == other.#{f}|]
+        equalsMember (BT_UserDefined a@Alias {} args) f = equalsMember (resolveAlias a args) f
+        equalsMember _ f          = [lt|(this.#{f} == null && other.#{f} == null) || (this.#{f} != null && this.#{f}.equals(other.#{f}))|]
+
+
+-- builds text for Object.hashCode() override
+object_hashCode :: [Field] -> Maybe Type -> Text
+object_hashCode fields structBase = [lt|@Override
+    public int hashCode() {
+        int result = 17;
+        #{newlineSep 2 hash hashInputs}
+        return result;
+    }
+|]
+    where
+        hash codeExpr = [lt|result += #{codeExpr};
+        result *= 0xeadbeef;
+        result ^= result >> 16;|]
+
+        hashInputs = (hashBase structBase) ++ hashFields
+
+        hashBase (Just _) = [[lt|super.hashCode()|]]
+        hashBase Nothing  = []
+
+        hashFields = map (\Field {..} -> hashCode fieldType fieldName) fields
+        hashCode BT_Bool f    = [lt|(#{f} ? 0 : 1)|]
+        hashCode BT_Int64 f   = [lt|#{f} ^ (#{f} >>> 32)|]
+        hashCode BT_UInt64 f  = [lt|#{f} ^ (#{f} >>> 32)|]
+        hashCode BT_Float f   = [lt|com.microsoft.bond.helpers.FloatingPointHelper.floatHashCode(#{f})|]
+        hashCode BT_Double f  = [lt|com.microsoft.bond.helpers.FloatingPointHelper.doubleHashCode(#{f})|]
+        hashCode BT_Int8 f    = [lt|#{f}|]
+        hashCode BT_Int16 f   = [lt|#{f}|]
+        hashCode BT_Int32 f   = [lt|#{f}|]
+        hashCode BT_UInt8 f   = [lt|#{f}|]
+        hashCode BT_UInt16 f  = [lt|#{f}|]
+        hashCode BT_UInt32 f  = [lt|#{f}|]
+        hashCode (BT_UserDefined a@Alias {} args) f = hashCode (resolveAlias a args) f
+        hashCode _ f          = [lt|#{f} == null ? 0 : #{f}.hashCode()|]
+
+
 -- Template for struct -> Java class.
 class_java :: MappingContext -> [Import] -> Declaration -> Text
 class_java java _ declaration = [lt|
@@ -448,7 +513,8 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
 
     #{doubleLineSep 1 publicFieldDecl structFields}
     #{publicConstructorDecl}
-
+    #{object_equals declName structFields structBase}
+    #{object_hashCode structFields structBase}
     @Override
     public com.microsoft.bond.StructBondType<? extends #{typeNameWithParams declName declParams}> getBondType() {
         return #{getBondTypeReturnValue};

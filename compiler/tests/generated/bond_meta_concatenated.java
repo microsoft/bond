@@ -116,6 +116,27 @@ public class HasMetaFields implements com.microsoft.bond.BondSerializable {
         ((StructBondTypeImpl)BOND_TYPE).initializeStructFields(this);
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof HasMetaFields)) return false;
+        
+        final HasMetaFields other = (HasMetaFields) o;
+        if (!((this.full_name == null && other.full_name == null) || (this.full_name != null && this.full_name.equals(other.full_name)))) return false;
+        if (!((this.name == null && other.name == null) || (this.name != null && this.name.equals(other.name)))) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result += full_name == null ? 0 : full_name.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += name == null ? 0 : name.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        return result;
+    }
 
     @Override
     public com.microsoft.bond.StructBondType<? extends HasMetaFields> getBondType() {

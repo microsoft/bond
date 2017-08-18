@@ -165,4 +165,28 @@ public abstract class Bonded<T extends BondSerializable> {
      * @return a new Bonded instance constrained to the given type or null if this conversion is not possible
      */
     public abstract <U extends BondSerializable> Bonded<U> convert(StructBondType<U> toBondType);
+
+    /**
+     * Equality on Bonded and Bonded subtypes is always reference equality
+     * (i.e., the same as Object.equals()). The semantics of .equals() in
+     * codegen'd types depend on this.
+     *
+     * This is reimplemented as a final override here to enforce it on Bonded
+     * subtypes.
+     */
+    @Override
+    public final boolean equals(Object other) {
+        return this == other;
+    }
+
+    /**
+     * Implemented as a final override to ensure consistency with .equals() on
+     * Bonded and Bonded subtypes. See {@link Bonded#equals(Object)}.
+     *
+     * @return see {@link Object#hashCode()}
+     */
+    @Override
+    public final int hashCode() {
+        return super.hashCode();
+    }
 }
