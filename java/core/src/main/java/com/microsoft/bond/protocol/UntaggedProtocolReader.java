@@ -196,4 +196,12 @@ public interface UntaggedProtocolReader {
      * @return a clone of this reader's underlying stream
      */
     InputStream cloneStream() throws IOException;
+
+    /**
+     * Clones this untagged protocol reader.
+     *
+     * @return a clone of this stream
+     * @throws IOException if there was an error cloning this stream
+     */
+    UntaggedProtocolReader cloneProtocolReader() throws IOException;
 }
