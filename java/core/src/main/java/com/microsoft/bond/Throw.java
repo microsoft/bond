@@ -107,6 +107,17 @@ final class Throw {
                 typeName);
     }
 
+    // raised when encountering a missing (nothing) value of a non-optional field during struct serialization
+    // this exception should be chained to another exception that indicates the field
+    static void raiseNonOptionalFieldValueSetToNothingError(
+            StructBondType.StructField<?> field) throws InvalidBondDataException {
+        raiseInvalidDataError(
+                null,
+                "Unable to serialize a non-optional field '%s' of type '%s' since its value is set to nothing.",
+                field.getName(),
+                field.getFieldType().getFullName());
+    }
+
     // raised when deserializing a value of type that is not compatible with the type of the field
     static void raiseFieldTypeIsNotCompatibleDeserializationError(
             BondDataType deserializedBondDataType,

@@ -111,7 +111,7 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
             context.writer.writeUInt32(stream.size());
             context.writer.writeBytes(stream.toByteArray());
         } else {
-            value.serialize(context.writer);
+            value.serialize(context);
         }
     }
 

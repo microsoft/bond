@@ -170,6 +170,9 @@ public final class UInt64BondType extends PrimitiveBondType<Long> {
             StructBondType.StructField<Long> field) throws IOException {
         if (value != null) {
             serializePrimitiveField(context, value.value, field);
+        } else if (!field.isOptional()) {
+            // throws
+            Throw.raiseNonOptionalFieldValueSetToNothingError(field);
         }
     }
 

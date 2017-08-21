@@ -173,6 +173,9 @@ public final class FloatBondType extends PrimitiveBondType<Float> {
             StructBondType.StructField<Float> field) throws IOException {
         if (value != null) {
             serializePrimitiveField(context, value.value, field);
+        } else if (!field.isOptional()) {
+            // throws
+            Throw.raiseNonOptionalFieldValueSetToNothingError(field);
         }
     }
 

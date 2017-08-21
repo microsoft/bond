@@ -36,6 +36,11 @@ final class SpecificTypeObjectBonded<T extends BondSerializable> extends Bonded<
     }
 
     @Override
+    void serialize(BondType.SerializationContext context) throws IOException {
+        this.bondType.serializeValue(context, this.objectInstance);
+    }
+
+    @Override
     public <U extends BondSerializable>
     void serialize(ProtocolWriter protocolWriter, StructBondType<U> asBondType) throws IOException {
         ArgumentHelper.ensureNotNull(protocolWriter, "protocolWriter");
