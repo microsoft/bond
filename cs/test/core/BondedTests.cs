@@ -438,5 +438,15 @@
             Assert.IsTrue(Comparer.Equal(poly1, obj.poly[1].Deserialize()));
             Assert.IsTrue(Comparer.Equal(poly2, obj.poly[2].Deserialize<Derived>()));
         }
+
+        [Test]
+        public void SerializeBondedCB2Multiple()
+        {
+            var obj = new StructWithBonded();
+
+            var stream = new MemoryStream();
+            stream.SetLength(0);
+            Util.SerializeCB2Multiple(obj, stream, 2);
+        }
     }
 }

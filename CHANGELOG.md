@@ -43,6 +43,9 @@ different versioning scheme, following the Haskell community's
   [Issue #498](https://github.com/Microsoft/bond/issues/498)
     * Such streams are detected by inspecting
       [`Stream.CanSeek`][msdn-stream-canseek].
+* Fix a bug in CompactBinaryWriter when using v2 that repeated first pass
+  when a bonded field was serailized, resulting in extra work and extra
+  state left in the CompactBinaryWriter.
 
 [msdn-gzipstream]: https://msdn.microsoft.com/en-us/library/system.io.compression.gzipstream(v=vs.110).aspx
 [msdn-stream-canseek]: https://msdn.microsoft.com/en-us/library/system.io.stream.canseek(v=vs.110).aspx

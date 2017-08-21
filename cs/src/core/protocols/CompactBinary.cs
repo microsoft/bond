@@ -176,7 +176,11 @@ namespace Bond.Protocols
         {
             if (version == 2)
             {
-                return firstPassWriter.Value;
+                // Only return first pass if not in middle of second pass
+                if (lengths.Count == 0)
+                {
+                    return firstPassWriter.Value;
+                }
             }
 
             return null;
