@@ -393,6 +393,8 @@ namespace UnitTest
             for (uint i = 0; i < times; i++)
             {
                 Serialize.To(writer, obj);
+
+                // Verify that CBv2 writer has an active FirstPassWriter before the next top-level serialization
                 Assert.NotNull(writer.GetFirstPassWriter());
             }
             output.Flush();
