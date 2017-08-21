@@ -1,10 +1,12 @@
 package com.microsoft.bond.codegen;
 
+import java.util.Arrays;
+
+import com.microsoft.bond.Blob;
 import com.microsoft.bond.test.*;
+
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Arrays;
 
 public class EqualsHashCodeTests {
     // a.equals(b) == true -> a.hashCode() == b.hashCode()
@@ -45,18 +47,18 @@ public class EqualsHashCodeTests {
         final Primitives one = new Primitives(), another = new Primitives();
         for (final Primitives p : Arrays.asList(one, another)) {
             p.iint8 = 3;
-            p.iint16 = 3;
-            p.iint32 = 3;
-            p.iint64 = 3;
-            p.iuint8 = 3;
-            p.iuint16 = 3;
-            p.iuint32 = 3;
-            p.iuint64 = 3;
-            p.ffloat = 3.0f;
-            p.fdouble = 3.0;
+            p.iint16 = 4;
+            p.iint32 = 5;
+            p.iint64 = 6;
+            p.iuint8 = 7;
+            p.iuint16 = 8;
+            p.iuint32 = 9;
+            p.iuint64 = 10;
+            p.ffloat = 11.0f;
+            p.fdouble = 12.0;
             p.bbool = true;
-            p.str = "three";
-            p.wstr = "three";
+            p.str = "thirteen";
+            p.wstr = "fourteen";
         }
         assertObjectsAreEqual(one, another);
 
@@ -121,20 +123,22 @@ public class EqualsHashCodeTests {
             c.intList.add(1);
             c.intList.add(2);
 
-            c.intVector.add(1);
             c.intVector.add(2);
+            c.intVector.add(3);
 
-            c.intSet.add(1);
-            c.intSet.add(2);
+            c.intSet.add(4);
+            c.intSet.add(5);
 
-            c.intMap.put(1, 2);
-            c.intMap.put(2, 3);
+            c.intMap.put(6, 7);
+            c.intMap.put(8, 9);
 
             final Primitives p1 = new Primitives(), p2 = new Primitives();
-            p1.iint64 = 3;
-            p2.iint64 = 3;
+            p1.iint64 = 10;
+            p2.iint64 = 11;
             c.primitivesList.add(p1);
             c.primitivesList.add(p2);
+
+            c.dataBlob = new Blob(new byte[]{12, 13});
         }
         assertObjectsAreEqual(one, another);
 
@@ -158,6 +162,10 @@ public class EqualsHashCodeTests {
         another.primitivesList.get(0).iint64++;
         Assert.assertNotEquals(one, another);
         another.primitivesList.get(0).iint64 = one.primitivesList.get(0).iint64;
+
+        another.dataBlob.getData()[0]++;
+        Assert.assertNotEquals(one, another);
+        another.dataBlob.getData()[0] = one.dataBlob.getData()[0];
     }
 
     @Test
