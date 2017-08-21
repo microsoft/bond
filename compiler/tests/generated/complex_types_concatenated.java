@@ -150,7 +150,7 @@ public class ComplexTypes implements com.microsoft.bond.BondSerializable {
 
         private com.microsoft.bond.StructBondType.ObjectStructField<java.util.Set<java.lang.Boolean>> sb;
 
-        private com.microsoft.bond.StructBondType.ObjectStructField<java.util.List<byte[]>> vb;
+        private com.microsoft.bond.StructBondType.ObjectStructField<java.util.List<com.microsoft.bond.Blob>> vb;
 
         private com.microsoft.bond.StructBondType.ObjectStructField<java.lang.Float> nf;
 
@@ -168,7 +168,7 @@ public class ComplexTypes implements com.microsoft.bond.BondSerializable {
         protected final void initialize() {
             this.li8 = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.List<java.lang.Byte>>(this, listOf(com.microsoft.bond.BondTypes.INT8), 0, "li8", com.microsoft.bond.Modifier.Optional);
             this.sb = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.Set<java.lang.Boolean>>(this, setOf(com.microsoft.bond.BondTypes.BOOL), 1, "sb", com.microsoft.bond.Modifier.Optional);
-            this.vb = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.List<byte[]>>(this, vectorOf(com.microsoft.bond.BondTypes.BLOB), 2, "vb", com.microsoft.bond.Modifier.Optional);
+            this.vb = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.List<com.microsoft.bond.Blob>>(this, vectorOf(com.microsoft.bond.BondTypes.BLOB), 2, "vb", com.microsoft.bond.Modifier.Optional);
             this.nf = new com.microsoft.bond.StructBondType.ObjectStructField<java.lang.Float>(this, nullableOf(com.microsoft.bond.BondTypes.FLOAT), 3, "nf", com.microsoft.bond.Modifier.Optional);
             this.msws = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.Map<java.lang.String, java.lang.String>>(this, mapOf(com.microsoft.bond.BondTypes.STRING, com.microsoft.bond.BondTypes.WSTRING), 4, "msws", com.microsoft.bond.Modifier.Optional);
             this.bfoo = new com.microsoft.bond.StructBondType.ObjectStructField<com.microsoft.bond.Bonded<tests.Foo>>(this, bondedOf((com.microsoft.bond.StructBondType<tests.Foo>) getStructType(tests.Foo.class)), 5, "bfoo", com.microsoft.bond.Modifier.Optional);
@@ -309,7 +309,7 @@ public class ComplexTypes implements com.microsoft.bond.BondSerializable {
 
     public java.util.Set<java.lang.Boolean> sb;
 
-    public java.util.List<byte[]> vb;
+    public java.util.List<com.microsoft.bond.Blob> vb;
 
     public java.lang.Float nf;
 

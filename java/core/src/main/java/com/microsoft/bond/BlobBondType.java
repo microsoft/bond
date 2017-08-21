@@ -4,18 +4,19 @@
 package com.microsoft.bond;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
  * Implements the {@link BondType} contract for the Bond "blob" data type.
  */
-public final class BlobBondType extends BondType<byte[]> {
+public final class BlobBondType extends BondType<Blob> {
 
     /**
      * The default of values of this type.
      * An immutable singleton value (empty).
      */
-    public static final byte[] DEFAULT_VALUE = new byte[0];
+    public static final Blob DEFAULT_VALUE = new Blob();
 
     /**
      * The name of the type as it appears in Bond schemas.
@@ -47,12 +48,12 @@ public final class BlobBondType extends BondType<byte[]> {
     }
 
     @Override
-    public final Class<byte[]> getValueClass() {
-        return byte[].class;
+    public final Class<Blob> getValueClass() {
+        return Blob.class;
     }
 
     @Override
-    public final Class<byte[]> getPrimitiveValueClass() {
+    public final Class<Blob> getPrimitiveValueClass() {
         return null;
     }
 
@@ -72,25 +73,25 @@ public final class BlobBondType extends BondType<byte[]> {
     }
 
     @Override
-    protected final byte[] newDefaultValue() {
+    protected final Blob newDefaultValue() {
         return DEFAULT_VALUE;
     }
 
     @Override
-    protected final byte[] cloneValue(byte[] value) {
-        return value.clone();
+    protected final Blob cloneValue(Blob value) {
+        return new Blob(Arrays.copyOf(value.getData(), value.getData().length));
     }
 
     @Override
-    protected final void serializeValue(SerializationContext context, byte[] value) throws IOException {
+    protected final void serializeValue(SerializationContext context, Blob value) throws IOException {
         this.verifyNonNullableValueIsNotSetToNull(value);
-        context.writer.writeContainerBegin(value.length, BondDataType.BT_INT8);
-        context.writer.writeBytes(value);
+        context.writer.writeContainerBegin(value.getData().length, BondDataType.BT_INT8);
+        context.writer.writeBytes(value.getData());
         context.writer.writeContainerEnd();
     }
 
     @Override
-    protected final byte[] deserializeValue(TaggedDeserializationContext context) throws IOException {
+    protected final Blob deserializeValue(TaggedDeserializationContext context) throws IOException {
         context.reader.readListBegin(context.readContainerResult);
         if (context.readContainerResult.elementType.value != BondDataType.BT_INT8.value) {
             // throws
@@ -100,15 +101,15 @@ public final class BlobBondType extends BondType<byte[]> {
                     BondDataType.BT_INT8,
                     this.getFullName());
         }
-        final byte[] value = context.reader.readBytes(context.readContainerResult.count);
+        final Blob value = new Blob(context.reader.readBytes(context.readContainerResult.count));
         context.reader.readContainerEnd();
         return value;
     }
 
     @Override
-    protected final byte[] deserializeValue(UntaggedDeserializationContext context) throws IOException {
+    protected final Blob deserializeValue(UntaggedDeserializationContext context) throws IOException {
         final int count = context.reader.readContainerBegin();
-        final byte[] value = context.reader.readBytes(count);
+        final Blob value = new Blob(context.reader.readBytes(count));
         context.reader.readContainerEnd();
         return value;
     }
@@ -116,10 +117,10 @@ public final class BlobBondType extends BondType<byte[]> {
     @Override
     protected final void serializeField(
             SerializationContext context,
-            byte[] value,
-            StructBondType.StructField<byte[]> field) throws IOException {
+            Blob value,
+            StructBondType.StructField<Blob> field) throws IOException {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
-        if (value.length == 0 && field.isOptional()) {
+        if (value.getData().length == 0 && field.isOptional()) {
             context.writer.writeFieldOmitted(BondDataType.BT_LIST, field.getId(), field);
         } else {
             context.writer.writeFieldBegin(BondDataType.BT_LIST, field.getId(), field);
@@ -134,15 +135,15 @@ public final class BlobBondType extends BondType<byte[]> {
     }
 
     @Override
-    protected final byte[] deserializeField(
+    protected final Blob deserializeField(
             TaggedDeserializationContext context,
-            StructBondType.StructField<byte[]> field) throws IOException {
+            StructBondType.StructField<Blob> field) throws IOException {
         // a blob value may be deserialized only from BT_LIST
         if (context.readFieldResult.type.value != BondDataType.BT_LIST.value) {
             // throws
             Throw.raiseFieldTypeIsNotCompatibleDeserializationError(context.readFieldResult.type, field);
         }
-        byte[] value = null;
+        Blob value = null;
         try {
             value = this.deserializeValue(context);
         } catch (InvalidBondDataException e) {

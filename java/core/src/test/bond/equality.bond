@@ -24,6 +24,7 @@ struct Containers {
     2: set<int32> intSet;
     3: map<int32, int32> intMap;
     4: list<Primitives> primitivesList;
+    5: blob dataBlob;
 }
 
 struct Recursive {

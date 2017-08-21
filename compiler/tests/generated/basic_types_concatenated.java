@@ -49,7 +49,7 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
 
         private com.microsoft.bond.StructBondType.FloatStructField _float;
 
-        private com.microsoft.bond.StructBondType.ObjectStructField<byte[]> _blob;
+        private com.microsoft.bond.StructBondType.ObjectStructField<com.microsoft.bond.Blob> _blob;
 
         private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -70,7 +70,7 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
             this._int64 = new com.microsoft.bond.StructBondType.Int64StructField(this, 17, "_int64", com.microsoft.bond.Modifier.Optional);
             this._double = new com.microsoft.bond.StructBondType.DoubleStructField(this, 18, "_double", com.microsoft.bond.Modifier.Optional);
             this._float = new com.microsoft.bond.StructBondType.FloatStructField(this, 20, "_float", com.microsoft.bond.Modifier.Optional);
-            this._blob = new com.microsoft.bond.StructBondType.ObjectStructField<byte[]>(this, com.microsoft.bond.BondTypes.BLOB, 21, "_blob", com.microsoft.bond.Modifier.Optional);
+            this._blob = new com.microsoft.bond.StructBondType.ObjectStructField<com.microsoft.bond.Blob>(this, com.microsoft.bond.BondTypes.BLOB, 21, "_blob", com.microsoft.bond.Modifier.Optional);
             super.initializeBaseAndFields(null, this._bool, this._str, this._wstr, this._uint64, this._uint16, this._uint32, this._uint8, this._int8, this._int16, this._int32, this._int64, this._double, this._float, this._blob);
         }
 
@@ -299,7 +299,7 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
 
     public float _float;
 
-    public byte[] _blob;
+    public com.microsoft.bond.Blob _blob;
     
     public BasicTypes() {
         super();
