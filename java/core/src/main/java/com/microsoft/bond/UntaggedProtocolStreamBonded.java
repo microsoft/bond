@@ -41,6 +41,15 @@ final class UntaggedProtocolStreamBonded<T extends BondSerializable> extends Bon
     }
 
     @Override
+    void serialize(BondType.SerializationContext context) throws IOException {
+        if (this.bondType == null) {
+            throw new InvalidBondDataException("Cannot serialize an unknown struct type within a Bonded instance.");
+        }
+        // deserialize into object using object-backed temporary instance, then serialize it
+        Bonded.fromObject(this.deserialize(), this.bondType).serialize(context);
+    }
+
+    @Override
     public <U extends BondSerializable>
     void serialize(ProtocolWriter protocolWriter, StructBondType<U> asBondType) throws IOException {
         ArgumentHelper.ensureNotNull(protocolWriter, "protocolWriter");
