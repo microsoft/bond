@@ -22,14 +22,27 @@ env:
     - FLAVOR="cpp-grpc" BOOST="1.64.0"
     - FLAVOR="cpp-grpc" BOOST="1.63.0"
     - FLAVOR="hs"
+
+# The Java build is unusually difficult to shoehorn into csharp. Changes to
+# JAVA_HOME don't seem to take effect, and even if you manually symlink
+# /usr/lib/jvm/default-java to the right JDK, you get weird Groovy errors from
+# gradle. matrix: include: makes it possible to override the language setting
+# for specific builds.
+matrix:
+    include:
+        - language: java
+          env: FLAVOR="java"
+
 addons:
   apt:
     sources:
         - ubuntu-toolchain-r-test
     packages:
+        - wget
         - g++-4.8
         - ccache
-        - wget
+        - oracle-java8-installer
+        - oracle-java8-set-default
 
 before_install:
     - mkdir -p ~/.local/bin
@@ -75,13 +88,34 @@ script:
     - if [ "$FLAVOR" == "cs" ]; then xbuild /p:Configuration=Debug cs/cs.sln; fi
     - if [ "$FLAVOR" == "cs" ]; then xbuild /p:Configuration=Fields cs/cs.sln; fi
     - if [ "$FLAVOR" == "cs" ]; then mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll; fi
+
     - if [ "$FLAVOR" == "cpp-core" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
     - if [ "$FLAVOR" == "cpp-core" ]; then make --jobs 2 check; fi
+
     - if [ "$FLAVOR" == "cpp-comm" ]; then cmake -DBOND_ENABLE_COMM=TRUE -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
     - if [ "$FLAVOR" == "cpp-comm" ]; then make --jobs 2 check; fi
+
     - if [ "$FLAVOR" == "cpp-grpc" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DgRPC_ZLIB_PROVIDER=package ..; fi
     - if [ "$FLAVOR" == "cpp-grpc" ]; then make --jobs 2 check; fi
+
     - if [ "$FLAVOR" == "hs" ]; then cmake -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
     - if [ "$FLAVOR" == "hs" ]; then make gbc-tests; fi
     - if [ "$FLAVOR" == "hs" ]; then cd ../compiler; fi
     - if [ "$FLAVOR" == "hs" ]; then ../build/compiler/build/gbc-tests/gbc-tests; fi
+
+    - if [ "$FLAVOR" == "java" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
+    - if [ "$FLAVOR" == "java" ]; then make gbc; fi
+    - if [ "$FLAVOR" == "java" ]; then export PATH=`pwd`/compiler/build/gbc:$PATH; fi
+    - if [ "$FLAVOR" == "java" ]; then cd ../java/gradle-plugin; gradle build; fi
+    - if [ "$FLAVOR" == "java" ]; then mvn install:install-file -Dfile=build/libs/bond-gradle-1.0.jar -DgroupId=org.bondlib -DartifactId=gradle -Dversion=1.0 -Dpackaging=jar; fi
+    - if [ "$FLAVOR" == "java" ]; then cd ../core; gradle build; fi
+    - if [ "$FLAVOR" == "java" ]; then cd ../compat; gradle build; fi
+    - if [ "$FLAVOR" == "java" ]; then cd ../../build; fi
+    - if [ "$FLAVOR" == "java" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
+    - if [ "$FLAVOR" == "java" ]; then make --jobs 2 check; fi
+    # Run Java examples.
+    - if [ "$FLAVOR" == "java" ]; then cd ../examples/java/core; fi
+    # set -e will cause the entire travis script to immediately return nonzero
+    # if any command returns nonzero. Be aware that this behavior will apply to
+    # any lines after this one.
+    - if [ "$FLAVOR" == "java" ]; then set -e; for example in *; do pushd $example; echo "running examples/java/core/$example"; gradle run; popd; done; fi
