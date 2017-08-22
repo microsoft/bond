@@ -1,4 +1,4 @@
-namespace com.microsoft.bond.test
+namespace org.bondlib.test
 
 struct Empty {}
 

@@ -2,22 +2,22 @@
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class Foo<T> implements com.microsoft.bond.BondSerializable {
+public class Foo<T> implements org.bondlib.BondSerializable {
     
     public static abstract class GenericBondTypeBuilder {
 
         private GenericBondTypeBuilder() {
         }
 
-        public abstract <T> com.microsoft.bond.StructBondType<Foo<T>> makeGenericType(com.microsoft.bond.BondType<T> T);
+        public abstract <T> org.bondlib.StructBondType<Foo<T>> makeGenericType(org.bondlib.BondType<T> T);
     }
 
-    private static final class StructBondTypeImpl<T> extends com.microsoft.bond.StructBondType<Foo<T>> {
+    private static final class StructBondTypeImpl<T> extends org.bondlib.StructBondType<Foo<T>> {
         
-        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<Foo> {
+        static final class StructBondTypeBuilderImpl extends org.bondlib.StructBondType.StructBondTypeBuilder<Foo> {
             
-            private <T> com.microsoft.bond.StructBondType<Foo<T>> makeGenericType(com.microsoft.bond.BondType<T> T) {
-                com.microsoft.bond.helpers.ArgumentHelper.ensureNotNull(T, "T");
+            private <T> org.bondlib.StructBondType<Foo<T>> makeGenericType(org.bondlib.BondType<T> T) {
+                org.bondlib.helpers.ArgumentHelper.ensureNotNull(T, "T");
                 return (StructBondTypeImpl) this.getInitializedFromCache(T);
             }
 
@@ -27,8 +27,8 @@ public class Foo<T> implements com.microsoft.bond.BondSerializable {
             }
 
             @Override
-            protected final com.microsoft.bond.StructBondType<Foo> buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
-                return new StructBondTypeImpl(new com.microsoft.bond.GenericTypeSpecialization(genericTypeArguments));
+            protected final org.bondlib.StructBondType<Foo> buildNewInstance(org.bondlib.BondType[] genericTypeArguments) {
+                return new StructBondTypeImpl(new org.bondlib.GenericTypeSpecialization(genericTypeArguments));
             }
 
             static void register() {
@@ -36,16 +36,16 @@ public class Foo<T> implements com.microsoft.bond.BondSerializable {
             }
         }
 
-        private com.microsoft.bond.StructBondType.ObjectStructField<java.util.List<java.util.List<T>>> aa;
+        private org.bondlib.StructBondType.ObjectStructField<java.util.List<java.util.List<T>>> aa;
 
-        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+        private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
         }
         
         @Override
         protected final void initialize() {
-            com.microsoft.bond.BondType<T> T = this.getGenericSpecialization().getGenericTypeArgument(0);
-            this.aa = new com.microsoft.bond.StructBondType.ObjectStructField<java.util.List<java.util.List<T>>>(this, vectorOf(vectorOf(T)), 0, "aa", com.microsoft.bond.Modifier.Optional);
+            org.bondlib.BondType<T> T = this.getGenericSpecialization().getGenericTypeArgument(0);
+            this.aa = new org.bondlib.StructBondType.ObjectStructField<java.util.List<java.util.List<T>>>(this, vectorOf(vectorOf(T)), 0, "aa", org.bondlib.Modifier.Optional);
             super.initializeBaseAndFields(null, this.aa);
         }
 
@@ -70,12 +70,12 @@ public class Foo<T> implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void serializeStructFields(com.microsoft.bond.BondType.SerializationContext context, Foo<T> value) throws java.io.IOException {
+        protected final void serializeStructFields(org.bondlib.BondType.SerializationContext context, Foo<T> value) throws java.io.IOException {
             this.aa.serialize(context, value.aa);
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, Foo<T> value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.TaggedDeserializationContext context, Foo<T> value) throws java.io.IOException {
             boolean __has_aa = false;
             while (this.readField(context)) {
                 switch (context.readFieldResult.id) {
@@ -92,7 +92,7 @@ public class Foo<T> implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, Foo<T> value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, Foo<T> value) throws java.io.IOException {
             value.aa = this.aa.deserialize(context);
         }
         
@@ -112,7 +112,7 @@ public class Foo<T> implements com.microsoft.bond.BondSerializable {
         final StructBondTypeImpl.StructBondTypeBuilderImpl builder = new StructBondTypeImpl.StructBondTypeBuilderImpl();
 
         @Override
-        public final <T> com.microsoft.bond.StructBondType<Foo<T>> makeGenericType(com.microsoft.bond.BondType<T> T) {
+        public final <T> org.bondlib.StructBondType<Foo<T>> makeGenericType(org.bondlib.BondType<T> T) {
             return this.builder.makeGenericType(T);
         }
     };
@@ -128,7 +128,7 @@ public class Foo<T> implements com.microsoft.bond.BondSerializable {
 
     public java.util.List<java.util.List<T>> aa;
     
-public Foo(com.microsoft.bond.StructBondType<Foo<T>> genericType) {
+public Foo(org.bondlib.StructBondType<Foo<T>> genericType) {
         super();
         this.__genericType = (StructBondTypeImpl<T>)genericType;
         this.__genericType.initializeStructFields(this);
@@ -153,7 +153,7 @@ public Foo(com.microsoft.bond.StructBondType<Foo<T>> genericType) {
     }
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends Foo<T>> getBondType() {
+    public org.bondlib.StructBondType<? extends Foo<T>> getBondType() {
         return this.__genericType;
     }
 }
@@ -162,7 +162,7 @@ package tests;
 
 
 @javax.annotation.Generated("gbc")
-public final class EnumToWrap implements com.microsoft.bond.BondEnum<EnumToWrap> {
+public final class EnumToWrap implements org.bondlib.BondEnum<EnumToWrap> {
 
     public static final class Values {
         private Values() {}
@@ -170,7 +170,7 @@ public final class EnumToWrap implements com.microsoft.bond.BondEnum<EnumToWrap>
         public static final int anEnumValue = 0;
     }
 
-    private static final class EnumBondTypeImpl extends com.microsoft.bond.EnumBondType<EnumToWrap> {
+    private static final class EnumBondTypeImpl extends org.bondlib.EnumBondType<EnumToWrap> {
 
         @Override
         public java.lang.Class<EnumToWrap> getValueClass() { return EnumToWrap.class; }
@@ -179,7 +179,7 @@ public final class EnumToWrap implements com.microsoft.bond.BondEnum<EnumToWrap>
         public final EnumToWrap getEnumValue(int value) { return get(value); }
     }
 
-    public static final com.microsoft.bond.EnumBondType<EnumToWrap> BOND_TYPE = new EnumBondTypeImpl();
+    public static final org.bondlib.EnumBondType<EnumToWrap> BOND_TYPE = new EnumBondTypeImpl();
 
     public static final EnumToWrap anEnumValue = new EnumToWrap(Values.anEnumValue, "anEnumValue");
 
@@ -196,7 +196,7 @@ public final class EnumToWrap implements com.microsoft.bond.BondEnum<EnumToWrap>
     public final String getLabel() { return this.label; }
 
     @Override
-    public final com.microsoft.bond.EnumBondType<EnumToWrap> getBondType() { return BOND_TYPE; }
+    public final org.bondlib.EnumBondType<EnumToWrap> getBondType() { return BOND_TYPE; }
 
     @Override
     public final int compareTo(EnumToWrap o) { return this.value < o.value ? -1 : (this.value > o.value ? 1 : 0); }
@@ -231,11 +231,11 @@ public final class EnumToWrap implements com.microsoft.bond.BondEnum<EnumToWrap>
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
+public class WrappingAnEnum implements org.bondlib.BondSerializable {
     
-    private static final class StructBondTypeImpl extends com.microsoft.bond.StructBondType<WrappingAnEnum> {
+    private static final class StructBondTypeImpl extends org.bondlib.StructBondType<WrappingAnEnum> {
         
-        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<WrappingAnEnum> {
+        static final class StructBondTypeBuilderImpl extends org.bondlib.StructBondType.StructBondTypeBuilder<WrappingAnEnum> {
             
             @Override
             public final int getGenericTypeParameterCount() {
@@ -243,7 +243,7 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
             }
 
             @Override
-            protected final com.microsoft.bond.StructBondType<WrappingAnEnum> buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
+            protected final org.bondlib.StructBondType<WrappingAnEnum> buildNewInstance(org.bondlib.BondType[] genericTypeArguments) {
                 return new StructBondTypeImpl(null);
             }
 
@@ -252,15 +252,15 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
             }
         }
 
-        private com.microsoft.bond.StructBondType.EnumStructField<tests.EnumToWrap> aWrappedEnum;
+        private org.bondlib.StructBondType.EnumStructField<tests.EnumToWrap> aWrappedEnum;
 
-        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+        private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
         }
         
         @Override
         protected final void initialize() {
-            this.aWrappedEnum = new com.microsoft.bond.StructBondType.EnumStructField<tests.EnumToWrap>(this, tests.EnumToWrap.BOND_TYPE, 0, "aWrappedEnum", com.microsoft.bond.Modifier.Optional);
+            this.aWrappedEnum = new org.bondlib.StructBondType.EnumStructField<tests.EnumToWrap>(this, tests.EnumToWrap.BOND_TYPE, 0, "aWrappedEnum", org.bondlib.Modifier.Optional);
             super.initializeBaseAndFields(null, this.aWrappedEnum);
         }
 
@@ -285,12 +285,12 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void serializeStructFields(com.microsoft.bond.BondType.SerializationContext context, WrappingAnEnum value) throws java.io.IOException {
+        protected final void serializeStructFields(org.bondlib.BondType.SerializationContext context, WrappingAnEnum value) throws java.io.IOException {
             this.aWrappedEnum.serialize(context, value.aWrappedEnum);
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, WrappingAnEnum value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.TaggedDeserializationContext context, WrappingAnEnum value) throws java.io.IOException {
             boolean __has_aWrappedEnum = false;
             while (this.readField(context)) {
                 switch (context.readFieldResult.id) {
@@ -307,7 +307,7 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, WrappingAnEnum value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, WrappingAnEnum value) throws java.io.IOException {
             value.aWrappedEnum = this.aWrappedEnum.deserialize(context);
         }
         
@@ -322,7 +322,7 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
         }
     }
 
-    public static final com.microsoft.bond.StructBondType<WrappingAnEnum> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+    public static final org.bondlib.StructBondType<WrappingAnEnum> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
 
     public static void initializeBondType() {
         StructBondTypeImpl.StructBondTypeBuilderImpl.register();
@@ -359,7 +359,7 @@ public class WrappingAnEnum implements com.microsoft.bond.BondSerializable {
     }
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends WrappingAnEnum> getBondType() {
+    public org.bondlib.StructBondType<? extends WrappingAnEnum> getBondType() {
         return BOND_TYPE;
     }
 }

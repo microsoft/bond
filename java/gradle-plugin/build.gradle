@@ -1,6 +1,6 @@
 apply plugin: 'groovy'
 
-group 'com.microsoft.bond'
+group 'org.bondlib'
 version '1.0'
 
 dependencies {

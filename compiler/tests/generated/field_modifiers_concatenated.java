@@ -2,11 +2,11 @@
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class Foo implements com.microsoft.bond.BondSerializable {
+public class Foo implements org.bondlib.BondSerializable {
     
-    private static final class StructBondTypeImpl extends com.microsoft.bond.StructBondType<Foo> {
+    private static final class StructBondTypeImpl extends org.bondlib.StructBondType<Foo> {
         
-        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<Foo> {
+        static final class StructBondTypeBuilderImpl extends org.bondlib.StructBondType.StructBondTypeBuilder<Foo> {
             
             @Override
             public final int getGenericTypeParameterCount() {
@@ -14,7 +14,7 @@ public class Foo implements com.microsoft.bond.BondSerializable {
             }
 
             @Override
-            protected final com.microsoft.bond.StructBondType<Foo> buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
+            protected final org.bondlib.StructBondType<Foo> buildNewInstance(org.bondlib.BondType[] genericTypeArguments) {
                 return new StructBondTypeImpl(null);
             }
 
@@ -23,21 +23,21 @@ public class Foo implements com.microsoft.bond.BondSerializable {
             }
         }
 
-        private com.microsoft.bond.StructBondType.BoolStructField o;
+        private org.bondlib.StructBondType.BoolStructField o;
 
-        private com.microsoft.bond.StructBondType.Int16StructField r;
+        private org.bondlib.StructBondType.Int16StructField r;
 
-        private com.microsoft.bond.StructBondType.DoubleStructField ro;
+        private org.bondlib.StructBondType.DoubleStructField ro;
 
-        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+        private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
         }
         
         @Override
         protected final void initialize() {
-            this.o = new com.microsoft.bond.StructBondType.BoolStructField(this, 0, "o", com.microsoft.bond.Modifier.Optional);
-            this.r = new com.microsoft.bond.StructBondType.Int16StructField(this, 1, "r", com.microsoft.bond.Modifier.Required);
-            this.ro = new com.microsoft.bond.StructBondType.DoubleStructField(this, 2, "ro", com.microsoft.bond.Modifier.RequiredOptional);
+            this.o = new org.bondlib.StructBondType.BoolStructField(this, 0, "o", org.bondlib.Modifier.Optional);
+            this.r = new org.bondlib.StructBondType.Int16StructField(this, 1, "r", org.bondlib.Modifier.Required);
+            this.ro = new org.bondlib.StructBondType.DoubleStructField(this, 2, "ro", org.bondlib.Modifier.RequiredOptional);
             super.initializeBaseAndFields(null, this.o, this.r, this.ro);
         }
 
@@ -62,14 +62,14 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void serializeStructFields(com.microsoft.bond.BondType.SerializationContext context, Foo value) throws java.io.IOException {
+        protected final void serializeStructFields(org.bondlib.BondType.SerializationContext context, Foo value) throws java.io.IOException {
             this.o.serialize(context, value.o);
             this.r.serialize(context, value.r);
             this.ro.serialize(context, value.ro);
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, Foo value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.TaggedDeserializationContext context, Foo value) throws java.io.IOException {
             boolean __has_o = false;
             boolean __has_r = false;
             boolean __has_ro = false;
@@ -98,7 +98,7 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
             value.o = this.o.deserialize(context);
             value.r = this.r.deserialize(context);
             value.ro = this.ro.deserialize(context);
@@ -119,7 +119,7 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         }
     }
 
-    public static final com.microsoft.bond.StructBondType<Foo> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+    public static final org.bondlib.StructBondType<Foo> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
 
     public static void initializeBondType() {
         StructBondTypeImpl.StructBondTypeBuilderImpl.register();
@@ -148,7 +148,7 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         final Foo other = (Foo) o;
         if (!(this.o == other.o)) return false;
         if (!(this.r == other.r)) return false;
-        if (!(com.microsoft.bond.helpers.FloatingPointHelper.doubleEquals(this.ro, other.ro))) return false;
+        if (!(org.bondlib.helpers.FloatingPointHelper.doubleEquals(this.ro, other.ro))) return false;
         return true;
     }
 
@@ -161,14 +161,14 @@ public class Foo implements com.microsoft.bond.BondSerializable {
         result += r;
         result *= 0xeadbeef;
         result ^= result >> 16;
-        result += com.microsoft.bond.helpers.FloatingPointHelper.doubleHashCode(ro);
+        result += org.bondlib.helpers.FloatingPointHelper.doubleHashCode(ro);
         result *= 0xeadbeef;
         result ^= result >> 16;
         return result;
     }
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends Foo> getBondType() {
+    public org.bondlib.StructBondType<? extends Foo> getBondType() {
         return BOND_TYPE;
     }
 }

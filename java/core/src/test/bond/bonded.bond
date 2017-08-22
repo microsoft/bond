@@ -1,6 +1,6 @@
 import "common.bond"
 
-namespace com.microsoft.bond.test
+namespace org.bondlib.test
 
 struct BondedCollection {
     0: list<bonded<Base>> bondeds;

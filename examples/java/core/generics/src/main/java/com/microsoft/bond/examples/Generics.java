@@ -1,19 +1,19 @@
-package com.microsoft.bond.examples;
+package org.bondlib.examples;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import com.microsoft.bond.BondTypes;
-import com.microsoft.bond.Deserializer;
-import com.microsoft.bond.Serializer;
-import com.microsoft.bond.StructBondType;
-import com.microsoft.bond.protocol.CompactBinaryReader;
-import com.microsoft.bond.protocol.CompactBinaryWriter;
+import org.bondlib.BondTypes;
+import org.bondlib.Deserializer;
+import org.bondlib.Serializer;
+import org.bondlib.StructBondType;
+import org.bondlib.protocol.CompactBinaryReader;
+import org.bondlib.protocol.CompactBinaryWriter;
 
 // See build.gradle for namespace mapping
-import com.microsoft.bond.examples.generics.Base;
-import com.microsoft.bond.examples.generics.Struct;
+import org.bondlib.examples.generics.Base;
+import org.bondlib.examples.generics.Struct;
 
 public class Generics {
 

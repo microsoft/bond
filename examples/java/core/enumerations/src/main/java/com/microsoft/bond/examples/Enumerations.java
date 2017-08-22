@@ -1,9 +1,9 @@
-package com.microsoft.bond.examples;
+package org.bondlib.examples;
 
 // See build.gradle for namespace mapping
-import com.microsoft.bond.examples.enumerations.Color;
-import com.microsoft.bond.examples.enumerations.Fruit;
-import com.microsoft.bond.examples.enumerations.Limits;
+import org.bondlib.examples.enumerations.Color;
+import org.bondlib.examples.enumerations.Fruit;
+import org.bondlib.examples.enumerations.Limits;
 
 public class Enumerations {
 

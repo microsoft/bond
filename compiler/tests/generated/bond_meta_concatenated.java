@@ -2,11 +2,11 @@
 package deprecated.bondmeta;
 
 @javax.annotation.Generated("gbc")
-public class HasMetaFields implements com.microsoft.bond.BondSerializable {
+public class HasMetaFields implements org.bondlib.BondSerializable {
     
-    private static final class StructBondTypeImpl extends com.microsoft.bond.StructBondType<HasMetaFields> {
+    private static final class StructBondTypeImpl extends org.bondlib.StructBondType<HasMetaFields> {
         
-        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<HasMetaFields> {
+        static final class StructBondTypeBuilderImpl extends org.bondlib.StructBondType.StructBondTypeBuilder<HasMetaFields> {
             
             @Override
             public final int getGenericTypeParameterCount() {
@@ -14,7 +14,7 @@ public class HasMetaFields implements com.microsoft.bond.BondSerializable {
             }
 
             @Override
-            protected final com.microsoft.bond.StructBondType<HasMetaFields> buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
+            protected final org.bondlib.StructBondType<HasMetaFields> buildNewInstance(org.bondlib.BondType[] genericTypeArguments) {
                 return new StructBondTypeImpl(null);
             }
 
@@ -23,18 +23,18 @@ public class HasMetaFields implements com.microsoft.bond.BondSerializable {
             }
         }
 
-        private com.microsoft.bond.StructBondType.StringStructField full_name;
+        private org.bondlib.StructBondType.StringStructField full_name;
 
-        private com.microsoft.bond.StructBondType.StringStructField name;
+        private org.bondlib.StructBondType.StringStructField name;
 
-        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+        private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
         }
         
         @Override
         protected final void initialize() {
-            this.full_name = new com.microsoft.bond.StructBondType.StringStructField(this, 0, "full_name", com.microsoft.bond.Modifier.Optional);
-            this.name = new com.microsoft.bond.StructBondType.StringStructField(this, 1, "name", com.microsoft.bond.Modifier.Optional);
+            this.full_name = new org.bondlib.StructBondType.StringStructField(this, 0, "full_name", org.bondlib.Modifier.Optional);
+            this.name = new org.bondlib.StructBondType.StringStructField(this, 1, "name", org.bondlib.Modifier.Optional);
             super.initializeBaseAndFields(null, this.full_name, this.name);
         }
 
@@ -59,13 +59,13 @@ public class HasMetaFields implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void serializeStructFields(com.microsoft.bond.BondType.SerializationContext context, HasMetaFields value) throws java.io.IOException {
+        protected final void serializeStructFields(org.bondlib.BondType.SerializationContext context, HasMetaFields value) throws java.io.IOException {
             this.full_name.serialize(context, value.full_name);
             this.name.serialize(context, value.name);
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, HasMetaFields value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.TaggedDeserializationContext context, HasMetaFields value) throws java.io.IOException {
             boolean __has_full_name = false;
             boolean __has_name = false;
             while (this.readField(context)) {
@@ -88,7 +88,7 @@ public class HasMetaFields implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, HasMetaFields value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, HasMetaFields value) throws java.io.IOException {
             value.full_name = this.full_name.deserialize(context);
             value.name = this.name.deserialize(context);
         }
@@ -106,7 +106,7 @@ public class HasMetaFields implements com.microsoft.bond.BondSerializable {
         }
     }
 
-    public static final com.microsoft.bond.StructBondType<HasMetaFields> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+    public static final org.bondlib.StructBondType<HasMetaFields> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
 
     public static void initializeBondType() {
         StructBondTypeImpl.StructBondTypeBuilderImpl.register();
@@ -149,7 +149,7 @@ public class HasMetaFields implements com.microsoft.bond.BondSerializable {
     }
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends HasMetaFields> getBondType() {
+    public org.bondlib.StructBondType<? extends HasMetaFields> getBondType() {
         return BOND_TYPE;
     }
 }

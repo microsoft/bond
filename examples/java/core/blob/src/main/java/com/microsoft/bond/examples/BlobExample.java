@@ -1,20 +1,20 @@
-package com.microsoft.bond.examples;
+package org.bondlib.examples;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import com.microsoft.bond.Blob;
-import com.microsoft.bond.Deserializer;
-import com.microsoft.bond.Serializer;
-import com.microsoft.bond.Something;
+import org.bondlib.Blob;
+import org.bondlib.Deserializer;
+import org.bondlib.Serializer;
+import org.bondlib.Something;
 
-import com.microsoft.bond.protocol.CompactBinaryReader;
-import com.microsoft.bond.protocol.CompactBinaryWriter;
+import org.bondlib.protocol.CompactBinaryReader;
+import org.bondlib.protocol.CompactBinaryWriter;
 
 // See build.gradle for namespace mapping
-import com.microsoft.bond.examples.blob.Example;
+import org.bondlib.examples.blob.Example;
 
 public class BlobExample {
 

@@ -33,9 +33,9 @@ generatedClassAnnotations = [lt|@javax.annotation.Generated("gbc")|]
 
 -- returns the qualified name of Modifier constant
 modifierConstantName :: Modifier -> Text
-modifierConstantName Optional = [lt|com.microsoft.bond.Modifier.Optional|]
-modifierConstantName Required = [lt|com.microsoft.bond.Modifier.Required|]
-modifierConstantName RequiredOptional = [lt|com.microsoft.bond.Modifier.RequiredOptional|]
+modifierConstantName Optional = [lt|org.bondlib.Modifier.Optional|]
+modifierConstantName Required = [lt|org.bondlib.Modifier.Required|]
+modifierConstantName RequiredOptional = [lt|org.bondlib.Modifier.RequiredOptional|]
 
 -- returns a value indicating whether a type is a non-enum Bond primitive type
 isPrimitiveNonEnumBondType :: Type -> Bool

@@ -1,4 +1,4 @@
-group 'com.microsoft.bond'
+group 'org.bondlib'
 version '1.0'
 
 buildscript {
@@ -8,15 +8,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.microsoft.bond:gradle:+'
+        classpath 'org.bondlib:gradle:+'
     }
 }
 
 apply plugin: 'application'
-apply plugin: 'com.microsoft.bond.gradle'
+apply plugin: 'org.bondlib.gradle'
 
 sourceCompatibility = 1.8
-mainClassName = 'com.microsoft.bond.examples.RecordStreaming'
+mainClassName = 'org.bondlib.examples.RecordStreaming'
 applicationDefaultJvmArgs = ['-ea']
 
 repositories {
@@ -28,7 +28,7 @@ dependencies {
 }
 
 compileBond {
-    options '--namespace', 'examples.record_streaming=com.microsoft.bond.examples.recordstreaming'
+    options '--namespace', 'examples.record_streaming=org.bondlib.examples.recordstreaming'
 }
 
 jar {

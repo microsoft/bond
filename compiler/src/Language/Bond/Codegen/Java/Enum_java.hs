@@ -29,7 +29,7 @@ package #{javaPackage};
 
     typeDefinition Enum {..} = [lt|
 #{Java.generatedClassAnnotations}
-public final class #{declName} implements com.microsoft.bond.BondEnum<#{declName}> {
+public final class #{declName} implements org.bondlib.BondEnum<#{declName}> {
 
     public static final class Values {
         private Values() {}
@@ -37,7 +37,7 @@ public final class #{declName} implements com.microsoft.bond.BondEnum<#{declName
         #{newlineSep 2 constantIntValueDecl enumConstantsWithInt}
     }
 
-    private static final class EnumBondTypeImpl extends com.microsoft.bond.EnumBondType<#{declName}> {
+    private static final class EnumBondTypeImpl extends org.bondlib.EnumBondType<#{declName}> {
 
         @Override
         public java.lang.Class<#{declName}> getValueClass() { return #{declName}.class; }
@@ -46,7 +46,7 @@ public final class #{declName} implements com.microsoft.bond.BondEnum<#{declName
         public final #{declName} getEnumValue(int value) { return get(value); }
     }
 
-    public static final com.microsoft.bond.EnumBondType<#{declName}> BOND_TYPE = new EnumBondTypeImpl();
+    public static final org.bondlib.EnumBondType<#{declName}> BOND_TYPE = new EnumBondTypeImpl();
 
     #{newlineSep 1 constantObjectDecl enumConstantsWithInt}
 
@@ -63,7 +63,7 @@ public final class #{declName} implements com.microsoft.bond.BondEnum<#{declName
     public final String getLabel() { return this.label; }
 
     @Override
-    public final com.microsoft.bond.EnumBondType<#{declName}> getBondType() { return BOND_TYPE; }
+    public final org.bondlib.EnumBondType<#{declName}> getBondType() { return BOND_TYPE; }
 
     @Override
     public final int compareTo(#{declName} o) { return this.value < o.value ? -1 : (this.value > o.value ? 1 : 0); }

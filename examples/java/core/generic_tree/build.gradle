@@ -1,4 +1,4 @@
-group 'com.microsoft.bond'
+group 'org.bondlib'
 version '1.0'
 
 buildscript {
@@ -8,15 +8,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.microsoft.bond:gradle:+'
+        classpath 'org.bondlib:gradle:+'
     }
 }
 
 apply plugin: 'application'
-apply plugin: 'com.microsoft.bond.gradle'
+apply plugin: 'org.bondlib.gradle'
 
 sourceCompatibility = 1.8
-mainClassName = 'com.microsoft.bond.examples.GenericTree'
+mainClassName = 'org.bondlib.examples.GenericTree'
 applicationDefaultJvmArgs = ['-ea']
 
 repositories {
@@ -29,7 +29,7 @@ dependencies {
 
 compileBond {
     bondfiles 'src/main/bond/generic_tree.bond'
-    options '--namespace', 'examples.generic_tree=com.microsoft.bond.examples.generictree'
+    options '--namespace', 'examples.generic_tree=org.bondlib.examples.generictree'
 }
 
 jar {

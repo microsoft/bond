@@ -2,7 +2,7 @@
   <configuration default="false" name="all tests" type="JUnit" factoryName="JUnit">
     <extension name="coverage" enabled="true" merge="false" runner="idea">
       <pattern>
-        <option name="PATTERN" value="com.microsoft.bond.*" />
+        <option name="PATTERN" value="org.bondlib.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

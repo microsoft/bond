@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-group 'com.microsoft.bond'
+group 'org.bondlib'
 version = '5.0.0'
 
 buildscript {
@@ -11,12 +11,12 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.microsoft.bond:gradle:+'
+        classpath 'org.bondlib:gradle:+'
     }
 }
 
 apply plugin: 'java'
-apply plugin: 'com.microsoft.bond.gradle'
+apply plugin: 'org.bondlib.gradle'
 
 sourceCompatibility = 1.6
 
@@ -31,5 +31,5 @@ dependencies {
 compileBond {
     bondfiles '../../idl/bond/core/bond.bond',
               '../../idl/bond/core/bond_const.bond'
-    options '-n', 'bond=com.microsoft.bond'
+    options '-n', 'bond=org.bondlib'
 }

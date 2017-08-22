@@ -28,42 +28,42 @@ data JavaFieldMapping = JavaPublicFields deriving Eq
 structFieldDescriptorTypeName :: MappingContext -> Type -> Text
 structFieldDescriptorTypeName java = typeName
     where
-        typeName (BT_Maybe BT_Int8) = [lt|com.microsoft.bond.StructBondType.SomethingInt8StructField|]
-        typeName BT_Int8 = [lt|com.microsoft.bond.StructBondType.Int8StructField|]
-        typeName (BT_Maybe BT_Int16) = [lt|com.microsoft.bond.StructBondType.SomethingInt16StructField|]
-        typeName BT_Int16 = [lt|com.microsoft.bond.StructBondType.Int16StructField|]
-        typeName (BT_Maybe BT_Int32) = [lt|com.microsoft.bond.StructBondType.SomethingInt32StructField|]
-        typeName BT_Int32 = [lt|com.microsoft.bond.StructBondType.Int32StructField|]
-        typeName (BT_Maybe BT_Int64) = [lt|com.microsoft.bond.StructBondType.SomethingInt64StructField|]
-        typeName BT_Int64 = [lt|com.microsoft.bond.StructBondType.Int64StructField|]
-        typeName (BT_Maybe BT_UInt8) = [lt|com.microsoft.bond.StructBondType.SomethingUInt8StructField|]
-        typeName BT_UInt8 = [lt|com.microsoft.bond.StructBondType.UInt8StructField|]
-        typeName (BT_Maybe BT_UInt16) = [lt|com.microsoft.bond.StructBondType.SomethingUInt16StructField|]
-        typeName BT_UInt16 = [lt|com.microsoft.bond.StructBondType.UInt16StructField|]
-        typeName (BT_Maybe BT_UInt32) = [lt|com.microsoft.bond.StructBondType.SomethingUInt32StructField|]
-        typeName BT_UInt32 = [lt|com.microsoft.bond.StructBondType.UInt32StructField|]
-        typeName (BT_Maybe BT_UInt64) = [lt|com.microsoft.bond.StructBondType.SomethingUInt64StructField|]
-        typeName BT_UInt64 = [lt|com.microsoft.bond.StructBondType.UInt64StructField|]
-        typeName (BT_Maybe BT_Float) = [lt|com.microsoft.bond.StructBondType.SomethingFloatStructField|]
-        typeName BT_Float = [lt|com.microsoft.bond.StructBondType.FloatStructField|]
-        typeName (BT_Maybe BT_Double) = [lt|com.microsoft.bond.StructBondType.SomethingDoubleStructField|]
-        typeName BT_Double = [lt|com.microsoft.bond.StructBondType.DoubleStructField|]
-        typeName (BT_Maybe BT_Bool) = [lt|com.microsoft.bond.StructBondType.SomethingBoolStructField|]
-        typeName BT_Bool = [lt|com.microsoft.bond.StructBondType.BoolStructField|]
-        typeName (BT_Maybe BT_String) = [lt|com.microsoft.bond.StructBondType.SomethingStringStructField|]
-        typeName BT_String = [lt|com.microsoft.bond.StructBondType.StringStructField|]
-        typeName (BT_Maybe BT_WString) = [lt|com.microsoft.bond.StructBondType.SomethingWStringStructField|]
-        typeName BT_WString = [lt|com.microsoft.bond.StructBondType.WStringStructField|]
-        typeName (BT_Maybe BT_MetaName) = [lt|com.microsoft.bond.StructBondType.SomethingStringStructField|]
-        typeName BT_MetaName = [lt|com.microsoft.bond.StructBondType.StringStructField|]
-        typeName (BT_Maybe BT_MetaFullName) = [lt|com.microsoft.bond.StructBondType.SomethingStringStructField|]
-        typeName BT_MetaFullName = [lt|com.microsoft.bond.StructBondType.StringStructField|]
-        typeName (BT_Maybe (BT_UserDefined e@Enum {} _)) = [lt|com.microsoft.bond.StructBondType.SomethingEnumStructField<#{qualifiedDeclaredTypeName java e}>|]
-        typeName (BT_UserDefined e@Enum {} _) = [lt|com.microsoft.bond.StructBondType.EnumStructField<#{qualifiedDeclaredTypeName java e}>|]
+        typeName (BT_Maybe BT_Int8) = [lt|org.bondlib.StructBondType.SomethingInt8StructField|]
+        typeName BT_Int8 = [lt|org.bondlib.StructBondType.Int8StructField|]
+        typeName (BT_Maybe BT_Int16) = [lt|org.bondlib.StructBondType.SomethingInt16StructField|]
+        typeName BT_Int16 = [lt|org.bondlib.StructBondType.Int16StructField|]
+        typeName (BT_Maybe BT_Int32) = [lt|org.bondlib.StructBondType.SomethingInt32StructField|]
+        typeName BT_Int32 = [lt|org.bondlib.StructBondType.Int32StructField|]
+        typeName (BT_Maybe BT_Int64) = [lt|org.bondlib.StructBondType.SomethingInt64StructField|]
+        typeName BT_Int64 = [lt|org.bondlib.StructBondType.Int64StructField|]
+        typeName (BT_Maybe BT_UInt8) = [lt|org.bondlib.StructBondType.SomethingUInt8StructField|]
+        typeName BT_UInt8 = [lt|org.bondlib.StructBondType.UInt8StructField|]
+        typeName (BT_Maybe BT_UInt16) = [lt|org.bondlib.StructBondType.SomethingUInt16StructField|]
+        typeName BT_UInt16 = [lt|org.bondlib.StructBondType.UInt16StructField|]
+        typeName (BT_Maybe BT_UInt32) = [lt|org.bondlib.StructBondType.SomethingUInt32StructField|]
+        typeName BT_UInt32 = [lt|org.bondlib.StructBondType.UInt32StructField|]
+        typeName (BT_Maybe BT_UInt64) = [lt|org.bondlib.StructBondType.SomethingUInt64StructField|]
+        typeName BT_UInt64 = [lt|org.bondlib.StructBondType.UInt64StructField|]
+        typeName (BT_Maybe BT_Float) = [lt|org.bondlib.StructBondType.SomethingFloatStructField|]
+        typeName BT_Float = [lt|org.bondlib.StructBondType.FloatStructField|]
+        typeName (BT_Maybe BT_Double) = [lt|org.bondlib.StructBondType.SomethingDoubleStructField|]
+        typeName BT_Double = [lt|org.bondlib.StructBondType.DoubleStructField|]
+        typeName (BT_Maybe BT_Bool) = [lt|org.bondlib.StructBondType.SomethingBoolStructField|]
+        typeName BT_Bool = [lt|org.bondlib.StructBondType.BoolStructField|]
+        typeName (BT_Maybe BT_String) = [lt|org.bondlib.StructBondType.SomethingStringStructField|]
+        typeName BT_String = [lt|org.bondlib.StructBondType.StringStructField|]
+        typeName (BT_Maybe BT_WString) = [lt|org.bondlib.StructBondType.SomethingWStringStructField|]
+        typeName BT_WString = [lt|org.bondlib.StructBondType.WStringStructField|]
+        typeName (BT_Maybe BT_MetaName) = [lt|org.bondlib.StructBondType.SomethingStringStructField|]
+        typeName BT_MetaName = [lt|org.bondlib.StructBondType.StringStructField|]
+        typeName (BT_Maybe BT_MetaFullName) = [lt|org.bondlib.StructBondType.SomethingStringStructField|]
+        typeName BT_MetaFullName = [lt|org.bondlib.StructBondType.StringStructField|]
+        typeName (BT_Maybe (BT_UserDefined e@Enum {} _)) = [lt|org.bondlib.StructBondType.SomethingEnumStructField<#{qualifiedDeclaredTypeName java e}>|]
+        typeName (BT_UserDefined e@Enum {} _) = [lt|org.bondlib.StructBondType.EnumStructField<#{qualifiedDeclaredTypeName java e}>|]
         typeName (BT_Maybe (BT_UserDefined a@Alias {} args)) = structFieldDescriptorTypeName java (BT_Maybe (resolveAlias a args))
         typeName (BT_UserDefined a@Alias {} args) = structFieldDescriptorTypeName java (resolveAlias a args)
-        typeName (BT_Maybe t) = [lt|com.microsoft.bond.StructBondType.SomethingObjectStructField<#{getElementTypeName java t}>|]
-        typeName t = [lt|com.microsoft.bond.StructBondType.ObjectStructField<#{getElementTypeName java t}>|]
+        typeName (BT_Maybe t) = [lt|org.bondlib.StructBondType.SomethingObjectStructField<#{getElementTypeName java t}>|]
+        typeName t = [lt|org.bondlib.StructBondType.ObjectStructField<#{getElementTypeName java t}>|]
 
 
 -- given the type of the field, value indicating whether a struct field descriptor type is generic and hence needs an explicit type parameter
@@ -79,7 +79,7 @@ typeParamVarName TypeParam {..} = [lt|#{paramName}|]
 
 -- given a type parameter, returns the declaration of a local variable containing the type descriptor
 typeParamVarDecl :: TypeParam -> Text
-typeParamVarDecl t@TypeParam {..} = [lt|com.microsoft.bond.BondType<#{paramName}> #{typeParamVarName t}|]
+typeParamVarDecl t@TypeParam {..} = [lt|org.bondlib.BondType<#{paramName}> #{typeParamVarName t}|]
 
 
 -- given a list of type parameters, returns it as comma-separated text
@@ -109,17 +109,17 @@ typeNameWithParams declName declParams = [lt|#{declName}#{typeParamAnglesNameLis
 
 -- given a class name and a list of type parameters, returns the full type descriptor name with type parameters (if any)
 typeDescriptorNameWithParams :: String -> [TypeParam] -> Text
-typeDescriptorNameWithParams declName declParams = [lt|com.microsoft.bond.StructBondType<#{typeNameWithParams declName declParams}>|]
+typeDescriptorNameWithParams declName declParams = [lt|org.bondlib.StructBondType<#{typeNameWithParams declName declParams}>|]
 
 
 -- given a class name, returns the full type descriptor name (using non-generic notation for the struct type)
 typeDescriptorName :: String -> Text
-typeDescriptorName declName = [lt|com.microsoft.bond.StructBondType<#{declName}>|]
+typeDescriptorName declName = [lt|org.bondlib.StructBondType<#{declName}>|]
 
 
 -- given a variable name, returns call to ArgumentHelper.ensureNotNull method that checks the variable for null
 ensureNotNullArgument :: Text -> Text
-ensureNotNullArgument argName = [lt|com.microsoft.bond.helpers.ArgumentHelper.ensureNotNull(#{argName}, "#{argName}")|]
+ensureNotNullArgument argName = [lt|org.bondlib.helpers.ArgumentHelper.ensureNotNull(#{argName}, "#{argName}")|]
 
 
 -- given a field type and optional default value, returns an expression for the parameter containing the default value,
@@ -151,7 +151,7 @@ fieldDefaultValueInitParamExpr _ _ _ = mempty
 structFieldDescriptorInitStructExpr :: MappingContext -> Type -> String -> [Type] -> Text
 structFieldDescriptorInitStructExpr java fieldType typeName params = [lt|#{typeCastExpr} getStructType(#{typeName}.class#{paramExprList params})|]
     where
-        typeCastExpr = [lt|(com.microsoft.bond.StructBondType<#{(getTypeName java) fieldType}>)|]
+        typeCastExpr = [lt|(org.bondlib.StructBondType<#{(getTypeName java) fieldType}>)|]
         paramExprList :: [Type] -> Text
         paramExprList [] = mempty
         paramExprList (x:xs) = [lt|, #{structFieldDescriptorInitTypeExpr java x}#{paramExprList xs}|]
@@ -160,20 +160,20 @@ structFieldDescriptorInitStructExpr java fieldType typeName params = [lt|#{typeC
 -- given field type, returns a type descriptor expression for the field, used in initialization of struct field descriptors
 structFieldDescriptorInitTypeExpr :: MappingContext -> Type -> Text
 structFieldDescriptorInitTypeExpr java (BT_Maybe t) = structFieldDescriptorInitTypeExpr java t
-structFieldDescriptorInitTypeExpr _ BT_Int8 = [lt|com.microsoft.bond.BondTypes.INT8|]
-structFieldDescriptorInitTypeExpr _ BT_Int16 = [lt|com.microsoft.bond.BondTypes.INT16|]
-structFieldDescriptorInitTypeExpr _ BT_Int32 = [lt|com.microsoft.bond.BondTypes.INT32|]
-structFieldDescriptorInitTypeExpr _ BT_Int64 = [lt|com.microsoft.bond.BondTypes.INT64|]
-structFieldDescriptorInitTypeExpr _ BT_UInt8 = [lt|com.microsoft.bond.BondTypes.UINT8|]
-structFieldDescriptorInitTypeExpr _ BT_UInt16 = [lt|com.microsoft.bond.BondTypes.UINT16|]
-structFieldDescriptorInitTypeExpr _ BT_UInt32 = [lt|com.microsoft.bond.BondTypes.UINT32|]
-structFieldDescriptorInitTypeExpr _ BT_UInt64 = [lt|com.microsoft.bond.BondTypes.UINT64|]
-structFieldDescriptorInitTypeExpr _ BT_Float = [lt|com.microsoft.bond.BondTypes.FLOAT|]
-structFieldDescriptorInitTypeExpr _ BT_Double = [lt|com.microsoft.bond.BondTypes.DOUBLE|]
-structFieldDescriptorInitTypeExpr _ BT_Bool = [lt|com.microsoft.bond.BondTypes.BOOL|]
-structFieldDescriptorInitTypeExpr _ BT_String = [lt|com.microsoft.bond.BondTypes.STRING|]
-structFieldDescriptorInitTypeExpr _ BT_WString = [lt|com.microsoft.bond.BondTypes.WSTRING|]
-structFieldDescriptorInitTypeExpr _ BT_Blob = [lt|com.microsoft.bond.BondTypes.BLOB|]
+structFieldDescriptorInitTypeExpr _ BT_Int8 = [lt|org.bondlib.BondTypes.INT8|]
+structFieldDescriptorInitTypeExpr _ BT_Int16 = [lt|org.bondlib.BondTypes.INT16|]
+structFieldDescriptorInitTypeExpr _ BT_Int32 = [lt|org.bondlib.BondTypes.INT32|]
+structFieldDescriptorInitTypeExpr _ BT_Int64 = [lt|org.bondlib.BondTypes.INT64|]
+structFieldDescriptorInitTypeExpr _ BT_UInt8 = [lt|org.bondlib.BondTypes.UINT8|]
+structFieldDescriptorInitTypeExpr _ BT_UInt16 = [lt|org.bondlib.BondTypes.UINT16|]
+structFieldDescriptorInitTypeExpr _ BT_UInt32 = [lt|org.bondlib.BondTypes.UINT32|]
+structFieldDescriptorInitTypeExpr _ BT_UInt64 = [lt|org.bondlib.BondTypes.UINT64|]
+structFieldDescriptorInitTypeExpr _ BT_Float = [lt|org.bondlib.BondTypes.FLOAT|]
+structFieldDescriptorInitTypeExpr _ BT_Double = [lt|org.bondlib.BondTypes.DOUBLE|]
+structFieldDescriptorInitTypeExpr _ BT_Bool = [lt|org.bondlib.BondTypes.BOOL|]
+structFieldDescriptorInitTypeExpr _ BT_String = [lt|org.bondlib.BondTypes.STRING|]
+structFieldDescriptorInitTypeExpr _ BT_WString = [lt|org.bondlib.BondTypes.WSTRING|]
+structFieldDescriptorInitTypeExpr _ BT_Blob = [lt|org.bondlib.BondTypes.BLOB|]
 structFieldDescriptorInitTypeExpr java (BT_Bonded t) = [lt|bondedOf(#{structFieldDescriptorInitTypeExpr java t})|]
 structFieldDescriptorInitTypeExpr java (BT_Nullable t) = [lt|nullableOf(#{structFieldDescriptorInitTypeExpr java t})|]
 structFieldDescriptorInitTypeExpr java (BT_Vector t) = [lt|vectorOf(#{structFieldDescriptorInitTypeExpr java t})|]
@@ -226,7 +226,7 @@ makeStructBuilderMember_makeGenericType declName declParams = [lt|
 -- the StructBondTypeBuilderImpl class which is responsible for building the type descriptor
 makeStructBondTypeMember_StructBondTypeBuilderImpl :: String -> [TypeParam] -> Text
 makeStructBondTypeMember_StructBondTypeBuilderImpl declName declParams = [lt|
-        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<#{declName}> {
+        static final class StructBondTypeBuilderImpl extends org.bondlib.StructBondType.StructBondTypeBuilder<#{declName}> {
             #{ifThenElse (null declParams) mempty (makeStructBuilderMember_makeGenericType declName declParams)}
             @Override
             public final int getGenericTypeParameterCount() {
@@ -234,8 +234,8 @@ makeStructBondTypeMember_StructBondTypeBuilderImpl declName declParams = [lt|
             }
 
             @Override
-            protected final #{typeDescriptorName declName} buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
-                return new StructBondTypeImpl(#{ifThenElse (null declParams) "null" "new com.microsoft.bond.GenericTypeSpecialization(genericTypeArguments)"});
+            protected final #{typeDescriptorName declName} buildNewInstance(org.bondlib.BondType[] genericTypeArguments) {
+                return new StructBondTypeImpl(#{ifThenElse (null declParams) "null" "new org.bondlib.GenericTypeSpecialization(genericTypeArguments)"});
             }
 
             static void register() {
@@ -280,7 +280,7 @@ makeStructBondTypeMember_serializeStructFields declName declParams structFields 
         protected final void serializeStructFields(#{methodParamDecl}) throws java.io.IOException {#{newlineBeginSep 3 serializeField structFields}
         }|]
             where
-                methodParamDecl = [lt|com.microsoft.bond.BondType.SerializationContext context, #{typeNameWithParams declName declParams} value|]
+                methodParamDecl = [lt|org.bondlib.BondType.SerializationContext context, #{typeNameWithParams declName declParams} value|]
                 serializeField Field {..} = [lt|this.#{fieldName}.serialize(context, value.#{fieldName});|]
 
 
@@ -299,7 +299,7 @@ makeStructBondTypeMember_deserializeStructFields_tagged declName declParams stru
             }#{newlineBeginSep 3 verifyField structFields}
         }|]
             where
-                methodParamDecl = [lt|com.microsoft.bond.BondType.TaggedDeserializationContext context, #{typeNameWithParams declName declParams} value|]
+                methodParamDecl = [lt|org.bondlib.BondType.TaggedDeserializationContext context, #{typeNameWithParams declName declParams} value|]
                 declareLocalVariable Field {..} = [lt|boolean __has_#{fieldName} = false;|]
                 deserializeField Field {..} = [lt|#{switchCasePart}#{newLine 6}#{deserializePart}#{newLine 6}#{setBooleanPart}#{newLine 6}break;|]
                   where
@@ -318,7 +318,7 @@ makeStructBondTypeMember_deserializeStructFields_untagged declName declParams st
         protected final void deserializeStructFields(#{methodParamDecl}) throws java.io.IOException {#{newlineBeginSep 3 deserializeField structFields}
         }|]
             where
-                methodParamDecl = [lt|com.microsoft.bond.BondType.UntaggedDeserializationContext context, #{typeNameWithParams declName declParams} value|]
+                methodParamDecl = [lt|org.bondlib.BondType.UntaggedDeserializationContext context, #{typeNameWithParams declName declParams} value|]
                 deserializeField Field {..} = [lt|value.#{fieldName} = this.#{fieldName}.deserialize(context);|]
 
 
@@ -353,13 +353,13 @@ bondTypeStaticVariableDeclAsGenericBondTypeBuilder declName declParams = [lt|pub
         final StructBondTypeImpl.StructBondTypeBuilderImpl builder = new StructBondTypeImpl.StructBondTypeBuilderImpl();
 
         @Override
-        public final <#{paramList}> com.microsoft.bond.StructBondType<#{declName}<#{paramList}>> makeGenericType(#{sepBy ", " methodArg declParams}) {
+        public final <#{paramList}> org.bondlib.StructBondType<#{declName}<#{paramList}>> makeGenericType(#{sepBy ", " methodArg declParams}) {
             return this.builder.makeGenericType(#{paramList});
         }
     };|]
     where
         paramList = sepBy ", " paramName declParams
-        methodArg TypeParam {..} = [lt|com.microsoft.bond.BondType<#{paramName}> #{paramName}|]
+        methodArg TypeParam {..} = [lt|org.bondlib.BondType<#{paramName}> #{paramName}|]
 
 
 -- builds text for public constructor of non-generic Bond struct class
@@ -373,14 +373,14 @@ publicConstructorDeclForNonGenericStruct java declName maybeBase = [lt|
     where
         superConstructorArgs Nothing = mempty
         superConstructorArgs (Just t) = if isGenericBondStructType t
-            then [lt|(com.microsoft.bond.StructBondType<#{getTypeName java t}>)BOND_TYPE.getBaseStructType()|]
+            then [lt|(org.bondlib.StructBondType<#{getTypeName java t}>)BOND_TYPE.getBaseStructType()|]
             else mempty
 
 
 -- builds text for public constructor of generic Bond struct class
 publicConstructorDeclForGenericStruct :: MappingContext -> String -> [TypeParam] -> Maybe Type -> Text
 publicConstructorDeclForGenericStruct java declName declParams maybeBase = [lt|
-public #{declName}(com.microsoft.bond.StructBondType<#{declName}<#{paramList}>> genericType) {
+public #{declName}(org.bondlib.StructBondType<#{declName}<#{paramList}>> genericType) {
         super(#{superConstructorArgs maybeBase});
         this.__genericType = (StructBondTypeImpl<#{paramList}>)genericType;
         this.__genericType.initializeStructFields(this);
@@ -390,7 +390,7 @@ public #{declName}(com.microsoft.bond.StructBondType<#{declName}<#{paramList}>> 
         paramList = sepBy ", " paramName declParams
         superConstructorArgs Nothing = mempty
         superConstructorArgs (Just t) = if isGenericBondStructType t
-            then [lt|(com.microsoft.bond.StructBondType<#{getTypeName java t}>)com.microsoft.bond.helpers.ArgumentHelper.ensureNotNull(genericType, "genericType").getBaseStructType()|]
+            then [lt|(org.bondlib.StructBondType<#{getTypeName java t}>)org.bondlib.helpers.ArgumentHelper.ensureNotNull(genericType, "genericType").getBaseStructType()|]
             else mempty
 
 
@@ -409,8 +409,8 @@ object_equals declName fields structBase = [lt|@Override
         compareBase (Just _)     = [lt|if (!(super.equals(o))) return false;|]
         compareBase Nothing      = mempty
         compareField Field {..}  = [lt|if (!(#{equalsMember fieldType fieldName})) return false;|]
-        equalsMember BT_Float f  = [lt|com.microsoft.bond.helpers.FloatingPointHelper.floatEquals(this.#{f}, other.#{f})|]
-        equalsMember BT_Double f = [lt|com.microsoft.bond.helpers.FloatingPointHelper.doubleEquals(this.#{f}, other.#{f})|]
+        equalsMember BT_Float f  = [lt|org.bondlib.helpers.FloatingPointHelper.floatEquals(this.#{f}, other.#{f})|]
+        equalsMember BT_Double f = [lt|org.bondlib.helpers.FloatingPointHelper.doubleEquals(this.#{f}, other.#{f})|]
         equalsMember BT_Bool f    = [lt|this.#{f} == other.#{f}|]
         equalsMember BT_Int8 f    = [lt|this.#{f} == other.#{f}|]
         equalsMember BT_Int16 f   = [lt|this.#{f} == other.#{f}|]
@@ -447,8 +447,8 @@ object_hashCode fields structBase = [lt|@Override
         hashCode BT_Bool f    = [lt|(#{f} ? 0 : 1)|]
         hashCode BT_Int64 f   = [lt|#{f} ^ (#{f} >>> 32)|]
         hashCode BT_UInt64 f  = [lt|#{f} ^ (#{f} >>> 32)|]
-        hashCode BT_Float f   = [lt|com.microsoft.bond.helpers.FloatingPointHelper.floatHashCode(#{f})|]
-        hashCode BT_Double f  = [lt|com.microsoft.bond.helpers.FloatingPointHelper.doubleHashCode(#{f})|]
+        hashCode BT_Float f   = [lt|org.bondlib.helpers.FloatingPointHelper.floatHashCode(#{f})|]
+        hashCode BT_Double f  = [lt|org.bondlib.helpers.FloatingPointHelper.doubleHashCode(#{f})|]
         hashCode BT_Int8 f    = [lt|#{f}|]
         hashCode BT_Int16 f   = [lt|#{f}|]
         hashCode BT_Int32 f   = [lt|#{f}|]
@@ -479,7 +479,7 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
 
         #{doubleLineSep 2 fieldDescriptorFieldDecl structFields}
 
-        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+        private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
         }
         #{makeStructBondTypeMember_initialize java declParams structFields structBase}
@@ -526,17 +526,17 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
     #{object_equals declName structFields structBase}
     #{object_hashCode structFields structBase}
     @Override
-    public com.microsoft.bond.StructBondType<? extends #{typeNameWithParams declName declParams}> getBondType() {
+    public org.bondlib.StructBondType<? extends #{typeNameWithParams declName declParams}> getBondType() {
         return #{getBondTypeReturnValue};
     }
 }|]
             where
-                interface = [lt| implements com.microsoft.bond.BondSerializable|]
+                interface = [lt| implements org.bondlib.BondSerializable|]
                 baseClass x = [lt| extends #{javaType x}|]
                 publicFieldDecl Field {..} = [lt|public #{javaType fieldType} #{fieldName};|]
                 fieldDescriptorFieldDecl Field {..} = [lt|private #{structFieldDescriptorTypeName java fieldType} #{fieldName};|]
                 bondTypeStaticVariableDecl = if null declParams
-                    then [lt|public static final com.microsoft.bond.StructBondType<#{declName}> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();|]
+                    then [lt|public static final org.bondlib.StructBondType<#{declName}> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();|]
                     else bondTypeStaticVariableDeclAsGenericBondTypeBuilder declName declParams
                 bondTypeDescriptorInstanceVariableDecl = if null declParams
                     then mempty

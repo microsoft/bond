@@ -1,21 +1,21 @@
-package com.microsoft.bond.examples;
+package org.bondlib.examples;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import com.microsoft.bond.Bonded;
-import com.microsoft.bond.Deserializer;
-import com.microsoft.bond.Serializer;
+import org.bondlib.Bonded;
+import org.bondlib.Deserializer;
+import org.bondlib.Serializer;
 
-import com.microsoft.bond.protocol.CompactBinaryReader;
-import com.microsoft.bond.protocol.CompactBinaryWriter;
+import org.bondlib.protocol.CompactBinaryReader;
+import org.bondlib.protocol.CompactBinaryWriter;
 
-import com.microsoft.bond.examples.polymorphiccontainer.Circle;
-import com.microsoft.bond.examples.polymorphiccontainer.Polymorphic;
-import com.microsoft.bond.examples.polymorphiccontainer.Rectangle;
-import com.microsoft.bond.examples.polymorphiccontainer.Shape;
-import com.microsoft.bond.examples.polymorphiccontainer.Type;
+import org.bondlib.examples.polymorphiccontainer.Circle;
+import org.bondlib.examples.polymorphiccontainer.Polymorphic;
+import org.bondlib.examples.polymorphiccontainer.Rectangle;
+import org.bondlib.examples.polymorphiccontainer.Shape;
+import org.bondlib.examples.polymorphiccontainer.Type;
 
 public class PolymorphicContainer {
 
