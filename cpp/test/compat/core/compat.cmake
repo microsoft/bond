@@ -32,12 +32,12 @@ if (JAVA_COMPAT)
         set (PATHSEP ":")
     endif()
 
-    run (java -classpath ${JAVA_CORE}${PATHSEP}${JAVA_COMPAT} com.microsoft.bond.compat.CompatDriver
+    run (java -classpath ${JAVA_CORE}${PATHSEP}${JAVA_COMPAT} org.bondlib.compat.CompatDriver
         ${TEST} ${COMPAT_DATA}/compat.${TEST}.dat compat.${TEST}.java.dat ${TEST})
     run (${BOND_COMPAT} ${TEST} -d compat.${TEST}.java.dat expected.java.${TEST} deserialized.java.${TEST})
 
     if (${TEST} STREQUAL schema)
-        run (java -classpath ${JAVA_CORE}${PATHSEP}${JAVA_COMPAT} com.microsoft.bond.compat.CompatDriver
+        run (java -classpath ${JAVA_CORE}${PATHSEP}${JAVA_COMPAT} org.bondlib.compat.CompatDriver
             ${TEST} compat.Compat.json compat.${TEST}.gbc.dat)
     endif()
 endif()

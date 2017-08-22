@@ -1,21 +1,21 @@
-package com.microsoft.bond.examples;
+package org.bondlib.examples;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import com.microsoft.bond.BondSerializable;
-import com.microsoft.bond.Deserializer;
-import com.microsoft.bond.Serializer;
-import com.microsoft.bond.Something;
-import com.microsoft.bond.StructBondType;
+import org.bondlib.BondSerializable;
+import org.bondlib.Deserializer;
+import org.bondlib.Serializer;
+import org.bondlib.Something;
+import org.bondlib.StructBondType;
 
-import com.microsoft.bond.protocol.CompactBinaryReader;
-import com.microsoft.bond.protocol.CompactBinaryWriter;
+import org.bondlib.protocol.CompactBinaryReader;
+import org.bondlib.protocol.CompactBinaryWriter;
 
-import com.microsoft.bond.examples.nothingdefault.Struct_v1;
-import com.microsoft.bond.examples.nothingdefault.Struct_v2;
+import org.bondlib.examples.nothingdefault.Struct_v1;
+import org.bondlib.examples.nothingdefault.Struct_v2;
 
 public class NothingDefault {
 

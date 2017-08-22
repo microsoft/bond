@@ -1,6 +1,6 @@
 import "common.bond"
 
-namespace com.microsoft.bond.test
+namespace org.bondlib.test
 
 struct Primitives {
     0: int8 iint8;

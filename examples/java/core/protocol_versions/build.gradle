@@ -1,4 +1,4 @@
-group 'com.microsoft.bond'
+group 'org.bondlib'
 version '1.0'
 
 buildscript {
@@ -8,15 +8,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.microsoft.bond:gradle:+'
+        classpath 'org.bondlib:gradle:+'
     }
 }
 
 apply plugin: 'application'
-apply plugin: 'com.microsoft.bond.gradle'
+apply plugin: 'org.bondlib.gradle'
 
 sourceCompatibility = 1.8
-mainClassName = 'com.microsoft.bond.examples.ProtocolVersions'
+mainClassName = 'org.bondlib.examples.ProtocolVersions'
 applicationDefaultJvmArgs = ['-ea']
 
 repositories {
@@ -29,7 +29,7 @@ dependencies {
 
 compileBond {
     bondfiles 'src/main/bond/protocol_versions.bond'
-    options '--namespace', 'examples.protocol_versions=com.microsoft.bond.examples.protocolversions'
+    options '--namespace', 'examples.protocol_versions=org.bondlib.examples.protocolversions'
 }
 
 jar {

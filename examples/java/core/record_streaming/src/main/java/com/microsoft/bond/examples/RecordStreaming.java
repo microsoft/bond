@@ -1,17 +1,17 @@
-package com.microsoft.bond.examples;
+package org.bondlib.examples;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 
-import com.microsoft.bond.Deserializer;
-import com.microsoft.bond.Serializer;
+import org.bondlib.Deserializer;
+import org.bondlib.Serializer;
 
-import com.microsoft.bond.protocol.CompactBinaryReader;
-import com.microsoft.bond.protocol.CompactBinaryWriter;
+import org.bondlib.protocol.CompactBinaryReader;
+import org.bondlib.protocol.CompactBinaryWriter;
 
-import com.microsoft.bond.examples.recordstreaming.Struct;
+import org.bondlib.examples.recordstreaming.Struct;
 
 public class RecordStreaming {
 

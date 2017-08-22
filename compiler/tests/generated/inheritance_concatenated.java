@@ -2,11 +2,11 @@
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class Base implements com.microsoft.bond.BondSerializable {
+public class Base implements org.bondlib.BondSerializable {
     
-    private static final class StructBondTypeImpl extends com.microsoft.bond.StructBondType<Base> {
+    private static final class StructBondTypeImpl extends org.bondlib.StructBondType<Base> {
         
-        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<Base> {
+        static final class StructBondTypeBuilderImpl extends org.bondlib.StructBondType.StructBondTypeBuilder<Base> {
             
             @Override
             public final int getGenericTypeParameterCount() {
@@ -14,7 +14,7 @@ public class Base implements com.microsoft.bond.BondSerializable {
             }
 
             @Override
-            protected final com.microsoft.bond.StructBondType<Base> buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
+            protected final org.bondlib.StructBondType<Base> buildNewInstance(org.bondlib.BondType[] genericTypeArguments) {
                 return new StructBondTypeImpl(null);
             }
 
@@ -23,15 +23,15 @@ public class Base implements com.microsoft.bond.BondSerializable {
             }
         }
 
-        private com.microsoft.bond.StructBondType.Int32StructField x;
+        private org.bondlib.StructBondType.Int32StructField x;
 
-        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+        private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
         }
         
         @Override
         protected final void initialize() {
-            this.x = new com.microsoft.bond.StructBondType.Int32StructField(this, 0, "x", com.microsoft.bond.Modifier.Optional);
+            this.x = new org.bondlib.StructBondType.Int32StructField(this, 0, "x", org.bondlib.Modifier.Optional);
             super.initializeBaseAndFields(null, this.x);
         }
 
@@ -56,12 +56,12 @@ public class Base implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void serializeStructFields(com.microsoft.bond.BondType.SerializationContext context, Base value) throws java.io.IOException {
+        protected final void serializeStructFields(org.bondlib.BondType.SerializationContext context, Base value) throws java.io.IOException {
             this.x.serialize(context, value.x);
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, Base value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.TaggedDeserializationContext context, Base value) throws java.io.IOException {
             boolean __has_x = false;
             while (this.readField(context)) {
                 switch (context.readFieldResult.id) {
@@ -78,7 +78,7 @@ public class Base implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, Base value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, Base value) throws java.io.IOException {
             value.x = this.x.deserialize(context);
         }
         
@@ -93,7 +93,7 @@ public class Base implements com.microsoft.bond.BondSerializable {
         }
     }
 
-    public static final com.microsoft.bond.StructBondType<Base> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+    public static final org.bondlib.StructBondType<Base> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
 
     public static void initializeBondType() {
         StructBondTypeImpl.StructBondTypeBuilderImpl.register();
@@ -130,7 +130,7 @@ public class Base implements com.microsoft.bond.BondSerializable {
     }
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends Base> getBondType() {
+    public org.bondlib.StructBondType<? extends Base> getBondType() {
         return BOND_TYPE;
     }
 }
@@ -140,9 +140,9 @@ package tests;
 @javax.annotation.Generated("gbc")
 public class Foo extends tests.Base {
     
-    private static final class StructBondTypeImpl extends com.microsoft.bond.StructBondType<Foo> {
+    private static final class StructBondTypeImpl extends org.bondlib.StructBondType<Foo> {
         
-        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<Foo> {
+        static final class StructBondTypeBuilderImpl extends org.bondlib.StructBondType.StructBondTypeBuilder<Foo> {
             
             @Override
             public final int getGenericTypeParameterCount() {
@@ -150,7 +150,7 @@ public class Foo extends tests.Base {
             }
 
             @Override
-            protected final com.microsoft.bond.StructBondType<Foo> buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
+            protected final org.bondlib.StructBondType<Foo> buildNewInstance(org.bondlib.BondType[] genericTypeArguments) {
                 return new StructBondTypeImpl(null);
             }
 
@@ -159,16 +159,16 @@ public class Foo extends tests.Base {
             }
         }
 
-        private com.microsoft.bond.StructBondType.Int32StructField x;
+        private org.bondlib.StructBondType.Int32StructField x;
 
-        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+        private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
         }
         
         @Override
         protected final void initialize() {
-            this.x = new com.microsoft.bond.StructBondType.Int32StructField(this, 0, "x", com.microsoft.bond.Modifier.Optional);
-            super.initializeBaseAndFields((com.microsoft.bond.StructBondType<tests.Base>) getStructType(tests.Base.class), this.x);
+            this.x = new org.bondlib.StructBondType.Int32StructField(this, 0, "x", org.bondlib.Modifier.Optional);
+            super.initializeBaseAndFields((org.bondlib.StructBondType<tests.Base>) getStructType(tests.Base.class), this.x);
         }
 
         @Override
@@ -192,12 +192,12 @@ public class Foo extends tests.Base {
         }
         
         @Override
-        protected final void serializeStructFields(com.microsoft.bond.BondType.SerializationContext context, Foo value) throws java.io.IOException {
+        protected final void serializeStructFields(org.bondlib.BondType.SerializationContext context, Foo value) throws java.io.IOException {
             this.x.serialize(context, value.x);
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, Foo value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.TaggedDeserializationContext context, Foo value) throws java.io.IOException {
             boolean __has_x = false;
             while (this.readField(context)) {
                 switch (context.readFieldResult.id) {
@@ -214,7 +214,7 @@ public class Foo extends tests.Base {
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
             value.x = this.x.deserialize(context);
         }
         
@@ -229,7 +229,7 @@ public class Foo extends tests.Base {
         }
     }
 
-    public static final com.microsoft.bond.StructBondType<Foo> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+    public static final org.bondlib.StructBondType<Foo> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
 
     public static void initializeBondType() {
         StructBondTypeImpl.StructBondTypeBuilderImpl.register();
@@ -269,7 +269,7 @@ public class Foo extends tests.Base {
     }
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends Foo> getBondType() {
+    public org.bondlib.StructBondType<? extends Foo> getBondType() {
         return BOND_TYPE;
     }
 }

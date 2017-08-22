@@ -1,4 +1,4 @@
-group 'com.microsoft.bond'
+group 'org.bondlib'
 version '1.0'
 
 buildscript {
@@ -8,15 +8,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.microsoft.bond:gradle:+'
+        classpath 'org.bondlib:gradle:+'
     }
 }
 
 apply plugin: 'application'
-apply plugin: 'com.microsoft.bond.gradle'
+apply plugin: 'org.bondlib.gradle'
 
 sourceCompatibility = 1.8
-mainClassName = 'com.microsoft.bond.examples.Imports'
+mainClassName = 'org.bondlib.examples.Imports'
 applicationDefaultJvmArgs = ['-ea']
 
 repositories {
@@ -29,9 +29,9 @@ dependencies {
 
 compileBond {
     bondfiles 'src/main/bond/schema.bond'
-    options '--namespace', 'Examples=com.microsoft.bond.examples.imports',
-            '--namespace', 'Examples.Common=com.microsoft.bond.examples.imports.common',
-            '--namespace', 'Examples.Common.Protocol=com.microsoft.bond.examples.imports.common.protocol',
+    options '--namespace', 'Examples=org.bondlib.examples.imports',
+            '--namespace', 'Examples.Common=org.bondlib.examples.imports.common',
+            '--namespace', 'Examples.Common.Protocol=org.bondlib.examples.imports.common.protocol',
             '--import-dir', 'src/main/bond/common'
 }
 

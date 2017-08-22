@@ -2,11 +2,11 @@
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class BasicTypes implements com.microsoft.bond.BondSerializable {
+public class BasicTypes implements org.bondlib.BondSerializable {
     
-    private static final class StructBondTypeImpl extends com.microsoft.bond.StructBondType<BasicTypes> {
+    private static final class StructBondTypeImpl extends org.bondlib.StructBondType<BasicTypes> {
         
-        static final class StructBondTypeBuilderImpl extends com.microsoft.bond.StructBondType.StructBondTypeBuilder<BasicTypes> {
+        static final class StructBondTypeBuilderImpl extends org.bondlib.StructBondType.StructBondTypeBuilder<BasicTypes> {
             
             @Override
             public final int getGenericTypeParameterCount() {
@@ -14,7 +14,7 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
             }
 
             @Override
-            protected final com.microsoft.bond.StructBondType<BasicTypes> buildNewInstance(com.microsoft.bond.BondType[] genericTypeArguments) {
+            protected final org.bondlib.StructBondType<BasicTypes> buildNewInstance(org.bondlib.BondType[] genericTypeArguments) {
                 return new StructBondTypeImpl(null);
             }
 
@@ -23,54 +23,54 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
             }
         }
 
-        private com.microsoft.bond.StructBondType.BoolStructField _bool;
+        private org.bondlib.StructBondType.BoolStructField _bool;
 
-        private com.microsoft.bond.StructBondType.StringStructField _str;
+        private org.bondlib.StructBondType.StringStructField _str;
 
-        private com.microsoft.bond.StructBondType.WStringStructField _wstr;
+        private org.bondlib.StructBondType.WStringStructField _wstr;
 
-        private com.microsoft.bond.StructBondType.UInt64StructField _uint64;
+        private org.bondlib.StructBondType.UInt64StructField _uint64;
 
-        private com.microsoft.bond.StructBondType.UInt16StructField _uint16;
+        private org.bondlib.StructBondType.UInt16StructField _uint16;
 
-        private com.microsoft.bond.StructBondType.UInt32StructField _uint32;
+        private org.bondlib.StructBondType.UInt32StructField _uint32;
 
-        private com.microsoft.bond.StructBondType.UInt8StructField _uint8;
+        private org.bondlib.StructBondType.UInt8StructField _uint8;
 
-        private com.microsoft.bond.StructBondType.Int8StructField _int8;
+        private org.bondlib.StructBondType.Int8StructField _int8;
 
-        private com.microsoft.bond.StructBondType.Int16StructField _int16;
+        private org.bondlib.StructBondType.Int16StructField _int16;
 
-        private com.microsoft.bond.StructBondType.Int32StructField _int32;
+        private org.bondlib.StructBondType.Int32StructField _int32;
 
-        private com.microsoft.bond.StructBondType.Int64StructField _int64;
+        private org.bondlib.StructBondType.Int64StructField _int64;
 
-        private com.microsoft.bond.StructBondType.DoubleStructField _double;
+        private org.bondlib.StructBondType.DoubleStructField _double;
 
-        private com.microsoft.bond.StructBondType.FloatStructField _float;
+        private org.bondlib.StructBondType.FloatStructField _float;
 
-        private com.microsoft.bond.StructBondType.ObjectStructField<com.microsoft.bond.Blob> _blob;
+        private org.bondlib.StructBondType.ObjectStructField<org.bondlib.Blob> _blob;
 
-        private StructBondTypeImpl(com.microsoft.bond.GenericTypeSpecialization genericTypeSpecialization) {
+        private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
         }
         
         @Override
         protected final void initialize() {
-            this._bool = new com.microsoft.bond.StructBondType.BoolStructField(this, 0, "_bool", com.microsoft.bond.Modifier.Optional);
-            this._str = new com.microsoft.bond.StructBondType.StringStructField(this, 2, "_str", com.microsoft.bond.Modifier.Optional);
-            this._wstr = new com.microsoft.bond.StructBondType.WStringStructField(this, 3, "_wstr", com.microsoft.bond.Modifier.Optional);
-            this._uint64 = new com.microsoft.bond.StructBondType.UInt64StructField(this, 10, "_uint64", com.microsoft.bond.Modifier.Optional);
-            this._uint16 = new com.microsoft.bond.StructBondType.UInt16StructField(this, 11, "_uint16", com.microsoft.bond.Modifier.Optional);
-            this._uint32 = new com.microsoft.bond.StructBondType.UInt32StructField(this, 12, "_uint32", com.microsoft.bond.Modifier.Optional);
-            this._uint8 = new com.microsoft.bond.StructBondType.UInt8StructField(this, 13, "_uint8", com.microsoft.bond.Modifier.Optional);
-            this._int8 = new com.microsoft.bond.StructBondType.Int8StructField(this, 14, "_int8", com.microsoft.bond.Modifier.Optional);
-            this._int16 = new com.microsoft.bond.StructBondType.Int16StructField(this, 15, "_int16", com.microsoft.bond.Modifier.Optional);
-            this._int32 = new com.microsoft.bond.StructBondType.Int32StructField(this, 16, "_int32", com.microsoft.bond.Modifier.Optional);
-            this._int64 = new com.microsoft.bond.StructBondType.Int64StructField(this, 17, "_int64", com.microsoft.bond.Modifier.Optional);
-            this._double = new com.microsoft.bond.StructBondType.DoubleStructField(this, 18, "_double", com.microsoft.bond.Modifier.Optional);
-            this._float = new com.microsoft.bond.StructBondType.FloatStructField(this, 20, "_float", com.microsoft.bond.Modifier.Optional);
-            this._blob = new com.microsoft.bond.StructBondType.ObjectStructField<com.microsoft.bond.Blob>(this, com.microsoft.bond.BondTypes.BLOB, 21, "_blob", com.microsoft.bond.Modifier.Optional);
+            this._bool = new org.bondlib.StructBondType.BoolStructField(this, 0, "_bool", org.bondlib.Modifier.Optional);
+            this._str = new org.bondlib.StructBondType.StringStructField(this, 2, "_str", org.bondlib.Modifier.Optional);
+            this._wstr = new org.bondlib.StructBondType.WStringStructField(this, 3, "_wstr", org.bondlib.Modifier.Optional);
+            this._uint64 = new org.bondlib.StructBondType.UInt64StructField(this, 10, "_uint64", org.bondlib.Modifier.Optional);
+            this._uint16 = new org.bondlib.StructBondType.UInt16StructField(this, 11, "_uint16", org.bondlib.Modifier.Optional);
+            this._uint32 = new org.bondlib.StructBondType.UInt32StructField(this, 12, "_uint32", org.bondlib.Modifier.Optional);
+            this._uint8 = new org.bondlib.StructBondType.UInt8StructField(this, 13, "_uint8", org.bondlib.Modifier.Optional);
+            this._int8 = new org.bondlib.StructBondType.Int8StructField(this, 14, "_int8", org.bondlib.Modifier.Optional);
+            this._int16 = new org.bondlib.StructBondType.Int16StructField(this, 15, "_int16", org.bondlib.Modifier.Optional);
+            this._int32 = new org.bondlib.StructBondType.Int32StructField(this, 16, "_int32", org.bondlib.Modifier.Optional);
+            this._int64 = new org.bondlib.StructBondType.Int64StructField(this, 17, "_int64", org.bondlib.Modifier.Optional);
+            this._double = new org.bondlib.StructBondType.DoubleStructField(this, 18, "_double", org.bondlib.Modifier.Optional);
+            this._float = new org.bondlib.StructBondType.FloatStructField(this, 20, "_float", org.bondlib.Modifier.Optional);
+            this._blob = new org.bondlib.StructBondType.ObjectStructField<org.bondlib.Blob>(this, org.bondlib.BondTypes.BLOB, 21, "_blob", org.bondlib.Modifier.Optional);
             super.initializeBaseAndFields(null, this._bool, this._str, this._wstr, this._uint64, this._uint16, this._uint32, this._uint8, this._int8, this._int16, this._int32, this._int64, this._double, this._float, this._blob);
         }
 
@@ -95,7 +95,7 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void serializeStructFields(com.microsoft.bond.BondType.SerializationContext context, BasicTypes value) throws java.io.IOException {
+        protected final void serializeStructFields(org.bondlib.BondType.SerializationContext context, BasicTypes value) throws java.io.IOException {
             this._bool.serialize(context, value._bool);
             this._str.serialize(context, value._str);
             this._wstr.serialize(context, value._wstr);
@@ -113,7 +113,7 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.TaggedDeserializationContext context, BasicTypes value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.TaggedDeserializationContext context, BasicTypes value) throws java.io.IOException {
             boolean __has__bool = false;
             boolean __has__str = false;
             boolean __has__wstr = false;
@@ -208,7 +208,7 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(com.microsoft.bond.BondType.UntaggedDeserializationContext context, BasicTypes value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, BasicTypes value) throws java.io.IOException {
             value._bool = this._bool.deserialize(context);
             value._str = this._str.deserialize(context);
             value._wstr = this._wstr.deserialize(context);
@@ -262,7 +262,7 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
         }
     }
 
-    public static final com.microsoft.bond.StructBondType<BasicTypes> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
+    public static final org.bondlib.StructBondType<BasicTypes> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
 
     public static void initializeBondType() {
         StructBondTypeImpl.StructBondTypeBuilderImpl.register();
@@ -299,7 +299,7 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
 
     public float _float;
 
-    public com.microsoft.bond.Blob _blob;
+    public org.bondlib.Blob _blob;
     
     public BasicTypes() {
         super();
@@ -322,8 +322,8 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
         if (!(this._int16 == other._int16)) return false;
         if (!(this._int32 == other._int32)) return false;
         if (!(this._int64 == other._int64)) return false;
-        if (!(com.microsoft.bond.helpers.FloatingPointHelper.doubleEquals(this._double, other._double))) return false;
-        if (!(com.microsoft.bond.helpers.FloatingPointHelper.floatEquals(this._float, other._float))) return false;
+        if (!(org.bondlib.helpers.FloatingPointHelper.doubleEquals(this._double, other._double))) return false;
+        if (!(org.bondlib.helpers.FloatingPointHelper.floatEquals(this._float, other._float))) return false;
         if (!((this._blob == null && other._blob == null) || (this._blob != null && this._blob.equals(other._blob)))) return false;
         return true;
     }
@@ -364,10 +364,10 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
         result += _int64 ^ (_int64 >>> 32);
         result *= 0xeadbeef;
         result ^= result >> 16;
-        result += com.microsoft.bond.helpers.FloatingPointHelper.doubleHashCode(_double);
+        result += org.bondlib.helpers.FloatingPointHelper.doubleHashCode(_double);
         result *= 0xeadbeef;
         result ^= result >> 16;
-        result += com.microsoft.bond.helpers.FloatingPointHelper.floatHashCode(_float);
+        result += org.bondlib.helpers.FloatingPointHelper.floatHashCode(_float);
         result *= 0xeadbeef;
         result ^= result >> 16;
         result += _blob == null ? 0 : _blob.hashCode();
@@ -377,7 +377,7 @@ public class BasicTypes implements com.microsoft.bond.BondSerializable {
     }
 
     @Override
-    public com.microsoft.bond.StructBondType<? extends BasicTypes> getBondType() {
+    public org.bondlib.StructBondType<? extends BasicTypes> getBondType() {
         return BOND_TYPE;
     }
 }

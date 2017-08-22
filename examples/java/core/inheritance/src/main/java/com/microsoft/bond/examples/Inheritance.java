@@ -1,21 +1,21 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-package com.microsoft.bond.examples;
+package org.bondlib.examples;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import com.microsoft.bond.BondSerializable;
-import com.microsoft.bond.Deserializer;
-import com.microsoft.bond.Serializer;
+import org.bondlib.BondSerializable;
+import org.bondlib.Deserializer;
+import org.bondlib.Serializer;
 
-import com.microsoft.bond.protocol.CompactBinaryReader;
-import com.microsoft.bond.protocol.CompactBinaryWriter;
+import org.bondlib.protocol.CompactBinaryReader;
+import org.bondlib.protocol.CompactBinaryWriter;
 
-import com.microsoft.bond.examples.inheritance.Base;
-import com.microsoft.bond.examples.inheritance.Derived;
+import org.bondlib.examples.inheritance.Base;
+import org.bondlib.examples.inheritance.Derived;
 
 public class Inheritance {
 
