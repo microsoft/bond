@@ -1,6 +1,7 @@
-To build with a development version of this plugin, repeat as follows:
+To build with a development version of this plugin, enter the directory
+containing this README and repeat as follows:
 * make changes
 * gradle build
-* mvn install:install-file -Dfile=${BOND_JAVA_ROOT}/gradle-plugin/build/libs/bond-gradle-1.0.jar -DgroupId=org.bondlib -DartifactId=gradle -Dversion=1.0 -Dpackaging=jar
+* mvn install:install-file -Dfile=build/libs/bond-gradle-1.0.jar -DgroupId=org.bondlib -DartifactId=gradle -Dversion=1.0 -Dpackaging=jar
 This will install the plugin to your local maven repository, which the other
 Java projects' build.gradles will use in preference to maven central.
