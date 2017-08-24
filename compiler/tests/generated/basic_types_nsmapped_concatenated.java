@@ -81,7 +81,7 @@ public class BasicTypes implements org.bondlib.BondSerializable {
 
         @Override
         public final String getQualifiedName() {
-            return "nsmapped.BasicTypes";
+            return "tests.BasicTypes";
         }
 
         @Override
