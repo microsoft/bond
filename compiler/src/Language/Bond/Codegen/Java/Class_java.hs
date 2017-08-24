@@ -491,7 +491,7 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
 
         @Override
         public final String getQualifiedName() {
-            return "#{qualifiedDeclaredTypeName java s}";
+            return "#{qualifiedDeclaredTypeName idl s}";
         }
 
         @Override
@@ -531,6 +531,7 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
     }
 }|]
             where
+                idl = MappingContext idlTypeMapping [] [] []
                 interface = [lt| implements org.bondlib.BondSerializable|]
                 baseClass x = [lt| extends #{javaType x}|]
                 publicFieldDecl Field {..} = [lt|public #{javaType fieldType} #{fieldName};|]
