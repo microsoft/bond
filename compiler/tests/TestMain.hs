@@ -117,6 +117,11 @@ tests = testGroup "Compiler tests"
                     ]
                     "service"
                 ]
+            , verifyCodegen
+                [ "c++"
+                , "--namespace=tests=nsmapped"
+                ]
+                "basic_types_nsmapped"
             , testGroup "Comm"
                 [ verifyCppCommCodegen
                     [ "c++"
@@ -162,6 +167,11 @@ tests = testGroup "Compiler tests"
                 , "--using=time=System.DateTime"
                 ]
                 "nullable_alias"
+            , verifyCodegen
+                [ "c#"
+                , "--namespace=tests=nsmapped"
+                ]
+                "basic_types_nsmapped"
             , testGroup "Comm"
                 [ verifyCsCommCodegen
                     [ "c#"
@@ -184,6 +194,11 @@ tests = testGroup "Compiler tests"
             , verifyJavaCodegen "generics"
             , verifyJavaCodegen "inheritance"
             , verifyJavaCodegen "aliases"
+            , verifyCodegen
+                [ "java"
+                , "--namespace=tests=nsmapped"
+                ]
+                "basic_types_nsmapped"
             ]
         ]
     ]

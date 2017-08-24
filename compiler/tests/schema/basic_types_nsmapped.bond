@@ -1,0 +1,19 @@
+ namespace tests
+
+struct BasicTypes
+{
+     0: bool _bool;
+     2: string _str;
+     3: wstring _wstr;
+    14: int8 _int8;
+    15: int16 _int16;
+    16: int32 _int32;
+    17: int64 _int64;
+    13: uint8 _uint8;
+    11: uint16 _uint16;
+    12: uint32 _uint32;
+    10: uint64 _uint64;
+    18: double _double;
+    20: float _float;
+    21: blob _blob;
+}
