@@ -378,6 +378,35 @@ public abstract class BondType<T> {
     }
 
     /**
+     * Gets a type descriptor for the Bond "bonded" container type. Throws an exception
+     * if the value type is not a Bond struct. This method is intended for generated code.
+     * This method returns {@link BondType} instead of more specific {@link BondedBondType},
+     * due to the constraint on the latter's generic type parameter which must be a struct
+     * type (i.e. derive from {@link StructBondType}. Since the type parameter TStruct is not
+     * contrained in this method, that generic type constraint can't be satisfied. It shall be
+     * noted however, that this method returns only instances of {@link BondedBondType} with
+     * a valid Bond struct value underneath. All other cases result in throwing an exception.
+     *
+     * @param valueType a type descriptor for the underlying value class
+     * @param <TStruct> the class of the underlying struct value
+     * @return a type descriptor instance
+     * @exception IllegalArgumentException if the argument is not a Bond struct type
+     */
+    protected static <TStruct> BondType<Bonded<TStruct>> bondedOf(
+            BondType<TStruct> valueType) {
+        ArgumentHelper.ensureNotNull(valueType, "valueType");
+        if (!(valueType instanceof StructBondType)) {
+            Throw.raiseInvalidBondedValueTypeError(valueType);
+        }
+        // It's not possible to delegate to the public bondedOf method using a generic type, since that method
+        // constrains the TStruct type parameter. Thus, the call is made using non-generic type and the result
+        // is upcast to a generic type to match the method's return type.
+        @SuppressWarnings("unchecked")
+        BondType<Bonded<TStruct>> upcastBondedType = (BondType<Bonded<TStruct>>) bondedOf((StructBondType) valueType);
+        return upcastBondedType;
+    }
+
+    /**
      * Gets a type descriptor for the Bond "vector" container type.
      *
      * @param elementType a type descriptor for the element value class
@@ -417,6 +446,24 @@ public abstract class BondType<T> {
     }
 
     /**
+     * Gets a type descriptor for the Bond "set" container type. Throws an exception
+     * if the element type is not a primitive Bond type. This method is intended for generated code.
+     *
+     * @param elementType a type descriptor for the element value class
+     * @param <TElement>  the class of the element values
+     * @return a type descriptor instance
+     * @exception IllegalArgumentException if the argument is not a primitive Bond type
+     */
+    protected static <TElement> SetBondType<TElement> setOf(
+            BondType<TElement> elementType) {
+        ArgumentHelper.ensureNotNull(elementType, "elementType");
+        if (!(elementType instanceof PrimitiveBondType)) {
+            Throw.raiseInvalidSetElementTypeError(elementType);
+        }
+        return setOf((PrimitiveBondType<TElement>) elementType);
+    }
+
+    /**
      * Gets a type descriptor for the Bond "map" container type.
      *
      * @param keyType   a type descriptor for the map key class
@@ -430,6 +477,27 @@ public abstract class BondType<T> {
         ArgumentHelper.ensureNotNull(keyType, "keyType");
         ArgumentHelper.ensureNotNull(valueType, "valueType");
         return (MapBondType<TKey, TValue>) getCachedType(new MapBondType<TKey, TValue>(keyType, valueType));
+    }
+
+    /**
+     * Gets a type descriptor for the Bond "map" container type. Throws an exception
+     * if the key type is not a primitive Bond type. This method is intended for generated code.
+     *
+     * @param keyType   a type descriptor for the map key class
+     * @param valueType a type descriptor for the mapped values class
+     * @param <TKey>    the class of the map keys
+     * @param <TValue>  the class of the mapped values
+     * @return a type descriptor instance
+     * @exception IllegalArgumentException if the key type argument is not a primitive Bond type
+     */
+    public static <TKey, TValue> MapBondType<TKey, TValue> mapOf(
+            BondType<TKey> keyType, BondType<TValue> valueType) {
+        ArgumentHelper.ensureNotNull(keyType, "keyType");
+        ArgumentHelper.ensureNotNull(valueType, "valueType");
+        if (!(keyType instanceof PrimitiveBondType)) {
+            Throw.raiseInvalidMapKeyTypeError(keyType);
+        }
+        return mapOf((PrimitiveBondType<TKey>) keyType, valueType);
     }
 
     /**
