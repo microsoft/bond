@@ -3,6 +3,13 @@
 
 package org.bondlib;
 
+import org.bondlib.protocol.*;
+import org.junit.Assert;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.*;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -137,6 +144,44 @@ public final class TestHelper {
      */
     public static double rawLongBitsToDouble(long bits) {
         return ByteBuffer.allocate(8).putLong(bits).getDouble(0);
+    }
+
+    /**
+     * Marshals a Bond struct instance using given protocol and version, then unmarshals it
+     * and tests whether the original instance is equal to the unmarshaled one.
+     * @param obj struct instance
+     * @param protocolType protocol type
+     * @param protocolVersion protocol version
+     * @throws IOException if error occurred
+     */
+    public static void marshalUnmarshalAndCompare(
+            BondSerializable obj,
+            ProtocolType protocolType,
+            int protocolVersion) throws IOException {
+        // create protocol writer
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ProtocolWriter protocolWriter;
+        switch (protocolType.value) {
+            case ProtocolType.Values.FAST_PROTOCOL:
+                protocolWriter = new FastBinaryWriter(baos, protocolVersion);
+                break;
+            case ProtocolType.Values.COMPACT_PROTOCOL:
+                protocolWriter = new CompactBinaryWriter(baos, protocolVersion);
+                break;
+            case ProtocolType.Values.SIMPLE_PROTOCOL:
+                protocolWriter = new SimpleBinaryWriter(baos, protocolVersion);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported protocol type: " + protocolType);
+        }
+        // marshall/unmarshal/compare
+        Marshal.marshal(obj, protocolWriter);
+        byte[] payloadBytes = baos.toByteArray();
+        ByteArrayInputStream bais = new ByteArrayInputStream(payloadBytes);
+        Bonded<? extends BondSerializable> bondedCloneObj = Unmarshal.unmarshal(bais, obj.getBondType());
+        BondSerializable cloneObj = bondedCloneObj.deserialize();
+        boolean areEqual = obj.equals(cloneObj);
+        Assert.assertTrue(areEqual);
     }
 
     /**

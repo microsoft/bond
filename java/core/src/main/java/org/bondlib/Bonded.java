@@ -13,9 +13,15 @@ import java.io.IOException;
 /**
  * A construct representing a Bonded payload of some struct type.
  *
- * @param <T> the struct type of this Bonded instance
+ * The type parameter is expected to implement {@link BondSerializable} but this is not enforced at compile-time
+ * since the details of the type may not be known in advance (e.g. consider a generic type that contains a bonded
+ * field wrapping an instance of an unknown type specified through a type parameter). It shall be noted that
+ * although this class doesn't explicitly constrain its type parameter, all public API that creates {@link Bonded}
+ * instances does have this enforcement.
+ *
+ * @param <T> the struct type of this Bonded instance which is expected to implement {@link BondSerializable}
  */
-public abstract class Bonded<T extends BondSerializable> {
+public abstract class Bonded<T> {
 
     /**
      * Creates a new Bonded instance from a tagged protocol reader that is constrained to a given struct type.

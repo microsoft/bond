@@ -179,4 +179,25 @@ final class Throw {
                 field.getId(),
                 field.getFieldType().getFullName());
     }
+
+    // raised when trying to instantiate a map container with an invalid key type
+    static void raiseInvalidMapKeyTypeError(BondType<?> keyType) {
+        throw new IllegalArgumentException(String.format(
+                "Invalid map key type: '%s', must be a Bond primitive data type.",
+                keyType.getFullName()));
+    }
+
+    // raised when trying to instantiate a set container with an invalid element type
+    static void raiseInvalidSetElementTypeError(BondType<?> elementType) {
+        throw new IllegalArgumentException(String.format(
+                "Invalid set element type: '%s', must be a Bond primitive data type.",
+                elementType.getFullName()));
+    }
+
+    // raised when trying to instantiate a Bonded container with an invalid element type
+    static void raiseInvalidBondedValueTypeError(BondType<?> valueType) {
+        throw new IllegalArgumentException(String.format(
+                "Invalid bonded value type: '%s', must be a Bond struct data type.",
+                valueType.getFullName()));
+    }
 }
