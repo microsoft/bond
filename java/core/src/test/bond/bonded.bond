@@ -2,6 +2,10 @@ import "common.bond"
 
 namespace org.bondlib.test
 
+struct HasBondedField {
+    0: bonded<Base> bondedField;
+}
+
 struct BondedCollection {
     0: list<bonded<Base>> bondeds;
 }

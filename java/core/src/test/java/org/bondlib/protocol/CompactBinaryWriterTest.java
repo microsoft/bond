@@ -3,12 +3,20 @@
 
 package org.bondlib.protocol;
 
+import org.bondlib.Bonded;
+import org.bondlib.Deserializer;
 import org.bondlib.ProtocolType;
+import org.bondlib.Serializer;
+import org.bondlib.test.Base;
+import org.bondlib.test.HasBondedField;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -110,5 +118,48 @@ public class CompactBinaryWriterTest {
         } catch (IOException e) {
             fail("IOException can't be thrown here: " + e);
         }
+    }
+
+    /*
+     * Regression test for a bug where there would be stale state after
+     * serializing a Bonded field with a Compact v2 writer (the only stateful
+     * writer). The bug was fixed in commit 8a608fbe.
+     */
+    @Test
+    public void v2WReuseWithBonded() throws IOException {
+        final int objCount = 3;
+
+        final List<Base> basesIn = new ArrayList<Base>();
+        for (int i = 0; i < objCount; i++) {
+            final Base base = new Base();
+            base.baseInt = i;
+            basesIn.add(base);
+        }
+
+        final List<HasBondedField> structsIn = new ArrayList<HasBondedField>();
+        for (int i = 0; i < objCount; i++) {
+            final HasBondedField struct = new HasBondedField();
+            struct.bondedField = Bonded.fromObject(basesIn.get(i), Base.BOND_TYPE);
+            structsIn.add(struct);
+        }
+
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final CompactBinaryWriter writer = new CompactBinaryWriter(baos, 2);
+        final Serializer<HasBondedField> serializer = new Serializer<HasBondedField>();
+        for (int i = 0; i < objCount; i++) {
+            serializer.serialize(structsIn.get(i), writer);
+        }
+
+        final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        final CompactBinaryReader reader = new CompactBinaryReader(bais, 2);
+        final Deserializer<HasBondedField> deserializer = new Deserializer<HasBondedField>(HasBondedField.BOND_TYPE);
+        final List<Base> basesOut = new ArrayList<Base>();
+        for (int i = 0; i < objCount; i++) {
+            final HasBondedField struct = deserializer.deserialize(reader);
+            basesOut.add(struct.bondedField.deserialize());
+        }
+
+        Assert.assertEquals(0, bais.available());
+        Assert.assertEquals(basesIn, basesOut);
     }
 }
