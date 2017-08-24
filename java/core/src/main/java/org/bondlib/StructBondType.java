@@ -519,6 +519,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             initializeSchemaVariantWithDefaultValue(fieldDef.metadata.default_value, field);
             fieldDef.id = field.id;
             fieldDef.type = field.fieldType.createSchemaTypeDef(structDefMap);
+            structDef.fields.add(fieldDef);
         }
     }
 
