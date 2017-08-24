@@ -13,16 +13,10 @@ import java.io.IOException;
  */
 public abstract class EnumBondType<TEnum extends BondEnum<TEnum>> extends PrimitiveBondType<TEnum> {
 
-    // the default value of the enum type is cached inside the singleton class descriptor,
-    // since the generated enum class may not cache it if there is no declared constant for it
-    private final TEnum defaultValue;
-
     /**
      * Used by generated subclasses (and only by generated subclasses) to instantiate the type descriptor.
      */
     protected EnumBondType() {
-        // a default for enum type is the enum value with the underlying integer set to 0
-        this.defaultValue = this.getEnumValue(0);
     }
 
     @Override
@@ -50,7 +44,8 @@ public abstract class EnumBondType<TEnum extends BondEnum<TEnum>> extends Primit
 
     @Override
     protected final TEnum newDefaultValue() {
-        return this.defaultValue;
+        // a default for enum type is the enum value with the underlying integer set to 0
+        return this.getEnumValue(0);
     }
 
     /**
