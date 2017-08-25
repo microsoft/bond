@@ -231,7 +231,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      *
      * @return a new schema definition instance
      */
-    final SchemaDef buildSchemaDef() {
+    public final SchemaDef buildSchemaDef() {
         SchemaDef schemaDef = new SchemaDef();
         HashMap<StructBondType<?>, StructDefOrdinalTuple> typeDefMap =
             new HashMap<StructBondType<?>, StructDefOrdinalTuple>();
