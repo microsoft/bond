@@ -1,6 +1,3 @@
-# warning C4310: cast truncates constant value
-cxx_add_compile_options(MSVC /wd4310)
-
 # Core unit tests don't build under VS2013 without this.
 cxx_add_compile_options(MSVC /EHa)
 
