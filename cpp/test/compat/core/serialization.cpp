@@ -52,12 +52,25 @@ void Init(std::list<T>& x)
     }
     else
     {
+#ifdef _MSC_VER
+    #pragma warning (push)
+    // warning C4310: cast truncates constant value
+    //
+    // There are golden data files with the truncated values, so we need to
+    // truncate when T is not large enough for the value.
+    #pragma warning (disable: 4310)
+#endif
+
         static std::vector<T> constants = boost::assign::list_of
             ((T)-1)((T)0)((T)1)((T)2)((T)3)((T)4)((T)5)((T)6)((T)7)((T)8)((T)9)
             ((T)SCHAR_MAX)((T)SCHAR_MIN)((T)UCHAR_MAX)
             ((T)SHRT_MIN)((T)SHRT_MAX)((T)USHRT_MAX)
             ((T)INT_MIN)((T)INT_MAX)((T)UINT_MAX)
             ((T)LLONG_MAX)((T)LLONG_MIN)((T)ULLONG_MAX);
+
+#ifdef _MSC_VER
+    #pragma warning (pop)
+#endif
 
         std::copy(constants.begin(), constants.end(), std::back_inserter(x));
     }
