@@ -47,7 +47,9 @@ function (add_compat_test test)
     endif()
 
     if (BOND_JAVA_COMPAT_TEST)
-        add_interop_test (java ${test})
+        if (NOT (${test} MATCHES "(json|schema)"))
+            add_interop_test (java ${test})
+        endif()
     endif()
 endfunction()
 
