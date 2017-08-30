@@ -107,7 +107,8 @@ script:
     - if [ "$FLAVOR" == "java" ]; then make gbc; fi
     - if [ "$FLAVOR" == "java" ]; then export PATH=`pwd`/compiler/build/gbc:$PATH; fi
     - if [ "$FLAVOR" == "java" ]; then cd ../java/gradle-plugin; gradle build; fi
-    - if [ "$FLAVOR" == "java" ]; then mvn install:install-file -Dfile=build/libs/bond-gradle-1.0.jar -DgroupId=org.bondlib -DartifactId=gradle -Dversion=1.0 -Dpackaging=jar; fi
+    - if [ "$FLAVOR" == "java" ]; then PLUGIN_VERSION=`sed -n "s/version ['\"]\(.*\)['\"]/\1/p" java/gradle-plugin/build.gradle`; fi
+    - if [ "$FLAVOR" == "java" ]; then mvn install:install-file -Dfile=build/libs/bond-gradle-$PLUGIN_VERSION.jar -DgroupId=org.bondlib -DartifactId=gradle -Dversion=$PLUGIN_VERSION -Dpackaging=jar; fi
     - if [ "$FLAVOR" == "java" ]; then cd ../core; gradle build; fi
     - if [ "$FLAVOR" == "java" ]; then cd ../compat; gradle build; fi
     - if [ "$FLAVOR" == "java" ]; then cd ../../build; fi
