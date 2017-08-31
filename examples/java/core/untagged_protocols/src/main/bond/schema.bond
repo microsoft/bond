@@ -1,0 +1,14 @@
+﻿namespace Examples
+
+struct Example1
+{
+    0: bool Enabled;
+    1: string Name;
+}
+
+struct Example2
+{
+    0: bool Enabled;
+    1: string Name;
+    2: nullable<list<double>> Numbers;
+}
