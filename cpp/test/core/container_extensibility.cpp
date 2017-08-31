@@ -4,12 +4,46 @@
 #include "container_extensibility.h"
 
 
-template <typename Protocols, typename T, size_t N, typename S>
-bool Compare(const std::array<T, N>& left, const S& right)
+template <typename Protocols, typename T, size_t N>
+bool Compare(const std::array<T, N>& left, const std::array<T, N>& right)
 {
-    for (typename S::size_type i = 0; i < right.size(); ++i)
+    static_assert(N > 0, "must have non-empty static strings");
+
+    const uint32_t rightLength = std::string_length(right);
+
+    if (std::string_length(left) != rightLength)
+    {
+        return false;
+    }
+
+    for (uint32_t i = 0; i < rightLength; ++i)
+    {
         if (!Compare<Protocols>(left[i], static_cast<T>(right[i])))
+        {
             return false;
+        }
+    }
+
+    return true;
+}
+
+template <typename Protocols, typename T, size_t N>
+bool Compare(const std::array<T, N>& left, const std::basic_string<T>& right)
+{
+    static_assert(N > 0, "must have non-empty static string");
+
+    if (std::string_length(left) != right.size())
+    {
+        return false;
+    }
+
+    for (typename std::basic_string<T>::size_type i = 0; i < right.size(); ++i)
+    {
+        if (!Compare<Protocols>(left[i], static_cast<T>(right[i])))
+        {
+            return false;
+        }
+    }
 
     return true;
 }
@@ -105,7 +139,7 @@ TEST_CASE_BEGIN(MultiIndexTest)
         typedef BondStruct<std::list<uint32_t> > Standard;
         typedef BondStruct<
             boost::multi_index::multi_index_container<
-                uint32_t, 
+                uint32_t,
                 boost::multi_index::indexed_by<
                     boost::multi_index::sequenced<>,
                     boost::multi_index::ordered_non_unique<boost::multi_index::identity<uint32_t> >
@@ -121,7 +155,7 @@ TEST_CASE_BEGIN(MultiIndexTest)
         typedef BondStruct<std::list<SimpleStructView> > Standard;
         typedef BondStruct<
             boost::multi_index::multi_index_container<
-                SimpleStructView, 
+                SimpleStructView,
                 boost::multi_index::indexed_by<
                     boost::multi_index::sequenced<>,
                     ordered_non_unique_field<SimpleStructView::Schema::var::m_str>,
@@ -142,13 +176,13 @@ void ExtensibilityTests(const char* name)
 {
     UnitTestSuite suite(name);
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         SimpleListContainerTest, Reader, Writer>(suite, "C array based container");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         StringTest, Reader, Writer>(suite, "uint8_t[], uint16_t[] string");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         MultiIndexTest, Reader, Writer>(suite, "boost::multi_index_container");
 }
 
@@ -192,4 +226,3 @@ bool init_unit_test()
     ExtensibilityTest::InitializeAssociative();
     return true;
 }
-
