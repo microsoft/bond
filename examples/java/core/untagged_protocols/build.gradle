@@ -1,0 +1,39 @@
+group 'org.bondlib'
+version '1.0'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.bondlib:gradle:+'
+    }
+}
+
+apply plugin: 'application'
+apply plugin: 'org.bondlib.gradle'
+
+sourceCompatibility = 1.8
+mainClassName = 'org.bondlib.examples.UntaggedProtocols'
+applicationDefaultJvmArgs = ['-ea']
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile files('../../../../java/core/build/libs/bond-5.0.0.jar')
+}
+
+compileBond {
+    bondfiles 'src/main/bond/schema.bond'
+    options '--namespace', 'Examples=org.bondlib.examples.untagged_protocols'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
