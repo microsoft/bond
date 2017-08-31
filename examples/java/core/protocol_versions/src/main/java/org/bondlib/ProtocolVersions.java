@@ -5,7 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.bondlib.Deserializer;
+import org.bondlib.Marshal;
 import org.bondlib.Serializer;
+import org.bondlib.Unmarshal;
 
 import org.bondlib.protocol.CompactBinaryReader;
 import org.bondlib.protocol.CompactBinaryWriter;
@@ -57,6 +59,17 @@ public class ProtocolVersions {
             assert obj.equals(obj2) : "Roundtrip CBv2 failed";
         }
 
-        assert false : "Add marshaling example here";
+        {
+            // Here, we Marshal to CompactBinary v2.
+            final ByteArrayOutputStream output = new ByteArrayOutputStream();
+            final CompactBinaryWriter writer = new CompactBinaryWriter(output, 2);
+            Marshal.marshal(obj, writer);
+
+            final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+            // The protocol and version are determined from the payload itself.
+            final Struct obj2 = Unmarshal.unmarshal(input, Struct.BOND_TYPE).deserialize();
+
+            assert obj.equals(obj2) : "Roundtrip marshalled CBv2 failed";
+        }
     }
 }

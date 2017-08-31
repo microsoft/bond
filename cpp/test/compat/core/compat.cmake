@@ -22,6 +22,12 @@ if (CSHARP_COMPAT)
 endif()
 
 if (JAVA_COMPAT)
+    if (${TEST} STREQUAL schema)
+        # gbc schema compat comes through here, so it isn't enough to avoid
+        # creating java schema tests in this directory's CMakeLists.txt.
+        return()
+    endif()
+
     if (NOT JAVA_CORE)
         message(FATAL_ERROR "Cannot run Java compat without setting JAVA_CORE")
     endif()
