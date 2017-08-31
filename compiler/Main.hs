@@ -182,7 +182,17 @@ javaCodegen Java {..} = do
                     let content =
                           if no_banner
                           then code
-                          else (commonHeader "//" bondFile javaFile <> code)
+                          else (commonHeader "//" safeBondFile safeJavaFile <> code)
+                              where
+                                  -- javac will always treat "\u" as the start
+                                  -- of a unicode escape sequence, and will
+                                  -- error out if it isn't followed by a valid
+                                  -- code. This breaks compilation of generated
+                                  -- code if either path has components that
+                                  -- start with u.
+                                  backToForward s = map (\c -> if c == '\\' then '/' else c) s
+                                  safeBondFile = backToForward bondFile
+                                  safeJavaFile = backToForward javaFile
 
                     createDir packageDir
                     LTIO.writeFile (packageDir </> javaFile) content
