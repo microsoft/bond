@@ -70,7 +70,9 @@ public final class WStringBondType extends PrimitiveBondType<String> {
     }
 
     @Override
-    protected final String deserializeValue(UntaggedDeserializationContext context) throws IOException {
+    protected final String deserializeValue(
+            UntaggedDeserializationContext context,
+            RuntimeSchema schema) throws IOException {
         return context.reader.readWString();
     }
 

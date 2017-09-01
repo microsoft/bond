@@ -70,7 +70,15 @@ public class Foo implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, Foo value) throws java.io.IOException {
+            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+                switch (field.id) {
+                    default:
+                        context.reader.skip(fieldSchema);
+                        break;
+                }
+            }
         }
         
         @Override
@@ -261,14 +269,57 @@ public class ComplexTypes implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, ComplexTypes value) throws java.io.IOException {
-            value.li8 = this.li8.deserialize(context);
-            value.sb = this.sb.deserialize(context);
-            value.vb = this.vb.deserialize(context);
-            value.nf = this.nf.deserialize(context);
-            value.msws = this.msws.deserialize(context);
-            value.bfoo = this.bfoo.deserialize(context);
-            value.m = this.m.deserialize(context);
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, ComplexTypes value) throws java.io.IOException {
+            boolean __has_li8 = false;
+            boolean __has_sb = false;
+            boolean __has_vb = false;
+            boolean __has_nf = false;
+            boolean __has_msws = false;
+            boolean __has_bfoo = false;
+            boolean __has_m = false;
+            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+                switch (field.id) {
+                    case 0:
+                        value.li8 = this.li8.deserialize(context, fieldSchema);
+                        __has_li8 = true;
+                        break;
+                    case 1:
+                        value.sb = this.sb.deserialize(context, fieldSchema);
+                        __has_sb = true;
+                        break;
+                    case 2:
+                        value.vb = this.vb.deserialize(context, fieldSchema);
+                        __has_vb = true;
+                        break;
+                    case 3:
+                        value.nf = this.nf.deserialize(context, fieldSchema);
+                        __has_nf = true;
+                        break;
+                    case 4:
+                        value.msws = this.msws.deserialize(context, fieldSchema);
+                        __has_msws = true;
+                        break;
+                    case 5:
+                        value.bfoo = this.bfoo.deserialize(context, fieldSchema);
+                        __has_bfoo = true;
+                        break;
+                    case 6:
+                        value.m = this.m.deserialize(context, fieldSchema);
+                        __has_m = true;
+                        break;
+                    default:
+                        context.reader.skip(fieldSchema);
+                        break;
+                }
+            }
+            this.li8.verifyDeserialized(__has_li8);
+            this.sb.verifyDeserialized(__has_sb);
+            this.vb.verifyDeserialized(__has_vb);
+            this.nf.verifyDeserialized(__has_nf);
+            this.msws.verifyDeserialized(__has_msws);
+            this.bfoo.verifyDeserialized(__has_bfoo);
+            this.m.verifyDeserialized(__has_m);
         }
         
         @Override

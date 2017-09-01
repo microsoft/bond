@@ -92,8 +92,21 @@ public class Foo<T> implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, Foo<T> value) throws java.io.IOException {
-            value.aa = this.aa.deserialize(context);
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, Foo<T> value) throws java.io.IOException {
+            boolean __has_aa = false;
+            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+                switch (field.id) {
+                    case 0:
+                        value.aa = this.aa.deserialize(context, fieldSchema);
+                        __has_aa = true;
+                        break;
+                    default:
+                        context.reader.skip(fieldSchema);
+                        break;
+                }
+            }
+            this.aa.verifyDeserialized(__has_aa);
         }
         
         @Override
@@ -307,8 +320,21 @@ public class WrappingAnEnum implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, WrappingAnEnum value) throws java.io.IOException {
-            value.aWrappedEnum = this.aWrappedEnum.deserialize(context);
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, WrappingAnEnum value) throws java.io.IOException {
+            boolean __has_aWrappedEnum = false;
+            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+                switch (field.id) {
+                    case 0:
+                        value.aWrappedEnum = this.aWrappedEnum.deserialize(context, fieldSchema);
+                        __has_aWrappedEnum = true;
+                        break;
+                    default:
+                        context.reader.skip(fieldSchema);
+                        break;
+                }
+            }
+            this.aWrappedEnum.verifyDeserialized(__has_aWrappedEnum);
         }
         
         @Override

@@ -208,21 +208,99 @@ public class BasicTypes implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, BasicTypes value) throws java.io.IOException {
-            value._bool = this._bool.deserialize(context);
-            value._str = this._str.deserialize(context);
-            value._wstr = this._wstr.deserialize(context);
-            value._uint64 = this._uint64.deserialize(context);
-            value._uint16 = this._uint16.deserialize(context);
-            value._uint32 = this._uint32.deserialize(context);
-            value._uint8 = this._uint8.deserialize(context);
-            value._int8 = this._int8.deserialize(context);
-            value._int16 = this._int16.deserialize(context);
-            value._int32 = this._int32.deserialize(context);
-            value._int64 = this._int64.deserialize(context);
-            value._double = this._double.deserialize(context);
-            value._float = this._float.deserialize(context);
-            value._blob = this._blob.deserialize(context);
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, BasicTypes value) throws java.io.IOException {
+            boolean __has__bool = false;
+            boolean __has__str = false;
+            boolean __has__wstr = false;
+            boolean __has__uint64 = false;
+            boolean __has__uint16 = false;
+            boolean __has__uint32 = false;
+            boolean __has__uint8 = false;
+            boolean __has__int8 = false;
+            boolean __has__int16 = false;
+            boolean __has__int32 = false;
+            boolean __has__int64 = false;
+            boolean __has__double = false;
+            boolean __has__float = false;
+            boolean __has__blob = false;
+            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+                switch (field.id) {
+                    case 0:
+                        value._bool = this._bool.deserialize(context, fieldSchema);
+                        __has__bool = true;
+                        break;
+                    case 2:
+                        value._str = this._str.deserialize(context, fieldSchema);
+                        __has__str = true;
+                        break;
+                    case 3:
+                        value._wstr = this._wstr.deserialize(context, fieldSchema);
+                        __has__wstr = true;
+                        break;
+                    case 10:
+                        value._uint64 = this._uint64.deserialize(context, fieldSchema);
+                        __has__uint64 = true;
+                        break;
+                    case 11:
+                        value._uint16 = this._uint16.deserialize(context, fieldSchema);
+                        __has__uint16 = true;
+                        break;
+                    case 12:
+                        value._uint32 = this._uint32.deserialize(context, fieldSchema);
+                        __has__uint32 = true;
+                        break;
+                    case 13:
+                        value._uint8 = this._uint8.deserialize(context, fieldSchema);
+                        __has__uint8 = true;
+                        break;
+                    case 14:
+                        value._int8 = this._int8.deserialize(context, fieldSchema);
+                        __has__int8 = true;
+                        break;
+                    case 15:
+                        value._int16 = this._int16.deserialize(context, fieldSchema);
+                        __has__int16 = true;
+                        break;
+                    case 16:
+                        value._int32 = this._int32.deserialize(context, fieldSchema);
+                        __has__int32 = true;
+                        break;
+                    case 17:
+                        value._int64 = this._int64.deserialize(context, fieldSchema);
+                        __has__int64 = true;
+                        break;
+                    case 18:
+                        value._double = this._double.deserialize(context, fieldSchema);
+                        __has__double = true;
+                        break;
+                    case 20:
+                        value._float = this._float.deserialize(context, fieldSchema);
+                        __has__float = true;
+                        break;
+                    case 21:
+                        value._blob = this._blob.deserialize(context, fieldSchema);
+                        __has__blob = true;
+                        break;
+                    default:
+                        context.reader.skip(fieldSchema);
+                        break;
+                }
+            }
+            this._bool.verifyDeserialized(__has__bool);
+            this._str.verifyDeserialized(__has__str);
+            this._wstr.verifyDeserialized(__has__wstr);
+            this._uint64.verifyDeserialized(__has__uint64);
+            this._uint16.verifyDeserialized(__has__uint16);
+            this._uint32.verifyDeserialized(__has__uint32);
+            this._uint8.verifyDeserialized(__has__uint8);
+            this._int8.verifyDeserialized(__has__int8);
+            this._int16.verifyDeserialized(__has__int16);
+            this._int32.verifyDeserialized(__has__int32);
+            this._int64.verifyDeserialized(__has__int64);
+            this._double.verifyDeserialized(__has__double);
+            this._float.verifyDeserialized(__has__float);
+            this._blob.verifyDeserialized(__has__blob);
         }
         
         @Override

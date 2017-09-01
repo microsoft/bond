@@ -3,6 +3,10 @@
 
 package org.bondlib.protocol;
 
+import org.bondlib.BondDataType;
+import org.bondlib.RuntimeSchema;
+import org.bondlib.TypeDef;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -198,6 +202,103 @@ public final class SimpleBinaryReader implements UntaggedProtocolReader {
     public void skipWString() throws IOException {
         final int codeUnitCount = readLength();
         this.reader.skipBytes(codeUnitCount * 2);
+    }
+
+    @Override
+    public void skip(RuntimeSchema schema) throws IOException {
+
+        TypeDef type = schema.getTypeDef();
+
+        switch (type.id.value) {
+
+            case BondDataType.Values.BT_BOOL:
+                this.skipBool();
+                break;
+
+            case BondDataType.Values.BT_UINT8:
+                this.skipUInt8();
+                break;
+
+            case BondDataType.Values.BT_UINT16:
+                this.skipUInt16();
+                break;
+
+            case BondDataType.Values.BT_UINT32:
+                this.skipUInt32();
+                break;
+
+            case BondDataType.Values.BT_UINT64:
+                this.skipUInt64();
+                break;
+
+            case BondDataType.Values.BT_FLOAT:
+                this.skipFloat();
+                break;
+
+            case BondDataType.Values.BT_DOUBLE:
+                this.skipDouble();
+                break;
+
+            case BondDataType.Values.BT_STRING:
+                this.skipString();
+                break;
+
+            case BondDataType.Values.BT_STRUCT:
+                if (schema.isBonded()) {
+                    int count = readLength();
+                    skipBytes(count);
+                } else {
+                    if (schema.hasBase()) {
+                        skip(schema.getBaseSchema());
+                    }
+                    for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                        skip(schema.getFieldSchema(field));
+                    }
+                }
+                break;
+
+            case BondDataType.Values.BT_LIST:
+            case BondDataType.Values.BT_SET: {
+                int numElems = readLength();
+                final RuntimeSchema elementSchema = schema.getElementSchema();
+                for (int i = 0; i < numElems; i++) {
+                    skip(elementSchema);
+                }
+                break;
+            }
+            case BondDataType.Values.BT_MAP: {
+                int numElems = readLength();
+                final RuntimeSchema keySchema = schema.getElementSchema();
+                final RuntimeSchema elementSchema = schema.getElementSchema();
+                for (int i = 0; i < numElems; i++) {
+                    skip(keySchema);
+                    skip(elementSchema);
+                }
+                break;
+            }
+            case BondDataType.Values.BT_INT8:
+                this.skipInt8();
+                break;
+
+            case BondDataType.Values.BT_INT16:
+                this.skipInt16();
+                break;
+
+            case BondDataType.Values.BT_INT32:
+                this.skipInt32();
+                break;
+
+            case BondDataType.Values.BT_INT64:
+                this.skipInt64();
+                break;
+
+            case BondDataType.Values.BT_WSTRING:
+                this.skipWString();
+                break;
+
+            default:
+                throw new IllegalArgumentException("Bad value in SimpleBinartReader.skip(RuntimeSchema)");
+        }
     }
 
     @Override

@@ -126,7 +126,9 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
     }
 
     @Override
-    protected final Bonded<TStruct> deserializeValue(UntaggedDeserializationContext context) throws IOException {
+    protected final Bonded<TStruct> deserializeValue(
+            UntaggedDeserializationContext context,
+            RuntimeSchema schema) throws IOException {
         // Bonded fields are always marshaled and prefixed with a fixed-width length.
         final int bondedLength = context.reader.readUInt32();
         final InputStream clonedInputStream = context.reader.cloneStream();

@@ -3,6 +3,8 @@
 
 package org.bondlib.protocol;
 
+import org.bondlib.RuntimeSchema;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -191,6 +193,14 @@ public interface UntaggedProtocolReader {
      * Skip a wstring.
      */
     void skipWString() throws IOException;
+
+    /**
+     * Skip based on supplied runtime schema
+     * 
+     * @param schema the runtime schema
+     * @throws IOException
+     */
+    void skip(RuntimeSchema schema) throws IOException;
 
     /**
      * @return a clone of this reader's underlying stream

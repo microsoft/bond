@@ -148,12 +148,15 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
     }
 
     @Override
-    protected final List<TElement> deserializeValue(UntaggedDeserializationContext context) throws IOException {
+    protected final List<TElement> deserializeValue(
+            UntaggedDeserializationContext context,
+            RuntimeSchema schema) throws IOException {
         final int count = context.reader.readContainerBegin();
         final List<TElement> value = newDefaultValue();
+        final RuntimeSchema elementSchema = schema.getElementSchema();
         for (int i = 0; i < count; ++i) {
             try {
-                TElement element = this.elementType.deserializeValue(context);
+                TElement element = this.elementType.deserializeValue(context, elementSchema);
                 value.add(element);
             } catch (InvalidBondDataException e) {
                 Throw.raiseListContainerElementSerializationError(true, false, this.getFullName(), i, e, null);

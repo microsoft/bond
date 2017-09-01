@@ -546,43 +546,231 @@ public class Foo implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
-            value.m_bool_1 = this.m_bool_1.deserialize(context);
-            value.m_bool_2 = this.m_bool_2.deserialize(context);
-            value.m_bool_3 = this.m_bool_3.deserialize(context);
-            value.m_str_1 = this.m_str_1.deserialize(context);
-            value.m_str_2 = this.m_str_2.deserialize(context);
-            value.m_int8_4 = this.m_int8_4.deserialize(context);
-            value.m_int8_5 = this.m_int8_5.deserialize(context);
-            value.m_int16_4 = this.m_int16_4.deserialize(context);
-            value.m_int16_5 = this.m_int16_5.deserialize(context);
-            value.m_int32_4 = this.m_int32_4.deserialize(context);
-            value.m_int32_max = this.m_int32_max.deserialize(context);
-            value.m_int64_4 = this.m_int64_4.deserialize(context);
-            value.m_int64_max = this.m_int64_max.deserialize(context);
-            value.m_uint8_2 = this.m_uint8_2.deserialize(context);
-            value.m_uint8_3 = this.m_uint8_3.deserialize(context);
-            value.m_uint16_2 = this.m_uint16_2.deserialize(context);
-            value.m_uint16_3 = this.m_uint16_3.deserialize(context);
-            value.m_uint32_3 = this.m_uint32_3.deserialize(context);
-            value.m_uint32_max = this.m_uint32_max.deserialize(context);
-            value.m_uint64_3 = this.m_uint64_3.deserialize(context);
-            value.m_uint64_max = this.m_uint64_max.deserialize(context);
-            value.m_double_3 = this.m_double_3.deserialize(context);
-            value.m_double_4 = this.m_double_4.deserialize(context);
-            value.m_double_5 = this.m_double_5.deserialize(context);
-            value.m_float_3 = this.m_float_3.deserialize(context);
-            value.m_float_4 = this.m_float_4.deserialize(context);
-            value.m_float_7 = this.m_float_7.deserialize(context);
-            value.m_enum1 = this.m_enum1.deserialize(context);
-            value.m_enum2 = this.m_enum2.deserialize(context);
-            value.m_enum3 = this.m_enum3.deserialize(context);
-            value.m_enum_int32min = this.m_enum_int32min.deserialize(context);
-            value.m_enum_int32max = this.m_enum_int32max.deserialize(context);
-            value.m_enum_uint32_min = this.m_enum_uint32_min.deserialize(context);
-            value.m_enum_uint32_max = this.m_enum_uint32_max.deserialize(context);
-            value.m_wstr_1 = this.m_wstr_1.deserialize(context);
-            value.m_wstr_2 = this.m_wstr_2.deserialize(context);
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, Foo value) throws java.io.IOException {
+            boolean __has_m_bool_1 = false;
+            boolean __has_m_bool_2 = false;
+            boolean __has_m_bool_3 = false;
+            boolean __has_m_str_1 = false;
+            boolean __has_m_str_2 = false;
+            boolean __has_m_int8_4 = false;
+            boolean __has_m_int8_5 = false;
+            boolean __has_m_int16_4 = false;
+            boolean __has_m_int16_5 = false;
+            boolean __has_m_int32_4 = false;
+            boolean __has_m_int32_max = false;
+            boolean __has_m_int64_4 = false;
+            boolean __has_m_int64_max = false;
+            boolean __has_m_uint8_2 = false;
+            boolean __has_m_uint8_3 = false;
+            boolean __has_m_uint16_2 = false;
+            boolean __has_m_uint16_3 = false;
+            boolean __has_m_uint32_3 = false;
+            boolean __has_m_uint32_max = false;
+            boolean __has_m_uint64_3 = false;
+            boolean __has_m_uint64_max = false;
+            boolean __has_m_double_3 = false;
+            boolean __has_m_double_4 = false;
+            boolean __has_m_double_5 = false;
+            boolean __has_m_float_3 = false;
+            boolean __has_m_float_4 = false;
+            boolean __has_m_float_7 = false;
+            boolean __has_m_enum1 = false;
+            boolean __has_m_enum2 = false;
+            boolean __has_m_enum3 = false;
+            boolean __has_m_enum_int32min = false;
+            boolean __has_m_enum_int32max = false;
+            boolean __has_m_enum_uint32_min = false;
+            boolean __has_m_enum_uint32_max = false;
+            boolean __has_m_wstr_1 = false;
+            boolean __has_m_wstr_2 = false;
+            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+                switch (field.id) {
+                    case 0:
+                        value.m_bool_1 = this.m_bool_1.deserialize(context, fieldSchema);
+                        __has_m_bool_1 = true;
+                        break;
+                    case 1:
+                        value.m_bool_2 = this.m_bool_2.deserialize(context, fieldSchema);
+                        __has_m_bool_2 = true;
+                        break;
+                    case 2:
+                        value.m_bool_3 = this.m_bool_3.deserialize(context, fieldSchema);
+                        __has_m_bool_3 = true;
+                        break;
+                    case 3:
+                        value.m_str_1 = this.m_str_1.deserialize(context, fieldSchema);
+                        __has_m_str_1 = true;
+                        break;
+                    case 4:
+                        value.m_str_2 = this.m_str_2.deserialize(context, fieldSchema);
+                        __has_m_str_2 = true;
+                        break;
+                    case 5:
+                        value.m_int8_4 = this.m_int8_4.deserialize(context, fieldSchema);
+                        __has_m_int8_4 = true;
+                        break;
+                    case 6:
+                        value.m_int8_5 = this.m_int8_5.deserialize(context, fieldSchema);
+                        __has_m_int8_5 = true;
+                        break;
+                    case 7:
+                        value.m_int16_4 = this.m_int16_4.deserialize(context, fieldSchema);
+                        __has_m_int16_4 = true;
+                        break;
+                    case 8:
+                        value.m_int16_5 = this.m_int16_5.deserialize(context, fieldSchema);
+                        __has_m_int16_5 = true;
+                        break;
+                    case 9:
+                        value.m_int32_4 = this.m_int32_4.deserialize(context, fieldSchema);
+                        __has_m_int32_4 = true;
+                        break;
+                    case 10:
+                        value.m_int32_max = this.m_int32_max.deserialize(context, fieldSchema);
+                        __has_m_int32_max = true;
+                        break;
+                    case 11:
+                        value.m_int64_4 = this.m_int64_4.deserialize(context, fieldSchema);
+                        __has_m_int64_4 = true;
+                        break;
+                    case 12:
+                        value.m_int64_max = this.m_int64_max.deserialize(context, fieldSchema);
+                        __has_m_int64_max = true;
+                        break;
+                    case 13:
+                        value.m_uint8_2 = this.m_uint8_2.deserialize(context, fieldSchema);
+                        __has_m_uint8_2 = true;
+                        break;
+                    case 14:
+                        value.m_uint8_3 = this.m_uint8_3.deserialize(context, fieldSchema);
+                        __has_m_uint8_3 = true;
+                        break;
+                    case 15:
+                        value.m_uint16_2 = this.m_uint16_2.deserialize(context, fieldSchema);
+                        __has_m_uint16_2 = true;
+                        break;
+                    case 16:
+                        value.m_uint16_3 = this.m_uint16_3.deserialize(context, fieldSchema);
+                        __has_m_uint16_3 = true;
+                        break;
+                    case 17:
+                        value.m_uint32_3 = this.m_uint32_3.deserialize(context, fieldSchema);
+                        __has_m_uint32_3 = true;
+                        break;
+                    case 18:
+                        value.m_uint32_max = this.m_uint32_max.deserialize(context, fieldSchema);
+                        __has_m_uint32_max = true;
+                        break;
+                    case 19:
+                        value.m_uint64_3 = this.m_uint64_3.deserialize(context, fieldSchema);
+                        __has_m_uint64_3 = true;
+                        break;
+                    case 20:
+                        value.m_uint64_max = this.m_uint64_max.deserialize(context, fieldSchema);
+                        __has_m_uint64_max = true;
+                        break;
+                    case 21:
+                        value.m_double_3 = this.m_double_3.deserialize(context, fieldSchema);
+                        __has_m_double_3 = true;
+                        break;
+                    case 22:
+                        value.m_double_4 = this.m_double_4.deserialize(context, fieldSchema);
+                        __has_m_double_4 = true;
+                        break;
+                    case 23:
+                        value.m_double_5 = this.m_double_5.deserialize(context, fieldSchema);
+                        __has_m_double_5 = true;
+                        break;
+                    case 24:
+                        value.m_float_3 = this.m_float_3.deserialize(context, fieldSchema);
+                        __has_m_float_3 = true;
+                        break;
+                    case 25:
+                        value.m_float_4 = this.m_float_4.deserialize(context, fieldSchema);
+                        __has_m_float_4 = true;
+                        break;
+                    case 26:
+                        value.m_float_7 = this.m_float_7.deserialize(context, fieldSchema);
+                        __has_m_float_7 = true;
+                        break;
+                    case 27:
+                        value.m_enum1 = this.m_enum1.deserialize(context, fieldSchema);
+                        __has_m_enum1 = true;
+                        break;
+                    case 28:
+                        value.m_enum2 = this.m_enum2.deserialize(context, fieldSchema);
+                        __has_m_enum2 = true;
+                        break;
+                    case 29:
+                        value.m_enum3 = this.m_enum3.deserialize(context, fieldSchema);
+                        __has_m_enum3 = true;
+                        break;
+                    case 30:
+                        value.m_enum_int32min = this.m_enum_int32min.deserialize(context, fieldSchema);
+                        __has_m_enum_int32min = true;
+                        break;
+                    case 31:
+                        value.m_enum_int32max = this.m_enum_int32max.deserialize(context, fieldSchema);
+                        __has_m_enum_int32max = true;
+                        break;
+                    case 32:
+                        value.m_enum_uint32_min = this.m_enum_uint32_min.deserialize(context, fieldSchema);
+                        __has_m_enum_uint32_min = true;
+                        break;
+                    case 33:
+                        value.m_enum_uint32_max = this.m_enum_uint32_max.deserialize(context, fieldSchema);
+                        __has_m_enum_uint32_max = true;
+                        break;
+                    case 34:
+                        value.m_wstr_1 = this.m_wstr_1.deserialize(context, fieldSchema);
+                        __has_m_wstr_1 = true;
+                        break;
+                    case 35:
+                        value.m_wstr_2 = this.m_wstr_2.deserialize(context, fieldSchema);
+                        __has_m_wstr_2 = true;
+                        break;
+                    default:
+                        context.reader.skip(fieldSchema);
+                        break;
+                }
+            }
+            this.m_bool_1.verifyDeserialized(__has_m_bool_1);
+            this.m_bool_2.verifyDeserialized(__has_m_bool_2);
+            this.m_bool_3.verifyDeserialized(__has_m_bool_3);
+            this.m_str_1.verifyDeserialized(__has_m_str_1);
+            this.m_str_2.verifyDeserialized(__has_m_str_2);
+            this.m_int8_4.verifyDeserialized(__has_m_int8_4);
+            this.m_int8_5.verifyDeserialized(__has_m_int8_5);
+            this.m_int16_4.verifyDeserialized(__has_m_int16_4);
+            this.m_int16_5.verifyDeserialized(__has_m_int16_5);
+            this.m_int32_4.verifyDeserialized(__has_m_int32_4);
+            this.m_int32_max.verifyDeserialized(__has_m_int32_max);
+            this.m_int64_4.verifyDeserialized(__has_m_int64_4);
+            this.m_int64_max.verifyDeserialized(__has_m_int64_max);
+            this.m_uint8_2.verifyDeserialized(__has_m_uint8_2);
+            this.m_uint8_3.verifyDeserialized(__has_m_uint8_3);
+            this.m_uint16_2.verifyDeserialized(__has_m_uint16_2);
+            this.m_uint16_3.verifyDeserialized(__has_m_uint16_3);
+            this.m_uint32_3.verifyDeserialized(__has_m_uint32_3);
+            this.m_uint32_max.verifyDeserialized(__has_m_uint32_max);
+            this.m_uint64_3.verifyDeserialized(__has_m_uint64_3);
+            this.m_uint64_max.verifyDeserialized(__has_m_uint64_max);
+            this.m_double_3.verifyDeserialized(__has_m_double_3);
+            this.m_double_4.verifyDeserialized(__has_m_double_4);
+            this.m_double_5.verifyDeserialized(__has_m_double_5);
+            this.m_float_3.verifyDeserialized(__has_m_float_3);
+            this.m_float_4.verifyDeserialized(__has_m_float_4);
+            this.m_float_7.verifyDeserialized(__has_m_float_7);
+            this.m_enum1.verifyDeserialized(__has_m_enum1);
+            this.m_enum2.verifyDeserialized(__has_m_enum2);
+            this.m_enum3.verifyDeserialized(__has_m_enum3);
+            this.m_enum_int32min.verifyDeserialized(__has_m_enum_int32min);
+            this.m_enum_int32max.verifyDeserialized(__has_m_enum_int32max);
+            this.m_enum_uint32_min.verifyDeserialized(__has_m_enum_uint32_min);
+            this.m_enum_uint32_max.verifyDeserialized(__has_m_enum_uint32_max);
+            this.m_wstr_1.verifyDeserialized(__has_m_wstr_1);
+            this.m_wstr_2.verifyDeserialized(__has_m_wstr_2);
         }
         
         @Override
