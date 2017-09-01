@@ -88,9 +88,27 @@ public class HasMetaFields implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, HasMetaFields value) throws java.io.IOException {
-            value.full_name = this.full_name.deserialize(context);
-            value.name = this.name.deserialize(context);
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, HasMetaFields value) throws java.io.IOException {
+            boolean __has_full_name = false;
+            boolean __has_name = false;
+            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+                switch (field.id) {
+                    case 0:
+                        value.full_name = this.full_name.deserialize(context, fieldSchema);
+                        __has_full_name = true;
+                        break;
+                    case 1:
+                        value.name = this.name.deserialize(context, fieldSchema);
+                        __has_name = true;
+                        break;
+                    default:
+                        context.reader.skip(fieldSchema);
+                        break;
+                }
+            }
+            this.full_name.verifyDeserialized(__has_full_name);
+            this.name.verifyDeserialized(__has_name);
         }
         
         @Override

@@ -50,4 +50,18 @@ public final class Deserializer<TStruct extends BondSerializable> {
         ArgumentHelper.ensureNotNull(reader, "reader");
         return this.structType.deserialize(reader);
     }
+
+    /**
+     * Deserializes an object from the given untagged protocol reader using the given RuntimeSchema
+
+     * @param reader the protocol reader to read from
+     * @param schema the runtime schema
+     * @return deserialized object
+     * @throws IOException if an I/O error occurred
+     */
+    public final TStruct deserialize(UntaggedProtocolReader reader, RuntimeSchema schema) throws IOException {
+        ArgumentHelper.ensureNotNull(reader, "reader");
+        ArgumentHelper.ensureNotNull(schema, "schema");
+        return this.structType.deserialize(reader, schema);
+    }
 }

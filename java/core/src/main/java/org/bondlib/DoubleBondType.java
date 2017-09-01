@@ -77,7 +77,9 @@ public final class DoubleBondType extends PrimitiveBondType<Double> {
     }
 
     @Override
-    protected final Double deserializeValue(UntaggedDeserializationContext context) throws IOException {
+    protected final Double deserializeValue(
+            UntaggedDeserializationContext context,
+            RuntimeSchema schema) throws IOException {
         return deserializePrimitiveValue(context);
     }
 
@@ -122,8 +124,8 @@ public final class DoubleBondType extends PrimitiveBondType<Double> {
     }
 
     /**
-     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext)} method
-     * for primitive values.
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext, RuntimeSchema)}
+     * method for primitive values.
      *
      * @param context contains the runtime context of the deserialization
      * @return the deserialized value

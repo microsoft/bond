@@ -75,7 +75,9 @@ public final class BoolBondType extends PrimitiveBondType<Boolean> {
     }
 
     @Override
-    protected final Boolean deserializeValue(UntaggedDeserializationContext context) throws IOException {
+    protected final Boolean deserializeValue(
+            UntaggedDeserializationContext context,
+            RuntimeSchema schema) throws IOException {
         return deserializePrimitiveValue(context);
     }
 
@@ -120,8 +122,8 @@ public final class BoolBondType extends PrimitiveBondType<Boolean> {
     }
 
     /**
-     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext)} method
-     * for primitive values.
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext, RuntimeSchema)}
+     * method for primitive values.
      *
      * @param context contains the runtime context of the deserialization
      * @return the deserialized value

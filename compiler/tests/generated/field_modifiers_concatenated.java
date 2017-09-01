@@ -98,10 +98,33 @@ public class Foo implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
-            value.o = this.o.deserialize(context);
-            value.r = this.r.deserialize(context);
-            value.ro = this.ro.deserialize(context);
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, Foo value) throws java.io.IOException {
+            boolean __has_o = false;
+            boolean __has_r = false;
+            boolean __has_ro = false;
+            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+                switch (field.id) {
+                    case 0:
+                        value.o = this.o.deserialize(context, fieldSchema);
+                        __has_o = true;
+                        break;
+                    case 1:
+                        value.r = this.r.deserialize(context, fieldSchema);
+                        __has_r = true;
+                        break;
+                    case 2:
+                        value.ro = this.ro.deserialize(context, fieldSchema);
+                        __has_ro = true;
+                        break;
+                    default:
+                        context.reader.skip(fieldSchema);
+                        break;
+                }
+            }
+            this.o.verifyDeserialized(__has_o);
+            this.r.verifyDeserialized(__has_r);
+            this.ro.verifyDeserialized(__has_ro);
         }
         
         @Override

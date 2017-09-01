@@ -315,11 +315,26 @@ makeStructBondTypeMember_deserializeStructFields_tagged declName declParams stru
 makeStructBondTypeMember_deserializeStructFields_untagged :: String -> [TypeParam] -> [Field] -> Text
 makeStructBondTypeMember_deserializeStructFields_untagged declName declParams structFields = [lt|
         @Override
-        protected final void deserializeStructFields(#{methodParamDecl}) throws java.io.IOException {#{newlineBeginSep 3 deserializeField structFields}
+        protected final void deserializeStructFields(#{methodParamDecl}) throws java.io.IOException {#{newlineBeginSep 3 declareLocalVariable structFields}
+            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+                switch (field.id) {#{newlineBeginSep 5 deserializeField structFields}
+                    default:
+                        context.reader.skip(fieldSchema);
+                        break;
+                }
+            }#{newlineBeginSep 3 verifyField structFields}
         }|]
             where
-                methodParamDecl = [lt|org.bondlib.BondType.UntaggedDeserializationContext context, #{typeNameWithParams declName declParams} value|]
-                deserializeField Field {..} = [lt|value.#{fieldName} = this.#{fieldName}.deserialize(context);|]
+                methodParamDecl = [lt|org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, #{typeNameWithParams declName declParams} value|]
+                declareLocalVariable Field {..} = [lt|boolean __has_#{fieldName} = false;|]
+                deserializeField Field {..} = [lt|#{switchCasePart}#{newLine 6}#{deserializePart}#{newLine 6}#{setBooleanPart}#{newLine 6}break;|]
+                  where
+                    switchCasePart = [lt|case #{fieldOrdinal}:|]
+                    deserializePart = [lt|value.#{fieldName} = this.#{fieldName}.deserialize(context, fieldSchema);|]
+                    setBooleanPart = [lt|__has_#{fieldName} = true;|]
+
+                verifyField Field {..} = [lt|this.#{fieldName}.verifyDeserialized(__has_#{fieldName});|]
 
 
 -- given class name, generic type parameters, and struct fields, builds text for implementation of

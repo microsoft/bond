@@ -78,8 +78,21 @@ public class Base implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, Base value) throws java.io.IOException {
-            value.x = this.x.deserialize(context);
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, Base value) throws java.io.IOException {
+            boolean __has_x = false;
+            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+                switch (field.id) {
+                    case 0:
+                        value.x = this.x.deserialize(context, fieldSchema);
+                        __has_x = true;
+                        break;
+                    default:
+                        context.reader.skip(fieldSchema);
+                        break;
+                }
+            }
+            this.x.verifyDeserialized(__has_x);
         }
         
         @Override
@@ -214,8 +227,21 @@ public class Foo extends tests.Base {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, Foo value) throws java.io.IOException {
-            value.x = this.x.deserialize(context);
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, Foo value) throws java.io.IOException {
+            boolean __has_x = false;
+            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
+                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+                switch (field.id) {
+                    case 0:
+                        value.x = this.x.deserialize(context, fieldSchema);
+                        __has_x = true;
+                        break;
+                    default:
+                        context.reader.skip(fieldSchema);
+                        break;
+                }
+            }
+            this.x.verifyDeserialized(__has_x);
         }
         
         @Override
