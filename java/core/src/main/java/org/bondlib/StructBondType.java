@@ -535,9 +535,17 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
             case BondDataType.Values.BT_INT8:
             case BondDataType.Values.BT_INT16:
-            case BondDataType.Values.BT_INT32:
             case BondDataType.Values.BT_INT64:
                 variant.int_value = ((Number) field.getDefaultValue()).longValue();
+                break;
+
+            case BondDataType.Values.BT_INT32:
+                Object value = field.getDefaultValue();
+                if (value instanceof Number) {
+                    variant.int_value = ((Number) field.getDefaultValue()).longValue();
+                } else {
+                    variant.int_value = ((BondEnum) field.getDefaultValue()).getValue();
+                }
                 break;
 
             case BondDataType.Values.BT_BOOL:
