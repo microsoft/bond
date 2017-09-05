@@ -30,6 +30,7 @@ different versioning scheme, following the Haskell community's
 * Errors from some versions of G++ like "non-template type `Deserialize`
   used as a template" have been fixed.
   [Issue #538](https://github.com/Microsoft/bond/issues/538)
+* Guard against overflows in OutputMemoryStream, blob, and SimpleArray.
 
 ### C# ###
 

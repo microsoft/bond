@@ -7,8 +7,11 @@
 #include <bond/core/blob.h>
 #include <bond/core/containers.h>
 #include <bond/core/traits.h>
+#include <bond/core/detail/check_overflow.h>
 #include <boost/static_assert.hpp>
 #include <cstring>
+#include <limits>
+#include <stdexcept>
 
 namespace bond
 {
@@ -143,6 +146,7 @@ public:
     template <typename T>
     void GetBuffers(std::vector<blob, T>& buffers) const
     {
+        bond::detail::check_add_overflow(static_cast<uint32_t>(_blobs.size()), 1);
         buffers.reserve(_blobs.size() + 1);
 
         //
@@ -244,6 +248,12 @@ public:
             if (_rangeSize > 0)
             {
                 _blobs.push_back(blob(_buffer, _rangeOffset, _rangeSize));
+            }
+
+            // cap buffer at 2GB
+            if (_bufferSize >= ((std::numeric_limits<uint32_t>::max)() >> 1))
+            {
+                throw std::bad_alloc();
             }
 
             //

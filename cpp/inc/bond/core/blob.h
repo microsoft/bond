@@ -6,6 +6,7 @@
 
 #include "config.h"
 #include "container_interface.h"
+#include "detail/check_overflow.h"
 #include <boost/shared_array.hpp>
 #include <boost/make_shared.hpp>
 #include <stdint.h>
@@ -38,6 +39,7 @@ public:
           _content(static_cast<const char*>(content)),
           _length(length)
     {
+        bond::detail::check_add_overflow(_content, length);
     }
 
     /// @brief Construct from a boost::shared_ptr to const memory buffer
@@ -46,6 +48,7 @@ public:
           _content(_buffer.get()),
           _length(length)
     {
+        bond::detail::check_add_overflow(_content, length);
     }
 
     /// @brief Construct from a boost::shared_ptr to const memory buffer
@@ -54,6 +57,8 @@ public:
           _content(_buffer.get() + offset),
           _length(length)
     {
+        bond::detail::check_add_overflow(_buffer.get(), offset);
+        bond::detail::check_add_overflow(_content, length);
     }
 
     /// @brief Construct from a boost::shared_ptr to memory buffer
@@ -62,6 +67,7 @@ public:
           _content(_buffer.get()),
           _length(length)
     {
+        bond::detail::check_add_overflow(_content, length);
     }
 
     /// @brief Construct from a boost::shared_ptr to memory buffer
@@ -70,6 +76,8 @@ public:
           _content(_buffer.get() + offset),
           _length(length)
     {
+        bond::detail::check_add_overflow(_buffer.get(), offset);
+        bond::detail::check_add_overflow(_content, length);
     }
 
     /// @brief Construct from a smart pointer other than boost::shared_ptr
@@ -81,6 +89,7 @@ public:
           _content(_buffer.get()),
           _length(length)
     {
+        bond::detail::check_add_overflow(_content, length);
     }
 
     /// @brief Construct from a smart pointer other than boost::shared_ptr
@@ -92,6 +101,8 @@ public:
           _content(_buffer.get() + offset),
           _length(length)
     {
+        bond::detail::check_add_overflow(_buffer.get(), offset);
+        bond::detail::check_add_overflow(_content, length);
     }
 
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
@@ -115,7 +126,11 @@ public:
     /// @brief Assign a new value from another blob object or its part
     void assign(const blob& from, uint32_t offset, uint32_t length)
     {
-        BOOST_ASSERT((offset + length) <= from._length);
+        bond::detail::check_add_overflow(offset, length);
+        if (offset + length > from._length)
+        {
+            throw std::invalid_argument("Total of offset and length too large; must be less than length of blob");
+        }
 
         _buffer = from._buffer;
         _content = from._content + offset;
@@ -143,7 +158,11 @@ public:
     /// @brief Return a blob object for a range of this object
     blob range(uint32_t offset, uint32_t length) const
     {
-        BOOST_ASSERT((offset + length) <= _length);
+        bond::detail::check_add_overflow(offset, length);
+        if (offset + length > _length)
+        {
+            throw std::invalid_argument("Total of offset and length too large; must be less than length of blob");
+        }
 
         blob temp;
         temp._buffer = _buffer;
@@ -157,7 +176,10 @@ public:
     /// the end of the buffer
     blob range(uint32_t offset) const
     {
-        BOOST_ASSERT(offset <= _length);
+        if (offset > _length)
+        {
+            throw std::invalid_argument("Offset too large; must be less than length of blob");
+        }
 
         blob temp = *this;
         temp._content += offset;
@@ -291,6 +313,7 @@ inline blob merge(const A& allocator, const blob& x, const blob& y)
     }
     else
     {
+        detail::check_add_overflow(x.length(), y.length());
         uint32_t length = x.length() + y.length();
         boost::shared_ptr<char[]> buffer = boost::allocate_shared_noinit<char[]>(allocator, length);
 
@@ -310,6 +333,7 @@ inline blob merge(const A& allocator, t_It begin, t_It end)
     uint32_t length = 0;
     for (t_It it = begin; it != end; ++it)
     {
+        detail::check_add_overflow(length, it->length());
         length += it->length();
     }
 
@@ -320,8 +344,7 @@ inline blob merge(const A& allocator, t_It begin, t_It end)
         //
         return blob();
     }
-    else
-    if (length == begin->length())
+    else if (length == begin->length())
     {
         //
         // just first blob in the sequence is not empty
