@@ -761,16 +761,13 @@ public abstract class StructBondType<TStruct extends BondSerializable>
          * Codegen helper to verify deserialized field.
          *
          * @param isFieldSet a boolean tracking whether the field was set during deserialization
-         * @return true if the argument is false and the field needs to be set to the default value
          * @throws InvalidBondDataException if the field is required and was not set
          */
-        public final boolean verifyDeserialized(boolean isFieldSet) throws InvalidBondDataException {
+        public final void verifyDeserialized(boolean isFieldSet) throws InvalidBondDataException {
             if (!isFieldSet && this.modifier.value == Modifier.Required.value) {
                 // throws
                 Throw.raiseRequiredStructFieldIsMissingDeserializationError(this);
             }
-            // indicate to the generated code that the field needs to be set to the default value
-            return !isFieldSet;
         }
 
         final void verifyFieldWasNotYetDeserialized(
