@@ -250,8 +250,8 @@ public:
                 _blobs.push_back(blob(_buffer, _rangeOffset, _rangeSize));
             }
 
-            // cap buffer at 2GB
-            if (_bufferSize >= ((std::numeric_limits<uint32_t>::max)() >> 1))
+            // cap buffer to prevent overflow
+            if (_bufferSize > ((std::numeric_limits<uint32_t>::max)() >> 1))
             {
                 throw std::bad_alloc();
             }

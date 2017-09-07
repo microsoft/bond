@@ -5,6 +5,7 @@
 
 #include <limits>
 #include <stdexcept>
+#include <boost/static_assert.hpp>
 
 namespace bond
 {
@@ -13,7 +14,10 @@ namespace detail
 
     inline void check_add_overflow(const char* ptr, uint32_t offset)
     {
-        if ((ptr + offset) < ptr)
+        BOOST_STATIC_ASSERT(sizeof(const char *) == sizeof(std::uintptr_t));
+
+        std::uintptr_t uintptr = reinterpret_cast<std::uintptr_t>(ptr);
+        if (((std::numeric_limits<uintptr_t>::max)() - offset) < uintptr)
         {
             throw std::overflow_error("Overflow on addition");
         }

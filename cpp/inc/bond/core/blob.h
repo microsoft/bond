@@ -129,7 +129,7 @@ public:
         bond::detail::check_add_overflow(offset, length);
         if (offset + length > from._length)
         {
-            throw std::invalid_argument("Total of offset and length too large; must be less than length of blob");
+            throw std::invalid_argument("Total of offset and length too large; must be less than or equal to length of blob");
         }
 
         _buffer = from._buffer;
@@ -161,7 +161,7 @@ public:
         bond::detail::check_add_overflow(offset, length);
         if (offset + length > _length)
         {
-            throw std::invalid_argument("Total of offset and length too large; must be less than length of blob");
+            throw std::invalid_argument("Total of offset and length too large; must be less than or equal to length of blob");
         }
 
         blob temp;
@@ -178,7 +178,7 @@ public:
     {
         if (offset > _length)
         {
-            throw std::invalid_argument("Offset too large; must be less than length of blob");
+            throw std::invalid_argument("Offset too large; must be less than or equal to length of blob");
         }
 
         blob temp = *this;

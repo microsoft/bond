@@ -57,7 +57,7 @@ public:
 private:
     void grow(T x)
     {
-        // cap at 2^31 elements
+        // cap elements to prevent overflow
         if (_capacity >= ((std::numeric_limits<uint32_t>::max)() >> 1))
         {
             throw std::bad_alloc();
