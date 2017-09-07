@@ -152,6 +152,7 @@ cxx_add_compile_options(Clang
     --std=c++11
     -Wall
     -Werror
+    -Wno-null-dereference
     -Wno-unknown-warning-option
     -Wno-unused-local-typedefs)
 
@@ -161,6 +162,7 @@ cxx_add_compile_options(AppleClang
     --std=c++11
     -Wall
     -Werror
+    -Wno-null-dereference
     -Wno-unknown-warning-option
     -Wno-unused-local-typedefs)
 
