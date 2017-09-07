@@ -27,10 +27,33 @@ different versioning scheme, following the Haskell community's
   bond::CoreException is now thrown.
 * When SimpleJSON deserializes a map key of non-primitive type, a
   bond::CoreException is now thrown.
+* Errors from some versions of G++ like "non-template type `Deserialize`
+  used as a template" have been fixed.
+  [Issue #538](https://github.com/Microsoft/bond/issues/538)
 
 ### C# ###
 
 * Reflection.IsBonded now recognizes custom IBonded implementations.
+* Use Newtonsoft's JSON.NET BigInteger support -- when available -- to
+  handle the full range of uint64 values in the SimpleJson protocol (.NET
+  4.5 or greater, .NET Standard 1.6 or greater).
+* `Bond.IO.Unsafe.InputStream` can now be used with streams that do not
+  implement [`Stream.Seek`][msdn-stream-seek], like
+  [`System.IO.Compression.GzipStream`][msdn-gzipstream].
+  [Issue #498](https://github.com/Microsoft/bond/issues/498)
+    * Such streams are detected by inspecting
+      [`Stream.CanSeek`][msdn-stream-canseek].
+* Fix a bug in CompactBinaryWriter when using v2 that repeated first pass
+  when a bonded field was serailized, resulting in extra work and extra
+  state left in the CompactBinaryWriter.
+
+[msdn-gzipstream]: https://msdn.microsoft.com/en-us/library/system.io.compression.gzipstream(v=vs.110).aspx
+[msdn-stream-canseek]: https://msdn.microsoft.com/en-us/library/system.io.stream.canseek(v=vs.110).aspx
+[msdn-stream-seek]: https://msdn.microsoft.com/en-us/library/system.io.stream.seek(v=vs.110).aspx
+
+## 6.0.1 ##
+
+This version was not used.
 
 ## 6.0.0: 2017-06-29  ##
 * `gbc` & compiler library: 0.10.0.0

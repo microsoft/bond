@@ -61,6 +61,7 @@ build the core Bond library on Ubuntu 14.04:
 sudo apt-get install \
     clang \
     cmake \
+    haskell-stack \
     zlib1g-dev \
     libboost-dev \
     libboost-thread-dev
@@ -71,7 +72,7 @@ In the root `bond` directory run:
 ```bash
 mkdir build
 cd build
-cmake .. -DBOND_ENABLE_GRPC=FALSE
+cmake -DBOND_ENABLE_GRPC=FALSE ..
 make
 sudo make install
 ```
@@ -94,7 +95,7 @@ sudo apt-get install \
     python2.7-dev
 
 cd build # or wherever you ran CMake before
-cmake .. -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package
+cmake -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package ..
 ```
 
 Running the following command in the build directory will build and execute all
@@ -128,7 +129,7 @@ order to generate and build from makefiles, in the root `bond` directory run:
 ```bash
 mkdir build
 cd build
-cmake ..
+cmake -DBOND_ENABLE_GRPC=FALSE ..
 make
 sudo make install
 ```
@@ -137,7 +138,7 @@ Alternatively, you can generate Xcode projects by passing the `-G Xcode` option
 to cmake:
 
 ```bash
-cmake -G Xcode ..
+cmake -DBOND_ENABLE_GRPC=FALSE -G Xcode ..
 ```
 
 You can build and run unit tests by building the `check` target in Xcode or by

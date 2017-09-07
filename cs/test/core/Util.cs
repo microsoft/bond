@@ -385,6 +385,21 @@ namespace UnitTest
             output.Flush();
         }
 
+        public static void SerializeCB2Multiple<T>(T obj, Stream stream, uint times)
+        {
+            var output = new OutputStream(stream, 11);
+            var writer = new CompactBinaryWriter<OutputStream>(output, 2);
+
+            for (uint i = 0; i < times; i++)
+            {
+                Serialize.To(writer, obj);
+
+                // Verify that CBv2 writer has an active FirstPassWriter before the next top-level serialization
+                Assert.NotNull(writer.GetFirstPassWriter());
+            }
+            output.Flush();
+        }
+
         public static void MarshalCB2<T>(T obj, Stream stream)
         {
             var output = new OutputStream(stream, 11);
@@ -976,6 +991,12 @@ namespace UnitTest
                 return DeserializeTagged<To>(reader);
             });
 
+#if SUPPORTS_BIGINTEGER
+            const bool hasBigInteger = true;
+#else
+            const bool hasBigInteger = false;
+#endif
+
             // Simple doesn't support omitting fields
             if (typeof(From) != typeof(Nothing) && typeof(From) != typeof(GenericsWithNothing))
             {
@@ -999,9 +1020,10 @@ namespace UnitTest
                 if (!AnyField<From>(Reflection.IsBonded))
                 {
                     streamTranscode(SerializeSP, TranscodeSPXml<From>, DeserializeXml<To>);
-                
-                    // NewtonSoft JSON doesn't support uint64
-                    if (typeof (From) != typeof (MaxUInt64))
+
+                    // NewtonSoft JSON doesn't fully support uint64 in portable profile, so we skip
+                    // MaxUInt64 type where BigInteger isn't avaiable
+                    if (hasBigInteger || (typeof(From) != typeof (MaxUInt64)))
                     {
                         streamTranscode(SerializeSP, TranscodeSPJson<From>, DeserializeJson<To>);
                     }
@@ -1024,8 +1046,9 @@ namespace UnitTest
                 streamTranscode(SerializeCB, TranscodeCBXml<From>, DeserializeXml<To>);
                 streamTranscode(SerializeFB, TranscodeFBXml<From>, DeserializeXml<To>);
 
-                // NewtonSoft JSON doesn't support uint64
-                if (typeof (From) != typeof (MaxUInt64))
+                // NewtonSoft JSON doesn't fully support uint64 in portable profile, so we skip
+                // MaxUInt64 type where BigInteger isn't avaiable
+                if (hasBigInteger || (typeof (From) != typeof (MaxUInt64)))
                 {
                     streamRoundtrip(SerializeJson, DeserializeJson<To>);
                     streamTranscode(SerializeCB, TranscodeCBJson<From>, DeserializeJson<To>);

@@ -633,9 +633,9 @@ template <typename Protocols, typename X, typename I, typename T>
 typename boost::enable_if<require_modify_element<X> >::type
 inline DeserializeElement(X& var, const I& item, const T& element)
 {
-    struct Deserialize
+    struct DeserializeImpl
     {
-        Deserialize(const T& element)
+        DeserializeImpl(const T& element)
             : element(element)
         {}
 
@@ -647,7 +647,7 @@ inline DeserializeElement(X& var, const I& item, const T& element)
         const T& element;
     };
 
-    modify_element(var, item, Deserialize(element));
+    modify_element(var, item, DeserializeImpl(element));
 }
 
 

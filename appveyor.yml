@@ -200,6 +200,8 @@
 
                 msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
+                if (-not $?) { throw "cs compat build failed" }
+
                 mkdir build
 
                 cd build
@@ -296,6 +298,9 @@
             if ($env:BOND_BUILD -eq "C#") {
 
                 nunit-console-x86 /framework:net-4.5 /labels "cs\test\core\bin\debug\net45\${env:BOND_OUTPUT}\Bond.UnitTest.dll" cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+                if (-not $?) { throw "tests failed" }
+
+                nunit-console-x86 /framework:net-4.5 /labels "cs\test\core\bin\debug\net45-nonportable\${env:BOND_OUTPUT}\Bond.UnitTest.dll"
                 if (-not $?) { throw "tests failed" }
 
                 & examples\cs\grpc\pingpong\bin\Debug\pingpong.exe

@@ -2,6 +2,7 @@
     #pragma warning(disable : 4505) // disable "unreferenced local function has been removed" warning
 #endif
 
+#include <comm_test_common_apply.h>
 #include <comm_test_common_reflection.h>
 #include <comm_test_common_comm.h>
 

@@ -10,10 +10,10 @@
   </PropertyGroup>
   <Import Project="..\nuget\Common.props" />
   <PropertyGroup Condition="'$(BuildFramework)' == ''">
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <BuildFramework>net45</BuildFramework>
   </PropertyGroup>
   <PropertyGroup>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <OutputPath>bin\$(BuildType)\$(BuildFramework)</OutputPath>
     <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
     <FileAlignment>512</FileAlignment>

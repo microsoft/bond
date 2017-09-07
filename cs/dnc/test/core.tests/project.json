@@ -9,7 +9,7 @@
                 "gen/*.cs"
             ]
         },
-        "debugType": "portable",
+        "debugType": "net45",
         "nowarn": [
             "CS1591"
         ],
@@ -39,7 +39,10 @@
         "io": "1.0.0-*",
         "json": "1.0.0-*",
         "NUnit": "3.4.0",
-        "reflection": "1.0.0-*"
+        "reflection": "1.0.0-*",
+        "Newtonsoft.Json": {
+            "version": "10.0.1"
+        }
     },
     "frameworks": {
         "netcoreapp1.0": {
@@ -47,6 +50,11 @@
                 "netcoreapp1.0",
                 "portable-net45+win8"
             ],
+            "buildOptions": {
+                "define": [
+                    "SUPPORTS_BIGINTEGER"
+                ]
+            },
             "dependencies": {
                 "Microsoft.NETCore.App": {
                     "version": "1.0.0-*",

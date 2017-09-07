@@ -9,6 +9,10 @@ namespace Bond.Expressions.Json
     using System.Globalization;
     using System.Linq.Expressions;
 
+#if SUPPORTS_BIGINTEGER
+    using System.Numerics;
+#endif
+
     using Bond.Expressions.Pull;
     using Bond.Protocols;
 
@@ -120,17 +124,30 @@ namespace Bond.Expressions.Json
             {
                 convertedValue = Reader.Value;
             }
-            
+
             var errorMessage = 
                 StringExpression.Format(
                     "Invalid input, expected JSON token of type {0}, encountered {1}",
                     Expression.Constant(scalarTokenType, typeof(object)),
                     Expression.Convert(Reader.TokenType, typeof(object)));
 
+            Expression embeddedExpression = handler(convertedValue);
+
+#if SUPPORTS_BIGINTEGER
+            if (expectedType == BondDataType.BT_UINT64 && scalarTokenType == JsonToken.Integer)
+            {
+                embeddedExpression =
+                    Expression.IfThenElse(
+                        Expression.TypeIs(Reader.Value, typeof(long)),
+                        embeddedExpression,
+                        handler(Expression.Convert(Reader.Value, typeof(BigInteger))));
+            }
+#endif
+
             var handleValue =
                 Expression.IfThenElse(
                     JsonTokenEquals(scalarTokenType),
-                    handler(convertedValue),
+                    embeddedExpression,
                     ThrowUnexpectedInput(errorMessage));
 
             // If a floating point value is expected also accept an integer
@@ -138,7 +155,7 @@ namespace Bond.Expressions.Json
             {
                 handleValue = Expression.IfThenElse(
                     JsonTokenEquals(JsonToken.Integer),
-                    handler(Expression.Convert(Reader.Value, typeof (long))),
+                    handler(Expression.Convert(Reader.Value, typeof(long))),
                     handleValue);
             }
 

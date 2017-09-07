@@ -28,9 +28,9 @@
         </dependencies>
     </metadata>
     <files>
-        <file target="lib\net45" src="net45\Bond.JSON.dll" />
-        <file target="lib\net45" src="net45\Bond.JSON.pdb" />
-        <file target="lib\net45" src="net45\Bond.JSON.xml" />
+        <file target="lib\net45" src="net45-nonportable\Bond.JSON.dll" />
+        <file target="lib\net45" src="net45-nonportable\Bond.JSON.pdb" />
+        <file target="lib\net45" src="net45-nonportable\Bond.JSON.xml" />
 
         <file target="lib\netstandard1.0" src="netstandard1.0\Bond.JSON.dll" />
         <file target="lib\netstandard1.0" src="netstandard1.0\Bond.JSON.pdb" />

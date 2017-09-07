@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -32,8 +32,6 @@ cd $(OutDir)
 call cmake $(ProjectDir)\..\compiler -Wno-dev
 if %errorlevel% neq 0 goto :cmEnd
 call cmake --build $(OutDir) --target gbc
-if %errorlevel% neq 0 goto :cmEnd
-copy $(OutDir)\build\gbc\gbc.exe $(ProjectDir)\tools\
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -84,4 +82,7 @@ if %errorlevel% neq 0 goto :VCEnd
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Java\Util.hs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(OutDir)\build\gbc\gbc.exe" DestinationFolder="$(ProjectDir)\tools\" />
+  </Target>
 </Project>

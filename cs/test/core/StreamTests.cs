@@ -1,34 +1,77 @@
 ﻿namespace UnitTest
 {
+    using System;
     using System.IO;
+    using System.Runtime.InteropServices;
     using NUnit.Framework;
     using Bond;
+    using Bond.IO;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
 
+    /// <summary>
+    /// Common test cases for IInputStream implementations. There's a
+    /// concrete implementation for each IInputStream implementation we want
+    /// to test.
+    /// </summary>
     [TestFixture]
-    public class StreamTests
+    public abstract class IInputStreamTestsBase<TInputStream>
+        where TInputStream : IInputStream, ICloneable<TInputStream>
     {
-
-        // Restore the default settings at the start and end of each test
-        [SetUp]
-        [TearDown]
-        public void RestoreDefaults()
+        protected TInputStream MakeInputStream(params byte[] buffer)
         {
-            InputStream.ActiveAllocationChunk = InputStream.DefaultAllocationChunk;
+            return MakeInputStream(new ArraySegment<byte>(buffer));
+        }
+
+        /// <summary>
+        /// Creates an <typeparamref name="TInputStream" /> over the given bytes.
+        /// </summary>
+        protected abstract TInputStream MakeInputStream(ArraySegment<byte> buffer);
+
+        // Not all implementations use an internal buffer, but for those that
+        // do, it needs to be this large.
+        protected const int InternalBufferSize = 9;
+
+        [Test]
+        public void Skip_AdvancesPosition()
+        {
+            var inputStream = MakeInputStream(0, 1, 2);
+
+            inputStream.SkipBytes(2);
+            Assert.AreEqual(2, inputStream.Position);
+
+            Assert.AreEqual(2, inputStream.ReadUInt8());
         }
 
         [Test]
-        public void StreamPositionLengthTest()
+        public void SkipBeyondInternalBufferSize_SeeksCorrectly()
         {
-            StreamPositionLengthTestImpl();
-            InputStream.ActiveAllocationChunk = 8;
-            StreamPositionLengthTestImpl();
+            var buf = MakeSequential(InternalBufferSize*3 + 1);
+
+            var inputStream = MakeInputStream(buf);
+            Assert.AreEqual(0, inputStream.ReadUInt8());
+            inputStream.SkipBytes(InternalBufferSize);
+            var blob = inputStream.ReadBytes(InternalBufferSize*2);
+            for (int j = 0; j < blob.Count; ++j)
+            {
+                byte expectedValue = (byte) ((j + InternalBufferSize + 1)%256);
+                Assert.AreEqual(expectedValue, blob.Array[blob.Offset + j]);
+            }
         }
 
-        internal void StreamPositionLengthTestImpl()
+        [Test]
+        public void SkipBeyondEndOfStream_ThrowsOnNextRead()
         {
-            const int _50MB = 50*1024*1024;
+            var buf = MakeSequential(InternalBufferSize*3);
+            var inputStream = MakeInputStream(buf);
+            inputStream.SkipBytes(InternalBufferSize*3 + 1);
+            Assert.Throws<EndOfStreamException>(() => inputStream.ReadUInt8());
+        }
+
+        [Test]
+        public void Stream_PositionLength_AsExpected()
+        {
+            const int _50MB = 50 * 1024 * 1024;
 
             var from1 = Random.Init<Containers>();
             var from2 = Random.Init<Containers>();
@@ -57,8 +100,8 @@
 
             stream.Position = 0;
 
-            var input = new InputStream(stream);
-            var reader = new CompactBinaryReader<InputStream>(input);
+            var input = MakeInputStream(stream.ToArray());
+            var reader = new CompactBinaryReader<TInputStream>(input);
 
             Assert.IsTrue(input.Position == stream.Position);
             Assert.IsTrue(input.Length == stream.Length);
@@ -77,72 +120,51 @@
         }
 
         [Test]
-        public void StreamBufferReuseTest()
+        public void ReadBytes_DifferentSizesAndPositions_ReadCorrectly()
         {
-            StreamBufferReuseTestImpl();
-            InputStream.ActiveAllocationChunk = 8;
-            StreamBufferReuseTestImpl();
-            InputStream.ActiveAllocationChunk = 2;
-            StreamBufferReuseTestImpl();
-        }
-
-        internal void StreamBufferReuseTestImpl()
-        {
-            var buffer = new byte[5 * 1024];
-            
-            for (var i = 0; i < buffer.Length; ++i)
-                buffer[i] = (byte)(i % 256);
+            var buffer = MakeSequential(5 * 1024);
 
             for (var k = 3; k < 20; ++k)
             {
-                var stream = new MemoryStream(buffer, 0, buffer.Length, false, true);
-                var input = new InputStream(stream, 9);
-                
+                var input = MakeInputStream(buffer);
+
                 while (input.Position + k + sizeof(long) < input.Length)
                 {
                     var x = input.Position;
                     var bytes = input.ReadBytes(k);
                     input.ReadUInt64();
                     for (var j = 0; j < bytes.Count; ++j)
-                        Assert.AreEqual(bytes.Array[bytes.Offset + j], (x + j) % 256);
+                    {
+                        Assert.AreEqual((x + j)%256, bytes.Array[bytes.Offset + j]);
+                    }
                 }
             }
         }
 
-
-        delegate void IntTest<T>(T value);
-
         [Test]
-        public void VarIntTest()
+        public void VarInts_RoundTrip()
         {
-            VarIntTestImpl();
-            InputStream.ActiveAllocationChunk = 8;
-            VarIntTestImpl();
-        }
-
-        internal void VarIntTestImpl()
-        {
-            IntTest<ushort> test16 = (value) =>
+            Action<ushort> test16 = value =>
             {
                 var output = new OutputBuffer();
                 output.WriteVarUInt16(value);
-                var input = new InputBuffer(output.Data);
+                var input = MakeInputStream(output.Data);
                 Assert.AreEqual(value, input.ReadVarUInt16());
             };
 
-            IntTest<uint> test32 = (value) =>
+            Action<uint> test32 = value =>
             {
                 var output = new OutputBuffer();
                 output.WriteVarUInt32(value);
-                var input = new InputBuffer(output.Data);
+                var input = MakeInputStream(output.Data);
                 Assert.AreEqual(value, input.ReadVarUInt32());
             };
 
-            IntTest<ulong> test64 = (value) =>
+            Action<ulong> test64 = value =>
             {
                 var output = new OutputBuffer();
                 output.WriteVarUInt64(value);
-                var input = new InputBuffer(output.Data);
+                var input = MakeInputStream(output.Data);
                 Assert.AreEqual(value, input.ReadVarUInt64());
             };
 
@@ -152,6 +174,205 @@
             test32(uint.MaxValue);
             test64(ulong.MinValue);
             test64(ulong.MaxValue);
+        }
+
+        protected static ArraySegment<byte> EmbedBuffer(ArraySegment<byte> buffer)
+        {
+            if (buffer.Offset != 0 && buffer.Count != buffer.Array.Length)
+            {
+                // it's already embedded in something else
+                return buffer;
+            }
+
+            var largerBuffer = new byte[buffer.Count + 5];
+            largerBuffer[0] = 255;
+            largerBuffer[1] = 255;
+            largerBuffer[2] = 255;
+            Buffer.BlockCopy(
+                src: buffer.Array,
+                srcOffset: buffer.Offset,
+                dst: largerBuffer,
+                dstOffset: 3,
+                count: buffer.Count);
+            largerBuffer[largerBuffer.Length - 2] = 128;
+            largerBuffer[largerBuffer.Length - 1] = 128;
+
+            return new ArraySegment<byte>(largerBuffer, offset: 3, count: buffer.Count);
+        }
+
+        protected static byte[] MakeSequential(int length)
+        {
+            Assert.That(length >= 0);
+
+            var buf = new byte[length];
+            for (int i = 0; i < length; ++i)
+            {
+                buf[i] = (byte) (i%256);
+            }
+
+            return buf;
+        }
+    }
+
+    public class UnsafeInputBufferTests : IInputStreamTestsBase<Bond.IO.Unsafe.InputBuffer>
+    {
+        protected override Bond.IO.Unsafe.InputBuffer MakeInputStream(ArraySegment<byte> buffer)
+        {
+            return new Bond.IO.Unsafe.InputBuffer(buffer);
+        }
+    }
+
+    public class UnsafeInputBufferOffsetTests : IInputStreamTestsBase<Bond.IO.Unsafe.InputBuffer>
+    {
+        protected override Bond.IO.Unsafe.InputBuffer MakeInputStream(ArraySegment<byte> buffer)
+        {
+            return new Bond.IO.Unsafe.InputBuffer(EmbedBuffer(buffer));
+        }
+    }
+
+    public class SafeInputBufferTests : IInputStreamTestsBase<Bond.IO.Safe.InputBuffer>
+    {
+        protected override Bond.IO.Safe.InputBuffer MakeInputStream(ArraySegment<byte> buffer)
+        {
+            return new Bond.IO.Safe.InputBuffer(buffer);
+        }
+    }
+
+    public class SafeInputBufferOffsetTests : IInputStreamTestsBase<Bond.IO.Safe.InputBuffer>
+    {
+        protected override Bond.IO.Safe.InputBuffer MakeInputStream(ArraySegment<byte> buffer)
+        {
+            return new Bond.IO.Safe.InputBuffer(EmbedBuffer(buffer));
+        }
+    }
+
+    public class InputPointerTests : IInputStreamTestsBase<InputPointer>
+    {
+        GCHandle? pinnedBuffer;
+
+        [TearDown]
+        public void TearDown()
+        {
+            pinnedBuffer?.Free();
+            pinnedBuffer = null;
+        }
+
+        protected override InputPointer MakeInputStream(ArraySegment<byte> buffer)
+        {
+            // there may already be a pinnedBuffer, so be sure to free it
+            pinnedBuffer?.Free();
+
+            pinnedBuffer = GCHandle.Alloc(buffer.Array, GCHandleType.Pinned);
+            return new InputPointer(
+                pinnedBuffer.Value.AddrOfPinnedObject() + buffer.Offset,
+                buffer.Count);
+        }
+    }
+
+    public abstract class InputStreamTestsBase : IInputStreamTestsBase<InputStream>
+    {
+        // Restore the default settings at the start and end of each test
+        [SetUp]
+        [TearDown]
+        public void RestoreDefaults()
+        {
+            InputStream.ActiveAllocationChunk = InputStream.DefaultAllocationChunk;
+        }
+
+        [Test]
+        public void SkipBeyondInternalBufferSize_AllocationChunk_SeeksCorrectly()
+        {
+            InputStream.ActiveAllocationChunk = 8;
+            SkipBeyondInternalBufferSize_SeeksCorrectly();
+            InputStream.ActiveAllocationChunk = 2;
+            SkipBeyondInternalBufferSize_SeeksCorrectly();
+        }
+
+        [Test]
+        public void SkipBeyondEndOfStream_AllocationChunk_ThrowsOnNextRead()
+        {
+            InputStream.ActiveAllocationChunk = 8;
+            SkipBeyondEndOfStream_ThrowsOnNextRead();
+            InputStream.ActiveAllocationChunk = 2;
+            SkipBeyondEndOfStream_ThrowsOnNextRead();
+        }
+
+        [Test]
+        public void Stream_PositionLength_WithAllocationChunk_AsExpected()
+        {
+            InputStream.ActiveAllocationChunk = 8;
+            Stream_PositionLength_AsExpected();
+            InputStream.ActiveAllocationChunk = 2;
+            Stream_PositionLength_AsExpected();
+        }
+
+        [Test]
+        public void ReadBytes_DifferentSizesAndOffsets_WithAllocationChunk_ReadCorrectly()
+        {
+            InputStream.ActiveAllocationChunk = 8;
+            ReadBytes_DifferentSizesAndPositions_ReadCorrectly();
+            InputStream.ActiveAllocationChunk = 2;
+            ReadBytes_DifferentSizesAndPositions_ReadCorrectly();
+        }
+
+        [Test]
+        public void VarInts_With_AllocationChunk_RoundTrip()
+        {
+            InputStream.ActiveAllocationChunk = 8;
+            VarInts_RoundTrip();
+            InputStream.ActiveAllocationChunk = 2;
+            VarInts_RoundTrip();
+        }
+
+
+        [Test]
+        public void BadActiveAllocationChunkValues_Throws()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => InputStream.ActiveAllocationChunk = 0);
+            Assert.Throws<ArgumentOutOfRangeException>(() => InputStream.ActiveAllocationChunk = -1);
+        }
+    }
+
+    public class InputStreamTests : InputStreamTestsBase
+    {
+        protected override InputStream MakeInputStream(ArraySegment<byte> buffer)
+        {
+            var ms = new MemoryStream(
+                buffer.Array,
+                buffer.Offset,
+                buffer.Count,
+                writable: false,
+                publiclyVisible: true);
+            return new InputStream(ms, InternalBufferSize);
+        }
+    }
+
+    public class NonSeekableInputStreamTests : InputStreamTestsBase
+    {
+        protected override InputStream MakeInputStream(ArraySegment<byte> buffer)
+        {
+            var ms = new NonSeekableMemoryStream(buffer);
+            return new InputStream(ms, InternalBufferSize);
+        }
+
+        private class NonSeekableMemoryStream : MemoryStream
+        {
+            public NonSeekableMemoryStream(ArraySegment<byte> buffer)
+                : base(buffer.Array,
+                    buffer.Offset,
+                    buffer.Count,
+                    writable: false,
+                    publiclyVisible: true)
+            {
+            }
+
+            public override bool CanSeek => false;
+
+            public override long Seek(long offset, SeekOrigin loc)
+            {
+                throw new NotImplementedException(
+                    $"{nameof(NonSeekableMemoryStream)} cannot Seek.");
+            }
         }
     }
 }
