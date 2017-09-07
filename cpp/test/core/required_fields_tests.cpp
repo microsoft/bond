@@ -1,7 +1,23 @@
+#ifdef _MSC_VER
+#pragma warning(push)
+// Since we're explicitly testing some exceptional code paths, some
+// expansions of StaticParser are expected to produce unreachable code.
+#pragma warning(disable: 4702) // C4702: unreachable code
+#endif
+
 #include "precompiled.h"
 #include "serialization_test.h"
 #include "untagged_protocol.h"
 
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
+#ifdef _MSC_VER
+// Some of the type names for the boost::mpl::list of schema fields in these
+// tests are too long for MSVC to handle without truncation.
+#pragma warning(disable: 4503) // warning C4503: '...' decorated name length exceeded, name was truncated
+#endif
 
 template <typename Protocols>
 bool Compare(const Required& left, const RequiredViewGood& right)
@@ -89,11 +105,11 @@ TEST_CASE_BEGIN(OptionalToRequired)
 {
     typedef BondStructOptional<T> From;
     typedef BondStructRequired<T> To;
-    
+
     From from;
-    
+
     typename Writer::Buffer buffer(1024);
-    
+
     Factory<Writer>::Call(buffer, bond::v1, boost::bind(
         bond::Serialize<Protocols, From, Writer>, from, _1));
 
@@ -121,36 +137,36 @@ void RequiredTests(const char* name)
 {
     UnitTestSuite suite(name);
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         RequiredFields, Reader, Writer, Required, Required, Protocols>(suite, "Struct with required fields");
-    
-    AddTestCase<TEST_ID(N), 
+
+    AddTestCase<TEST_ID(N),
         RequiredFields, Reader, Writer, Required, RequiredViewGood, Protocols>(suite, "View with required fields");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         RequiredFields, Reader, Writer, RequiredViewGood, RequiredViewGood, Protocols>(suite, "Required and optional fields");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         MissingRequiredFields, Reader, Writer, Required, RequiredViewMissingLast, Protocols>(suite, "Missing last required field");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         MissingRequiredFields, Reader, Writer, Required, RequiredViewMissingFirst, Protocols>(suite, "Missing first required field");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         MissingRequiredFields, Reader, Writer, Required, RequiredViewMismatchType, Protocols>(suite, "Mimatched type required field");
 
-    AddTestCase<TEST_ID(N), 
+    AddTestCase<TEST_ID(N),
         MissingRequiredFields, Reader, Writer, Required, RequiredViewMissingInNested, Protocols>(suite, "Required in nested fields");
-    
-    AddTestCase<TEST_ID(N), 
+
+    AddTestCase<TEST_ID(N),
         MissingRequiredFields, Reader, Writer, bond::Void, RequiredViewMissingLast, Protocols>(suite, "Missing all fields");
 
     if (bond::may_omit_fields<Writer>::value)
     {
-        AddTestCase<TEST_ID(N), 
+        AddTestCase<TEST_ID(N),
             OptionalToRequired, Reader, Writer, bool, Protocols>(suite, "Optional bool to required");
 
-        AddTestCase<TEST_ID(N), 
+        AddTestCase<TEST_ID(N),
             OptionalToRequired, Reader, Writer, list<float>, Protocols>(suite, "Optional list to required");
     }
 }
@@ -198,4 +214,3 @@ bool init_unit_test()
     RequiredTestsInit();
     return true;
 }
-
