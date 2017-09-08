@@ -7,7 +7,7 @@
 #include <bond/core/blob.h>
 #include <bond/core/containers.h>
 #include <bond/core/traits.h>
-#include <bond/core/detail/check_overflow.h>
+#include <bond/core/detail/checked_add.h>
 #include <boost/static_assert.hpp>
 #include <cstring>
 #include <limits>
@@ -146,8 +146,7 @@ public:
     template <typename T>
     void GetBuffers(std::vector<blob, T>& buffers) const
     {
-        bond::detail::check_add_overflow(static_cast<uint32_t>(_blobs.size()), 1);
-        buffers.reserve(_blobs.size() + 1);
+        buffers.reserve(bond::detail::checked_add(_blobs.size(), 1U));
 
         //
         // insert all "ready" blobs

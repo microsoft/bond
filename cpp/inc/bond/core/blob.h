@@ -6,7 +6,7 @@
 
 #include "config.h"
 #include "container_interface.h"
-#include "detail/check_overflow.h"
+#include "detail/checked_add.h"
 #include <boost/shared_array.hpp>
 #include <boost/make_shared.hpp>
 #include <stdint.h>
@@ -39,7 +39,7 @@ public:
           _content(static_cast<const char*>(content)),
           _length(length)
     {
-        bond::detail::check_add_overflow(_content, length);
+        bond::detail::checked_add(_content, length);
     }
 
     /// @brief Construct from a boost::shared_ptr to const memory buffer
@@ -48,17 +48,16 @@ public:
           _content(_buffer.get()),
           _length(length)
     {
-        bond::detail::check_add_overflow(_content, length);
+        bond::detail::checked_add(_content, length);
     }
 
     /// @brief Construct from a boost::shared_ptr to const memory buffer
     blob(const boost::shared_ptr<const char[]>& buffer, uint32_t offset, uint32_t length)
         : _buffer(buffer),
-          _content(_buffer.get() + offset),
+          _content(bond::detail::checked_add(_buffer.get(), offset)),
           _length(length)
     {
-        bond::detail::check_add_overflow(_buffer.get(), offset);
-        bond::detail::check_add_overflow(_content, length);
+        bond::detail::checked_add(_content, length);
     }
 
     /// @brief Construct from a boost::shared_ptr to memory buffer
@@ -67,17 +66,16 @@ public:
           _content(_buffer.get()),
           _length(length)
     {
-        bond::detail::check_add_overflow(_content, length);
+        bond::detail::checked_add(_content, length);
     }
 
     /// @brief Construct from a boost::shared_ptr to memory buffer
     blob(const boost::shared_ptr<char[]>& buffer, uint32_t offset, uint32_t length)
         : _buffer(buffer),
-          _content(_buffer.get() + offset),
+          _content(bond::detail::checked_add(_buffer.get(), offset)),
           _length(length)
     {
-        bond::detail::check_add_overflow(_buffer.get(), offset);
-        bond::detail::check_add_overflow(_content, length);
+        bond::detail::checked_add(_content, length);
     }
 
     /// @brief Construct from a smart pointer other than boost::shared_ptr
@@ -89,7 +87,7 @@ public:
           _content(_buffer.get()),
           _length(length)
     {
-        bond::detail::check_add_overflow(_content, length);
+        bond::detail::checked_add(_content, length);
     }
 
     /// @brief Construct from a smart pointer other than boost::shared_ptr
@@ -98,11 +96,10 @@ public:
     template <typename T, template <typename U> class SmartPtr>
     blob(const SmartPtr<T>& buffer, uint32_t offset, uint32_t length)
         : _buffer(wrap_in_shared_ptr(buffer)),
-          _content(_buffer.get() + offset),
+          _content(bond::detail::checked_add(_buffer.get(), offset)),
           _length(length)
     {
-        bond::detail::check_add_overflow(_buffer.get(), offset);
-        bond::detail::check_add_overflow(_content, length);
+        bond::detail::checked_add(_content, length);
     }
 
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
@@ -126,8 +123,7 @@ public:
     /// @brief Assign a new value from another blob object or its part
     void assign(const blob& from, uint32_t offset, uint32_t length)
     {
-        bond::detail::check_add_overflow(offset, length);
-        if (offset + length > from._length)
+        if (bond::detail::checked_add(offset, length) > from._length)
         {
             throw std::invalid_argument("Total of offset and length too large; must be less than or equal to length of blob");
         }
@@ -158,8 +154,7 @@ public:
     /// @brief Return a blob object for a range of this object
     blob range(uint32_t offset, uint32_t length) const
     {
-        bond::detail::check_add_overflow(offset, length);
-        if (offset + length > _length)
+        if (bond::detail::checked_add(offset, length) > _length)
         {
             throw std::invalid_argument("Total of offset and length too large; must be less than or equal to length of blob");
         }
@@ -313,8 +308,7 @@ inline blob merge(const A& allocator, const blob& x, const blob& y)
     }
     else
     {
-        detail::check_add_overflow(x.length(), y.length());
-        uint32_t length = x.length() + y.length();
+        uint32_t length = detail::checked_add(x.length(), y.length());
         boost::shared_ptr<char[]> buffer = boost::allocate_shared_noinit<char[]>(allocator, length);
 
         ::memcpy(buffer.get(), x.content(), x.length());
@@ -333,8 +327,7 @@ inline blob merge(const A& allocator, t_It begin, t_It end)
     uint32_t length = 0;
     for (t_It it = begin; it != end; ++it)
     {
-        detail::check_add_overflow(length, it->length());
-        length += it->length();
+        length = detail::checked_add(length, it->length());
     }
 
     if (0 == length)
