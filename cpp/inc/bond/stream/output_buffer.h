@@ -7,8 +7,11 @@
 #include <bond/core/blob.h>
 #include <bond/core/containers.h>
 #include <bond/core/traits.h>
+#include <bond/core/detail/checked_add.h>
 #include <boost/static_assert.hpp>
 #include <cstring>
+#include <limits>
+#include <stdexcept>
 
 namespace bond
 {
@@ -143,7 +146,7 @@ public:
     template <typename T>
     void GetBuffers(std::vector<blob, T>& buffers) const
     {
-        buffers.reserve(_blobs.size() + 1);
+        buffers.reserve(bond::detail::checked_add(_blobs.size(), 1U));
 
         //
         // insert all "ready" blobs
@@ -244,6 +247,12 @@ public:
             if (_rangeSize > 0)
             {
                 _blobs.push_back(blob(_buffer, _rangeOffset, _rangeSize));
+            }
+
+            // cap buffer to prevent overflow
+            if (_bufferSize > ((std::numeric_limits<uint32_t>::max)() >> 1))
+            {
+                throw std::bad_alloc();
             }
 
             //

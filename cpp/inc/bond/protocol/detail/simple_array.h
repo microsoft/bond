@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <limits>
+#include <stdexcept>
+
 namespace bond
 {
 namespace detail
@@ -54,6 +57,12 @@ public:
 private:
     void grow(T x)
     {
+        // cap elements to prevent overflow
+        if (_capacity >= ((std::numeric_limits<uint32_t>::max)() >> 1))
+        {
+            throw std::bad_alloc();
+        }
+
         T* new_data = new T[_capacity <<= 1];
         memcpy(new_data, _data, _size * sizeof(T));
         memfree();
