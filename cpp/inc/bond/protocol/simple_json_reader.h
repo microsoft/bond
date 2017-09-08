@@ -5,6 +5,8 @@
 
 #include "encoding.h"
 #include "detail/rapidjson_helper.h"
+#include "rapidjson/document.h"
+#include "rapidjson/reader.h"
 #include <boost/call_traits.hpp>
 #include <boost/make_shared.hpp>
 
@@ -21,7 +23,7 @@ class SimpleJsonReader
 {
 public:
     typedef BufferT                         Buffer;
-    typedef DOMParser<SimpleJsonReader&>    Parser; 
+    typedef DOMParser<SimpleJsonReader&>    Parser;
     typedef SimpleJsonWriter<Buffer>        Writer;
     typedef rapidjson::Value                Field;
 
@@ -49,7 +51,7 @@ public:
           _document(that._document),
           _value(that._value)
     {}
-    
+
     bool ReadVersion()
     {
         return false;
@@ -60,24 +62,27 @@ public:
         // Don't need to reparse for nested fields
         if (!_value || _value == _document.get())
         {
-            _document->ParseStream<rapidjson::kParseStopWhenDoneFlag>(_stream);
+            const unsigned parseFlags = rapidjson::kParseIterativeFlag | rapidjson::kParseStopWhenDoneFlag;
+
+            _document->ParseStream<parseFlags>(_stream);
+            BOOST_ASSERT(!_document->HasParseError());
             _value = _document.get();
         }
     }
-    
+
     const Field* FindField(uint16_t id, const Metadata& metadata, BondDataType type)
     {
         // BT_INT32 may be an enum. This allows us to decode symbolic enum values
         // when parsing using runtime schema. The assumption is that runtime schema
         // matches JSON payload. If it doesn't, nothing horrible will happen, but
-        // we might not indicate a required field missing for an int32 field if we 
+        // we might not indicate a required field missing for an int32 field if we
         // mistake a string member with matching name for it.
         return FindField(id, metadata, type, type == BT_INT32);
     }
 
     const Field* FindField(uint16_t id, const Metadata& metadata, BondDataType type, bool is_enum);
 
-    
+
     template <typename T>
     void Read(T& var)
     {
@@ -103,7 +108,7 @@ public:
     void Skip(const T&)
     {}
 
-    
+
     bool operator==(const SimpleJsonReader& rhs) const
     {
         return _value == rhs._value;
@@ -122,7 +127,7 @@ public:
     {
         return _input;
     }
-    
+
 private:
     rapidjson::Value::ConstMemberIterator MemberBegin() const
     {

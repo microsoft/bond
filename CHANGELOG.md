@@ -31,6 +31,8 @@ different versioning scheme, following the Haskell community's
   used as a template" have been fixed.
   [Issue #538](https://github.com/Microsoft/bond/issues/538)
 * Guard against overflows in OutputMemoryStream, blob, and SimpleArray.
+* Use RapidJSON's iterative parser to handle deeply nested JSON data without
+  causing a stack overflow.
 
 ### C# ###
 

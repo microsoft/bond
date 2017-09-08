@@ -1,5 +1,7 @@
 #include "precompiled.h"
 #include "json_tests.h"
+
+#include <boost/format.hpp>
 #include <locale>
 #include <stdarg.h>
 
@@ -187,10 +189,8 @@ TEST_CASE_END
 
 
 template <uint16_t N, typename Reader, typename Writer>
-void StringTests(const char* name)
+void StringTests(UnitTestSuite& suite)
 {
-    UnitTestSuite suite(name);
-
     AddTestCase<TEST_ID(N),
         StringRoundtripTest, Reader, Writer>(suite, "Roundtrip string/wstring");
 
@@ -199,14 +199,38 @@ void StringTests(const char* name)
 }
 
 
+TEST_CASE_BEGIN(DeepNesting)
+{
+    const size_t nestingDepth = 10000;
+
+    std::string listOpens(nestingDepth, '[');
+    std::string listCloses(nestingDepth, ']');
+
+    std::string deeplyNestedList = boost::str(
+        boost::format("{\"deeplyNestedList\": %strue%s}") % listOpens % listCloses);
+
+    bond::SimpleJsonReader<const char*> json_reader(deeplyNestedList.c_str());
+
+    // The type here doesn't really matter. We need something with no
+    // required fields, as we're really just testing that we can parse a
+    // deeply nested JSON array without crashing.
+    SimpleStruct to;
+    bond::Deserialize(json_reader, to);
+}
+TEST_CASE_END
+
 void JSONTest::Initialize()
 {
+    UnitTestSuite suite("Simple JSON test");
+
     TEST_SIMPLE_JSON_PROTOCOL(
         StringTests<
             0x1c04,
             bond::SimpleJsonReader<bond::InputBuffer>,
-            bond::SimpleJsonWriter<bond::OutputBuffer> >("Simple JSON test");
+            bond::SimpleJsonWriter<bond::OutputBuffer> >(suite);
     );
+
+    AddTestCase<TEST_ID(0x1c05), DeepNesting>(suite, "Deeply nested JSON struct");
 }
 
 bool init_unit_test()
