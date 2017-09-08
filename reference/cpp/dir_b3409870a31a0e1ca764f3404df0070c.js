@@ -1,6 +1,7 @@
 var dir_b3409870a31a0e1ca764f3404df0070c =
 [
     [ "any.h", "any_8h_source.html", null ],
+    [ "checked_add.h", "checked__add_8h_source.html", null ],
     [ "cmdargs.h", "detail_2cmdargs_8h_source.html", null ],
     [ "debug.h", "debug_8h_source.html", null ],
     [ "double_pass.h", "double__pass_8h_source.html", null ],
