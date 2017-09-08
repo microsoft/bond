@@ -86,6 +86,12 @@ test-suite gbc-tests
                     Tests.Codegen.Util
                     Tests.Syntax
   ghc-options:      -threaded -Wall
+
+  if os(windows) && arch(i386)
+    ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
+  if os(windows) && arch(x86_64)
+    ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va
+
   build-depends:    bond,
                     aeson >= 0.7.0.6 && < 0.12.0.0,
                     aeson-pretty == 0.7.2,
@@ -112,6 +118,12 @@ executable gbc
   other-modules:    IO
                     Options
   ghc-options:      -threaded -Wall
+
+  if os(windows) && arch(i386)
+    ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
+  if os(windows) && arch(x86_64)
+    ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va
+
   build-depends:    bond,
                     aeson >= 0.7.0.6 && < 0.12.0.0,
                     async >= 2.0.1.0,
