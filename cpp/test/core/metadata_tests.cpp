@@ -1,6 +1,7 @@
 #include "precompiled.h"
 #include "metadata_tests.h"
 
+#include <boost/format.hpp>
 
 class DefaultValueVerifier
     : public bond::SerializingTransform
@@ -111,10 +112,9 @@ public:
 
     void Begin(const bond::Metadata& metadata) const
     {
-        char name[100], qualified_name[100];
-
-        sprintf(name, "%sWithMetadata", _name);
-        sprintf(qualified_name, "unittest.%sWithMetadata", _name);
+        std::string name = boost::str(boost::format("%sWithMetadata") % _name);
+        std::string qualified_name =
+            boost::str(boost::format("unittest.%sWithMetadata") % _name);
 
         UT_AssertIsTrue(metadata.name == name);
         UT_AssertIsTrue(metadata.qualified_name == qualified_name);
@@ -144,9 +144,8 @@ public:
     bool Field(uint16_t id, const bond::Metadata& metadata, const T& value) const
     {
         bond::Metadata  metadata_copy = metadata;
-        char            name[100];
 
-        sprintf(name, "%s%u", _name, id);
+        std::string name = boost::str(boost::format("%s%u") % _name % id);
 
         UT_AssertIsTrue(metadata_copy.name == name);
         UT_AssertIsTrue(metadata_copy.name == metadata_copy.attributes["field_name"]);
@@ -306,4 +305,3 @@ bool init_unit_test()
     MetadataTest::Initialize();
     return true;
 }
-
