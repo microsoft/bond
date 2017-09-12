@@ -121,13 +121,13 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
 
     @Override
     protected final TValue deserializeValue(
-            UntaggedDeserializationContext context,
-            RuntimeSchema schema) throws IOException {
+        UntaggedDeserializationContext context,
+        TypeDef typeDef) throws IOException {
         TValue value = null;
         final int count = context.reader.readContainerBegin();
         // If count == 0, all we need to do is return null.
         if (count == 1) {
-            value = this.valueType.deserializeValue(context, schema.getElementSchema());
+            value = this.valueType.deserializeValue(context, typeDef.element);
         } else if (count > 1) {
             // throws
             Throw.raiseNullableListValueHasMultipleElementsDeserializationError(this.getFullName());

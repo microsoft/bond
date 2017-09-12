@@ -16,7 +16,7 @@ import java.io.IOException;
 public class UntaggedWithSchemaDeserializationTests {
     private static final int SIMPLE_VERSION = 2;
     private RecordV1 recordIn;
-    private RuntimeSchema recordV1Schema;
+    private SchemaDef recordV1Schema;
     private SimpleBinaryReader reader;
 
     /*
@@ -40,7 +40,7 @@ public class UntaggedWithSchemaDeserializationTests {
         final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         reader = new SimpleBinaryReader(bais, SIMPLE_VERSION);
         final Deserializer<SchemaDef> schemaDeserializer = new Deserializer<SchemaDef>(SchemaDef.BOND_TYPE);
-        recordV1Schema = new RuntimeSchema(schemaDeserializer.deserialize(reader));
+        recordV1Schema = schemaDeserializer.deserialize(reader);
     }
 
     @Test

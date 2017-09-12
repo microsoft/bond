@@ -200,19 +200,19 @@ public abstract class BondType<T> {
     protected abstract T deserializeValue(TaggedDeserializationContext context) throws IOException;
 
     /**
-     * Deserializes a value of this type from an untagged protocol reader and a runtime schema.
+     * Deserializes a value of this type from an untagged protocol reader and a typedef.
      * This method is intended for objects and is not suitable for Java primitive (non-object) types
      * since its return value is an object and would have to be unboxed. To deserialize primitive values use
      * the static helper method defined in each singleton class for a primitive Java type.
      *
      * @param context contains the runtime context of the deserialization
-     * @param schema the runtime schema to use for deserialization
+     * @param typeDef the typedef to use for deserialization
      * @return the deserialized value (boxed if necessary)
      * @throws IOException if an I/O error occurred
      */
     protected abstract T deserializeValue(
-            UntaggedDeserializationContext context,
-            RuntimeSchema schema) throws IOException;
+        UntaggedDeserializationContext context,
+        TypeDef typeDef) throws IOException;
 
     /**
      * Serializes a struct field of this type into a protocol writer, including field metadata.
@@ -553,9 +553,11 @@ public abstract class BondType<T> {
      */
     protected static final class UntaggedDeserializationContext {
         public final UntaggedProtocolReader reader;
+        public final SchemaDef schema;
 
-        public UntaggedDeserializationContext(UntaggedProtocolReader reader) {
+        public UntaggedDeserializationContext(UntaggedProtocolReader reader, SchemaDef schema) {
             this.reader = reader;
+            this.schema = schema;
         }
     }
 }

@@ -78,17 +78,16 @@ public class Base implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, Base value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.StructDef structDef, Base value) throws java.io.IOException {
             boolean __has_x = false;
-            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
-                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+            for (final org.bondlib.FieldDef field : structDef.fields) {
                 switch (field.id) {
                     case 0:
-                        value.x = this.x.deserialize(context, fieldSchema);
+                        value.x = this.x.deserialize(context, field.type);
                         __has_x = true;
                         break;
                     default:
-                        context.reader.skip(fieldSchema);
+                        context.reader.skip(context.schema, field.type);
                         break;
                 }
             }
@@ -227,17 +226,16 @@ public class Foo extends tests.Base {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, Foo value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.StructDef structDef, Foo value) throws java.io.IOException {
             boolean __has_x = false;
-            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
-                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+            for (final org.bondlib.FieldDef field : structDef.fields) {
                 switch (field.id) {
                     case 0:
-                        value.x = this.x.deserialize(context, fieldSchema);
+                        value.x = this.x.deserialize(context, field.type);
                         __has_x = true;
                         break;
                     default:
-                        context.reader.skip(fieldSchema);
+                        context.reader.skip(context.schema, field.type);
                         break;
                 }
             }

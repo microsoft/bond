@@ -4,7 +4,8 @@
 package org.bondlib.protocol;
 
 import org.bondlib.BondDataType;
-import org.bondlib.RuntimeSchema;
+import org.bondlib.SchemaDef;
+import org.bondlib.StructDef;
 import org.bondlib.TypeDef;
 
 import java.io.IOException;
@@ -205,10 +206,7 @@ public final class SimpleBinaryReader implements UntaggedProtocolReader {
     }
 
     @Override
-    public void skip(RuntimeSchema schema) throws IOException {
-
-        TypeDef type = schema.getTypeDef();
-
+    public void skip(SchemaDef schemaDef, TypeDef type) throws IOException {
         switch (type.id.value) {
 
             case BondDataType.Values.BT_BOOL:
@@ -244,15 +242,17 @@ public final class SimpleBinaryReader implements UntaggedProtocolReader {
                 break;
 
             case BondDataType.Values.BT_STRUCT:
-                if (schema.isBonded()) {
+                if (type.bonded_type) {
                     int count = readLength();
                     skipBytes(count);
                 } else {
-                    if (schema.hasBase()) {
-                        skip(schema.getBaseSchema());
+                    final StructDef structDef = schemaDef.structs.get(type.struct_def);
+                    final TypeDef baseDef = structDef.base_def;
+                    if (baseDef != null) {
+                        skip(schemaDef, baseDef);
                     }
-                    for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
-                        skip(schema.getFieldSchema(field));
+                    for (final org.bondlib.FieldDef field : structDef.fields) {
+                        skip(schemaDef, field.type);
                     }
                 }
                 break;
@@ -260,19 +260,19 @@ public final class SimpleBinaryReader implements UntaggedProtocolReader {
             case BondDataType.Values.BT_LIST:
             case BondDataType.Values.BT_SET: {
                 int numElems = readLength();
-                final RuntimeSchema elementSchema = schema.getElementSchema();
+                final TypeDef elementTypeDef = type.element;
                 for (int i = 0; i < numElems; i++) {
-                    skip(elementSchema);
+                    skip(schemaDef, elementTypeDef);
                 }
                 break;
             }
             case BondDataType.Values.BT_MAP: {
                 int numElems = readLength();
-                final RuntimeSchema keySchema = schema.getElementSchema();
-                final RuntimeSchema elementSchema = schema.getElementSchema();
+                final TypeDef keyTypeDef = type.key;
+                final TypeDef valueTypeDef = type.element;
                 for (int i = 0; i < numElems; i++) {
-                    skip(keySchema);
-                    skip(elementSchema);
+                    skip(schemaDef, keyTypeDef);
+                    skip(schemaDef, valueTypeDef);
                 }
                 break;
             }
@@ -297,7 +297,7 @@ public final class SimpleBinaryReader implements UntaggedProtocolReader {
                 break;
 
             default:
-                throw new IllegalArgumentException("Bad value in SimpleBinartReader.skip(RuntimeSchema)");
+                throw new IllegalArgumentException("unknown BondDataType while skipping");
         }
     }
 

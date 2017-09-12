@@ -5,9 +5,9 @@ struct Struct
     0: string String = "this is a string";
 }
 
-[StructAttribute("Value of the attribute")]
+[StructAttribute("struct attribute")]
 struct Example
 {
-    [FieldAttribute("Value of the attribute")]
+    [FieldAttribute("field attribute")]
     0: map<uint32, Struct> mapStruct1;
 }

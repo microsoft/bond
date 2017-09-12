@@ -3,7 +3,8 @@
 
 package org.bondlib.protocol;
 
-import org.bondlib.RuntimeSchema;
+import org.bondlib.SchemaDef;
+import org.bondlib.TypeDef;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -196,11 +197,12 @@ public interface UntaggedProtocolReader {
 
     /**
      * Skip based on supplied runtime schema
-     * 
-     * @param schema the runtime schema
+     *
+     * @param schema the schema def
+     * @param typeDef the type def
      * @throws IOException
      */
-    void skip(RuntimeSchema schema) throws IOException;
+    void skip(SchemaDef schema, TypeDef typeDef) throws IOException;
 
     /**
      * @return a clone of this reader's underlying stream

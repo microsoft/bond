@@ -179,12 +179,12 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      * fields.
      *
      * @param context contains the runtime context of the deserialization
-     * @param schema the runtime schema
+     * @param structDef the StructDef of this struct
      * @param value   the value to deserialize into
      * @throws IOException if an I/O error occurred
      */
     protected abstract void deserializeStructFields(
-        UntaggedDeserializationContext context, RuntimeSchema schema, TStruct value) throws IOException;
+        UntaggedDeserializationContext context, StructDef structDef, TStruct value) throws IOException;
 
     /**
      * Used by generated subclasses to initialize declared fields of this struct, excluding inherited fields.
@@ -358,21 +358,23 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
     @Override
     protected final TStruct deserializeValue(
-            UntaggedDeserializationContext context,
-            RuntimeSchema schema) throws IOException {
+        UntaggedDeserializationContext context,
+        TypeDef typeDef) throws IOException {
         TStruct value = this.newDefaultValue();
-        this.deserializeValue(context, schema, value);
+        this.deserializeValue(context, typeDef, value);
         return value;
     }
 
     private void deserializeValue(
-            UntaggedDeserializationContext context,
-            RuntimeSchema schema,
-            TStruct value) throws IOException {
+        UntaggedDeserializationContext context,
+        TypeDef typeDef,
+        TStruct value) throws IOException {
+        final StructDef structDef = context.schema.structs.get(typeDef.struct_def);
         if (this.baseStructType != null) {
-            this.baseStructType.deserializeValue(context, schema.getBaseSchema(), value);
+            final TypeDef baseDef = structDef.base_def;
+            this.baseStructType.deserializeValue(context, baseDef, value);
         }
-        this.deserializeStructFields(context, schema, value);
+        this.deserializeStructFields(context, structDef, value);
     }
 
     @Override
@@ -473,7 +475,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      * @throws IOException if an I/O error occurred
      */
     TStruct deserialize(UntaggedProtocolReader reader) throws IOException {
-        return this.deserialize(reader, new RuntimeSchema(this.buildSchemaDef()));
+        return this.deserialize(reader, this.buildSchemaDef());
     }
 
     /**
@@ -484,9 +486,9 @@ public abstract class StructBondType<TStruct extends BondSerializable>
      * @return deserialized object
      * @throws IOException if an I/O error occurred
      */
-    TStruct deserialize(UntaggedProtocolReader reader, RuntimeSchema schema) throws IOException {
-        UntaggedDeserializationContext context = new UntaggedDeserializationContext(reader);
-        return this.deserializeValue(context, schema);
+    TStruct deserialize(UntaggedProtocolReader reader, SchemaDef schema) throws IOException {
+        UntaggedDeserializationContext context = new UntaggedDeserializationContext(reader, schema);
+        return this.deserializeValue(context, schema.root);
     }
 
     @Override
@@ -544,6 +546,8 @@ public abstract class StructBondType<TStruct extends BondSerializable>
 
     private void initializeSchemaVariantWithDefaultValue(Variant variant, StructField field) {
         variant.nothing = field.isDefaultNothing();
+        if (variant.nothing) { return; }
+
         switch (field.fieldType.getBondDataType().value) {
             case BondDataType.Values.BT_UINT8:
             case BondDataType.Values.BT_UINT16:
@@ -848,9 +852,9 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final TField deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
-            return this.fieldType.deserializeValue(context, schema);
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
+            return this.fieldType.deserializeValue(context, typeDef);
         }
     }
 
@@ -900,9 +904,9 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final SomethingObject<TField> deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
-            return Something.wrap(this.fieldType.deserializeValue(context, schema));
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
+            return Something.wrap(this.fieldType.deserializeValue(context, typeDef));
         }
     }
 
@@ -962,9 +966,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return UInt8BondType.deserializePrimitiveField(context, this);
         }
 
-        public final byte deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final byte deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return UInt8BondType.deserializePrimitiveValue(context);
         }
     }
@@ -1012,9 +1014,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return UInt8BondType.deserializePrimitiveSomethingField(context, this);
         }
 
-        public final SomethingByte deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final SomethingByte deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Something.wrap(UInt8BondType.deserializePrimitiveValue(context));
         }
     }
@@ -1075,9 +1075,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return UInt16BondType.deserializePrimitiveField(context, this);
         }
 
-        public final short deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final short deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return UInt16BondType.deserializePrimitiveValue(context);
         }
     }
@@ -1125,9 +1123,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return UInt16BondType.deserializePrimitiveSomethingField(context, this);
         }
 
-        public final SomethingShort deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final SomethingShort deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Something.wrap(UInt16BondType.deserializePrimitiveValue(context));
         }
     }
@@ -1188,9 +1184,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return UInt32BondType.deserializePrimitiveField(context, this);
         }
 
-        public final int deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final int deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return UInt32BondType.deserializePrimitiveValue(context);
         }
     }
@@ -1238,9 +1232,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return UInt32BondType.deserializePrimitiveSomethingField(context, this);
         }
 
-        public final SomethingInteger deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final SomethingInteger deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Something.wrap(UInt32BondType.deserializePrimitiveValue(context));
         }
     }
@@ -1301,9 +1293,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return UInt64BondType.deserializePrimitiveField(context, this);
         }
 
-        public final long deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final long deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return UInt64BondType.deserializePrimitiveValue(context);
         }
     }
@@ -1351,9 +1341,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return UInt64BondType.deserializePrimitiveSomethingField(context, this);
         }
 
-        public final SomethingLong deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final SomethingLong deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Something.wrap(UInt64BondType.deserializePrimitiveValue(context));
         }
     }
@@ -1414,9 +1402,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return Int8BondType.deserializePrimitiveField(context, this);
         }
 
-        public final byte deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final byte deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Int8BondType.deserializePrimitiveValue(context);
         }
     }
@@ -1464,9 +1450,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return Int8BondType.deserializePrimitiveSomethingField(context, this);
         }
 
-        public final SomethingByte deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final SomethingByte deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Something.wrap(Int8BondType.deserializePrimitiveValue(context));
         }
     }
@@ -1527,9 +1511,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return Int16BondType.deserializePrimitiveField(context, this);
         }
 
-        public final short deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final short deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Int16BondType.deserializePrimitiveValue(context);
         }
     }
@@ -1577,9 +1559,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return Int16BondType.deserializePrimitiveSomethingField(context, this);
         }
 
-        public final SomethingShort deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final SomethingShort deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Something.wrap(Int16BondType.deserializePrimitiveValue(context));
         }
     }
@@ -1640,8 +1620,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return Int32BondType.deserializePrimitiveField(context, this);
         }
 
-        public final int deserialize(
-                UntaggedDeserializationContext context, RuntimeSchema schema) throws IOException {
+        public final int deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Int32BondType.deserializePrimitiveValue(context);
         }
     }
@@ -1689,9 +1668,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return Int32BondType.deserializePrimitiveSomethingField(context, this);
         }
 
-        public final SomethingInteger deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final SomethingInteger deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Something.wrap(Int32BondType.deserializePrimitiveValue(context));
         }
     }
@@ -1752,9 +1729,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return Int64BondType.deserializePrimitiveField(context, this);
         }
 
-        public final long deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final long deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Int64BondType.deserializePrimitiveValue(context);
         }
     }
@@ -1802,9 +1777,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return Int64BondType.deserializePrimitiveSomethingField(context, this);
         }
 
-        public final SomethingLong deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final SomethingLong deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Something.wrap(Int64BondType.deserializePrimitiveValue(context));
         }
     }
@@ -1865,9 +1838,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return BoolBondType.deserializePrimitiveField(context, this);
         }
 
-        public final boolean deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final boolean deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return BoolBondType.deserializePrimitiveValue(context);
         }
     }
@@ -1915,9 +1886,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return BoolBondType.deserializePrimitiveSomethingField(context, this);
         }
 
-        public final SomethingBoolean deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final SomethingBoolean deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Something.wrap(BoolBondType.deserializePrimitiveValue(context));
         }
     }
@@ -1978,9 +1947,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return FloatBondType.deserializePrimitiveField(context, this);
         }
 
-        public final float deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final float deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return FloatBondType.deserializePrimitiveValue(context);
         }
     }
@@ -2028,9 +1995,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return FloatBondType.deserializePrimitiveSomethingField(context, this);
         }
 
-        public final SomethingFloat deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final SomethingFloat deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Something.wrap(FloatBondType.deserializePrimitiveValue(context));
         }
     }
@@ -2091,9 +2056,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return DoubleBondType.deserializePrimitiveField(context, this);
         }
 
-        public final double deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final double deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return DoubleBondType.deserializePrimitiveValue(context);
         }
     }
@@ -2141,9 +2104,7 @@ public abstract class StructBondType<TStruct extends BondSerializable>
             return DoubleBondType.deserializePrimitiveSomethingField(context, this);
         }
 
-        public final SomethingDouble deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
+        public final SomethingDouble deserialize(UntaggedDeserializationContext context, TypeDef typeDef) throws IOException {
             return Something.wrap(DoubleBondType.deserializePrimitiveValue(context));
         }
     }
@@ -2205,9 +2166,9 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final String deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
-            return this.fieldType.deserializeValue(context, schema);
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
+            return this.fieldType.deserializeValue(context, typeDef);
         }
     }
 
@@ -2255,9 +2216,9 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final SomethingObject<String> deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
-            return Something.wrap(this.fieldType.deserializeValue(context, schema));
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
+            return Something.wrap(this.fieldType.deserializeValue(context, typeDef));
         }
     }
 
@@ -2318,9 +2279,9 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final String deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
-            return this.fieldType.deserializeValue(context, schema);
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
+            return this.fieldType.deserializeValue(context, typeDef);
         }
     }
 
@@ -2369,9 +2330,9 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final SomethingObject<String> deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
-            return Something.wrap(this.fieldType.deserializeValue(context, schema));
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
+            return Something.wrap(this.fieldType.deserializeValue(context, typeDef));
         }
     }
 
@@ -2433,9 +2394,9 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final TEnum deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
-            return this.fieldType.deserializeValue(context, schema);
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
+            return this.fieldType.deserializeValue(context, typeDef);
         }
     }
 
@@ -2485,9 +2446,9 @@ public abstract class StructBondType<TStruct extends BondSerializable>
         }
 
         public final SomethingObject<TEnum> deserialize(
-                UntaggedDeserializationContext context,
-                RuntimeSchema schema) throws IOException {
-            return Something.wrap(this.fieldType.deserializeValue(context, schema));
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
+            return Something.wrap(this.fieldType.deserializeValue(context, typeDef));
         }
     }
 }

@@ -1,7 +1,7 @@
 package org.bondlib.examples;
 
 import org.bondlib.Deserializer;
-import org.bondlib.RuntimeSchema;
+import org.bondlib.SchemaDef;
 import org.bondlib.Serializer;
 import org.bondlib.examples.untagged_protocols.Example1;
 import org.bondlib.examples.untagged_protocols.Example2;

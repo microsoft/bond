@@ -149,14 +149,14 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
 
     @Override
     protected final Set<TElement> deserializeValue(
-            UntaggedDeserializationContext context,
-            RuntimeSchema schema) throws IOException {
+        UntaggedDeserializationContext context,
+        TypeDef typeDef) throws IOException {
         final int count = context.reader.readContainerBegin();
         final Set<TElement> value = newDefaultValue();
-        final RuntimeSchema elementSchema = schema.getElementSchema();
+        final TypeDef elementType = typeDef.element;
         for (int i = 0; i < count; ++i) {
             try {
-                TElement element = this.elementType.deserializeValue(context, elementSchema);
+                TElement element = this.elementType.deserializeValue(context, elementType);
                 value.add(element);
             } catch (InvalidBondDataException e) {
                 Throw.raiseListContainerElementSerializationError(true, true, this.getFullName(), i, e, null);

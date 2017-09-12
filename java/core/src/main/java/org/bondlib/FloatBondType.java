@@ -78,8 +78,8 @@ public final class FloatBondType extends PrimitiveBondType<Float> {
 
     @Override
     protected final Float deserializeValue(
-            UntaggedDeserializationContext context,
-            RuntimeSchema schema) throws IOException {
+        UntaggedDeserializationContext context,
+        TypeDef typeDef) throws IOException {
         return deserializePrimitiveValue(context);
     }
 
@@ -124,7 +124,7 @@ public final class FloatBondType extends PrimitiveBondType<Float> {
     }
 
     /**
-     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext, RuntimeSchema)}
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext, TypeDef)}
      * method for primitive values.
      *
      * @param context contains the runtime context of the deserialization

@@ -2,21 +2,15 @@ namespace org.bondlib.test
 
 struct RecordV1 {
     0: string name;
-    1: uint64 tstamp;
+    1: uint32 tstamp;
 }
 
 struct RecordV2 {
     0: string name;
-    1: uint64 tstamp;
+    1: uint32 tstamp;
     2: string location;
 }
 
-
 struct FieldRemovedRecord {
-    1: uint64 tstamp;
+    1: uint32 tstamp;
 }
-
-struct IncompatibleTypeChangeRecord {
-    0: uint32 user_id;
-    1: uint64 tstamp;
-

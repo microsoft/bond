@@ -76,23 +76,24 @@ public final class UInt32BondType extends PrimitiveBondType<Integer> {
 
     @Override
     protected final Integer deserializeValue(
-            UntaggedDeserializationContext context, RuntimeSchema schema) throws IOException {
+        UntaggedDeserializationContext context,
+        TypeDef typeDef) throws IOException {
         return deserializePrimitiveValue(context);
     }
 
     @Override
     protected final void serializeField(
-            SerializationContext context,
-            Integer value,
-            StructBondType.StructField<Integer> field) throws IOException {
+        SerializationContext context,
+        Integer value,
+        StructBondType.StructField<Integer> field) throws IOException {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
         serializePrimitiveField(context, value, field);
     }
 
     @Override
     protected final Integer deserializeField(
-            TaggedDeserializationContext context,
-            StructBondType.StructField<Integer> field) throws IOException {
+        TaggedDeserializationContext context,
+        StructBondType.StructField<Integer> field) throws IOException {
         return deserializePrimitiveField(context, field);
     }
 
@@ -121,7 +122,7 @@ public final class UInt32BondType extends PrimitiveBondType<Integer> {
     }
 
     /**
-     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext, RuntimeSchema)}
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext, TypeDef)}
      * method for primitive values.
      *
      * @param context contains the runtime context of the deserialization
@@ -143,9 +144,9 @@ public final class UInt32BondType extends PrimitiveBondType<Integer> {
      * @throws IOException if an I/O error occurred
      */
     protected static void serializePrimitiveField(
-            SerializationContext context,
-            int value,
-            StructBondType.StructField<Integer> field) throws IOException {
+        SerializationContext context,
+        int value,
+        StructBondType.StructField<Integer> field) throws IOException {
         if (!field.isDefaultNothing() && field.isOptional() && (value == field.getDefaultValue())) {
             context.writer.writeFieldOmitted(BondDataType.BT_UINT32, field.getId(), field);
         } else {
@@ -166,9 +167,9 @@ public final class UInt32BondType extends PrimitiveBondType<Integer> {
      * @throws IOException if an I/O error occurred
      */
     protected static void serializePrimitiveSomethingField(
-            SerializationContext context,
-            SomethingInteger value,
-            StructBondType.StructField<Integer> field) throws IOException {
+        SerializationContext context,
+        SomethingInteger value,
+        StructBondType.StructField<Integer> field) throws IOException {
         if (value != null) {
             serializePrimitiveField(context, value.value, field);
         } else if (!field.isOptional()) {
@@ -188,8 +189,8 @@ public final class UInt32BondType extends PrimitiveBondType<Integer> {
      * @throws IOException if an I/O error occurred
      */
     protected static int deserializePrimitiveField(
-            TaggedDeserializationContext context,
-            StructBondType.StructField<Integer> field) throws IOException {
+        TaggedDeserializationContext context,
+        StructBondType.StructField<Integer> field) throws IOException {
         // an uint32 value may be deserialized from BT_UINT32, BT_UINT16 or BT_UINT8
         if (context.readFieldResult.type.value != BondDataType.BT_UINT32.value) {
             if (context.readFieldResult.type.value == BondDataType.BT_UINT16.value) {
@@ -214,8 +215,8 @@ public final class UInt32BondType extends PrimitiveBondType<Integer> {
      * @throws IOException if an I/O error occurred
      */
     protected static SomethingInteger deserializePrimitiveSomethingField(
-            TaggedDeserializationContext context,
-            StructBondType.StructField<Integer> field) throws IOException {
+        TaggedDeserializationContext context,
+        StructBondType.StructField<Integer> field) throws IOException {
         return Something.wrap(deserializePrimitiveField(context, field));
     }
 }

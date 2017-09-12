@@ -76,8 +76,8 @@ public final class Int8BondType extends PrimitiveBondType<Byte> {
 
     @Override
     protected final Byte deserializeValue(
-            UntaggedDeserializationContext context,
-            RuntimeSchema schema) throws IOException {
+        UntaggedDeserializationContext context,
+        TypeDef typeDef) throws IOException {
         return deserializePrimitiveValue(context);
     }
 
@@ -122,7 +122,7 @@ public final class Int8BondType extends PrimitiveBondType<Byte> {
     }
 
     /**
-     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext, RuntimeSchema)}
+     * Implements the behavior of the {@link BondType#deserializeValue(UntaggedDeserializationContext, TypeDef)}
      * method for primitive values.
      *
      * @param context contains the runtime context of the deserialization

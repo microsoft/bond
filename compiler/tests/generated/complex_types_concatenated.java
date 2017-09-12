@@ -70,12 +70,11 @@ public class Foo implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, Foo value) throws java.io.IOException {
-            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
-                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.StructDef structDef, Foo value) throws java.io.IOException {
+            for (final org.bondlib.FieldDef field : structDef.fields) {
                 switch (field.id) {
                     default:
-                        context.reader.skip(fieldSchema);
+                        context.reader.skip(context.schema, field.type);
                         break;
                 }
             }
@@ -269,7 +268,7 @@ public class ComplexTypes implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, ComplexTypes value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.StructDef structDef, ComplexTypes value) throws java.io.IOException {
             boolean __has_li8 = false;
             boolean __has_sb = false;
             boolean __has_vb = false;
@@ -277,39 +276,38 @@ public class ComplexTypes implements org.bondlib.BondSerializable {
             boolean __has_msws = false;
             boolean __has_bfoo = false;
             boolean __has_m = false;
-            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
-                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+            for (final org.bondlib.FieldDef field : structDef.fields) {
                 switch (field.id) {
                     case 0:
-                        value.li8 = this.li8.deserialize(context, fieldSchema);
+                        value.li8 = this.li8.deserialize(context, field.type);
                         __has_li8 = true;
                         break;
                     case 1:
-                        value.sb = this.sb.deserialize(context, fieldSchema);
+                        value.sb = this.sb.deserialize(context, field.type);
                         __has_sb = true;
                         break;
                     case 2:
-                        value.vb = this.vb.deserialize(context, fieldSchema);
+                        value.vb = this.vb.deserialize(context, field.type);
                         __has_vb = true;
                         break;
                     case 3:
-                        value.nf = this.nf.deserialize(context, fieldSchema);
+                        value.nf = this.nf.deserialize(context, field.type);
                         __has_nf = true;
                         break;
                     case 4:
-                        value.msws = this.msws.deserialize(context, fieldSchema);
+                        value.msws = this.msws.deserialize(context, field.type);
                         __has_msws = true;
                         break;
                     case 5:
-                        value.bfoo = this.bfoo.deserialize(context, fieldSchema);
+                        value.bfoo = this.bfoo.deserialize(context, field.type);
                         __has_bfoo = true;
                         break;
                     case 6:
-                        value.m = this.m.deserialize(context, fieldSchema);
+                        value.m = this.m.deserialize(context, field.type);
                         __has_m = true;
                         break;
                     default:
-                        context.reader.skip(fieldSchema);
+                        context.reader.skip(context.schema, field.type);
                         break;
                 }
             }
