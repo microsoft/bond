@@ -182,22 +182,22 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
 
     @Override
     protected final Map<TKey, TValue> deserializeValue(
-            UntaggedDeserializationContext context,
-            RuntimeSchema schema) throws IOException {
+        UntaggedDeserializationContext context,
+        TypeDef typeDef) throws IOException {
         final int count = context.reader.readContainerBegin();
         final Map<TKey, TValue> value = newDefaultValue();
-        final RuntimeSchema keySchema = schema.getKeySchema();
-        final RuntimeSchema elementSchema = schema.getElementSchema();
+        final TypeDef keyType = typeDef.key;
+        final TypeDef valueType = typeDef.element;
         for (int i = 0; i < count; ++i) {
             TKey mapEntryKey = null;
             try {
-                mapEntryKey = this.keyType.deserializeValue(context, keySchema);
+                mapEntryKey = this.keyType.deserializeValue(context, keyType);
             } catch (InvalidBondDataException e) {
                 Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, null, e, null);
             }
             TValue mapEntryValue = null;
             try {
-                mapEntryValue = this.valueType.deserializeValue(context, elementSchema);
+                mapEntryValue = this.valueType.deserializeValue(context, valueType);
             } catch (InvalidBondDataException e) {
                 Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, mapEntryKey, e, null);
             }

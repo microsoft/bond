@@ -104,22 +104,21 @@ public class Foo<T1, T2> implements org.bondlib.BondSerializable {
         }
         
         @Override
-        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, Foo<T1, T2> value) throws java.io.IOException {
+        protected final void deserializeStructFields(org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.StructDef structDef, Foo<T1, T2> value) throws java.io.IOException {
             boolean __has_t2 = false;
             boolean __has_n = false;
-            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
-                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+            for (final org.bondlib.FieldDef field : structDef.fields) {
                 switch (field.id) {
                     case 0:
-                        value.t2 = this.t2.deserialize(context, fieldSchema);
+                        value.t2 = this.t2.deserialize(context, field.type);
                         __has_t2 = true;
                         break;
                     case 1:
-                        value.n = this.n.deserialize(context, fieldSchema);
+                        value.n = this.n.deserialize(context, field.type);
                         __has_n = true;
                         break;
                     default:
-                        context.reader.skip(fieldSchema);
+                        context.reader.skip(context.schema, field.type);
                         break;
                 }
             }

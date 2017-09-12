@@ -27,18 +27,16 @@ public class RuntimeSchemaExample {
         final CompactBinaryReader reader = new CompactBinaryReader(input, 1);
         final Deserializer<SchemaDef> deserializer = new Deserializer<>(SchemaDef.BOND_TYPE);
 
-        final SchemaDef schemaDef = deserializer.deserialize(reader);
-        final RuntimeSchema schema = new RuntimeSchema(schemaDef);
+        final SchemaDef schema = deserializer.deserialize(reader);
 
-        assert schema.isStruct();
-        assert schema.getStructDef().metadata.qualified_name.equals("Examples.Example");
+        assert schema.structs.get(0).metadata.qualified_name.equals("Examples.Example");
 
         // TODO: Java SchemaDef does not yet support attributes
         // assert schema.getStructDef().metadata.attributes.get("StructAttribute").equals("Value of the string");
         // assert schema.getStructDef().fields.get(0).metadata.attributes.get("FieldAttribute").equals("Value of the string");
 
-        assert schema.getStructDef().fields.get(0).type.key.id == BondDataType.BT_UINT32;
-        assert schema.getSchemaDef().structs.get(1).fields.get(0).metadata.default_value.string_value.equals("this is a string");
+        assert schema.structs.get(0).fields.get(0).type.key.id == BondDataType.BT_UINT32;
+        assert schema.structs.get(1).fields.get(0).metadata.default_value.string_value.equals("this is a string");
     }
 
 }

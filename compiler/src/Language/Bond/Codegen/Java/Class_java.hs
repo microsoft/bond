@@ -316,22 +316,21 @@ makeStructBondTypeMember_deserializeStructFields_untagged :: String -> [TypePara
 makeStructBondTypeMember_deserializeStructFields_untagged declName declParams structFields = [lt|
         @Override
         protected final void deserializeStructFields(#{methodParamDecl}) throws java.io.IOException {#{newlineBeginSep 3 declareLocalVariable structFields}
-            for (final org.bondlib.FieldDef field : schema.getStructDef().fields) {
-                final org.bondlib.RuntimeSchema fieldSchema = schema.getFieldSchema(field);
+            for (final org.bondlib.FieldDef field : structDef.fields) {
                 switch (field.id) {#{newlineBeginSep 5 deserializeField structFields}
                     default:
-                        context.reader.skip(fieldSchema);
+                        context.reader.skip(context.schema, field.type);
                         break;
                 }
             }#{newlineBeginSep 3 verifyField structFields}
         }|]
             where
-                methodParamDecl = [lt|org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.RuntimeSchema schema, #{typeNameWithParams declName declParams} value|]
+                methodParamDecl = [lt|org.bondlib.BondType.UntaggedDeserializationContext context, org.bondlib.StructDef structDef, #{typeNameWithParams declName declParams} value|]
                 declareLocalVariable Field {..} = [lt|boolean __has_#{fieldName} = false;|]
                 deserializeField Field {..} = [lt|#{switchCasePart}#{newLine 6}#{deserializePart}#{newLine 6}#{setBooleanPart}#{newLine 6}break;|]
                   where
                     switchCasePart = [lt|case #{fieldOrdinal}:|]
-                    deserializePart = [lt|value.#{fieldName} = this.#{fieldName}.deserialize(context, fieldSchema);|]
+                    deserializePart = [lt|value.#{fieldName} = this.#{fieldName}.deserialize(context, field.type);|]
                     setBooleanPart = [lt|__has_#{fieldName} = true;|]
 
                 verifyField Field {..} = [lt|this.#{fieldName}.verifyDeserialized(__has_#{fieldName});|]

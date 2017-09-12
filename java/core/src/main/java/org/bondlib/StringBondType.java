@@ -71,8 +71,8 @@ public final class StringBondType extends PrimitiveBondType<String> {
 
     @Override
     protected final String deserializeValue(
-            UntaggedDeserializationContext context,
-            RuntimeSchema schema) throws IOException {
+        UntaggedDeserializationContext context,
+        TypeDef typeDef) throws IOException {
         return context.reader.readString();
     }
 

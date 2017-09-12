@@ -108,8 +108,8 @@ public final class BlobBondType extends BondType<Blob> {
 
     @Override
     protected final Blob deserializeValue(
-            UntaggedDeserializationContext context,
-            RuntimeSchema schema) throws IOException {
+        UntaggedDeserializationContext context,
+        TypeDef typeDef) throws IOException {
         final int count = context.reader.readContainerBegin();
         final Blob value = new Blob(context.reader.readBytes(count));
         context.reader.readContainerEnd();
