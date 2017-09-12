@@ -1,4 +1,5 @@
-% Why Bond?
+Why Bond?
+---------
 
 Bond is an [open source framework](https://github.com/Microsoft/bond/) which
 addresses similar scenarios to Protocol Buffers, Thrift and Avro. In this 
