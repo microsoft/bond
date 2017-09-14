@@ -3,13 +3,13 @@
 
 package org.bondlib;
 
+import org.bondlib.helpers.ArgumentHelper;
 import org.bondlib.protocol.*;
 import org.junit.Assert;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.lang.reflect.*;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -149,8 +149,9 @@ public final class TestHelper {
     /**
      * Marshals a Bond struct instance using given protocol and version, then unmarshals it
      * and tests whether the original instance is equal to the unmarshaled one.
-     * @param obj struct instance
-     * @param protocolType protocol type
+     *
+     * @param obj             struct instance
+     * @param protocolType    protocol type
      * @param protocolVersion protocol version
      * @throws IOException if error occurred
      */
@@ -180,8 +181,12 @@ public final class TestHelper {
         ByteArrayInputStream bais = new ByteArrayInputStream(payloadBytes);
         Bonded<? extends BondSerializable> bondedCloneObj = Unmarshal.unmarshal(bais, obj.getBondType());
         BondSerializable cloneObj = bondedCloneObj.deserialize();
-        boolean areEqual = obj.equals(cloneObj);
-        Assert.assertTrue(areEqual);
+        try {
+            assertStructMemberwiseEquals(obj, cloneObj);
+        } catch (IllegalAccessException ex) {
+            // shouldn't happen
+            fail("Unexpected exception raised when testing marshal/unmarshal roundtrip: " + ex);
+        }
     }
 
     /**
@@ -194,90 +199,98 @@ public final class TestHelper {
      * @throws IllegalAccessException if there was a reflection error
      */
     public static <TStruct extends BondSerializable> void assertStructMemberwiseEquals(
-            TStruct a, TStruct b) throws IllegalAccessException {
+            TStruct a, TStruct b) throws IllegalAccessException, IOException {
+        ArgumentHelper.ensureNotNull(a, "a");
+        ArgumentHelper.ensureNotNull(b, "b");
         assertStructMemberwiseEqualsHelper(a, b, "");
     }
 
+    // helper for assertStructMemberwiseEquals, which compares two field values
     private static void assertStructMemberwiseEqualsHelper(
-            Object a, Object b, String path) throws IllegalAccessException {
-        if (a != null && b == null) {
-            fail("If first object is non-null then the second object must not be null: " + path);
-        } else if (a == null && b != null) {
-            fail("If second object is non-null then the first object must not be null: " + path);
-        } else if (a == null && b == null) {
-            // nothing more to compare
-            return;
-        }
-
-        assertSame("Object class must be the same: " + path, a.getClass(), b.getClass());
-
-        Class<?> clazz = a.getClass();
-        if (BondSerializable.class.isAssignableFrom(clazz)) {
-            // struct type
-            Field[] fields = clazz.getFields();
-            for (Field field : fields) {
-                if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                    // compare field values based onthe field's declared type
-                    Class<?> fieldClass = field.getType();
-                    String fieldPath = path + "." + field.getName();
-                    if (fieldClass == Byte.TYPE) {
-                        // primitive type
-                        assertEquals("Fields of type byte must match: " + fieldPath,
-                                field.getByte(a), field.getByte(b));
-                    } else if (fieldClass == Short.TYPE) {
-                        // primitive type
-                        assertEquals("Fields of type short must match: " + fieldPath,
-                                field.getShort(a), field.getShort(b));
-                    } else if (fieldClass == Integer.TYPE) {
-                        // primitive type
-                        assertEquals("Fields of type int must match: " + fieldPath,
-                                field.getInt(a), field.getInt(b));
-                    } else if (fieldClass == Long.TYPE) {
-                        // primitive type
-                        assertEquals("Fields of type long must match: " + fieldPath,
-                                field.getLong(a), field.getLong(b));
-                    } else if (fieldClass == Boolean.TYPE) {
-                        // primitive type
-                        assertEquals("Fields of type boolean must match: " + fieldPath,
-                                field.getBoolean(a), field.getBoolean(b));
-                    } else if (fieldClass == Float.TYPE) {
-                        // primitive type
-                        assertEquals("Fields of type float must match: " + fieldPath,
-                                field.getFloat(a), field.getFloat(b), 0F);
-                    } else if (fieldClass == Long.TYPE) {
-                        // primitive type
-                        assertEquals("Fields of type double must match: " + fieldPath,
-                                field.getDouble(a), field.getDouble(b), 0D);
-                    } else {
-                        // object
-                        assertStructMemberwiseEqualsHelper(field.get(a), field.get(b), fieldPath);
+            Object a, Object b, String path) throws IllegalAccessException, IOException {
+        // deal with nulls first
+        assertEquals("Ether both values are null or none: " + path, a == null, b == null);
+        if (a != null && b != null) {
+            Class aValueClass = a.getClass();
+            Class bValueClass = b.getClass();
+            // The following Bond types require special equality test, all others use the "equals" method:
+            // * structs - needs to report which fields differ and recurse
+            // * collections (list/vector, set, map) - needs to report which elements differ and recurse
+            // * blob - needs to report which elements differ
+            // * bonded - need to implement custom equality comparison
+            if (BondSerializable.class.isAssignableFrom(aValueClass)) {
+                // struct type
+                assertSame("Both objects must be the same struct: " + path, aValueClass, bValueClass);
+                Field[] fields = aValueClass.getFields();
+                for (Field field : fields) {
+                    if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                        String fieldPath = path + "." + field.getName();
+                        Object aFieldValue = field.get(a);
+                        Object bFieldValue = field.get(b);
+                        assertStructMemberwiseEqualsHelper(aFieldValue, bFieldValue, fieldPath);
                     }
                 }
+            } else if (List.class.isAssignableFrom(aValueClass)) {
+                // list or vector type
+                assertTrue("Both objects must be lists: " + path, List.class.isAssignableFrom(bValueClass));
+                List<?> aList = (List) a;
+                List<?> bList = (List) b;
+                assertEquals("List sizes must match: " + path, aList.size(), bList.size());
+                for (int i = 0; i < aList.size(); ++i) {
+                    String elementPath = path + "[" + i + "]";
+                    assertStructMemberwiseEqualsHelper(aList.get(i), bList.get(i), elementPath);
+                }
+            } else if (Set.class.isAssignableFrom(aValueClass)) {
+                // set type (elements are restricted to primitive Bond types so no need to recurse)
+                assertTrue("Both objects must be sets: " + path, Set.class.isAssignableFrom(bValueClass));
+                Set<?> aSet = (Set) a;
+                Set<?> bSet = (Set) b;
+                assertEquals("Set sizes must match: " + path, aSet.size(), bSet.size());
+                for (Object aSetElement : aSet) {
+                    assertTrue(
+                            "Element " + aSetElement + " of the first set must in the second set: " + path,
+                            bSet.contains(aSetElement));
+                }
+            } else if (Map.class.isAssignableFrom(aValueClass)) {
+                // map type (elements are restricted to primitive Bond types so no need to recurse for keys)
+                assertTrue("Both objects must be maps: " + path, Map.class.isAssignableFrom(bValueClass));
+                Map<?, ?> aMap = (Map) a;
+                Map<?, ?> bMap = (Map) b;
+                assertEquals("Map sizes must match: " + path, aMap.size(), bMap.size());
+                for (Map.Entry aMapEntry : aMap.entrySet()) {
+                    Object aMapKey = aMapEntry.getKey();
+                    Object aMapValue = aMapEntry.getValue();
+                    assertTrue(
+                            "Key " + aMapKey + " of the first map must be in the second map: " + path,
+                            bMap.containsKey(aMapKey));
+                    Object bMapValue = bMap.get(aMapKey);
+                    String elementPath = path + "[" + aMapKey + "]";
+                    assertStructMemberwiseEqualsHelper(aMapValue, bMapValue, elementPath);
+                }
+            } else if (Bonded.class.isAssignableFrom(aValueClass)) {
+                // bonded type, instances of which may have different struct types but the same data, which
+                // happens when deserializing bonded<Base> that was originally serialized as bonded<Derived>
+                assertTrue("Both objects must be bondeds: " + path, Bonded.class.isAssignableFrom(bValueClass));
+                Bonded<?> aBonded = (Bonded) a;
+                Bonded<?> bBonded = (Bonded) b;
+                StructBondType<?> aBondedType = aBonded.getBondType();
+                StructBondType<?> bBondedType = bBonded.getBondType();
+                assertTrue(
+                        "One type must be a subtype of another: " + path,
+                        aBondedType.isSubtypeOf(bBondedType) || bBondedType.isSubtypeOf(aBondedType));
+                // compare Bonded data by comparing deserialized as base and separately as derived structs
+                Object aBondedStructAsA = aBonded.deserialize(aBondedType);
+                Object bBondedStructAsA = bBonded.deserialize(aBondedType);
+                Object aBondedStructAsB = aBonded.deserialize(bBondedType);
+                Object bBondedStructAsB = bBonded.deserialize(bBondedType);
+                assertStructMemberwiseEqualsHelper(aBondedStructAsA, bBondedStructAsA, path);
+                assertStructMemberwiseEqualsHelper(aBondedStructAsB, bBondedStructAsB, path);
+            } else {
+                // everything else, for which the equals method is sufficient:
+                // (float/double values are boxed and the equals implementation of the box works as expected)
+                assertSame("Both objects must be of the same class: " + path, aValueClass, bValueClass);
+                assertEquals("Values must match: " + path, a, b);
             }
-        } else if (List.class.isAssignableFrom(clazz)) {
-            // list type
-            List aList = (List)a;
-            List bList = (List)b;
-            assertEquals("List sizes muct mathch: " + path, aList.size(), bList.size());
-            for (int i = 0; i < aList.size(); ++i) {
-                String elementPath = path + "[" + i + "]";
-                assertStructMemberwiseEqualsHelper(aList.get(i), bList.get(i), elementPath);
-            }
-        } else if (Set.class.isAssignableFrom(clazz)) {
-            // set
-            // TODO: support set comparison
-            throw new UnsupportedOperationException();
-        } else if (Map.class.isAssignableFrom(clazz)) {
-            // map
-            // TODO: support map comparison
-            throw new UnsupportedOperationException();
-        } else if (Bonded.class.isAssignableFrom(clazz)) {
-            // bonded
-            // TODO: support bonded comparison
-            throw new UnsupportedOperationException();
-        } else {
-            // general object
-            assertEquals("Values of type " + clazz.getName() + " must match: " + path, a, b);
         }
     }
 }

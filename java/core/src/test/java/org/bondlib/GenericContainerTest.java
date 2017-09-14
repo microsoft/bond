@@ -263,8 +263,7 @@ public class GenericContainerTest {
             Assert.assertEquals(elementBondType.newDefaultValue(), container.bondedField.deserialize());
             container.bondedField = Bonded.fromObject(elementValue, elementBondType);
             Assert.assertEquals(elementValue, container.bondedField.deserialize());
-            // can't compare marshal/unmarshal results due to lack of proper Bonded.equals
-            // TODO: implement a way to compare bonded fields and use it in this method
+            marshalUnmarshalAndCompareUsingMultipleProtocols(container);
         } catch (IOException e) {
             Assert.fail(e.toString());
         }

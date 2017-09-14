@@ -227,7 +227,7 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
      *
      * @return an array containing the descriptors of the struct fields
      */
-    public final StructField<?>[] geStructFields() {
+    public final StructField<?>[] getStructFields() {
         return this.structFields.clone();
     }
 
