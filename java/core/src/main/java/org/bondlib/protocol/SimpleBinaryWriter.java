@@ -5,6 +5,7 @@ package org.bondlib.protocol;
 
 import org.bondlib.BondDataType;
 import org.bondlib.BondEnum;
+import org.bondlib.Metadata;
 import org.bondlib.ProtocolType;
 
 import java.io.IOException;
@@ -48,7 +49,7 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
 
     @Override
     public void writeFieldOmitted(
-        final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
+        final BondDataType type, final int id, final Metadata metadata) throws IOException {
         // Simple doesn't support omitting fields, so we need to explicitly write the default values
         // for optional fields.
         //
@@ -56,64 +57,58 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
         // serialize such a field if it is actually set to nothing (e.g., a SomethingObject which is
         // null).
 
-        if (metadata.isDefaultNothing()) {
+        if (metadata.default_value.nothing) {
             throw new IllegalArgumentException("can't omit fields with default = nothing in SimpleBinary");
         }
 
         switch (type.value) {
             case BondDataType.Values.BT_BOOL:
-                writeBool((Boolean) metadata.getDefaultValue());
+                this.writeBool(SchemaHelper.getDefaultBoolFieldValue(metadata));
                 break;
             case BondDataType.Values.BT_INT8:
-                writeInt8((Byte) metadata.getDefaultValue());
+                this.writeInt8(SchemaHelper.getDefaultInt8FieldValue(metadata));
                 break;
             case BondDataType.Values.BT_INT16:
-                writeInt16((Short) metadata.getDefaultValue());
+                this.writeInt16(SchemaHelper.getDefaultInt16FieldValue(metadata));
                 break;
             case BondDataType.Values.BT_INT32:
-                // Could be an int32, could be an enum.
-                final Object def = metadata.getDefaultValue();
-                if (def instanceof BondEnum) {
-                    writeInt32(((BondEnum) def).getValue());
-                } else {
-                    writeInt32((Integer) def);
-                }
+                this.writeInt32(SchemaHelper.getDefaultInt32FieldValue(metadata));
                 break;
             case BondDataType.Values.BT_INT64:
-                writeInt64((Long) metadata.getDefaultValue());
+                this.writeInt64(SchemaHelper.getDefaultInt64FieldValue(metadata));
                 break;
             case BondDataType.Values.BT_UINT8:
-                writeUInt8((Byte) metadata.getDefaultValue());
+                this.writeUInt8(SchemaHelper.getDefaultUInt8FieldValue(metadata));
                 break;
             case BondDataType.Values.BT_UINT16:
-                writeUInt16((Short) metadata.getDefaultValue());
+                this.writeUInt16(SchemaHelper.getDefaultUInt16FieldValue(metadata));
                 break;
             case BondDataType.Values.BT_UINT32:
-                writeUInt32((Integer) metadata.getDefaultValue());
+                this.writeUInt32(SchemaHelper.getDefaultUInt32FieldValue(metadata));
                 break;
             case BondDataType.Values.BT_UINT64:
-                writeUInt64((Long) metadata.getDefaultValue());
+                this.writeUInt64(SchemaHelper.getDefaultUInt64FieldValue(metadata));
                 break;
             case BondDataType.Values.BT_FLOAT:
-                writeFloat((Float) metadata.getDefaultValue());
+                this.writeFloat(SchemaHelper.getDefaultFloatFieldValue(metadata));
                 break;
             case BondDataType.Values.BT_DOUBLE:
-                writeDouble((Double) metadata.getDefaultValue());
+                this.writeDouble(SchemaHelper.getDefaultDoubleFieldValue(metadata));
                 break;
             case BondDataType.Values.BT_STRING:
-                writeString((String) metadata.getDefaultValue());
+                this.writeString(SchemaHelper.getDefaultStringFieldValue(metadata));
                 break;
             case BondDataType.Values.BT_WSTRING:
-                writeWString((String) metadata.getDefaultValue());
+                this.writeWString(SchemaHelper.getDefaultWStringFieldValue(metadata));
                 break;
             case BondDataType.Values.BT_LIST:
             case BondDataType.Values.BT_SET:
             case BondDataType.Values.BT_MAP:
-                writeContainerBegin(0, type);
-                writeContainerEnd();
+                this.writeContainerBegin(0, type);
+                this.writeContainerEnd();
                 break;
             default:
-                throw new IllegalArgumentException("Invalid bondType " + type.toString());
+                throw new IllegalArgumentException("Invalid bondType: " + type.toString());
         }
     }
 
@@ -234,7 +229,7 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
     //
 
     @Override
-    public void writeStructBegin(final StructMetadata metadata) throws IOException {
+    public void writeStructBegin(final Metadata metadata) throws IOException {
     }
 
     @Override
@@ -242,7 +237,7 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
     }
 
     @Override
-    public void writeBaseBegin(final StructMetadata metadata) throws IOException {
+    public void writeBaseBegin(final Metadata metadata) throws IOException {
     }
 
     @Override
@@ -251,7 +246,7 @@ public final class SimpleBinaryWriter implements ProtocolWriter {
 
     @Override
     public void writeFieldBegin(
-        final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
+        final BondDataType type, final int id, final Metadata metadata) throws IOException {
     }
 
     @Override

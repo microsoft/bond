@@ -148,9 +148,9 @@ public final class UInt8BondType extends PrimitiveBondType<Byte> {
             byte value,
             StructBondType.StructField<Byte> field) throws IOException {
         if (!field.isDefaultNothing() && field.isOptional() && (value == field.getDefaultValue())) {
-            context.writer.writeFieldOmitted(BondDataType.BT_UINT8, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_UINT8, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_UINT8, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_UINT8, field.getId(), field.getFieldDef().metadata);
             context.writer.writeUInt8(value);
             context.writer.writeFieldEnd();
         }

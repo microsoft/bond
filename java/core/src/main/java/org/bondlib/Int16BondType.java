@@ -148,9 +148,9 @@ public final class Int16BondType extends PrimitiveBondType<Short> {
             short value,
             StructBondType.StructField<Short> field) throws IOException {
         if (!field.isDefaultNothing() && field.isOptional() && (value == field.getDefaultValue())) {
-            context.writer.writeFieldOmitted(BondDataType.BT_INT16, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_INT16, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_INT16, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_INT16, field.getId(), field.getFieldDef().metadata);
             context.writer.writeInt16(value);
             context.writer.writeFieldEnd();
         }

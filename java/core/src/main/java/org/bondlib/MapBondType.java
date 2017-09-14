@@ -215,9 +215,9 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
         final int count = value.size();
         if (!field.isDefaultNothing() && count == 0 && field.isOptional()) {
-            context.writer.writeFieldOmitted(BondDataType.BT_MAP, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_MAP, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_MAP, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_MAP, field.getId(), field.getFieldDef().metadata);
             try {
                 this.serializeValue(context, value);
             } catch (InvalidBondDataException e) {

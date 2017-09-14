@@ -174,9 +174,9 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
         final int count = value.size();
         if (!field.isDefaultNothing() && count == 0 && field.isOptional()) {
-            context.writer.writeFieldOmitted(BondDataType.BT_SET, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_SET, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_SET, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_SET, field.getId(), field.getFieldDef().metadata);
             try {
                 this.serializeValue(context, value);
             } catch (InvalidBondDataException e) {

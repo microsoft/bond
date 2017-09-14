@@ -83,9 +83,9 @@ public abstract class EnumBondType<TEnum extends BondEnum<TEnum>> extends Primit
         int intValueToSerialize = value.getValue();
         if (!field.isDefaultNothing() && field.isOptional() &&
                 intValueToSerialize == field.getDefaultValue().getValue()) {
-            context.writer.writeFieldOmitted(BondDataType.BT_INT32, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_INT32, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_INT32, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_INT32, field.getId(), field.getFieldDef().metadata);
             context.writer.writeInt32(intValueToSerialize);
             context.writer.writeFieldEnd();
         }

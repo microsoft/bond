@@ -174,9 +174,9 @@ public final class ListBondType<TElement> extends BondType<List<TElement>> {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
         final int count = value.size();
         if (!field.isDefaultNothing() && count == 0 && field.isOptional()) {
-            context.writer.writeFieldOmitted(BondDataType.BT_LIST, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_LIST, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_LIST, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_LIST, field.getId(), field.getFieldDef().metadata);
             try {
                 this.serializeValue(context, value);
             } catch (InvalidBondDataException e) {

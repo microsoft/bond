@@ -151,9 +151,9 @@ public final class DoubleBondType extends PrimitiveBondType<Double> {
             StructBondType.StructField<Double> field) throws IOException {
         if (!field.isDefaultNothing() && field.isOptional() &&
                 FloatingPointHelper.doubleEquals(value, field.getDefaultValue())) {
-            context.writer.writeFieldOmitted(BondDataType.BT_DOUBLE, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_DOUBLE, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_DOUBLE, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_DOUBLE, field.getId(), field.getFieldDef().metadata);
             context.writer.writeDouble(value);
             context.writer.writeFieldEnd();
         }

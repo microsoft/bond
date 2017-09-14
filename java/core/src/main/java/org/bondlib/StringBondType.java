@@ -83,9 +83,9 @@ public final class StringBondType extends PrimitiveBondType<String> {
             StructBondType.StructField<String> field) throws IOException {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
         if (field.isOptional() && value.equals(field.getDefaultValue())) {
-            context.writer.writeFieldOmitted(BondDataType.BT_STRING, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_STRING, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_STRING, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_STRING, field.getId(), field.getFieldDef().metadata);
             context.writer.writeString(value);
             context.writer.writeFieldEnd();
         }
