@@ -341,7 +341,7 @@ public final class StructGenerator {
         if (isSigned && this.rand.nextBoolean()) {
             if (result == 0) {
                 // use the most negative number of the given width
-                result |= ~0L << bitCount;
+                result = ~0L << bitCount;
             } else {
                 result = -result;
             }
