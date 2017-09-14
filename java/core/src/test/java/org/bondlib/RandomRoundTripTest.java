@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 
 public class RandomRoundTripTest {
 
-    private static final int testIterationCount = 1;
+    private static final int testIterationCount = 3;
 
     @Test
     public void testSchemaDef() throws IOException {
@@ -251,7 +251,7 @@ public class RandomRoundTripTest {
             throws IOException {
         StructGenerator structGenerator = new StructGenerator(settings, randomSeed);
 
-        // multiple iterarions
+        // test using multiple iterations, to expand randomized coverage
         for (int i = 0; i < testIterationCount; ++i) {
             TStruct structValue = structGenerator.generateStruct(bondType);
             TestHelper.marshalUnmarshalAndCompare(structValue, ProtocolType.FAST_PROTOCOL, 1);
