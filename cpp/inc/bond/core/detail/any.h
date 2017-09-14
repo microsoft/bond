@@ -139,7 +139,7 @@ private:
         template <typename T>
         struct impl<T, false>
         {
-            static T* unsafe_cast(any& x) BOND_NOEXCEPT
+            static T*& unsafe_cast(any& x) BOND_NOEXCEPT
             {
                 BOOST_ASSERT(TypeId<T>::value == x._id);
                 return *static_cast<T**>(x.data());
@@ -158,7 +158,9 @@ private:
 
             static void destroy(any& x)
             {
-                delete unsafe_cast(x);
+                T*& ptr = unsafe_cast(x);
+                delete ptr;
+                ptr = nullptr;
             }
         };
 
