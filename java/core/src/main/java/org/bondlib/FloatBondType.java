@@ -151,9 +151,9 @@ public final class FloatBondType extends PrimitiveBondType<Float> {
             StructBondType.StructField<Float> field) throws IOException {
         if (!field.isDefaultNothing() && field.isOptional() &&
                 FloatingPointHelper.floatEquals(value, field.getDefaultValue())) {
-            context.writer.writeFieldOmitted(BondDataType.BT_FLOAT, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_FLOAT, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_FLOAT, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_FLOAT, field.getId(), field.getFieldDef().metadata);
             context.writer.writeFloat(value);
             context.writer.writeFieldEnd();
         }

@@ -143,7 +143,7 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
             Bonded<TStruct> value,
             StructBondType.StructField<Bonded<TStruct>> field) throws IOException {
         // struct (bonded) fields are never omitted
-        context.writer.writeFieldBegin(BondDataType.BT_STRUCT, field.getId(), field);
+        context.writer.writeFieldBegin(BondDataType.BT_STRUCT, field.getId(), field.getFieldDef().metadata);
         try {
             this.serializeValue(context, value);
         } catch (InvalidBondDataException e) {

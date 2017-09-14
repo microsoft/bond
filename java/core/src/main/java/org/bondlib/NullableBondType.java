@@ -142,9 +142,9 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
             TValue value,
             StructBondType.StructField<TValue> field) throws IOException {
         if (!field.isDefaultNothing() && value == null && field.isOptional()) {
-            context.writer.writeFieldOmitted(BondDataType.BT_LIST, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_LIST, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_LIST, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_LIST, field.getId(), field.getFieldDef().metadata);
             try {
                 this.serializeValue(context, value);
             } catch (InvalidBondDataException e) {

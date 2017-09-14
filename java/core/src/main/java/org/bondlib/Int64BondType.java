@@ -148,9 +148,9 @@ public final class Int64BondType extends PrimitiveBondType<Long> {
             long value,
             StructBondType.StructField<Long> field) throws IOException {
         if (!field.isDefaultNothing() && field.isOptional() && (value == field.getDefaultValue())) {
-            context.writer.writeFieldOmitted(BondDataType.BT_INT64, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_INT64, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_INT64, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_INT64, field.getId(), field.getFieldDef().metadata);
             context.writer.writeInt64(value);
             context.writer.writeFieldEnd();
         }

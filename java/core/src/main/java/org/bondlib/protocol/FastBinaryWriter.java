@@ -4,6 +4,7 @@
 package org.bondlib.protocol;
 
 import org.bondlib.BondDataType;
+import org.bondlib.Metadata;
 import org.bondlib.ProtocolType;
 
 import java.io.IOException;
@@ -46,7 +47,7 @@ public final class FastBinaryWriter implements ProtocolWriter {
     }
 
     @Override
-    public void writeStructBegin(final StructMetadata metadata) throws IOException {
+    public void writeStructBegin(final Metadata metadata) throws IOException {
     }
 
     @Override
@@ -55,7 +56,7 @@ public final class FastBinaryWriter implements ProtocolWriter {
     }
 
     @Override
-    public void writeBaseBegin(final StructMetadata metadata) throws IOException {
+    public void writeBaseBegin(final Metadata metadata) throws IOException {
     }
 
     @Override
@@ -65,7 +66,7 @@ public final class FastBinaryWriter implements ProtocolWriter {
 
     @Override
     public void writeFieldBegin(
-            final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
+            final BondDataType type, final int id, final Metadata metadata) throws IOException {
         writer.writeInt8((byte) type.value);
         writer.writeInt16((short) id);
     }
@@ -76,7 +77,7 @@ public final class FastBinaryWriter implements ProtocolWriter {
 
     @Override
     public void writeFieldOmitted(
-            final BondDataType type, final int id, final FieldMetadata metadata) throws IOException {
+            final BondDataType type, final int id, final Metadata metadata) throws IOException {
     }
 
     @Override

@@ -123,9 +123,9 @@ public final class BlobBondType extends BondType<Blob> {
             StructBondType.StructField<Blob> field) throws IOException {
         this.verifySerializedNonNullableFieldIsNotSetToNull(value, field);
         if (value.getData().length == 0 && field.isOptional()) {
-            context.writer.writeFieldOmitted(BondDataType.BT_LIST, field.getId(), field);
+            context.writer.writeFieldOmitted(BondDataType.BT_LIST, field.getId(), field.getFieldDef().metadata);
         } else {
-            context.writer.writeFieldBegin(BondDataType.BT_LIST, field.getId(), field);
+            context.writer.writeFieldBegin(BondDataType.BT_LIST, field.getId(), field.getFieldDef().metadata);
             try {
                 this.serializeValue(context, value);
             } catch (InvalidBondDataException e) {
