@@ -5,6 +5,7 @@
 
 #include <limits>
 #include <stdexcept>
+#include <boost/static_assert.hpp>
 
 namespace bond
 {
@@ -19,7 +20,9 @@ public:
         : _size(0),
           _capacity(N),
           _data(_insitu)    
-    {}
+    {
+        BOOST_STATIC_ASSERT(N != 0);
+    }
 
     ~SimpleArray()
     {
@@ -38,6 +41,10 @@ public:
 
     T pop()
     {
+        if (_size == 0)
+        {
+            throw std::underflow_error("Can't pop empty array");
+        }
         return _data[--_size];
     }
 
@@ -72,7 +79,10 @@ private:
     void memfree()
     {
         if (_data != _insitu)
+        {
             delete [] _data;
+            _data = nullptr;
+        }
     }
 
     BOOST_STATIC_ASSERT(is_pod<T>::value);

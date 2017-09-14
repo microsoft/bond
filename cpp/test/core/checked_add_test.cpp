@@ -18,6 +18,14 @@ struct CheckedAddUIntTest
         UT_AssertAreEqual(bond::detail::checked_add(x2, x3), x2 + x3);
         UT_AssertThrows(bond::detail::checked_add(x2, x4), std::overflow_error);
         UT_AssertAreEqual(bond::detail::checked_add(x3, x4), x3 + x4);
+
+        uint8_t y3 = 1;
+        uint8_t y4 = 100;
+
+        UT_AssertThrows(bond::detail::checked_add(x1, y3), std::overflow_error);
+        UT_AssertThrows(bond::detail::checked_add(x1, y4), std::overflow_error);
+        UT_AssertAreEqual(bond::detail::checked_add(x2, y3), x2 + y3);
+        UT_AssertThrows(bond::detail::checked_add(x2, y4), std::overflow_error);
     }
 };
 
