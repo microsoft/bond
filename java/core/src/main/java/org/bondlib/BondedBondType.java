@@ -38,7 +38,7 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
      *
      * @return the underlying value type descriptor
      */
-    public final BondType<TStruct> getValueType() {
+    public final StructBondType<TStruct> getValueType() {
         return this.valueType;
     }
 

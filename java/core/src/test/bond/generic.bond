@@ -27,3 +27,27 @@ struct GenericMapContainer<T> {
 struct GenericBondedContainer<T> {
     0: bonded<T> bondedField;
 }
+
+struct GenericContainerOfContainersForPrimitives<T> {
+    0: GenericValueContainer<T> valueContainer;
+    1: GenericNullableContainer<T> nullableContainer;
+    2: GenericVectorContainer<T> vectorContainer;
+    3: GenericListContainer<T> listContainer;
+    4: GenericSetContainer<T> setContainer;
+    5: GenericMapContainer<T> mapContainer;
+}
+
+struct GenericContainerOfContainersForStructs<T> {
+    0: GenericValueContainer<T> valueContainer;
+    1: GenericNullableContainer<T> nullableContainer;
+    2: GenericVectorContainer<T> vectorContainer;
+    3: GenericListContainer<T> listContainer;
+    4: GenericBondedContainer<T> bondedContainer;
+}
+
+struct GenericContainerOfContainersForCollections<T> {
+    0: GenericValueContainer<T> valueContainer;
+    1: GenericNullableContainer<T> nullableContainer;
+    2: GenericVectorContainer<T> vectorContainer;
+    3: GenericListContainer<T> listContainer;
+}
