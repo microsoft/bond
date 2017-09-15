@@ -3,8 +3,6 @@
 
 package org.bondlib;
 
-import org.bondlib.helpers.FloatingPointHelper;
-
 import java.io.IOException;
 
 /**

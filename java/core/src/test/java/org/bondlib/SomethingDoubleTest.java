@@ -3,7 +3,6 @@
 
 package org.bondlib;
 
-import org.bondlib.helpers.FloatingPointHelper;
 import org.junit.Test;
 
 import java.util.ArrayList;

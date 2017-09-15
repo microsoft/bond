@@ -6,10 +6,9 @@ import java.io.IOException;
 
 import org.bondlib.Bonded;
 import org.bondlib.Deserializer;
+import org.bondlib.CompactBinaryReader;
+import org.bondlib.CompactBinaryWriter;
 import org.bondlib.Serializer;
-
-import org.bondlib.protocol.CompactBinaryReader;
-import org.bondlib.protocol.CompactBinaryWriter;
 
 import org.bondlib.examples.polymorphiccontainer.Circle;
 import org.bondlib.examples.polymorphiccontainer.Polymorphic;

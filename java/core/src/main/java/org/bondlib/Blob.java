@@ -5,8 +5,6 @@ package org.bondlib;
 
 import java.util.Arrays;
 
-import org.bondlib.helpers.ArgumentHelper;
-
 /**
  * Provides implementation for the Bond blob type as a simple wrapper around {@code byte []}.
  */

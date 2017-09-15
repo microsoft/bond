@@ -7,11 +7,10 @@ import java.util.Arrays;
 
 import org.bondlib.Blob;
 import org.bondlib.Deserializer;
+import org.bondlib.CompactBinaryReader;
+import org.bondlib.CompactBinaryWriter;
 import org.bondlib.Serializer;
 import org.bondlib.Something;
-
-import org.bondlib.protocol.CompactBinaryReader;
-import org.bondlib.protocol.CompactBinaryWriter;
 
 // See build.gradle for namespace mapping
 import org.bondlib.examples.blob.Example;

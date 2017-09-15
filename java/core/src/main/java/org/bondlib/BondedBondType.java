@@ -3,10 +3,6 @@
 
 package org.bondlib;
 
-import org.bondlib.protocol.CompactBinaryWriter;
-import org.bondlib.protocol.ProtocolWriter;
-import org.bondlib.protocol.TaggedProtocolReader;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;

@@ -399,8 +399,8 @@ public class BasicTypes implements org.bondlib.BondSerializable {
         if (!(this._int16 == other._int16)) return false;
         if (!(this._int32 == other._int32)) return false;
         if (!(this._int64 == other._int64)) return false;
-        if (!(org.bondlib.helpers.FloatingPointHelper.doubleEquals(this._double, other._double))) return false;
-        if (!(org.bondlib.helpers.FloatingPointHelper.floatEquals(this._float, other._float))) return false;
+        if (!(org.bondlib.FloatingPointHelper.doubleEquals(this._double, other._double))) return false;
+        if (!(org.bondlib.FloatingPointHelper.floatEquals(this._float, other._float))) return false;
         if (!((this._blob == null && other._blob == null) || (this._blob != null && this._blob.equals(other._blob)))) return false;
         return true;
     }
@@ -441,10 +441,10 @@ public class BasicTypes implements org.bondlib.BondSerializable {
         result += _int64 ^ (_int64 >>> 32);
         result *= 0xeadbeef;
         result ^= result >> 16;
-        result += org.bondlib.helpers.FloatingPointHelper.doubleHashCode(_double);
+        result += org.bondlib.FloatingPointHelper.doubleHashCode(_double);
         result *= 0xeadbeef;
         result ^= result >> 16;
-        result += org.bondlib.helpers.FloatingPointHelper.floatHashCode(_float);
+        result += org.bondlib.FloatingPointHelper.floatHashCode(_float);
         result *= 0xeadbeef;
         result ^= result >> 16;
         result += _blob == null ? 0 : _blob.hashCode();

@@ -1,8 +1,6 @@
 package org.bondlib.compat;
 
-import org.bondlib.Deserializer;
-import org.bondlib.Serializer;
-import org.bondlib.protocol.*;
+import org.bondlib.*;
 import unittest.compat.Compat;
 
 import java.io.FileInputStream;

@@ -1,12 +1,13 @@
 package org.bondlib.examples;
 
 import org.bondlib.Deserializer;
+import org.bondlib.SimpleBinaryReader;
+import org.bondlib.SimpleBinaryWriter;
 import org.bondlib.SchemaDef;
 import org.bondlib.Serializer;
+
 import org.bondlib.examples.untagged_protocols.Example1;
 import org.bondlib.examples.untagged_protocols.Example2;
-import org.bondlib.protocol.SimpleBinaryReader;
-import org.bondlib.protocol.SimpleBinaryWriter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
