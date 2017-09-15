@@ -3,10 +3,6 @@
 
 package org.bondlib;
 
-import org.bondlib.helpers.ArgumentHelper;
-import org.bondlib.protocol.*;
-import org.junit.Assert;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

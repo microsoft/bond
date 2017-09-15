@@ -3,8 +3,6 @@
 
 package org.bondlib;
 
-import org.bondlib.helpers.FloatingPointHelper;
-
 /**
  * An implementation of the {@link Something} construct that wraps a primitive float value which can be
  * accessed directly and is never set to null.

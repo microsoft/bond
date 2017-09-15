@@ -6,13 +6,12 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import org.bondlib.BondSerializable;
+import org.bondlib.CompactBinaryReader;
+import org.bondlib.CompactBinaryWriter;
 import org.bondlib.Deserializer;
 import org.bondlib.Serializer;
 import org.bondlib.Something;
 import org.bondlib.StructBondType;
-
-import org.bondlib.protocol.CompactBinaryReader;
-import org.bondlib.protocol.CompactBinaryWriter;
 
 import org.bondlib.examples.nothingdefault.Struct_v1;
 import org.bondlib.examples.nothingdefault.Struct_v2;

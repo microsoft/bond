@@ -6,10 +6,10 @@ import java.io.IOException;
 
 import org.bondlib.BondTypes;
 import org.bondlib.Deserializer;
+import org.bondlib.CompactBinaryReader;
+import org.bondlib.CompactBinaryWriter;
 import org.bondlib.Serializer;
 import org.bondlib.StructBondType;
-import org.bondlib.protocol.CompactBinaryReader;
-import org.bondlib.protocol.CompactBinaryWriter;
 
 // See build.gradle for namespace mapping
 import org.bondlib.examples.generics.Base;

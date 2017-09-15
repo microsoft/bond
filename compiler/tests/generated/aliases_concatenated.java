@@ -17,7 +17,7 @@ public class Foo<T> implements org.bondlib.BondSerializable {
         static final class StructBondTypeBuilderImpl extends org.bondlib.StructBondType.StructBondTypeBuilder<Foo> {
             
             private <T> org.bondlib.StructBondType<Foo<T>> makeGenericType(org.bondlib.BondType<T> T) {
-                org.bondlib.helpers.ArgumentHelper.ensureNotNull(T, "T");
+                org.bondlib.ArgumentHelper.ensureNotNull(T, "T");
                 return (StructBondTypeImpl) this.getInitializedFromCache(T);
             }
 

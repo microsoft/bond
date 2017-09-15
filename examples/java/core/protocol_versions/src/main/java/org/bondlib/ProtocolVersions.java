@@ -5,12 +5,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.bondlib.Deserializer;
+import org.bondlib.CompactBinaryReader;
+import org.bondlib.CompactBinaryWriter;
 import org.bondlib.Marshal;
 import org.bondlib.Serializer;
 import org.bondlib.Unmarshal;
-
-import org.bondlib.protocol.CompactBinaryReader;
-import org.bondlib.protocol.CompactBinaryWriter;
 
 import org.bondlib.examples.protocolversions.Struct;
 

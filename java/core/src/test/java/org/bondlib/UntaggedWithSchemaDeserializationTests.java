@@ -1,7 +1,5 @@
 package org.bondlib;
 
-import org.bondlib.protocol.SimpleBinaryReader;
-import org.bondlib.protocol.SimpleBinaryWriter;
 import org.bondlib.test.FieldRemovedRecord;
 import org.bondlib.test.RecordV1;
 import org.bondlib.test.RecordV2;

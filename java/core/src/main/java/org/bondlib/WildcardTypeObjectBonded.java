@@ -3,9 +3,6 @@
 
 package org.bondlib;
 
-import org.bondlib.helpers.ArgumentHelper;
-import org.bondlib.protocol.ProtocolWriter;
-
 import java.io.IOException;
 
 /**

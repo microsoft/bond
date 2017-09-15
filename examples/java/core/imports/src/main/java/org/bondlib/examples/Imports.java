@@ -4,11 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.bondlib.CompactBinaryReader;
+import org.bondlib.CompactBinaryWriter;
 import org.bondlib.Deserializer;
 import org.bondlib.Serializer;
-
-import org.bondlib.protocol.CompactBinaryReader;
-import org.bondlib.protocol.CompactBinaryWriter;
 
 // See build.gradle for namespace mapping
 import org.bondlib.examples.imports.Message;

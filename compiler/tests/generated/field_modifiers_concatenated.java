@@ -170,7 +170,7 @@ public class Foo implements org.bondlib.BondSerializable {
         final Foo other = (Foo) o;
         if (!(this.o == other.o)) return false;
         if (!(this.r == other.r)) return false;
-        if (!(org.bondlib.helpers.FloatingPointHelper.doubleEquals(this.ro, other.ro))) return false;
+        if (!(org.bondlib.FloatingPointHelper.doubleEquals(this.ro, other.ro))) return false;
         return true;
     }
 
@@ -183,7 +183,7 @@ public class Foo implements org.bondlib.BondSerializable {
         result += r;
         result *= 0xeadbeef;
         result ^= result >> 16;
-        result += org.bondlib.helpers.FloatingPointHelper.doubleHashCode(ro);
+        result += org.bondlib.FloatingPointHelper.doubleHashCode(ro);
         result *= 0xeadbeef;
         result ^= result >> 16;
         return result;

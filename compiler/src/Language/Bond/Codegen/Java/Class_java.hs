@@ -119,7 +119,7 @@ typeDescriptorName declName = [lt|org.bondlib.StructBondType<#{declName}>|]
 
 -- given a variable name, returns call to ArgumentHelper.ensureNotNull method that checks the variable for null
 ensureNotNullArgument :: Text -> Text
-ensureNotNullArgument argName = [lt|org.bondlib.helpers.ArgumentHelper.ensureNotNull(#{argName}, "#{argName}")|]
+ensureNotNullArgument argName = [lt|org.bondlib.ArgumentHelper.ensureNotNull(#{argName}, "#{argName}")|]
 
 
 -- given a field type and optional default value, returns an expression for the parameter containing the default value,
@@ -404,7 +404,7 @@ public #{declName}(org.bondlib.StructBondType<#{declName}<#{paramList}>> generic
         paramList = sepBy ", " paramName declParams
         superConstructorArgs Nothing = mempty
         superConstructorArgs (Just t) = if isGenericBondStructType t
-            then [lt|(org.bondlib.StructBondType<#{getTypeName java t}>)org.bondlib.helpers.ArgumentHelper.ensureNotNull(genericType, "genericType").getBaseStructType()|]
+            then [lt|(org.bondlib.StructBondType<#{getTypeName java t}>)org.bondlib.ArgumentHelper.ensureNotNull(genericType, "genericType").getBaseStructType()|]
             else mempty
 
 
@@ -423,8 +423,8 @@ object_equals declName fields structBase = [lt|@Override
         compareBase (Just _)     = [lt|if (!(super.equals(o))) return false;|]
         compareBase Nothing      = mempty
         compareField Field {..}  = [lt|if (!(#{equalsMember fieldType fieldName})) return false;|]
-        equalsMember BT_Float f  = [lt|org.bondlib.helpers.FloatingPointHelper.floatEquals(this.#{f}, other.#{f})|]
-        equalsMember BT_Double f = [lt|org.bondlib.helpers.FloatingPointHelper.doubleEquals(this.#{f}, other.#{f})|]
+        equalsMember BT_Float f  = [lt|org.bondlib.FloatingPointHelper.floatEquals(this.#{f}, other.#{f})|]
+        equalsMember BT_Double f = [lt|org.bondlib.FloatingPointHelper.doubleEquals(this.#{f}, other.#{f})|]
         equalsMember BT_Bool f    = [lt|this.#{f} == other.#{f}|]
         equalsMember BT_Int8 f    = [lt|this.#{f} == other.#{f}|]
         equalsMember BT_Int16 f   = [lt|this.#{f} == other.#{f}|]
@@ -461,8 +461,8 @@ object_hashCode fields structBase = [lt|@Override
         hashCode BT_Bool f    = [lt|(#{f} ? 0 : 1)|]
         hashCode BT_Int64 f   = [lt|#{f} ^ (#{f} >>> 32)|]
         hashCode BT_UInt64 f  = [lt|#{f} ^ (#{f} >>> 32)|]
-        hashCode BT_Float f   = [lt|org.bondlib.helpers.FloatingPointHelper.floatHashCode(#{f})|]
-        hashCode BT_Double f  = [lt|org.bondlib.helpers.FloatingPointHelper.doubleHashCode(#{f})|]
+        hashCode BT_Float f   = [lt|org.bondlib.FloatingPointHelper.floatHashCode(#{f})|]
+        hashCode BT_Double f  = [lt|org.bondlib.FloatingPointHelper.doubleHashCode(#{f})|]
         hashCode BT_Int8 f    = [lt|#{f}|]
         hashCode BT_Int16 f   = [lt|#{f}|]
         hashCode BT_Int32 f   = [lt|#{f}|]

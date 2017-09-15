@@ -1,7 +1,5 @@
 package org.bondlib;
 
-import org.bondlib.protocol.FastBinaryReader;
-import org.bondlib.protocol.FastBinaryWriter;
 import org.bondlib.test.Base;
 import org.bondlib.test.BondedCollection;
 import org.bondlib.test.Derived;

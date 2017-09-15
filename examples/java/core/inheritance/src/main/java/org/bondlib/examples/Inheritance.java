@@ -8,11 +8,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.bondlib.BondSerializable;
+import org.bondlib.CompactBinaryReader;
+import org.bondlib.CompactBinaryWriter;
 import org.bondlib.Deserializer;
 import org.bondlib.Serializer;
-
-import org.bondlib.protocol.CompactBinaryReader;
-import org.bondlib.protocol.CompactBinaryWriter;
 
 import org.bondlib.examples.inheritance.Base;
 import org.bondlib.examples.inheritance.Derived;

@@ -6,9 +6,6 @@ import java.io.IOException;
 
 import org.bondlib.*;
 
-import org.bondlib.protocol.CompactBinaryReader;
-import org.bondlib.protocol.CompactBinaryWriter;
-
 // See build.gradle for namespace mapping
 import org.bondlib.examples.runtime_schema.Example;
 
