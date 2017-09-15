@@ -11,7 +11,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.bondlib:gradle:+'
+        classpath 'org.bondlib:bond-gradle:+'
     }
 }
 
