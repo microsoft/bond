@@ -15,9 +15,12 @@
 
 namespace tests
 {
+    [global::Bond.Attribute("FooAttribute", "Bar")]
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
     public interface IFoo
     {
+        [global::Bond.Attribute("foo", "method")]
+        [global::Bond.Attribute("method", "")]
         global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<Result>> fooAsync(global::Bond.Comm.IMessage<Param> param, global::System.Threading.CancellationToken ct);
     }
     

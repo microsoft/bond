@@ -8,6 +8,7 @@
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/client_callback.h>
 #include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/grpc/reflection.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 #include <bond/ext/grpc/detail/client_call_data.h>
@@ -40,6 +41,8 @@ template <typename Payload>
     class Foo final
 {
 public:
+    struct Schema;
+
     template <typename TThreadPool>
     class ClientCore
     {
@@ -241,6 +244,73 @@ inline void Foo<Payload>::ClientCore<TThreadPool>::Asyncfoo33(
         cb);
     calldata->dispatch(rpcmethod_foo33_, request);
 }
+
+template <typename Payload>
+    struct Foo<Payload>::Schema
+{
+    static const ::bond::Metadata metadata;
+
+    private: static const ::bond::Metadata s_foo31_metadata;
+    private: static const ::bond::Metadata s_foo32_metadata;
+    private: static const ::bond::Metadata s_foo33_metadata;
+
+    public: struct service
+    {
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo<Payload>,
+                ::bond::bonded<Payload>,
+                ::bond::bonded< ::bond::Void>,
+                &s_foo31_metadata
+            > foo31;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo<Payload>,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded<Payload>,
+                &s_foo32_metadata
+            > foo32;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo<Payload>,
+                ::bond::bonded<Payload>,
+                ::bond::bonded<Payload>,
+                &s_foo33_metadata
+            > foo33;
+    };
+
+    private: typedef boost::mpl::list<> methods0;
+    private: typedef typename boost::mpl::push_front<methods0, typename service::foo33>::type methods1;
+    private: typedef typename boost::mpl::push_front<methods1, typename service::foo32>::type methods2;
+    private: typedef typename boost::mpl::push_front<methods2, typename service::foo31>::type methods3;
+
+    public: typedef typename methods3::type methods;
+
+    Schema()
+        {
+            // Force instantiation of template statics
+            (void)metadata;
+            (void)s_foo31_metadata;
+            (void)s_foo32_metadata;
+            (void)s_foo33_metadata;
+        }
+};
+
+    template <typename Payload>
+    const ::bond::Metadata Foo<Payload>::Schema::metadata
+        = ::bond::reflection::MetadataInit<boost::mpl::list<Payload> >("Foo", "tests.Foo",
+                ::bond::reflection::Attributes());
+    
+    template <typename Payload>
+    const ::bond::Metadata Foo<Payload>::Schema::s_foo31_metadata
+        = ::bond::reflection::MetadataInit("foo31");
+    
+    template <typename Payload>
+    const ::bond::Metadata Foo<Payload>::Schema::s_foo32_metadata
+        = ::bond::reflection::MetadataInit("foo32");
+    
+    template <typename Payload>
+    const ::bond::Metadata Foo<Payload>::Schema::s_foo33_metadata
+        = ::bond::reflection::MetadataInit("foo33");
 
 
 } // namespace tests

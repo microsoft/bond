@@ -5,7 +5,8 @@ add_bond_codegen (lib/grpc_static_library.bond
 add_library (grpc_static_library_lib EXCLUDE_FROM_ALL
     STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/grpc_static_library_types.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/grpc_static_library_apply.cpp)
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/grpc_static_library_apply.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/grpc_static_library_grpc.cpp)
 
 add_target_to_folder (grpc_static_library_lib)
 

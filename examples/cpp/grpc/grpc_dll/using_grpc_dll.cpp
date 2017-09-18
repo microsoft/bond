@@ -33,6 +33,8 @@
 #include <iostream>
 #include <memory>
 
+#include <boost/mpl/list.hpp>
+
 using grpc::Channel;
 
 using grpc::Server;
@@ -53,6 +55,12 @@ struct TestServiceImpl : TestService::Service
         response = request.items[0];
 
         call.Finish(response);
+    }
+};
+
+struct print_metadata {
+    template<typename T> void operator()(const T&) {
+        std::cout << T::metadata.name << std::endl;
     }
 };
 
@@ -96,6 +104,10 @@ int main()
         bond::RuntimeSchema schema = bond::GetRuntimeSchema<MyStruct>();
 
         std::cout << schema.GetSchema().structs[schema.GetSchema().root.struct_def].fields[0].metadata.name << std::endl;
+
+        print_metadata()(TestService::Schema());
+
+        boost::mpl::for_each<TestService::Schema::methods>(print_metadata());
     }
 
     { // Exercise gRPC facilities

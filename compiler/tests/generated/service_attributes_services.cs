@@ -15,6 +15,7 @@
 
 namespace tests
 {
+    [global::Bond.Attribute("FooAttribute", "Bar")]
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
     public abstract class FooServiceBase : IFoo, global::Bond.Comm.IService
     {
@@ -26,6 +27,8 @@ namespace tests
             }
         }
 
+        [global::Bond.Attribute("foo", "method")]
+        [global::Bond.Attribute("method", "")]
         public abstract global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<Result>> fooAsync(global::Bond.Comm.IMessage<Param> param, global::System.Threading.CancellationToken ct);
 
         private global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage> fooAsync_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
