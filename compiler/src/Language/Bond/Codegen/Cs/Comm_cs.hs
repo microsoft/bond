@@ -57,12 +57,12 @@ namespace #{csNamespace}
       where
         generics = angles $ sepBy ", " paramName declParams
 
-        methodDeclaration Function{..} = [lt|global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>> #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param, global::System.Threading.CancellationToken ct);|]
+        methodDeclaration Function{..} = [lt|#{CS.schemaAttributes 2 methodAttributes}global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>> #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param, global::System.Threading.CancellationToken ct);|]
           where
             getMessageResultTypeName = getMessageTypeName cs methodResult
             getMessageInputTypeName = getMessageTypeName cs methodInput
 
-        methodDeclaration Event{..} = [lt|void #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param);|]
+        methodDeclaration Event{..} = [lt|#{CS.schemaAttributes 2 methodAttributes}void #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param);|]
           where
             getMessageInputTypeName = getMessageTypeName cs methodInput
 
@@ -103,7 +103,7 @@ namespace #{csNamespace}
         interfaceGenerics = angles $ sepBy "," paramName declParams -- of the form "<T1, T2, T3>"
         proxyGenerics = sepEndBy ", " paramName declParams -- of the form "T1, T2, T3, "
 
-        proxyMethod Function{..} = [lt|public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>> #{methodName}Async(#{getMessageProxyInputParam cs methodInput})
+        proxyMethod Function{..} = [lt|#{CS.schemaAttributes 2 methodAttributes}public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>> #{methodName}Async(#{getMessageProxyInputParam cs methodInput})
         {
             var message = new global::Bond.Comm.Message<#{getMessageInputTypeName}>(#{paramOrBondVoid methodInput});
             return #{methodName}Async(message, global::System.Threading.CancellationToken.None);
@@ -121,7 +121,7 @@ namespace #{csNamespace}
             getMessageResultTypeName = getMessageTypeName cs methodResult
             getMessageInputTypeName = getMessageTypeName cs methodInput
 
-        proxyMethod Event{..} = [lt|public void #{methodName}Async(#{getMessageProxyInputParam cs methodInput})
+        proxyMethod Event{..} = [lt|#{CS.schemaAttributes 2 methodAttributes}public void #{methodName}Async(#{getMessageProxyInputParam cs methodInput})
         {
             var message = new global::Bond.Comm.Message<#{getMessageInputTypeName}>(#{paramOrBondVoid methodInput});
             #{methodName}Async(message);
@@ -173,7 +173,7 @@ namespace #{csNamespace}
         methodInfo Function{..} = [lt|yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="#{getDeclTypeName idl s}.#{methodName}", Callback = #{methodName}Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.RequestResponse};|]
         methodInfo Event{..} = [lt|yield return new global::Bond.Comm.ServiceMethodInfo {MethodName="#{getDeclTypeName idl s}.#{methodName}", Callback = #{methodName}Async_Glue, CallbackType = global::Bond.Comm.ServiceCallbackType.Event};|]
 
-        methodAbstract Function{..} = [lt|public abstract global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>> #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param, global::System.Threading.CancellationToken ct);|]
+        methodAbstract Function{..} = [lt|#{CS.schemaAttributes 2 methodAttributes}public abstract global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<#{getMessageResultTypeName}>> #{methodName}Async(global::Bond.Comm.IMessage<#{getMessageInputTypeName}> param, global::System.Threading.CancellationToken ct);|]
           where
             getMessageResultTypeName = getMessageTypeName cs methodResult
             getMessageInputTypeName = getMessageTypeName cs methodInput
@@ -192,7 +192,7 @@ namespace #{csNamespace}
             getMessageResultTypeName = getMessageTypeName cs methodResult
             getMessageInputTypeName = getMessageTypeName cs methodInput
 
-        methodGlue Event{..} = [lt|private global::System.Threading.Tasks.Task #{methodName}Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
+        methodGlue Event{..} = [lt|#{CS.schemaAttributes 2 methodAttributes}private global::System.Threading.Tasks.Task #{methodName}Async_Glue(global::Bond.Comm.IMessage param, global::Bond.Comm.ReceiveContext context, global::System.Threading.CancellationToken ct)
         {
             #{methodName}Async(param.Convert<#{getMessageInputTypeName}>());
             return global::Bond.Comm.CodegenHelpers.CompletedTask;

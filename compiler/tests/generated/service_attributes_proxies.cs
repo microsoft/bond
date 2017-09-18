@@ -15,6 +15,7 @@
 
 namespace tests
 {
+    [global::Bond.Attribute("FooAttribute", "Bar")]
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
     public class FooProxy<TConnection> : IFoo where TConnection : global::Bond.Comm.IRequestResponseConnection
     {
@@ -25,6 +26,8 @@ namespace tests
             m_connection = connection;
         }
 
+        [global::Bond.Attribute("foo", "method")]
+        [global::Bond.Attribute("method", "")]
         public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<Result>> fooAsync(Param param)
         {
             var message = new global::Bond.Comm.Message<Param>(param);

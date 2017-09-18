@@ -12,12 +12,17 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased  ##
-* `gbc` & compiler library: TBD
+* `gbc` & compiler library: TBD (minor bump needed)
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD (bug fix bump needed)
+* C++ version: TBD (minor bump needed)
 * C# NuGet version: TBD  (bug fix bump needed)
-* C# Comm NuGet version: TBD
+* C# Comm NuGet version: (minor bump needed)
+
+### `gbc` and Bond compiler library ###
+
+* Add service/method annotations in C# for Comm and gRPC.
+* Add service/method metadata support in C++ for gRPC.
 
 ### C++ ###
 
@@ -34,6 +39,8 @@ different versioning scheme, following the Haskell community's
 * Use RapidJSON's iterative parser to handle deeply nested JSON data without
   causing a stack overflow.
 * Guard against min/max being function-style macros in more places.
+* Provide compile-time access to metadata about gRPC services and methods.
+
 
 ### C# ###
 
@@ -50,10 +57,15 @@ different versioning scheme, following the Haskell community's
 * Fix a bug in CompactBinaryWriter when using v2 that repeated first pass
   when a bonded field was serailized, resulting in extra work and extra
   state left in the CompactBinaryWriter.
+* Apply IDL annotations to services and methods for gRPC.
 
 [msdn-gzipstream]: https://msdn.microsoft.com/en-us/library/system.io.compression.gzipstream(v=vs.110).aspx
 [msdn-stream-canseek]: https://msdn.microsoft.com/en-us/library/system.io.stream.canseek(v=vs.110).aspx
 [msdn-stream-seek]: https://msdn.microsoft.com/en-us/library/system.io.stream.seek(v=vs.110).aspx
+
+### C# Comm ###
+
+* Apply IDL annotations to services and methods for Comm.
 
 ## 6.0.1 ##
 

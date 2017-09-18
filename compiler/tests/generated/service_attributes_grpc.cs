@@ -16,6 +16,7 @@
 
 namespace tests
 {
+    [global::Bond.Attribute("FooAttribute", "Bar")]
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
     public static class Foo 
     {
@@ -30,6 +31,8 @@ namespace tests
 
         public abstract class FooBase
         {
+            [global::Bond.Attribute("foo", "method")]
+            [global::Bond.Attribute("method", "")]
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<Result>> foo(global::Bond.Grpc.IMessage<Param> request, global::Grpc.Core.ServerCallContext context);
         }
 
@@ -47,6 +50,8 @@ namespace tests
             {
             }
 
+            [global::Bond.Attribute("foo", "method")]
+            [global::Bond.Attribute("method", "")]
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<Result>> fooAsync(Param request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
                 var message = global::Bond.Grpc.Message.From(request);

@@ -1,6 +1,6 @@
 
 #include "service_attributes_reflection.h"
-#include "service_attributes_comm.h"
+#include "service_attributes_grpc.h"
 
 namespace tests
 {

@@ -109,6 +109,22 @@ if (BOND_ENABLE_COMM)
         ${comm_transport_detail_headers})
 endif(BOND_ENABLE_COMM)
 
+if (BOND_ENABLE_GRPC)
+    file (GLOB ext_detail_headers "inc/bond/ext/detail/*.h")
+    source_group ("ext\\detail" FILES ${ext_detail_headers})
+
+    file (GLOB ext_grpc_headers "inc/bond/ext/grpc/*.h")
+    source_group ("ext\\grpc" FILES ${ext_grpc_headers})
+
+    file (GLOB ext_grpc_detail_headers "inc/bond/ext/grpc/detail/*.h")
+    source_group ("ext\\grpc\\detail" FILES ${ext_grpc_detail_headers})
+
+    list (APPEND headers
+        ${ext_detail_headers}
+        ${ext_grpc_headers}
+        ${ext_grpc_detail_headers})
+endif()
+
 source_group ("generated" FILES ${generated_files})
 
 add_library (bond

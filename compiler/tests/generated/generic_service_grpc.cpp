@@ -1,6 +1,6 @@
 
 #include "generic_service_reflection.h"
-#include "generic_service_comm.h"
+#include "generic_service_grpc.h"
 
 namespace tests
 {
