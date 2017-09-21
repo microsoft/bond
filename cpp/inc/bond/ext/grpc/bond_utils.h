@@ -63,7 +63,7 @@ namespace grpc {
 
             const size_t bufferSize = grpc_byte_buffer_length(buffer);
 
-            if (bufferSize > std::numeric_limits<uint32_t>::max())
+            if (bufferSize > (std::numeric_limits<uint32_t>::max)())
             {
                 grpc_byte_buffer_destroy(buffer);
                 return Status(StatusCode::INTERNAL, "Buffer is too large");

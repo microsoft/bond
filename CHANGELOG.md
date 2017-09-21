@@ -33,6 +33,7 @@ different versioning scheme, following the Haskell community's
 * Guard against overflows in OutputMemoryStream, blob, and SimpleArray.
 * Use RapidJSON's iterative parser to handle deeply nested JSON data without
   causing a stack overflow.
+* Guard against min/max being function-style macros in more places.
 
 ### C# ###
 
