@@ -5,7 +5,8 @@ add_bond_codegen (grpc_dll.bond
 add_library (grpc_dll_example_lib EXCLUDE_FROM_ALL
     SHARED
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/grpc_dll_types.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/grpc_dll_apply.cpp)
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/grpc_dll_apply.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/grpc_dll_grpc.cpp)
 
 target_include_directories(grpc_dll_example_lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 

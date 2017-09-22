@@ -3,7 +3,7 @@
 
 {-# LANGUAGE QuasiQuotes, OverloadedStrings, RecordWildCards #-}
 
-module Language.Bond.Codegen.Cpp.Comm_cpp (comm_cpp) where
+module Language.Bond.Codegen.Cpp.Grpc_cpp (grpc_cpp) where
 
 import Data.Monoid
 import Prelude
@@ -14,12 +14,12 @@ import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
--- | Codegen template for generating /base_name/_comm.cpp containing
+-- | Codegen template for generating /base_name/_grpc.cpp containing
 -- definitions of helper functions and schema metadata static variables.
-comm_cpp :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
-comm_cpp cpp file _imports declarations = ("_comm.cpp", [lt|
+grpc_cpp :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
+grpc_cpp cpp file _imports declarations = ("_grpc.cpp", [lt|
 #include "#{file}_reflection.h"
-#include "#{file}_comm.h"
+#include "#{file}_grpc.h"
 
 #{CPP.openNamespace cpp}
     #{doubleLineSepEnd 1 statics declarations}

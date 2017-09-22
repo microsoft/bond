@@ -1,7 +1,6 @@
 
 #include "bond_meta_reflection.h"
 #include "bond_meta_comm.h"
-#include <bond/core/exception.h>
 
 namespace deprecated
 {
