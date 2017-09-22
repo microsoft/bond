@@ -11,9 +11,12 @@ import java.io.IOException;
 public interface TextProtocolReader {
 
     /**
-     * Start reading a struct.
+     * Start reading a struct. The method returns struct name or null if struct name is not supported
+     * by the implementing protocol.
+     *
+     * @return struct name if supported by the protool or null otherwise
      */
-    void readStructBegin() throws IOException;
+    String readStructBegin() throws IOException;
 
     /**
      * End reading a struct.
