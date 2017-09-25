@@ -15,6 +15,8 @@
 
 namespace tests
 {
+    using System.Collections.Generic;
+
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
     public interface IFoo<Payload>
     {
@@ -23,6 +25,10 @@ namespace tests
         global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<Payload>> foo32Async(global::Bond.Comm.IMessage<global::Bond.Void> param, global::System.Threading.CancellationToken ct);
 
         global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<Payload>> foo33Async(global::Bond.Comm.IMessage<Payload> param, global::System.Threading.CancellationToken ct);
+
+        global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> ConsumesGeneric1Async(global::Bond.Comm.IMessage<SomeBox<int>> param, global::System.Threading.CancellationToken ct);
+
+        global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> ConsumesGeneric2Async(global::Bond.Comm.IMessage<SomeBox<List<int>>> param, global::System.Threading.CancellationToken ct);
     }
     
 } // tests
