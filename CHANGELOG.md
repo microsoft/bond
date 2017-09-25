@@ -16,7 +16,7 @@ different versioning scheme, following the Haskell community's
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: TBD (bug fix bump needed)
-* C# NuGet version: TBD  (bug fix bump needed)
+* C# NuGet version: TBD  (minor bump needed)
 * C# Comm NuGet version: TBD
 
 ### C++ ###
@@ -37,6 +37,7 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
+* Added `Bond.Box.Create` helper method to create `Bond.Box<T>` instances.
 * Reflection.IsBonded now recognizes custom IBonded implementations.
 * Use Newtonsoft's JSON.NET BigInteger support -- when available -- to
   handle the full range of uint64 values in the SimpleJson protocol (.NET
@@ -50,6 +51,9 @@ different versioning scheme, following the Haskell community's
 * Fix a bug in CompactBinaryWriter when using v2 that repeated first pass
   when a bonded field was serailized, resulting in extra work and extra
   state left in the CompactBinaryWriter.
+* Fixed a bug that produced C# code that couldn't be compiled when using
+  Bond-over-gRPC with a generic type instantiated with a collection.
+  [Issue #623](https://github.com/Microsoft/bond/issues/623)
 
 [msdn-gzipstream]: https://msdn.microsoft.com/en-us/library/system.io.compression.gzipstream(v=vs.110).aspx
 [msdn-stream-canseek]: https://msdn.microsoft.com/en-us/library/system.io.stream.canseek(v=vs.110).aspx

@@ -43,6 +43,8 @@ comm_interface_cs cs _ _ declarations = ("_interfaces.cs", [lt|
 #{CS.disableReSharperWarnings}
 namespace #{csNamespace}
 {
+    using System.Collections.Generic;
+
     #{doubleLineSep 1 comm declarations}
 } // #{csNamespace}
 |])
@@ -74,6 +76,8 @@ comm_proxy_cs cs _ _ declarations = ("_proxies.cs", [lt|
 #{CS.disableReSharperWarnings}
 namespace #{csNamespace}
 {
+    using System.Collections.Generic;
+
     #{doubleLineSep 1 comm declarations}
 } // #{csNamespace}
 |])
@@ -145,6 +149,8 @@ comm_service_cs cs _ _ declarations = ("_services.cs", [lt|
 #{CS.disableReSharperWarnings}
 namespace #{csNamespace}
 {
+    using System.Collections.Generic;
+
     #{doubleLineSep 1 comm declarations}
 } // #{csNamespace}
 |])
