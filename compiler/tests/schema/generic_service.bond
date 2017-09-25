@@ -1,9 +1,16 @@
 namespace tests
 
+struct SomeBox<T>
+{
+    0: T value;
+}
+
 service Foo<Payload>
 {
     void foo31(Payload);
     Payload foo32(void);
     Payload foo33(Payload);
-}
 
+   void ConsumesGeneric1(SomeBox<int32>);
+   void ConsumesGeneric2(SomeBox<vector<int32>>);
+}

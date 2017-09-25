@@ -15,6 +15,8 @@
 
 namespace tests
 {
+    using System.Collections.Generic;
+
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
     public class FooProxy<TConnection> : IFoo where TConnection : global::Bond.Comm.IEventConnection, global::Bond.Comm.IRequestResponseConnection
     {

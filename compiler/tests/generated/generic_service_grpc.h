@@ -86,6 +86,34 @@ public:
             Asyncfoo33(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded<Payload>{request}, cb);
         }
 
+        void AsyncConsumesGeneric1(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::SomeBox<int32_t>>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb);
+        void AsyncConsumesGeneric1(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::SomeBox<int32_t>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
+        {
+            AsyncConsumesGeneric1(context, ::bond::bonded< ::tests::SomeBox<int32_t>>{request}, cb);
+        }
+        void AsyncConsumesGeneric1(const ::bond::bonded< ::tests::SomeBox<int32_t>>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
+        {
+            AsyncConsumesGeneric1(::std::make_shared< ::grpc::ClientContext>(), request, cb);
+        }
+        void AsyncConsumesGeneric1(const ::tests::SomeBox<int32_t>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
+        {
+            AsyncConsumesGeneric1(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests::SomeBox<int32_t>>{request}, cb);
+        }
+
+        void AsyncConsumesGeneric2(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb);
+        void AsyncConsumesGeneric2(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::SomeBox<std::vector<int32_t> >& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
+        {
+            AsyncConsumesGeneric2(context, ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>{request}, cb);
+        }
+        void AsyncConsumesGeneric2(const ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
+        {
+            AsyncConsumesGeneric2(::std::make_shared< ::grpc::ClientContext>(), request, cb);
+        }
+        void AsyncConsumesGeneric2(const ::tests::SomeBox<std::vector<int32_t> >& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
+        {
+            AsyncConsumesGeneric2(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>{request}, cb);
+        }
+
         ClientCore(const ClientCore&) = delete;
         ClientCore& operator=(const ClientCore&) = delete;
 
@@ -102,6 +130,10 @@ public:
         const ::grpc::RpcMethod rpcmethod_foo32_;
 
         const ::grpc::RpcMethod rpcmethod_foo33_;
+
+        const ::grpc::RpcMethod rpcmethod_ConsumesGeneric1_;
+
+        const ::grpc::RpcMethod rpcmethod_ConsumesGeneric2_;
     };
 
     using Client = ClientCore< ::bond::ext::gRPC::thread_pool>;
@@ -115,6 +147,8 @@ public:
             this->AddMethod("/tests.Foo/foo31");
             this->AddMethod("/tests.Foo/foo32");
             this->AddMethod("/tests.Foo/foo33");
+            this->AddMethod("/tests.Foo/ConsumesGeneric1");
+            this->AddMethod("/tests.Foo/ConsumesGeneric2");
         }
 
         virtual ~ServiceCore() { }
@@ -143,6 +177,18 @@ public:
                 cq,
                 tp,
                 std::bind(&ServiceCore::foo33, this, std::placeholders::_1));
+            _rd_ConsumesGeneric1.emplace(
+                this,
+                3,
+                cq,
+                tp,
+                std::bind(&ServiceCore::ConsumesGeneric1, this, std::placeholders::_1));
+            _rd_ConsumesGeneric2.emplace(
+                this,
+                4,
+                cq,
+                tp,
+                std::bind(&ServiceCore::ConsumesGeneric2, this, std::placeholders::_1));
 
             this->queue_receive(
                 0,
@@ -165,16 +211,34 @@ public:
                 &_rd_foo33->_receivedCall->_responder,
                 cq,
                 &_rd_foo33.get());
+            this->queue_receive(
+                3,
+                &_rd_ConsumesGeneric1->_receivedCall->_context,
+                &_rd_ConsumesGeneric1->_receivedCall->_request,
+                &_rd_ConsumesGeneric1->_receivedCall->_responder,
+                cq,
+                &_rd_ConsumesGeneric1.get());
+            this->queue_receive(
+                4,
+                &_rd_ConsumesGeneric2->_receivedCall->_context,
+                &_rd_ConsumesGeneric2->_receivedCall->_request,
+                &_rd_ConsumesGeneric2->_receivedCall->_responder,
+                cq,
+                &_rd_ConsumesGeneric2.get());
         }
 
         virtual void foo31(::bond::ext::gRPC::unary_call< ::bond::bonded<Payload>, ::bond::Void>) = 0;
         virtual void foo32(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, Payload>) = 0;
         virtual void foo33(::bond::ext::gRPC::unary_call< ::bond::bonded<Payload>, Payload>) = 0;
+        virtual void ConsumesGeneric1(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::SomeBox<int32_t>>, ::bond::Void>) = 0;
+        virtual void ConsumesGeneric2(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>, ::bond::Void>) = 0;
 
     private:
         ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<Payload>, ::bond::Void, TThreadPool>> _rd_foo31;
         ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, Payload, TThreadPool>> _rd_foo32;
         ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<Payload>, Payload, TThreadPool>> _rd_foo33;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::SomeBox<int32_t>>, ::bond::Void, TThreadPool>> _rd_ConsumesGeneric1;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>, ::bond::Void, TThreadPool>> _rd_ConsumesGeneric2;
     };
 
     using Service = ServiceCore< ::bond::ext::gRPC::thread_pool>;
@@ -192,6 +256,8 @@ inline Foo<Payload>::ClientCore<TThreadPool>::ClientCore(
     , rpcmethod_foo31_("/tests.Foo/foo31", ::grpc::RpcMethod::NORMAL_RPC, channel)
     , rpcmethod_foo32_("/tests.Foo/foo32", ::grpc::RpcMethod::NORMAL_RPC, channel)
     , rpcmethod_foo33_("/tests.Foo/foo33", ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_ConsumesGeneric1_("/tests.Foo/ConsumesGeneric1", ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_ConsumesGeneric2_("/tests.Foo/ConsumesGeneric2", ::grpc::RpcMethod::NORMAL_RPC, channel)
     { }
 
 template <typename Payload>
@@ -246,6 +312,40 @@ inline void Foo<Payload>::ClientCore<TThreadPool>::Asyncfoo33(
 }
 
 template <typename Payload>
+    template <typename TThreadPool>
+inline void Foo<Payload>::ClientCore<TThreadPool>::AsyncConsumesGeneric1(
+    ::std::shared_ptr< ::grpc::ClientContext> context,
+    const ::bond::bonded< ::tests::SomeBox<int32_t>>& request,
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
+{
+    
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::SomeBox<int32_t>, ::bond::Void, TThreadPool>>(
+        _channel,
+        _ioManager,
+        _threadPool,
+        context,
+        cb);
+    calldata->dispatch(rpcmethod_ConsumesGeneric1_, request);
+}
+
+template <typename Payload>
+    template <typename TThreadPool>
+inline void Foo<Payload>::ClientCore<TThreadPool>::AsyncConsumesGeneric2(
+    ::std::shared_ptr< ::grpc::ClientContext> context,
+    const ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>& request,
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::bond::Void>>)>& cb)
+{
+    
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::SomeBox<std::vector<int32_t> >, ::bond::Void, TThreadPool>>(
+        _channel,
+        _ioManager,
+        _threadPool,
+        context,
+        cb);
+    calldata->dispatch(rpcmethod_ConsumesGeneric2_, request);
+}
+
+template <typename Payload>
     struct Foo<Payload>::Schema
 {
     static const ::bond::Metadata metadata;
@@ -253,6 +353,8 @@ template <typename Payload>
     private: static const ::bond::Metadata s_foo31_metadata;
     private: static const ::bond::Metadata s_foo32_metadata;
     private: static const ::bond::Metadata s_foo33_metadata;
+    private: static const ::bond::Metadata s_ConsumesGeneric1_metadata;
+    private: static const ::bond::Metadata s_ConsumesGeneric2_metadata;
 
     public: struct service
     {
@@ -276,14 +378,30 @@ template <typename Payload>
                 ::bond::bonded<Payload>,
                 &s_foo33_metadata
             > foo33;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo<Payload>,
+                ::bond::bonded< ::tests::SomeBox<int32_t>>,
+                ::bond::bonded< ::bond::Void>,
+                &s_ConsumesGeneric1_metadata
+            > ConsumesGeneric1;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo<Payload>,
+                ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>,
+                ::bond::bonded< ::bond::Void>,
+                &s_ConsumesGeneric2_metadata
+            > ConsumesGeneric2;
     };
 
     private: typedef boost::mpl::list<> methods0;
-    private: typedef typename boost::mpl::push_front<methods0, typename service::foo33>::type methods1;
-    private: typedef typename boost::mpl::push_front<methods1, typename service::foo32>::type methods2;
-    private: typedef typename boost::mpl::push_front<methods2, typename service::foo31>::type methods3;
+    private: typedef typename boost::mpl::push_front<methods0, typename service::ConsumesGeneric2>::type methods1;
+    private: typedef typename boost::mpl::push_front<methods1, typename service::ConsumesGeneric1>::type methods2;
+    private: typedef typename boost::mpl::push_front<methods2, typename service::foo33>::type methods3;
+    private: typedef typename boost::mpl::push_front<methods3, typename service::foo32>::type methods4;
+    private: typedef typename boost::mpl::push_front<methods4, typename service::foo31>::type methods5;
 
-    public: typedef typename methods3::type methods;
+    public: typedef typename methods5::type methods;
 
     Schema()
         {
@@ -292,6 +410,8 @@ template <typename Payload>
             (void)s_foo31_metadata;
             (void)s_foo32_metadata;
             (void)s_foo33_metadata;
+            (void)s_ConsumesGeneric1_metadata;
+            (void)s_ConsumesGeneric2_metadata;
         }
 };
 
@@ -311,6 +431,14 @@ template <typename Payload>
     template <typename Payload>
     const ::bond::Metadata Foo<Payload>::Schema::s_foo33_metadata
         = ::bond::reflection::MetadataInit("foo33");
+    
+    template <typename Payload>
+    const ::bond::Metadata Foo<Payload>::Schema::s_ConsumesGeneric1_metadata
+        = ::bond::reflection::MetadataInit("ConsumesGeneric1");
+    
+    template <typename Payload>
+    const ::bond::Metadata Foo<Payload>::Schema::s_ConsumesGeneric2_metadata
+        = ::bond::reflection::MetadataInit("ConsumesGeneric2");
 
 
 } // namespace tests

@@ -15,6 +15,8 @@
 
 namespace tests
 {
+    using System.Collections.Generic;
+
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
     public class FooProxy<Payload, TConnection> : IFoo<Payload> where TConnection : global::Bond.Comm.IRequestResponseConnection
     {
@@ -66,6 +68,36 @@ namespace tests
             return m_connection.RequestResponseAsync<Payload, Payload>(
                 "tests.Foo",
                 "foo33",
+                param,
+                ct);
+        }
+
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> ConsumesGeneric1Async(SomeBox<int> param)
+        {
+            var message = new global::Bond.Comm.Message<SomeBox<int>>(param);
+            return ConsumesGeneric1Async(message, global::System.Threading.CancellationToken.None);
+        }
+
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> ConsumesGeneric1Async(global::Bond.Comm.IMessage<SomeBox<int>> param, global::System.Threading.CancellationToken ct)
+        {
+            return m_connection.RequestResponseAsync<SomeBox<int>, global::Bond.Void>(
+                "tests.Foo",
+                "ConsumesGeneric1",
+                param,
+                ct);
+        }
+
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> ConsumesGeneric2Async(SomeBox<List<int>> param)
+        {
+            var message = new global::Bond.Comm.Message<SomeBox<List<int>>>(param);
+            return ConsumesGeneric2Async(message, global::System.Threading.CancellationToken.None);
+        }
+
+        public global::System.Threading.Tasks.Task<global::Bond.Comm.IMessage<global::Bond.Void>> ConsumesGeneric2Async(global::Bond.Comm.IMessage<SomeBox<List<int>>> param, global::System.Threading.CancellationToken ct)
+        {
+            return m_connection.RequestResponseAsync<SomeBox<List<int>>, global::Bond.Void>(
+                "tests.Foo",
+                "ConsumesGeneric2",
                 param,
                 ct);
         }
