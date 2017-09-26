@@ -1,7 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Portable.Internal.props" />
+  <PropertyGroup Condition="'$(BuildNonportable)' == 'true'">
+    <BuildFramework>net45-nonportable</BuildFramework>
+    <DefineConstants>$(DefineConstants);SUPPORTS_XMLRESOLVER</DefineConstants>
+  </PropertyGroup>
+  <Import Condition="'$(BuildNonportable)' == 'true'" Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
+  <Import Condition="'$(BuildNonportable)' != 'true'" Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Portable.Internal.props" />
   <PropertyGroup>
     <ProjectGuid>{43CBBA9B-C4BC-4E64-8733-7B72562D2E91}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -9,6 +14,8 @@
     <RootNamespace>Bond</RootNamespace>
     <AssemblyName>Bond</AssemblyName>
     <BondRedistributable>true</BondRedistributable>
+    <DependentOutputPath>bin\$(BuildType)\net45</DependentOutputPath>
+    <HasNonportableVersion>true</HasNonportableVersion>
   </PropertyGroup>
   <ItemGroup>
     <BondCodegen Include="$(BOND_INCLUDE_PATH)\bond\core\bond.bond" />
@@ -84,10 +91,10 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Bond.Attributes">
-      <HintPath>..\attributes\$(OutputPath)\Bond.Attributes.dll</HintPath>
+      <HintPath>..\attributes\$(DependentOutputPath)\Bond.Attributes.dll</HintPath>
     </Reference>
     <Reference Include="Bond.Reflection">
-      <HintPath>..\reflection\$(OutputPath)\Bond.Reflection.dll</HintPath>
+      <HintPath>..\reflection\$(DependentOutputPath)\Bond.Reflection.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
