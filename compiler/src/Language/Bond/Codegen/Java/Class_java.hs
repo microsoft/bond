@@ -499,12 +499,12 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
         #{makeStructBondTypeMember_initialize java declParams structFields structBase}
 
         @Override
-        public final String getName() {
+        public final java.lang.String getName() {
             return "#{declName}";
         }
 
         @Override
-        public final String getQualifiedName() {
+        public final java.lang.String getQualifiedName() {
             return "#{qualifiedDeclaredTypeName idl s}";
         }
 

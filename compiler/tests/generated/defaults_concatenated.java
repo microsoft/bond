@@ -48,13 +48,13 @@ public final class EnumType1 implements org.bondlib.BondEnum<EnumType1> {
 
     private final java.lang.String label;
 
-    private EnumType1(int value, String label) { this.value = value; this.label = label; }
+    private EnumType1(int value, java.lang.String label) { this.value = value; this.label = label; }
 
     @Override
     public final int getValue() { return this.value; }
 
     @Override
-    public final String getLabel() { return this.label; }
+    public final java.lang.String getLabel() { return this.label; }
 
     @Override
     public final org.bondlib.EnumBondType<EnumType1> getBondType() { return BOND_TYPE; }
@@ -69,7 +69,7 @@ public final class EnumType1 implements org.bondlib.BondEnum<EnumType1> {
     public final int hashCode() { return this.value; }
 
     @Override
-    public final java.lang.String toString() { return this.label != null ? this.label : ("EnumType1(" + String.valueOf(this.value) + ")"); }
+    public final java.lang.String toString() { return this.label != null ? this.label : ("EnumType1(" + java.lang.String.valueOf(this.value) + ")"); }
 
     public static EnumType1 get(int value) {
         switch (value) {
@@ -86,7 +86,7 @@ public final class EnumType1 implements org.bondlib.BondEnum<EnumType1> {
         }
     }
 
-    public static EnumType1 valueOf(String str) {
+    public static EnumType1 valueOf(java.lang.String str) {
         if (str == null) {
             throw new java.lang.IllegalArgumentException("Argument 'str' must not be null.");
         } else if (str.equals("EnumValue1")) {
@@ -259,12 +259,12 @@ public class Foo implements org.bondlib.BondSerializable {
         }
 
         @Override
-        public final String getName() {
+        public final java.lang.String getName() {
             return "Foo";
         }
 
         @Override
-        public final String getQualifiedName() {
+        public final java.lang.String getQualifiedName() {
             return "tests.Foo";
         }
 

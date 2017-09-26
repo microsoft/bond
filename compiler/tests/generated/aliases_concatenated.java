@@ -50,12 +50,12 @@ public class Foo<T> implements org.bondlib.BondSerializable {
         }
 
         @Override
-        public final String getName() {
+        public final java.lang.String getName() {
             return "Foo";
         }
 
         @Override
-        public final String getQualifiedName() {
+        public final java.lang.String getQualifiedName() {
             return "tests.Foo";
         }
 
@@ -199,13 +199,13 @@ public final class EnumToWrap implements org.bondlib.BondEnum<EnumToWrap> {
 
     private final java.lang.String label;
 
-    private EnumToWrap(int value, String label) { this.value = value; this.label = label; }
+    private EnumToWrap(int value, java.lang.String label) { this.value = value; this.label = label; }
 
     @Override
     public final int getValue() { return this.value; }
 
     @Override
-    public final String getLabel() { return this.label; }
+    public final java.lang.String getLabel() { return this.label; }
 
     @Override
     public final org.bondlib.EnumBondType<EnumToWrap> getBondType() { return BOND_TYPE; }
@@ -220,7 +220,7 @@ public final class EnumToWrap implements org.bondlib.BondEnum<EnumToWrap> {
     public final int hashCode() { return this.value; }
 
     @Override
-    public final java.lang.String toString() { return this.label != null ? this.label : ("EnumToWrap(" + String.valueOf(this.value) + ")"); }
+    public final java.lang.String toString() { return this.label != null ? this.label : ("EnumToWrap(" + java.lang.String.valueOf(this.value) + ")"); }
 
     public static EnumToWrap get(int value) {
         switch (value) {
@@ -229,7 +229,7 @@ public final class EnumToWrap implements org.bondlib.BondEnum<EnumToWrap> {
         }
     }
 
-    public static EnumToWrap valueOf(String str) {
+    public static EnumToWrap valueOf(java.lang.String str) {
         if (str == null) {
             throw new java.lang.IllegalArgumentException("Argument 'str' must not be null.");
         } else if (str.equals("anEnumValue")) {
@@ -277,12 +277,12 @@ public class WrappingAnEnum implements org.bondlib.BondSerializable {
         }
 
         @Override
-        public final String getName() {
+        public final java.lang.String getName() {
             return "WrappingAnEnum";
         }
 
         @Override
-        public final String getQualifiedName() {
+        public final java.lang.String getQualifiedName() {
             return "tests.WrappingAnEnum";
         }
 

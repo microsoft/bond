@@ -35,12 +35,12 @@ public class Foo implements org.bondlib.BondSerializable {
         }
 
         @Override
-        public final String getName() {
+        public final java.lang.String getName() {
             return "Foo";
         }
 
         @Override
-        public final String getQualifiedName() {
+        public final java.lang.String getQualifiedName() {
             return "tests.Foo";
         }
 
@@ -184,12 +184,12 @@ public class ComplexTypes implements org.bondlib.BondSerializable {
         }
 
         @Override
-        public final String getName() {
+        public final java.lang.String getName() {
             return "ComplexTypes";
         }
 
         @Override
-        public final String getQualifiedName() {
+        public final java.lang.String getQualifiedName() {
             return "tests.ComplexTypes";
         }
 

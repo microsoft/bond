@@ -75,12 +75,12 @@ public class BasicTypes implements org.bondlib.BondSerializable {
         }
 
         @Override
-        public final String getName() {
+        public final java.lang.String getName() {
             return "BasicTypes";
         }
 
         @Override
-        public final String getQualifiedName() {
+        public final java.lang.String getQualifiedName() {
             return "tests.BasicTypes";
         }
 

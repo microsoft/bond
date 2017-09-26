@@ -39,12 +39,12 @@ public class HasMetaFields implements org.bondlib.BondSerializable {
         }
 
         @Override
-        public final String getName() {
+        public final java.lang.String getName() {
             return "HasMetaFields";
         }
 
         @Override
-        public final String getQualifiedName() {
+        public final java.lang.String getQualifiedName() {
             return "deprecated.bondmeta.HasMetaFields";
         }
 

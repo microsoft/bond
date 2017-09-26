@@ -36,12 +36,12 @@ public class Base implements org.bondlib.BondSerializable {
         }
 
         @Override
-        public final String getName() {
+        public final java.lang.String getName() {
             return "Base";
         }
 
         @Override
-        public final String getQualifiedName() {
+        public final java.lang.String getQualifiedName() {
             return "tests.Base";
         }
 
@@ -184,12 +184,12 @@ public class Foo extends tests.Base {
         }
 
         @Override
-        public final String getName() {
+        public final java.lang.String getName() {
             return "Foo";
         }
 
         @Override
-        public final String getQualifiedName() {
+        public final java.lang.String getQualifiedName() {
             return "tests.Foo";
         }
 

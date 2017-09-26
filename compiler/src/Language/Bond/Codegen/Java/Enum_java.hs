@@ -54,13 +54,13 @@ public final class #{declName} implements org.bondlib.BondEnum<#{declName}> {
 
     private final java.lang.String label;
 
-    private #{declName}(int value, String label) { this.value = value; this.label = label; }
+    private #{declName}(int value, java.lang.String label) { this.value = value; this.label = label; }
 
     @Override
     public final int getValue() { return this.value; }
 
     @Override
-    public final String getLabel() { return this.label; }
+    public final java.lang.String getLabel() { return this.label; }
 
     @Override
     public final org.bondlib.EnumBondType<#{declName}> getBondType() { return BOND_TYPE; }
@@ -75,7 +75,7 @@ public final class #{declName} implements org.bondlib.BondEnum<#{declName}> {
     public final int hashCode() { return this.value; }
 
     @Override
-    public final java.lang.String toString() { return this.label != null ? this.label : ("#{declName}(" + String.valueOf(this.value) + ")"); }
+    public final java.lang.String toString() { return this.label != null ? this.label : ("#{declName}(" + java.lang.String.valueOf(this.value) + ")"); }
 
     public static #{declName} get(int value) {
         switch (value) {
@@ -84,7 +84,7 @@ public final class #{declName} implements org.bondlib.BondEnum<#{declName}> {
         }
     }
 
-    public static #{declName} valueOf(String str) {
+    public static #{declName} valueOf(java.lang.String str) {
         if (str == null) {
             throw new java.lang.IllegalArgumentException("Argument 'str' must not be null.");
         #{newlineSepEnd 2 parseCaseConstantMapping enumConstants}} else {
