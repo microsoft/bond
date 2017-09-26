@@ -21,11 +21,27 @@ namespace Bond.Protocols
         }
 
         public SimpleXmlReader(Stream stream)
-            : this(XmlReader.Create(stream, new XmlReaderSettings 
+            : this(XmlReader.Create(stream, new XmlReaderSettings
                 {
                     IgnoreComments = true,
-                    IgnoreProcessingInstructions = true
+                    IgnoreProcessingInstructions = true,
+#if SUPPORTS_XMLRESOLVER
+                // do not attempt to resolve any external resources
+                XmlResolver = null,
+#endif
                 }))
+        { }
+
+        public SimpleXmlReader(TextReader textReader)
+    : this(XmlReader.Create(textReader, new XmlReaderSettings
+    {
+        IgnoreComments = true,
+        IgnoreProcessingInstructions = true,
+#if SUPPORTS_XMLRESOLVER
+                // do not attempt to resolve any external resources
+                XmlResolver = null,
+#endif
+            }))
         { }
 
         public bool EOF

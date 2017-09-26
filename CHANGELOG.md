@@ -68,6 +68,8 @@ different versioning scheme, following the Haskell community's
 * Fixed a bug that produced C# code that couldn't be compiled when using
   Bond-over-gRPC with a generic type instantiated with a collection.
   [Issue #623](https://github.com/Microsoft/bond/issues/623)
+* When targeting .NET 4.5, avoid resolving external entities when using
+  `SimpleXmlReader`.
 
 [msdn-gzipstream]: https://msdn.microsoft.com/en-us/library/system.io.compression.gzipstream(v=vs.110).aspx
 [msdn-stream-canseek]: https://msdn.microsoft.com/en-us/library/system.io.stream.canseek(v=vs.110).aspx

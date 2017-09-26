@@ -39,7 +39,7 @@
   <Variant>Complex</Variant>
 </Config>";
 
-            var reader = new SimpleXmlReader(XmlReader.Create(new StringReader(configString)));
+            var reader = new SimpleXmlReader(new StringReader(configString));
             config = Deserialize<Config>.From(reader);
             Debug.Assert(config.Enabled == false);
         }
