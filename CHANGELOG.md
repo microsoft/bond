@@ -15,12 +15,13 @@ different versioning scheme, following the Haskell community's
 * `gbc` & compiler library: TBD
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD (bug fix bump needed)
+* C++ version: TBD (minor bump needed)
 * C# NuGet version: TBD  (minor bump needed)
 * C# Comm NuGet version: TBD
 
 ### C++ ###
 
+* Added `bond::make_box` helper function to create `bond::Box<T>` instances.
 * When Unicode conversion fails during JSON deserialization to wstring, a
   bond::CoreException is now thrown instead of a Boost exception.
 * When SimpleJSON deserializes a map key with no matching value, a
