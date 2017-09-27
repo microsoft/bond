@@ -1,0 +1,17 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+import "bond/core/bond.bond"
+
+namespace Examples.GrpcScalar;
+
+// Service method parameters and return types can only be Bond structs.
+// Scalar values and bare collections cannot be used. If only one value
+// needs to be passed/returned, the type bond.Box<T> can be used to quickly
+// wrap a value in a Bond struct. (There's nothing special about
+// bond.Box<T>, except that it ships with Bond.)
+service ScalarMethods
+{
+    bond.Box<int32> Negate(bond.Box<int32>);
+    bond.Box<uint64> Sum(bond.Box<vector<uint64>>);
+}

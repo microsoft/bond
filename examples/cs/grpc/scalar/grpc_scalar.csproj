@@ -3,10 +3,10 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="..\..\..\..\cs\build\nuget\Bond.CSharp.props" />
   <PropertyGroup>
-    <ProjectGuid>{618420F1-6465-4DF4-BD1B-747765F481FF}</ProjectGuid>
+    <ProjectGuid>{51F4135B-2CEF-436F-91CE-A6548B37E459}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>pingpong</RootNamespace>
-    <AssemblyName>grpc-pingpong</AssemblyName>
+    <RootNamespace>scalar</RootNamespace>
+    <AssemblyName>grpc-scalar</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -38,17 +38,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DoublePingService.cs" />
-    <Compile Include="GrpcPingPong.cs" />
-    <Compile Include="PingPongService.cs" />
-    <BondCodegen Include="pingpong.bond">
+    <Compile Include="GrpcScalar.cs" />
+    <Compile Include="ScalarService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- This import is not needed when consuming Bond via NuGet packages.
+         Due to the different layout of the Bond repository, we manually
+         specify it here. -->
+    <BondImportDirectory Include="..\..\..\..\idl" />
+    <BondCodegen Include="scalar.bond">
       <Options>--grpc</Options>
     </BondCodegen>
     <!-- Resharper Workaround -->
-    <Compile Include="$(IntermediateOutputPath)\pingpong_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\scalar_types.cs" Condition="False" />
     <!-- End Resharper Workaround -->
     <!-- TODO: edit the .targets to automatically include the grpc files -->
-    <Compile Include="$(IntermediateOutputPath)\pingpong_grpc.cs" />
+    <Compile Include="$(IntermediateOutputPath)\scalar_grpc.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Attributes">

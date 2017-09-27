@@ -15,6 +15,8 @@
 
 namespace tests
 {
+    using System.Collections.Generic;
+
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
     public abstract class FooServiceBase : IFoo, global::Bond.Comm.IService
     {

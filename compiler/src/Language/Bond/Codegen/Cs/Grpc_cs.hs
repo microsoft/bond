@@ -28,6 +28,8 @@ grpc_cs cs _ _ declarations = ("_grpc.cs", [lt|
 
 namespace #{csNamespace}
 {
+    using System.Collections.Generic;
+
     #{doubleLineSep 1 grpc declarations}
 } // #{csNamespace}
 |])

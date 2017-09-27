@@ -16,6 +16,8 @@
 
 namespace tests
 {
+    using System.Collections.Generic;
+
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
     public static class Foo<Payload> where Payload : class
     {
@@ -42,6 +44,20 @@ namespace tests
             global::Bond.Grpc.Marshaller<Payload>.Instance,
             global::Bond.Grpc.Marshaller<Payload>.Instance);
 
+        static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<SomeBox<int>>, global::Bond.Grpc.IMessage<global::Bond.Void>> Method_ConsumesGeneric1 = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<SomeBox<int>>, global::Bond.Grpc.IMessage<global::Bond.Void>>(
+            global::Grpc.Core.MethodType.Unary,
+            ServiceName,
+            "ConsumesGeneric1",
+            global::Bond.Grpc.Marshaller<SomeBox<int>>.Instance,
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance);
+
+        static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<SomeBox<List<int>>>, global::Bond.Grpc.IMessage<global::Bond.Void>> Method_ConsumesGeneric2 = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<SomeBox<List<int>>>, global::Bond.Grpc.IMessage<global::Bond.Void>>(
+            global::Grpc.Core.MethodType.Unary,
+            ServiceName,
+            "ConsumesGeneric2",
+            global::Bond.Grpc.Marshaller<SomeBox<List<int>>>.Instance,
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance);
+
         public abstract class FooBase
         {
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo31(global::Bond.Grpc.IMessage<Payload> request, global::Grpc.Core.ServerCallContext context);
@@ -49,6 +65,10 @@ namespace tests
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<Payload>> foo32(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
 
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<Payload>> foo33(global::Bond.Grpc.IMessage<Payload> request, global::Grpc.Core.ServerCallContext context);
+
+            public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> ConsumesGeneric1(global::Bond.Grpc.IMessage<SomeBox<int>> request, global::Grpc.Core.ServerCallContext context);
+
+            public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> ConsumesGeneric2(global::Bond.Grpc.IMessage<SomeBox<List<int>>> request, global::Grpc.Core.ServerCallContext context);
         }
 
         public class FooClient : global::Grpc.Core.ClientBase<FooClient>
@@ -98,6 +118,28 @@ namespace tests
                 return CallInvoker.AsyncUnaryCall(Method_foo33, null, options, request);
             }
 
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> ConsumesGeneric1Async(SomeBox<int> request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+            {
+                var message = global::Bond.Grpc.Message.From(request);
+                return ConsumesGeneric1Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> ConsumesGeneric1Async(global::Bond.Grpc.IMessage<SomeBox<int>> request, global::Grpc.Core.CallOptions options)
+            {
+                return CallInvoker.AsyncUnaryCall(Method_ConsumesGeneric1, null, options, request);
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> ConsumesGeneric2Async(SomeBox<List<int>> request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+            {
+                var message = global::Bond.Grpc.Message.From(request);
+                return ConsumesGeneric2Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> ConsumesGeneric2Async(global::Bond.Grpc.IMessage<SomeBox<List<int>>> request, global::Grpc.Core.CallOptions options)
+            {
+                return CallInvoker.AsyncUnaryCall(Method_ConsumesGeneric2, null, options, request);
+            }
+
             protected override FooClient NewInstance(global::Grpc.Core.ClientBase.ClientBaseConfiguration configuration)
             {
                 return new FooClient(configuration);
@@ -110,6 +152,8 @@ namespace tests
                     .AddMethod(Method_foo31, serviceImpl.foo31)
                     .AddMethod(Method_foo32, serviceImpl.foo32)
                     .AddMethod(Method_foo33, serviceImpl.foo33)
+                    .AddMethod(Method_ConsumesGeneric1, serviceImpl.ConsumesGeneric1)
+                    .AddMethod(Method_ConsumesGeneric2, serviceImpl.ConsumesGeneric2)
                     .Build();
         }
     }

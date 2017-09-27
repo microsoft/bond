@@ -9,9 +9,13 @@ if (BOND_ENABLE_COMM)
     set(comm-flag COMM)
 endif()
 
+if (BOND_ENABLE_GRPC)
+    set(grpc-flag GRPC)
+endif()
+
 add_bond_codegen (${core_schemas}
     ENUM_HEADER
-    ${comm-flag}
+    ${comm-flag} ${grpc-flag}
     OUTPUT_DIR ${BOND_GENERATED}/bond/core)
 
 # Generate again into intermediate dir so that we can build libraries
@@ -23,7 +27,7 @@ add_bond_codegen (${core_schemas}
 # in a clean build, leading to collisions in multi-processor build.
 add_bond_codegen (${core_schemas}
     ENUM_HEADER
-    ${comm-flag}
+    ${comm-flag} ${grpc-flag}
     OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/core)
 
 file (GLOB core_headers "inc/bond/core/*.h")
@@ -79,9 +83,6 @@ if (BOND_ENABLE_COMM)
     file (GLOB comm_detail_headers "inc/bond/comm/detail/*.h")
     source_group ("comm\\detail" FILES ${comm_detail_headers})
 
-    file (GLOB comm_detail_headers "inc/bond/comm/detail/*.h")
-    source_group ("comm\\detail" FILES ${comm_detail_headers})
-
     file (GLOB comm_layers_headers "inc/bond/comm/layers/*.h")
     source_group ("comm\\layers" FILES ${comm_layers_headers})
 
@@ -109,7 +110,30 @@ if (BOND_ENABLE_COMM)
         ${comm_transport_detail_headers})
 endif(BOND_ENABLE_COMM)
 
-source_group ("generated" FILES ${generated_files})
+# ext headers (currently, only used by gRPC stuff, but in its own block
+# because it doesn't depend on gRPC stuff)
+if (BOND_ENABLE_GRPC)
+    file (GLOB ext_detail_headers "inc/bond/ext/detail/*.h")
+    source_group ("ext\\detail" FILES ${ext_detail_headers})
+
+    list (APPEND headers
+        ${ext_detail_headers})
+endif()
+
+# gRPC-specific headers
+if (BOND_ENABLE_GRPC)
+    file (GLOB grpc_headers "inc/bond/ext/grpc/*.h")
+    source_group ("ext\\grpc" FILES ${grpc_headers})
+
+    file (GLOB grpc_detail_headers "inc/bond/ext/grpc/detail/*.h")
+    source_group ("ext\\grpc\\detail" FILES ${grpc_detail_headers})
+
+    list (APPEND headers
+        ${grpc_headers}
+        ${grpc_detail_headers})
+endif()
+
+source_group ("generated" FILES ${generated_files_types} ${generated_files_apply})
 
 add_library (bond
     STATIC
