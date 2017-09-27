@@ -26,6 +26,7 @@ different versioning scheme, following the Haskell community's
 
 ### C++ ###
 
+* Added `bond::make_box` helper function to create `bond::Box<T>` instances.
 * When Unicode conversion fails during JSON deserialization to wstring, a
   bond::CoreException is now thrown instead of a Boost exception.
 * When SimpleJSON deserializes a map key with no matching value, a
@@ -42,6 +43,9 @@ different versioning scheme, following the Haskell community's
 * Provide compile-time access to metadata about gRPC services and methods.
 * Using `bond::ext::gRPC::wait_callback` no longer causes a shared_ptr cycle
   and the resulting resource leak.
+* Ensure that `bond_grpc.h` and `bond_const_grpc.h` are generated when the
+  CMake variable BOND_ENABLE_GRPC is set to that importing `bond.bond` and
+  `bond_const.bond` when defining a service works.
 
 ### C# ###
 
