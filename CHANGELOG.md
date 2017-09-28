@@ -40,7 +40,8 @@ different versioning scheme, following the Haskell community's
   causing a stack overflow.
 * Guard against min/max being function-style macros in more places.
 * Provide compile-time access to metadata about gRPC services and methods.
-
+* Using `bond::ext::gRPC::wait_callback` no longer causes a shared_ptr cycle
+  and the resulting resource leak.
 
 ### C# ###
 
