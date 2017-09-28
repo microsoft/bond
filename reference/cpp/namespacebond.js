@@ -21,6 +21,9 @@ var namespacebond =
           [ "service_unary_call_data", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data" ],
           [ "unary_call_impl", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl" ]
         ] ],
+        [ "reflection", null, [
+          [ "MethodTemplate", "structbond_1_1ext_1_1g_r_p_c_1_1reflection_1_1_method_template.html", "structbond_1_1ext_1_1g_r_p_c_1_1reflection_1_1_method_template" ]
+        ] ],
         [ "io_manager", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager" ],
         [ "MultipleInvocationException", "classbond_1_1ext_1_1g_r_p_c_1_1_multiple_invocation_exception.html", null ],
         [ "server_builder_core", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder__core.html", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder__core" ],

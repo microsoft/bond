@@ -20,7 +20,7 @@ var dir_585ede617c51de64e75ced9e91992c1d =
     [ "nullable.h", "nullable_8h_source.html", null ],
     [ "parser.h", "parser_8h_source.html", null ],
     [ "protocol.h", "protocol_8h_source.html", null ],
-    [ "reflection.h", "reflection_8h_source.html", null ],
+    [ "reflection.h", "core_2reflection_8h_source.html", null ],
     [ "runtime_schema.h", "runtime__schema_8h_source.html", null ],
     [ "scalar_interface.h", "scalar__interface_8h_source.html", null ],
     [ "schema.h", "schema_8h_source.html", null ],
