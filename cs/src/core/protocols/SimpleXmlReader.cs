@@ -26,22 +26,22 @@ namespace Bond.Protocols
                     IgnoreComments = true,
                     IgnoreProcessingInstructions = true,
 #if SUPPORTS_XMLRESOLVER
-                // do not attempt to resolve any external resources
-                XmlResolver = null,
+                    // do not attempt to resolve any external resources
+                    XmlResolver = null,
 #endif
                 }))
         { }
 
         public SimpleXmlReader(TextReader textReader)
-    : this(XmlReader.Create(textReader, new XmlReaderSettings
-    {
-        IgnoreComments = true,
-        IgnoreProcessingInstructions = true,
+            : this(XmlReader.Create(textReader, new XmlReaderSettings
+                {
+                    IgnoreComments = true,
+                    IgnoreProcessingInstructions = true,
 #if SUPPORTS_XMLRESOLVER
-                // do not attempt to resolve any external resources
-                XmlResolver = null,
+                    // do not attempt to resolve any external resources
+                    XmlResolver = null,
 #endif
-            }))
+                }))
         { }
 
         public bool EOF
