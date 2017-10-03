@@ -327,36 +327,39 @@
                 .Constant<System.UInt16>(40),
                 .Constant<Bond.Metadata>(_nestedVector))
         };
-        .If ($Example.b != .Default(System.ArraySegment`1[System.Byte])) {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
+        .Block(System.ArraySegment`1[System.Byte] $convertedBlob) {
+            $convertedBlob = $Example.b;
+            .If ($convertedBlob != .Default(System.ArraySegment`1[System.Byte])) {
+                .Block() {
+                    .Call $writer.WriteFieldBegin(
+                        .Constant<Bond.BondDataType>(BT_LIST),
+                        .Constant<System.UInt16>(50),
+                        .Constant<Bond.Metadata>(b));
+                    .Block(
+                        System.ArraySegment`1[System.Byte] $arraySegment,
+                        System.Int32 $count,
+                        System.Int32 $index,
+                        System.Int32 $end) {
+                        $arraySegment = $Example.b;
+                        $index = $arraySegment.Offset;
+                        $count = $arraySegment.Count;
+                        $end = $index + $count;
+                        .Block() {
+                            .Call $writer.WriteContainerBegin(
+                                $count,
+                                .Constant<Bond.BondDataType>(BT_INT8));
+                            .Call $writer.WriteBytes($arraySegment);
+                            .Call $writer.WriteContainerEnd()
+                        }
+                    };
+                    .Call $writer.WriteFieldEnd()
+                }
+            } .Else {
+                .Call $writer.WriteFieldOmitted(
                     .Constant<Bond.BondDataType>(BT_LIST),
                     .Constant<System.UInt16>(50),
-                    .Constant<Bond.Metadata>(b));
-                .Block(
-                    System.ArraySegment`1[System.Byte] $arraySegment,
-                    System.Int32 $count,
-                    System.Int32 $index,
-                    System.Int32 $end) {
-                    $arraySegment = $Example.b;
-                    $index = $arraySegment.Offset;
-                    $count = $arraySegment.Count;
-                    $end = $index + $count;
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_INT8));
-                        .Call $writer.WriteBytes($Example.b);
-                        .Call $writer.WriteContainerEnd()
-                    }
-                };
-                .Call $writer.WriteFieldEnd()
+                    .Constant<Bond.Metadata>(b))
             }
-        } .Else {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(50),
-                .Constant<Bond.Metadata>(b))
         };
         .If (($Example._map).Count != 0) {
             .Block() {
@@ -401,42 +404,41 @@
                 .Constant<System.UInt16>(60),
                 .Constant<Bond.Metadata>(_map))
         };
-        .If (.Call ExpressionsTest.BondTypeAliasConverter.Convert(
-            $Example._decimal,
-            .Default(System.ArraySegment`1[System.Byte])) != .Default(System.ArraySegment`1[System.Byte])) {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
+        .Block(System.ArraySegment`1[System.Byte] $convertedBlob) {
+            $convertedBlob = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                $Example._decimal,
+                .Default(System.ArraySegment`1[System.Byte]));
+            .If ($convertedBlob != .Default(System.ArraySegment`1[System.Byte])) {
+                .Block() {
+                    .Call $writer.WriteFieldBegin(
+                        .Constant<Bond.BondDataType>(BT_LIST),
+                        .Constant<System.UInt16>(70),
+                        .Constant<Bond.Metadata>(_decimal));
+                    .Block(
+                        System.ArraySegment`1[System.Byte] $arraySegment,
+                        System.Int32 $count,
+                        System.Int32 $index,
+                        System.Int32 $end) {
+                        $arraySegment = $convertedBlob;
+                        $index = $arraySegment.Offset;
+                        $count = $arraySegment.Count;
+                        $end = $index + $count;
+                        .Block() {
+                            .Call $writer.WriteContainerBegin(
+                                $count,
+                                .Constant<Bond.BondDataType>(BT_INT8));
+                            .Call $writer.WriteBytes($arraySegment);
+                            .Call $writer.WriteContainerEnd()
+                        }
+                    };
+                    .Call $writer.WriteFieldEnd()
+                }
+            } .Else {
+                .Call $writer.WriteFieldOmitted(
                     .Constant<Bond.BondDataType>(BT_LIST),
                     .Constant<System.UInt16>(70),
-                    .Constant<Bond.Metadata>(_decimal));
-                .Block(
-                    System.ArraySegment`1[System.Byte] $arraySegment,
-                    System.Int32 $count,
-                    System.Int32 $index,
-                    System.Int32 $end) {
-                    $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
-                        $Example._decimal,
-                        .Default(System.ArraySegment`1[System.Byte]));
-                    $index = $arraySegment.Offset;
-                    $count = $arraySegment.Count;
-                    $end = $index + $count;
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_INT8));
-                        .Call $writer.WriteBytes(.Call ExpressionsTest.BondTypeAliasConverter.Convert(
-                                $Example._decimal,
-                                .Default(System.ArraySegment`1[System.Byte])));
-                        .Call $writer.WriteContainerEnd()
-                    }
-                };
-                .Call $writer.WriteFieldEnd()
+                    .Constant<Bond.Metadata>(_decimal))
             }
-        } .Else {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(70),
-                .Constant<Bond.Metadata>(_decimal))
         };
         .If (($Example._decList).Count != 0) {
             .Block() {
@@ -473,9 +475,7 @@
                                             .Call $writer.WriteContainerBegin(
                                                 $count,
                                                 .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call ExpressionsTest.BondTypeAliasConverter.Convert(
-                                                    $node.Value,
-                                                    .Default(System.ArraySegment`1[System.Byte])));
+                                            .Call $writer.WriteBytes($arraySegment);
                                             .Call $writer.WriteContainerEnd()
                                         }
                                     };
@@ -496,6 +496,185 @@
                 .Constant<Bond.BondDataType>(BT_LIST),
                 .Constant<System.UInt16>(71),
                 .Constant<Bond.Metadata>(_decList))
+        };
+        .If (($Example._decVector).Count != 0) {
+            .Block() {
+                .Call $writer.WriteFieldBegin(
+                    .Constant<Bond.BondDataType>(BT_LIST),
+                    .Constant<System.UInt16>(72),
+                    .Constant<Bond.Metadata>(_decVector));
+                .Block(
+                    System.Int32 $index,
+                    System.Int32 $count) {
+                    $index = -1;
+                    $count = ($Example._decVector).Count;
+                    .Block() {
+                        .Call $writer.WriteContainerBegin(
+                            $count,
+                            .Constant<Bond.BondDataType>(BT_LIST));
+                        .Loop  {
+                            .If (++$index < $count) {
+                                .Block() {
+                                    .Default(System.Void);
+                                    .Block(
+                                        System.ArraySegment`1[System.Byte] $arraySegment,
+                                        System.Int32 $count,
+                                        System.Int32 $index,
+                                        System.Int32 $end) {
+                                        $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                            ($Example._decVector).Item[$index],
+                                            .Default(System.ArraySegment`1[System.Byte]));
+                                        $index = $arraySegment.Offset;
+                                        $count = $arraySegment.Count;
+                                        $end = $index + $count;
+                                        .Block() {
+                                            .Call $writer.WriteContainerBegin(
+                                                $count,
+                                                .Constant<Bond.BondDataType>(BT_INT8));
+                                            .Call $writer.WriteBytes($arraySegment);
+                                            .Call $writer.WriteContainerEnd()
+                                        }
+                                    };
+                                    .Default(System.Void)
+                                }
+                            } .Else {
+                                .Break end { }
+                            }
+                        }
+                        .LabelTarget end:;
+                        .Call $writer.WriteContainerEnd()
+                    }
+                };
+                .Call $writer.WriteFieldEnd()
+            }
+        } .Else {
+            .Call $writer.WriteFieldOmitted(
+                .Constant<Bond.BondDataType>(BT_LIST),
+                .Constant<System.UInt16>(72),
+                .Constant<Bond.Metadata>(_decVector))
+        };
+        .If (($Example._decMap).Count != 0) {
+            .Block() {
+                .Call $writer.WriteFieldBegin(
+                    .Constant<Bond.BondDataType>(BT_MAP),
+                    .Constant<System.UInt16>(73),
+                    .Constant<Bond.Metadata>(_decMap));
+                .Block(System.Collections.Generic.IEnumerator`1[System.Collections.Generic.KeyValuePair`2[System.Int32,System.Decimal]] $enumerator)
+                 {
+                    $enumerator = .Call ($Example._decMap).GetEnumerator();
+                    .Block() {
+                        .Call $writer.WriteContainerBegin(
+                            ($Example._decMap).Count,
+                            .Constant<Bond.BondDataType>(BT_INT32),
+                            .Constant<Bond.BondDataType>(BT_LIST));
+                        .Loop  {
+                            .If (
+                                .Call $enumerator.MoveNext()
+                            ) {
+                                .Block() {
+                                    .Default(System.Void);
+                                    .Call $writer.WriteInt32(($enumerator.Current).Key);
+                                    .Default(System.Void);
+                                    .Default(System.Void);
+                                    .Default(System.Void);
+                                    .Block(
+                                        System.ArraySegment`1[System.Byte] $arraySegment,
+                                        System.Int32 $count,
+                                        System.Int32 $index,
+                                        System.Int32 $end) {
+                                        $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                            ($enumerator.Current).Value,
+                                            .Default(System.ArraySegment`1[System.Byte]));
+                                        $index = $arraySegment.Offset;
+                                        $count = $arraySegment.Count;
+                                        $end = $index + $count;
+                                        .Block() {
+                                            .Call $writer.WriteContainerBegin(
+                                                $count,
+                                                .Constant<Bond.BondDataType>(BT_INT8));
+                                            .Call $writer.WriteBytes($arraySegment);
+                                            .Call $writer.WriteContainerEnd()
+                                        }
+                                    };
+                                    .Default(System.Void)
+                                }
+                            } .Else {
+                                .Break end { }
+                            }
+                        }
+                        .LabelTarget end:;
+                        .Call $writer.WriteContainerEnd()
+                    }
+                };
+                .Call $writer.WriteFieldEnd()
+            }
+        } .Else {
+            .Call $writer.WriteFieldOmitted(
+                .Constant<Bond.BondDataType>(BT_MAP),
+                .Constant<System.UInt16>(73),
+                .Constant<Bond.Metadata>(_decMap))
+        };
+        .If ($Example._decNullable != 0M) {
+            .Block() {
+                .Call $writer.WriteFieldBegin(
+                    .Constant<Bond.BondDataType>(BT_LIST),
+                    .Constant<System.UInt16>(74),
+                    .Constant<Bond.Metadata>(_decNullable));
+                .Block(
+                    System.ArraySegment`1[System.Byte] $arraySegment,
+                    System.Int32 $count) {
+                    $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                        $Example._decNullable,
+                        .Default(System.ArraySegment`1[System.Byte]));
+                    $count = .If ($arraySegment.Array != null) {
+                        1
+                    } .Else {
+                        0
+                    };
+                    .Block() {
+                        .Call $writer.WriteContainerBegin(
+                            $count,
+                            .Constant<Bond.BondDataType>(BT_LIST));
+                        .Loop  {
+                            .If ($count-- != 0) {
+                                .Block() {
+                                    .Default(System.Void);
+                                    .Block(
+                                        System.ArraySegment`1[System.Byte] $arraySegment,
+                                        System.Int32 $count,
+                                        System.Int32 $index,
+                                        System.Int32 $end) {
+                                        $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                            $Example._decNullable,
+                                            .Default(System.ArraySegment`1[System.Byte]));
+                                        $index = $arraySegment.Offset;
+                                        $count = $arraySegment.Count;
+                                        $end = $index + $count;
+                                        .Block() {
+                                            .Call $writer.WriteContainerBegin(
+                                                $count,
+                                                .Constant<Bond.BondDataType>(BT_INT8));
+                                            .Call $writer.WriteBytes($arraySegment);
+                                            .Call $writer.WriteContainerEnd()
+                                        }
+                                    };
+                                    .Default(System.Void)
+                                }
+                            } .Else {
+                                .Break end { }
+                            }
+                        }
+                        .LabelTarget end:;
+                        .Call $writer.WriteContainerEnd()
+                    }
+                };
+                .Call $writer.WriteFieldEnd()
+            }
+        } .Else {
+            .Call $writer.WriteFieldOmitted(
+                .Constant<Bond.BondDataType>(BT_LIST),
+                .Constant<System.UInt16>(74),
+                .Constant<Bond.Metadata>(_decNullable))
         };
         .Call $writer.WriteStructEnd()
     }

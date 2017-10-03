@@ -62,12 +62,12 @@ namespace Bond.Expressions.Json
             // into a nullable
             var readJsonNullAsEmptyList = Expression.Block(
                 Reader.Read(),
-                handler(parser, elementType, Expression.Constant(false), Expression.Constant(0)));
+                handler(parser, elementType, Expression.Constant(false), Expression.Constant(0), null));
 
             // if the json contains an array, read the array into the list
             var readJsonArrayAsList = Expression.Block(
                 Reader.Read(),
-                handler(parser, elementType, JsonTokenNotEquals(JsonToken.EndArray), Expression.Constant(0)),
+                handler(parser, elementType, JsonTokenNotEquals(JsonToken.EndArray), Expression.Constant(0), null),
                 Reader.Read());
 
             return Expression.IfThenElse(

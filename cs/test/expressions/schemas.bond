@@ -12,7 +12,7 @@ struct Nested
     0: double _double;
 }
 
-using decimal = blob;
+using decimal = int32;
 
 struct Example : Base
 {
@@ -30,4 +30,7 @@ struct Example : Base
     60: map<int32, double> _map;
     70: decimal _decimal;
     71: list<decimal> _decList;
+    72: vector<decimal> _decVector;
+    73: map<int32, decimal> _decMap;
+    74: nullable<decimal> _decNullable;
 };

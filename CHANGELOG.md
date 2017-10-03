@@ -70,6 +70,7 @@ different versioning scheme, following the Haskell community's
   [Issue #623](https://github.com/Microsoft/bond/issues/623)
 * When targeting .NET 4.5, avoid resolving external entities when using
   `SimpleXmlReader`.
+* Reduce redundant conversions during serialization of aliased blobs.
 
 [msdn-gzipstream]: https://msdn.microsoft.com/en-us/library/system.io.compression.gzipstream(v=vs.110).aspx
 [msdn-stream-canseek]: https://msdn.microsoft.com/en-us/library/system.io.stream.canseek(v=vs.110).aspx

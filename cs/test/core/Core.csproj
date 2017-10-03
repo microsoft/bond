@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup Condition="'$(BuildNonportable)' == 'true'">
@@ -54,6 +54,7 @@
     <Compile Include="SerializerGeneratorFactoryTests.cs" />
     <Compile Include="StreamTests.cs" />
     <Compile Include="Structs.cs" />
+    <Compile Include="ConvertTests.cs" />
     <Compile Include="TypeAliasTests.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="XmlParsingTests.cs" />
