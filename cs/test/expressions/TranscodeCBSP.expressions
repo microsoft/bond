@@ -1432,6 +1432,222 @@
         }
         .LabelTarget end:;
         .Loop  {
+            .If ((System.Int32)$fieldType > 1) {
+                .Block() {
+                    .If ($fieldId == .Constant<System.UInt16>(70)) {
+                        .Block() {
+                            .Block() {
+                                .Call $writer.WriteFieldBegin(
+                                    $fieldType,
+                                    .Constant<System.UInt16>(70),
+                                    .Constant<Bond.Metadata>(_decimal));
+                                .Invoke (.Lambda #Lambda2<System.Action`3[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream],System.Int32]>)(
+                                    $reader,
+                                    $writer,
+                                    10);
+                                .Call $writer.WriteFieldEnd()
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .Break end { }
+                        }
+                    } .Else {
+                        .If ($fieldId > .Constant<System.UInt16>(70)) {
+                            .Block() {
+                                .Call $writer.WriteFieldOmitted(
+                                    .Constant<Bond.BondDataType>(BT_LIST),
+                                    .Constant<System.UInt16>(70),
+                                    .Constant<Bond.Metadata>(_decimal));
+                                .Break end { }
+                            }
+                        } .Else {
+                            .Block() {
+                                .Call $writer.WriteFieldBegin(
+                                    $fieldType,
+                                    $fieldId,
+                                    null);
+                                .Switch ($fieldType) {
+                                .Case (.Constant<Bond.BondDataType>(BT_LIST)):
+                                .Case (.Constant<Bond.BondDataType>(BT_SET)):
+                                        .Invoke (.Lambda #Lambda2<System.Action`3[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream],System.Int32]>)(
+                                            $reader,
+                                            $writer,
+                                            3)
+                                .Case (.Constant<Bond.BondDataType>(BT_MAP)):
+                                        .Invoke (.Lambda #Lambda2<System.Action`3[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream],System.Int32]>)(
+                                            $reader,
+                                            $writer,
+                                            4)
+                                .Case (.Constant<Bond.BondDataType>(BT_STRUCT)):
+                                        .Invoke (.Lambda #Lambda2<System.Action`3[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream],System.Int32]>)(
+                                            $reader,
+                                            $writer,
+                                            5)
+                                .Case (.Constant<Bond.BondDataType>(BT_BOOL)):
+                                        .Call $writer.WriteBool(.Call $reader.ReadBool())
+                                .Case (.Constant<Bond.BondDataType>(BT_UINT8)):
+                                        .Call $writer.WriteUInt8(.Call $reader.ReadUInt8())
+                                .Case (.Constant<Bond.BondDataType>(BT_UINT16)):
+                                        .Call $writer.WriteUInt16(.Call $reader.ReadUInt16())
+                                .Case (.Constant<Bond.BondDataType>(BT_UINT32)):
+                                        .Call $writer.WriteUInt32(.Call $reader.ReadUInt32())
+                                .Case (.Constant<Bond.BondDataType>(BT_UINT64)):
+                                        .Call $writer.WriteUInt64(.Call $reader.ReadUInt64())
+                                .Case (.Constant<Bond.BondDataType>(BT_FLOAT)):
+                                        .Call $writer.WriteFloat(.Call $reader.ReadFloat())
+                                .Case (.Constant<Bond.BondDataType>(BT_DOUBLE)):
+                                        .Call $writer.WriteDouble(.Call $reader.ReadDouble())
+                                .Case (.Constant<Bond.BondDataType>(BT_STRING)):
+                                        .Call $writer.WriteString(.Call $reader.ReadString())
+                                .Case (.Constant<Bond.BondDataType>(BT_INT8)):
+                                        .Call $writer.WriteInt8(.Call $reader.ReadInt8())
+                                .Case (.Constant<Bond.BondDataType>(BT_INT16)):
+                                        .Call $writer.WriteInt16(.Call $reader.ReadInt16())
+                                .Case (.Constant<Bond.BondDataType>(BT_INT32)):
+                                        .Call $writer.WriteInt32(.Call $reader.ReadInt32())
+                                .Case (.Constant<Bond.BondDataType>(BT_INT64)):
+                                        .Call $writer.WriteInt64(.Call $reader.ReadInt64())
+                                .Case (.Constant<Bond.BondDataType>(BT_WSTRING)):
+                                        .Call $writer.WriteWString(.Call $reader.ReadWString())
+                                .Default:
+                                        .Invoke (.Lambda #Lambda3<System.Action`1[Bond.BondDataType]>)($fieldType)
+                                };
+                                .Call $writer.WriteFieldEnd()
+                            }
+                        }
+                    };
+                    .Call $reader.ReadFieldEnd();
+                    .Call $reader.ReadFieldBegin(
+                        $fieldType,
+                        $fieldId);
+                    .If ($fieldId > .Constant<System.UInt16>(70)) {
+                        .Break end { }
+                    } .Else {
+                        .Default(System.Void)
+                    }
+                }
+            } .Else {
+                .Block() {
+                    .Call $writer.WriteFieldOmitted(
+                        .Constant<Bond.BondDataType>(BT_LIST),
+                        .Constant<System.UInt16>(70),
+                        .Constant<Bond.Metadata>(_decimal));
+                    .Break end { }
+                }
+            }
+        }
+        .LabelTarget end:;
+        .Loop  {
+            .If ((System.Int32)$fieldType > 1) {
+                .Block() {
+                    .If ($fieldId == .Constant<System.UInt16>(71)) {
+                        .Block() {
+                            .Block() {
+                                .Call $writer.WriteFieldBegin(
+                                    $fieldType,
+                                    .Constant<System.UInt16>(71),
+                                    .Constant<Bond.Metadata>(_decList));
+                                .Invoke (.Lambda #Lambda2<System.Action`3[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream],System.Int32]>)(
+                                    $reader,
+                                    $writer,
+                                    12);
+                                .Call $writer.WriteFieldEnd()
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .Break end { }
+                        }
+                    } .Else {
+                        .If ($fieldId > .Constant<System.UInt16>(71)) {
+                            .Block() {
+                                .Call $writer.WriteFieldOmitted(
+                                    .Constant<Bond.BondDataType>(BT_LIST),
+                                    .Constant<System.UInt16>(71),
+                                    .Constant<Bond.Metadata>(_decList));
+                                .Break end { }
+                            }
+                        } .Else {
+                            .Block() {
+                                .Call $writer.WriteFieldBegin(
+                                    $fieldType,
+                                    $fieldId,
+                                    null);
+                                .Switch ($fieldType) {
+                                .Case (.Constant<Bond.BondDataType>(BT_LIST)):
+                                .Case (.Constant<Bond.BondDataType>(BT_SET)):
+                                        .Invoke (.Lambda #Lambda2<System.Action`3[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream],System.Int32]>)(
+                                            $reader,
+                                            $writer,
+                                            3)
+                                .Case (.Constant<Bond.BondDataType>(BT_MAP)):
+                                        .Invoke (.Lambda #Lambda2<System.Action`3[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream],System.Int32]>)(
+                                            $reader,
+                                            $writer,
+                                            4)
+                                .Case (.Constant<Bond.BondDataType>(BT_STRUCT)):
+                                        .Invoke (.Lambda #Lambda2<System.Action`3[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream],System.Int32]>)(
+                                            $reader,
+                                            $writer,
+                                            5)
+                                .Case (.Constant<Bond.BondDataType>(BT_BOOL)):
+                                        .Call $writer.WriteBool(.Call $reader.ReadBool())
+                                .Case (.Constant<Bond.BondDataType>(BT_UINT8)):
+                                        .Call $writer.WriteUInt8(.Call $reader.ReadUInt8())
+                                .Case (.Constant<Bond.BondDataType>(BT_UINT16)):
+                                        .Call $writer.WriteUInt16(.Call $reader.ReadUInt16())
+                                .Case (.Constant<Bond.BondDataType>(BT_UINT32)):
+                                        .Call $writer.WriteUInt32(.Call $reader.ReadUInt32())
+                                .Case (.Constant<Bond.BondDataType>(BT_UINT64)):
+                                        .Call $writer.WriteUInt64(.Call $reader.ReadUInt64())
+                                .Case (.Constant<Bond.BondDataType>(BT_FLOAT)):
+                                        .Call $writer.WriteFloat(.Call $reader.ReadFloat())
+                                .Case (.Constant<Bond.BondDataType>(BT_DOUBLE)):
+                                        .Call $writer.WriteDouble(.Call $reader.ReadDouble())
+                                .Case (.Constant<Bond.BondDataType>(BT_STRING)):
+                                        .Call $writer.WriteString(.Call $reader.ReadString())
+                                .Case (.Constant<Bond.BondDataType>(BT_INT8)):
+                                        .Call $writer.WriteInt8(.Call $reader.ReadInt8())
+                                .Case (.Constant<Bond.BondDataType>(BT_INT16)):
+                                        .Call $writer.WriteInt16(.Call $reader.ReadInt16())
+                                .Case (.Constant<Bond.BondDataType>(BT_INT32)):
+                                        .Call $writer.WriteInt32(.Call $reader.ReadInt32())
+                                .Case (.Constant<Bond.BondDataType>(BT_INT64)):
+                                        .Call $writer.WriteInt64(.Call $reader.ReadInt64())
+                                .Case (.Constant<Bond.BondDataType>(BT_WSTRING)):
+                                        .Call $writer.WriteWString(.Call $reader.ReadWString())
+                                .Default:
+                                        .Invoke (.Lambda #Lambda3<System.Action`1[Bond.BondDataType]>)($fieldType)
+                                };
+                                .Call $writer.WriteFieldEnd()
+                            }
+                        }
+                    };
+                    .Call $reader.ReadFieldEnd();
+                    .Call $reader.ReadFieldBegin(
+                        $fieldType,
+                        $fieldId);
+                    .If ($fieldId > .Constant<System.UInt16>(71)) {
+                        .Break end { }
+                    } .Else {
+                        .Default(System.Void)
+                    }
+                }
+            } .Else {
+                .Block() {
+                    .Call $writer.WriteFieldOmitted(
+                        .Constant<Bond.BondDataType>(BT_LIST),
+                        .Constant<System.UInt16>(71),
+                        .Constant<Bond.Metadata>(_decList));
+                    .Break end { }
+                }
+            }
+        }
+        .LabelTarget end:;
+        .Loop  {
             .If ($fieldType != .Constant<Bond.BondDataType>(BT_STOP)) {
                 .Block() {
                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_STOP_BASE)) {
@@ -3168,6 +3384,61 @@
 }
 
 .Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>(
+    Bond.BondDataType $e,
+    Bond.BondDataType $a) {
+    .Call Bond.Expressions.ThrowExpression.ThrowInvalidTypeException(
+        $e,
+        $a)
+}.Lambda #Lambda1<System.Action`2[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream]]>(
+    Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream] $reader,
+    Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream] $writer) {
+    .Block(
+        System.Int32 $count,
+        Bond.BondDataType $elementType) {
+        .Call $reader.ReadContainerBegin(
+            $count,
+            $elementType);
+        .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
+            .Block() {
+                .Call $writer.WriteContainerBegin(
+                    $count,
+                    .Constant<Bond.BondDataType>(BT_LIST));
+                .Loop  {
+                    .If ($count-- > 0) {
+                        .Block() {
+                            .Default(System.Void);
+                            .Invoke (.Lambda #Lambda2<System.Action`3[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream],System.Int32]>)(
+                                $reader,
+                                $writer,
+                                10);
+                            .Default(System.Void)
+                        }
+                    } .Else {
+                        .Break end { }
+                    }
+                }
+                .LabelTarget end:;
+                .Call $writer.WriteContainerEnd()
+            }
+        } .Else {
+            .Invoke (.Lambda #Lambda3<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                .Constant<Bond.BondDataType>(BT_LIST),
+                $elementType)
+        };
+        .Call $reader.ReadContainerEnd()
+    }
+}
+
+.Lambda #Lambda2<System.Action`3[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream],System.Int32]>(
+    Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream] $r,
+    Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream] $w,
+    System.Int32 $i) {
+    .Invoke ((.Constant<ExpressionsTest.Transcoder`2[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream]]>(ExpressionsTest.Transcoder`2[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.SimpleBinaryWriter`1[Bond.IO.Unsafe.OutputStream]]).transcode)[$i])(
+        $r,
+        $w)
+}
+
+.Lambda #Lambda3<System.Action`2[Bond.BondDataType,Bond.BondDataType]>(
     Bond.BondDataType $e,
     Bond.BondDataType $a) {
     .Call Bond.Expressions.ThrowExpression.ThrowInvalidTypeException(

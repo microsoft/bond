@@ -12,6 +12,8 @@ struct Nested
     0: double _double;
 }
 
+using decimal = blob;
+
 struct Example : Base
 {
      0: bool _bool;
@@ -26,4 +28,6 @@ struct Example : Base
     40: list<Nested> _nestedVector;
     50: blob b;
     60: map<int32, double> _map;
+    70: decimal _decimal;
+    71: list<decimal> _decList;
 };

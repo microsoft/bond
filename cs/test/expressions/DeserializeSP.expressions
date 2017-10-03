@@ -264,6 +264,50 @@
                         .Call $reader.ReadContainerEnd()
                     }
                 };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    .Block(System.Int32 $count) {
+                        $count = .Call $reader.ReadContainerBegin();
+                        $Example._decimal = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                            .Call $reader.ReadBytes($count),
+                            .Default(System.Decimal));
+                        .Call $reader.ReadContainerEnd()
+                    }
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    .Block(System.Int32 $count) {
+                        $count = .Call $reader.ReadContainerBegin();
+                        .Block(System.Decimal $Example._decList_item) {
+                            .Default(System.Void);
+                            .Loop  {
+                                .If ($count-- > 0) {
+                                    .Block() {
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            $Example._decList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                .Call $reader.ReadBytes($count),
+                                                .Default(System.Decimal));
+                                            .Call $reader.ReadContainerEnd()
+                                        };
+                                        .Call ($Example._decList).Add($Example._decList_item)
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:;
+                            .Default(System.Void)
+                        };
+                        .Call $reader.ReadContainerEnd()
+                    }
+                };
                 .Default(System.Void)
             }
         };
