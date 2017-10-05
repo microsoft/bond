@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package org.bondlib;
 
 import org.junit.Assert;
@@ -1691,6 +1694,280 @@ public final class SimpleJsonReaderTest {
         Assert.assertEquals(fieldName, currentFieldName);
         try {
             double value = r.readDouble();
+            Assert.fail("Parsing should fail: " + value);
+        } catch (InvalidBondDataException e) {
+            // success
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // readString tests
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Test
+    public void testReadString() throws IOException {
+        String[] expectedValues = new String[]{
+                "",
+                "unit test",
+                "\u55ae\u5143\u6e2c\u8a66",
+                "\u30e6\u30cb\u30c3\u30c8\u30c6\u30b9\u30c8",
+                "\u0a2f\u0a42\u0a28\u0a3f\u0a1f \u0a1f\u0a48\u0a38\u0a1f",
+                "\u043c\u043e\u0434\u0443\u043b\u044c\u043d\u044b\u0439 \u0442\u0435\u0441\u0442",
+                "Ki\u1ec3m tra \u0111\u01a1n v\u1ecb",
+                "\u00fcnite testi",
+                "\u10d4\u10e0\u10d7\u10d4\u10e3\u10da\u10d8 \u10d2\u10d0\u10db\u10dd\u10ea\u10d3\u10d0",
+                "\u05de\u05d1\u05d7\u05df \u05d9\u05d7\u05d9\u05d3\u05d4",
+                "\u0627\u062e\u062a\u0628\u0627\u0631 \u0627\u0644\u0648\u062d\u062f\u0629",
+                "\uD852\uDF62",
+        };
+        for (String expectedValue : expectedValues) {
+            parseAndVerifyString('\"' + expectedValue + '\"', expectedValue);
+        }
+    }
+
+    @Test
+    public void testReadString_Error_Integer() throws IOException {
+        parseMalformedAndVerifyString("1");
+    }
+
+    @Test
+    public void testReadString_Error_Float() throws IOException {
+        parseMalformedAndVerifyString("1.0");
+    }
+
+    @Test
+    public void testReadString_Error_Literal() throws IOException {
+        parseMalformedAndVerifyString("null");
+    }
+
+    @Test
+    public void testReadString_Error_Array() throws IOException {
+        parseMalformedAndVerifyString("[]");
+    }
+
+    @Test
+    public void testReadString_Error_Object() throws IOException {
+        parseMalformedAndVerifyString("{}");
+    }
+
+    private static void parseAndVerifyString(String jsonValue, String expectedValue) throws IOException {
+        // build JSON object with 4 fields: two scalars and two arrays (with 1 element and 2 elements)
+        String scalarField1Name = "scalarField1";
+        String scalarField2Name = "scalarField2";
+        String arrayField1Name = "arrayField1";
+        String arrayField2Name = "arrayField2";
+        String json = "{" +
+                "\"" + scalarField1Name + "\":" + jsonValue + "," +
+                "\"" + scalarField2Name + "\":" + jsonValue + "," +
+                "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
+                "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        SimpleJsonReader r = new SimpleJsonReader(bais);
+        r.readStructBegin();
+
+        String currentFieldName;
+        boolean currentContainerHasItems;
+
+        // scalar field 1
+        currentFieldName = r.readFieldBegin();
+        Assert.assertEquals(scalarField1Name, currentFieldName);
+        String actualScalarField1Value = r.readString();
+        Assert.assertEquals(expectedValue, actualScalarField1Value);
+        r.readFieldEnd();
+
+        // scalar field 2
+        currentFieldName = r.readFieldBegin();
+        Assert.assertEquals(scalarField2Name, currentFieldName);
+        String actualScalarField2Value = r.readString();
+        Assert.assertEquals(expectedValue, actualScalarField2Value);
+        r.readFieldEnd();
+
+        // array field 1 (1 element)
+        currentFieldName = r.readFieldBegin();
+        Assert.assertEquals(arrayField1Name, currentFieldName);
+        r.readContainerBegin();
+        currentContainerHasItems = r.readContainerItemBegin();
+        Assert.assertTrue(currentContainerHasItems);
+        String actualArrayField1Element1Value = r.readString();
+        Assert.assertEquals(expectedValue, actualArrayField1Element1Value);
+        r.readContainerItemEnd();
+        currentContainerHasItems = r.readContainerItemBegin();
+        Assert.assertFalse(currentContainerHasItems);
+        r.readContainerEnd();
+        r.readFieldEnd();
+
+        // array field 2 (2 elements)
+        currentFieldName = r.readFieldBegin();
+        Assert.assertEquals(arrayField2Name, currentFieldName);
+        r.readContainerBegin();
+        currentContainerHasItems = r.readContainerItemBegin();
+        Assert.assertTrue(currentContainerHasItems);
+        String actualArrayField2Element1Value = r.readString();
+        Assert.assertEquals(expectedValue, actualArrayField2Element1Value);
+        r.readContainerItemEnd();
+        currentContainerHasItems = r.readContainerItemBegin();
+        Assert.assertTrue(currentContainerHasItems);
+        String actualArrayField2Element2Value = r.readString();
+        Assert.assertEquals(expectedValue, actualArrayField2Element2Value);
+        r.readContainerItemEnd();
+        currentContainerHasItems = r.readContainerItemBegin();
+        Assert.assertFalse(currentContainerHasItems);
+        r.readContainerEnd();
+        r.readFieldEnd();
+
+        currentFieldName = r.readFieldBegin();
+        Assert.assertNull(currentFieldName);
+        r.readStructEnd();
+    }
+
+    private static void parseMalformedAndVerifyString(String jsonValue) throws IOException {
+        String fieldName = "field";
+        String json = "{\"" + fieldName + "\":" + jsonValue + "}";
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        SimpleJsonReader r = new SimpleJsonReader(bais);
+        r.readStructBegin();
+        String currentFieldName = r.readFieldBegin();
+        Assert.assertEquals(fieldName, currentFieldName);
+        try {
+            String value = r.readString();
+            Assert.fail("Parsing should fail: " + value);
+        } catch (InvalidBondDataException e) {
+            // success
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // readWString tests
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Test
+    public void testReadWString() throws IOException {
+        String[] expectedValues = new String[]{
+                "",
+                "unit test",
+                "\u55ae\u5143\u6e2c\u8a66",
+                "\u30e6\u30cb\u30c3\u30c8\u30c6\u30b9\u30c8",
+                "\u0a2f\u0a42\u0a28\u0a3f\u0a1f \u0a1f\u0a48\u0a38\u0a1f",
+                "\u043c\u043e\u0434\u0443\u043b\u044c\u043d\u044b\u0439 \u0442\u0435\u0441\u0442",
+                "Ki\u1ec3m tra \u0111\u01a1n v\u1ecb",
+                "\u00fcnite testi",
+                "\u10d4\u10e0\u10d7\u10d4\u10e3\u10da\u10d8 \u10d2\u10d0\u10db\u10dd\u10ea\u10d3\u10d0",
+                "\u05de\u05d1\u05d7\u05df \u05d9\u05d7\u05d9\u05d3\u05d4",
+                "\u0627\u062e\u062a\u0628\u0627\u0631 \u0627\u0644\u0648\u062d\u062f\u0629",
+                "\uD852\uDF62",
+        };
+        for (String expectedValue : expectedValues) {
+            parseAndVerifyWString('\"' + expectedValue + '\"', expectedValue);
+        }
+    }
+
+    @Test
+    public void testReadWString_Error_Integer() throws IOException {
+        parseMalformedAndVerifyWString("1");
+    }
+
+    @Test
+    public void testReadWString_Error_Float() throws IOException {
+        parseMalformedAndVerifyWString("1.0");
+    }
+
+    @Test
+    public void testReadWString_Error_Literal() throws IOException {
+        parseMalformedAndVerifyWString("null");
+    }
+
+    @Test
+    public void testReadWString_Error_Array() throws IOException {
+        parseMalformedAndVerifyWString("[]");
+    }
+
+    @Test
+    public void testReadWString_Error_Object() throws IOException {
+        parseMalformedAndVerifyWString("{}");
+    }
+
+    private static void parseAndVerifyWString(String jsonValue, String expectedValue) throws IOException {
+        // build JSON object with 4 fields: two scalars and two arrays (with 1 element and 2 elements)
+        String scalarField1Name = "scalarField1";
+        String scalarField2Name = "scalarField2";
+        String arrayField1Name = "arrayField1";
+        String arrayField2Name = "arrayField2";
+        String json = "{" +
+                "\"" + scalarField1Name + "\":" + jsonValue + "," +
+                "\"" + scalarField2Name + "\":" + jsonValue + "," +
+                "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
+                "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        SimpleJsonReader r = new SimpleJsonReader(bais);
+        r.readStructBegin();
+
+        String currentFieldName;
+        boolean currentContainerHasItems;
+
+        // scalar field 1
+        currentFieldName = r.readFieldBegin();
+        Assert.assertEquals(scalarField1Name, currentFieldName);
+        String actualScalarField1Value = r.readWString();
+        Assert.assertEquals(expectedValue, actualScalarField1Value);
+        r.readFieldEnd();
+
+        // scalar field 2
+        currentFieldName = r.readFieldBegin();
+        Assert.assertEquals(scalarField2Name, currentFieldName);
+        String actualScalarField2Value = r.readWString();
+        Assert.assertEquals(expectedValue, actualScalarField2Value);
+        r.readFieldEnd();
+
+        // array field 1 (1 element)
+        currentFieldName = r.readFieldBegin();
+        Assert.assertEquals(arrayField1Name, currentFieldName);
+        r.readContainerBegin();
+        currentContainerHasItems = r.readContainerItemBegin();
+        Assert.assertTrue(currentContainerHasItems);
+        String actualArrayField1Element1Value = r.readWString();
+        Assert.assertEquals(expectedValue, actualArrayField1Element1Value);
+        r.readContainerItemEnd();
+        currentContainerHasItems = r.readContainerItemBegin();
+        Assert.assertFalse(currentContainerHasItems);
+        r.readContainerEnd();
+        r.readFieldEnd();
+
+        // array field 2 (2 elements)
+        currentFieldName = r.readFieldBegin();
+        Assert.assertEquals(arrayField2Name, currentFieldName);
+        r.readContainerBegin();
+        currentContainerHasItems = r.readContainerItemBegin();
+        Assert.assertTrue(currentContainerHasItems);
+        String actualArrayField2Element1Value = r.readWString();
+        Assert.assertEquals(expectedValue, actualArrayField2Element1Value);
+        r.readContainerItemEnd();
+        currentContainerHasItems = r.readContainerItemBegin();
+        Assert.assertTrue(currentContainerHasItems);
+        String actualArrayField2Element2Value = r.readWString();
+        Assert.assertEquals(expectedValue, actualArrayField2Element2Value);
+        r.readContainerItemEnd();
+        currentContainerHasItems = r.readContainerItemBegin();
+        Assert.assertFalse(currentContainerHasItems);
+        r.readContainerEnd();
+        r.readFieldEnd();
+
+        currentFieldName = r.readFieldBegin();
+        Assert.assertNull(currentFieldName);
+        r.readStructEnd();
+    }
+
+    private static void parseMalformedAndVerifyWString(String jsonValue) throws IOException {
+        String fieldName = "field";
+        String json = "{\"" + fieldName + "\":" + jsonValue + "}";
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        SimpleJsonReader r = new SimpleJsonReader(bais);
+        r.readStructBegin();
+        String currentFieldName = r.readFieldBegin();
+        Assert.assertEquals(fieldName, currentFieldName);
+        try {
+            String value = r.readWString();
             Assert.fail("Parsing should fail: " + value);
         } catch (InvalidBondDataException e) {
             // success
