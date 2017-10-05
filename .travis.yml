@@ -72,8 +72,10 @@ script:
     - if [ "$FLAVOR" == "cs" ]; then make DESTDIR=$HOME install; fi
     - if [ "$FLAVOR" == "cs" ]; then cd ..; fi
     - if [ "$FLAVOR" == "cs" ]; then export BOND_COMPILER_PATH=$HOME/usr/local/bin; fi
-    - if [ "$FLAVOR" == "cs" ]; then msbuild /p:Configuration=Debug cs/cs.sln; fi
-    - if [ "$FLAVOR" == "cs" ]; then msbuild /p:Configuration=Fields cs/cs.sln; fi
+    # exclude the Compiler.vcxproj from cs/cs.sln on Linux (xbuild ignore it with a warning but msbuild fail on it)
+    - if [ "$FLAVOR" == "cs" ]; then sed '/21E175D5-BBDD-4B63-8FB7-38899BF2F9D1/d' cs/cs.sln > cs/cs_no_cpp.sln; fi
+    - if [ "$FLAVOR" == "cs" ]; then msbuild /p:Configuration=Debug cs/cs_no_cpp.sln; fi
+    - if [ "$FLAVOR" == "cs" ]; then msbuild /p:Configuration=Fields cs/cs_no_cpp.sln; fi
     - if [ "$FLAVOR" == "cs" ]; then mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll; fi
     - if [ "$FLAVOR" == "cpp-core" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
     - if [ "$FLAVOR" == "cpp-core" ]; then make --jobs 2 check; fi
