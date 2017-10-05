@@ -18,7 +18,6 @@ import java.math.BigInteger;
  */
 public final class SimpleJsonReader implements TextProtocolReader {
 
-    private final InputStream inputStream;
     private final JsonParser parser;
 
     // indicates whether the parser's actual state is one token ahead of the expected state,
@@ -30,14 +29,8 @@ public final class SimpleJsonReader implements TextProtocolReader {
 
     public SimpleJsonReader(InputStream inputStream) throws IOException {
         ArgumentHelper.ensureNotNull(inputStream, "inputStream");
-        this.inputStream = inputStream;
-        this.parser = createParser(inputStream);
+        this.parser = JsonGlobals.jsonFactory.createParser(inputStream);
         this.hasPeekedParserForNextToken = false;
-    }
-
-    private static JsonParser createParser(InputStream inputStream) throws IOException {
-        JsonParser parser = JsonGlobals.jsonFactory.createParser(inputStream);
-        return parser;
     }
 
     @Override
