@@ -127,6 +127,12 @@
         <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
       </_BondGeneratedFiles>
 
+      <_BondGeneratedFiles Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_grpc.cs')"
+                           Condition="'%(BondCodegen.Options)' != ''">
+        <AutoGen>true</AutoGen>
+        <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
+      </_BondGeneratedFiles>
+
       <_BondGeneratedFileNames Include="@(_BondGeneratedFiles)"/>
       <Compile Include="@(_BondGeneratedFileNames)" />
 
