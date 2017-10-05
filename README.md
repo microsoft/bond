@@ -86,6 +86,7 @@ different options:
 
 ```bash
 sudo apt-get install \
+    golang \
     autoconf \
     build-essential \
     libboost-date-time-dev \
