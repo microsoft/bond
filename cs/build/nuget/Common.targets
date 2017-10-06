@@ -128,6 +128,12 @@
       </_BondGeneratedFiles>
 
       <_BondGeneratedFiles Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_grpc.cs')"
+                           Condition="$(BondOptions.Contains('--grpc'))">
+        <AutoGen>true</AutoGen>
+        <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
+      </_BondGeneratedFiles>
+
+      <_BondGeneratedFiles Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_grpc.cs')"
                            Condition="$([System.String]::new('%(BondCodegen.Options)').Contains('--grpc'))">
         <AutoGen>true</AutoGen>
         <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
