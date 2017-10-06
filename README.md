@@ -86,9 +86,9 @@ different options:
 
 ```bash
 sudo apt-get install \
-    golang \
     autoconf \
     build-essential \
+    golang \
     libboost-date-time-dev \
     libboost-python-dev \
     libboost-test-dev \
