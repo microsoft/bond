@@ -13,5 +13,5 @@
 *.swm
 
 # VS
-/.vs
-/.vscode
+.vs/
+.vscode/
