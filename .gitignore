@@ -12,5 +12,6 @@
 *.swo
 *.swm
 
-# VS Code
-/.vscode/
+# VS
+/.vs
+/.vscode
