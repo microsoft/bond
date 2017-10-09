@@ -92,6 +92,7 @@ add_unit_test (basic_type_lists.cpp)
 add_unit_test (basic_type_map.cpp)
 add_unit_test (blob_tests.cpp)
 add_unit_test (bonded_tests.cpp)
+add_unit_test (capped_allocator_tests.cpp)
 add_unit_test (checked_add_test.cpp)
 add_unit_test (cmdargs.cpp)
 add_unit_test (container_extensibility.cpp
