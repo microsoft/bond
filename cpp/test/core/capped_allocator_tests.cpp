@@ -152,14 +152,14 @@ BOOST_AUTO_TEST_CASE(SharedCounterAllocationTests)
         allocator_with_state<> alloc{ state };
         BOOST_CHECK_EQUAL(state.use_count(), 2);
 
-        auto counter = bond::capped_allocator_shared_counter<>::allocate(1024, alloc);
+        bond::capped_allocator_shared_counter<> counter{ 1024, alloc };
         const auto initial_value = counter.value();
         BOOST_CHECK_NE(initial_value, 0u);
         const auto inital_use_count = state.use_count();
         BOOST_CHECK_GT(inital_use_count, 2);
 
         BOOST_CHECK_THROW(
-            bond::capped_allocator_shared_counter<>::allocate(counter.value() - 1, alloc),
+            bond::capped_allocator_shared_counter<>(counter.value() - 1, alloc),
             std::bad_alloc);
         
         auto copy1 = counter;
@@ -258,44 +258,44 @@ BOOST_AUTO_TEST_CASE(AllocatorCounterInBytesTest)
     BOOST_CHECK_EQUAL(counter.value(), 0u);
 }
 
-struct counter_mock
-{
-    using value_type = int;
-
-    static std::vector<int> allocate_call_args;
-
-    explicit counter_mock(int)
-    {}
-
-    static counter_mock allocate(int v, const std::allocator<void>&)
-    {
-        allocate_call_args.push_back(v);
-        return counter_mock{ v };
-    }
-};
-
-std::vector<int> counter_mock::allocate_call_args;
-
 BOOST_AUTO_TEST_CASE(AllocatorCallsCounterAllocateTest)
 {
+    static std::vector<int> allocate_call_args;
+
+    struct counter_mock
+    {
+        using value_type = int;
+
+        using allocator_type = std::allocator<void>;
+
+        explicit counter_mock(int)
+        {}
+
+        counter_mock(int x, const std::allocator<void>&)
+        {
+            allocate_call_args.push_back(x);
+        }
+    };
+
+
     // BOOST_TEST_CONTEXT("Counter passed by value")
     {
         bond::capped_allocator<std::allocator<void>, counter_mock> alloc{ counter_mock{ 10 } };
-        BOOST_CHECK(counter_mock::allocate_call_args.empty());
+        BOOST_CHECK(allocate_call_args.empty());
     }
 
     // BOOST_TEST_CONTEXT("Counter passed by reference")
     {
         counter_mock counter{ 20 };
         bond::capped_allocator<std::allocator<void>, counter_mock> alloc{ std::ref(counter) };
-        BOOST_CHECK(counter_mock::allocate_call_args.empty());
+        BOOST_CHECK(allocate_call_args.empty());
     }
 
     // BOOST_TEST_CONTEXT("Counter emplacement")
     {
         bond::capped_allocator<std::allocator<void>, counter_mock> alloc{ 30 };
-        BOOST_REQUIRE_EQUAL(counter_mock::allocate_call_args.size(), 1u);
-        BOOST_CHECK_EQUAL(counter_mock::allocate_call_args.front(), 30);
+        BOOST_REQUIRE_EQUAL(allocate_call_args.size(), 1u);
+        BOOST_CHECK_EQUAL(allocate_call_args.front(), 30);
     }
 }
 

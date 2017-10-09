@@ -4,7 +4,6 @@
 #pragma once
 
 #include "config.h"
-#include "traits.h"
 #include <boost/optional.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/utility/enable_if.hpp>
@@ -42,7 +41,20 @@ namespace bond
     template <typename Alloc, typename Counter = capped_allocator_shared_counter<typename std::allocator_traits<Alloc>::size_type>>
     class capped_allocator;
 
+} // namespace bond
 
+
+namespace std
+{
+    template <typename T, bool SingleThreaded, typename Alloc>
+    struct uses_allocator<bond::capped_allocator_shared_counter<T, SingleThreaded>, Alloc> : std::true_type
+    {};
+
+} // namespace std
+
+
+namespace bond
+{
     namespace detail
     {
         /// @brief Helper type that can hold either a value or a reference.
@@ -305,17 +317,9 @@ namespace bond
         ///
         /// @remarks The provided limit is applied to counter allocation as well.
         template <typename Alloc>
-        static capped_allocator_shared_counter allocate(T max_value, const Alloc& alloc = {})
-        {
-            capped_allocator_counter<T, SingleThreaded> counter{ max_value };
-            capped_allocator<Alloc, decltype(counter)&> capped_alloc{ std::ref(counter), alloc };
-            capped_allocator_shared_counter shared_counter{
-                max_value,
-                capped_alloc }; // Only a copy of underlying \c Alloc will be stored as part of
-                                // the counter, so it is safe to have the \c counter on the stack.
-            shared_counter.try_add(counter.value());
-            return shared_counter;
-        }
+        capped_allocator_shared_counter(T max_value, const Alloc& alloc)
+            : capped_allocator_shared_counter{ allocate_counter(max_value, alloc) }
+        {}
 
         bool try_add(T val) BOND_NOEXCEPT
         {
@@ -459,13 +463,29 @@ namespace bond
             : _value{ counter_with_allocator<Alloc>::allocate_counter(max_value, capped_alloc) }
         {}
 
+        /// @brief Allocates counter using the provided allocator.
+        ///
+        /// @remarks The provided limit is applied to counter allocation as well.
+        template <typename Alloc>
+        static capped_allocator_shared_counter allocate_counter(T max_value, const Alloc& alloc)
+        {
+            capped_allocator_counter<T, SingleThreaded> counter{ max_value };
+            capped_allocator<Alloc, decltype(counter)&> capped_alloc{ std::ref(counter), alloc };
+            capped_allocator_shared_counter shared_counter{
+                max_value,
+                capped_alloc }; // Only a copy of underlying \c Alloc will be stored as part of
+                                // the counter, so it is safe to have the \c counter on the stack.
+            shared_counter.try_add(counter.value());
+            return shared_counter;
+        }
+
         boost::intrusive_ptr<counter> _value;
     };
 
 
     namespace detail
     {
-        /// @brief Helper type to deal type that are not C++11 conformant.
+        /// @brief Helper type to deal with types that are not C++11 conformant.
         template <typename Alloc, typename Enable = void>
         struct allocator_reference_type_workaround
         {};
@@ -517,7 +537,7 @@ namespace bond
         ///
         /// @param alloc the base allocator instance.
         ///
-        /// @param subtract_on_deallocate flag to indicate if counter must be adjust for deallocation.
+        /// @param subtract_on_deallocate flag to indicate if counter must be adjusted for deallocation.
         explicit capped_allocator(detail::value_or_reference<Counter> count, const Alloc& alloc = {}, bool subtract_on_deallocate = true)
             : holder{ alloc },
               _count{ count },
@@ -530,13 +550,12 @@ namespace bond
         ///
         /// @param alloc the base allocator instance.
         ///
-        /// @param subtract_on_deallocate flag to indicate if counter must be adjust for deallocation.
+        /// @param subtract_on_deallocate flag to indicate if counter must be adjusted for deallocation.
         ///
-        /// @remarks The overload is used when \ref Counter can be allocated using \c Counter::allocate.
-        template <typename C = Counter,
-            typename boost::enable_if<check_method<C(*)(typename C::value_type, const Alloc&), &C::allocate>>::type* = nullptr>
+        /// @remarks The overload is used when \ref Counter can be allocated using \c Alloc.
+        template <typename C = Counter, typename boost::enable_if<std::uses_allocator<C, Alloc>>::type* = nullptr>
         explicit capped_allocator(typename C::value_type counter_value, const Alloc& alloc = {}, bool subtract_on_deallocate = true)
-            : capped_allocator{ Counter::allocate(counter_value, alloc), alloc, subtract_on_deallocate }
+            : capped_allocator{ Counter{ counter_value, alloc }, alloc, subtract_on_deallocate }
         {}
 
         /// @brief Converts from a compatible allocator.
