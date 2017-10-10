@@ -127,6 +127,7 @@ namespace tests
         std::wstring m_wstr_1;
         ::bond::maybe<std::wstring> m_wstr_2;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         Foo()
           : m_bool_1(true),
             m_bool_2(false),

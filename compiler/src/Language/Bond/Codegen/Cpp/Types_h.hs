@@ -208,6 +208,7 @@ namespace std
 
         -- default constructor
         defaultCtor = [lt|
+        template <typename = void> // Workaround to avoid compilation if not used
         #{declName}()#{initList}#{ctorBody}|]
           where
             initList = initializeList mempty

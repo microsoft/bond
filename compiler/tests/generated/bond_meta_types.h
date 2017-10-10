@@ -26,6 +26,7 @@ namespace bondmeta
         std::string full_name;
         std::string name;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         HasMetaFields()
         {
             InitMetadata("HasMetaFields", "deprecated.bondmeta.HasMetaFields");

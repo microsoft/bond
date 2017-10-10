@@ -36,6 +36,7 @@ namespace tests
         float _float;
         ::bond::blob _blob;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         BasicTypes()
           : _bool(),
             _uint64(),

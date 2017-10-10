@@ -26,6 +26,7 @@ namespace bondmeta
         std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> full_name;
         std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> name;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         HasMetaFields()
         {
             InitMetadata("HasMetaFields", "deprecated.bondmeta.HasMetaFields");

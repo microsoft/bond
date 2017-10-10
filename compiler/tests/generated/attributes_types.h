@@ -97,6 +97,7 @@ namespace tests
     {
         std::string f;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         Foo()
         {
         }

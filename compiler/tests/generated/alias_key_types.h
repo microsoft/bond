@@ -24,6 +24,7 @@ namespace test
         std::map<std::string, int32_t> m;
         std::set<int32_t> s;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         foo()
         {
         }

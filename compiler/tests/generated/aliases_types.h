@@ -24,6 +24,7 @@ namespace tests
     {
         std::vector<std::vector<T> > aa;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         Foo()
         {
         }
@@ -159,6 +160,7 @@ namespace tests
     {
         ::tests::EnumToWrap aWrappedEnum;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         WrappingAnEnum()
           : aWrappedEnum(::tests::_bond_enumerators::EnumToWrap::anEnumValue)
         {

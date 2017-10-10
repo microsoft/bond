@@ -1,7 +1,5 @@
 #include "precompiled.h"
-#include <bond/core/capped_allocator.h>
-#include <bond/core/tuple.h>
-
+#include "capped_allocator_tests/allocator_test_reflection.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/range/combine.hpp>
@@ -18,21 +16,20 @@
 #endif
 
 #include <vector>
-#include <map>
 #include <limits>
 #include <type_traits>
 
 BOOST_AUTO_TEST_SUITE(CappedAllocatorTests)
 
 using all_counter_types = boost::mpl::list<
-    bond::capped_allocator_counter<std::size_t, true>,
-    bond::capped_allocator_counter<std::size_t, false>,
-    bond::capped_allocator_shared_counter<std::size_t, true>,
-    bond::capped_allocator_shared_counter<std::size_t, false>>;
+    bond::single_threaded_counter<>,
+    bond::multi_threaded_counter<>,
+    bond::shared_counter<bond::single_threaded_counter<>>,
+    bond::shared_counter<bond::multi_threaded_counter<>>>;
 
 using thread_safe_counter_types = boost::mpl::list<
-    bond::capped_allocator_counter<std::size_t, false>,
-    bond::capped_allocator_shared_counter<std::size_t, false>>;
+    bond::multi_threaded_counter<>,
+    bond::shared_counter<bond::multi_threaded_counter<>>>;
 
 template <typename T = void>
 struct allocator_with_state : std::allocator<T>
@@ -54,30 +51,6 @@ struct allocator_with_state : std::allocator<T>
     {}
 
     std::shared_ptr<void> state;
-};
-
-template <typename T = void>
-struct allocator_with_state_final final : allocator_with_state<T>
-{
-    template <typename U>
-    struct rebind
-    {
-        using other = allocator_with_state_final<U>;
-    };
-
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-    using allocator_with_state<T>::allocator_with_state;
-#else
-    template <typename U>
-    allocator_with_state_final(std::shared_ptr<U> state)
-        : allocator_with_state<T>(std::move(state))
-    {}
-#endif
-
-    template <typename U>
-    allocator_with_state_final(const allocator_with_state_final<U>& other)
-        : allocator_with_state<T>(other)
-    {}
 };
 
 template <typename T>
@@ -152,14 +125,14 @@ BOOST_AUTO_TEST_CASE(SharedCounterAllocationTests)
         allocator_with_state<> alloc{ state };
         BOOST_CHECK_EQUAL(state.use_count(), 2);
 
-        bond::capped_allocator_shared_counter<> counter{ 1024, alloc };
+        bond::shared_counter<> counter{ 1024, alloc };
         const auto initial_value = counter.value();
         BOOST_CHECK_NE(initial_value, 0u);
         const auto inital_use_count = state.use_count();
         BOOST_CHECK_GT(inital_use_count, 2);
 
         BOOST_CHECK_THROW(
-            bond::capped_allocator_shared_counter<>(counter.value() - 1, alloc),
+            bond::shared_counter<>(counter.value() - 1, alloc),
             std::bad_alloc);
         
         auto copy1 = counter;
@@ -187,28 +160,28 @@ BOOST_AUTO_TEST_CASE(AllocatorCounterReferenceTest)
 {
     // BOOST_TEST_CONTEXT("Reference type holding a reference")
     {
-        bond::capped_allocator_counter<> counter{ 0 };
+        bond::single_threaded_counter<> counter{ 0 };
         bond::capped_allocator<std::allocator<char>, decltype(counter)&> alloc{ counter };
         BOOST_CHECK_EQUAL(&counter, &alloc.get_counter());
     }
 
     // BOOST_TEST_CONTEXT("Reference type holding a reference using std::ref")
     {
-        bond::capped_allocator_counter<> counter{ 0 };
+        bond::single_threaded_counter<> counter{ 0 };
         bond::capped_allocator<std::allocator<char>, decltype(counter)&> alloc{ std::ref(counter) };
         BOOST_CHECK_EQUAL(&counter, &alloc.get_counter());
     }
 
     // BOOST_TEST_CONTEXT("Value type holding a value")
     {
-        bond::capped_allocator_shared_counter<> counter{ 0 };
+        bond::shared_counter<> counter{ 0 };
         bond::capped_allocator<std::allocator<char>, decltype(counter)> alloc{ counter };
         BOOST_CHECK_NE(&counter, &alloc.get_counter());
     }
 
     // BOOST_TEST_CONTEXT("Value type holding a reference")
     {
-        bond::capped_allocator_shared_counter<> counter{ 0 };
+        bond::shared_counter<> counter{ 0 };
         bond::capped_allocator<std::allocator<char>, decltype(counter)> alloc{ std::ref(counter) };
         BOOST_CHECK_EQUAL(&counter, &alloc.get_counter());
     }
@@ -216,7 +189,7 @@ BOOST_AUTO_TEST_CASE(AllocatorCounterReferenceTest)
 
 BOOST_AUTO_TEST_CASE(AllocatorSubtractOnDeallocateTest)
 {
-    bond::capped_allocator_counter<> counter{ 10 };
+    bond::single_threaded_counter<> counter{ 10 };
     bond::capped_allocator<std::allocator<char>, decltype(counter)&> alloc{ counter, {}, false };
 
     auto test = [](decltype(alloc)& alloc)
@@ -248,7 +221,7 @@ BOOST_AUTO_TEST_CASE(AllocatorSubtractOnDeallocateTest)
 
 BOOST_AUTO_TEST_CASE(AllocatorCounterInBytesTest)
 {
-    bond::capped_allocator_counter<> counter{ 10 };
+    bond::single_threaded_counter<> counter{ 10 };
     bond::capped_allocator<std::allocator<char[10]>, decltype(counter)&> alloc{ counter };
     BOOST_CHECK_EQUAL(counter.value(), 0u);
     const auto ptr = alloc.allocate(1);
@@ -258,7 +231,7 @@ BOOST_AUTO_TEST_CASE(AllocatorCounterInBytesTest)
     BOOST_CHECK_EQUAL(counter.value(), 0u);
 }
 
-BOOST_AUTO_TEST_CASE(AllocatorCallsCounterAllocateTest)
+BOOST_AUTO_TEST_CASE(AllocatorAwareCounterTest)
 {
     static std::vector<int> allocate_call_args;
 
@@ -301,7 +274,7 @@ BOOST_AUTO_TEST_CASE(AllocatorCallsCounterAllocateTest)
 
 BOOST_AUTO_TEST_CASE(AllocatorExceptionSafetyTest)
 {
-    bond::capped_allocator<std::allocator<char>, bond::capped_allocator_shared_counter<>> alloc{ 100 };
+    bond::capped_allocator<std::allocator<char>, bond::shared_counter<>> alloc{ 100 };
     const auto count = alloc.get_counter().value();
     BOOST_CHECK_NE(count, 0u);
 
@@ -329,84 +302,81 @@ BOOST_AUTO_TEST_CASE(AllocatorComparisonTest)
     BOOST_CHECK((a2 != a3));
 }
 
-BOOST_AUTO_TEST_CASE(FinalAllocatorTest)
+using all_protocols = boost::mpl::list<
+    bond::SimpleBinaryReader<bond::InputBuffer>,
+    bond::CompactBinaryReader<bond::InputBuffer>,
+    bond::FastBinaryReader<bond::InputBuffer> >;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(BondStructDeserializationTest, Reader, all_protocols)
 {
-    using capped_void_allocator = bond::capped_allocator<allocator_with_state_final<>>;
+    bond::capped_allocator<std::allocator<char>> alloc{ 1024 * 1024 };
 
-    auto state = std::make_shared<int>();
+    capped_allocator_tests::Struct from{ alloc };
+
+    InitRandom(from);
+
+    // BOOST_TEST_CONTEXT("Serialization with overflow")
     {
-        capped_void_allocator alloc{ 1024, state };
-        std::vector<int, std::allocator_traits<capped_void_allocator>::rebind_alloc<int>> v{ 10, 0, alloc };
-        BOOST_CHECK_EQUAL(v.size(), 10u);
+        using Writer = typename bond::get_protocol_writer<Reader, bond::OutputMemoryStream<decltype(alloc)>>::type;
+
+        decltype(alloc) new_alloc{ 1024 };
+        typename Writer::Buffer output{ new_alloc };
+        Writer writer{ output };
+        BOOST_CHECK_THROW(bond::Serialize(from, writer), std::bad_alloc);
     }
-    BOOST_CHECK(state.unique());
-}
 
-BOOST_AUTO_TEST_CASE(ComplexDeserializationTest)
-{
-    using capped_void_allocator = bond::capped_allocator<allocator_with_state<void>>;
+    bond::blob buffer;
 
-    using capped_vector = std::vector<
-        std::uint32_t,
-        std::allocator_traits<capped_void_allocator>::rebind_alloc<std::uint32_t>>;
-
-    using capped_map = std::map<
-        std::uint32_t,
-        capped_vector,
-        std::less<std::uint32_t>,
-        std::allocator_traits<capped_void_allocator>::rebind_alloc<std::pair<const std::uint32_t, capped_vector>>>;
-
-    auto state = std::make_shared<int>();
+    // BOOST_TEST_CONTEXT("Serialization without overflow")
     {
-        capped_void_allocator alloc{ 1024 * 1024, state };
-        capped_map map{ capped_map::key_compare{}, alloc };
+        using Writer = typename bond::get_protocol_writer<Reader, bond::OutputBuffer>::type;
 
-        for (std::uint32_t i = 0; i < 100; ++i)
-        {
-            map.emplace(
-                std::piecewise_construct,
-                std::forward_as_tuple(i),
-                std::forward_as_tuple(alloc)).first->second.push_back(i);
-        }
+        typename Writer::Buffer output;
+        Writer writer{ output };
+        BOOST_CHECK_NO_THROW(bond::Serialize(from, writer));
 
-        BOOST_REQUIRE_EQUAL(map.size(), 100u);
-
-        for (const auto& item : boost::combine(boost::irange<std::uint32_t>(0, 100), map))
-        {
-            const auto& expected = item.get<0>();
-            const auto& actual = item.get<1>();
-
-            BOOST_CHECK_EQUAL(actual.first, expected);
-            BOOST_REQUIRE_EQUAL(actual.second.size(), 1u);
-            BOOST_CHECK_EQUAL(actual.second.front(), expected);
-        }
-
-        bond::OutputBuffer output;
-        bond::CompactBinaryWriter<decltype(output)> writer{ output };
-        bond::Serialize(std::make_tuple(map), writer);
-
-        // BOOST_TEST_CONTEXT("Deserialize without overflow")
-        {
-            capped_void_allocator new_alloc{ 1024 * 1024, state };
-
-            bond::CompactBinaryReader<bond::InputBuffer> reader{ output.GetBuffer() };
-            std::tuple<capped_map> new_map{ capped_map{ capped_map::key_compare{}, new_alloc } };
-            bond::Deserialize(reader, new_map);
-
-            BOOST_CHECK((map == std::get<0>(new_map)));
-        }
-
-        // BOOST_TEST_CONTEXT("Deserialize with overflow")
-        {
-            capped_void_allocator new_alloc{ 1024, state };
-
-            bond::CompactBinaryReader<bond::InputBuffer> reader{ output.GetBuffer() };
-            std::tuple<capped_map> new_map{ capped_map{ capped_map::key_compare{}, new_alloc } };
-
-            BOOST_CHECK_THROW(bond::Deserialize(reader, new_map), std::bad_alloc);
-        }
+        buffer = output.GetBuffer();
     }
-    BOOST_CHECK(state.unique());
+
+    // BOOST_TEST_CONTEXT("Compile-time schema deserialize without overflow")
+    {
+        Reader reader{ buffer };
+
+        decltype(alloc) new_alloc{ 1024 * 1024 };
+        decltype(from) to{ new_alloc };
+        BOOST_CHECK_NO_THROW(bond::Deserialize(reader, to));
+        BOOST_CHECK((from == to));
+    }
+
+    // BOOST_TEST_CONTEXT("Compile-time schema deserialize with overflow")
+    {
+        Reader reader{ buffer };
+
+        decltype(alloc) new_alloc{ 4 * 1024 };
+        decltype(from) to{ new_alloc };
+        BOOST_CHECK_THROW(bond::Deserialize(reader, to), std::bad_alloc);
+    }
+
+    // BOOST_TEST_CONTEXT("Runtime schema deserialize without overflow")
+    {
+        Reader reader{ buffer };
+        bond::bonded<void> bonded{ reader, bond::GetRuntimeSchema<decltype(from)>() };
+
+        decltype(alloc) new_alloc{ 1024 * 1024 };
+        decltype(from) to{ new_alloc };
+        BOOST_CHECK_NO_THROW(bonded.Deserialize(to));
+        BOOST_CHECK((from == to));
+    }
+
+    // BOOST_TEST_CONTEXT("Runtime schema deserialize with overflow")
+    {
+        Reader reader{ buffer };
+        bond::bonded<void> bonded{ reader, bond::GetRuntimeSchema<decltype(from)>() };
+
+        decltype(alloc) new_alloc{ 4 * 1024 };
+        decltype(from) to{ new_alloc };
+        BOOST_CHECK_THROW(bonded.Deserialize(to), std::bad_alloc);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

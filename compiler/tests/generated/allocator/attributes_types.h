@@ -97,6 +97,7 @@ namespace tests
     {
         std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> f;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         Foo()
         {
         }

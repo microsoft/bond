@@ -33,6 +33,7 @@ namespace test
         ::bond::maybe<my::map<my::string, bool> > m1;
         ::bond::maybe<my::string> st1;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         foo()
           : l(),
             v(),
