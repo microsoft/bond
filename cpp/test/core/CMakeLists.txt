@@ -81,11 +81,11 @@ add_bond_codegen (TARGET unit_test_codegen3
 
 add_bond_codegen (TARGET unit_test_codegen4
     allocator_test.bond
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/capped_allocator_tests"
+    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/capped_allocator_tests_generated"
     OPTIONS
-        --using=\"Vector=std::vector<{0}, bond::capped_allocator<std::allocator<{0}> > >\"
-        --header=\"<bond/core/capped_allocator.h>\"
-        --allocator=\"bond::capped_allocator<std::allocator<char> >\"
+        --using=\"Vector=std::vector<{0}, capped_allocator_tests::test_allocator<std::allocator<{0}> > >\"
+        --header=\\\"allocators.h\\\"
+        --allocator=\"capped_allocator_tests::test_allocator<std::allocator<char> >\"
         --namespace=\"allocator_test=capped_allocator_tests\")
 
 
@@ -103,8 +103,7 @@ add_unit_test (basic_type_lists.cpp)
 add_unit_test (basic_type_map.cpp)
 add_unit_test (blob_tests.cpp)
 add_unit_test (bonded_tests.cpp)
-add_unit_test (capped_allocator_tests.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/capped_allocator_tests/allocator_test_types.cpp)
+add_unit_test (capped_allocator_tests.cpp)
 add_unit_test (checked_add_test.cpp)
 add_unit_test (cmdargs.cpp)
 add_unit_test (container_extensibility.cpp

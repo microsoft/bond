@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "config.h"
+#include <bond/core/config.h>
 #include <boost/static_assert.hpp>
 #include <type_traits>
 

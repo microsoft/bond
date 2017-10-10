@@ -1,5 +1,5 @@
 #include "precompiled.h"
-#include "capped_allocator_tests/allocator_test_reflection.h"
+#include "capped_allocator_tests_generated/allocator_test_reflection.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/range/combine.hpp>
@@ -309,7 +309,7 @@ using all_protocols = boost::mpl::list<
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(BondStructDeserializationTest, Reader, all_protocols)
 {
-    bond::capped_allocator<std::allocator<char>> alloc{ 1024 * 1024 };
+    capped_allocator_tests::test_allocator<std::allocator<char>> alloc{ 1024 * 1024 };
 
     capped_allocator_tests::Struct from{ alloc };
 

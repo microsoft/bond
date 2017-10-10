@@ -72,17 +72,37 @@ namespace bond
 
         /// @brief Helper type to deal with types that are not C++11 conformant.
         template <typename Alloc, typename Enable = void>
-        struct allocator_reference_type_workaround
-        {};
+        struct allocator_reference_type_workaround;
 
         /// @brief Transfer \c reference and \c const_reference types if available.
         template <typename Alloc>
         struct allocator_reference_type_workaround<Alloc, typename boost::enable_if_c<
-            !std::is_void<typename Alloc::reference>::value
-            && !std::is_void<typename Alloc::const_reference>::value>::type>
+            !std::is_void<typename Alloc::value_type>::value
+            && !(std::is_void<typename Alloc::reference>::value
+                || std::is_void<typename Alloc::const_reference>::value)>::type>
         {
             using reference = typename Alloc::reference;
             using const_reference = typename Alloc::const_reference;
+        };
+
+        /// @brief Use \c value_type if \c reference and \c const_reference are not available.
+        template <typename Alloc>
+        struct allocator_reference_type_workaround<Alloc, typename boost::enable_if_c<
+            !std::is_void<typename Alloc::value_type>::value
+            && (std::is_void<typename Alloc::reference>::value
+                || std::is_void<typename Alloc::const_reference>::value)>::type>
+        {
+            using reference = typename Alloc::value_type&;
+            using const_reference = const typename Alloc::value_type&;
+        };
+
+        /// @brief Use \c void for \c reference and \c const_reference in all other cases.
+        template <typename Alloc>
+        struct allocator_reference_type_workaround<Alloc, typename boost::enable_if<
+            std::is_void<typename Alloc::value_type>>::type>
+        {
+            using reference = void;
+            using const_reference = void;
         };
 
     } // namespace detail
@@ -109,6 +129,8 @@ namespace bond
         using const_pointer = typename traits::const_pointer;
         using void_pointer = typename traits::void_pointer;
         using const_void_pointer = typename traits::const_void_pointer;
+        using reference = typename detail::allocator_reference_type_workaround<Alloc>::reference;
+        using const_reference = typename detail::allocator_reference_type_workaround<Alloc>::const_reference;
         using size_type = typename traits::size_type;
         using difference_type = typename traits::difference_type;
         using propagate_on_container_copy_assignment = typename traits::propagate_on_container_copy_assignment;
