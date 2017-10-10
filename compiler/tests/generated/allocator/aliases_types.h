@@ -24,6 +24,7 @@ namespace tests
     {
         std::vector<std::vector<T, typename arena::rebind<T>::other>, typename arena::rebind<std::vector<T, typename arena::rebind<T>::other> >::other> aa;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         Foo()
         {
         }

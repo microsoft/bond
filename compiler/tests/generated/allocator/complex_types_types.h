@@ -94,6 +94,7 @@ namespace tests
         ::bond::bonded< ::tests::Foo> bfoo;
         std::map<double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other>, typename arena::rebind<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other> >::other>, std::less<double>, typename arena::rebind<std::pair<const double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other>, typename arena::rebind<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename arena::rebind< ::bond::nullable< ::bond::bonded< ::tests::Bar> > >::other> >::other> > >::other> m;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         ComplexTypes()
         {
         }

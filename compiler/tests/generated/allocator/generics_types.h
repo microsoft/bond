@@ -25,6 +25,7 @@ namespace tests
         T2 t2;
         ::bond::nullable< ::tests::Foo<T1, bool>, arena> n;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         Foo()
           : t2()
         {

@@ -142,6 +142,7 @@ namespace tests
         std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other> m_wstr_1;
         ::bond::maybe<std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other> > m_wstr_2;
         
+        template <typename = void> // Workaround to avoid compilation if not used
         Foo()
           : m_bool_1(true),
             m_bool_2(false),

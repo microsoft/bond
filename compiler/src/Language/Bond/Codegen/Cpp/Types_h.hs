@@ -206,10 +206,19 @@ namespace std
         {
         }|]
 
+        needAlloc alloc = isJust structBase || any (allocParameterized alloc . fieldType) structFields
+        allocParameterized alloc t = (isStruct t) || (L.isInfixOf (L.pack alloc) . toLazyText $ cppType t)
+
         -- default constructor
         defaultCtor = [lt|
-        #{declName}()#{initList}#{ctorBody}|]
+        #{dummyTemplateTag allocator}#{declName}()#{initList}#{ctorBody}|]
           where
+            dummyTemplateTag (Just alloc) = if needAlloc alloc
+                then [lt|template <typename = void> // Workaround to avoid compilation if not used
+        |]
+                else mempty
+            dummyTemplateTag Nothing = mempty
+
             initList = initializeList mempty
                 $ commaLineSep 3 fieldInit structFields
             fieldInit Field {..} = optional (\x -> [lt|#{fieldName}(#{x})|])
@@ -220,9 +229,7 @@ namespace std
         #{declName}(const #{alloc}&#{allocParam})#{initList}#{ctorBody}
         |]
           where
-            allocParam = if needAlloc then [lt| allocator|] else mempty
-              where
-                needAlloc = isJust structBase || any (allocParameterized . fieldType) structFields
+            allocParam = if needAlloc alloc then [lt| allocator|] else mempty
             initList = initializeList
                 (optional baseInit structBase)
                 (commaLineSep 3 fieldInit structFields)
@@ -230,7 +237,7 @@ namespace std
             fieldInit Field {..} = optional (\x -> [lt|#{fieldName}(#{x})|])
                 $ allocInitValue fieldType fieldDefault
             allocInitValue t@(BT_UserDefined a@Alias {} args) d
-                | allocParameterized t = allocInitValue (resolveAlias a args) d
+                | allocParameterized alloc t = allocInitValue (resolveAlias a args) d
                 | otherwise = initValue t d
             allocInitValue (BT_Nullable t) _ = allocInitValue t Nothing
             allocInitValue (BT_Maybe t) _ = allocInitValue t Nothing
@@ -244,7 +251,6 @@ namespace std
             keyType (BT_Map key _) = cppType key
             keyType (BT_UserDefined a@Alias {} args) = keyType $ resolveAlias a args
             keyType _ = error "allocatorCtor/keyType: impossible happened."
-            allocParameterized t = (isStruct t) || (L.isInfixOf (L.pack alloc) . toLazyText $ cppType t)
 
         -- copy constructor
         copyCtor = if hasMetaFields then define else implicitlyDeclared
