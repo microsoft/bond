@@ -3,7 +3,7 @@ package tests;
 
 
 @javax.annotation.Generated("gbc")
-public final class Enum implements org.bondlib.BondEnum<Enum> {
+public final class Enum implements org.bondlib.BondEnum<Enum>, java.io.Serializable {
 
     public static final class Values {
         private Values() {}
@@ -18,6 +18,10 @@ public final class Enum implements org.bondlib.BondEnum<Enum> {
 
         @Override
         public final Enum getEnumValue(int value) { return get(value); }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return BOND_TYPE;
+        }
     }
 
     public static final org.bondlib.EnumBondType<Enum> BOND_TYPE = new EnumBondTypeImpl();
@@ -67,12 +71,16 @@ public final class Enum implements org.bondlib.BondEnum<Enum> {
             throw new java.lang.IllegalArgumentException("Invalid 'Enum' enum value: '" + str + "'.");
         }
     }
+
+    private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+        return get(this.value);
+    }
 }
 
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class Foo implements org.bondlib.BondSerializable {
+public class Foo implements org.bondlib.BondSerializable, java.io.Serializable {
     
     private static final class StructBondTypeImpl extends org.bondlib.StructBondType<Foo> {
         
@@ -93,7 +101,7 @@ public class Foo implements org.bondlib.BondSerializable {
             }
         }
 
-        private org.bondlib.StructBondType.StringStructField f;
+        private transient org.bondlib.StructBondType.StringStructField f;
 
         private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -172,6 +180,10 @@ public class Foo implements org.bondlib.BondSerializable {
         @Override
         protected final void cloneStructFields(Foo fromValue, Foo toValue) {
             toValue.f = this.f.clone(fromValue.f);
+        }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
         }
     }
 

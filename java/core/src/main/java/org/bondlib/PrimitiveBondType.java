@@ -3,6 +3,7 @@
 
 package org.bondlib;
 
+import java.io.ObjectStreamException;
 import java.util.HashMap;
 
 /**
@@ -59,4 +60,12 @@ public abstract class PrimitiveBondType<TPrimitive> extends BondType<TPrimitive>
         typeDef.id = this.getBondDataType();
         return typeDef;
     }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
 }

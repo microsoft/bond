@@ -4,6 +4,7 @@
 package org.bondlib;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -149,8 +150,8 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
 
     @Override
     protected final Set<TElement> deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
         final int count = context.reader.readContainerBegin();
         final Set<TElement> value = newDefaultValue();
         final TypeDef elementType = typeDef.element;
@@ -229,5 +230,21 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
         typeDef.id = this.getBondDataType();
         typeDef.element = this.elementType.createSchemaTypeDef(structDefMap);
         return typeDef;
+    }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Replaces deserialized object by a shared instance from the type cache,
+     * per {@link java.io.Serializable} specification.
+     */
+    private Object readResolve() throws ObjectStreamException {
+        return getCachedType(this);
     }
 }

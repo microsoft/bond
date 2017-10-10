@@ -2,7 +2,7 @@
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class Foo implements org.bondlib.BondSerializable {
+public class Foo implements org.bondlib.BondSerializable, java.io.Serializable {
     
     private static final class StructBondTypeImpl extends org.bondlib.StructBondType<Foo> {
         
@@ -87,6 +87,10 @@ public class Foo implements org.bondlib.BondSerializable {
         @Override
         protected final void cloneStructFields(Foo fromValue, Foo toValue) {
         }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
+        }
     }
 
     public static final org.bondlib.StructBondType<Foo> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
@@ -132,7 +136,7 @@ public class Foo implements org.bondlib.BondSerializable {
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class ComplexTypes implements org.bondlib.BondSerializable {
+public class ComplexTypes implements org.bondlib.BondSerializable, java.io.Serializable {
     
     private static final class StructBondTypeImpl extends org.bondlib.StructBondType<ComplexTypes> {
         
@@ -153,19 +157,19 @@ public class ComplexTypes implements org.bondlib.BondSerializable {
             }
         }
 
-        private org.bondlib.StructBondType.ObjectStructField<java.util.List<java.lang.Byte>> li8;
+        private transient org.bondlib.StructBondType.ObjectStructField<java.util.List<java.lang.Byte>> li8;
 
-        private org.bondlib.StructBondType.ObjectStructField<java.util.Set<java.lang.Boolean>> sb;
+        private transient org.bondlib.StructBondType.ObjectStructField<java.util.Set<java.lang.Boolean>> sb;
 
-        private org.bondlib.StructBondType.ObjectStructField<java.util.List<org.bondlib.Blob>> vb;
+        private transient org.bondlib.StructBondType.ObjectStructField<java.util.List<org.bondlib.Blob>> vb;
 
-        private org.bondlib.StructBondType.ObjectStructField<java.lang.Float> nf;
+        private transient org.bondlib.StructBondType.ObjectStructField<java.lang.Float> nf;
 
-        private org.bondlib.StructBondType.ObjectStructField<java.util.Map<java.lang.String, java.lang.String>> msws;
+        private transient org.bondlib.StructBondType.ObjectStructField<java.util.Map<java.lang.String, java.lang.String>> msws;
 
-        private org.bondlib.StructBondType.ObjectStructField<org.bondlib.Bonded<tests.Foo>> bfoo;
+        private transient org.bondlib.StructBondType.ObjectStructField<org.bondlib.Bonded<tests.Foo>> bfoo;
 
-        private org.bondlib.StructBondType.ObjectStructField<java.util.Map<java.lang.Double, java.util.List<java.util.List<org.bondlib.Bonded<tests.Bar>>>>> m;
+        private transient org.bondlib.StructBondType.ObjectStructField<java.util.Map<java.lang.Double, java.util.List<java.util.List<org.bondlib.Bonded<tests.Bar>>>>> m;
 
         private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -340,6 +344,10 @@ public class ComplexTypes implements org.bondlib.BondSerializable {
             toValue.msws = this.msws.clone(fromValue.msws);
             toValue.bfoo = this.bfoo.clone(fromValue.bfoo);
             toValue.m = this.m.clone(fromValue.m);
+        }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
         }
     }
 

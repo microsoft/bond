@@ -4,6 +4,7 @@
 package org.bondlib;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * A construct representing a Bonded payload of some struct type.
@@ -16,7 +17,7 @@ import java.io.IOException;
  *
  * @param <T> the struct type of this Bonded instance which is expected to implement {@link BondSerializable}
  */
-public abstract class Bonded<T> {
+public abstract class Bonded<T> implements Serializable {
 
     /**
      * Creates a new Bonded instance from a tagged protocol reader that is constrained to a given struct type.
@@ -230,4 +231,12 @@ public abstract class Bonded<T> {
     public final int hashCode() {
         return super.hashCode();
     }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
 }

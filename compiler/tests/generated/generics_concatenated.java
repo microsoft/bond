@@ -2,7 +2,7 @@
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class Foo<T1, T2> implements org.bondlib.BondSerializable {
+public class Foo<T1, T2> implements org.bondlib.BondSerializable, java.io.Serializable {
     
     public static abstract class GenericBondTypeBuilder {
 
@@ -37,9 +37,9 @@ public class Foo<T1, T2> implements org.bondlib.BondSerializable {
             }
         }
 
-        private org.bondlib.StructBondType.ObjectStructField<T2> t2;
+        private transient org.bondlib.StructBondType.ObjectStructField<T2> t2;
 
-        private org.bondlib.StructBondType.ObjectStructField<tests.Foo<T1, java.lang.Boolean>> n;
+        private transient org.bondlib.StructBondType.ObjectStructField<tests.Foo<T1, java.lang.Boolean>> n;
 
         private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -136,6 +136,10 @@ public class Foo<T1, T2> implements org.bondlib.BondSerializable {
         protected final void cloneStructFields(Foo<T1, T2> fromValue, Foo<T1, T2> toValue) {
             toValue.t2 = this.t2.clone(fromValue.t2);
             toValue.n = this.n.clone(fromValue.n);
+        }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
         }
     }
 

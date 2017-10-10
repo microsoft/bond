@@ -4,6 +4,7 @@
 package org.bondlib;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -182,8 +183,8 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
 
     @Override
     protected final Map<TKey, TValue> deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
         final int count = context.reader.readContainerBegin();
         final Map<TKey, TValue> value = newDefaultValue();
         final TypeDef keyType = typeDef.key;
@@ -271,5 +272,21 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
         typeDef.element = this.valueType.createSchemaTypeDef(structDefMap);
         typeDef.key = this.keyType.createSchemaTypeDef(structDefMap);
         return typeDef;
+    }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Replaces deserialized object by a shared instance from the type cache,
+     * per {@link java.io.Serializable} specification.
+     */
+    private Object readResolve() throws ObjectStreamException {
+        return getCachedType(this);
     }
 }

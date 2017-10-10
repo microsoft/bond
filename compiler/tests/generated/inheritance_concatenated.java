@@ -2,7 +2,7 @@
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class Base implements org.bondlib.BondSerializable {
+public class Base implements org.bondlib.BondSerializable, java.io.Serializable {
     
     private static final class StructBondTypeImpl extends org.bondlib.StructBondType<Base> {
         
@@ -23,7 +23,7 @@ public class Base implements org.bondlib.BondSerializable {
             }
         }
 
-        private org.bondlib.StructBondType.Int32StructField x;
+        private transient org.bondlib.StructBondType.Int32StructField x;
 
         private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -103,6 +103,10 @@ public class Base implements org.bondlib.BondSerializable {
         protected final void cloneStructFields(Base fromValue, Base toValue) {
             toValue.x = this.x.clone(fromValue.x);
         }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
+        }
     }
 
     public static final org.bondlib.StructBondType<Base> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();
@@ -171,7 +175,7 @@ public class Foo extends tests.Base {
             }
         }
 
-        private org.bondlib.StructBondType.Int32StructField x;
+        private transient org.bondlib.StructBondType.Int32StructField x;
 
         private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -250,6 +254,10 @@ public class Foo extends tests.Base {
         @Override
         protected final void cloneStructFields(Foo fromValue, Foo toValue) {
             toValue.x = this.x.clone(fromValue.x);
+        }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
         }
     }
 

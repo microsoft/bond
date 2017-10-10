@@ -522,6 +522,10 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
         #{makeStructBondTypeMember_deserializeStructFields_untagged declName declParams structFields}
         #{makeStructBondTypeMember_initializeStructFields declName declParams structFields}
         #{makeStructBondTypeMember_cloneStructFields declName declParams structFields}
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
+        }
     }
 
     #{bondTypeStaticVariableDecl}
@@ -546,10 +550,10 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
 }|]
             where
                 idl = MappingContext idlTypeMapping [] [] []
-                interface = [lt| implements org.bondlib.BondSerializable|]
+                interface = [lt| implements org.bondlib.BondSerializable, java.io.Serializable|]
                 baseClass x = [lt| extends #{javaType x}|]
                 publicFieldDecl Field {..} = [lt|public #{javaType fieldType} #{fieldName};|]
-                fieldDescriptorFieldDecl Field {..} = [lt|private #{structFieldDescriptorTypeName java fieldType} #{fieldName};|]
+                fieldDescriptorFieldDecl Field {..} = [lt|private transient #{structFieldDescriptorTypeName java fieldType} #{fieldName};|]
                 bondTypeStaticVariableDecl = if null declParams
                     then [lt|public static final org.bondlib.StructBondType<#{declName}> BOND_TYPE = new StructBondTypeImpl.StructBondTypeBuilderImpl().getInitializedFromCache();|]
                     else bondTypeStaticVariableDeclAsGenericBondTypeBuilder declName declParams

@@ -8,9 +8,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class GenericContainerTest {
 
@@ -18,7 +17,7 @@ public class GenericContainerTest {
     public void testGenericValueContainer() {
         genericValueContainerTestHelper(BondTypes.STRING, "test");
         genericValueContainerTestHelper(BondTypes.BOOL, true);
-        genericValueContainerTestHelper(BondTypes.INT8, (byte)1);
+        genericValueContainerTestHelper(BondTypes.INT8, (byte) 1);
         genericValueContainerTestHelper(BondTypes.INT32, Integer.MIN_VALUE);
         genericValueContainerTestHelper(BondTypes.UINT64, Long.MAX_VALUE);
         genericValueContainerTestHelper(BondTypes.DOUBLE, 3.14);
@@ -43,13 +42,14 @@ public class GenericContainerTest {
         container.valueField = elementValue;
         Assert.assertEquals(elementValue, container.valueField);
         marshalUnmarshalAndCompareUsingMultipleProtocols(container);
+        serializeDeserializeAndCompareUsingStandardSerialization(container);
     }
 
     @Test
     public void testGenericNullableContainer() {
         genericNullableContainerTestHelper(BondTypes.STRING, "test");
         genericNullableContainerTestHelper(BondTypes.BOOL, true);
-        genericNullableContainerTestHelper(BondTypes.INT8, (byte)1);
+        genericNullableContainerTestHelper(BondTypes.INT8, (byte) 1);
         genericNullableContainerTestHelper(BondTypes.INT32, Integer.MIN_VALUE);
         genericNullableContainerTestHelper(BondTypes.UINT64, Long.MAX_VALUE);
         genericNullableContainerTestHelper(BondTypes.DOUBLE, 3.14);
@@ -74,13 +74,14 @@ public class GenericContainerTest {
         container.nullableField = elementValue;
         Assert.assertEquals(elementValue, container.nullableField);
         marshalUnmarshalAndCompareUsingMultipleProtocols(container);
+        serializeDeserializeAndCompareUsingStandardSerialization(container);
     }
 
     @Test
     public void testGenericVectorContainer() {
         genericVectorContainerTestHelper(BondTypes.STRING, "test");
         genericVectorContainerTestHelper(BondTypes.BOOL, true);
-        genericVectorContainerTestHelper(BondTypes.INT8, (byte)1);
+        genericVectorContainerTestHelper(BondTypes.INT8, (byte) 1);
         genericVectorContainerTestHelper(BondTypes.INT32, Integer.MIN_VALUE);
         genericVectorContainerTestHelper(BondTypes.UINT64, Long.MAX_VALUE);
         genericVectorContainerTestHelper(BondTypes.DOUBLE, 3.14);
@@ -106,13 +107,14 @@ public class GenericContainerTest {
         Assert.assertEquals(1, container.vectorField.size());
         Assert.assertEquals(elementValue, container.vectorField.get(0));
         marshalUnmarshalAndCompareUsingMultipleProtocols(container);
+        serializeDeserializeAndCompareUsingStandardSerialization(container);
     }
 
     @Test
     public void testGenericListContainer() {
         genericListContainerTestHelper(BondTypes.STRING, "test");
         genericListContainerTestHelper(BondTypes.BOOL, true);
-        genericListContainerTestHelper(BondTypes.INT8, (byte)1);
+        genericListContainerTestHelper(BondTypes.INT8, (byte) 1);
         genericListContainerTestHelper(BondTypes.INT32, Integer.MIN_VALUE);
         genericListContainerTestHelper(BondTypes.UINT64, Long.MAX_VALUE);
         genericListContainerTestHelper(BondTypes.DOUBLE, 3.14);
@@ -138,13 +140,14 @@ public class GenericContainerTest {
         Assert.assertEquals(1, container.listField.size());
         Assert.assertEquals(elementValue, container.listField.get(0));
         marshalUnmarshalAndCompareUsingMultipleProtocols(container);
+        serializeDeserializeAndCompareUsingStandardSerialization(container);
     }
 
     @Test
     public void testGenericSetContainer() {
         genericSetContainerTestHelper(BondTypes.STRING, "test");
         genericSetContainerTestHelper(BondTypes.BOOL, true);
-        genericSetContainerTestHelper(BondTypes.INT8, (byte)1);
+        genericSetContainerTestHelper(BondTypes.INT8, (byte) 1);
         genericSetContainerTestHelper(BondTypes.INT32, Integer.MIN_VALUE);
         genericSetContainerTestHelper(BondTypes.UINT64, Long.MAX_VALUE);
         genericSetContainerTestHelper(BondTypes.DOUBLE, 3.14);
@@ -162,6 +165,7 @@ public class GenericContainerTest {
         Assert.assertEquals(1, container.setField.size());
         Assert.assertTrue(container.setField.contains(elementValue));
         marshalUnmarshalAndCompareUsingMultipleProtocols(container);
+        serializeDeserializeAndCompareUsingStandardSerialization(container);
     }
 
     @Test
@@ -195,7 +199,7 @@ public class GenericContainerTest {
     public void testGenericMapContainer() {
         genericMapContainerTestHelper(BondTypes.STRING, "test");
         genericMapContainerTestHelper(BondTypes.BOOL, true);
-        genericMapContainerTestHelper(BondTypes.INT8, (byte)1);
+        genericMapContainerTestHelper(BondTypes.INT8, (byte) 1);
         genericMapContainerTestHelper(BondTypes.INT32, Integer.MIN_VALUE);
         genericMapContainerTestHelper(BondTypes.UINT64, Long.MAX_VALUE);
         genericMapContainerTestHelper(BondTypes.DOUBLE, 3.14);
@@ -214,6 +218,7 @@ public class GenericContainerTest {
         Assert.assertTrue(container.mapField.containsKey(elementValue));
         Assert.assertTrue(container.mapField.containsValue(elementValue));
         marshalUnmarshalAndCompareUsingMultipleProtocols(container);
+        serializeDeserializeAndCompareUsingStandardSerialization(container);
     }
 
     @Test
@@ -303,6 +308,16 @@ public class GenericContainerTest {
             TestHelper.marshalUnmarshalAndCompare(obj, ProtocolType.COMPACT_PROTOCOL, 2);
             TestHelper.marshalUnmarshalAndCompare(obj, ProtocolType.SIMPLE_PROTOCOL, 1);
             TestHelper.marshalUnmarshalAndCompare(obj, ProtocolType.SIMPLE_PROTOCOL, 2);
+        } catch (IOException e) {
+            // shouldn't happen
+            Assert.fail(e.toString());
+        }
+    }
+
+    private static void serializeDeserializeAndCompareUsingStandardSerialization(Serializable obj) {
+        try {
+            Object deserializedObj = TestHelper.serializeAndDeserialize(obj);
+            Assert.assertEquals(obj, deserializedObj);
         } catch (IOException e) {
             // shouldn't happen
             Assert.fail(e.toString());

@@ -43,4 +43,12 @@ public final class SomethingFloat extends Something<Float> {
         }
         return false;
     }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
 }

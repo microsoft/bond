@@ -2,7 +2,7 @@
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class BasicTypes implements org.bondlib.BondSerializable {
+public class BasicTypes implements org.bondlib.BondSerializable, java.io.Serializable {
     
     private static final class StructBondTypeImpl extends org.bondlib.StructBondType<BasicTypes> {
         
@@ -23,33 +23,33 @@ public class BasicTypes implements org.bondlib.BondSerializable {
             }
         }
 
-        private org.bondlib.StructBondType.BoolStructField _bool;
+        private transient org.bondlib.StructBondType.BoolStructField _bool;
 
-        private org.bondlib.StructBondType.StringStructField _str;
+        private transient org.bondlib.StructBondType.StringStructField _str;
 
-        private org.bondlib.StructBondType.WStringStructField _wstr;
+        private transient org.bondlib.StructBondType.WStringStructField _wstr;
 
-        private org.bondlib.StructBondType.UInt64StructField _uint64;
+        private transient org.bondlib.StructBondType.UInt64StructField _uint64;
 
-        private org.bondlib.StructBondType.UInt16StructField _uint16;
+        private transient org.bondlib.StructBondType.UInt16StructField _uint16;
 
-        private org.bondlib.StructBondType.UInt32StructField _uint32;
+        private transient org.bondlib.StructBondType.UInt32StructField _uint32;
 
-        private org.bondlib.StructBondType.UInt8StructField _uint8;
+        private transient org.bondlib.StructBondType.UInt8StructField _uint8;
 
-        private org.bondlib.StructBondType.Int8StructField _int8;
+        private transient org.bondlib.StructBondType.Int8StructField _int8;
 
-        private org.bondlib.StructBondType.Int16StructField _int16;
+        private transient org.bondlib.StructBondType.Int16StructField _int16;
 
-        private org.bondlib.StructBondType.Int32StructField _int32;
+        private transient org.bondlib.StructBondType.Int32StructField _int32;
 
-        private org.bondlib.StructBondType.Int64StructField _int64;
+        private transient org.bondlib.StructBondType.Int64StructField _int64;
 
-        private org.bondlib.StructBondType.DoubleStructField _double;
+        private transient org.bondlib.StructBondType.DoubleStructField _double;
 
-        private org.bondlib.StructBondType.FloatStructField _float;
+        private transient org.bondlib.StructBondType.FloatStructField _float;
 
-        private org.bondlib.StructBondType.ObjectStructField<org.bondlib.Blob> _blob;
+        private transient org.bondlib.StructBondType.ObjectStructField<org.bondlib.Blob> _blob;
 
         private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -336,6 +336,10 @@ public class BasicTypes implements org.bondlib.BondSerializable {
             toValue._double = this._double.clone(fromValue._double);
             toValue._float = this._float.clone(fromValue._float);
             toValue._blob = this._blob.clone(fromValue._blob);
+        }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
         }
     }
 

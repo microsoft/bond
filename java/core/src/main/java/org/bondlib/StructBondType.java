@@ -64,23 +64,23 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
     // This lock is also used to protect schema def initialization, and the same two points above apply.
     private static final Object initializationLock = new Object();
 
-    // set by the constructor (part of the object identity)
+    // set by the constructor (part of the object identity), these are the only non-transient instance fields
     private final GenericTypeSpecialization genericTypeSpecialization;
     private final int precomputedHashCode;
 
     // set by the initialization method instead of the constructor since may have cyclic dependencies
-    private StructBondType<? super TStruct> baseStructType;
-    private StructField<?>[] structFields;
+    private transient StructBondType<? super TStruct> baseStructType;
+    private transient StructField<?>[] structFields;
 
     // cached schema def, thread-safe (atomic) read and write from/to memory
-    private volatile SchemaDef schemaDef = null;
+    private transient volatile SchemaDef schemaDef = null;
 
     // indicates whether this instance is initialized, thread-safe (atomic) read and write from/to memory
-    private volatile boolean isInitialized = false;
+    private transient volatile boolean isInitialized = false;
 
     // indicates whether this instance is currently being initialized by the thread holding the global lock;
     // the flag is used to prevent a thread from re-entering initialization method due to cyclic references
-    private boolean isCurrentlyInitializing = false;
+    private transient boolean isCurrentlyInitializing = false;
 
     /**
      * Used by generated subclasses to instantiate the type descriptor.
@@ -178,9 +178,9 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
      * Used by generated subclasses to deserialize fields of this struct using the runtime schema, excluding inherited
      * fields.
      *
-     * @param context contains the runtime context of the deserialization
+     * @param context   contains the runtime context of the deserialization
      * @param structDef the StructDef of this struct
-     * @param value   the value to deserialize into
+     * @param value     the value to deserialize into
      * @throws IOException if an I/O error occurred
      */
     protected abstract void deserializeStructFields(
@@ -391,17 +391,17 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
 
     @Override
     protected final TStruct deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
         TStruct value = this.newDefaultValue();
         this.deserializeValue(context, typeDef, value);
         return value;
     }
 
     private void deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef,
-        TStruct value) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef,
+            TStruct value) throws IOException {
         final StructDef structDef = context.schema.structs.get(typeDef.struct_def);
         if (this.baseStructType != null) {
             final TypeDef baseDef = structDef.base_def;
@@ -702,6 +702,26 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
     }
 
     /**
+     * Returns a cached type descriptor that is equal to the argument, or caches the argument otherwise.
+     * The method returns a non-null reference to the type descriptor that is equal to the argument
+     * (or the same as the argument if called for the first time with that class).
+     *
+     * @param type the type descriptor
+     * @param ensureInitialized if true, the type descriptor will be initialized
+     * @param <TStruct>  the Bond value class
+     * @return a cached type descriptor, never null
+     */
+    protected static <TStruct extends BondSerializable> StructBondType<TStruct> getCachedType(
+            StructBondType<TStruct> type, boolean ensureInitialized) {
+        @SuppressWarnings("unchecked")
+        StructBondType<TStruct> cachedValue = (StructBondType<TStruct>) getCachedType(type);
+        if (ensureInitialized) {
+            cachedValue.ensureInitialized();
+        }
+        return cachedValue;
+    }
+
+    /**
      * Responsible for building and caching Bond struct types with generic type parameters. Please note
      * that a {@link StructBondType} instance for a generic type can exist only when all generic type
      * parameters are bound. This class is responsible for this binding: it takes the generic type
@@ -921,8 +941,8 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
         }
 
         public final TField deserialize(
-            UntaggedDeserializationContext context,
-            TypeDef typeDef) throws IOException {
+                UntaggedDeserializationContext context,
+                TypeDef typeDef) throws IOException {
             return this.fieldType.deserializeValue(context, typeDef);
         }
     }
@@ -973,8 +993,8 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
         }
 
         public final SomethingObject<TField> deserialize(
-            UntaggedDeserializationContext context,
-            TypeDef typeDef) throws IOException {
+                UntaggedDeserializationContext context,
+                TypeDef typeDef) throws IOException {
             return Something.wrap(this.fieldType.deserializeValue(context, typeDef));
         }
     }
@@ -2235,8 +2255,8 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
         }
 
         public final String deserialize(
-            UntaggedDeserializationContext context,
-            TypeDef typeDef) throws IOException {
+                UntaggedDeserializationContext context,
+                TypeDef typeDef) throws IOException {
             return this.fieldType.deserializeValue(context, typeDef);
         }
     }
@@ -2285,8 +2305,8 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
         }
 
         public final SomethingObject<String> deserialize(
-            UntaggedDeserializationContext context,
-            TypeDef typeDef) throws IOException {
+                UntaggedDeserializationContext context,
+                TypeDef typeDef) throws IOException {
             return Something.wrap(this.fieldType.deserializeValue(context, typeDef));
         }
     }
@@ -2348,8 +2368,8 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
         }
 
         public final String deserialize(
-            UntaggedDeserializationContext context,
-            TypeDef typeDef) throws IOException {
+                UntaggedDeserializationContext context,
+                TypeDef typeDef) throws IOException {
             return this.fieldType.deserializeValue(context, typeDef);
         }
     }
@@ -2399,8 +2419,8 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
         }
 
         public final SomethingObject<String> deserialize(
-            UntaggedDeserializationContext context,
-            TypeDef typeDef) throws IOException {
+                UntaggedDeserializationContext context,
+                TypeDef typeDef) throws IOException {
             return Something.wrap(this.fieldType.deserializeValue(context, typeDef));
         }
     }
@@ -2463,8 +2483,8 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
         }
 
         public final TEnum deserialize(
-            UntaggedDeserializationContext context,
-            TypeDef typeDef) throws IOException {
+                UntaggedDeserializationContext context,
+                TypeDef typeDef) throws IOException {
             return this.fieldType.deserializeValue(context, typeDef);
         }
     }
@@ -2515,9 +2535,17 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
         }
 
         public final SomethingObject<TEnum> deserialize(
-            UntaggedDeserializationContext context,
-            TypeDef typeDef) throws IOException {
+                UntaggedDeserializationContext context,
+                TypeDef typeDef) throws IOException {
             return Something.wrap(this.fieldType.deserializeValue(context, typeDef));
         }
     }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
 }

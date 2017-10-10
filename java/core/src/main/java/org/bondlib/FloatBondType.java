@@ -4,6 +4,7 @@
 package org.bondlib;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
 
 /**
  * Implements the {@link BondType} contract for the Bond "float" data type.
@@ -76,8 +77,8 @@ public final class FloatBondType extends PrimitiveBondType<Float> {
 
     @Override
     protected final Float deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
         return deserializePrimitiveValue(context);
     }
 
@@ -214,5 +215,21 @@ public final class FloatBondType extends PrimitiveBondType<Float> {
             TaggedDeserializationContext context,
             StructBondType.StructField<Float> field) throws IOException {
         return Something.wrap(deserializePrimitiveField(context, field));
+    }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Replaces deserialized object by the singleton instance,
+     * per {@link java.io.Serializable} specification.
+     */
+    private Object readResolve() throws ObjectStreamException {
+        return INSTANCE;
     }
 }

@@ -29,7 +29,7 @@ package #{javaPackage};
 
     typeDefinition Enum {..} = [lt|
 #{Java.generatedClassAnnotations}
-public final class #{declName} implements org.bondlib.BondEnum<#{declName}> {
+public final class #{declName} implements org.bondlib.BondEnum<#{declName}>, java.io.Serializable {
 
     public static final class Values {
         private Values() {}
@@ -44,6 +44,10 @@ public final class #{declName} implements org.bondlib.BondEnum<#{declName}> {
 
         @Override
         public final #{declName} getEnumValue(int value) { return get(value); }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return BOND_TYPE;
+        }
     }
 
     public static final org.bondlib.EnumBondType<#{declName}> BOND_TYPE = new EnumBondTypeImpl();
@@ -90,6 +94,10 @@ public final class #{declName} implements org.bondlib.BondEnum<#{declName}> {
         #{newlineSepEnd 2 parseCaseConstantMapping enumConstants}} else {
             throw new java.lang.IllegalArgumentException("Invalid '#{declName}' enum value: '" + str + "'.");
         }
+    }
+
+    private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+        return get(this.value);
     }
 }|]
       where

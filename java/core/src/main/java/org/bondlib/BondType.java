@@ -4,6 +4,7 @@
 package org.bondlib;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * same Java type to represent multiple primitive types in Bond such as signed vs. unsigned integers).
  * @param <T> the class of the value
  */
-public abstract class BondType<T> {
+public abstract class BondType<T> implements Serializable {
 
     // The global type cache, which maps a Bond type descriptor to itself and is used to cache type descriptor
     // objects. Caching helps reducing memory footprint when working with generic types such as lists, nullables,
@@ -555,4 +556,12 @@ public abstract class BondType<T> {
             this.schema = schema;
         }
     }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
 }

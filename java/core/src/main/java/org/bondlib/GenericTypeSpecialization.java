@@ -3,10 +3,12 @@
 
 package org.bondlib;
 
+import java.io.Serializable;
+
 /**
  * Contains details of generic specialization of a generic struct type.
  */
-public final class GenericTypeSpecialization {
+public final class GenericTypeSpecialization implements Serializable {
 
     /**
      * Array of generic type arguments.
@@ -67,4 +69,12 @@ public final class GenericTypeSpecialization {
         }
         return true;
     }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
 }

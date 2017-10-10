@@ -2,7 +2,7 @@
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class Foo<T> implements org.bondlib.BondSerializable {
+public class Foo<T> implements org.bondlib.BondSerializable, java.io.Serializable {
     
     public static abstract class GenericBondTypeBuilder {
 
@@ -36,7 +36,7 @@ public class Foo<T> implements org.bondlib.BondSerializable {
             }
         }
 
-        private org.bondlib.StructBondType.ObjectStructField<java.util.List<java.util.List<T>>> aa;
+        private transient org.bondlib.StructBondType.ObjectStructField<java.util.List<java.util.List<T>>> aa;
 
         private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -117,6 +117,10 @@ public class Foo<T> implements org.bondlib.BondSerializable {
         protected final void cloneStructFields(Foo<T> fromValue, Foo<T> toValue) {
             toValue.aa = this.aa.clone(fromValue.aa);
         }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
+        }
     }
 
     public static final GenericBondTypeBuilder BOND_TYPE = new GenericBondTypeBuilder() {
@@ -174,7 +178,7 @@ package tests;
 
 
 @javax.annotation.Generated("gbc")
-public final class EnumToWrap implements org.bondlib.BondEnum<EnumToWrap> {
+public final class EnumToWrap implements org.bondlib.BondEnum<EnumToWrap>, java.io.Serializable {
 
     public static final class Values {
         private Values() {}
@@ -189,6 +193,10 @@ public final class EnumToWrap implements org.bondlib.BondEnum<EnumToWrap> {
 
         @Override
         public final EnumToWrap getEnumValue(int value) { return get(value); }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return BOND_TYPE;
+        }
     }
 
     public static final org.bondlib.EnumBondType<EnumToWrap> BOND_TYPE = new EnumBondTypeImpl();
@@ -238,12 +246,16 @@ public final class EnumToWrap implements org.bondlib.BondEnum<EnumToWrap> {
             throw new java.lang.IllegalArgumentException("Invalid 'EnumToWrap' enum value: '" + str + "'.");
         }
     }
+
+    private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+        return get(this.value);
+    }
 }
 
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class WrappingAnEnum implements org.bondlib.BondSerializable {
+public class WrappingAnEnum implements org.bondlib.BondSerializable, java.io.Serializable {
     
     private static final class StructBondTypeImpl extends org.bondlib.StructBondType<WrappingAnEnum> {
         
@@ -264,7 +276,7 @@ public class WrappingAnEnum implements org.bondlib.BondSerializable {
             }
         }
 
-        private org.bondlib.StructBondType.EnumStructField<tests.EnumToWrap> aWrappedEnum;
+        private transient org.bondlib.StructBondType.EnumStructField<tests.EnumToWrap> aWrappedEnum;
 
         private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -343,6 +355,10 @@ public class WrappingAnEnum implements org.bondlib.BondSerializable {
         @Override
         protected final void cloneStructFields(WrappingAnEnum fromValue, WrappingAnEnum toValue) {
             toValue.aWrappedEnum = this.aWrappedEnum.clone(fromValue.aWrappedEnum);
+        }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
         }
     }
 

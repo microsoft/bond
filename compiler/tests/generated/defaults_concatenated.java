@@ -3,7 +3,7 @@ package tests;
 
 
 @javax.annotation.Generated("gbc")
-public final class EnumType1 implements org.bondlib.BondEnum<EnumType1> {
+public final class EnumType1 implements org.bondlib.BondEnum<EnumType1>, java.io.Serializable {
 
     public static final class Values {
         private Values() {}
@@ -28,6 +28,10 @@ public final class EnumType1 implements org.bondlib.BondEnum<EnumType1> {
 
         @Override
         public final EnumType1 getEnumValue(int value) { return get(value); }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return BOND_TYPE;
+        }
     }
 
     public static final org.bondlib.EnumBondType<EnumType1> BOND_TYPE = new EnumBondTypeImpl();
@@ -115,12 +119,16 @@ public final class EnumType1 implements org.bondlib.BondEnum<EnumType1> {
             throw new java.lang.IllegalArgumentException("Invalid 'EnumType1' enum value: '" + str + "'.");
         }
     }
+
+    private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+        return get(this.value);
+    }
 }
 
 package tests;
 
 @javax.annotation.Generated("gbc")
-public class Foo implements org.bondlib.BondSerializable {
+public class Foo implements org.bondlib.BondSerializable, java.io.Serializable {
     
     private static final class StructBondTypeImpl extends org.bondlib.StructBondType<Foo> {
         
@@ -141,77 +149,77 @@ public class Foo implements org.bondlib.BondSerializable {
             }
         }
 
-        private org.bondlib.StructBondType.BoolStructField m_bool_1;
+        private transient org.bondlib.StructBondType.BoolStructField m_bool_1;
 
-        private org.bondlib.StructBondType.BoolStructField m_bool_2;
+        private transient org.bondlib.StructBondType.BoolStructField m_bool_2;
 
-        private org.bondlib.StructBondType.SomethingBoolStructField m_bool_3;
+        private transient org.bondlib.StructBondType.SomethingBoolStructField m_bool_3;
 
-        private org.bondlib.StructBondType.StringStructField m_str_1;
+        private transient org.bondlib.StructBondType.StringStructField m_str_1;
 
-        private org.bondlib.StructBondType.SomethingStringStructField m_str_2;
+        private transient org.bondlib.StructBondType.SomethingStringStructField m_str_2;
 
-        private org.bondlib.StructBondType.Int8StructField m_int8_4;
+        private transient org.bondlib.StructBondType.Int8StructField m_int8_4;
 
-        private org.bondlib.StructBondType.SomethingInt8StructField m_int8_5;
+        private transient org.bondlib.StructBondType.SomethingInt8StructField m_int8_5;
 
-        private org.bondlib.StructBondType.Int16StructField m_int16_4;
+        private transient org.bondlib.StructBondType.Int16StructField m_int16_4;
 
-        private org.bondlib.StructBondType.SomethingInt16StructField m_int16_5;
+        private transient org.bondlib.StructBondType.SomethingInt16StructField m_int16_5;
 
-        private org.bondlib.StructBondType.SomethingInt32StructField m_int32_4;
+        private transient org.bondlib.StructBondType.SomethingInt32StructField m_int32_4;
 
-        private org.bondlib.StructBondType.Int32StructField m_int32_max;
+        private transient org.bondlib.StructBondType.Int32StructField m_int32_max;
 
-        private org.bondlib.StructBondType.SomethingInt64StructField m_int64_4;
+        private transient org.bondlib.StructBondType.SomethingInt64StructField m_int64_4;
 
-        private org.bondlib.StructBondType.Int64StructField m_int64_max;
+        private transient org.bondlib.StructBondType.Int64StructField m_int64_max;
 
-        private org.bondlib.StructBondType.UInt8StructField m_uint8_2;
+        private transient org.bondlib.StructBondType.UInt8StructField m_uint8_2;
 
-        private org.bondlib.StructBondType.SomethingUInt8StructField m_uint8_3;
+        private transient org.bondlib.StructBondType.SomethingUInt8StructField m_uint8_3;
 
-        private org.bondlib.StructBondType.UInt16StructField m_uint16_2;
+        private transient org.bondlib.StructBondType.UInt16StructField m_uint16_2;
 
-        private org.bondlib.StructBondType.SomethingUInt16StructField m_uint16_3;
+        private transient org.bondlib.StructBondType.SomethingUInt16StructField m_uint16_3;
 
-        private org.bondlib.StructBondType.SomethingUInt32StructField m_uint32_3;
+        private transient org.bondlib.StructBondType.SomethingUInt32StructField m_uint32_3;
 
-        private org.bondlib.StructBondType.UInt32StructField m_uint32_max;
+        private transient org.bondlib.StructBondType.UInt32StructField m_uint32_max;
 
-        private org.bondlib.StructBondType.SomethingUInt64StructField m_uint64_3;
+        private transient org.bondlib.StructBondType.SomethingUInt64StructField m_uint64_3;
 
-        private org.bondlib.StructBondType.UInt64StructField m_uint64_max;
+        private transient org.bondlib.StructBondType.UInt64StructField m_uint64_max;
 
-        private org.bondlib.StructBondType.SomethingDoubleStructField m_double_3;
+        private transient org.bondlib.StructBondType.SomethingDoubleStructField m_double_3;
 
-        private org.bondlib.StructBondType.DoubleStructField m_double_4;
+        private transient org.bondlib.StructBondType.DoubleStructField m_double_4;
 
-        private org.bondlib.StructBondType.DoubleStructField m_double_5;
+        private transient org.bondlib.StructBondType.DoubleStructField m_double_5;
 
-        private org.bondlib.StructBondType.SomethingFloatStructField m_float_3;
+        private transient org.bondlib.StructBondType.SomethingFloatStructField m_float_3;
 
-        private org.bondlib.StructBondType.FloatStructField m_float_4;
+        private transient org.bondlib.StructBondType.FloatStructField m_float_4;
 
-        private org.bondlib.StructBondType.FloatStructField m_float_7;
+        private transient org.bondlib.StructBondType.FloatStructField m_float_7;
 
-        private org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum1;
+        private transient org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum1;
 
-        private org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum2;
+        private transient org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum2;
 
-        private org.bondlib.StructBondType.SomethingEnumStructField<tests.EnumType1> m_enum3;
+        private transient org.bondlib.StructBondType.SomethingEnumStructField<tests.EnumType1> m_enum3;
 
-        private org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum_int32min;
+        private transient org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum_int32min;
 
-        private org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum_int32max;
+        private transient org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum_int32max;
 
-        private org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum_uint32_min;
+        private transient org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum_uint32_min;
 
-        private org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum_uint32_max;
+        private transient org.bondlib.StructBondType.EnumStructField<tests.EnumType1> m_enum_uint32_max;
 
-        private org.bondlib.StructBondType.WStringStructField m_wstr_1;
+        private transient org.bondlib.StructBondType.WStringStructField m_wstr_1;
 
-        private org.bondlib.StructBondType.SomethingWStringStructField m_wstr_2;
+        private transient org.bondlib.StructBondType.SomethingWStringStructField m_wstr_2;
 
         private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -850,6 +858,10 @@ public class Foo implements org.bondlib.BondSerializable {
             toValue.m_enum_uint32_max = this.m_enum_uint32_max.clone(fromValue.m_enum_uint32_max);
             toValue.m_wstr_1 = this.m_wstr_1.clone(fromValue.m_wstr_1);
             toValue.m_wstr_2 = this.m_wstr_2.clone(fromValue.m_wstr_2);
+        }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
         }
     }
 

@@ -3,15 +3,17 @@
 
 package org.bondlib;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Provides implementation for the Bond blob type as a simple wrapper around {@code byte []}.
  */
-public final class Blob {
+public final class Blob implements Serializable {
 
     /**
      * Creates a new Blob instance
+     *
      * @return new Blob instance with an empty {@code byte[]}
      */
     public Blob() {
@@ -20,6 +22,7 @@ public final class Blob {
 
     /**
      * Creates a new Blob instance wrapping an existing {@code byte[]}
+     *
      * @param data
      * @return new Blob instance wrapping the data array
      * @throws IllegalArgumentException if the argument is null
@@ -31,6 +34,7 @@ public final class Blob {
 
     /**
      * Compare for equality by contents of underlying {@code byte[]}
+     *
      * @param other object to compare against
      * @return {@code true} if object is also a Blob and the underlying arrays have equivalent contents
      */
@@ -49,6 +53,7 @@ public final class Blob {
 
     /**
      * Generate hash code based on contents of underlying {@code byte[]}
+     *
      * @return hash code of underlying array contents
      */
     @Override
@@ -58,12 +63,20 @@ public final class Blob {
 
     /**
      * Provide access to underlying {@code byte[]}
+     *
      * @return the underying {@code byte[]}
      */
-    public byte[] getData()
-    {
+    public byte[] getData() {
         return this.data;
     }
 
     private final byte[] data;
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
 }

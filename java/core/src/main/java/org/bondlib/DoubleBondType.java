@@ -4,6 +4,7 @@
 package org.bondlib;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
 
 /**
  * Implements the {@link BondType} contract for the Bond "double" data type.
@@ -76,8 +77,8 @@ public final class DoubleBondType extends PrimitiveBondType<Double> {
 
     @Override
     protected final Double deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
         return deserializePrimitiveValue(context);
     }
 
@@ -217,5 +218,21 @@ public final class DoubleBondType extends PrimitiveBondType<Double> {
             TaggedDeserializationContext context,
             StructBondType.StructField<Double> field) throws IOException {
         return Something.wrap(deserializePrimitiveField(context, field));
+    }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Replaces deserialized object by the singleton instance,
+     * per {@link java.io.Serializable} specification.
+     */
+    private Object readResolve() throws ObjectStreamException {
+        return INSTANCE;
     }
 }
