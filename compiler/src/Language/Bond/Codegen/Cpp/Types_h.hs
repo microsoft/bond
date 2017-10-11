@@ -211,13 +211,19 @@ namespace std
 
         -- default constructor
         defaultCtor = [lt|
-        #{dummyTemplateTag allocator}#{declName}()#{initList}#{ctorBody}|]
+        #{dummyTemplateTag}#{declName}(#{vc12WorkaroundParam})#{initList}#{ctorBody}|]
           where
-            dummyTemplateTag (Just alloc) = if needAlloc alloc
-                then [lt|template <typename = void> // Workaround to avoid compilation if not used
+            needAllocParam = case allocator of
+                (Just alloc) -> needAlloc alloc
+                Nothing -> False
+
+            vc12WorkaroundParam = if needAllocParam then [lt|_bond_vc12_ctor_workaround_ = {}|] else mempty
+
+            dummyTemplateTag = if needAllocParam
+                then [lt|struct _bond_vc12_ctor_workaround_ {};
+        template <int = 0> // Workaround to avoid compilation if not used
         |]
                 else mempty
-            dummyTemplateTag Nothing = mempty
 
             initList = initializeList mempty
                 $ commaLineSep 3 fieldInit structFields

@@ -127,8 +127,9 @@ namespace tests
         std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other> m_wstr_1;
         ::bond::maybe<std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other> > m_wstr_2;
         
-        template <typename = void> // Workaround to avoid compilation if not used
-        Foo()
+        struct _bond_vc12_ctor_workaround_ {};
+        template <int = 0> // Workaround to avoid compilation if not used
+        Foo(_bond_vc12_ctor_workaround_ = {})
           : m_bool_1(true),
             m_bool_2(false),
             m_str_1("default string value"),

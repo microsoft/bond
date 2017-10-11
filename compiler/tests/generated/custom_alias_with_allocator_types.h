@@ -33,8 +33,9 @@ namespace test
         ::bond::maybe<my::map<my::string<arena>, bool, arena> > m1;
         ::bond::maybe<my::string<arena> > st1;
         
-        template <typename = void> // Workaround to avoid compilation if not used
-        foo()
+        struct _bond_vc12_ctor_workaround_ {};
+        template <int = 0> // Workaround to avoid compilation if not used
+        foo(_bond_vc12_ctor_workaround_ = {})
           : l(),
             v(),
             s(),
