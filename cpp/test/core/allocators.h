@@ -1,7 +1,5 @@
 #pragma once
 
-#include <bond/core/capped_allocator.h>
-
 namespace detail
 {
 
@@ -102,37 +100,3 @@ public:
 }
 
 typedef detail::TestAllocator<> TestAllocator;
-
-
-namespace capped_allocator_tests
-{
-    // The libstdc++ versions below 5 are not fully C++11 compatible.
-    // Adding a default .ctor for testing, until we upgrade to newer version.
-#ifndef _MSC_VER
-    template <typename Alloc>
-    struct test_allocator : bond::capped_allocator<Alloc>
-    {
-        template <typename U>
-        struct rebind
-        {
-            using other = test_allocator<typename std::allocator_traits<Alloc>::template rebind_alloc<U>>;
-        };
-
-        test_allocator()
-            : test_allocator(0)
-        {}
-
-        explicit test_allocator(std::size_t max_value)
-            : bond::capped_allocator<Alloc>(max_value)
-        {}
-
-        template <typename U>
-        test_allocator(const test_allocator<U>& other)
-            : bond::capped_allocator<Alloc>(other)
-        {}
-    };
-#else
-    template <typename Alloc>
-    using test_allocator = bond::capped_allocator<Alloc>;
-#endif
-}

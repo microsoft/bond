@@ -1,11 +1,12 @@
 #include "precompiled.h"
-#include "capped_allocator_tests_generated/allocator_test_reflection.h"
+#include <bond/core/capped_allocator.h>
 #include <boost/test/unit_test.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/range/combine.hpp>
 #include <boost/range/irange.hpp>
 
 #ifdef _MSC_VER
+#include "capped_allocator_tests_generated/allocator_test_reflection.h"
 #pragma warning (push)
 #pragma warning (disable: 4100)
 #endif
@@ -302,6 +303,8 @@ BOOST_AUTO_TEST_CASE(AllocatorComparisonTest)
     BOOST_CHECK((a2 != a3));
 }
 
+#ifdef _MSC_VER
+
 using all_protocols = boost::mpl::list<
     bond::SimpleBinaryReader<bond::InputBuffer>,
     bond::CompactBinaryReader<bond::InputBuffer>,
@@ -309,21 +312,13 @@ using all_protocols = boost::mpl::list<
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(BondStructDeserializationTest, Reader, all_protocols)
 {
-    capped_allocator_tests::test_allocator<std::allocator<char>> alloc{ 1024 * 1024 };
+    const std::size_t max_size = (std::numeric_limits<std::uint32_t>::max)();
+    bond::capped_allocator<std::allocator<char>> alloc{ max_size };
 
     capped_allocator_tests::Struct from{ alloc };
 
     InitRandom(from);
-
-    // BOOST_TEST_CONTEXT("Serialization with overflow")
-    {
-        using Writer = typename bond::get_protocol_writer<Reader, bond::OutputMemoryStream<decltype(alloc)>>::type;
-
-        decltype(alloc) new_alloc{ 1024 };
-        typename Writer::Buffer output{ new_alloc };
-        Writer writer{ output };
-        BOOST_CHECK_THROW(bond::Serialize(from, writer), std::bad_alloc);
-    }
+    const auto obj_mem_usage = alloc.get_counter().value();
 
     bond::blob buffer;
 
@@ -333,28 +328,46 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(BondStructDeserializationTest, Reader, all_protoco
 
         typename Writer::Buffer output;
         Writer writer{ output };
-        BOOST_CHECK_NO_THROW(bond::Serialize(from, writer));
+        BOOST_REQUIRE_NO_THROW(bond::Serialize(from, writer));
 
         buffer = output.GetBuffer();
+    }
+
+    // BOOST_TEST_CONTEXT("Serialization with overflow")
+    {
+        using Writer = typename bond::get_protocol_writer<Reader, bond::OutputMemoryStream<decltype(alloc)>>::type;
+
+        decltype(alloc) new_alloc{ buffer.size() / 2 };
+        typename Writer::Buffer output{ new_alloc };
+        Writer writer{ output };
+        BOOST_CHECK_THROW(bond::Serialize(from, writer), std::bad_alloc);
     }
 
     // BOOST_TEST_CONTEXT("Compile-time schema deserialize without overflow")
     {
         Reader reader{ buffer };
 
-        decltype(alloc) new_alloc{ 1024 * 1024 };
+        decltype(alloc) new_alloc{ max_size };
         decltype(from) to{ new_alloc };
-        BOOST_CHECK_NO_THROW(bond::Deserialize(reader, to));
+        BOOST_REQUIRE_NO_THROW(bond::Deserialize(reader, to));
         BOOST_CHECK((from == to));
     }
+
+    auto expected_exception = [](const std::exception& e)
+    {
+        return dynamic_cast<const std::bad_alloc*>(&e)
+            // Some STL containers may throw std::length_error while checking
+            // for space using allocator's max_size before actual allocation.
+            || dynamic_cast<const std::length_error*>(&e);
+    };
 
     // BOOST_TEST_CONTEXT("Compile-time schema deserialize with overflow")
     {
         Reader reader{ buffer };
 
-        decltype(alloc) new_alloc{ 4 * 1024 };
+        decltype(alloc) new_alloc{ obj_mem_usage - 1 };
         decltype(from) to{ new_alloc };
-        BOOST_CHECK_THROW(bond::Deserialize(reader, to), std::bad_alloc);
+        BOOST_CHECK_EXCEPTION(bond::Deserialize(reader, to), std::exception, expected_exception);
     }
 
     // BOOST_TEST_CONTEXT("Runtime schema deserialize without overflow")
@@ -362,9 +375,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(BondStructDeserializationTest, Reader, all_protoco
         Reader reader{ buffer };
         bond::bonded<void> bonded{ reader, bond::GetRuntimeSchema<decltype(from)>() };
 
-        decltype(alloc) new_alloc{ 1024 * 1024 };
+        decltype(alloc) new_alloc{ max_size };
         decltype(from) to{ new_alloc };
-        BOOST_CHECK_NO_THROW(bonded.Deserialize(to));
+        BOOST_REQUIRE_NO_THROW(bonded.Deserialize(to));
         BOOST_CHECK((from == to));
     }
 
@@ -373,11 +386,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(BondStructDeserializationTest, Reader, all_protoco
         Reader reader{ buffer };
         bond::bonded<void> bonded{ reader, bond::GetRuntimeSchema<decltype(from)>() };
 
-        decltype(alloc) new_alloc{ 4 * 1024 };
+        decltype(alloc) new_alloc{ obj_mem_usage - 1 };
         decltype(from) to{ new_alloc };
-        BOOST_CHECK_THROW(bonded.Deserialize(to), std::bad_alloc);
+        BOOST_CHECK_EXCEPTION(bonded.Deserialize(to), std::exception, expected_exception);
     }
 }
+
+#endif // _MSC_VER
 
 BOOST_AUTO_TEST_SUITE_END()
 
