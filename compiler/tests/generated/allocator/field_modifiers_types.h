@@ -25,7 +25,6 @@ namespace tests
         int16_t r;
         double ro;
         
-        template <typename = void> // Workaround to avoid compilation if not used
         Foo()
           : o(),
             r(),

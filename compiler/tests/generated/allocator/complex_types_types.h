@@ -24,7 +24,6 @@ namespace tests
     struct Foo
     {
         
-        template <typename = void> // Workaround to avoid compilation if not used
         Foo()
         {
         }

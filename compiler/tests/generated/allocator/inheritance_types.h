@@ -23,7 +23,6 @@ namespace tests
     {
         int32_t x;
         
-        template <typename = void> // Workaround to avoid compilation if not used
         Base()
           : x()
         {

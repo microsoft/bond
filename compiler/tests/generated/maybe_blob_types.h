@@ -23,7 +23,6 @@ namespace tests
     {
         ::bond::maybe< ::bond::blob> b;
         
-        template <typename = void> // Workaround to avoid compilation if not used
         Foo()
         {
         }
