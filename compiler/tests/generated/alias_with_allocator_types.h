@@ -33,8 +33,9 @@ namespace test
         ::bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> > m1;
         ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> > st1;
         
-        template <typename = void> // Workaround to avoid compilation if not used
-        foo()
+        struct _bond_vc12_ctor_workaround_ {};
+        template <int = 0> // Workaround to avoid compilation if not used
+        foo(_bond_vc12_ctor_workaround_ = {})
           : d("foo")
         {
         }
@@ -142,8 +143,9 @@ namespace test
         ::test::foo f;
         ::test::foo f1;
         
-        template <typename = void> // Workaround to avoid compilation if not used
-        withFoo()
+        struct _bond_vc12_ctor_workaround_ {};
+        template <int = 0> // Workaround to avoid compilation if not used
+        withFoo(_bond_vc12_ctor_workaround_ = {})
         {
         }
 
