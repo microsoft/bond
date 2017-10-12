@@ -59,9 +59,13 @@
           Inputs="$(ProjectDir)\..\compiler\CMakeLists.txt;@(None)"
           Outputs="$(ProjectDir)\tools\gbc.exe">
     <Message Text="Building Bond Compiler..." Importance="High" />
-    <Exec Command="cmake $(ProjectDir)\..\compiler -Wno-dev" WorkingDirectory="$(OutDir)" />
-    <Exec Command="call cmake --build $(OutDir) --target gbc" WorkingDirectory="$(OutDir)" />
-    <Copy SourceFiles="$(OutDir)\build\gbc\gbc.exe" DestinationFolder="$(ProjectDir)\tools\" />
+
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+
+    <Exec Command="cmake $(ProjectDir)\..\compiler -Wno-dev" WorkingDirectory="$(IntermediateOutputPath)" />
+    <Exec Command="call cmake --build $(IntermediateOutputPath) --target gbc" WorkingDirectory="$(IntermediateOutputPath)" />
+    
+    <Copy SourceFiles="$(IntermediateOutputPath)\build\gbc\gbc.exe" DestinationFolder="$(ProjectDir)\tools\" />
   </Target>
 
   <Target Name="ExternalBuild" DependsOnTargets="CoreExternalBuild" />
