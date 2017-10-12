@@ -50,10 +50,6 @@
   <Import Project="$(MSBuildThisFileDirectory)\build\internal\Common.Internal.targets" />
 
   <PropertyGroup>
-    <BuildDependsOn>
-      $(BuildDependsOn);
-      ExternalBuild;
-    </BuildDependsOn>
     <ExternalBuildDependsOn>
       CoreExternalBuild;
     </ExternalBuildDependsOn>
@@ -69,5 +65,7 @@
   </Target>
 
   <Target Name="ExternalBuild" DependsOnTargets="CoreExternalBuild" />
+
+  <Target Name="Build" DependsOnTargets="ExternalBuild" />
 
 </Project>
