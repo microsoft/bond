@@ -63,7 +63,7 @@
     <MakeDir Directories="$(IntermediateOutputPath)" />
 
     <Exec Command="cmake $(ProjectDir)\..\compiler -Wno-dev" WorkingDirectory="$(IntermediateOutputPath)" />
-    <Exec Command="call cmake --build $(IntermediateOutputPath) --target gbc" WorkingDirectory="$(IntermediateOutputPath)" />
+    <Exec Command="cmake --build . --target gbc" WorkingDirectory="$(IntermediateOutputPath)" />
     
     <Copy SourceFiles="$(IntermediateOutputPath)\build\gbc\gbc.exe" DestinationFolder="$(ProjectDir)\tools\" />
   </Target>
