@@ -18,7 +18,7 @@ namespace tests
     using System.Collections.Generic;
 
     [global::Bond.Attribute("FooAttribute", "Bar")]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.0.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.1.0")]
     public interface IFoo
     {
         [global::Bond.Attribute("foo", "method")]
