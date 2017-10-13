@@ -213,7 +213,7 @@ namespace std
         defaultCtor = [lt|
         #{dummyTemplateTag}#{declName}(#{vc12WorkaroundParam})#{initList}#{ctorBody}|]
           where
-            needAllocParam = maybe False needAlloc
+            needAllocParam = maybe False needAlloc allocator
 
             vc12WorkaroundParam = if needAllocParam then [lt|_bond_vc12_ctor_workaround_ = {}|] else mempty
 
