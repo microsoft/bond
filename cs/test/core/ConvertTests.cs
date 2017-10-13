@@ -305,12 +305,6 @@
             Assert.AreEqual(foo.CountInstances(), BondTypeAliasConverter.ConvertFromRefObjectCount);
             Assert.AreEqual(foo2.CountInstances(), BondTypeAliasConverter.ConvertToRefObjectCount);
             Assert.AreEqual(foo.CountInstances(), foo2.CountInstances());
-
-            Assert.AreEqual(foo._ref, foo2._ref);
-            Assert.AreEqual(foo._refVector, foo2._refVector);
-            Assert.AreEqual(foo._refVector, foo2._refVector);
-            Assert.AreEqual(foo._refList, foo2._refList);
-            Assert.AreEqual(foo._refNullable, foo2._refNullable);
             Assert.IsTrue(Bond.Comparer.Equal(foo, foo2));
         }
 
