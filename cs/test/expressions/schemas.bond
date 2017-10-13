@@ -13,6 +13,7 @@ struct Nested
 }
 
 using decimal = blob;
+using reference = blob;
 
 struct Example : Base
 {
@@ -27,10 +28,19 @@ struct Example : Base
     30: vector<int32> _int32Vector;
     40: list<Nested> _nestedVector;
     50: blob b;
+    51: list<blob> _blobList;
+    52: vector<blob> _blobVector;
+    53: map<int32, blob> _blobMap;
+    54: nullable<blob> _blobNullable;
     60: map<int32, double> _map;
     70: decimal _decimal;
     71: list<decimal> _decList;
     72: vector<decimal> _decVector;
     73: map<int32, decimal> _decMap;
     74: nullable<decimal> _decNullable;
+    80: reference _reference;
+    81: list<reference> _refList;
+    82: vector<reference> _refVector;
+    83: map<int32, reference> _refMap;
+    84: nullable<reference> _refNullable;
 };
