@@ -9,11 +9,14 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 
 /**
  * Unit tests for the {@link SimpleJsonReader} class.
  */
 public final class SimpleJsonReaderTest {
+
+    private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
     ///////////////////////////////////////////////////////////////////////////
     // readBool tests
@@ -67,7 +70,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -129,7 +132,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyBool(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -215,7 +218,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -277,7 +280,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyInt8(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -367,7 +370,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -429,7 +432,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyInt16(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -529,7 +532,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -591,7 +594,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyInt32(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -710,7 +713,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -772,7 +775,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyInt64(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -820,6 +823,11 @@ public final class SimpleJsonReaderTest {
     }
 
     @Test
+    public void testReadUInt8_Error_NegativeOverflow() throws IOException {
+        parseMalformedAndVerifyUInt8("-" + String.valueOf(UnsignedHelper.MAX_UINT8_VALUE + 1));
+    }
+
+    @Test
     public void testReadUInt8_Error_Float() throws IOException {
         parseMalformedAndVerifyUInt8("1.0");
     }
@@ -857,7 +865,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -924,7 +932,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyUInt8(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -973,6 +981,11 @@ public final class SimpleJsonReaderTest {
     }
 
     @Test
+    public void testReadUInt16_Error_NegativeOverflow() throws IOException {
+        parseMalformedAndVerifyUInt16("-" + String.valueOf(UnsignedHelper.MAX_UINT16_VALUE + 1));
+    }
+
+    @Test
     public void testReadUInt16_Error_Float() throws IOException {
         parseMalformedAndVerifyUInt16("1.0");
     }
@@ -1009,7 +1022,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -1076,7 +1089,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyUInt16(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -1130,6 +1143,11 @@ public final class SimpleJsonReaderTest {
     }
 
     @Test
+    public void testReadUInt32_Error_NegativeOverflow() throws IOException {
+        parseMalformedAndVerifyUInt32("-" + String.valueOf(UnsignedHelper.MAX_UINT32_VALUE + 1));
+    }
+
+    @Test
     public void testReadUInt32_Error_Float() throws IOException {
         parseMalformedAndVerifyUInt32("1.0");
     }
@@ -1166,7 +1184,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -1233,7 +1251,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyUInt32(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -1296,6 +1314,11 @@ public final class SimpleJsonReaderTest {
     }
 
     @Test
+    public void testReadUInt64_Error_NegativeOverflow() throws IOException {
+        parseMalformedAndVerifyUInt64("-" + String.valueOf(UnsignedHelper.MAX_UINT64_VALUE.add(BigInteger.ONE)));
+    }
+
+    @Test
     public void testReadUInt64_Error_Float() throws IOException {
         parseMalformedAndVerifyUInt64("1.0");
     }
@@ -1332,7 +1355,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -1399,7 +1422,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyUInt64(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -1480,7 +1503,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -1543,7 +1566,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyFloat(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -1624,7 +1647,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -1687,7 +1710,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyDouble(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -1762,7 +1785,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -1824,7 +1847,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyString(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();
@@ -1899,7 +1922,7 @@ public final class SimpleJsonReaderTest {
                 "\"" + arrayField1Name + "\":[" + jsonValue + "]," +
                 "\"" + arrayField2Name + "\":[" + jsonValue + "," + jsonValue + "]" + "}";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
 
@@ -1961,7 +1984,7 @@ public final class SimpleJsonReaderTest {
     private static void parseMalformedAndVerifyWString(String jsonValue) throws IOException {
         String fieldName = "field";
         String json = "{\"" + fieldName + "\":" + jsonValue + "}";
-        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes(UTF8_CHARSET));
         SimpleJsonReader r = new SimpleJsonReader(bais);
         r.readStructBegin();
         String currentFieldName = r.readFieldBegin();

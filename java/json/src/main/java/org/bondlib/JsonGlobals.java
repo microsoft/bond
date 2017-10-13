@@ -11,10 +11,19 @@ import com.fasterxml.jackson.core.JsonParser;
  */
 final class JsonGlobals {
 
-    // thread-safe shared factory for parsers
+    // prevent instantiation
+    private JsonGlobals() {
+    }
+
+    /**
+     * Thread-safe shared factory for parsers (see {@link JsonFactory} javadoc for details.
+     */
     static final JsonFactory jsonFactory = new JsonFactory();
 
     static {
+        // Allow parsing and generating non-numeric floating-point values: (+/-)Infinity and NaN,
+        // to be able to properly roundtrip (i.e. be able to parse output that we generate) when
+        // a float or double field is set to such value.
         jsonFactory.enable(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS);
     }
 }

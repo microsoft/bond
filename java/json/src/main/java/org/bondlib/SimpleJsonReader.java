@@ -134,6 +134,9 @@ public final class SimpleJsonReader implements TextProtocolReader {
                 return (byte) valueAsInt;
             }
         }
+        // at this point, we have a NUMBER_INT token with either:
+        // (a) number type BIG_INT or LONG, or
+        // (b) number type INT but value is outside of int8 bounds
         throw createInvalidBondDataException(
                 "Current JSON integer value '%s' is outside of bounds for the expected Bond data type 'int8'.",
                 this.parser.getValueAsString());
@@ -156,6 +159,9 @@ public final class SimpleJsonReader implements TextProtocolReader {
                 return (short) valueAsInt;
             }
         }
+        // at this point, we have a NUMBER_INT token with either:
+        // (a) number type BIG_INT or LONG, or
+        // (b) number type INT but value is outside of int16 bounds
         throw createInvalidBondDataException(
                 "Current JSON integer value '%s' is outside of bounds for the expected Bond data type 'int16'.",
                 this.parser.getValueAsString());
@@ -176,6 +182,7 @@ public final class SimpleJsonReader implements TextProtocolReader {
             final int valueAsInt = this.parser.getIntValue();
             return valueAsInt;
         }
+        // at this point, we have a NUMBER_INT token with number type BIG_INT or LONG
         throw createInvalidBondDataException(
                 "Current JSON integer value '%s' is outside of bounds for the expected Bond data type 'int32'.",
                 this.parser.getValueAsString());
@@ -196,6 +203,7 @@ public final class SimpleJsonReader implements TextProtocolReader {
             final long valueAsLong = this.parser.getLongValue();
             return valueAsLong;
         }
+        // at this point, we have a NUMBER_INT token with number type BIG_INT
         throw createInvalidBondDataException(
                 "Current JSON integer value '%s' is outside of bounds for the expected Bond data type 'int64'.",
                 this.parser.getValueAsString());
@@ -218,6 +226,9 @@ public final class SimpleJsonReader implements TextProtocolReader {
                 return (byte) valueAsInt;
             }
         }
+        // at this point, we have a NUMBER_INT token with either:
+        // (a) number type BIG_INT or LONG, or
+        // (b) number type INT but value is outside of uint8 bounds
         throw createInvalidBondDataException(
                 "Current JSON integer value '%s' is outside of bounds for the expected Bond data type 'uint8'.",
                 this.parser.getValueAsString());
@@ -240,6 +251,9 @@ public final class SimpleJsonReader implements TextProtocolReader {
                 return (short) valueAsInt;
             }
         }
+        // at this point, we have a NUMBER_INT token with either:
+        // (a) number type BIG_INT or LONG, or
+        // (b) number type INT but value is outside of uint16 bounds
         throw createInvalidBondDataException(
                 "Current JSON integer value '%s' is outside of bounds for the expected Bond data type 'uint16'.",
                 this.parser.getValueAsString());
@@ -263,10 +277,14 @@ public final class SimpleJsonReader implements TextProtocolReader {
             }
         } else if (numberType == JsonParser.NumberType.LONG) {
             final long valueAsLong = this.parser.getLongValue();
-            if (valueAsLong <= UnsignedHelper.MAX_UINT32_VALUE) {
+            if (valueAsLong >= 0 && valueAsLong <= UnsignedHelper.MAX_UINT32_VALUE) {
                 return (int) valueAsLong;
             }
         }
+        // at this point, we have a NUMBER_INT token with either:
+        // (a) number type BIG_INT, or
+        // (b) number type INT but value is negative, or
+        // (c) number type LONG but value is outside of uint32 bounds
         throw createInvalidBondDataException(
                 "Current JSON integer value '%s' is outside of bounds for the expected Bond data type 'uint32'.",
                 this.parser.getValueAsString());
@@ -295,11 +313,15 @@ public final class SimpleJsonReader implements TextProtocolReader {
             }
         } else if (numberType == JsonParser.NumberType.BIG_INTEGER) {
             final BigInteger valueAsBigInteger = this.parser.getBigIntegerValue();
-            if (valueAsBigInteger.compareTo(UnsignedHelper.MAX_UINT64_VALUE) <= 0) {
+            if (valueAsBigInteger.signum() >= 0 && valueAsBigInteger.compareTo(UnsignedHelper.MAX_UINT64_VALUE) <= 0) {
                 // gets only the lower 64 bits
                 return valueAsBigInteger.longValue();
             }
         }
+        // at this point, we have a NUMBER_INT token with either:
+        // (a) number type INT but value is negative, or
+        // (b) number type LONG but value is negative, or
+        // (c) number type BIG_INT but value is outside of uint64 bounds
         throw createInvalidBondDataException(
                 "Current JSON integer value '%s' is outside of bounds for the expected Bond data type 'uint64'.",
                 this.parser.getValueAsString());
