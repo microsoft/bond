@@ -36,6 +36,7 @@
     <Compile Include="BondClass.cs" />
     <Compile Include="BondedTests.cs" />
     <Compile Include="CloningTests.cs" />
+    <Compile Include="ConvertTests.cs" />
     <Compile Include="CustomBondedTests.cs" />
     <Compile Include="DeserializerControlsTests.cs" />
     <Compile Include="EnumString.cs" />
@@ -54,7 +55,6 @@
     <Compile Include="SerializerGeneratorFactoryTests.cs" />
     <Compile Include="StreamTests.cs" />
     <Compile Include="Structs.cs" />
-    <Compile Include="ConvertTests.cs" />
     <Compile Include="TypeAliasTests.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="XmlParsingTests.cs" />

@@ -12,7 +12,7 @@ struct Nested
     0: double _double;
 }
 
-using decimal = int32;
+using decimal = blob;
 
 struct Example : Base
 {

@@ -8,15 +8,15 @@
     using System.Reflection;
     using System.Threading;
     using Bond;
-    using NUnit.Framework;
     using Bond.IO.Safe;
     using Bond.Protocols;
+    using NUnit.Framework;
 
     [global::Bond.Schema]
-    public partial class Decimals
+    public class Decimals
     {
         [global::Bond.Id(0), global::Bond.Type(typeof(global::Bond.Tag.blob))]
-        public System.Decimal _dec { get; set; }
+        public decimal _dec { get; set; }
 
         [global::Bond.Id(1), global::Bond.Type(typeof(List<global::Bond.Tag.blob>))]
         public List<decimal> _decVector { get; set; }
@@ -26,6 +26,9 @@
 
         [global::Bond.Id(3), global::Bond.Type(typeof(Dictionary<int, global::Bond.Tag.blob>))]
         public Dictionary<int, decimal> _decMap { get; set; }
+
+        [global::Bond.Id(4), global::Bond.Type(typeof(global::Bond.Tag.nullable<global::Bond.Tag.blob>))]
+        public decimal? _decNullable { get; set; }
 
         public Decimals()
             : this("UnitTest.Convert.Decimals", "Decimals")
@@ -37,11 +40,12 @@
             _decVector = new List<decimal>();
             _decList = new LinkedList<decimal>();
             _decMap = new Dictionary<int, decimal>();
+            _decNullable = null;
         }
 
         internal int CountDecimals()
         {
-            return 1 + _decVector.Count + _decList.Count + _decMap.Count;
+            return 1 + _decVector.Count + _decList.Count + _decMap.Count + (_decNullable.HasValue ? 1 : 0);
         }
     }
 
@@ -71,7 +75,7 @@
             return new ArraySegment<byte>(data);
         }
 
-        public static void Clear()
+        public static void ResetCounts()
         {
             ConvertToDecimalCount = 0;
             ConvertToArraySegmentCount = 0;
@@ -85,7 +89,7 @@
         [SetUp]
         public void Setup()
         {
-            BondTypeAliasConverter.Clear();
+            BondTypeAliasConverter.ResetCounts();
         }
 
         [Test]
@@ -102,6 +106,8 @@
             foo._decMap.Add(1, new decimal(15.15));
             foo._decMap.Add(2, new decimal(16.16));
             foo._decMap.Add(3, new decimal(17.17));
+
+            foo._decNullable = new decimal(20.20);
 
             var outputStream = new OutputBuffer();
             var writer = new CompactBinaryWriter<OutputBuffer>(outputStream);
@@ -128,12 +134,13 @@
             foo._decMap.Add(2, new decimal(16.16));
             foo._decMap.Add(3, new decimal(17.17));
 
+            foo._decNullable = new decimal(20.20);
+
             var output = new OutputBuffer();
             var writer = new CompactBinaryWriter<OutputBuffer>(output);
             var serializer = new Serializer<CompactBinaryWriter<OutputBuffer>>(typeof(Decimals));
 
             serializer.Serialize(foo, writer);
-
 
             var input = new InputBuffer(output.Data);
             var reader = new CompactBinaryReader<InputBuffer>(input);

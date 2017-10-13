@@ -621,12 +621,12 @@
                     .Constant<System.UInt16>(74),
                     .Constant<Bond.Metadata>(_decNullable));
                 .Block(
-                    System.ArraySegment`1[System.Byte] $arraySegment,
+                    System.ArraySegment`1[System.Byte] $convertedBlob,
                     System.Int32 $count) {
-                    $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                    $convertedBlob = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                         $Example._decNullable,
                         .Default(System.ArraySegment`1[System.Byte]));
-                    $count = .If ($arraySegment.Array != null) {
+                    $count = .If ($convertedBlob.Array != null) {
                         1
                     } .Else {
                         0
@@ -644,9 +644,7 @@
                                         System.Int32 $count,
                                         System.Int32 $index,
                                         System.Int32 $end) {
-                                        $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
-                                            $Example._decNullable,
-                                            .Default(System.ArraySegment`1[System.Byte]));
+                                        $arraySegment = $convertedBlob;
                                         $index = $arraySegment.Offset;
                                         $count = $arraySegment.Count;
                                         $end = $index + $count;

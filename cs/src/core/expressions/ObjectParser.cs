@@ -148,7 +148,7 @@ namespace Bond.Expressions
                     return Expression.Block(
                         new[] { convertedBlob },
                         Expression.Assign(convertedBlob, blob),
-                        PrunedExpression.IfThenElse(notEqual,processField,omitField));
+                        PrunedExpression.IfThenElse(notEqual, processField, omitField));
                 }
                 else if (fieldSchemaType.IsBondContainer())
                 {
@@ -349,22 +349,41 @@ namespace Bond.Expressions
 
             var valueType = schemaType.GetValueType();
             var count = Expression.Variable(typeof(int), "count");
-            var nullableValue = valueType.IsBondBlob() 
-                ? Expression.Property(typeAlias.Convert(value, valueType), "Array")
-                : value;
+
+            ParameterExpression convertedBlob = null;
+            var nullableValue = value;
+            var valueParser = new ObjectParser(this, value, valueType);
+
+            if (valueType.IsBondBlob()) {
+                convertedBlob = Expression.Variable(typeof(ArraySegment<byte>), "convertedBlob");
+                nullableValue = Expression.Property(convertedBlob, "Array");
+                valueParser = new ObjectParser(this, convertedBlob, convertedBlob.Type);
+            }
+
             var notNull = Expression.NotEqual(nullableValue, Expression.Constant(null));
 
             var loop = handler(
-                new ObjectParser(this, value, valueType),
+                valueParser,
                 Expression.Constant(valueType.GetBondDataType()),
                 Expression.NotEqual(Expression.PostDecrementAssign(count), Expression.Constant(0)),
                 count,
                 null);
 
-            return Expression.Block(
-                new[] { count },
-                Expression.Assign(count, Expression.Condition(notNull, Expression.Constant(1), Expression.Constant(0))),
-                loop);
+            if (convertedBlob != null)
+            {
+                return Expression.Block(
+                    new[] { convertedBlob, count },
+                    Expression.Assign(convertedBlob, typeAlias.Convert(value, valueType)),
+                    Expression.Assign(count, Expression.Condition(notNull, Expression.Constant(1), Expression.Constant(0))),
+                    loop);
+            }
+            else
+            {
+                return Expression.Block(
+                    new[] { count },
+                    Expression.Assign(count, Expression.Condition(notNull, Expression.Constant(1), Expression.Constant(0))),
+                    loop);
+            }
         }
 
         Expression BlobContainer(ContainerHandler handler)
