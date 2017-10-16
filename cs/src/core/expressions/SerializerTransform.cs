@@ -204,7 +204,7 @@ namespace Bond.Expressions
             var expectedValueType = schema.HasValue ? schema.TypeDef.element.id : (BondDataType?)null;
 
             return parser.Container(expectedValueType,
-                (valueParser, elementType, next, count) =>
+                (valueParser, elementType, next, count, arraySegment) =>
                 {
                     var body = ControlExpression.While(next,
                         Expression.Block(
@@ -215,20 +215,22 @@ namespace Bond.Expressions
                             writer.WriteItemEnd()));
 
                     var blob = parser.Blob(count);
-                    if (blob != null)
+                    if ((blob != null) || (arraySegment != null))
                     {
                         body = PrunedExpression.IfThenElse(
                             Expression.Equal(elementType, Expression.Constant(BondDataType.BT_INT8)),
-                            writer.WriteBytes(blob),
+                            writer.WriteBytes(arraySegment ?? blob),
                             body);
 
                         // For binary protocols we can write blob directly using protocols's WriteBytes
                         // even if the container is not a blob (blob is BT_LIST of BT_INT8).
                         if (binaryWriter)
+                        {
                             body = PrunedExpression.IfThenElse(
                                 Expression.Equal(elementType, Expression.Constant(BondDataType.BT_UINT8)),
-                                writer.WriteBytes(blob),
+                                writer.WriteBytes(arraySegment ?? blob),
                                 body);
+                        }
                     }
 
                     return Expression.Block(
