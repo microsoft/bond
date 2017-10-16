@@ -40,6 +40,11 @@ different versioning scheme, following the Haskell community's
 * Use RapidJSON's iterative parser to handle deeply nested JSON data without
   causing a stack overflow.
 * Guard against min/max being function-style macros in more places.
+* Allow Bond-generated C++ types to use non-default-constructable
+  allocators. (This works even on MSVC 2013 by only compiling the
+  generated-type's default constructor if it is used. The default
+  constructor is now a templated constructor that is invokable with zero
+  arguments.)
 * Provide compile-time access to metadata about gRPC services and methods.
 * Using `bond::ext::gRPC::wait_callback` no longer causes a shared_ptr cycle
   and the resulting resource leak.
