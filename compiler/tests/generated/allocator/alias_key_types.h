@@ -24,7 +24,9 @@ namespace test
         std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, int32_t, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, int32_t> >::other> m;
         std::set<int32_t, std::less<int32_t>, typename arena::rebind<int32_t>::other> s;
         
-        foo()
+        struct _bond_vc12_ctor_workaround_ {};
+        template <int = 0> // Workaround to avoid compilation if not used
+        foo(_bond_vc12_ctor_workaround_ = {})
         {
         }
 
