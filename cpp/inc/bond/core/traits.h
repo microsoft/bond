@@ -193,7 +193,7 @@ is_reader<Input, T, typename boost::enable_if<is_class<typename Input::Parser> >
 template <typename T> struct
 buffer_magic
 {
-    BOOST_STATIC_ASSERT_MSG(!is_same<T, T>::value, "Undefined buffer.");
+    BOOST_STATIC_ASSERT_MSG((!is_same<T, T>::value), "Undefined buffer.");
 };
 
 template <typename T> struct

@@ -109,7 +109,7 @@ inline auto try_apply(F&& f)
     -> decltype(try_apply(std::forward<F>(f), List{}))
 #endif
 {
-    BOOST_STATIC_ASSERT(!std::is_same<List, list<> >::value);
+    BOOST_STATIC_ASSERT((!std::is_same<List, list<> >::value));
 
     return try_apply(std::forward<F>(f), List{});
 }
