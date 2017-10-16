@@ -182,7 +182,8 @@ namespace Bond.Expressions.Xml
                 new SimpleXmlParser<R>(this, Schema.GetElementSchema()), 
                 Expression.Constant(Schema.TypeDef.element.id), 
                 nextItem, 
-                Expression.Constant(0)));
+                Expression.Constant(0),
+                null));
         }
 
         public override Expression Map(BondDataType? expectedKeyType, BondDataType? expectedValueType, MapHandler handler)

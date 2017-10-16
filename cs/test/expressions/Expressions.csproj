@@ -8,6 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ExpressionsTest</RootNamespace>
     <AssemblyName>Bond.ExpressionsTest</AssemblyName>
+    <BondOptions>--using="reference=ExpressionsTest.RefObject" --using="decimal=decimal"</BondOptions>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

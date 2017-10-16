@@ -13,9 +13,10 @@ namespace Bond.Expressions
     /// <param name="valueType">Expression of type BondDataType indicating the element type</param>
     /// <param name="next">Expression of type bool indicating if there are more elements</param>
     /// <param name="count">Expression of type int indicating number of elements, may be null</param>
+    /// <param name="arraySegment">Parameter expression of type ArraySegment that holds conveted input bytes, may be null</param>
     /// <returns>Expression to handle the container</returns>
     public delegate Expression ContainerHandler(
-        IParser valueParser, Expression valueType, Expression next, Expression count);
+        IParser valueParser, Expression valueType, Expression next, Expression count, ParameterExpression arraySegment);
     
     /// <summary>
     /// Handler for maps
