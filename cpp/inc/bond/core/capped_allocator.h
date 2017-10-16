@@ -108,7 +108,8 @@ namespace bond
     } // namespace detail
 
 
-    /// @brief STL-compatible allocator adapter that limits the allocations.
+    /// STL-compatible allocator adapter that fails allocations by throwing
+    /// \c std::bad_alloc if the maximum number of bytes to be allocated is exceeded
     ///
     /// @tparam Alloc underlying allocator type.
     ///
@@ -116,9 +117,7 @@ namespace bond
     ///
     /// @remarks The provided counter is used to measure allocations in bytes.
     template <typename Alloc, typename Counter>
-    class capped_allocator :
-        private detail::allocator_holder<Alloc>,
-        public detail::allocator_reference_type_workaround<Alloc>
+    class capped_allocator : private detail::allocator_holder<Alloc>
     {
         using holder = detail::allocator_holder<Alloc>;
         using traits = std::allocator_traits<Alloc>;
@@ -149,11 +148,17 @@ namespace bond
 
         /// @brief Constructs capped allocator adapter.
         ///
-        /// @param count instance of a \ref Counter, its reference or the max value to construct.
+        /// @param count counter value to use (see remarks for more details).
         ///
         /// @param alloc the base allocator instance.
         ///
         /// @param subtract_on_deallocate flag to indicate if counter must be adjusted for deallocation.
+        ///
+        /// @remarks When \ref Counter is not a reference type, then \p count can be one of
+        /// - an instance of \ref Counter in which case it will be passed by-value,
+        /// - an instance of std::ref/boost::ref of a \ref Counter in which case only a reference will be held,
+        /// - max value for the \t Counter which will be used to construct one.
+        /// When \ref Counter is a reference type, then only a reference to an existing instance can be passed.
         explicit capped_allocator(
             detail::value_or_reference<Counter> count,
             const Alloc& alloc = {},
@@ -165,20 +170,20 @@ namespace bond
 
         /// @brief Constructs capped allocator adapter.
         ///
-        /// @param counter_value max counter value.
+        /// @param max_value max counter value.
         ///
         /// @param alloc the base allocator instance.
         ///
         /// @param subtract_on_deallocate flag to indicate if counter must be adjusted for deallocation.
         ///
-        /// @remarks The overload is used when \ref Counter can be allocated using \c Alloc.
+        /// @remarks The overload is used when \ref Counter is allocator-aware.
         template <typename C = Counter,
             typename boost::enable_if<std::uses_allocator<C, Alloc>>::type* = nullptr>
         explicit capped_allocator(
-            typename C::value_type counter_value,
+            typename C::value_type max_value,
             const Alloc& alloc = {},
             bool subtract_on_deallocate = true)
-            : capped_allocator{ Counter{ counter_value, alloc }, alloc, subtract_on_deallocate }
+            : capped_allocator{ Counter{ max_value, alloc }, alloc, subtract_on_deallocate }
         {}
 
         /// @brief Converts from a compatible allocator.

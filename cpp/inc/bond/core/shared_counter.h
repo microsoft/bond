@@ -122,12 +122,11 @@ namespace bond
             /// @remarks This operator is needed because this is a polymorphic type and
             /// we are doing \c "delete this" in the base type which may call into this
             /// version if the runtime type happens to be \ref internal_counter_with_allocator.
-            static void operator delete(void* ptr)
+            static void operator delete(void* /*ptr*/)
             {
                 // This is a private type and we never allocate it with default "operator new".
                 // It is only allocated using the custom one that accepts a capped allocator.
                 BOOST_ASSERT(false);
-                ::operator delete(ptr);
             }
 
         private:
@@ -162,7 +161,7 @@ namespace bond
             /// @brief Destroys and deallocates current instance using stored allocator.
             void delete_this() override
             {
-                auto alloc = _alloc;    // Save the allocators life because we will need it later.
+                auto alloc = _alloc;    // Make a copy of the allocator so we can use it later.
                 this->~internal_counter_with_allocator();
                 operator delete(this, alloc);
             }

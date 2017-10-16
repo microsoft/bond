@@ -1,12 +1,14 @@
 #include "precompiled.h"
+#ifdef _MSC_VER
+#include "capped_allocator_tests_generated/allocator_test_reflection.h"
+#endif
 #include <bond/core/capped_allocator.h>
-#include <boost/test/unit_test.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/range/combine.hpp>
 #include <boost/range/irange.hpp>
+#include <boost/test/unit_test.hpp>
 
 #ifdef _MSC_VER
-#include "capped_allocator_tests_generated/allocator_test_reflection.h"
 #pragma warning (push)
 #pragma warning (disable: 4100)
 #endif
@@ -16,9 +18,9 @@
 #pragma warning (pop)
 #endif
 
-#include <vector>
 #include <limits>
 #include <type_traits>
+#include <vector>
 
 BOOST_AUTO_TEST_SUITE(CappedAllocatorTests)
 
@@ -355,10 +357,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(BondStructDeserializationTest, Reader, all_protoco
 
     auto expected_exception = [](const std::exception& e)
     {
-        return dynamic_cast<const std::bad_alloc*>(&e)
-            // Some STL containers may throw std::length_error while checking
-            // for space using allocator's max_size before actual allocation.
-            || dynamic_cast<const std::length_error*>(&e);
+        // Some STL containers may throw std::length_error while checking
+        // for space using allocator's max_size before actual allocation.
+        return dynamic_cast<const std::bad_alloc*>(&e) || dynamic_cast<const std::length_error*>(&e);
     };
 
     // BOOST_TEST_CONTEXT("Compile-time schema deserialize with overflow")

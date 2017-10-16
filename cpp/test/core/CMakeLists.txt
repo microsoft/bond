@@ -37,8 +37,7 @@ add_target_to_folder (core_test_common)
 add_dependencies(core_test_common
     unit_test_codegen1
     unit_test_codegen2
-    unit_test_codegen3
-    unit_test_codegen4)
+    unit_test_codegen3)
 if (MSVC)
     add_dependencies (core_test_common unit_test_codegen4)
 endif()

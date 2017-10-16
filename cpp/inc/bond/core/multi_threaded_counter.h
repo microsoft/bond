@@ -56,6 +56,7 @@ namespace bond
             _value.fetch_sub(n, std::memory_order::memory_order_relaxed);
         }
 
+        /// @remarks The returned value may not be up-to-date.
         T value() const BOND_NOEXCEPT
         {
             return _value.load(std::memory_order::memory_order_relaxed);
