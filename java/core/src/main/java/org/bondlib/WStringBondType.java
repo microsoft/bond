@@ -4,6 +4,7 @@
 package org.bondlib;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
 
 /**
  * Implements the {@link BondType} contract for the Bond "wstring" data type.
@@ -71,8 +72,8 @@ public final class WStringBondType extends PrimitiveBondType<String> {
 
     @Override
     protected final String deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
         return context.reader.readWString();
     }
 
@@ -101,5 +102,21 @@ public final class WStringBondType extends PrimitiveBondType<String> {
             Throw.raiseFieldTypeIsNotCompatibleDeserializationError(context.readFieldResult.type, field);
         }
         return context.reader.readWString();
+    }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Replaces deserialized object by the singleton instance,
+     * per {@link java.io.Serializable} specification.
+     */
+    private Object readResolve() throws ObjectStreamException {
+        return INSTANCE;
     }
 }

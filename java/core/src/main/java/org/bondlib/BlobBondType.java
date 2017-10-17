@@ -4,6 +4,7 @@
 package org.bondlib;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -108,8 +109,8 @@ public final class BlobBondType extends BondType<Blob> {
 
     @Override
     protected final Blob deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
         final int count = context.reader.readContainerBegin();
         final Blob value = new Blob(context.reader.readBytes(count));
         context.reader.readContainerEnd();
@@ -174,5 +175,21 @@ public final class BlobBondType extends BondType<Blob> {
         typeDef.id = this.getBondDataType();
         typeDef.element = BondTypes.INT8.createSchemaTypeDef(structDefMap);
         return typeDef;
+    }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Replaces deserialized object by the singleton instance,
+     * per {@link java.io.Serializable} specification.
+     */
+    private Object readResolve() throws ObjectStreamException {
+        return INSTANCE;
     }
 }

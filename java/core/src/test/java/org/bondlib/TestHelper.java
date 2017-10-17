@@ -3,9 +3,7 @@
 
 package org.bondlib;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.*;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -194,7 +192,7 @@ public final class TestHelper {
      * @param <TStruct> struct type
      * @throws IllegalAccessException if there was a reflection error
      */
-    public static <TStruct extends BondSerializable> void assertStructMemberwiseEquals(
+    public static <TStruct> void assertStructMemberwiseEquals(
             TStruct a, TStruct b) throws IllegalAccessException, IOException {
         ArgumentHelper.ensureNotNull(a, "a");
         ArgumentHelper.ensureNotNull(b, "b");
@@ -288,5 +286,37 @@ public final class TestHelper {
                 assertEquals("Values must match: " + path, a, b);
             }
         }
+    }
+
+    /**
+     * Serializes the object and deserializes and returns its deserialized version using
+     * the {@link Serializable} specification.
+     * @param inObj instance to serialized
+     * @param <T> type of serialized value
+     * @return deserialized instance
+     * @throws IOException if error occurred
+     */
+    public static <T extends Serializable> T serializeAndDeserialize(T inObj) throws IOException {
+        // serialize
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(inObj);
+        oos.close();
+        byte[] bytes = baos.toByteArray();
+
+        // deserialize
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        Object deserializedObj;
+        try {
+            deserializedObj = ois.readObject();
+        } catch (ClassNotFoundException e) {
+            fail("Should not happen (class exists): " + e);
+            deserializedObj = null;
+        }
+        ois.close();
+        @SuppressWarnings("unchecked")
+        T outObj = (T) deserializedObj;
+        return outObj;
     }
 }

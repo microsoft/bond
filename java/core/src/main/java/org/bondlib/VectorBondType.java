@@ -4,6 +4,7 @@
 package org.bondlib;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -155,8 +156,8 @@ public final class VectorBondType<TElement> extends BondType<List<TElement>> {
 
     @Override
     protected final List<TElement> deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
         final int count = context.reader.readContainerBegin();
         final List<TElement> value = newDefaultValue(count);
         final TypeDef elementType = typeDef.element;
@@ -235,5 +236,21 @@ public final class VectorBondType<TElement> extends BondType<List<TElement>> {
         typeDef.id = this.getBondDataType();
         typeDef.element = this.elementType.createSchemaTypeDef(structDefMap);
         return typeDef;
+    }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Replaces deserialized object by a shared instance from the type cache,
+     * per {@link java.io.Serializable} specification.
+     */
+    private Object readResolve() throws ObjectStreamException {
+        return getCachedType(this);
     }
 }

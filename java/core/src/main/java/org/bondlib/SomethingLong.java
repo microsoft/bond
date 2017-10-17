@@ -43,4 +43,12 @@ public final class SomethingLong extends Something<Long> {
         }
         return false;
     }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
 }

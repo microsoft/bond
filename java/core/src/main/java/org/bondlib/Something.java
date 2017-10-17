@@ -3,11 +3,13 @@
 
 package org.bondlib;
 
+import java.io.Serializable;
+
 /**
  * A generic wrapper around the value of a field defaulting to "nothing" in the Bond schema.
  * @param <T> the type of the wrapped value
  */
-public abstract class Something<T> {
+public abstract class Something<T> implements Serializable {
 
     // restrict subclasses to this package only
     Something() {
@@ -212,4 +214,12 @@ public abstract class Something<T> {
     public static double unwrap(SomethingDouble wrappedValue, double fallbackValue) {
         return wrappedValue != null ? wrappedValue.value : fallbackValue;
     }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
 }

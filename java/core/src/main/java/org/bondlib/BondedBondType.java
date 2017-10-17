@@ -6,6 +6,7 @@ package org.bondlib;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectStreamException;
 import java.util.HashMap;
 
 /**
@@ -123,8 +124,8 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
 
     @Override
     protected final Bonded<TStruct> deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
         // Bonded fields are always marshaled and prefixed with a fixed-width length.
         final int bondedLength = context.reader.readUInt32();
         final InputStream clonedInputStream = context.reader.cloneStream();
@@ -189,5 +190,21 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
         TypeDef typeDef = this.valueType.createSchemaTypeDef(structDefMap);
         typeDef.bonded_type = true;
         return typeDef;
+    }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Replaces deserialized object by a shared instance from the type cache,
+     * per {@link java.io.Serializable} specification.
+     */
+    private Object readResolve() throws ObjectStreamException {
+        return getCachedType(this);
     }
 }

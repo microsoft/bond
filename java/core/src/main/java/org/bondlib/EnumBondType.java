@@ -69,8 +69,8 @@ public abstract class EnumBondType<TEnum extends BondEnum<TEnum>> extends Primit
 
     @Override
     protected final TEnum deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
         return this.getEnumValue(context.reader.readInt32());
     }
 
@@ -107,4 +107,12 @@ public abstract class EnumBondType<TEnum extends BondEnum<TEnum>> extends Primit
         }
         return this.getEnumValue(context.reader.readInt32());
     }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
 }

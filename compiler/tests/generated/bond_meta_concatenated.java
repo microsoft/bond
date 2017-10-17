@@ -2,7 +2,7 @@
 package deprecated.bondmeta;
 
 @javax.annotation.Generated("gbc")
-public class HasMetaFields implements org.bondlib.BondSerializable {
+public class HasMetaFields implements org.bondlib.BondSerializable, java.io.Serializable {
     
     private static final class StructBondTypeImpl extends org.bondlib.StructBondType<HasMetaFields> {
         
@@ -23,9 +23,9 @@ public class HasMetaFields implements org.bondlib.BondSerializable {
             }
         }
 
-        private org.bondlib.StructBondType.StringStructField full_name;
+        private transient org.bondlib.StructBondType.StringStructField full_name;
 
-        private org.bondlib.StructBondType.StringStructField name;
+        private transient org.bondlib.StructBondType.StringStructField name;
 
         private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
@@ -120,6 +120,10 @@ public class HasMetaFields implements org.bondlib.BondSerializable {
         protected final void cloneStructFields(HasMetaFields fromValue, HasMetaFields toValue) {
             toValue.full_name = this.full_name.clone(fromValue.full_name);
             toValue.name = this.name.clone(fromValue.name);
+        }
+
+        private java.lang.Object readResolve() throws java.io.ObjectStreamException {
+            return getCachedType(this, true);
         }
     }
 

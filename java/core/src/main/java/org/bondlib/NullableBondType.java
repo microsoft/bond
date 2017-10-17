@@ -4,6 +4,7 @@
 package org.bondlib;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.util.HashMap;
 
 /**
@@ -111,7 +112,7 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
         TValue value = null;
         if (context.readContainerResult.count == 1) {
             value = this.valueType.deserializeValue(context);
-        } else if (context.readContainerResult.count > 1){
+        } else if (context.readContainerResult.count > 1) {
             // throws
             Throw.raiseNullableListValueHasMultipleElementsDeserializationError(this.getFullName());
         }
@@ -121,8 +122,8 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
 
     @Override
     protected final TValue deserializeValue(
-        UntaggedDeserializationContext context,
-        TypeDef typeDef) throws IOException {
+            UntaggedDeserializationContext context,
+            TypeDef typeDef) throws IOException {
         TValue value = null;
         final int count = context.reader.readContainerBegin();
         // If count == 0, all we need to do is return null.
@@ -197,5 +198,21 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
         typeDef.id = this.getBondDataType();
         typeDef.element = this.valueType.createSchemaTypeDef(structDefMap);
         return typeDef;
+    }
+
+    // Java built-in serialization support
+
+    /**
+     * The serialization version,
+     * per {@link java.io.Serializable} specification.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Replaces deserialized object by a shared instance from the type cache,
+     * per {@link java.io.Serializable} specification.
+     */
+    private Object readResolve() throws ObjectStreamException {
+        return getCachedType(this);
     }
 }
