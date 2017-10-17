@@ -16,7 +16,7 @@
 namespace bond
 {
 
-namespace detail {namespace mpl
+namespace detail { namespace mpl
 {
 
 template <typename T> struct
@@ -25,6 +25,12 @@ identity
     using type = T;
 };
 
+
+/// Always evaluates to false, but depends on T, so can be used when
+/// type-based always-false-ness is needed.
+template <typename T>
+struct always_false
+    : std::false_type {};
 
 /// @brief Represents a type list.
 template <typename... T> struct
@@ -115,6 +121,6 @@ inline auto try_apply(F&& f)
 }
 
 
-}} // namespace mpl {namespace detail
+}} // namespace mpl { namespace detail
 
 } // namespace bond
