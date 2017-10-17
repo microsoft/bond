@@ -19,10 +19,15 @@ final class UnsignedHelper {
     private UnsignedHelper() {
     }
 
-    private final static BigInteger TWO_TO_POWER_8 = BigInteger.valueOf(2L).pow(8);
-    private final static BigInteger TWO_TO_POWER_16 = BigInteger.valueOf(2L).pow(16);
-    private final static BigInteger TWO_TO_POWER_32 = BigInteger.valueOf(2L).pow(32);
-    private final static BigInteger TWO_TO_POWER_64 = BigInteger.valueOf(2L).pow(64);
+    private static final BigInteger TWO_TO_POWER_8 = BigInteger.valueOf(2L).pow(8);
+    private static final BigInteger TWO_TO_POWER_16 = BigInteger.valueOf(2L).pow(16);
+    private static final BigInteger TWO_TO_POWER_32 = BigInteger.valueOf(2L).pow(32);
+    private static final BigInteger TWO_TO_POWER_64 = BigInteger.valueOf(2L).pow(64);
+
+    static final short MAX_UINT8_VALUE = 255;
+    static final int MAX_UINT16_VALUE = 65535;
+    static final long MAX_UINT32_VALUE = 4294967295L;
+    static final BigInteger MAX_UINT64_VALUE = new BigInteger("18446744073709551615");
 
     /**
      * Converts an unsigned 8-bit value (represented by the signed byte data type) to a 16-bit short value.
