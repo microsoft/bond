@@ -138,6 +138,23 @@ public class Foo<T> implements org.bondlib.BondSerializable {
     }
     private final StructBondTypeImpl<T> __genericType;
 
+    
+    // Java native serialization
+    @Override
+    public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        throw new java.lang.IllegalArgumentException("java.io.Serializable support is not implemented for generic types");
+    }
+
+    @Override
+    public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+        // This may actually fail before reaching this line with an InvalidClassException because
+        // generic types don't have the nullary constructor required by the Java serialization
+        // framework.
+        throw new java.lang.IllegalArgumentException("java.io.Serializable support is not implemented for generic types");
+    }
+    // end Java native serialization
+    
+
     public java.util.List<java.util.List<T>> aa;
     
 public Foo(org.bondlib.StructBondType<Foo<T>> genericType) {
@@ -355,6 +372,38 @@ public class WrappingAnEnum implements org.bondlib.BondSerializable {
     static {
         initializeBondType();
     }
+    
+
+    
+    // Java native serialization
+    private static final long serialVersionUID = 0L;
+    private WrappingAnEnum __deserializedInstance;
+
+    @Override
+    public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        final java.io.ByteArrayOutputStream outStream = new java.io.ByteArrayOutputStream();
+        final org.bondlib.ProtocolWriter writer = new org.bondlib.CompactBinaryWriter(outStream, 2);
+        org.bondlib.Marshal.marshal(this, writer);
+
+        final byte[] marshalled = outStream.toByteArray();
+        out.writeInt(marshalled.length);
+        out.write(marshalled);
+    }
+
+    @Override
+    public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+        final int marshalledLength = in.readInt();
+        final byte[] marshalled = new byte[marshalledLength];
+        final int bytesRead = in.read(marshalled);
+
+        final java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(marshalled);
+        this.__deserializedInstance = org.bondlib.Unmarshal.unmarshal(inStream, getBondType()).deserialize();
+    }
+
+    private Object readResolve() throws java.io.ObjectStreamException {
+        return this.__deserializedInstance;
+    }
+    // end Java native serialization
     
 
     public tests.EnumToWrap aWrappedEnum;

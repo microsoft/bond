@@ -101,6 +101,38 @@ public class Foo implements org.bondlib.BondSerializable {
     
 
     
+    // Java native serialization
+    private static final long serialVersionUID = 0L;
+    private Foo __deserializedInstance;
+
+    @Override
+    public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        final java.io.ByteArrayOutputStream outStream = new java.io.ByteArrayOutputStream();
+        final org.bondlib.ProtocolWriter writer = new org.bondlib.CompactBinaryWriter(outStream, 2);
+        org.bondlib.Marshal.marshal(this, writer);
+
+        final byte[] marshalled = outStream.toByteArray();
+        out.writeInt(marshalled.length);
+        out.write(marshalled);
+    }
+
+    @Override
+    public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+        final int marshalledLength = in.readInt();
+        final byte[] marshalled = new byte[marshalledLength];
+        final int bytesRead = in.read(marshalled);
+
+        final java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(marshalled);
+        this.__deserializedInstance = org.bondlib.Unmarshal.unmarshal(inStream, getBondType()).deserialize();
+    }
+
+    private Object readResolve() throws java.io.ObjectStreamException {
+        return this.__deserializedInstance;
+    }
+    // end Java native serialization
+    
+
+    
     
     public Foo() {
         super();
@@ -352,6 +384,38 @@ public class ComplexTypes implements org.bondlib.BondSerializable {
     static {
         initializeBondType();
     }
+    
+
+    
+    // Java native serialization
+    private static final long serialVersionUID = 0L;
+    private ComplexTypes __deserializedInstance;
+
+    @Override
+    public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        final java.io.ByteArrayOutputStream outStream = new java.io.ByteArrayOutputStream();
+        final org.bondlib.ProtocolWriter writer = new org.bondlib.CompactBinaryWriter(outStream, 2);
+        org.bondlib.Marshal.marshal(this, writer);
+
+        final byte[] marshalled = outStream.toByteArray();
+        out.writeInt(marshalled.length);
+        out.write(marshalled);
+    }
+
+    @Override
+    public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+        final int marshalledLength = in.readInt();
+        final byte[] marshalled = new byte[marshalledLength];
+        final int bytesRead = in.read(marshalled);
+
+        final java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(marshalled);
+        this.__deserializedInstance = org.bondlib.Unmarshal.unmarshal(inStream, getBondType()).deserialize();
+    }
+
+    private Object readResolve() throws java.io.ObjectStreamException {
+        return this.__deserializedInstance;
+    }
+    // end Java native serialization
     
 
     public java.util.List<java.lang.Byte> li8;
