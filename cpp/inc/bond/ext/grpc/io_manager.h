@@ -31,7 +31,7 @@ namespace bond { namespace ext { namespace gRPC {
     /// %grpc::CompletionQueue
     ///
     /// All of the tags enqueued in this completion queue must inherit from
-    /// \ref io_manager_tag. If not, the behavior is undefined.
+    /// \ref detail::io_manager_tag. If not, the behavior is undefined.
     class io_manager final
     {
     public:
@@ -39,6 +39,8 @@ namespace bond { namespace ext { namespace gRPC {
         /// automatically start its polling threads.
         struct delay_start_tag final { };
 
+        /// @brief Constant to indicate that the number of threads should be
+        /// based on the hardware's available concurrency.
         static constexpr size_t USE_HARDWARE_CONC = 0;
 
         /// @brief Creates and starts and io_manager.
