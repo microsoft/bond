@@ -55,6 +55,23 @@
     </ExternalBuildDependsOn>
   </PropertyGroup>
 
+  <Choose>
+    <When Condition="'$(OS)' == 'Windows_NT'">
+      <PropertyGroup>
+        <BuildDependsOn>
+          ExternalBuild;
+        </BuildDependsOn>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <BuildDependsOn>
+          SkipExternalBuild;
+        </BuildDependsOn>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
   <Target Name="CoreExternalBuild"
           Inputs="$(ProjectDir)\..\compiler\CMakeLists.txt;@(None)"
           Outputs="$(ProjectDir)\tools\gbc.exe">
@@ -68,8 +85,12 @@
     <Copy SourceFiles="$(IntermediateOutputPath)\build\gbc\gbc.exe" DestinationFolder="$(ProjectDir)\tools\" />
   </Target>
 
-  <Target Name="ExternalBuild" DependsOnTargets="CoreExternalBuild" />
+  <Target Name="ExternalBuild" DependsOnTargets="$(ExternalBuildDependsOn)" />
 
-  <Target Name="Build" DependsOnTargets="ExternalBuild" />
+  <Target Name="SkipExternalBuild">
+    <Message Text="Skip external building because it's only for Windows" Importance="High" />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
 
 </Project>
