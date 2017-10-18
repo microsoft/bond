@@ -48,6 +48,8 @@ class thread_pool_concept
 class thread_pool : private boost::asio::io_service
 {
 public:
+    /// @brief Constant to indicate that the number of threads should be
+    /// based on the hardware's available concurrency.
     static constexpr size_t USE_HARDWARE_CONC = 0;
 
     /// @brief Constructs and starts a thread pool with the specified number of

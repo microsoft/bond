@@ -148,17 +148,25 @@ namespace bond
 
         /// @brief Constructs capped allocator adapter.
         ///
-        /// @param count counter value to use (see remarks for more details).
+        /// @param count counter value to use (see remarks for more
+        /// details).
         ///
         /// @param alloc the base allocator instance.
         ///
-        /// @param subtract_on_deallocate flag to indicate if counter must be adjusted for deallocation.
+        /// @param subtract_on_deallocate flag to indicate if counter must
+        /// be adjusted for deallocation.
         ///
-        /// @remarks When \ref Counter is not a reference type, then \p count can be one of
-        /// - an instance of \ref Counter in which case it will be passed by-value,
-        /// - an instance of std::ref/boost::ref of a \ref Counter in which case only a reference will be held,
-        /// - max value for the \t Counter which will be used to construct one.
-        /// When \ref Counter is a reference type, then only a reference to an existing instance can be passed.
+        /// @remarks When \p Counter is not a reference type, then \p count
+        /// can be one of
+        /// - an instance of \p Counter in which case it will be passed
+        ///   by-value,
+        /// - an instance of %std::ref/%boost::ref of a \p Counter in which
+        ///   case only a reference will be held,
+        /// - max value for the \p Counter which will be used to construct
+        ///   one.
+        ///
+        /// When \p Counter is a reference type, then only a reference to an
+        /// existing instance can be passed.
         explicit capped_allocator(
             detail::value_or_reference<Counter> count,
             const Alloc& alloc = {},
@@ -174,9 +182,11 @@ namespace bond
         ///
         /// @param alloc the base allocator instance.
         ///
-        /// @param subtract_on_deallocate flag to indicate if counter must be adjusted for deallocation.
+        /// @param subtract_on_deallocate flag to indicate if counter must
+        /// be adjusted for deallocation.
         ///
-        /// @remarks The overload is used when \ref Counter is allocator-aware.
+        /// @remarks The overload is used when \p Counter is
+        /// allocator-aware.
         template <typename C = Counter,
             typename boost::enable_if<std::uses_allocator<C, Alloc>>::type* = nullptr>
         explicit capped_allocator(
