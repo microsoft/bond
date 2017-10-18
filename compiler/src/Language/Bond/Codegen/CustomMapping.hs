@@ -11,11 +11,13 @@ module Language.Bond.Codegen.CustomMapping
     , parseNamespaceMapping
     ) where
 
-import Data.Char
 import Control.Applicative
-import Prelude
-import Text.Parsec hiding (many, optional, (<|>))
+import Data.Void (Void)
 import Language.Bond.Syntax.Types
+import Prelude
+import Text.Megaparsec hiding (many, optional, (<|>))
+import Text.Megaparsec.Char
+import qualified Text.Megaparsec.Char.Lexer as L
 
 -- | Specification of a fragment of type alias mappings.
 data Fragment =
@@ -34,46 +36,52 @@ data NamespaceMapping = NamespaceMapping
     , toNamespace :: QualifiedName      -- ^ namespace in the generated code
     }
 
-type Parser a = Parsec SourceName () a
+type Parser = Parsec Void String
 
-whitespace :: Parser String
-whitespace = many (char ' ') <?> "whitespace"
 identifier :: Parser String
-identifier = many1 (alphaNum <|> char '_') <?> "identifier"
+identifier = some (alphaNumChar <|> char '_') <?> "identifier"
+
 qualifiedName :: Parser [String]
 qualifiedName = sepBy1 identifier (char '.') <?> "qualified name"
+
+sc :: Parser ()
+sc = L.space space1 lineCmnt blockCmnt
+  where
+    lineCmnt  = L.skipLineComment "//"
+    blockCmnt = L.skipBlockComment "/*" "*/"
+
 symbol :: String -> Parser String
-symbol s = whitespace *> string s <* whitespace
+symbol = L.symbol sc
+
 equal :: Parser String
 equal = symbol "="
-integer :: Parser Integer
-integer = decimal <$> many1 digit <?> "decimal number"
-  where
-    decimal = foldl (\x d -> 10 * x + toInteger (digitToInt d)) 0
 
--- | Parse a type alias mapping specification used in command-line arguments of 
+integer :: Parser Integer
+integer = L.decimal
+
+-- | Parse a type alias mapping specification used in command-line arguments of
 -- <https://microsoft.github.io/bond/manual/compiler.html#command-line-options gbc>.
 --
 -- ==== __Examples__
 --
 -- > > parseAliasMapping "Example.OrderedSet=SortedSet<{0}>"
 -- > Right (AliasMapping {aliasName = ["Example","OrderedSet"], aliasTemplate = [Fragment "SortedSet<",Placeholder 0,Fragment ">"]})
-parseAliasMapping :: String -> Either ParseError AliasMapping 
-parseAliasMapping s = parse aliasMapping s s
+parseAliasMapping :: String -> Either (ParseError Char Void) AliasMapping
+parseAliasMapping s = parse aliasMapping "" s
   where
-    aliasMapping = AliasMapping <$> qualifiedName <* equal <*> many1 (placeholder <|> fragment) <* eof
+    aliasMapping = AliasMapping <$> qualifiedName <* equal <*> some (placeholder <|> fragment) <* eof
     placeholder = Placeholder <$> fromIntegral <$> between (char '{') (char '}') integer
-    fragment = Fragment <$> many1 (noneOf "{")
+    fragment = Fragment <$> some (notChar '{')
 
--- | Parse a namespace mapping specification used in command-line arguments of 
+-- | Parse a namespace mapping specification used in command-line arguments of
 -- <https://microsoft.github.io/bond/manual/compiler.html#command-line-options gbc>.
 --
 -- ==== __Examples__
 --
 -- > > parseNamespaceMapping "bond=Microsoft.Bond"
 -- > Right (NamespaceMapping {fromNamespace = ["bond"], toNamespace = ["Microsoft","Bond"]})
-parseNamespaceMapping :: String -> Either ParseError NamespaceMapping
-parseNamespaceMapping s = parse namespaceMapping s s
+parseNamespaceMapping :: String -> Either (ParseError Char Void) NamespaceMapping
+parseNamespaceMapping s = parse namespaceMapping "" s
   where
     namespaceMapping = NamespaceMapping <$> qualifiedName <* equal <*> qualifiedName
 
