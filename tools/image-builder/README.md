@@ -1,8 +1,8 @@
-# Boost Builder
+# Image Builder
 
-This directory contains the source for a docker container that will create
-binaries of a number of Boost versions for Ubuntu 14.04 (Trusty Tahr). These
-binaries are useful for regression testing across those Boost releases.
+This directory contains the source for a docker container that will be used for
+building Bond C++ which will contain binaries of a number of Boost versions for
+Ubuntu 16.04 (Xenial Xerus).
 
 # Pre-requisites
 
@@ -16,28 +16,23 @@ For deb-based distributions, docker and zsh can be installed via:
 
     $ sudo apt update && sudo apt install docker.io zsh
 
-# Building Boost binaries
+# Building the Image
 
-To create the binaries, start in the directory containing this README.
+To create the image, start in the directory containing this README.
 
-Make the docker image:
+Run the `build_image.zsh` script which will make the docker image with all
+required dependencies and will compile all required versions of Boost (using
+the `build_boosts.zsh` script) that will become part of the image:
 
-    $ docker build -t boost-builder .
+    $ ./build_image.zsh
 
-Run the image:
+The build takes about 40 minutes on a quad-core 2.4 GHz Xeon. When it finishes,
+there will be a `bond-xenial.tar.xz` archive in this directory.
 
-    $ docker run -v `pwd`/out:/boosts -t boost-builder
+# Uploading the Image
 
-The build takes about fifteen minutes on a quad-core 3.3 GHz Xeon. When it
-finishes, there will be a set of .tar.xz archives in `./out/`. Each archive
-is meant to be unzipped from your root directory and will put, e.g., boost
-1.63.0 in `/opt/boost_1_63_0`. Multiple archives can be safely extracted into
-one filesystem.
-
-# Uploading Boost binaries
-
-After the Boost archives have been created, they need to be uploaded to the
-Azure storage account that the Travis CI builds consume them from.
+After the Image archive has been created, it needs to be uploaded to the
+Azure storage account that the Travis CI builds consume from.
 
 ## Credentials
 
@@ -51,8 +46,8 @@ To get the `AZURE_STORAGE_KEY`, visit the [Azure Portal][azure-portal].
 
 ## Uploading
 
-Run `./upload_boosts.zsh` to upload the .tar.xz files produced from the
-build.
+Run `./upload_image.zsh` to upload the `bond-xenial.tar.xz` archive
+produced from the build.
 
 [azure-cli]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
 [azure-portal]: https://portal.azure.com/
