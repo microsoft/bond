@@ -872,7 +872,7 @@ public class Foo implements org.bondlib.BondSerializable {
     @Override
     public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
         final java.io.ByteArrayOutputStream outStream = new java.io.ByteArrayOutputStream();
-        final org.bondlib.ProtocolWriter writer = new org.bondlib.CompactBinaryWriter(outStream, 2);
+        final org.bondlib.ProtocolWriter writer = new org.bondlib.CompactBinaryWriter(outStream, 1);
         org.bondlib.Marshal.marshal(this, writer);
 
         final byte[] marshalled = outStream.toByteArray();
@@ -884,7 +884,7 @@ public class Foo implements org.bondlib.BondSerializable {
     public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
         final int marshalledLength = in.readInt();
         final byte[] marshalled = new byte[marshalledLength];
-        final int bytesRead = in.read(marshalled);
+        in.readFully(marshalled);
 
         final java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(marshalled);
         this.__deserializedInstance = org.bondlib.Unmarshal.unmarshal(inStream, getBondType()).deserialize();
