@@ -45,6 +45,8 @@ different versioning scheme, following the Haskell community's
   generated-type's default constructor if it is used. The default
   constructor is now a templated constructor that is invokable with zero
   arguments.)
+* Fixed some macro uses that did not have sufficient parenthesis around
+  parameters and resulted in compiler errors.
 * Provide compile-time access to metadata about gRPC services and methods.
 * Using `bond::ext::gRPC::wait_callback` no longer causes a shared_ptr cycle
   and the resulting resource leak.
