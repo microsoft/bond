@@ -50,29 +50,15 @@
   <Import Project="$(MSBuildThisFileDirectory)\build\internal\Common.Internal.targets" />
 
   <PropertyGroup>
-    <ExternalBuildDependsOn>
-      CoreExternalBuild;
-    </ExternalBuildDependsOn>
+    <BuildDependsOn Condition="'$(OS)' == 'Windows_NT'">
+      ExternalBuild
+    </BuildDependsOn>
+    <BuildDependsOn Condition="'$(OS)' != 'Windows_NT'">
+      SkipExternalBuild
+    </BuildDependsOn>
   </PropertyGroup>
 
-  <Choose>
-    <When Condition="'$(OS)' == 'Windows_NT'">
-      <PropertyGroup>
-        <BuildDependsOn>
-          ExternalBuild;
-        </BuildDependsOn>
-      </PropertyGroup>
-    </When>
-    <Otherwise>
-      <PropertyGroup>
-        <BuildDependsOn>
-          SkipExternalBuild;
-        </BuildDependsOn>
-      </PropertyGroup>
-    </Otherwise>
-  </Choose>
-
-  <Target Name="CoreExternalBuild"
+  <Target Name="ExternalBuild"
           Inputs="$(ProjectDir)\..\compiler\CMakeLists.txt;@(None)"
           Outputs="$(ProjectDir)\tools\gbc.exe">
     <Message Text="Building Bond Compiler..." Importance="High" />
@@ -85,10 +71,8 @@
     <Copy SourceFiles="$(IntermediateOutputPath)\build\gbc\gbc.exe" DestinationFolder="$(ProjectDir)\tools\" />
   </Target>
 
-  <Target Name="ExternalBuild" DependsOnTargets="$(ExternalBuildDependsOn)" />
-
   <Target Name="SkipExternalBuild">
-    <Message Text="Skip external building because it's only for Windows" Importance="High" />
+    <Message Text="Skipping external building because it's only for Windows" Importance="High" />
   </Target>
 
   <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
