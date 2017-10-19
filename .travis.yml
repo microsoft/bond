@@ -9,6 +9,8 @@ cache:
         - cs/packages
         - $HOME/.ccache
         - $HOME/.stack
+services:
+    - docker
 env:
     - FLAVOR="cs"
     - FLAVOR="cpp-core" BOOST="1.64.0"
@@ -27,36 +29,32 @@ addons:
     sources:
         - ubuntu-toolchain-r-test
     packages:
-        - g++-4.8
-        - ccache
         - wget
 
 before_install:
-    - mkdir -p ~/.local/bin
-    - export PATH=$HOME/.local/bin:$PATH
-    - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
-    # linux prereqisite packages
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then wget --no-check-certificate https://www.cmake.org/files/v3.2/cmake-3.2.3-Linux-x86_64.tar.gz; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then tar -xf cmake-3.2.3-Linux-x86_64.tar.gz; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PWD/cmake-3.2.3-Linux-x86_64/bin:$PATH; fi
-    # set defaults
-    - if [ "$CXX" == "" ]; then echo "Setting default \$CXX"; export CXX="clang++"; fi
-    - if [ "$CC" == "" ]; then echo "Setting default \$CC"; export CC="clang"; fi
-    - if [ "$BOOST" == "" ]; then echo "Setting default \$BOOST"; export BOOST=1.63.0; fi
-    # pull down our boost binaries
-    - export BOOST_ARCHIVE=boost-$BOOST.tar.xz
-    - wget https://bondboostbinaries.blob.core.windows.net/bondboostbinaries/$BOOST_ARCHIVE -O /tmp/$BOOST_ARCHIVE
-    - pushd /; sudo tar -xf /tmp/$BOOST_ARCHIVE; popd
-    - export BOOST_ROOT=/opt/boost_`echo $BOOST | tr . _`
-    # ccache splits up your C{,XX}FLAGS and makes separate preprocessor and
-    # compiler calls. It includes a few flags that aren't used by one half of
-    # the process or the other. -Qunused-arguments prevents clang from failing
-    # the build because of this.
-    - export CXX="ccache $CXX -Qunused-arguments --system-header-prefix=boost/"
-    - export CC="ccache $CC -Qunused-arguments --system-header-prefix=boost/"
-    - echo "CXX=$CXX"
-    - echo "CC=$CC"
+
+    - if [ "$FLAVOR" == "cpp-core" ]; then export CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"; fi
+    - if [ "$FLAVOR" == "cpp-comm" ]; then export CPP_CMAKE_ARGS="-DBOND_ENABLE_COMM=TRUE -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"; fi
+    - if [ "$FLAVOR" == "cpp-grpc" ]; then export CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DgRPC_ZLIB_PROVIDER=package"; fi
+
+    - if [ "$CPP_CMAKE_ARGS" != "" ]; then
+        travis_retry curl -L https://bondboostbinaries.blob.core.windows.net/bondboostbinaries/bond-xenial.tar.xz | docker load;
+      else
+        mkdir -p ~/.local/bin;
+        export PATH=$HOME/.local/bin:$PATH;
+        travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack';
+
+        export BOOST=1.63.0;
+        export BOOST_ARCHIVE=boost-$BOOST.tar.xz;
+        wget https://bondboostbinaries.blob.core.windows.net/bondboostbinaries/$BOOST_ARCHIVE -O /tmp/$BOOST_ARCHIVE;
+        pushd /; sudo tar -xf /tmp/$BOOST_ARCHIVE; popd;
+        export BOOST_ROOT=/opt/boost_`echo $BOOST | tr . _`;
+
+        export CXX="ccache clang++ -Qunused-arguments --system-header-prefix=boost/";
+        export CC="ccache clang -Qunused-arguments --system-header-prefix=boost/";
+      fi
+
     # nunit installation
     - if [ "$FLAVOR" == "cs" ]; then travis_retry nuget install NUnit.Runners -version 2.6.4; fi
 
@@ -65,23 +63,38 @@ before_script:
     - if [ "$FLAVOR" == "cs" ]; then travis_retry nuget restore cs/cs.sln; fi
 
 script:
-    - mkdir build && cd build
+    - mkdir build
 
-    - if [ "$FLAVOR" == "cs" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
-    - if [ "$FLAVOR" == "cs" ]; then make gbc; fi
-    - if [ "$FLAVOR" == "cs" ]; then make DESTDIR=$HOME install; fi
-    - if [ "$FLAVOR" == "cs" ]; then cd ..; fi
-    - if [ "$FLAVOR" == "cs" ]; then export BOND_COMPILER_PATH=$HOME/usr/local/bin; fi
-    - if [ "$FLAVOR" == "cs" ]; then xbuild /p:Configuration=Debug cs/cs.sln; fi
-    - if [ "$FLAVOR" == "cs" ]; then xbuild /p:Configuration=Fields cs/cs.sln; fi
-    - if [ "$FLAVOR" == "cs" ]; then mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll; fi
-    - if [ "$FLAVOR" == "cpp-core" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
-    - if [ "$FLAVOR" == "cpp-core" ]; then make --jobs 2 check; fi
-    - if [ "$FLAVOR" == "cpp-comm" ]; then cmake -DBOND_ENABLE_COMM=TRUE -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
-    - if [ "$FLAVOR" == "cpp-comm" ]; then make --jobs 2 check; fi
-    - if [ "$FLAVOR" == "cpp-grpc" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DgRPC_ZLIB_PROVIDER=package ..; fi
-    - if [ "$FLAVOR" == "cpp-grpc" ]; then make --jobs 2 check; fi
-    - if [ "$FLAVOR" == "hs" ]; then cmake -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
-    - if [ "$FLAVOR" == "hs" ]; then make gbc-tests; fi
-    - if [ "$FLAVOR" == "hs" ]; then cd ../compiler; fi
-    - if [ "$FLAVOR" == "hs" ]; then ../build/compiler/build/gbc-tests/gbc-tests; fi
+    - if [ "$CPP_CMAKE_ARGS" != "" ]; then
+        docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond -i bond-xenial sh -c "
+            mkdir -p $HOME;
+            ln -s /root/.ccache $HOME/.ccache;
+            ln -s /root/.stack $HOME/.stack;
+            export BOOST_ROOT=/root/boosts/boost_`echo $BOOST | tr . _`;
+            export CXX='ccache clang++ -Qunused-arguments --system-header-prefix=boost/';
+            export CC='ccache clang -Qunused-arguments --system-header-prefix=boost/';
+            cd /root/bond/build;
+            cmake $CPP_CMAKE_ARGS ..;
+            make --jobs 2 check;
+            ";
+      else
+        cd build;
+      fi
+
+    - if [ "$FLAVOR" == "cs" ]; then
+        cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..;
+        make gbc;
+        make DESTDIR=$HOME install;
+        cd ..;
+        export BOND_COMPILER_PATH=$HOME/usr/local/bin;
+        xbuild /p:Configuration=Debug cs/cs.sln;
+        xbuild /p:Configuration=Fields cs/cs.sln;
+        mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll;
+      fi
+
+    - if [ "$FLAVOR" == "hs" ]; then
+        cmake -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..;
+        make gbc-tests;
+        cd ../compiler;
+        ../build/compiler/build/gbc-tests/gbc-tests;
+      fi
