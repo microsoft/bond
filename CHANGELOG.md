@@ -40,12 +40,21 @@ different versioning scheme, following the Haskell community's
 * Use RapidJSON's iterative parser to handle deeply nested JSON data without
   causing a stack overflow.
 * Guard against min/max being function-style macros in more places.
+* Allow Bond-generated C++ types to use non-default-constructable
+  allocators. (This works even on MSVC 2013 by only compiling the
+  generated-type's default constructor if it is used. The default
+  constructor is now a templated constructor that is invokable with zero
+  arguments.)
+* Fixed some macro uses that did not have sufficient parenthesis around
+  parameters and resulted in compiler errors.
 * Provide compile-time access to metadata about gRPC services and methods.
 * Using `bond::ext::gRPC::wait_callback` no longer causes a shared_ptr cycle
   and the resulting resource leak.
 * Ensure that `bond_grpc.h` and `bond_const_grpc.h` are generated when the
   CMake variable BOND_ENABLE_GRPC is set to that importing `bond.bond` and
   `bond_const.bond` when defining a service works.
+* Added `bond::capped_allocator` adapter that will allow to limit the max
+  number of bytes to allocate during deserialization.
 
 ### C# ###
 
@@ -70,6 +79,7 @@ different versioning scheme, following the Haskell community's
   [Issue #623](https://github.com/Microsoft/bond/issues/623)
 * When targeting .NET 4.5, avoid resolving external entities when using
   `SimpleXmlReader`.
+* Remove redundant conversions during serialization of aliased blobs.
 
 [msdn-gzipstream]: https://msdn.microsoft.com/en-us/library/system.io.compression.gzipstream(v=vs.110).aspx
 [msdn-stream-canseek]: https://msdn.microsoft.com/en-us/library/system.io.stream.canseek(v=vs.110).aspx

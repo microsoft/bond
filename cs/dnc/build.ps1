@@ -94,7 +94,7 @@ try
     $script:script_dir = Split-Path -LiteralPath $PSCommandPath
     Push-Location -Path (Split-Path -LiteralPath $PSCommandPath) -StackName bond_dnc_build
 
-    msbuild $script:msb_common /p:Configuration=$Configuration /p:Platform=Win32 '..\Compiler.vcxproj'
+    msbuild $script:msb_common /p:Configuration=$Configuration /p:Platform=Win32 '..\Compiler.csproj'
     if (-not $?) {
         throw "Building GBC failed."
     }

@@ -36,7 +36,9 @@ namespace tests
         float _float;
         ::bond::blob _blob;
         
-        BasicTypes()
+        struct _bond_vc12_ctor_workaround_ {};
+        template <int = 0> // Workaround to avoid compilation if not used
+        BasicTypes(_bond_vc12_ctor_workaround_ = {})
           : _bool(),
             _uint64(),
             _uint16(),

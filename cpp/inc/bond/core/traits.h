@@ -4,8 +4,9 @@
 #pragma once
 
 #include "config.h"
-#include "scalar_interface.h"
 #include "bond_fwd.h"
+#include "detail/mpl.h"
+#include "scalar_interface.h"
 #include <boost/type_traits/has_nothrow_copy.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/static_assert.hpp>
@@ -21,6 +22,8 @@
 #ifndef BOND_NO_CXX11_ALLOCATOR
 #include <memory>
 #endif
+
+#include <utility>
 
 namespace bond
 {
@@ -193,7 +196,9 @@ is_reader<Input, T, typename boost::enable_if<is_class<typename Input::Parser> >
 template <typename T> struct
 buffer_magic
 {
-    BOOST_STATIC_ASSERT_MSG(!is_same<T, T>::value, "Undefined buffer.");
+    BOOST_STATIC_ASSERT_MSG(
+        detail::mpl::always_false<T>::value,
+        "buffer_magic is undefined for this buffer. Make sure buffer_magic is specialized for this buffer type.");
 };
 
 template <typename T> struct
