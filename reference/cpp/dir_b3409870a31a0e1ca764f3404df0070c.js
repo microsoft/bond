@@ -3,7 +3,6 @@ var dir_b3409870a31a0e1ca764f3404df0070c =
     [ "any.h", "any_8h_source.html", null ],
     [ "checked_add.h", "checked__add_8h_source.html", null ],
     [ "cmdargs.h", "detail_2cmdargs_8h_source.html", null ],
-    [ "counter_base.h", "counter__base_8h_source.html", null ],
     [ "debug.h", "debug_8h_source.html", null ],
     [ "double_pass.h", "double__pass_8h_source.html", null ],
     [ "inheritance.h", "inheritance_8h_source.html", null ],
@@ -22,6 +21,5 @@ var dir_b3409870a31a0e1ca764f3404df0070c =
     [ "tuple_fields.h", "tuple__fields_8h_source.html", null ],
     [ "typeid_value.h", "typeid__value_8h_source.html", null ],
     [ "validate.h", "detail_2validate_8h_source.html", null ],
-    [ "value_or_reference.h", "value__or__reference_8h_source.html", null ],
     [ "visit_any.h", "visit__any_8h_source.html", null ]
 ];
