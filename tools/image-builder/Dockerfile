@@ -1,5 +1,7 @@
 FROM ubuntu:16.04
 
+VOLUME /root/.ccache /root/.stack /root/bond
+
 RUN apt-get update && \
     apt-get -y install \
     build-essential \
@@ -16,5 +18,3 @@ RUN apt-get update && \
 ADD build_boosts.zsh /root/
 
 RUN ["zsh", "/root/build_boosts.zsh"]
-
-VOLUME /root/.ccache /root/.stack /root/bond

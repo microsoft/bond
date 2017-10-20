@@ -36,10 +36,10 @@ Azure storage account that the Travis CI builds consume from.
 
 ## Credentials
 
-Ensure the file `~/.azure/bondboostbinaries.sh` has the current Azure
-storage account details:
+Ensure the file `~/.azure/bondbinaries.sh` has the current Azure storage
+account details:
 
-    export AZURE_STORAGE_ACCOUNT="bondboostbinaries"
+    export AZURE_STORAGE_ACCOUNT="bondbinaries"
     export AZURE_STORAGE_KEY="..."
 
 To get the `AZURE_STORAGE_KEY`, visit the [Azure Portal][azure-portal].

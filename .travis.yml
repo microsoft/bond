@@ -38,8 +38,8 @@ before_install:
     - if [ "$FLAVOR" == "cpp-comm" ]; then export CPP_CMAKE_ARGS="-DBOND_ENABLE_COMM=TRUE -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"; fi
     - if [ "$FLAVOR" == "cpp-grpc" ]; then export CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DgRPC_ZLIB_PROVIDER=package"; fi
 
-    - if [ "$CPP_CMAKE_ARGS" != "" ]; then
-        travis_retry curl -L https://bondboostbinaries.blob.core.windows.net/bondboostbinaries/bond-xenial.tar.xz | docker load;
+    - if [[ "$FLAVOR" == cpp-* ]]; then
+        travis_retry curl -L https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial.tar.xz | timer docker load;
       else
         mkdir -p ~/.local/bin;
         export PATH=$HOME/.local/bin:$PATH;
@@ -65,12 +65,12 @@ before_script:
 script:
     - mkdir build
 
-    - if [ "$CPP_CMAKE_ARGS" != "" ]; then
+    - if [[ "$FLAVOR" == cpp-* ]]; then
         docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond -i bond-xenial sh -c "
             mkdir -p $HOME;
             ln -s /root/.ccache $HOME/.ccache;
             ln -s /root/.stack $HOME/.stack;
-            export BOOST_ROOT=/root/boosts/boost_`echo $BOOST | tr . _`;
+            export BOOST_ROOT=/opt/boosts/boost_`echo $BOOST | tr . _`;
             export CXX='ccache clang++ -Qunused-arguments --system-header-prefix=boost/';
             export CC='ccache clang -Qunused-arguments --system-header-prefix=boost/';
             cd /root/bond/build;
