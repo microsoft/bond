@@ -39,7 +39,7 @@ before_install:
     - if [ "$FLAVOR" == "cpp-grpc" ]; then export CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DgRPC_ZLIB_PROVIDER=package"; fi
 
     - if [[ "$FLAVOR" == cpp-* ]]; then
-        travis_retry curl -L https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial.tar.xz | timer docker load;
+        travis_retry curl -L https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial.tar.xz | time docker load;
       else
         mkdir -p ~/.local/bin;
         export PATH=$HOME/.local/bin:$PATH;
