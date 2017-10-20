@@ -11,12 +11,13 @@
 #include <boost/static_assert.hpp>
 #include <initializer_list>
 #include <type_traits>
+#include <utility>
 
 
 namespace bond
 {
 
-namespace detail {namespace mpl
+namespace detail { namespace mpl
 {
 
 template <typename T> struct
@@ -25,6 +26,12 @@ identity
     using type = T;
 };
 
+
+/// Always evaluates to false, but depends on T, so can be used when
+/// type-based always-false-ness is needed.
+template <typename T>
+struct always_false
+    : std::false_type {};
 
 /// @brief Represents a type list.
 template <typename... T> struct
@@ -109,12 +116,12 @@ inline auto try_apply(F&& f)
     -> decltype(try_apply(std::forward<F>(f), List{}))
 #endif
 {
-    BOOST_STATIC_ASSERT(!std::is_same<List, list<> >::value);
+    BOOST_STATIC_ASSERT((!std::is_same<List, list<> >::value));
 
     return try_apply(std::forward<F>(f), List{});
 }
 
 
-}} // namespace mpl {namespace detail
+}} // namespace mpl { namespace detail
 
 } // namespace bond

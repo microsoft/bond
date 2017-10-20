@@ -87,8 +87,8 @@ script:
         make DESTDIR=$HOME install;
         cd ..;
         export BOND_COMPILER_PATH=$HOME/usr/local/bin;
-        xbuild /p:Configuration=Debug cs/cs.sln;
-        xbuild /p:Configuration=Fields cs/cs.sln;
+        msbuild /p:Configuration=Debug cs/cs.sln;
+        msbuild /p:Configuration=Fields cs/cs.sln;
         mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll;
       fi
 

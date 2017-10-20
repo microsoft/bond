@@ -94,7 +94,7 @@ struct NumericConverterFail
     template <typename Num2>
     void operator()(const Num2&)
     {
-        BOOST_STATIC_ASSERT(!(bond::is_matching_basic<Num1, Num2>::value));
+        BOOST_STATIC_ASSERT((!bond::is_matching_basic<Num1, Num2>::value));
         BOOST_STATIC_ASSERT(boost::is_arithmetic<Num1>::value || boost::is_enum<Num1>::value);
         BOOST_STATIC_ASSERT(boost::is_arithmetic<Num2>::value || boost::is_enum<Num2>::value);
 
