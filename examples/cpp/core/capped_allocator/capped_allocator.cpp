@@ -36,7 +36,7 @@ bond::blob SerializeStruct(const Struct& obj)
 
 int main()
 {
-	bond::CompactBinaryReader<bond::InputBuffer> reader{
+    bond::CompactBinaryReader<bond::InputBuffer> reader{
         SerializeStruct(PopulateStruct()) };
 
     // Limit the allowed memory allocations to 100 bytes.
