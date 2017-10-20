@@ -1,8 +1,7 @@
 # Image Builder
 
-This directory contains the source for a docker container that will be used for
-building Bond C++ which will contain binaries of a number of Boost versions for
-Ubuntu 16.04 (Xenial Xerus).
+This directory contains the source for a docker container that is used for building Bond
+C++. It contains binaries of a number of Boost versions for Ubuntu 16.04 (Xenial Xerus).
 
 # Pre-requisites
 
@@ -31,8 +30,8 @@ there will be a `bond-xenial.tar.xz` archive in this directory.
 
 # Uploading the Image
 
-After the Image archive has been created, it needs to be uploaded to the
-Azure storage account that the Travis CI builds consume from.
+After the image archive has been created, it needs to be uploaded to the
+Azure storage account that the Travis CI builds use.
 
 ## Credentials
 

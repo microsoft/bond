@@ -77,11 +77,10 @@ script:
             cmake $CPP_CMAKE_ARGS ..;
             make --jobs 2 check;
             ";
-      else
-        cd build;
       fi
 
     - if [ "$FLAVOR" == "cs" ]; then
+        cd build;
         cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..;
         make gbc;
         make DESTDIR=$HOME install;
@@ -93,6 +92,7 @@ script:
       fi
 
     - if [ "$FLAVOR" == "hs" ]; then
+        cd build;
         cmake -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..;
         make gbc-tests;
         cd ../compiler;
