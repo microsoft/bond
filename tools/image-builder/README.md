@@ -26,7 +26,7 @@ the `build_boosts.zsh` script) that will become part of the image:
 
     $ ./build_image.zsh
 
-The build takes about 40 minutes on a quad-core 2.4 GHz Xeon. When it finishes,
+The build takes about 50 minutes on a quad-core 2.4 GHz Xeon. When it finishes,
 there will be a `bond-xenial.tar.xz` archive in this directory.
 
 # Uploading the Image
