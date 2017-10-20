@@ -90,7 +90,7 @@ add_bond_codegen (TARGET unit_test_codegen4
     OPTIONS
         --using=\"Vector=std::vector<{0}, bond::capped_allocator<std::allocator<{0}> > >\"
         --header=\"<bond/core/capped_allocator.h>\"
-        --allocator=\"bond::capped_allocator<std::allocator<char> >\"
+        --allocator=\"bond::capped_allocator<>\"
         --namespace=\"allocator_test=capped_allocator_tests\")
 endif()
 

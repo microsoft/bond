@@ -34,7 +34,7 @@ using thread_safe_counter_types = boost::mpl::list<
     bond::multi_threaded_counter<>,
     bond::shared_counter<bond::multi_threaded_counter<>>>;
 
-template <typename T = void>
+template <typename T = char>
 struct allocator_with_state : std::allocator<T>
 {
     template <typename U>
@@ -242,12 +242,12 @@ BOOST_AUTO_TEST_CASE(AllocatorAwareCounterTest)
     {
         using value_type = int;
 
-        using allocator_type = std::allocator<void>;
+        using allocator_type = std::allocator<char>;
 
         explicit counter_mock(int)
         {}
 
-        counter_mock(int x, const std::allocator<void>&)
+        counter_mock(int x, const std::allocator<char>&)
         {
             allocate_call_args.push_back(x);
         }
@@ -256,20 +256,20 @@ BOOST_AUTO_TEST_CASE(AllocatorAwareCounterTest)
 
     // BOOST_TEST_CONTEXT("Counter passed by value")
     {
-        bond::capped_allocator<std::allocator<void>, counter_mock> alloc{ counter_mock{ 10 } };
+        bond::capped_allocator<std::allocator<char>, counter_mock> alloc{ counter_mock{ 10 } };
         BOOST_CHECK(allocate_call_args.empty());
     }
 
     // BOOST_TEST_CONTEXT("Counter passed by reference")
     {
         counter_mock counter{ 20 };
-        bond::capped_allocator<std::allocator<void>, counter_mock> alloc{ std::ref(counter) };
+        bond::capped_allocator<std::allocator<char>, counter_mock> alloc{ std::ref(counter) };
         BOOST_CHECK(allocate_call_args.empty());
     }
 
     // BOOST_TEST_CONTEXT("Counter emplacement")
     {
-        bond::capped_allocator<std::allocator<void>, counter_mock> alloc{ 30 };
+        bond::capped_allocator<std::allocator<char>, counter_mock> alloc{ 30 };
         BOOST_REQUIRE_EQUAL(allocate_call_args.size(), 1u);
         BOOST_CHECK_EQUAL(allocate_call_args.front(), 30);
     }

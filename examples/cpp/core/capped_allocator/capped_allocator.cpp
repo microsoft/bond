@@ -3,6 +3,8 @@
 #include <bond/core/bond.h>
 #include <bond/stream/output_buffer.h>
 
+#include <cassert>
+
 using namespace examples::capped_allocator;
 
 
@@ -44,6 +46,12 @@ int main()
     try
     {
         Deserialize(reader, obj);
+        assert(false);
+    }
+    catch (const std::length_error&)
+    {
+        // Some containers throw std::length_error when checking
+        // for allocator's max_size prior to actual allocation.
     }
     catch (const std::bad_alloc&)
     {

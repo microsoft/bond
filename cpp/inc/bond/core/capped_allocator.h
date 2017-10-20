@@ -28,12 +28,12 @@ namespace bond
                 : Alloc{ alloc }
             {}
 
-            const Alloc& get() const
+            const Alloc& get() const BOND_NOEXCEPT
             {
                 return *this;
             }
 
-            Alloc& get()
+            Alloc& get() BOND_NOEXCEPT
             {
                 return *this;
             }
@@ -53,12 +53,12 @@ namespace bond
                 : _alloc{ alloc }
             {}
 
-            const Alloc& get() const
+            const Alloc& get() const BOND_NOEXCEPT
             {
                 return _alloc;
             }
 
-            Alloc& get()
+            Alloc& get() BOND_NOEXCEPT
             {
                 return _alloc;
             }

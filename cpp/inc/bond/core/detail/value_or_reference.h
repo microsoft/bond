@@ -25,12 +25,12 @@ namespace detail
               _ref{ *_value }
         {}
 
-        value_or_reference(std::reference_wrapper<T> ref)
+        value_or_reference(std::reference_wrapper<T> ref) BOND_NOEXCEPT
             : _value{},
               _ref{ ref.get() }
         {}
 
-        value_or_reference(boost::reference_wrapper<T> ref)
+        value_or_reference(boost::reference_wrapper<T> ref) BOND_NOEXCEPT
             : _value{},
               _ref{ ref.get() }
         {}
@@ -47,7 +47,7 @@ namespace detail
             return *this;
         }
 
-        T& get() const
+        T& get() const BOND_NOEXCEPT
         {
             return _ref;
         }
@@ -65,19 +65,19 @@ namespace detail
     class value_or_reference<T&>
     {
     public:
-        value_or_reference(T& value)
+        value_or_reference(T& value) BOND_NOEXCEPT
             : _ref{ value }
         {}
 
-        value_or_reference(std::reference_wrapper<T> ref)
+        value_or_reference(std::reference_wrapper<T> ref) BOND_NOEXCEPT
             : value_or_reference{ ref.get() }
         {}
 
-        value_or_reference(boost::reference_wrapper<T> ref)
+        value_or_reference(boost::reference_wrapper<T> ref) BOND_NOEXCEPT
             : value_or_reference{ ref.get() }
         {}
 
-        T& get() const
+        T& get() const BOND_NOEXCEPT
         {
             return _ref;
         }

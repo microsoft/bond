@@ -18,7 +18,7 @@ namespace bond
     class shared_counter;
 
     template <
-        typename Alloc,
+        typename Alloc = std::allocator<char>,
         typename Counter = shared_counter<
             multi_threaded_counter<typename std::allocator_traits<Alloc>::size_type>>>
     class capped_allocator;
