@@ -53,6 +53,8 @@ different versioning scheme, following the Haskell community's
 * Ensure that `bond_grpc.h` and `bond_const_grpc.h` are generated when the
   CMake variable BOND_ENABLE_GRPC is set to that importing `bond.bond` and
   `bond_const.bond` when defining a service works.
+* Added `bond::capped_allocator` adapter that will allow to limit the max
+  number of bytes to allocate during deserialization.
 
 ### C# ###
 
