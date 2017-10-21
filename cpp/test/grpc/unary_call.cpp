@@ -4,6 +4,7 @@
 #include <bond/core/bond.h>
 #include <bond/core/bond_reflection.h>
 #include <bond/core/bonded.h>
+#include <bond/ext/grpc/shared_unary_call.h>
 #include <bond/ext/grpc/unary_call.h>
 
 #include <boost/static_assert.hpp>
