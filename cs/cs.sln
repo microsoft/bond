@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{62
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4268A1D3-AF40-4120-B021-D95A0F754221}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Compiler", "Compiler.csproj", "{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler", "Compiler.csproj", "{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compat", "test\compat\core\Compat.csproj", "{01302DFD-8DB9-4204-AAA5-1AA0EBC52749}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -64,6 +64,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blob", "..\examples\cs\core
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cloning", "..\examples\cs\core\cloning\cloning.csproj", "{B700FD1B-66B7-4A70-9067-CB214CC4ECCE}"
 	ProjectSection(ProjectDependencies) = postProject
+		{2E6E238C-9017-445C-9611-66DA780609BE} = {2E6E238C-9017-445C-9611-66DA780609BE}
 		{43CBBA9B-C4BC-4E64-8733-7B72562D2E91} = {43CBBA9B-C4BC-4E64-8733-7B72562D2E91}
 	EndProjectSection
 EndProject
@@ -385,21 +386,24 @@ Global
 		{C001C79F-D289-4CF3-BB59-5F5A72F70D0E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C001C79F-D289-4CF3-BB59-5F5A72F70D0E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C001C79F-D289-4CF3-BB59-5F5A72F70D0E}.Release|Win32.ActiveCfg = Release|Any CPU
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Debug|Win32.ActiveCfg = Debug|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Debug|Win32.Build.0 = Debug|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Fields|Any CPU.ActiveCfg = Debug|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Fields|Mixed Platforms.ActiveCfg = Debug|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Fields|Mixed Platforms.Build.0 = Debug|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Fields|Win32.ActiveCfg = Release|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Fields|Win32.Build.0 = Release|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Release|Any CPU.ActiveCfg = Release|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Release|Win32.ActiveCfg = Release|Win32
-		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Release|Win32.Build.0 = Release|Win32
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Debug|Win32.Build.0 = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Fields|Any CPU.ActiveCfg = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Fields|Any CPU.Build.0 = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Fields|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Fields|Mixed Platforms.Build.0 = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Fields|Win32.ActiveCfg = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Fields|Win32.Build.0 = Debug|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Release|Win32.ActiveCfg = Release|Any CPU
+		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}.Release|Win32.Build.0 = Release|Any CPU
 		{01302DFD-8DB9-4204-AAA5-1AA0EBC52749}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{01302DFD-8DB9-4204-AAA5-1AA0EBC52749}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01302DFD-8DB9-4204-AAA5-1AA0EBC52749}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
