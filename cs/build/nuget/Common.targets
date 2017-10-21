@@ -8,19 +8,20 @@
 *     $BOND_COMPILER_PATH  : Path to directory containing gbc.exe
 *
 *   User-Defines:
-*     @BondCodegen         : A bond idl file (usually with a .bond extension) to compile
+*     @BondCodegen         : A Bond IDL file (usually with a .bond extension) to compile
 *       %Options           : Any gbc options unique to this file (prefer $BondOptions than per-file)
 *     @BondImportDirectory : Directory for other schemas imported within a .bond file
 *     $BondOutputDirectory : Output directory for the generated files, by default IntermediateOutputPath
 *     $BondOptions         : Additional options to pass to the gbc generator
 *     $BondCodegenMode     : Code generation mode for gbc.exe to use (default c#)
 *
+*   These targets understand the structs/grpc switches that can be passed
+*   to gbc and adjust the files that are added to the Compile item as
+*   needed.
 -->
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- A set of properties that users of these targets can use to control whether proxies, services,
-       and types are included in compilation. The default for all is false, as including them via
-       these targets breaks ReSharper. -->
+  <!-- Set sensible defaults. -->
   <PropertyGroup>
     <BondOptions Condition=" '$(BondOptions)' == '' "></BondOptions>
     <BondOutputDirectory Condition=" '$(BondOutputDirectory)' == '' ">$(IntermediateOutputPath)</BondOutputDirectory>
@@ -72,7 +73,7 @@
        BondCodegen item. -->
   <Target Name="BondCodegenCs"
           Inputs="$(_PreExistingBondExe);@(BondCodegen)"
-          Outputs="$(BondOutputDirectory)\bondcodegen.done;@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_types.cs')"
+          Outputs="$(BondOutputDirectory)\bondcodegen.done"
           BeforeTargets="CoreCompile"
           Condition="'@(BondCodegen)' != ''">
 
@@ -115,31 +116,50 @@
 
   <!--
     * BondCompileCs - whether or not we are rebuilding bond sources, we still need them compiled,
-    *                      so this target should always run.
+    *                 so this target should always run.
   -->
   <Target Name="BondCompileCs"
           BeforeTargets="CoreCompile"
           Condition="'@(BondCodegen)' != ''">
 
     <ItemGroup>
-      <_BondGeneratedFiles Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_types.cs')">
+      <_BondGen_Structs_BondOptions
+          Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_types.cs')"
+          Condition="'%(BondCodegen.Options)' == ''
+                     AND !$(BondOptions.Contains('--structs=false'))">
         <AutoGen>true</AutoGen>
         <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
-      </_BondGeneratedFiles>
+      </_BondGen_Structs_BondOptions>
 
-      <_BondGeneratedFiles Include="@(_BondCodegenWithDefaultOptions -> '$(BondOutputDirectory)\%(FileName)_grpc.cs')"
-                           Condition="$(BondOptions.Contains('--grpc')) AND !$(BondOptions.Contains('--grpc=false'))">
+      <_BondGen_Structs_Options
+          Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_types.cs')"
+          Condition="'%(BondCodegen.Options)' != ''
+                     AND !$([System.String]::new('%(BondCodegen.Options)').Contains('--structs=false'))">
         <AutoGen>true</AutoGen>
         <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
-      </_BondGeneratedFiles>
+      </_BondGen_Structs_Options>
 
-      <_BondGeneratedFiles Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_grpc.cs')"
-                           Condition="$([System.String]::new('%(BondCodegen.Options)').Contains('--grpc')) AND !$([System.String]::new('%(BondCodegen.Options)').Contains('--grpc=false'))">
+      <_BondGen_Grpc_BondOptions
+          Include="@(_BondCodegenWithDefaultOptions -> '$(BondOutputDirectory)\%(FileName)_grpc.cs')"
+          Condition="$(BondOptions.Contains('--grpc'))
+                     AND !$(BondOptions.Contains('--grpc=false'))">
         <AutoGen>true</AutoGen>
         <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
-      </_BondGeneratedFiles>
+      </_BondGen_Grpc_BondOptions>
 
-      <_BondGeneratedFileNames Include="@(_BondGeneratedFiles)"/>
+      <_BondGen_Grpc_Options
+          Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_grpc.cs')"
+          Condition="$([System.String]::new('%(BondCodegen.Options)').Contains('--grpc'))
+                     AND !$([System.String]::new('%(BondCodegen.Options)').Contains('--grpc=false'))">
+        <AutoGen>true</AutoGen>
+        <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
+      </_BondGen_Grpc_Options>
+
+      <_BondGeneratedFileNames
+          Include="@(_BondGen_Structs_BondOptions);
+                   @(_BondGen_Structs_Options);
+                   @(_BondGen_Grpc_BondOptions);
+                   @(_BondGen_Grpc_Options)" />
       <Compile Include="@(_BondGeneratedFileNames)" />
 
       <!--

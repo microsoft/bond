@@ -64,16 +64,17 @@ different versioning scheme, following the Haskell community's
 
 * **Breaking change** The code generation MSBuild targets no longer support
   Mono's xbuild: only MSBuild is supported. Mono has
-  [deprecated xbuild in favor MSBuild](http://www.mono-project.com/docs/about-mono/releases/5.0.0/#msbuild)
+  [deprecated xbuild in favor of MSBuild](http://www.mono-project.com/docs/about-mono/releases/5.0.0/#msbuild)
   now that
   [MSBuild is open source and cross-platform](https://github.com/Microsoft/msbuild).
-  These are the MSBuild targets that run `gbc` on `BondCodegen` items.
 * **Breaking change** The code generation MSBuild targets now automatically
   compile the generated `_grpc.cs` files if `--grpc` is passed to `gbc`.
   Explicit `<Compile Include="$(IntermediateOutputPath)foo_grpc.cs" />`
   lines in MSBuild projects will need to be removed to fix error MSB3105
   about duplicate items. See commit TBD for an example of how to fix this.
   [Issue #448](https://github.com/Microsoft/bond/issues/448)
+* The code generation MSBuild targets will now skip compiling the
+  `_types.cs` files when `--structs=false` is passed to `gbc`.
 * Added `Bond.Box.Create` helper method to create `Bond.Box<T>` instances.
 * Reflection.IsBonded now recognizes custom IBonded implementations.
 * Use Newtonsoft's JSON.NET BigInteger support -- when available -- to
