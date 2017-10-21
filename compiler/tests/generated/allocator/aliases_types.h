@@ -24,7 +24,9 @@ namespace tests
     {
         std::vector<std::vector<T, typename arena::rebind<T>::other>, typename arena::rebind<std::vector<T, typename arena::rebind<T>::other> >::other> aa;
         
-        Foo()
+        struct _bond_vc12_ctor_workaround_ {};
+        template <int = 0> // Workaround to avoid compilation if not used
+        Foo(_bond_vc12_ctor_workaround_ = {})
         {
         }
 

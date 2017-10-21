@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{62
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4268A1D3-AF40-4120-B021-D95A0F754221}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Compiler", "Compiler.vcxproj", "{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Compiler", "Compiler.csproj", "{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compat", "test\compat\core\Compat.csproj", "{01302DFD-8DB9-4204-AAA5-1AA0EBC52749}"
 	ProjectSection(ProjectDependencies) = postProject

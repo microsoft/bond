@@ -25,7 +25,9 @@ namespace tests
         T2 t2;
         ::bond::nullable< ::tests::Foo<T1, bool>, arena> n;
         
-        Foo()
+        struct _bond_vc12_ctor_workaround_ {};
+        template <int = 0> // Workaround to avoid compilation if not used
+        Foo(_bond_vc12_ctor_workaround_ = {})
           : t2()
         {
         }

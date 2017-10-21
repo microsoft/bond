@@ -115,7 +115,8 @@ namespace Bond.Expressions
                 new UntaggedParser<R>(this, schema.GetElementSchema()),
                 Expression.Constant(schema.TypeDef.element.id),
                 Expression.GreaterThan(Expression.PostDecrementAssign(count), Expression.Constant(0)),
-                count);
+                count,
+                null);
 
             return Expression.Block(
                 new[] { count },
@@ -207,13 +208,13 @@ namespace Bond.Expressions
 
         Expression SkipSet()
         {
-            return Container(null, (valueParser, elementType, next, count) =>
+            return Container(null, (valueParser, elementType, next, count, arraySegment) =>
                 ControlExpression.While(next, valueParser.Skip(elementType)));
         }
 
         Expression SkipList()
         {
-            return Container(null, (valueParser, elementType, next, count) =>
+            return Container(null, (valueParser, elementType, next, count, arraySegment) =>
             {
                 Debug.Assert(elementType is ConstantExpression);
                 var elementDataType = (BondDataType)(elementType as ConstantExpression).Value;
