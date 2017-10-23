@@ -465,142 +465,142 @@ public:
 
             this->queue_receive(
                 0,
-                &_rd_foo11->_receivedCall->_context,
-                &_rd_foo11->_receivedCall->_request,
-                &_rd_foo11->_receivedCall->_responder,
+                &_rd_foo11->_receivedCall->context(),
+                &_rd_foo11->_receivedCall->request(),
+                &_rd_foo11->_receivedCall->responder(),
                 cq0,
                 &_rd_foo11.get());
             this->queue_receive(
                 1,
-                &_rd_foo12->_receivedCall->_context,
-                &_rd_foo12->_receivedCall->_request,
-                &_rd_foo12->_receivedCall->_responder,
+                &_rd_foo12->_receivedCall->context(),
+                &_rd_foo12->_receivedCall->request(),
+                &_rd_foo12->_receivedCall->responder(),
                 cq0,
                 &_rd_foo12.get());
             this->queue_receive(
                 2,
-                &_rd_foo12_impl->_receivedCall->_context,
-                &_rd_foo12_impl->_receivedCall->_request,
-                &_rd_foo12_impl->_receivedCall->_responder,
+                &_rd_foo12_impl->_receivedCall->context(),
+                &_rd_foo12_impl->_receivedCall->request(),
+                &_rd_foo12_impl->_receivedCall->responder(),
                 cq0,
                 &_rd_foo12_impl.get());
             this->queue_receive(
                 3,
-                &_rd_foo13->_receivedCall->_context,
-                &_rd_foo13->_receivedCall->_request,
-                &_rd_foo13->_receivedCall->_responder,
+                &_rd_foo13->_receivedCall->context(),
+                &_rd_foo13->_receivedCall->request(),
+                &_rd_foo13->_receivedCall->responder(),
                 cq0,
                 &_rd_foo13.get());
             this->queue_receive(
                 4,
-                &_rd_foo14->_receivedCall->_context,
-                &_rd_foo14->_receivedCall->_request,
-                &_rd_foo14->_receivedCall->_responder,
+                &_rd_foo14->_receivedCall->context(),
+                &_rd_foo14->_receivedCall->request(),
+                &_rd_foo14->_receivedCall->responder(),
                 cq0,
                 &_rd_foo14.get());
             this->queue_receive(
                 5,
-                &_rd_foo15->_receivedCall->_context,
-                &_rd_foo15->_receivedCall->_request,
-                &_rd_foo15->_receivedCall->_responder,
+                &_rd_foo15->_receivedCall->context(),
+                &_rd_foo15->_receivedCall->request(),
+                &_rd_foo15->_receivedCall->responder(),
                 cq0,
                 &_rd_foo15.get());
             this->queue_receive(
                 6,
-                &_rd_foo21->_receivedCall->_context,
-                &_rd_foo21->_receivedCall->_request,
-                &_rd_foo21->_receivedCall->_responder,
+                &_rd_foo21->_receivedCall->context(),
+                &_rd_foo21->_receivedCall->request(),
+                &_rd_foo21->_receivedCall->responder(),
                 cq0,
                 &_rd_foo21.get());
             this->queue_receive(
                 7,
-                &_rd_foo22->_receivedCall->_context,
-                &_rd_foo22->_receivedCall->_request,
-                &_rd_foo22->_receivedCall->_responder,
+                &_rd_foo22->_receivedCall->context(),
+                &_rd_foo22->_receivedCall->request(),
+                &_rd_foo22->_receivedCall->responder(),
                 cq0,
                 &_rd_foo22.get());
             this->queue_receive(
                 8,
-                &_rd_foo23->_receivedCall->_context,
-                &_rd_foo23->_receivedCall->_request,
-                &_rd_foo23->_receivedCall->_responder,
+                &_rd_foo23->_receivedCall->context(),
+                &_rd_foo23->_receivedCall->request(),
+                &_rd_foo23->_receivedCall->responder(),
                 cq0,
                 &_rd_foo23.get());
             this->queue_receive(
                 9,
-                &_rd_foo24->_receivedCall->_context,
-                &_rd_foo24->_receivedCall->_request,
-                &_rd_foo24->_receivedCall->_responder,
+                &_rd_foo24->_receivedCall->context(),
+                &_rd_foo24->_receivedCall->request(),
+                &_rd_foo24->_receivedCall->responder(),
                 cq0,
                 &_rd_foo24.get());
             this->queue_receive(
                 10,
-                &_rd_foo31->_receivedCall->_context,
-                &_rd_foo31->_receivedCall->_request,
-                &_rd_foo31->_receivedCall->_responder,
+                &_rd_foo31->_receivedCall->context(),
+                &_rd_foo31->_receivedCall->request(),
+                &_rd_foo31->_receivedCall->responder(),
                 cq0,
                 &_rd_foo31.get());
             this->queue_receive(
                 11,
-                &_rd_foo32->_receivedCall->_context,
-                &_rd_foo32->_receivedCall->_request,
-                &_rd_foo32->_receivedCall->_responder,
+                &_rd_foo32->_receivedCall->context(),
+                &_rd_foo32->_receivedCall->request(),
+                &_rd_foo32->_receivedCall->responder(),
                 cq0,
                 &_rd_foo32.get());
             this->queue_receive(
                 12,
-                &_rd_foo330->_receivedCall->_context,
-                &_rd_foo330->_receivedCall->_request,
-                &_rd_foo330->_receivedCall->_responder,
+                &_rd_foo330->_receivedCall->context(),
+                &_rd_foo330->_receivedCall->request(),
+                &_rd_foo330->_receivedCall->responder(),
                 cq0,
                 &_rd_foo330.get());
             this->queue_receive(
                 13,
-                &_rd__rd_foo33->_receivedCall->_context,
-                &_rd__rd_foo33->_receivedCall->_request,
-                &_rd__rd_foo33->_receivedCall->_responder,
+                &_rd__rd_foo33->_receivedCall->context(),
+                &_rd__rd_foo33->_receivedCall->request(),
+                &_rd__rd_foo33->_receivedCall->responder(),
                 cq0,
                 &_rd__rd_foo33.get());
             this->queue_receive(
                 14,
-                &_rd_foo34->_receivedCall->_context,
-                &_rd_foo34->_receivedCall->_request,
-                &_rd_foo34->_receivedCall->_responder,
+                &_rd_foo34->_receivedCall->context(),
+                &_rd_foo34->_receivedCall->request(),
+                &_rd_foo34->_receivedCall->responder(),
                 cq0,
                 &_rd_foo34.get());
             this->queue_receive(
                 15,
-                &_rd_foo41->_receivedCall->_context,
-                &_rd_foo41->_receivedCall->_request,
-                &_rd_foo41->_receivedCall->_responder,
+                &_rd_foo41->_receivedCall->context(),
+                &_rd_foo41->_receivedCall->request(),
+                &_rd_foo41->_receivedCall->responder(),
                 cq0,
                 &_rd_foo41.get());
             this->queue_receive(
                 16,
-                &_rd_foo42->_receivedCall->_context,
-                &_rd_foo42->_receivedCall->_request,
-                &_rd_foo42->_receivedCall->_responder,
+                &_rd_foo42->_receivedCall->context(),
+                &_rd_foo42->_receivedCall->request(),
+                &_rd_foo42->_receivedCall->responder(),
                 cq0,
                 &_rd_foo42.get());
             this->queue_receive(
                 17,
-                &_rd_foo43->_receivedCall->_context,
-                &_rd_foo43->_receivedCall->_request,
-                &_rd_foo43->_receivedCall->_responder,
+                &_rd_foo43->_receivedCall->context(),
+                &_rd_foo43->_receivedCall->request(),
+                &_rd_foo43->_receivedCall->responder(),
                 cq0,
                 &_rd_foo43.get());
             this->queue_receive(
                 18,
-                &_rd_foo44->_receivedCall->_context,
-                &_rd_foo44->_receivedCall->_request,
-                &_rd_foo44->_receivedCall->_responder,
+                &_rd_foo44->_receivedCall->context(),
+                &_rd_foo44->_receivedCall->request(),
+                &_rd_foo44->_receivedCall->responder(),
                 cq0,
                 &_rd_foo44.get());
             this->queue_receive(
                 19,
-                &_rd_cq->_receivedCall->_context,
-                &_rd_cq->_receivedCall->_request,
-                &_rd_cq->_receivedCall->_responder,
+                &_rd_cq->_receivedCall->context(),
+                &_rd_cq->_receivedCall->request(),
+                &_rd_cq->_receivedCall->responder(),
                 cq0,
                 &_rd_cq.get());
         }

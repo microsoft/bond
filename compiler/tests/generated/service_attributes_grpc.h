@@ -107,9 +107,9 @@ public:
 
             this->queue_receive(
                 0,
-                &_rd_foo->_receivedCall->_context,
-                &_rd_foo->_receivedCall->_request,
-                &_rd_foo->_receivedCall->_responder,
+                &_rd_foo->_receivedCall->context(),
+                &_rd_foo->_receivedCall->request(),
+                &_rd_foo->_receivedCall->responder(),
                 cq,
                 &_rd_foo.get());
         }

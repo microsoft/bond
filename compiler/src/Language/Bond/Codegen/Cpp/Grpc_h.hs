@@ -329,16 +329,16 @@ inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
                 std::bind(&#{serviceName}::#{methodName}, this, std::placeholders::_1));|]
                   queueReceive (index,Function{..}) = [lt|this->queue_receive(
                 #{index},
-                &#{serviceRdMember methodName}->_receivedCall->_context,
-                &#{serviceRdMember methodName}->_receivedCall->_request,
-                &#{serviceRdMember methodName}->_receivedCall->_responder,
+                &#{serviceRdMember methodName}->_receivedCall->context(),
+                &#{serviceRdMember methodName}->_receivedCall->request(),
+                &#{serviceRdMember methodName}->_receivedCall->responder(),
                 #{cqParam},
                 &#{serviceRdMember methodName}.get());|]
                   queueReceive (index,Event{..}) = [lt|this->queue_receive(
                 #{index},
-                &#{serviceRdMember methodName}->_receivedCall->_context,
-                &#{serviceRdMember methodName}->_receivedCall->_request,
-                &#{serviceRdMember methodName}->_receivedCall->_responder,
+                &#{serviceRdMember methodName}->_receivedCall->context(),
+                &#{serviceRdMember methodName}->_receivedCall->request(),
+                &#{serviceRdMember methodName}->_receivedCall->responder(),
                 #{cqParam},
                 &#{serviceRdMember methodName}.get());|]
 

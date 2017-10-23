@@ -43,5 +43,6 @@ target_link_libraries (grpc_test_common PUBLIC
 
 add_unit_test (io_manager.cpp)
 add_unit_test (thread_pool.cpp)
+add_unit_test (unary_call.cpp)
 add_unit_test (wait_callback.cpp)
 target_link_libraries(wait_callback PRIVATE bond_apply)

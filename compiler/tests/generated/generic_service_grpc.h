@@ -192,37 +192,37 @@ public:
 
             this->queue_receive(
                 0,
-                &_rd_foo31->_receivedCall->_context,
-                &_rd_foo31->_receivedCall->_request,
-                &_rd_foo31->_receivedCall->_responder,
+                &_rd_foo31->_receivedCall->context(),
+                &_rd_foo31->_receivedCall->request(),
+                &_rd_foo31->_receivedCall->responder(),
                 cq,
                 &_rd_foo31.get());
             this->queue_receive(
                 1,
-                &_rd_foo32->_receivedCall->_context,
-                &_rd_foo32->_receivedCall->_request,
-                &_rd_foo32->_receivedCall->_responder,
+                &_rd_foo32->_receivedCall->context(),
+                &_rd_foo32->_receivedCall->request(),
+                &_rd_foo32->_receivedCall->responder(),
                 cq,
                 &_rd_foo32.get());
             this->queue_receive(
                 2,
-                &_rd_foo33->_receivedCall->_context,
-                &_rd_foo33->_receivedCall->_request,
-                &_rd_foo33->_receivedCall->_responder,
+                &_rd_foo33->_receivedCall->context(),
+                &_rd_foo33->_receivedCall->request(),
+                &_rd_foo33->_receivedCall->responder(),
                 cq,
                 &_rd_foo33.get());
             this->queue_receive(
                 3,
-                &_rd_ConsumesGeneric1->_receivedCall->_context,
-                &_rd_ConsumesGeneric1->_receivedCall->_request,
-                &_rd_ConsumesGeneric1->_receivedCall->_responder,
+                &_rd_ConsumesGeneric1->_receivedCall->context(),
+                &_rd_ConsumesGeneric1->_receivedCall->request(),
+                &_rd_ConsumesGeneric1->_receivedCall->responder(),
                 cq,
                 &_rd_ConsumesGeneric1.get());
             this->queue_receive(
                 4,
-                &_rd_ConsumesGeneric2->_receivedCall->_context,
-                &_rd_ConsumesGeneric2->_receivedCall->_request,
-                &_rd_ConsumesGeneric2->_receivedCall->_responder,
+                &_rd_ConsumesGeneric2->_receivedCall->context(),
+                &_rd_ConsumesGeneric2->_receivedCall->request(),
+                &_rd_ConsumesGeneric2->_receivedCall->responder(),
                 cq,
                 &_rd_ConsumesGeneric2.get());
         }

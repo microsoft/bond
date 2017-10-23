@@ -22,6 +22,7 @@
 #include <bond/ext/grpc/unary_call.h>
 
 #include <boost/assert.hpp>
+#include <boost/smart_ptr/intrusive_ptr.hpp>
 #include <functional>
 #include <memory>
 #include <thread>
@@ -44,6 +45,8 @@ struct service_unary_call_data : io_manager_tag
     /// of this call.
     typedef std::function<void(unary_call<TRequest, TResponse> call)> CallbackType;
 
+    using uc_impl = unary_call_impl<TRequest, TResponse>;
+
     /// The service implementing the method.
     service<TThreadPool>* _service;
     /// The index of the method. Method indices correspond to the order in
@@ -56,7 +59,7 @@ struct service_unary_call_data : io_manager_tag
     /// The user code to invoke when a call to this method is received.
     CallbackType _cb;
     /// Individual state for one specific call to this method.
-    std::shared_ptr<unary_call_impl<TRequest, TResponse>> _receivedCall;
+    std::unique_ptr<uc_impl> _receivedCall;
 
     service_unary_call_data(
         service<TThreadPool>* service,
@@ -69,7 +72,7 @@ struct service_unary_call_data : io_manager_tag
           _cq(cq),
           _threadPool(threadPool),
           _cb(cb),
-          _receivedCall(std::make_shared<unary_call_impl<TRequest, TResponse>>())
+          _receivedCall(new uc_impl)
     {
         BOOST_ASSERT(service);
         BOOST_ASSERT(cq);
@@ -81,35 +84,31 @@ struct service_unary_call_data : io_manager_tag
     {
         if (ok)
         {
-            // capture the data associated with this one incomming request
-            // so that we can pass it to the user callback. The unary_call
-            // that we create to pass to the user callback takes ownership
-            // of this data.
-            //
-            // This scope block is here so that the shared_ptr that we
-            // create to capture in the lambda is destroyed after we enqueue
-            // in the thread pool but before we schedule the next receive.
-            // When we can use C++14, we can simplify this by using lambda's
-            // capture-by-move.
+            // Capture the data associated with this one incomming request
+            // so that we can pass it to the user callback. When we create
+            // the unary_call to pass to the user callback, the unary_call
+            // and unary_call_impl start collaborating to manage the
+            // lifetime of the unary_call_impl.
             {
-                std::shared_ptr<unary_call_impl<TRequest, TResponse>> receivedCall = _receivedCall;
+                // We have to manually release the pointer from
+                // _receivedCall to capture it in the lambda. When we can
+                // use C++14, we can simplify this by using lambda's
+                // capture-by-move.
+                auto receivedCall = boost::intrusive_ptr<uc_impl>{ _receivedCall.release() };
 
                 _threadPool->schedule([this, receivedCall]() mutable
                 {
                     _cb(unary_call<TRequest, TResponse> { std::move(receivedCall) });
-
-                    // should have transfered ownership
-                    BOOST_ASSERT(!receivedCall);
                 });
             }
 
             // create new state for the next request that will be received
-            _receivedCall = std::make_shared<unary_call_impl<TRequest, TResponse>>();
+            _receivedCall.reset(new uc_impl);
             _service->queue_receive(
                 _methodIndex,
-                &_receivedCall->_context,
-                &_receivedCall->_request,
-                &_receivedCall->_responder,
+                &_receivedCall->context(),
+                &_receivedCall->request(),
+                &_receivedCall->responder(),
                 _cq,
                 this);
         }
