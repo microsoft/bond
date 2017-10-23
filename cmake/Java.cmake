@@ -35,8 +35,8 @@ function (add_maven_install target)
     set (oneValueArgs AFTER_BUILD JAR)
     cmake_parse_arguments (arg "${flagArgs}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    # the -DpomFile here assumes you've created a pom via gradle's maven plugin
-    # and its install target.
+    # The path given to -DpomFile is hard-coded to match the output path of
+    # gradle's maven plugin.
     add_custom_command (
         COMMAND
         ${MAVEN_EXECUTABLE}
