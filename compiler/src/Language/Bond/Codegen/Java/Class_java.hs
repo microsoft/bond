@@ -498,12 +498,14 @@ javaNativeSerializationGlue declName = [lt|
         org.bondlib.Marshal.marshal(this, writer);
 
         final byte[] marshalled = outStream.toByteArray();
+        out.write(0);   // This type is not generic and has zero type parameters.
         out.writeInt(marshalled.length);
         out.write(marshalled);
     }
 
     @Override
     public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+        if (!(in.read() == 0)) throw new java.io.IOException("type is not generic, but serialized data has type parameters.");
         final int marshalledLength = in.readInt();
         final byte[] marshalled = new byte[marshalledLength];
         in.readFully(marshalled);
