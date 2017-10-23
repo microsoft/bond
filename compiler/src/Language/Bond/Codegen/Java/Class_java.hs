@@ -505,7 +505,7 @@ javaNativeSerializationGlue declName = [lt|
 
     @Override
     public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
-        if (!(in.read() == 0)) throw new java.io.IOException("type is not generic, but serialized data has type parameters.");
+        if (in.read() != 0) throw new java.io.IOException("type is not generic, but serialized data has type parameters.");
         final int marshalledLength = in.readInt();
         final byte[] marshalled = new byte[marshalledLength];
         in.readFully(marshalled);
