@@ -107,16 +107,10 @@ script:
     - if [ "$FLAVOR" == "hs" ]; then ../build/compiler/build/gbc-tests/gbc-tests; fi
 
 
+    - if [ "$FLAVOR" == "java" ]; then export PATH=$BOND_ROOT/build/compiler/build/gbc:$PATH; fi
     - if [ "$FLAVOR" == "java" ]; then BOND_JAVA=$BOND_ROOT/java; fi
     - if [ "$FLAVOR" == "java" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
-    - if [ "$FLAVOR" == "java" ]; then make gbc; fi
-    - if [ "$FLAVOR" == "java" ]; then export PATH=$BOND_ROOT/build/compiler/build/gbc:$PATH; fi
-    - if [ "$FLAVOR" == "java" ]; then cd $BOND_JAVA/gradle-plugin; gradle build; fi
-    - if [ "$FLAVOR" == "java" ]; then PLUGIN_VERSION=`sed -n "s/version ['\"]\(.*\)['\"]/\1/p" build.gradle`; fi
-    - if [ "$FLAVOR" == "java" ]; then mvn install:install-file -Dfile=build/libs/bond-gradle-$PLUGIN_VERSION.jar -DgroupId=org.bondlib -DartifactId=gradle -Dversion=$PLUGIN_VERSION -Dpackaging=jar; fi
-    - if [ "$FLAVOR" == "java" ]; then cd $BOND_JAVA/core; gradle build; fi
-    - if [ "$FLAVOR" == "java" ]; then cd $BOND_JAVA/compat; gradle build; fi
-    - if [ "$FLAVOR" == "java" ]; then cd $BOND_ROOT/build; fi
+    - if [ "$FLAVOR" == "java" ]; then make java; fi
     - if [ "$FLAVOR" == "java" ]; then cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..; fi
     - if [ "$FLAVOR" == "java" ]; then make --jobs 2 check; fi
     # Run Java examples.
