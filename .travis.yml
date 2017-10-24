@@ -8,6 +8,7 @@ cache:
         - cs/packages
         - $HOME/.ccache
         - $HOME/.stack
+        - $HOME/docker-images
 services:
     - docker
 env:
@@ -26,7 +27,9 @@ env:
 
 before_install:
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
-    - travis_retry curl -L https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial-new.tar.xz | time docker load
+    - mkdir -p $HOME/docker-images
+    - travis_retry wget -N https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial-new.tar.xz -O $HOME/docker-images/bond-xenial.tar.xz
+    - time docker load -i $HOME/docker-images/bond-xenial.tar.xz
 
 script:
     - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond bond-xenial $HOME $FLAVOR $BOOST
