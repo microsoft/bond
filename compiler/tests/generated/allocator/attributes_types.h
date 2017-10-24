@@ -95,7 +95,7 @@ namespace tests
     
     struct Foo
     {
-        std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> f;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > f;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used

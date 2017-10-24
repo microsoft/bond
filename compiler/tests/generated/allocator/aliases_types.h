@@ -22,7 +22,7 @@ namespace tests
     template <typename T>
     struct Foo
     {
-        std::vector<std::vector<T, typename arena::rebind<T>::other>, typename arena::rebind<std::vector<T, typename arena::rebind<T>::other> >::other> aa;
+        std::vector<std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> >, typename std::allocator_traits<arena>::template rebind_alloc<std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> > > > aa;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used

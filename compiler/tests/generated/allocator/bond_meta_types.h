@@ -23,8 +23,8 @@ namespace bondmeta
     
     struct HasMetaFields
     {
-        std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> full_name;
-        std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> name;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > full_name;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > name;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
