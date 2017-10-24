@@ -12,12 +12,20 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased  ##
-* `gbc` & compiler library: TBD (minor bump already done in bond.cabal)
+* `gbc` & compiler library: TBD
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD (minor bump needed)
-* C# NuGet version: TBD  (minor bump needed)
-* C# Comm NuGet version: (minor bump needed)
+* C++ version: TBD
+* C# NuGet version: TBD
+* C# Comm NuGet version: TBD
+
+## 7.0.0: 2017-10-24  ##
+* `gbc` & compiler library: 0.10.1.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 7.0.0
+* C# NuGet version: 7.0.0
+* C# Comm NuGet version: 0.13.0
 
 ### `gbc` and Bond compiler library ###
 
@@ -71,8 +79,12 @@ different versioning scheme, following the Haskell community's
   compile the generated `_grpc.cs` files if `--grpc` is passed to `gbc`.
   Explicit `<Compile Include="$(IntermediateOutputPath)foo_grpc.cs" />`
   lines in MSBuild projects will need to be removed to fix error MSB3105
-  about duplicate items. See commit TBD for an example of how to fix this.
+  about duplicate items. See commit
+  [a120cd99](https://github.com/Microsoft/bond/commit/a120cd9995d74e11b75766c5195ea4587c304dd7#diff-3b0b4bed9029ae89dbfb824ce7eff5e8R54)
+  for an example of how to fix this.
   [Issue #448](https://github.com/Microsoft/bond/issues/448)
+* **Breaking change** The low-level API `IParser.ContainerHandler` now has an
+  `arraySegment` parameter for the converted blob.
 * The code generation MSBuild targets will now skip compiling the
   `_types.cs` files when `--structs=false` is passed to `gbc`.
 * Added `Bond.Box.Create` helper method to create `Bond.Box<T>` instances.
