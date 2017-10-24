@@ -1,7 +1,7 @@
 # Image Builder
 
-This directory contains the source for a docker container that is used for building Bond
-C++. It contains binaries of a number of Boost versions for Ubuntu 16.04 (Xenial Xerus).
+This directory contains the source for a docker container that is used for building Bond.
+It contains binaries of a number of Boost versions for Ubuntu 16.04 (Xenial Xerus).
 
 # Pre-requisites
 

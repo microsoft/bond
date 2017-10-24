@@ -1,7 +1,6 @@
 dist: trusty
 # trusty requires virtualization, which is set by 'sudo: required'
 sudo: required
-language: csharp
 os:
     - linux
 cache:
@@ -24,77 +23,10 @@ env:
     - FLAVOR="cpp-grpc" BOOST="1.64.0"
     - FLAVOR="cpp-grpc" BOOST="1.63.0"
     - FLAVOR="hs"
-addons:
-  apt:
-    sources:
-        - ubuntu-toolchain-r-test
-    packages:
-        - wget
 
 before_install:
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
-
-    - if [ "$FLAVOR" == "cpp-core" ]; then export CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"; fi
-    - if [ "$FLAVOR" == "cpp-comm" ]; then export CPP_CMAKE_ARGS="-DBOND_ENABLE_COMM=TRUE -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"; fi
-    - if [ "$FLAVOR" == "cpp-grpc" ]; then export CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DgRPC_ZLIB_PROVIDER=package"; fi
-
-    - if [[ "$FLAVOR" == cpp-* ]]; then
-        travis_retry curl -L https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial.tar.xz | time docker load;
-      else
-        mkdir -p ~/.local/bin;
-        export PATH=$HOME/.local/bin:$PATH;
-        travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack';
-
-        export BOOST=1.63.0;
-        export BOOST_ARCHIVE=boost-$BOOST.tar.xz;
-        wget https://bondboostbinaries.blob.core.windows.net/bondboostbinaries/$BOOST_ARCHIVE -O /tmp/$BOOST_ARCHIVE;
-        pushd /; sudo tar -xf /tmp/$BOOST_ARCHIVE; popd;
-        export BOOST_ROOT=/opt/boost_`echo $BOOST | tr . _`;
-
-        export CXX="ccache clang++ -Qunused-arguments --system-header-prefix=boost/";
-        export CC="ccache clang -Qunused-arguments --system-header-prefix=boost/";
-      fi
-
-    # nunit installation
-    - if [ "$FLAVOR" == "cs" ]; then travis_retry nuget install NUnit.Runners -version 2.6.4; fi
-
-before_script:
-    # restore nuget packages for solution
-    - if [ "$FLAVOR" == "cs" ]; then travis_retry nuget restore cs/cs.sln; fi
+    - travis_retry curl -L https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial-new.tar.xz | time docker load
 
 script:
-    - mkdir build
-
-    - if [[ "$FLAVOR" == cpp-* ]]; then
-        docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond -i bond-xenial sh -c "
-            mkdir -p $HOME;
-            ln -s /root/.ccache $HOME/.ccache;
-            ln -s /root/.stack $HOME/.stack;
-            export BOOST_ROOT=/opt/boosts/boost_`echo $BOOST | tr . _`;
-            export CXX='ccache clang++ -Qunused-arguments --system-header-prefix=boost/';
-            export CC='ccache clang -Qunused-arguments --system-header-prefix=boost/';
-            cd /root/bond/build;
-            cmake $CPP_CMAKE_ARGS ..;
-            make --jobs 2 check;
-            ";
-      fi
-
-    - if [ "$FLAVOR" == "cs" ]; then
-        cd build;
-        cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..;
-        make gbc;
-        make DESTDIR=$HOME install;
-        cd ..;
-        export BOND_COMPILER_PATH=$HOME/usr/local/bin;
-        msbuild /p:Configuration=Debug cs/cs.sln;
-        msbuild /p:Configuration=Fields cs/cs.sln;
-        mono NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll cs/test/internal/bin/debug/net45/Bond.InternalTest.dll;
-      fi
-
-    - if [ "$FLAVOR" == "hs" ]; then
-        cd build;
-        cmake -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE ..;
-        make gbc-tests;
-        cd ../compiler;
-        ../build/compiler/build/gbc-tests/gbc-tests;
-      fi
+    - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond bond-xenial $HOME $FLAVOR $BOOST
