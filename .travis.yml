@@ -27,8 +27,9 @@ env:
 
 before_install:
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
-    - mkdir -p $HOME/docker-images
-    - travis_retry wget -N https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial-new.tar.xz -O $HOME/docker-images/bond-xenial.tar.xz
+    - pushd $HOME/docker-images
+    - travis_retry wget -N https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial-new.tar.xz
+    - popd
     - time docker load -i $HOME/docker-images/bond-xenial.tar.xz
 
 script:
