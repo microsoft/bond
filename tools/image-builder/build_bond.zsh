@@ -1,55 +1,55 @@
 #!/bin/zsh
 
 set -eux
+# Set this option so we can pass multiple args to cmake in a single shell variable
 setopt shwordsplit
 
-HOME=$1
+SYMLINKED_HOME=$1
 FLAVOR=$2
 BOOST=${3:-}
 
-BUILD_PATH=/root/build/$FLAVOR
-if [ $BOOST != "" ]; then BUILD_PATH=$BUILD_PATH/$BOOST; fi
+BUILD_PATH=/root/build
 
-mkdir -p $HOME $BUILD_PATH
-ln -s /root/.stack $HOME/.stack
+mkdir -p $SYMLINKED_HOME $BUILD_PATH
+ln -s /root/.stack $SYMLINKED_HOME/.stack
 
 cd $BUILD_PATH
 
 case "$FLAVOR" in
     cpp-*)
         case "$FLAVOR" in
-            "cpp-core") CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE";;
-            "cpp-comm") CPP_CMAKE_ARGS="-DBOND_ENABLE_COMM=TRUE -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE";;
-            "cpp-grpc") CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DgRPC_ZLIB_PROVIDER=package";;
+            cpp-core) CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE";;
+            cpp-comm) CPP_CMAKE_ARGS="-DBOND_ENABLE_COMM=TRUE -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE";;
+            cpp-grpc) CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DgRPC_ZLIB_PROVIDER=package";;
             *) echo "Unknown FLAVOR=$FLAVOR"; exit 1;;
         esac
+
+        if [ ! $BOOST ]; then echo "BOOST not specified"; exit 1; fi
 
         export BOOST_ROOT=/opt/boosts/boost_`echo $BOOST | tr . _`
         export CXX="ccache clang++ -Qunused-arguments --system-header-prefix=boost/"
         export CC="ccache clang -Qunused-arguments --system-header-prefix=boost/"
 
-        ln -s /root/.ccache $HOME/.ccache
+        ln -s /root/.ccache $SYMLINKED_HOME/.ccache
 
         cmake $CPP_CMAKE_ARGS /root/bond
 
         make --jobs 2 check
         ;;
 
-    "cs")
+    cs)
         # TODO: Remove build dependency on C++
         export BOOST_ROOT=/opt/boosts/boost_1_63_0
         export CXX="ccache clang++ -Qunused-arguments --system-header-prefix=boost/"
         export CC="ccache clang -Qunused-arguments --system-header-prefix=boost/"
-        ln -s /root/.ccache $HOME/.ccache
+        ln -s /root/.ccache $SYMLINKED_HOME/.ccache
 
         nuget restore /root/bond/cs/cs.sln
 
         cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE /root/bond
 
         make gbc
-        make DESTDIR=/root install
-
-        export BOND_COMPILER_PATH=/root/usr/local/bin
+        make install
 
         msbuild /p:Configuration=Debug /root/bond/cs/cs.sln
         msbuild /p:Configuration=Fields /root/bond/cs/cs.sln
@@ -60,12 +60,12 @@ case "$FLAVOR" in
             /root/bond/cs/test/internal/bin/debug/net45/Bond.InternalTest.dll
         ;;
 
-    "hs")
+    hs)
         # TODO: Remove build dependency on C++
         export BOOST_ROOT=/opt/boosts/boost_1_63_0
         export CXX="ccache clang++ -Qunused-arguments --system-header-prefix=boost/"
         export CC="ccache clang -Qunused-arguments --system-header-prefix=boost/"
-        ln -s /root/.ccache $HOME/.ccache
+        ln -s /root/.ccache $SYMLINKED_HOME/.ccache
 
         cmake -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE /root/bond
 
