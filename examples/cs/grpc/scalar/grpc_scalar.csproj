@@ -51,9 +51,8 @@
     </BondCodegen>
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\scalar_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\scalar_grpc.cs" Condition="False" />
     <!-- End Resharper Workaround -->
-    <!-- TODO: edit the .targets to automatically include the grpc files -->
-    <Compile Include="$(IntermediateOutputPath)\scalar_grpc.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Attributes">

@@ -46,9 +46,8 @@
     </BondCodegen>
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\pingpong_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\pingpong_grpc.cs" Condition="False" />
     <!-- End Resharper Workaround -->
-    <!-- TODO: edit the .targets to automatically include the grpc files -->
-    <Compile Include="$(IntermediateOutputPath)\pingpong_grpc.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Attributes">
