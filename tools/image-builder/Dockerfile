@@ -2,10 +2,10 @@ FROM ubuntu:16.04
 
 # Cache folders
 VOLUME /root/.ccache /root/.stack
-# Enlistment
+# Source code
 VOLUME /root/bond
 
-# Install components needed for compiling Boost
+# Components for Boost
 RUN apt-get update && \
     apt-get -y install \
     build-essential \

@@ -7,8 +7,13 @@ HOME=$1
 FLAVOR=$2
 BOOST=${3:-}
 
-mkdir -p $HOME
+BUILD_PATH=/root/build/$FLAVOR
+if [ $BOOST != "" ]; then BUILD_PATH=$BUILD_PATH/$BOOST; fi
+
+mkdir -p $HOME $BUILD_PATH
 ln -s /root/.stack $HOME/.stack
+
+cd $BUILD_PATH
 
 case "$FLAVOR" in
     cpp-*)
@@ -25,8 +30,6 @@ case "$FLAVOR" in
 
         ln -s /root/.ccache $HOME/.ccache
 
-        mkdir /root/bond_build_cpp
-        cd /root/bond_build_cpp
         cmake $CPP_CMAKE_ARGS /root/bond
 
         make --jobs 2 check
@@ -41,14 +44,12 @@ case "$FLAVOR" in
 
         nuget restore /root/bond/cs/cs.sln
 
-        mkdir /root/bond_build_cs
-        cd /root/bond_build_cs
         cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE /root/bond
 
         make gbc
-        make DESTDIR=$HOME install
+        make DESTDIR=/root install
 
-        export BOND_COMPILER_PATH=$HOME/usr/local/bin
+        export BOND_COMPILER_PATH=/root/usr/local/bin
 
         msbuild /p:Configuration=Debug /root/bond/cs/cs.sln
         msbuild /p:Configuration=Fields /root/bond/cs/cs.sln
@@ -66,14 +67,12 @@ case "$FLAVOR" in
         export CC="ccache clang -Qunused-arguments --system-header-prefix=boost/"
         ln -s /root/.ccache $HOME/.ccache
 
-        mkdir /root/bond_build_hs
-        cd /root/bond_build_hs
         cmake -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE /root/bond
 
         make gbc-tests
 
         cd /root/bond/compiler
-        /root/bond_build_hs/compiler/build/gbc-tests/gbc-tests
+        $BUILD_PATH/compiler/build/gbc-tests/gbc-tests
         ;;
 
     *)
