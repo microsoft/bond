@@ -21,17 +21,17 @@ namespace test
     
     struct foo
     {
-        std::list<bool, typename arena::rebind<bool>::other> l;
-        std::vector<bool, typename arena::rebind<bool>::other> v;
-        std::set<bool, std::less<bool>, typename arena::rebind<bool>::other> s;
-        std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> m;
-        std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> st;
-        std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> d;
-        ::bond::maybe<std::list<bool, typename arena::rebind<bool>::other> > l1;
-        ::bond::maybe<std::vector<bool, typename arena::rebind<bool>::other> > v1;
-        ::bond::maybe<std::set<bool, std::less<bool>, typename arena::rebind<bool>::other> > s1;
-        ::bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> > m1;
-        ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> > st1;
+        std::list<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > l;
+        std::vector<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > v;
+        std::set<bool, std::less<bool>, typename std::allocator_traits<arena>::template rebind_alloc<bool> > s;
+        std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool> > > m;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > st;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > d;
+        ::bond::maybe<std::list<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > > l1;
+        ::bond::maybe<std::vector<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > > v1;
+        ::bond::maybe<std::set<bool, std::less<bool>, typename std::allocator_traits<arena>::template rebind_alloc<bool> > > s1;
+        ::bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool> > > > m1;
+        ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > st1;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
@@ -70,13 +70,13 @@ namespace test
           : l(allocator),
             v(allocator),
             s(std::less<bool>(), allocator),
-            m(std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>>(), allocator),
+            m(std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >>(), allocator),
             st(allocator),
             d("foo", allocator),
             l1(allocator),
             v1(allocator),
             s1(std::less<bool>(), allocator),
-            m1(std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>>(), allocator),
+            m1(std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >>(), allocator),
             st1(allocator)
         {
         }

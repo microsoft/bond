@@ -23,6 +23,8 @@ different versioning scheme, following the Haskell community's
 
 * Add service/method annotations in C# for Comm and gRPC.
 * Add service/method metadata support in C++ for gRPC.
+* C++ codegen now uses [`std::allocator_traits`](http://en.cppreference.com/w/cpp/memory/allocator_traits)
+  for rebinding allocator types.
 
 ### C++ ###
 

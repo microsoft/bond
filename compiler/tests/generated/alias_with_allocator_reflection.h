@@ -34,7 +34,7 @@ namespace test
                 0,
                 ::bond::reflection::optional_field_modifier,
                 foo,
-                std::list<bool, typename arena::rebind<bool>::other>,
+                std::list<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> >,
                 &foo::l,
                 &s_l_metadata
             > {}  l;
@@ -44,7 +44,7 @@ namespace test
                 1,
                 ::bond::reflection::optional_field_modifier,
                 foo,
-                std::vector<bool, typename arena::rebind<bool>::other>,
+                std::vector<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> >,
                 &foo::v,
                 &s_v_metadata
             > {}  v;
@@ -54,7 +54,7 @@ namespace test
                 2,
                 ::bond::reflection::optional_field_modifier,
                 foo,
-                std::set<bool, std::less<bool>, typename arena::rebind<bool>::other>,
+                std::set<bool, std::less<bool>, typename std::allocator_traits<arena>::template rebind_alloc<bool> >,
                 &foo::s,
                 &s_s_metadata
             > {}  s;
@@ -64,7 +64,7 @@ namespace test
                 3,
                 ::bond::reflection::optional_field_modifier,
                 foo,
-                std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other>,
+                std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool> > >,
                 &foo::m,
                 &s_m_metadata
             > {}  m;
@@ -74,7 +74,7 @@ namespace test
                 4,
                 ::bond::reflection::optional_field_modifier,
                 foo,
-                std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>,
+                std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >,
                 &foo::st,
                 &s_st_metadata
             > {}  st;
@@ -84,7 +84,7 @@ namespace test
                 5,
                 ::bond::reflection::optional_field_modifier,
                 foo,
-                std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>,
+                std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >,
                 &foo::d,
                 &s_d_metadata
             > {}  d;
@@ -94,7 +94,7 @@ namespace test
                 10,
                 ::bond::reflection::optional_field_modifier,
                 foo,
-                ::bond::maybe<std::list<bool, typename arena::rebind<bool>::other> >,
+                ::bond::maybe<std::list<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > >,
                 &foo::l1,
                 &s_l1_metadata
             > {}  l1;
@@ -104,7 +104,7 @@ namespace test
                 11,
                 ::bond::reflection::optional_field_modifier,
                 foo,
-                ::bond::maybe<std::vector<bool, typename arena::rebind<bool>::other> >,
+                ::bond::maybe<std::vector<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > >,
                 &foo::v1,
                 &s_v1_metadata
             > {}  v1;
@@ -114,7 +114,7 @@ namespace test
                 12,
                 ::bond::reflection::optional_field_modifier,
                 foo,
-                ::bond::maybe<std::set<bool, std::less<bool>, typename arena::rebind<bool>::other> >,
+                ::bond::maybe<std::set<bool, std::less<bool>, typename std::allocator_traits<arena>::template rebind_alloc<bool> > >,
                 &foo::s1,
                 &s_s1_metadata
             > {}  s1;
@@ -124,7 +124,7 @@ namespace test
                 13,
                 ::bond::reflection::optional_field_modifier,
                 foo,
-                ::bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool, std::less<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >, typename arena::rebind<std::pair<const std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>, bool> >::other> >,
+                ::bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool> > > >,
                 &foo::m1,
                 &s_m1_metadata
             > {}  m1;
@@ -134,7 +134,7 @@ namespace test
                 14,
                 ::bond::reflection::optional_field_modifier,
                 foo,
-                ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other> >,
+                ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >,
                 &foo::st1,
                 &s_st1_metadata
             > {}  st1;
