@@ -473,6 +473,72 @@ object_hashCode fields structBase = [lt|@Override
         hashCode _ f          = [lt|#{f} == null ? 0 : #{f}.hashCode()|]
 
 
+-- We implement Externalizable, rather than Serializable, so that
+-- ser/deserialization will result in a single call on the most derived class,
+-- rather than one call for each type in the inheritance chain. By reading into
+-- a byte[] instead of trying to deserialize from the ObjectInput{,Stream} we're
+-- passed, we can start from a ByteArrayInputStream, which we already know how
+-- to clone for Bonded fields.
+--
+-- We write the length of the serialized data because we can't assume the
+-- ObjectInput{,Stream} actually ends after the object we care about.
+--
+-- serialVersionUID is always 0 so that Java will always delegate compatibility
+-- checking of serialized data against current deserialization code to us.
+javaNativeSerializationGlue :: String -> Text
+javaNativeSerializationGlue declName = [lt|
+    // Java native serialization
+    private static final long serialVersionUID = 0L;
+    private #{declName} __deserializedInstance;
+
+    @Override
+    public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        final java.io.ByteArrayOutputStream outStream = new java.io.ByteArrayOutputStream();
+        final org.bondlib.ProtocolWriter writer = new org.bondlib.CompactBinaryWriter(outStream, 1);
+        org.bondlib.Marshal.marshal(this, writer);
+
+        final byte[] marshalled = outStream.toByteArray();
+        out.write(0);   // This type is not generic and has zero type parameters.
+        out.writeInt(marshalled.length);
+        out.write(marshalled);
+    }
+
+    @Override
+    public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+        if (in.read() != 0) throw new java.io.IOException("type is not generic, but serialized data has type parameters.");
+        final int marshalledLength = in.readInt();
+        final byte[] marshalled = new byte[marshalledLength];
+        in.readFully(marshalled);
+
+        final java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(marshalled);
+        this.__deserializedInstance = org.bondlib.Unmarshal.unmarshal(inStream, getBondType()).deserialize();
+    }
+
+    private Object readResolve() throws java.io.ObjectStreamException {
+        return this.__deserializedInstance;
+    }
+    // end Java native serialization
+    |]
+
+
+javaNativeSerializationUnimpl :: Text
+javaNativeSerializationUnimpl = [lt|
+    // Java native serialization
+    @Override
+    public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        throw new java.lang.IllegalArgumentException("java.io.Serializable support is not implemented for generic types");
+    }
+
+    @Override
+    public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+        // This may actually fail before reaching this line with an InvalidClassException because
+        // generic types don't have the nullary constructor required by the Java serialization
+        // framework.
+        throw new java.lang.IllegalArgumentException("java.io.Serializable support is not implemented for generic types");
+    }
+    // end Java native serialization
+    |]
+
 -- Template for struct -> Java class.
 class_java :: MappingContext -> [Import] -> Declaration -> Text
 class_java java _ declaration = [lt|
@@ -534,6 +600,8 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
         initializeBondType();
     }
     #{bondTypeDescriptorInstanceVariableDecl}
+
+    #{ifThenElse (null declParams) (javaNativeSerializationGlue declName) javaNativeSerializationUnimpl}
 
     #{doubleLineSep 1 publicFieldDecl structFields}
     #{publicConstructorDecl}

@@ -158,6 +158,23 @@ public class Foo<T1, T2> implements org.bondlib.BondSerializable {
     }
     private final StructBondTypeImpl<T1, T2> __genericType;
 
+    
+    // Java native serialization
+    @Override
+    public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        throw new java.lang.IllegalArgumentException("java.io.Serializable support is not implemented for generic types");
+    }
+
+    @Override
+    public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+        // This may actually fail before reaching this line with an InvalidClassException because
+        // generic types don't have the nullary constructor required by the Java serialization
+        // framework.
+        throw new java.lang.IllegalArgumentException("java.io.Serializable support is not implemented for generic types");
+    }
+    // end Java native serialization
+    
+
     public T2 t2;
 
     public tests.Foo<T1, java.lang.Boolean> n;

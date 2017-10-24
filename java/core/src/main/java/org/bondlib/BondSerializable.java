@@ -3,11 +3,13 @@
 
 package org.bondlib;
 
+import java.io.Externalizable;
+
 /**
  * Denotes a Bond struct type.
  * All generated Bond struct classes implement this interface.
  */
-public interface BondSerializable {
+public interface BondSerializable extends Externalizable {
 
     /**
      * Returns the {@link BondType} type descriptor for the current struct type.

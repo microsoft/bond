@@ -116,6 +116,40 @@ public class Base implements org.bondlib.BondSerializable {
     }
     
 
+    
+    // Java native serialization
+    private static final long serialVersionUID = 0L;
+    private Base __deserializedInstance;
+
+    @Override
+    public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        final java.io.ByteArrayOutputStream outStream = new java.io.ByteArrayOutputStream();
+        final org.bondlib.ProtocolWriter writer = new org.bondlib.CompactBinaryWriter(outStream, 1);
+        org.bondlib.Marshal.marshal(this, writer);
+
+        final byte[] marshalled = outStream.toByteArray();
+        out.write(0);   // This type is not generic and has zero type parameters.
+        out.writeInt(marshalled.length);
+        out.write(marshalled);
+    }
+
+    @Override
+    public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+        if (in.read() != 0) throw new java.io.IOException("type is not generic, but serialized data has type parameters.");
+        final int marshalledLength = in.readInt();
+        final byte[] marshalled = new byte[marshalledLength];
+        in.readFully(marshalled);
+
+        final java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(marshalled);
+        this.__deserializedInstance = org.bondlib.Unmarshal.unmarshal(inStream, getBondType()).deserialize();
+    }
+
+    private Object readResolve() throws java.io.ObjectStreamException {
+        return this.__deserializedInstance;
+    }
+    // end Java native serialization
+    
+
     public int x;
     
     public Base() {
@@ -262,6 +296,40 @@ public class Foo extends tests.Base {
     static {
         initializeBondType();
     }
+    
+
+    
+    // Java native serialization
+    private static final long serialVersionUID = 0L;
+    private Foo __deserializedInstance;
+
+    @Override
+    public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        final java.io.ByteArrayOutputStream outStream = new java.io.ByteArrayOutputStream();
+        final org.bondlib.ProtocolWriter writer = new org.bondlib.CompactBinaryWriter(outStream, 1);
+        org.bondlib.Marshal.marshal(this, writer);
+
+        final byte[] marshalled = outStream.toByteArray();
+        out.write(0);   // This type is not generic and has zero type parameters.
+        out.writeInt(marshalled.length);
+        out.write(marshalled);
+    }
+
+    @Override
+    public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+        if (in.read() != 0) throw new java.io.IOException("type is not generic, but serialized data has type parameters.");
+        final int marshalledLength = in.readInt();
+        final byte[] marshalled = new byte[marshalledLength];
+        in.readFully(marshalled);
+
+        final java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(marshalled);
+        this.__deserializedInstance = org.bondlib.Unmarshal.unmarshal(inStream, getBondType()).deserialize();
+    }
+
+    private Object readResolve() throws java.io.ObjectStreamException {
+        return this.__deserializedInstance;
+    }
+    // end Java native serialization
     
 
     public int x;
