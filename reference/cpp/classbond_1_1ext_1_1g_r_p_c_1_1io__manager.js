@@ -9,5 +9,6 @@ var classbond_1_1ext_1_1g_r_p_c_1_1io__manager =
     [ "cq", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#afd7e91a60b936d4c1be86a9f8cec895a", null ],
     [ "shutdown", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa8ac2b833a958e0d3fe6a3428067b47e", null ],
     [ "start", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa90b3c84d38309f06fad690efa3fec5f", null ],
-    [ "wait", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#af3cc339cc74d3d7e462707f0e66c6dc3", null ]
+    [ "wait", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#af3cc339cc74d3d7e462707f0e66c6dc3", null ],
+    [ "USE_HARDWARE_CONC", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa1c62c3780febc0e4b3b8f50b6910aac", null ]
 ];

@@ -183,12 +183,13 @@ template&lt;typename Alloc, typename Counter&gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section remark"><dt>Remarks</dt><dd>When Counter is not a reference type, then <code>count</code> can be one of<ul>
-<li>an instance of Counter in which case it will be passed by-value,</li>
-<li>an instance of std::ref/boost::ref of a Counter in which case only a reference will be held,</li>
-<li>max value for the  Counter which will be used to construct one. When Counter is a reference type, then only a reference to an existing instance can be passed. </li>
+<dl class="section remark"><dt>Remarks</dt><dd>When <code>Counter</code> is not a reference type, then <code>count</code> can be one of<ul>
+<li>an instance of <code>Counter</code> in which case it will be passed by-value,</li>
+<li>an instance of std::ref/boost::ref of a <code>Counter</code> in which case only a reference will be held,</li>
+<li>max value for the <code>Counter</code> which will be used to construct one.</li>
 </ul>
 </dd></dl>
+<p>When <code>Counter</code> is a reference type, then only a reference to an existing instance can be passed. </p>
 
 </div>
 </div>
@@ -243,7 +244,7 @@ template&lt;typename C  = Counter, typename boost::enable_if&lt; std::uses_alloc
   </table>
   </dd>
 </dl>
-<dl class="section remark"><dt>Remarks</dt><dd>The overload is used when Counter is allocator-aware. </dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>The overload is used when <code>Counter</code> is allocator-aware. </dd></dl>
 
 </div>
 </div>

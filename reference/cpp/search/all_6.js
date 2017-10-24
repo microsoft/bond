@@ -10,6 +10,6 @@ var searchData=
   ['field_5ftype',['field_type',['../structbond_1_1reflection_1_1_field_template.html#ace30bbaf65f63831316c0bd12cd87260',1,'bond::reflection::FieldTemplate']]],
   ['fieldtemplate',['FieldTemplate',['../structbond_1_1reflection_1_1_field_template.html',1,'bond::reflection']]],
   ['filter',['filter',['../structbond_1_1detail_1_1mpl_1_1filter.html',1,'bond::detail::mpl']]],
-  ['finish',['Finish',['../classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#a7b558940641efc35968b1ee09446facd',1,'bond::ext::gRPC::unary_call::Finish(const TResponse &amp;msg, const grpc::Status &amp;status=grpc::Status::OK)'],['../classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#a9a663ef55d559df838301caeb8217364',1,'bond::ext::gRPC::unary_call::Finish(const bond::bonded&lt; TResponse &gt; &amp;msg, const grpc::Status &amp;status=grpc::Status::OK)']]],
-  ['finishwitherror',['FinishWithError',['../classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#a1a692fb62e40fa8a69c62fdfbb8b39fc',1,'bond::ext::gRPC::unary_call']]]
+  ['finish',['Finish',['../classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#a14e2a62a37a05b9de27d202461987ab9',1,'bond::ext::gRPC::detail::unary_call_base::Finish(const TResponse &amp;msg, const grpc::Status &amp;status=grpc::Status::OK)'],['../classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#a3ed9e20c450a798ac52ccf1ed497b108',1,'bond::ext::gRPC::detail::unary_call_base::Finish(const bond::bonded&lt; TResponse &gt; &amp;msg, const grpc::Status &amp;status=grpc::Status::OK)']]],
+  ['finishwitherror',['FinishWithError',['../classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#ab5b123f435a76ff7c6cdc0e1a66c34c5',1,'bond::ext::gRPC::detail::unary_call_base']]]
 ];

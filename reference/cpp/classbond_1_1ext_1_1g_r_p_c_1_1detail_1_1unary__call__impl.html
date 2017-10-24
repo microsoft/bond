@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Bond: Class Members</title>
+<title>Bond: bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('functions_u.html','');});
+$(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -88,26 +88,38 @@ $(document).ready(function(){initNavTree('functions_u.html','');});
 </iframe>
 </div>
 
+<div class="header">
+  <div class="summary">
+<a href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl-members.html">List of all members</a>  </div>
+  <div class="headertitle">
+<div class="title">bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt; Class Template Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
+</div><!--header-->
 <div class="contents">
-<div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div>
 
-<h3><a class="anchor" id="index_u"></a>- u -</h3><ul>
-<li>unary_call()
-: <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#a8316eebe00f4ba62359208f550d7ff47">bond::ext::gRPC::unary_call&lt; TRequest, TResponse &gt;</a>
-</li>
-<li>unary_call_result()
-: <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html#afa2d897f9450836ceeae71c4aa8c8921">bond::ext::gRPC::unary_call_result&lt; TResponse &gt;</a>
-</li>
-<li>USE_HARDWARE_CONC
-: <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa1c62c3780febc0e4b3b8f50b6910aac">bond::ext::gRPC::io_manager</a>
-, <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#aff5e9a25724060263b5912dca2db27b8">bond::ext::gRPC::thread_pool</a>
-</li>
-</ul>
-</div><!-- contents -->
+<p>Implementation class that holds the state associated with a single async, unary call.  
+ <a href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html#details">More...</a></p>
+<div class="dynheader">
+Inheritance diagram for bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt;:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.png" usemap="#bond::ext::gRPC::detail::unary_5Fcall_5Fimpl_3C_20TRequest_2C_20TResponse_20_3E_map" alt=""/>
+  <map id="bond::ext::gRPC::detail::unary_5Fcall_5Fimpl_3C_20TRequest_2C_20TResponse_20_3E_map" name="bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt;_map">
+<area href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html" title="Interface for completion queue tag types that io_manager expects. " alt="bond::ext::gRPC::detail::io_manager_tag" shape="rect" coords="0,0,377,24"/>
+</map>
+ </div></div>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename TRequest, typename TResponse&gt;<br />
+class bond::ext::gRPC::detail::unary_call_impl&lt; TRequest, TResponse &gt;</h3>
+
+<p>Implementation class that holds the state associated with a single async, unary call. </p>
+<p>Potentually three different objects participate in shared ownership of instances of this class: the user-facing <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a> and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html">shared_unary_call</a> objects, as well as this object itself.</p>
+<p>To ensure that this instance stays alive while sending a response, <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html" title="Implementation class that holds the state associated with a single async, unary call. ">unary_call_impl</a> creates itself with a ref count of 1, opposed to the usual 0 that many boost::intrusive_ptr implementations use. When the notification that the response has been sent is dequeued from the completion queue, invoke() calls Release() on itself, decrementing the ref count, and allowing the remaining <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html" title="A shared owner of the details of a single async, unary call. ">shared_unary_call</a> objects, if any, to control lifetime. </p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="namespacebond.html">bond</a></li><li class="navelem"><b>ext</b></li><li class="navelem"><b>gRPC</b></li><li class="navelem"><b>detail</b></li><li class="navelem"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html">unary_call_impl</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>

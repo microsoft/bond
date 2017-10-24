@@ -27,7 +27,8 @@ var namespacebond =
           [ "io_manager_tag", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag" ],
           [ "service", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service" ],
           [ "service_unary_call_data", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data" ],
-          [ "unary_call_impl", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl" ]
+          [ "unary_call_base", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base" ],
+          [ "unary_call_impl", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html", null ]
         ] ],
         [ "reflection", null, [
           [ "MethodTemplate", "structbond_1_1ext_1_1g_r_p_c_1_1reflection_1_1_method_template.html", "structbond_1_1ext_1_1g_r_p_c_1_1reflection_1_1_method_template" ]
@@ -36,6 +37,7 @@ var namespacebond =
         [ "MultipleInvocationException", "classbond_1_1ext_1_1g_r_p_c_1_1_multiple_invocation_exception.html", null ],
         [ "server_builder_core", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder__core.html", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder__core" ],
         [ "server_core", "classbond_1_1ext_1_1g_r_p_c_1_1server__core.html", "classbond_1_1ext_1_1g_r_p_c_1_1server__core" ],
+        [ "shared_unary_call", "classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html", "classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call" ],
         [ "thread_pool", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool" ],
         [ "unary_call", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call" ],
         [ "unary_call_result", "structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html", "structbond_1_1ext_1_1g_r_p_c_1_1unary__call__result" ],

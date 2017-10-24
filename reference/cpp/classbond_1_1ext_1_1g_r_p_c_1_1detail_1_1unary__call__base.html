@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Bond: bond::ext::gRPC::unary_call&lt; TRequest, TResponse &gt; Class Template Reference</title>
+<title>Bond: bond::ext::gRPC::detail::unary_call_base&lt; TRequest, TResponse &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html','');});
+$(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -91,38 +91,27 @@ $(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1unary__
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call-members.html">List of all members</a>  </div>
+<a href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">bond::ext::gRPC::unary_call&lt; TRequest, TResponse &gt; Class Template Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
+<div class="title">bond::ext::gRPC::detail::unary_call_base&lt; TRequest, TResponse &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Exclusive owner of the details of a single async, unary call.  
- <a href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#details">More...</a></p>
+<p>Detail class that helps implement <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a> and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html">shared_unary_call</a>.  
+ <a href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#details">More...</a></p>
 <div class="dynheader">
-Inheritance diagram for bond::ext::gRPC::unary_call&lt; TRequest, TResponse &gt;:</div>
+Inheritance diagram for bond::ext::gRPC::detail::unary_call_base&lt; TRequest, TResponse &gt;:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.png" usemap="#bond::ext::gRPC::unary_5Fcall_3C_20TRequest_2C_20TResponse_20_3E_map" alt=""/>
-  <map id="bond::ext::gRPC::unary_5Fcall_3C_20TRequest_2C_20TResponse_20_3E_map" name="bond::ext::gRPC::unary_call&lt; TRequest, TResponse &gt;_map">
-<area href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html" title="Detail class that helps implement unary_call and shared_unary_call. " alt="bond::ext::gRPC::detail::unary_call_base&lt; TRequest, TResponse &gt;" shape="rect" coords="0,0,382,24"/>
+  <img src="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.png" usemap="#bond::ext::gRPC::detail::unary_5Fcall_5Fbase_3C_20TRequest_2C_20TResponse_20_3E_map" alt=""/>
+  <map id="bond::ext::gRPC::detail::unary_5Fcall_5Fbase_3C_20TRequest_2C_20TResponse_20_3E_map" name="bond::ext::gRPC::detail::unary_call_base&lt; TRequest, TResponse &gt;_map">
+<area href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html" title="A shared owner of the details of a single async, unary call. " alt="bond::ext::gRPC::shared_unary_call&lt; TRequest, TResponse &gt;" shape="rect" coords="0,56,382,80"/>
+<area href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. " alt="bond::ext::gRPC::unary_call&lt; TRequest, TResponse &gt;" shape="rect" coords="392,56,774,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8316eebe00f4ba62359208f550d7ff47"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#a8316eebe00f4ba62359208f550d7ff47">unary_call</a> ()=delete</td></tr>
-<tr class="memdesc:a8316eebe00f4ba62359208f550d7ff47"><td class="mdescLeft">&#160;</td><td class="mdescRight">The default constructor of <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> is not callable: the Bond-over-gRPC infrastructure will create <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> instances as needed.  <a href="#a8316eebe00f4ba62359208f550d7ff47">More...</a><br /></td></tr>
-<tr class="separator:a8316eebe00f4ba62359208f550d7ff47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e18c5d6339339fb81d1c41b1ca4ca99"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#a5e18c5d6339339fb81d1c41b1ca4ca99">unary_call</a> (<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a> &amp;&amp;other)=default</td></tr>
-<tr class="memdesc:a5e18c5d6339339fb81d1c41b1ca4ca99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> by moving from another <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a>.  <a href="#a5e18c5d6339339fb81d1c41b1ca4ca99">More...</a><br /></td></tr>
-<tr class="separator:a5e18c5d6339339fb81d1c41b1ca4ca99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a760a97896e004106d596b811a11ab1f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#a760a97896e004106d596b811a11ab1f6">operator=</a> (<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a> &amp;&amp;rhs)=default</td></tr>
-<tr class="memdesc:a760a97896e004106d596b811a11ab1f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign to this <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> by moving from another <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a>.  <a href="#a760a97896e004106d596b811a11ab1f6">More...</a><br /></td></tr>
-<tr class="separator:a760a97896e004106d596b811a11ab1f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5bb63392d9078504f417e0849244921"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html">shared_unary_call</a>&lt; TRequest, TResponse &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#ad5bb63392d9078504f417e0849244921">share</a> ()&amp;&amp;noexcept</td></tr>
-<tr class="memdesc:ad5bb63392d9078504f417e0849244921"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html">shared_unary_call</a> from this instance.  <a href="#ad5bb63392d9078504f417e0849244921">More...</a><br /></td></tr>
-<tr class="separator:ad5bb63392d9078504f417e0849244921"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cbaf120ba09b3afee5cdfcc3d2149ad"><td class="memItemLeft" align="right" valign="top">const grpc::ServerContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#a3cbaf120ba09b3afee5cdfcc3d2149ad">context</a> () const  noexcept</td></tr>
 <tr class="memdesc:a3cbaf120ba09b3afee5cdfcc3d2149ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the server context for this call.  <a href="#a3cbaf120ba09b3afee5cdfcc3d2149ad">More...</a><br /></td></tr>
 <tr class="separator:a3cbaf120ba09b3afee5cdfcc3d2149ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,72 +136,10 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename TRequest, typename TResponse&gt;<br />
-class bond::ext::gRPC::unary_call&lt; TRequest, TResponse &gt;</h3>
+class bond::ext::gRPC::detail::unary_call_base&lt; TRequest, TResponse &gt;</h3>
 
-<p>Exclusive owner of the details of a single async, unary call. </p>
-<p>Call <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#a14e2a62a37a05b9de27d202461987ab9">Finish</a> or <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#ab5b123f435a76ff7c6cdc0e1a66c34c5">FinishWithError</a> to send a response back to the client.</p>
-<p>If no explicit call to <code>Finish</code> or <code>FinishWithError</code> has been made before this <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> instance is destroyed or moved from, a generic internal server error is sent.</p>
-<dl class="section note"><dt>Note</dt><dd>This class can only be moved. If shared ownership semantics are needed, convert this to a <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html">shared_unary_call</a> with the <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#ad5bb63392d9078504f417e0849244921">share</a> function.</dd></dl>
-<dl class="section warning"><dt>Warning</dt><dd>A moved-from <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> is only valid for destruction or assignment. </dd></dl>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a8316eebe00f4ba62359208f550d7ff47"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TRequest, typename TResponse&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">bond::ext::gRPC::unary_call</a>&lt; TRequest, TResponse &gt;::<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a> </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>The default constructor of <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> is not callable: the Bond-over-gRPC infrastructure will create <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> instances as needed. </p>
-<p>Once created, a <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> instance can only be moved to another <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> or converted to a <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html">shared_unary_call</a> (see the <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#ad5bb63392d9078504f417e0849244921">share</a> function). </p>
-
-</div>
-</div>
-<a class="anchor" id="a5e18c5d6339339fb81d1c41b1ca4ca99"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TRequest, typename TResponse&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">bond::ext::gRPC::unary_call</a>&lt; TRequest, TResponse &gt;::<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a> </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a>&lt; TRequest, TResponse &gt; &amp;&amp;&#160;</td>
-          <td class="paramname"><em>other</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">default</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Constructs a <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> by moving from another <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a>. </p>
-<p>The moved-from instance is valid only for destruction and assignment. </p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
+<p>Detail class that helps implement <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a> and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html">shared_unary_call</a>. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a3cbaf120ba09b3afee5cdfcc3d2149ad"></a>
 <div class="memitem">
 <div class="memproto">
@@ -231,7 +158,7 @@ template&lt;typename TRequest , typename TResponse &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -258,7 +185,7 @@ template&lt;typename TRequest , typename TResponse &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -272,9 +199,6 @@ template&lt;typename TRequest , typename TResponse &gt; </div>
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename TRequest , typename TResponse &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html">bond::ext::gRPC::detail::unary_call_base</a>&lt; TRequest, TResponse &gt;::Finish </td>
@@ -294,11 +218,6 @@ template&lt;typename TRequest , typename TResponse &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Responds to the client with the given message and status. </p>
@@ -311,9 +230,6 @@ template&lt;typename TRequest , typename TResponse &gt; </div>
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename TRequest , typename TResponse &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html">bond::ext::gRPC::detail::unary_call_base</a>&lt; TRequest, TResponse &gt;::Finish </td>
@@ -333,11 +249,6 @@ template&lt;typename TRequest , typename TResponse &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Responds to the client with the given message and status. </p>
@@ -350,9 +261,6 @@ template&lt;typename TRequest , typename TResponse &gt; </div>
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename TRequest , typename TResponse &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html">bond::ext::gRPC::detail::unary_call_base</a>&lt; TRequest, TResponse &gt;::FinishWithError </td>
@@ -362,44 +270,10 @@ template&lt;typename TRequest , typename TResponse &gt; </div>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Responds to the client with the given status and no message. </p>
 <p>Only the first call to <code>Finish</code> or <code>FinishWithError</code> will be honored. </p>
-
-</div>
-</div>
-<a class="anchor" id="a760a97896e004106d596b811a11ab1f6"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TRequest, typename TResponse&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a>&amp; <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">bond::ext::gRPC::unary_call</a>&lt; TRequest, TResponse &gt;::operator= </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a>&lt; TRequest, TResponse &gt; &amp;&amp;&#160;</td>
-          <td class="paramname"><em>rhs</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">default</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Assign to this <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> by moving from another <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a>. </p>
-<p>The moved-from instance is valid only for destruction and assignment. </p>
 
 </div>
 </div>
@@ -421,7 +295,7 @@ template&lt;typename TRequest , typename TResponse &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -448,7 +322,7 @@ template&lt;typename TRequest , typename TResponse &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -457,40 +331,12 @@ template&lt;typename TRequest , typename TResponse &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="ad5bb63392d9078504f417e0849244921"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TRequest, typename TResponse&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html">shared_unary_call</a>&lt;TRequest, TResponse&gt; <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">bond::ext::gRPC::unary_call</a>&lt; TRequest, TResponse &gt;::share </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Creates a <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html">shared_unary_call</a> from this instance. </p>
-<p>This instance will be in a moved-from state after <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#ad5bb63392d9078504f417e0849244921">share</a> has been called, and the returned shared instance should be used to finish the call. </p>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacebond.html">bond</a></li><li class="navelem"><b>ext</b></li><li class="navelem"><b>gRPC</b></li><li class="navelem"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html">unary_call</a></li>
+    <li class="navelem"><a class="el" href="namespacebond.html">bond</a></li><li class="navelem"><b>ext</b></li><li class="navelem"><b>gRPC</b></li><li class="navelem"><b>detail</b></li><li class="navelem"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html">unary_call_base</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
