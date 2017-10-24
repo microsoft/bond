@@ -30,7 +30,7 @@ before_install:
     - pushd $HOME/docker-images
     - travis_retry wget -N https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial-new.tar.xz
     - popd
-    - time docker load -i $HOME/docker-images/bond-xenial.tar.xz
+    - time docker load -i $HOME/docker-images/bond-xenial-new.tar.xz
 
 script:
     - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond bond-xenial $HOME $FLAVOR $BOOST
