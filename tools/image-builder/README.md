@@ -1,7 +1,7 @@
 # Image Builder
 
-This directory contains the source for a docker container that is used for building Bond
-C++. It contains binaries of a number of Boost versions for Ubuntu 16.04 (Xenial Xerus).
+This directory contains the source for a docker container that is used for building Bond.
+It contains binaries of a number of Boost versions for Ubuntu 16.04 (Xenial Xerus).
 
 # Pre-requisites
 
@@ -26,7 +26,7 @@ the `build_boosts.zsh` script) that will become part of the image:
     $ ./build_image.zsh
 
 The build takes about 50 minutes on a quad-core 2.4 GHz Xeon. When it finishes,
-there will be a `bond-xenial.tar.xz` archive in this directory.
+there will be a `bond-xenial.tar.gz` archive in this directory.
 
 # Uploading the Image
 
@@ -45,7 +45,7 @@ To get the `AZURE_STORAGE_KEY`, visit the [Azure Portal][azure-portal].
 
 ## Uploading
 
-Run `./upload_image.zsh` to upload the `bond-xenial.tar.xz` archive
+Run `./upload_image.zsh` to upload the `bond-xenial.tar.gz` archive
 produced from the build.
 
 [azure-cli]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
