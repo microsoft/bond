@@ -19,6 +19,11 @@ different versioning scheme, following the Haskell community's
 * C# NuGet version: TBD
 * C# Comm NuGet version: TBD
 
+### `gbc` and Bond compiler library ###
+
+* C++ codegen now properly generates move assignment operator which was broken
+  for some cases.
+
 ## 7.0.0: 2017-10-24  ##
 * `gbc` & compiler library: 0.10.1.0
 * IDL core version: 2.0
