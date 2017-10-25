@@ -11,10 +11,8 @@ function (add_unit_test)
         bond
         unit_test_codegen1
         unit_test_codegen2
-        unit_test_codegen3)
-    if (MSVC)
-        add_dependencies (${name} unit_test_codegen4)
-    endif()
+        unit_test_codegen3
+        unit_test_codegen4)
     target_include_directories (${name} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
@@ -37,10 +35,8 @@ add_target_to_folder (core_test_common)
 add_dependencies(core_test_common
     unit_test_codegen1
     unit_test_codegen2
-    unit_test_codegen3)
-if (MSVC)
-    add_dependencies (core_test_common unit_test_codegen4)
-endif()
+    unit_test_codegen3
+    unit_test_codegen4)
 target_include_directories (core_test_common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
@@ -83,7 +79,6 @@ add_bond_codegen (TARGET unit_test_codegen3
         --header=\\\"allocators.h\\\"
         --allocator=TestAllocator)
 
-if (MSVC)
 add_bond_codegen (TARGET unit_test_codegen4
     allocator_test.bond
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/capped_allocator_tests_generated"
@@ -92,7 +87,6 @@ add_bond_codegen (TARGET unit_test_codegen4
         --header=\"<bond/core/capped_allocator.h>\"
         --allocator=\"bond::capped_allocator<>\"
         --namespace=\"allocator_test=capped_allocator_tests\")
-endif()
 
 # Full unit test is too big, .pdb files exceed compiler limit;
 # Since debugging such large executable is not practical anyways,
