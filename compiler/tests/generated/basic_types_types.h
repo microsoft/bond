@@ -83,6 +83,7 @@ namespace tests
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
         BasicTypes& operator=(const BasicTypes&) = default;
+        BasicTypes& operator=(BasicTypes&&) = default;
 #endif
 
         bool operator==(const BasicTypes& other) const

@@ -88,6 +88,7 @@ namespace test
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
         foo& operator=(const foo&) = default;
+        foo& operator=(foo&&) = default;
 #endif
 
         bool operator==(const foo& other) const

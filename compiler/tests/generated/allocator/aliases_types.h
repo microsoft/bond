@@ -55,6 +55,7 @@ namespace tests
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
         Foo& operator=(const Foo&) = default;
+        Foo& operator=(Foo&&) = default;
 #endif
 
         bool operator==(const Foo& other) const
@@ -197,6 +198,7 @@ namespace tests
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
         WrappingAnEnum& operator=(const WrappingAnEnum&) = default;
+        WrappingAnEnum& operator=(WrappingAnEnum&&) = default;
 #endif
 
         bool operator==(const WrappingAnEnum& other) const

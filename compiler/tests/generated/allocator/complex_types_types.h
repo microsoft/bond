@@ -51,6 +51,7 @@ namespace tests
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
         Foo& operator=(const Foo&) = default;
+        Foo& operator=(Foo&&) = default;
 #endif
 
         bool operator==(const Foo&) const
@@ -136,6 +137,7 @@ namespace tests
 #ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated operator= OK
         ComplexTypes& operator=(const ComplexTypes&) = default;
+        ComplexTypes& operator=(ComplexTypes&&) = default;
 #endif
 
         bool operator==(const ComplexTypes& other) const

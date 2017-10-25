@@ -309,12 +309,13 @@ namespace std
             -- default OK when there are no meta fields
             implicitlyDeclared = CPP.ifndef CPP.defaultedFunctions [lt|
         // Compiler generated operator= OK
-        #{declName}& operator=(const #{declName}&) = default;|]
+        #{declName}& operator=(const #{declName}&) = default;
+        #{declName}& operator=(#{declName}&&) = default;|]
 
             -- define operator= using swap
-            define = [lt|#{declName}& operator=(const #{declName}& #{otherParamName})
+            define = [lt|#{declName}& operator=(#{declName} #{otherParamName})
         {
-            #{declName}(#{otherParamName}).swap(*this);
+            #{otherParamName}.swap(*this);
             return *this;
         }|]
 
