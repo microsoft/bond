@@ -307,10 +307,14 @@ namespace std
         assignmentOp = if hasMetaFields then define else implicitlyDeclared
           where
             -- default OK when there are no meta fields
-            implicitlyDeclared = CPP.ifndef CPP.defaultedFunctions [lt|
+            implicitlyDeclared = [lt|
+#if !defined(#{CPP.defaultedMoveCtors})
         // Compiler generated operator= OK
         #{declName}& operator=(const #{declName}&) = default;
-        #{declName}& operator=(#{declName}&&) = default;|]
+        #{declName}& operator=(#{declName}&&) = default;
+#else
+        #{define}
+#endif|]
 
             -- define operator= using swap
             define = [lt|#{declName}& operator=(#{declName} #{otherParamName})

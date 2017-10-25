@@ -219,10 +219,16 @@ namespace tests
 #endif
         
         
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
+#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
         // Compiler generated operator= OK
         Foo& operator=(const Foo&) = default;
         Foo& operator=(Foo&&) = default;
+#else
+        Foo& operator=(Foo other)
+        {
+            other.swap(*this);
+            return *this;
+        }
 #endif
 
         bool operator==(const Foo& other) const
