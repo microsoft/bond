@@ -10,6 +10,55 @@
     using NUnit.Framework;
 
     [global::Bond.Schema]
+    public class Dates
+    {
+        [global::Bond.Id(0), global::Bond.Type(typeof(long))]
+        public System.DateTime _date { get; set; }
+
+        [global::Bond.Id(1), global::Bond.Type(typeof(List<long>))]
+        public List<System.DateTime> _dateVector { get; set; }
+
+        [global::Bond.Id(2), global::Bond.Type(typeof(LinkedList<long>))]
+        public LinkedList<System.DateTime> _dateList { get; set; }
+
+        [global::Bond.Id(3), global::Bond.Type(typeof(Dictionary<int,long>))]
+        public Dictionary<int, System.DateTime> _dateMap { get; set; }
+
+        [global::Bond.Id(4), global::Bond.Type(typeof(global::Bond.Tag.nullable<long>))]
+        public System.DateTime? _dateNullable { get; set; }
+
+        [global::Bond.Id(5), global::Bond.Type(typeof(long)), global::Bond.Required]
+        public System.DateTime _dateRequired { get; set; }
+
+        [global::Bond.Id(6), global::Bond.Type(typeof(long)), global::Bond.RequiredOptional]
+        public System.DateTime _dateRequiredOptional { get; set; }
+
+        [global::Bond.Id(7), global::Bond.Type(typeof(long))]
+        public System.DateTime _dateOptional { get; set; }
+
+        public Dates()
+            : this("UnitTest.Convert.Dates", "Dates")
+        { }
+
+        protected Dates(string fullName, string name)
+        {
+            _date = new System.DateTime();
+            _dateVector = new List<System.DateTime>();
+            _dateList = new LinkedList<System.DateTime>();
+            _dateMap = new Dictionary<int, System.DateTime>();
+            _dateNullable = null;
+            _dateRequired = new System.DateTime();
+            _dateRequiredOptional = new System.DateTime();
+            _dateOptional = new System.DateTime();
+        }
+
+        internal int CountInstances()
+        {
+            return 4 + _dateVector.Count + _dateList.Count + _dateMap.Count + (_dateNullable.HasValue ? 1 : 0);
+        }
+    }
+
+    [global::Bond.Schema]
     public class Decimals
     {
         [global::Bond.Id(0), global::Bond.Type(typeof(global::Bond.Tag.blob))]
@@ -30,6 +79,12 @@
         [global::Bond.Id(5), global::Bond.Type(typeof(global::Bond.Tag.blob)), global::Bond.Required]
         public decimal _decRequired { get; set; }
 
+        [global::Bond.Id(6), global::Bond.Type(typeof(global::Bond.Tag.blob)), global::Bond.RequiredOptional]
+        public decimal _decRequiredOptional { get; set; }
+
+        [global::Bond.Id(7), global::Bond.Type(typeof(global::Bond.Tag.blob))]
+        public decimal _decOptional { get; set; }
+
         public Decimals()
             : this("UnitTest.Convert.Decimals", "Decimals")
         { }
@@ -42,11 +97,13 @@
             _decMap = new Dictionary<int, decimal>();
             _decNullable = null;
             _decRequired = new decimal();
+            _decRequiredOptional = new decimal();
+            _decOptional = new decimal();
         }
 
         internal int CountInstances()
         {
-            return 1 + _decVector.Count + _decList.Count + _decMap.Count + (_decNullable.HasValue ? 1 : 0) + 1;
+            return 4 + _decVector.Count + _decList.Count + _decMap.Count + (_decNullable.HasValue ? 1 : 0);
         }
     }
 
@@ -114,6 +171,12 @@
         [global::Bond.Id(5), global::Bond.Type(typeof(global::Bond.Tag.blob)), global::Bond.Required]
         public RefObject _refRequired { get; set; }
 
+        [global::Bond.Id(6), global::Bond.Type(typeof(global::Bond.Tag.blob)), global::Bond.RequiredOptional]
+        public RefObject _refRequiredOptional { get; set; }
+
+        [global::Bond.Id(7), global::Bond.Type(typeof(global::Bond.Tag.blob)), global::Bond.RequiredOptional]
+        public RefObject _refOptional { get; set; }
+
         public RefObjects()
             : this("UnitTest.Convert.RefObjects", "RefObjects")
         { }
@@ -126,21 +189,38 @@
             _refMap = new Dictionary<int, RefObject>();
             _refNullable = null;
             _refRequired = new RefObject();
+            _refRequiredOptional = new RefObject();
+            _refOptional = new RefObject();
         }
 
         internal int CountInstances()
         {
-            return 1 + _refVector.Count + _refList.Count + _refMap.Count + (_refNullable != null ? 1 : 0) + 1;
+            return 4 + _refVector.Count + _refList.Count + _refMap.Count + (_refNullable != null ? 1 : 0);
         }
     }
 
     public static class BondTypeAliasConverter
     {
+        public static int ConvertToDateTimeCount = 0;
+        public static int ConvertFromDateTimeCount = 0;
+
         public static int ConvertToDecimalCount = 0;
         public static int ConvertFromDecimalCount = 0;
 
         public static int ConvertToRefObjectCount = 0;
         public static int ConvertFromRefObjectCount = 0;
+
+        public static DateTime Convert(long value, DateTime unused)
+        {
+            Interlocked.Increment(ref ConvertToDateTimeCount);
+            return new DateTime(value, DateTimeKind.Utc);
+        }
+
+        public static long Convert(DateTime value, long unused)
+        {
+            Interlocked.Increment(ref ConvertFromDateTimeCount);
+            return value.ToUniversalTime().Ticks;
+        }
 
         public static decimal Convert(ArraySegment<byte> value, decimal unused)
         {
@@ -179,6 +259,9 @@
 
         public static void ResetCounts()
         {
+            ConvertToDateTimeCount = 0;
+            ConvertFromDateTimeCount = 0;
+
             ConvertToDecimalCount = 0;
             ConvertFromDecimalCount = 0;
 
@@ -197,8 +280,80 @@
             BondTypeAliasConverter.ResetCounts();
         }
 
+        private static DateTime MakeUtcDateTime(int year, int month, int day)
+        {
+            return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+        }
+
         [Test]
-        public void CorrectSerializeConvertCountStruct()
+        public void CorrectSerializeConvertCountLongStruct()
+        {
+            var foo = new Dates();
+            foo._date = MakeUtcDateTime(2015,1,8);
+            foo._dateVector.Add(MakeUtcDateTime(2015,1,9));
+            foo._dateVector.Add(MakeUtcDateTime(2015,1,10));
+            foo._dateList.AddLast(MakeUtcDateTime(2015, 1, 11));
+            foo._dateList.AddLast(MakeUtcDateTime(2015, 1, 12));
+            foo._dateList.AddLast(MakeUtcDateTime(2015, 1, 13));
+
+            foo._dateMap.Add(1, MakeUtcDateTime(2015, 1, 14));
+            foo._dateMap.Add(2, MakeUtcDateTime(2015, 1, 15));
+            foo._dateMap.Add(3, MakeUtcDateTime(2015, 1, 16));
+
+            foo._dateNullable = MakeUtcDateTime(2015, 1, 17);
+
+            foo._dateRequired = MakeUtcDateTime(2015, 1, 18);
+            foo._dateRequiredOptional = MakeUtcDateTime(2015, 1, 19);
+            foo._dateOptional = MakeUtcDateTime(2015, 1, 20);
+
+            var output = new OutputBuffer();
+            var writer = new CompactBinaryWriter<OutputBuffer>(output);
+            var serializer = new Serializer<CompactBinaryWriter<OutputBuffer>>(typeof(Dates));
+            serializer.Serialize(foo, writer);
+
+            Assert.AreEqual(foo.CountInstances(), BondTypeAliasConverter.ConvertFromDateTimeCount);
+            Assert.AreEqual(0, BondTypeAliasConverter.ConvertToDateTimeCount);
+        }
+
+        [Test]
+        public void CorrectRoundtripConvertCountLongStruct()
+        {
+            var foo = new Dates();
+            foo._date = MakeUtcDateTime(2015,1,8);
+            foo._dateVector.Add(MakeUtcDateTime(2015,1,9));
+            foo._dateVector.Add(MakeUtcDateTime(2015,1,10));
+            foo._dateList.AddLast(MakeUtcDateTime(2015, 1, 11));
+            foo._dateList.AddLast(MakeUtcDateTime(2015, 1, 12));
+            foo._dateList.AddLast(MakeUtcDateTime(2015, 1, 13));
+
+            foo._dateMap.Add(1, MakeUtcDateTime(2015, 1, 14));
+            foo._dateMap.Add(2, MakeUtcDateTime(2015, 1, 15));
+            foo._dateMap.Add(3, MakeUtcDateTime(2015, 1, 16));
+
+            foo._dateNullable = MakeUtcDateTime(2015, 1, 17);
+
+            foo._dateRequired = MakeUtcDateTime(2015, 1, 18);
+            foo._dateRequiredOptional = MakeUtcDateTime(2015, 1, 19);
+            foo._dateOptional = MakeUtcDateTime(2015, 1, 20);
+
+            var output = new OutputBuffer();
+            var writer = new CompactBinaryWriter<OutputBuffer>(output);
+            var serializer = new Serializer<CompactBinaryWriter<OutputBuffer>>(typeof(Dates));
+            serializer.Serialize(foo, writer);
+
+            var input = new InputBuffer(output.Data);
+            var reader = new CompactBinaryReader<InputBuffer>(input);
+            var deserializer = new Deserializer<CompactBinaryReader<InputBuffer>>(typeof(Dates));
+            var foo2 = deserializer.Deserialize<Dates>(reader);
+
+            Assert.AreEqual(foo.CountInstances(), BondTypeAliasConverter.ConvertFromDateTimeCount);
+            Assert.AreEqual(foo2.CountInstances(), BondTypeAliasConverter.ConvertToDateTimeCount);
+            Assert.AreEqual(foo.CountInstances(), foo2.CountInstances());
+            Assert.IsTrue(Bond.Comparer.Equal(foo, foo2));
+        }
+
+        [Test]
+        public void CorrectSerializeConvertCountBlobStruct()
         {
             var foo = new Decimals();
             foo._dec = new decimal(19.91);
@@ -215,6 +370,8 @@
             foo._decNullable = new decimal(20.20);
 
             foo._decRequired = new decimal(21.21);
+            foo._decRequiredOptional = new decimal(22.22);
+            foo._decOptional = new decimal(23.23);
 
             var output = new OutputBuffer();
             var writer = new CompactBinaryWriter<OutputBuffer>(output);
@@ -226,7 +383,7 @@
         }
 
         [Test]
-        public void CorrectRoundtripConvertCountStruct()
+        public void CorrectRoundtripConvertCountBlobStruct()
         {
             var foo = new Decimals();
             foo._dec = new decimal(19.91);
@@ -243,6 +400,8 @@
             foo._decNullable = new decimal(20.20);
 
             foo._decRequired = new decimal(21.21);
+            foo._decRequiredOptional = new decimal(22.22);
+            foo._decOptional = new decimal(23.23);
 
             var output = new OutputBuffer();
             var writer = new CompactBinaryWriter<OutputBuffer>(output);
@@ -278,6 +437,8 @@
             foo._refNullable = new RefObject("10010");
 
             foo._refRequired = new RefObject("11011");
+            foo._refRequiredOptional = new RefObject("12012");
+            foo._refOptional = new RefObject("13013");
 
             var output = new OutputBuffer();
             var writer = new CompactBinaryWriter<OutputBuffer>(output);
@@ -307,6 +468,8 @@
             foo._refNullable = new RefObject("10010");
 
             foo._refRequired = new RefObject("11011");
+            foo._refRequiredOptional = new RefObject("12012");
+            foo._refOptional = new RefObject("13013");
 
             var output = new OutputBuffer();
             var writer = new CompactBinaryWriter<OutputBuffer>(output);

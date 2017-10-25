@@ -140,7 +140,7 @@ namespace Bond.Expressions
                     return Expression.Block(
                         new[] { convertedBlob },
                         Expression.Assign(convertedBlob, blob),
-                        PrunedExpression.IfThenElse(cannotOmit, processField, omitField));
+                        processField);
                 }
             }
             else
