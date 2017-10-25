@@ -13,6 +13,7 @@ services:
     - docker
 env:
     - FLAVOR="cs"
+    - FLAVOR="cpp-core" BOOST="1.65.1"
     - FLAVOR="cpp-core" BOOST="1.64.0"
     - FLAVOR="cpp-core" BOOST="1.63.0"
     - FLAVOR="cpp-core" BOOST="1.62.0"
@@ -21,6 +22,7 @@ env:
     - FLAVOR="cpp-core" BOOST="1.59.0"
     - FLAVOR="cpp-core" BOOST="1.58.0"
     - FLAVOR="cpp-comm" BOOST="1.63.0"
+    - FLAVOR="cpp-grpc" BOOST="1.65.1"
     - FLAVOR="cpp-grpc" BOOST="1.64.0"
     - FLAVOR="cpp-grpc" BOOST="1.63.0"
     - FLAVOR="hs"
