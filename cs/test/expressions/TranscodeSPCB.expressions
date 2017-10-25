@@ -848,6 +848,33 @@
         ) {
             .Call $writer.WriteFieldOmitted(
                 .Constant<Bond.BondDataType>(BT_LIST),
+                .Constant<System.UInt16>(75),
+                .Constant<Bond.Metadata>(_decimal_req))
+        } .Else {
+            .Block() {
+                .Call $writer.WriteFieldBegin(
+                    .Constant<Bond.BondDataType>(BT_LIST),
+                    .Constant<System.UInt16>(75),
+                    .Constant<Bond.Metadata>(_decimal_req));
+                .Block(System.Int32 $count) {
+                    $count = .Call $reader.ReadContainerBegin();
+                    .Block() {
+                        .Call $writer.WriteContainerBegin(
+                            $count,
+                            .Constant<Bond.BondDataType>(BT_INT8));
+                        .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                        .Call $writer.WriteContainerEnd()
+                    };
+                    .Call $reader.ReadContainerEnd()
+                };
+                .Call $writer.WriteFieldEnd()
+            }
+        };
+        .If (
+            .Call $reader.ReadFieldOmitted()
+        ) {
+            .Call $writer.WriteFieldOmitted(
+                .Constant<Bond.BondDataType>(BT_LIST),
                 .Constant<System.UInt16>(80),
                 .Constant<Bond.Metadata>(_reference))
         } .Else {

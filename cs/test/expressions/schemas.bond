@@ -38,6 +38,7 @@ struct Example : Base
     72: vector<decimal> _decVector;
     73: map<int32, decimal> _decMap;
     74: nullable<decimal> _decNullable;
+    75: required decimal _decimal_req;
     80: reference _reference;
     81: list<reference> _refList;
     82: vector<reference> _refVector;

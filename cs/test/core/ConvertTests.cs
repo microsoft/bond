@@ -27,6 +27,9 @@
         [global::Bond.Id(4), global::Bond.Type(typeof(global::Bond.Tag.nullable<global::Bond.Tag.blob>))]
         public decimal? _decNullable { get; set; }
 
+        [global::Bond.Id(5), global::Bond.Type(typeof(global::Bond.Tag.blob)), global::Bond.Required]
+        public decimal _decRequired { get; set; }
+
         public Decimals()
             : this("UnitTest.Convert.Decimals", "Decimals")
         { }
@@ -38,11 +41,12 @@
             _decList = new LinkedList<decimal>();
             _decMap = new Dictionary<int, decimal>();
             _decNullable = null;
+            _decRequired = new decimal();
         }
 
         internal int CountInstances()
         {
-            return 1 + _decVector.Count + _decList.Count + _decMap.Count + (_decNullable.HasValue ? 1 : 0);
+            return 1 + _decVector.Count + _decList.Count + _decMap.Count + (_decNullable.HasValue ? 1 : 0) + 1;
         }
     }
 
@@ -107,6 +111,9 @@
         [global::Bond.Id(4), global::Bond.Type(typeof(global::Bond.Tag.nullable<global::Bond.Tag.blob>))]
         public RefObject _refNullable { get; set; }
 
+        [global::Bond.Id(5), global::Bond.Type(typeof(global::Bond.Tag.blob)), global::Bond.Required]
+        public RefObject _refRequired { get; set; }
+
         public RefObjects()
             : this("UnitTest.Convert.RefObjects", "RefObjects")
         { }
@@ -118,11 +125,12 @@
             _refList = new LinkedList<RefObject>();
             _refMap = new Dictionary<int, RefObject>();
             _refNullable = null;
+            _refRequired = new RefObject();
         }
 
         internal int CountInstances()
         {
-            return 1 + _refVector.Count + _refList.Count + _refMap.Count + (_refNullable != null ? 1 : 0);
+            return 1 + _refVector.Count + _refList.Count + _refMap.Count + (_refNullable != null ? 1 : 0) + 1;
         }
     }
 
@@ -206,6 +214,8 @@
 
             foo._decNullable = new decimal(20.20);
 
+            foo._decRequired = new decimal(21.21);
+
             var output = new OutputBuffer();
             var writer = new CompactBinaryWriter<OutputBuffer>(output);
             var serializer = new Serializer<CompactBinaryWriter<OutputBuffer>>(typeof(Decimals));
@@ -231,6 +241,8 @@
             foo._decMap.Add(3, new decimal(17.17));
 
             foo._decNullable = new decimal(20.20);
+
+            foo._decRequired = new decimal(21.21);
 
             var output = new OutputBuffer();
             var writer = new CompactBinaryWriter<OutputBuffer>(output);
@@ -265,6 +277,8 @@
 
             foo._refNullable = new RefObject("10010");
 
+            foo._refRequired = new RefObject("11011");
+
             var output = new OutputBuffer();
             var writer = new CompactBinaryWriter<OutputBuffer>(output);
             var serializer = new Serializer<CompactBinaryWriter<OutputBuffer>>(typeof(RefObjects));
@@ -291,6 +305,8 @@
             foo._refMap.Add(3, new RefObject("9999"));
 
             foo._refNullable = new RefObject("10010");
+
+            foo._refRequired = new RefObject("11011");
 
             var output = new OutputBuffer();
             var writer = new CompactBinaryWriter<OutputBuffer>(output);

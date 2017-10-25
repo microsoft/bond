@@ -134,6 +134,14 @@ namespace Bond.Expressions
             if (fieldSchemaType.IsBondStruct() || fieldSchemaType.IsBonded() || schemaField.GetModifier() != Modifier.Optional)
             {
                 cannotOmit = Expression.Constant(true);
+
+                if (fieldSchemaType.IsBondBlob())
+                {
+                    return Expression.Block(
+                        new[] { convertedBlob },
+                        Expression.Assign(convertedBlob, blob),
+                        PrunedExpression.IfThenElse(cannotOmit, processField, omitField));
+                }
             }
             else
             {
