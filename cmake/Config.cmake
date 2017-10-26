@@ -169,6 +169,7 @@ cxx_add_compile_options(GNU
     --std=c++11
     -Wall
     -Werror
+    -Wno-deprecated-declarations
     -Wno-unknown-warning-option
     -Wno-unused-local-typedefs)
 
