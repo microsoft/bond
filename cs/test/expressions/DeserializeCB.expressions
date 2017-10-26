@@ -2363,6 +2363,72 @@
                 .Loop  {
                     .If ((System.Int32)$fieldType > 1) {
                         .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(75)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                $Example._decimal_req = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                    .Call $reader.ReadBytes($count),
+                                                    .Default(System.Decimal))
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_INT8),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(75)) {
+                                    .Block() {
+                                        .Invoke (.Lambda #Lambda3<System.Action`2[System.String,System.String]>)(
+                                            "Example",
+                                            "_decimal_req");
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(75)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Invoke (.Lambda #Lambda3<System.Action`2[System.String,System.String]>)(
+                                "Example",
+                                "_decimal_req");
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
                             .If ($fieldId == .Constant<System.UInt16>(80)) {
                                 .Block() {
                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
