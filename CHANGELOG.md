@@ -24,6 +24,12 @@ different versioning scheme, following the Haskell community's
 * C++ codegen now properly generates move assignment operator which was broken
   for some cases.
 
+### C++ ###
+
+* The CMake build now enforces a minimum Boost version of 1.58. The build
+  has required Boost 1.58 or later since version 5.2.0, but this was not
+  enforced.
+
 ## 7.0.0: 2017-10-24  ##
 * `gbc` & compiler library: 0.10.1.0
 * IDL core version: 2.0
