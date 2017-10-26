@@ -57,9 +57,9 @@ namespace bondmeta
             InitMetadata("HasMetaFields", "deprecated.bondmeta.HasMetaFields");
         }
         
-        HasMetaFields& operator=(const HasMetaFields& other)
+        HasMetaFields& operator=(HasMetaFields other)
         {
-            HasMetaFields(other).swap(*this);
+            other.swap(*this);
             return *this;
         }
 
