@@ -532,6 +532,21 @@
                 .If (
                     .Call $reader.ReadFieldOmitted()
                 ) {
+                    .Invoke (.Lambda #Lambda2<System.Action`2[System.String,System.String]>)(
+                        "Example",
+                        "_decimal_req")
+                } .Else {
+                    .Block(System.Int32 $count) {
+                        $count = .Call $reader.ReadContainerBegin();
+                        $Example._decimal_req = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                            .Call $reader.ReadBytes($count),
+                            .Default(System.Decimal));
+                        .Call $reader.ReadContainerEnd()
+                    }
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
                     .Default(System.Void)
                 } .Else {
                     .Block(System.Int32 $count) {

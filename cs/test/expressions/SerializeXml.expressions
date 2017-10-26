@@ -902,6 +902,35 @@
         };
         .Block(System.ArraySegment`1[System.Byte] $convertedBlob) {
             $convertedBlob = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                $Example._decimal_req,
+                .Default(System.ArraySegment`1[System.Byte]));
+            .Block() {
+                .Call $writer.WriteFieldBegin(
+                    .Constant<Bond.BondDataType>(BT_LIST),
+                    .Constant<System.UInt16>(75),
+                    .Constant<Bond.Metadata>(_decimal_req));
+                .Block(
+                    System.ArraySegment`1[System.Byte] $arraySegment,
+                    System.Int32 $count,
+                    System.Int32 $index,
+                    System.Int32 $end) {
+                    $arraySegment = $convertedBlob;
+                    $index = $arraySegment.Offset;
+                    $count = $arraySegment.Count;
+                    $end = $index + $count;
+                    .Block() {
+                        .Call $writer.WriteContainerBegin(
+                            $count,
+                            .Constant<Bond.BondDataType>(BT_INT8));
+                        .Call $writer.WriteBytes($arraySegment);
+                        .Call $writer.WriteContainerEnd()
+                    }
+                };
+                .Call $writer.WriteFieldEnd()
+            }
+        };
+        .Block(System.ArraySegment`1[System.Byte] $convertedBlob) {
+            $convertedBlob = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                 $Example._reference,
                 .Default(System.ArraySegment`1[System.Byte]));
             .If ($convertedBlob != .Default(System.ArraySegment`1[System.Byte])) {
