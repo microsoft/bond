@@ -7,6 +7,21 @@ setopt shwordsplit
 SYMLINKED_HOME=$1
 FLAVOR=$2
 BOOST=${3:-}
+COMPILER=${4:-clang}
+
+case "$COMPILER" in
+    clang)
+        CXX_COMPILER="clang++ -Qunused-arguments --system-header-prefix=boost/"
+        CC_COMPILER="clang -Qunused-arguments --system-header-prefix=boost/"
+        ;;
+    
+    gcc)
+        CXX_COMPILER="g++"
+        CC_COMPILER="gcc"
+        ;;
+    
+    *) echo "Unknown compiler $COMPILER"; exit 1;;
+esac
 
 BUILD_PATH=/root/build
 
@@ -27,8 +42,8 @@ case "$FLAVOR" in
         if [ ! $BOOST ]; then echo "BOOST not specified"; exit 1; fi
 
         export BOOST_ROOT=/opt/boosts/boost_`echo $BOOST | tr . _`
-        export CXX="ccache clang++ -Qunused-arguments --system-header-prefix=boost/"
-        export CC="ccache clang -Qunused-arguments --system-header-prefix=boost/"
+        export CXX="ccache $CXX_COMPILER"
+        export CC="ccache $CC_COMPILER"
 
         ln -s /root/.ccache $SYMLINKED_HOME/.ccache
 
@@ -40,8 +55,8 @@ case "$FLAVOR" in
     cs)
         # TODO: Remove build dependency on C++
         export BOOST_ROOT=/opt/boosts/boost_1_63_0
-        export CXX="ccache clang++ -Qunused-arguments --system-header-prefix=boost/"
-        export CC="ccache clang -Qunused-arguments --system-header-prefix=boost/"
+        export CXX="ccache $CXX_COMPILER"
+        export CC="ccache $CC_COMPILER"
         ln -s /root/.ccache $SYMLINKED_HOME/.ccache
 
         nuget restore /root/bond/cs/cs.sln
@@ -63,8 +78,8 @@ case "$FLAVOR" in
     hs)
         # TODO: Remove build dependency on C++
         export BOOST_ROOT=/opt/boosts/boost_1_63_0
-        export CXX="ccache clang++ -Qunused-arguments --system-header-prefix=boost/"
-        export CC="ccache clang -Qunused-arguments --system-header-prefix=boost/"
+        export CXX="ccache $CXX_COMPILER"
+        export CC="ccache $CC_COMPILER"
         ln -s /root/.ccache $SYMLINKED_HOME/.ccache
 
         cmake -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE /root/bond
