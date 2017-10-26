@@ -19,7 +19,20 @@ different versioning scheme, following the Haskell community's
 * C# NuGet version: TBD
 * C# Comm NuGet version: TBD
 
-## 7.0.0: 2017-10-24  ##
+## 7.0.1: 2017-10-26 ##
+* `gbc` & compiler library: 0.10.1.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 7.0.0
+* C# NuGet version: 7.0.1
+* C# Comm NuGet version: 0.14.0
+
+### C# ###
+* Fixes a regression introduced in 7.0.0 that resulted in an exception during
+  generation of Serializer instances if the type contained an aliased
+  `required` blob field.
+
+## 7.0.0: 2017-10-24 ##
 * `gbc` & compiler library: 0.10.1.0
 * IDL core version: 2.0
 * IDL comm version: 1.2
