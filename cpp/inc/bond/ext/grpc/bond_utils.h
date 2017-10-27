@@ -81,8 +81,7 @@ namespace grpc {
 
             char* dest = buff.get();
 
-            grpc_slice s;
-            while (grpc_byte_buffer_reader_next(&reader, &s) != 0)
+            for (grpc_slice s; grpc_byte_buffer_reader_next(&reader, &s) != 0;)
             {
                 std::memcpy(dest, GRPC_SLICE_START_PTR(s), GRPC_SLICE_LENGTH(s));
                 dest += GRPC_SLICE_LENGTH(s);
