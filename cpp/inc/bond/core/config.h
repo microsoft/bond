@@ -9,19 +9,6 @@
 #define BOND_NO_CXX11_NOEXCEPT
 #endif
 
-#if defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS) \
-    || defined(BOOST_NO_CXX11_RVALUE_REFERENCES) \
-    || defined(BOOST_NO_RVALUE_REFERENCES)
-// We need support for both defaulted functions and rvalue references to use
-// default move ctors
-#define BOND_NO_CXX11_DEFAULTED_MOVE_CTOR
-#else
-    #if defined(_MSC_VER) && (_MSC_VER < 1900)
-    // Versions of MSVC prior to 1900 do not support = default for move ctors
-    #define BOND_NO_CXX11_DEFAULTED_MOVE_CTOR
-    #endif
-#endif
-
 #if defined(BOOST_NO_CXX11_HDR_TYPE_TRAITS) && (_CPPLIB_VER < 520) && !defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define BOND_NO_CXX11_HDR_TYPE_TRAITS
 #endif

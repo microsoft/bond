@@ -18,7 +18,7 @@ namespace tests
     using System.Collections.Generic;
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.1.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.2.0")]
     public partial class Foo
     {
         [global::Bond.Id(0)]

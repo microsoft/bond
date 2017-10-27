@@ -18,7 +18,7 @@ namespace tests
     using System.Collections.Generic;
 
     [global::Bond.Attribute("FooAttribute", "Bar")]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.1.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.2.0")]
     public abstract class FooServiceBase : IFoo, global::Bond.Comm.IService
     {
         public global::System.Collections.Generic.IEnumerable<global::Bond.Comm.ServiceMethodInfo> Methods
