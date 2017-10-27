@@ -195,7 +195,7 @@ TEST_CASE_BEGIN(CompileTimeMetadataTests)
         UT_AssertAreEqual(value.m_int32_min, -2147483647-1);
         UT_AssertAreEqual(value.m_int32_max, 2147483647);
 
-        UT_AssertAreEqual(value.m_uint64_min, 0);
+        UT_AssertAreEqual(value.m_uint64_min, 0u);
         UT_AssertAreEqual(value.m_uint64_max, 0xFFFFFFFFFFFFFFFF);
         UT_AssertAreEqual(value.m_int64_min, -9223372036854775807LL-1);
         UT_AssertAreEqual(value.m_int64_max, 9223372036854775807);

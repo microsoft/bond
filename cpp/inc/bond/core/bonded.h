@@ -7,6 +7,7 @@
 #include "protocol.h"
 #include "runtime_schema.h"
 #include "bond_fwd.h"
+#include "select_protocol_fwd.h"
 #include "detail/double_pass.h"
 #include "detail/protocol_visitors.h"
 #include "detail/marshaled_bonded.h"
@@ -33,12 +34,6 @@ is_marshaled_bonded
     : std::integral_constant<bool,
         uses_marshaled_bonded<Reader, Unused>::value
         && is_bonded<T>::value> {};
-
-
-template <typename T, typename Protocols, typename Buffer, typename Transform>
-inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
-    Buffer& input,
-    const Transform& transform);
 
 
 /// @brief Represents data for a struct T known at compile-time

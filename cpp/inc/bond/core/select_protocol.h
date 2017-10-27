@@ -6,7 +6,7 @@
 #include "exception.h"
 #include "protocol.h"
 #include "runtime_schema.h"
-#include "exception.h"
+#include "select_protocol_fwd.h"
 
 #ifdef BOND_NO_CXX14_GENERIC_LAMBDAS
 #include <functional>
@@ -238,7 +238,7 @@ inline bool NextProtocol(const T& value, Buffer& output, uint16_t protocol)
 
 
 // Use compile-time schema
-template <typename T, typename Protocols = BuiltInProtocols, typename Buffer, typename Transform>
+template <typename T, typename Protocols, typename Buffer, typename Transform>
 inline std::pair<ProtocolType, bool> SelectProtocolAndApply(Buffer& input, const Transform& transform)
 {
     return detail::NextProtocol<T, Protocols>(input, transform);
@@ -246,7 +246,7 @@ inline std::pair<ProtocolType, bool> SelectProtocolAndApply(Buffer& input, const
 
 
 // Use runtime schema
-template <typename Protocols = BuiltInProtocols, typename Buffer, typename Transform>
+template <typename Protocols, typename Buffer, typename Transform>
 inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
     const RuntimeSchema& schema,
     Buffer& input,
