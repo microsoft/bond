@@ -169,7 +169,8 @@ cxx_add_compile_options(GNU
     --std=c++11
     -Wall
     -Werror
-    -Wno-unknown-warning-option
+    # Suppress warnings in Boost about using deprecated types like std::auto_ptr
+    -Wno-deprecated-declarations
     -Wno-unused-local-typedefs)
 
 include_directories (

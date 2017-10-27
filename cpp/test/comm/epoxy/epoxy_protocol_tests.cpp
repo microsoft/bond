@@ -19,13 +19,13 @@ using namespace std;
 
 namespace bond { namespace comm { namespace epoxy
 {
-static const auto good_request_id = 1;
-static const auto good_response_id = 2;
+static const auto good_request_id = 1u;
+static const auto good_response_id = 2u;
 static const auto good_service = "MyService";
 static const auto good_method = "ShaveYaks";
 static const auto good_payload = unique_ptr<test::Dummy>(new test::Dummy);
 static message<test::Dummy> meaningless_payload(*good_payload);
-static Error some_error = []() { Error e; e.error_code = ErrorCode::INTERNAL_SERVER_ERROR, e.message = "Meaningless message"; return e; }();
+static Error some_error = []{ Error e; e.error_code = ErrorCode::INTERNAL_SERVER_ERROR, e.message = "Meaningless message"; return e; }();
 static bond::comm::error error_wrapper(some_error);
 static message<test::Dummy> meaningless_error(error_wrapper);
 static const auto meaningless_error_code = ProtocolErrorCode::GENERIC_ERROR;
