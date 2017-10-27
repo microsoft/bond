@@ -13,18 +13,18 @@ services:
     - docker
 env:
     - FLAVOR="cs"
-    - FLAVOR="cpp-core" BOOST="1.65.1"
-    - FLAVOR="cpp-core" BOOST="1.64.0"
-    - FLAVOR="cpp-core" BOOST="1.63.0"
-    - FLAVOR="cpp-core" BOOST="1.62.0"
-    - FLAVOR="cpp-core" BOOST="1.61.0"
-    - FLAVOR="cpp-core" BOOST="1.60.0"
-    - FLAVOR="cpp-core" BOOST="1.59.0"
-    - FLAVOR="cpp-core" BOOST="1.58.0"
-    - FLAVOR="cpp-comm" BOOST="1.63.0"
-    - FLAVOR="cpp-grpc" BOOST="1.65.1"
-    - FLAVOR="cpp-grpc" BOOST="1.64.0"
-    - FLAVOR="cpp-grpc" BOOST="1.63.0"
+    - FLAVOR="cpp-core" BOOST="1.65.1" COMPILER="gcc"
+    - FLAVOR="cpp-core" BOOST="1.64.0" COMPILER="clang"
+    - FLAVOR="cpp-core" BOOST="1.63.0" COMPILER="clang"
+    - FLAVOR="cpp-core" BOOST="1.62.0" COMPILER="clang"
+    - FLAVOR="cpp-core" BOOST="1.61.0" COMPILER="clang"
+    - FLAVOR="cpp-core" BOOST="1.60.0" COMPILER="clang"
+    - FLAVOR="cpp-core" BOOST="1.59.0" COMPILER="clang"
+    - FLAVOR="cpp-core" BOOST="1.58.0" COMPILER="clang"
+    - FLAVOR="cpp-comm" BOOST="1.63.0" COMPILER="clang"
+    - FLAVOR="cpp-grpc" BOOST="1.65.1" COMPILER="gcc"
+    - FLAVOR="cpp-grpc" BOOST="1.64.0" COMPILER="clang"
+    - FLAVOR="cpp-grpc" BOOST="1.63.0" COMPILER="clang"
     - FLAVOR="hs"
 
 before_install:
@@ -35,4 +35,4 @@ before_install:
     - time docker load -i $HOME/docker-images/bond-xenial.tar.gz
 
 script:
-    - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond bond-xenial $HOME $FLAVOR $BOOST
+    - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond bond-xenial $HOME $FLAVOR $BOOST $COMPILER
