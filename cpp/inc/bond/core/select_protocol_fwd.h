@@ -11,7 +11,7 @@ namespace bond
 
 // Use compile-time schema
 template <typename T, typename Protocols = BuiltInProtocols, typename Buffer, typename Transform>
-inline std::pair<ProtocolType, bool> SelectProtocolAndApply(Buffer& input, Transform& transform);
+inline std::pair<ProtocolType, bool> SelectProtocolAndApply(Buffer& input, const Transform& transform);
 
 
 // Use runtime schema
