@@ -29,6 +29,8 @@ different versioning scheme, following the Haskell community's
 * The CMake build now enforces a minimum Boost version of 1.58. The build
   has required Boost 1.58 or later since version 5.2.0, but this was not
   enforced.
+* Fixed a memory leak when deserializing Bond-over-gRPC messages that were
+  stored as multiple slices.
 
 ## 7.0.1: 2017-10-26 ##
 * `gbc` & compiler library: 0.10.1.0

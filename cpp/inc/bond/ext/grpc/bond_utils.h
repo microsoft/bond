@@ -86,11 +86,11 @@ namespace grpc {
             {
                 std::memcpy(dest, GRPC_SLICE_START_PTR(s), GRPC_SLICE_LENGTH(s));
                 dest += GRPC_SLICE_LENGTH(s);
+                grpc_slice_unref(s);
             }
 
             BOOST_ASSERT(dest == buff.get() + bufferSize);
 
-            grpc_slice_unref(s);
             grpc_byte_buffer_reader_destroy(&reader);
             grpc_byte_buffer_destroy(buffer);
 
