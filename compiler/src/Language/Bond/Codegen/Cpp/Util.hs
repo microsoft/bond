@@ -15,7 +15,6 @@ module Language.Bond.Codegen.Cpp.Util
     , defaultValue
     , attributeInit
     , schemaMetadata
-    , ifndef
     , enumDefinition
     ) where
 
@@ -143,11 +142,6 @@ schemaMetadata _ s@Service {..} = [lt|
         attributes a = [lt|,
                 #{attributeInit a});|]
 schemaMetadata _ _ = error "schemaMetadata: impossible happened."
-
-ifndef :: ToText a => a -> Text -> Text
-ifndef m = between [lt|
-#ifndef #{m}|] [lt|
-#endif|]
 
 enumDefinition :: Declaration -> Text
 enumDefinition Enum {..} = [lt|enum #{declName}

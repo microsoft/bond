@@ -18,7 +18,7 @@ namespace tests
     using System.Collections.Generic;
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.2.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.11.0.0")]
     public partial class Foo<T>
     {
         [global::Bond.Id(0), global::Bond.Type(typeof(List<List<global::Bond.Tag.classT>>))]
@@ -34,14 +34,14 @@ namespace tests
         }
     }
 
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.2.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.11.0.0")]
     public enum EnumToWrap
     {
         anEnumValue,
     }
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.10.2.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.11.0.0")]
     public partial class WrappingAnEnum
     {
         [global::Bond.Id(0)]

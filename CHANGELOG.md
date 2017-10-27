@@ -23,7 +23,7 @@ different versioning scheme, following the Haskell community's
 
 * C++ codegen now properly generates move assignment operator which was broken
   for some cases.
-* C++ codegen no more generates checks for C++11, except for MSVC 2013 workarounds.
+* C++ codegen no longer generates checks for C++11, except for MSVC 2013 workarounds.
 
 ### C++ ###
 
