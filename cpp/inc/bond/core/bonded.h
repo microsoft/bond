@@ -62,7 +62,6 @@ public:
           _base(false)
     {}
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     /// @brief Move constructor
     bonded(bonded&& bonded) BOND_NOEXCEPT_IF(
         bond::is_nothrow_move_constructible<Reader>::value
@@ -74,11 +73,8 @@ public:
     {
         bonded._skip = false;
     }
-#endif
 
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
     bonded& operator=(const bonded& rhs) = default;
-#endif
 
     /// @brief Explicit up/down-casting from/to bonded of a derived type
     template <typename U, typename ReaderT>

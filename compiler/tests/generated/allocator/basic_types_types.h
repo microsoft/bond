@@ -54,14 +54,12 @@ namespace tests
         }
 
         
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
         BasicTypes(const BasicTypes&) = default;
-#endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
         BasicTypes(BasicTypes&&) = default;
-#elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
+#else
         BasicTypes(BasicTypes&& other)
           : _bool(std::move(other._bool)),
             _str(std::move(other._str)),

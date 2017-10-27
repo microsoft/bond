@@ -40,14 +40,12 @@ namespace bondmeta
             InitMetadata("HasMetaFields", "deprecated.bondmeta.HasMetaFields");
         }
         
-#if !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
         HasMetaFields(HasMetaFields&& other)
           : full_name(std::move(other.full_name)),
             name(std::move(other.name))
         {
             InitMetadata("HasMetaFields", "deprecated.bondmeta.HasMetaFields");
         }
-#endif
         
         explicit
         HasMetaFields(const arena& allocator)

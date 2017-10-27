@@ -260,7 +260,7 @@ namespace std
         copyCtor = if hasMetaFields then define else implicitlyDeclared
           where
             -- default OK when there are no meta fields
-            implicitlyDeclared = CPP.ifndef CPP.defaultedFunctions [lt|
+            implicitlyDeclared = [lt|
         // Compiler generated copy ctor OK
         #{declName}(const #{declName}&) = default;|]
 
@@ -278,15 +278,13 @@ namespace std
 
         -- move constructor
         moveCtor = if hasMetaFields then [lt|
-#if !defined(#{CPP.rvalueReferences})
-        #{explicit}
-#endif|]
+        #{explicit}|]
             -- even if implicit would be okay, fall back to explicit for
             -- compilers that don't support = default for move constructors
                                     else [lt|
 #if !defined(#{CPP.defaultedMoveCtors})
         #{implicit}
-#elif !defined(#{CPP.rvalueReferences})
+#else
         #{explicit}
 #endif|]
           where

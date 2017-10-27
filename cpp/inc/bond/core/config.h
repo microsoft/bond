@@ -5,36 +5,8 @@
 
 #include <boost/config.hpp>
 
-#if defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS)
-#define BOND_NO_CXX11_DEFAULTED_FUNCTIONS
-#else
-  #if defined(_MSC_VER) && (_MSC_VER < 1900)
-  #define BOND_NO_CXX11_DEFAULTED_FUNCTIONS
-  #endif
-#endif
-
-#if defined(BOOST_NO_CXX11_AUTO_DECLARATIONS) || defined(BOOST_NO_AUTO_DECLARATIONS)
-#define BOND_NO_CXX11_AUTO_DECLARATIONS
-#endif
-
-#if defined(BOOST_NO_CXX11_AUTO_MULTIDECLARATIONS) || defined(BOOST_NO_AUTO_MULTIDECLARATIONS)
-#define BOND_NO_CXX11_AUTO_MULTIDECLARATIONS
-#endif
-
-#if defined(BOOST_NO_CXX11_LAMBDAS) || defined(BOOST_NO_LAMBDAS)
-#define BOND_NO_CXX11_LAMBDAS
-#endif
-
 #if defined(BOOST_NO_CXX11_NOEXCEPT) || defined(BOOST_NO_NOEXCEPT)
 #define BOND_NO_CXX11_NOEXCEPT
-#endif
-
-#if defined(BOOST_NO_CXX11_NULLPTR) || defined(BOOST_NO_NULLPTR)
-#define BOND_NO_CXX11_NULLPTR
-#endif
-
-#if defined(BOOST_NO_CXX11_RVALUE_REFERENCES) || defined(BOOST_NO_RVALUE_REFERENCES)
-#define BOND_NO_CXX11_RVALUE_REFERENCES
 #endif
 
 #if defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS) \
@@ -48,18 +20,6 @@
     // Versions of MSVC prior to 1900 do not support = default for move ctors
     #define BOND_NO_CXX11_DEFAULTED_MOVE_CTOR
     #endif
-#endif
-
-#if defined(BOOST_NO_CXX11_SCOPED_ENUMS) || defined(BOOST_NO_SCOPED_ENUMS)
-#define BOND_NO_CXX11_SCOPED_ENUMS
-#endif
-
-#if defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES) || defined(BOOST_NO_VARIADIC_TEMPLATES)
-#define BOND_NO_CXX11_VARIADIC_TEMPLATES
-#endif
-
-#if defined(BOOST_NO_CXX11_HDR_CODECVT) || defined(BOOST_NO_0X_HDR_CODECVT)
-#define BOND_NO_CXX11_HDR_CODECVT
 #endif
 
 #if defined(BOOST_NO_CXX11_HDR_TYPE_TRAITS) && (_CPPLIB_VER < 520) && !defined(__GXX_EXPERIMENTAL_CXX0X__)

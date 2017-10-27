@@ -182,7 +182,6 @@ public:
           _skip(skip)
     {}
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     value_common(value_common&& rhs) BOND_NOEXCEPT_IF(
         bond::is_nothrow_copy_constructible<Reader>::value)
         : _input(rhs._input),
@@ -190,12 +189,9 @@ public:
     {
         rhs._skip = false;
     }
-#endif
 
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
     value_common(const value_common& that) = default;
     value_common& operator=(const value_common& that) = default;
-#endif
 
     ~value_common()
     {
@@ -236,17 +232,13 @@ public:
         : value_common<T, Reader>(input, skip)
     {}
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     value(value&& rhs) BOND_NOEXCEPT_IF((
         bond::is_nothrow_move_constructible<value_common<T, Reader> >::value))
         : value_common<T, Reader>(std::move(rhs))
     {}
-#endif
 
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
     value(const value& that) = default;
     value& operator=(const value& that) = default;
-#endif
 
     /// @brief Deserialize the value
     template <typename Protocols = BuiltInProtocols>
@@ -308,17 +300,13 @@ public:
         : value_common<T, Reader>(input, skip)
     {}
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     value(value&& rhs) BOND_NOEXCEPT_IF((
         bond::is_nothrow_move_constructible<value_common<T, Reader> >::value))
         : value_common<T, Reader>(std::move(rhs))
     {}
-#endif
 
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
     value(const value& that) = default;
     value& operator=(const value& that) = default;
-#endif
 
     template <typename Protocols = BuiltInProtocols>
     void Deserialize(T& var) const
@@ -345,17 +333,13 @@ public:
         : value_common<T, Reader>(input, skip)
     {}
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     value(value&& rhs) BOND_NOEXCEPT_IF((
         bond::is_nothrow_move_constructible<value_common<T, Reader> >::value))
         : value_common<T, Reader>(std::move(rhs))
     {}
-#endif
 
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
     value(const value& that) = default;
     value& operator=(const value& that) = default;
-#endif
 
     // deserialize Bond struct into matching variable
     template <typename Protocols = BuiltInProtocols, typename X>
@@ -420,17 +404,13 @@ public:
         : value_common<T, Reader>(input, skip)
     {}
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     value(value&& rhs) BOND_NOEXCEPT_IF((
         bond::is_nothrow_move_constructible<value_common<T, Reader> >::value))
         : value_common<T, Reader>(std::move(rhs))
     {}
-#endif
 
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
     value(const value& that) = default;
     value& operator=(const value& that) = default;
-#endif
 
     // Deserialize container
     template <typename Protocols = BuiltInProtocols, typename X>
@@ -491,7 +471,6 @@ public:
         _schemaDef.root.id = type;
     }
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     value(value&& rhs) BOND_NOEXCEPT_IF(
         bond::is_nothrow_move_constructible<Reader>::value
         && bond::is_nothrow_move_constructible<SchemaDef>::value
@@ -503,12 +482,9 @@ public:
     {
         rhs._skip = false;
     }
-#endif
 
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
     value(const value& that) = default;
     value& operator=(const value& that) = default;
-#endif
 
     ~value()
     {

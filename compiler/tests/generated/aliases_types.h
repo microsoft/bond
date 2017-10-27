@@ -29,14 +29,12 @@ namespace tests
         }
 
         
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
-#endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
         Foo(Foo&&) = default;
-#elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
+#else
         Foo(Foo&& other)
           : aa(std::move(other.aa))
         {
@@ -172,14 +170,12 @@ namespace tests
         }
 
         
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
         WrappingAnEnum(const WrappingAnEnum&) = default;
-#endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
         WrappingAnEnum(WrappingAnEnum&&) = default;
-#elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
+#else
         WrappingAnEnum(WrappingAnEnum&& other)
           : aWrappedEnum(std::move(other.aWrappedEnum))
         {

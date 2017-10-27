@@ -41,14 +41,12 @@ namespace test
         }
 
         
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
         foo(const foo&) = default;
-#endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
         foo(foo&&) = default;
-#elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
+#else
         foo(foo&& other)
           : l(std::move(other.l)),
             v(std::move(other.v)),
@@ -157,14 +155,12 @@ namespace test
         }
 
         
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
         // Compiler generated copy ctor OK
         withFoo(const withFoo&) = default;
-#endif
         
 #if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
         withFoo(withFoo&&) = default;
-#elif !defined(BOND_NO_CXX11_RVALUE_REFERENCES)
+#else
         withFoo(withFoo&& other)
           : f(std::move(other.f)),
             f1(std::move(other.f1))
