@@ -66,8 +66,8 @@ case "$FLAVOR" in
         make gbc
         make install
 
-        msbuild /p:Configuration=Debug /root/bond/cs/cs.sln
-        msbuild /p:Configuration=Fields /root/bond/cs/cs.sln
+        msbuild /p:Configuration=Debug /m /root/bond/cs/cs.sln
+        msbuild /p:Configuration=Fields /m /root/bond/cs/cs.sln
 
         mono /root/NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels \
             /root/bond/cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll \
