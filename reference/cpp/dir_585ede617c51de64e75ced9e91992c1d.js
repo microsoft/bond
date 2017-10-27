@@ -29,6 +29,7 @@ var dir_585ede617c51de64e75ced9e91992c1d =
     [ "scalar_interface.h", "scalar__interface_8h_source.html", null ],
     [ "schema.h", "schema_8h_source.html", null ],
     [ "select_protocol.h", "select__protocol_8h_source.html", null ],
+    [ "select_protocol_fwd.h", "select__protocol__fwd_8h_source.html", null ],
     [ "shared_counter.h", "shared__counter_8h_source.html", null ],
     [ "single_threaded_counter.h", "single__threaded__counter_8h_source.html", null ],
     [ "stl_containers.h", "stl__containers_8h_source.html", null ],
