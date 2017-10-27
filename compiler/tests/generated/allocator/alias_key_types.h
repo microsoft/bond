@@ -34,14 +34,14 @@ namespace test
         // Compiler generated copy ctor OK
         foo(const foo&) = default;
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        foo(foo&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         foo(foo&& other)
           : m(std::move(other.m)),
             s(std::move(other.s))
         {
         }
+#else
+        foo(foo&&) = default;
 #endif
         
         explicit
@@ -52,16 +52,16 @@ namespace test
         }
         
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        // Compiler generated operator= OK
-        foo& operator=(const foo&) = default;
-        foo& operator=(foo&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         foo& operator=(foo other)
         {
             other.swap(*this);
             return *this;
         }
+#else
+        // Compiler generated operator= OK
+        foo& operator=(const foo&) = default;
+        foo& operator=(foo&&) = default;
 #endif
 
         bool operator==(const foo& other) const

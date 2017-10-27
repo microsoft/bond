@@ -32,25 +32,25 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        Foo(Foo&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         Foo(Foo&&)
         {
         }
+#else
+        Foo(Foo&&) = default;
 #endif
         
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        // Compiler generated operator= OK
-        Foo& operator=(const Foo&) = default;
-        Foo& operator=(Foo&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         Foo& operator=(Foo other)
         {
             other.swap(*this);
             return *this;
         }
+#else
+        // Compiler generated operator= OK
+        Foo& operator=(const Foo&) = default;
+        Foo& operator=(Foo&&) = default;
 #endif
 
         bool operator==(const Foo&) const
@@ -102,9 +102,7 @@ namespace tests
         // Compiler generated copy ctor OK
         ComplexTypes(const ComplexTypes&) = default;
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        ComplexTypes(ComplexTypes&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         ComplexTypes(ComplexTypes&& other)
           : li8(std::move(other.li8)),
             sb(std::move(other.sb)),
@@ -115,19 +113,21 @@ namespace tests
             m(std::move(other.m))
         {
         }
+#else
+        ComplexTypes(ComplexTypes&&) = default;
 #endif
         
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        // Compiler generated operator= OK
-        ComplexTypes& operator=(const ComplexTypes&) = default;
-        ComplexTypes& operator=(ComplexTypes&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         ComplexTypes& operator=(ComplexTypes other)
         {
             other.swap(*this);
             return *this;
         }
+#else
+        // Compiler generated operator= OK
+        ComplexTypes& operator=(const ComplexTypes&) = default;
+        ComplexTypes& operator=(ComplexTypes&&) = default;
 #endif
 
         bool operator==(const ComplexTypes& other) const

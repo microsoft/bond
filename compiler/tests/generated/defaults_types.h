@@ -172,9 +172,7 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        Foo(Foo&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         Foo(Foo&& other)
           : m_bool_1(std::move(other.m_bool_1)),
             m_bool_2(std::move(other.m_bool_2)),
@@ -214,19 +212,21 @@ namespace tests
             m_wstr_2(std::move(other.m_wstr_2))
         {
         }
+#else
+        Foo(Foo&&) = default;
 #endif
         
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        // Compiler generated operator= OK
-        Foo& operator=(const Foo&) = default;
-        Foo& operator=(Foo&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         Foo& operator=(Foo other)
         {
             other.swap(*this);
             return *this;
         }
+#else
+        // Compiler generated operator= OK
+        Foo& operator=(const Foo&) = default;
+        Foo& operator=(Foo&&) = default;
 #endif
 
         bool operator==(const Foo& other) const

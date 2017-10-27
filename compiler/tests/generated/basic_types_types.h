@@ -55,9 +55,7 @@ namespace tests
         // Compiler generated copy ctor OK
         BasicTypes(const BasicTypes&) = default;
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        BasicTypes(BasicTypes&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         BasicTypes(BasicTypes&& other)
           : _bool(std::move(other._bool)),
             _str(std::move(other._str)),
@@ -75,19 +73,21 @@ namespace tests
             _blob(std::move(other._blob))
         {
         }
+#else
+        BasicTypes(BasicTypes&&) = default;
 #endif
         
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        // Compiler generated operator= OK
-        BasicTypes& operator=(const BasicTypes&) = default;
-        BasicTypes& operator=(BasicTypes&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         BasicTypes& operator=(BasicTypes other)
         {
             other.swap(*this);
             return *this;
         }
+#else
+        // Compiler generated operator= OK
+        BasicTypes& operator=(const BasicTypes&) = default;
+        BasicTypes& operator=(BasicTypes&&) = default;
 #endif
 
         bool operator==(const BasicTypes& other) const

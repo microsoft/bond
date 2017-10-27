@@ -282,10 +282,10 @@ namespace std
             -- even if implicit would be okay, fall back to explicit for
             -- compilers that don't support = default for move constructors
                                     else [lt|
-#if !defined(#{CPP.defaultedMoveCtors})
-        #{implicit}
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         #{explicit}
+#else
+        #{implicit}
 #endif|]
           where
             -- default OK when there are no meta fields
@@ -306,12 +306,12 @@ namespace std
           where
             -- default OK when there are no meta fields
             implicitlyDeclared = [lt|
-#if !defined(#{CPP.defaultedMoveCtors})
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        #{define}
+#else
         // Compiler generated operator= OK
         #{declName}& operator=(const #{declName}&) = default;
         #{declName}& operator=(#{declName}&&) = default;
-#else
-        #{define}
 #endif|]
 
             -- define operator= using swap

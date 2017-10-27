@@ -16,7 +16,6 @@ module Language.Bond.Codegen.Cpp.Util
     , attributeInit
     , schemaMetadata
     , ifndef
-    , defaultedMoveCtors
     , enumDefinition
     ) where
 
@@ -144,9 +143,6 @@ schemaMetadata _ s@Service {..} = [lt|
         attributes a = [lt|,
                 #{attributeInit a});|]
 schemaMetadata _ _ = error "schemaMetadata: impossible happened."
-
-defaultedMoveCtors :: Text
-defaultedMoveCtors = [lt|BOND_NO_CXX11_DEFAULTED_MOVE_CTOR|]
 
 ifndef :: ToText a => a -> Text -> Text
 ifndef m = between [lt|

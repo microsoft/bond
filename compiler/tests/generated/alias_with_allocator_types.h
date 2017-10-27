@@ -44,9 +44,7 @@ namespace test
         // Compiler generated copy ctor OK
         foo(const foo&) = default;
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        foo(foo&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         foo(foo&& other)
           : l(std::move(other.l)),
             v(std::move(other.v)),
@@ -61,6 +59,8 @@ namespace test
             st1(std::move(other.st1))
         {
         }
+#else
+        foo(foo&&) = default;
 #endif
         
         explicit
@@ -80,16 +80,16 @@ namespace test
         }
         
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        // Compiler generated operator= OK
-        foo& operator=(const foo&) = default;
-        foo& operator=(foo&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         foo& operator=(foo other)
         {
             other.swap(*this);
             return *this;
         }
+#else
+        // Compiler generated operator= OK
+        foo& operator=(const foo&) = default;
+        foo& operator=(foo&&) = default;
 #endif
 
         bool operator==(const foo& other) const
@@ -158,14 +158,14 @@ namespace test
         // Compiler generated copy ctor OK
         withFoo(const withFoo&) = default;
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        withFoo(withFoo&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         withFoo(withFoo&& other)
           : f(std::move(other.f)),
             f1(std::move(other.f1))
         {
         }
+#else
+        withFoo(withFoo&&) = default;
 #endif
         
         explicit
@@ -176,16 +176,16 @@ namespace test
         }
         
         
-#if !defined(BOND_NO_CXX11_DEFAULTED_MOVE_CTOR)
-        // Compiler generated operator= OK
-        withFoo& operator=(const withFoo&) = default;
-        withFoo& operator=(withFoo&&) = default;
-#else
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
         withFoo& operator=(withFoo other)
         {
             other.swap(*this);
             return *this;
         }
+#else
+        // Compiler generated operator= OK
+        withFoo& operator=(const withFoo&) = default;
+        withFoo& operator=(withFoo&&) = default;
 #endif
 
         bool operator==(const withFoo& other) const
