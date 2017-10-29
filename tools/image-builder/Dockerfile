@@ -25,9 +25,8 @@ RUN apt-get -y install \
     cmake \
     golang
 
-# Components for Haskell
-RUN apt-get -y install \
-    haskell-stack
+# Components for Haskell. See https://docs.haskellstack.org/en/stable/install_and_upgrade/#linux
+RUN wget -qO- https://get.haskellstack.org/ | sh
 
 # Components for C#. See http://www.mono-project.com/download/#download-lin
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
