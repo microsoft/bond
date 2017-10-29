@@ -1,8 +1,6 @@
 #!/bin/zsh
 
 set -eux
-# Set this option so we can pass multiple args to cmake in a single shell variable
-setopt shwordsplit
 
 SYMLINKED_HOME=$1
 FLAVOR=$2
@@ -11,17 +9,21 @@ COMPILER=${4:-clang}
 
 case "$COMPILER" in
     clang)
-        CXX_COMPILER="clang++ -Qunused-arguments --system-header-prefix=boost/"
-        CC_COMPILER="clang -Qunused-arguments --system-header-prefix=boost/"
+        CXX_COMPILER=clang++
+        CXX_FLAGS="-Qunused-arguments --system-header-prefix=boost/"
+        CC_COMPILER=clang
+        CC_FLAGS="-Qunused-arguments --system-header-prefix=boost/"
         ;;
     
     gcc)
-        CXX_COMPILER="g++"
-        CC_COMPILER="gcc"
+        CXX_COMPILER=g++
+        CC_COMPILER=gcc
         ;;
     
     *) echo "Unknown compiler $COMPILER"; exit 1;;
 esac
+
+BOND_CMAKE_FLAGS="-DBOND_USE_CCACHE=TRUE"
 
 BUILD_PATH=/root/build
 
@@ -33,21 +35,21 @@ cd $BUILD_PATH
 case "$FLAVOR" in
     cpp-*)
         case "$FLAVOR" in
-            cpp-core) CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE";;
-            cpp-comm) CPP_CMAKE_ARGS="-DBOND_ENABLE_COMM=TRUE -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE";;
-            cpp-grpc) CPP_CMAKE_ARGS="-DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DgRPC_ZLIB_PROVIDER=package";;
+            cpp-core) BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE";;
+            cpp-comm) BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_ENABLE_COMM=TRUE -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE";;
+            cpp-grpc) BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DgRPC_ZLIB_PROVIDER=package";;
             *) echo "Unknown FLAVOR=$FLAVOR"; exit 1;;
         esac
 
         if [ ! $BOOST ]; then echo "BOOST not specified"; exit 1; fi
 
         export BOOST_ROOT=/opt/boosts/boost_`echo $BOOST | tr . _`
-        export CXX="ccache $CXX_COMPILER"
-        export CC="ccache $CC_COMPILER"
+        export CXX=$CXX_COMPILER
+        export CC=$CC_COMPILER
 
         ln -s /root/.ccache $SYMLINKED_HOME/.ccache
 
-        cmake $CPP_CMAKE_ARGS /root/bond
+        cmake -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DCMAKE_C_FLAGS="$CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
 
         make --jobs 2 check
         ;;
@@ -55,13 +57,14 @@ case "$FLAVOR" in
     cs)
         # TODO: Remove build dependency on C++
         export BOOST_ROOT=/opt/boosts/boost_1_63_0
-        export CXX="ccache $CXX_COMPILER"
-        export CC="ccache $CC_COMPILER"
+        export CXX=$CXX_COMPILER
+        export CC=$CC_COMPILER
         ln -s /root/.ccache $SYMLINKED_HOME/.ccache
 
         nuget restore /root/bond/cs/cs.sln
 
-        cmake -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE /root/bond
+        BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"
+        cmake -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DCMAKE_C_FLAGS="$CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
 
         make gbc
         make install
@@ -78,11 +81,12 @@ case "$FLAVOR" in
     hs)
         # TODO: Remove build dependency on C++
         export BOOST_ROOT=/opt/boosts/boost_1_63_0
-        export CXX="ccache $CXX_COMPILER"
-        export CC="ccache $CC_COMPILER"
+        export CXX=$CXX_COMPILER
+        export CC=$CC_COMPILER
         ln -s /root/.ccache $SYMLINKED_HOME/.ccache
 
-        cmake -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE /root/bond
+        BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"
+        cmake -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DCMAKE_C_FLAGS="$CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
 
         make gbc-tests
 
