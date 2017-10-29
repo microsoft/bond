@@ -18,6 +18,15 @@ if (BOND_GBC_PATH)
     message (STATUS "Existing GBC executable found: '${GBC_EXECUTABLE}'")
 endif()
 
+set (BOND_USE_CCACHE
+    "FALSE"
+    CACHE BOOL "If TRUE, then use ccache")
+
+if (BOND_USE_CCACHE)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif()
+
 if (MSVC)
     # MSVC needs this because of how template-heavy our code is.
     add_compile_options (/bigobj)
