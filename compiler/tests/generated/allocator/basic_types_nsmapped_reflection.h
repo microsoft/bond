@@ -47,7 +47,7 @@ namespace nsmapped
                 2,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
-                std::basic_string<char, std::char_traits<char>, typename arena::rebind<char>::other>,
+                std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >,
                 &BasicTypes::_str,
                 &s__str_metadata
             > {}  _str;
@@ -57,7 +57,7 @@ namespace nsmapped
                 3,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
-                std::basic_string<wchar_t, std::char_traits<wchar_t>, typename arena::rebind<wchar_t>::other>,
+                std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> >,
                 &BasicTypes::_wstr,
                 &s__wstr_metadata
             > {}  _wstr;
