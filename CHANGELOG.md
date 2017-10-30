@@ -11,17 +11,20 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Unreleased  ##
-* `gbc` & compiler library: TBD
-* IDL core version: TBD
-* IDL comm version: TBD
-* C++ version: TBD
-* C# NuGet version: TBD
-* C# Comm NuGet version: TBD
+## 7.0.2: 2017-10-30  ##
+* `gbc` & compiler library: 0.10.1.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 7.0.2
+* C# NuGet version: 7.0.1
+* C# Comm NuGet version: 0.14.0
 
 ### C++ ###
 * Fixed a memory leak when deserializing Bond-over-gRPC messages that were
   stored as multiple slices.
+
+### C# ###
+* There were no C# changes in this release.
 
 ## 7.0.1: 2017-10-26 ##
 * `gbc` & compiler library: 0.10.1.0
