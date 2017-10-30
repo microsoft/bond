@@ -5,9 +5,13 @@ VOLUME /root/.ccache /root/.stack
 # Source code
 VOLUME /root/bond
 
-# Components for Boost
+# Enable PPAs
 RUN apt-get update && \
     apt-get -y install \
+    software-properties-common
+
+# Components for Boost
+RUN apt-get -y install \
     build-essential \
     python2.7-dev \
     wget \
@@ -37,6 +41,14 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E03280
     nuget \
     referenceassemblies-pcl
 RUN nuget install NUnit.Runners -OutputDirectory /root -version 2.6.4
+
+# Components for Java
+RUN add-apt-repository ppa:cwchien/gradle && \
+    apt-get update && \
+    apt-get -y install \
+    gradle \
+    openjdk-8-jdk \
+    maven
 
 # Build script
 ENTRYPOINT ["zsh", "/root/bond/tools/ci-scripts/linux/build.zsh"]

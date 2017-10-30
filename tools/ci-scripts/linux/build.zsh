@@ -26,6 +26,7 @@ esac
 BOND_CMAKE_FLAGS="-DBOND_USE_CCACHE=TRUE"
 
 BUILD_PATH=/root/build
+BUILD_SCRIPTS=/root/bond/tools/ci-scripts/linux
 
 mkdir -p $SYMLINKED_HOME $BUILD_PATH
 ln -s /root/.stack $SYMLINKED_HOME/.stack
@@ -76,6 +77,14 @@ case "$FLAVOR" in
             /root/bond/cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll \
             /root/bond/cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll \
             /root/bond/cs/test/internal/bin/debug/net45/Bond.InternalTest.dll
+        ;;
+
+    java)
+        # TODO: Remove build dependency on C++
+        export BOOST_ROOT=/opt/boosts/boost_1_63_0
+        export CXX=$CXX_COMPILER
+        export CC=$CC_COMPILER
+        exec $BUILD_SCRIPTS/build_java.zsh
         ;;
 
     hs)
