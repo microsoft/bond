@@ -102,7 +102,6 @@ public:
         bond::detail::checked_add(_content, length);
     }
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     /// @brief Move constructor
     blob(blob&& that) BOND_NOEXCEPT_IF(
         bond::is_nothrow_move_constructible<boost::shared_ptr<const char[]> >::value)
@@ -113,12 +112,9 @@ public:
         that._content = 0;
         that._length = 0;
     }
-#endif
 
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
     blob(const blob& that) = default;
     blob& operator=(const blob& that) = default;
-#endif
 
     /// @brief Assign a new value from another blob object or its part
     void assign(const blob& from, uint32_t offset, uint32_t length)

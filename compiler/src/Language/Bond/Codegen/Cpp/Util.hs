@@ -15,10 +15,6 @@ module Language.Bond.Codegen.Cpp.Util
     , defaultValue
     , attributeInit
     , schemaMetadata
-    , ifndef
-    , defaultedFunctions
-    , defaultedMoveCtors
-    , rvalueReferences
     , enumDefinition
     ) where
 
@@ -146,16 +142,6 @@ schemaMetadata _ s@Service {..} = [lt|
         attributes a = [lt|,
                 #{attributeInit a});|]
 schemaMetadata _ _ = error "schemaMetadata: impossible happened."
-
-defaultedFunctions, defaultedMoveCtors, rvalueReferences :: Text
-defaultedFunctions = [lt|BOND_NO_CXX11_DEFAULTED_FUNCTIONS|]
-defaultedMoveCtors = [lt|BOND_NO_CXX11_DEFAULTED_MOVE_CTOR|]
-rvalueReferences = [lt|BOND_NO_CXX11_RVALUE_REFERENCES|]
-
-ifndef :: ToText a => a -> Text -> Text
-ifndef m = between [lt|
-#ifndef #{m}|] [lt|
-#endif|]
 
 enumDefinition :: Declaration -> Text
 enumDefinition Enum {..} = [lt|enum #{declName}

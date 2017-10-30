@@ -46,7 +46,6 @@ public:
     {}
 
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     /// @brief Move constructor
     bonded(bonded&& other) BOND_NOEXCEPT_IF(
         bond::is_nothrow_move_constructible<Reader>::value
@@ -58,7 +57,6 @@ public:
     {
         other._skip = false;
     }
-#endif
 
 
     ~bonded()

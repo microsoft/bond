@@ -8,7 +8,7 @@
 #include <type_traits>
 
 #define BOND_VERSION 0x0700
-#define BOND_MIN_CODEGEN_VERSION 0x0a10
+#define BOND_MIN_CODEGEN_VERSION 0x0b00
 
 namespace bond
 {

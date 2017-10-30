@@ -217,9 +217,8 @@ public:
         return base();
     }
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     explicit
-        nullable(value_type&& value) BOND_NOEXCEPT_IF(
+    nullable(value_type&& value) BOND_NOEXCEPT_IF(
             bond::is_nothrow_move_constructible<Allocator>::value
             && bond::is_nothrow_move_constructible<value_type>::value)
         : Allocator(detail::get_allocator(value)),
@@ -257,7 +256,6 @@ public:
         _value = std::move(value);
         _hasvalue = true;
     }
-#endif
 
 private:
     Allocator& base()
@@ -470,7 +468,6 @@ public:
         return base();
     }
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     explicit
     nullable(value_type&& value,
              const allocator_type& alloc = allocator_type())
@@ -501,7 +498,6 @@ public:
         else
             *_value = std::move(value);
     }
-#endif
 
 private:
     Allocator& base()
@@ -525,7 +521,6 @@ private:
         alloc.deallocate(_value, 1);
     }
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     template<typename Arg1>
     real_pointer new_value(Arg1&& arg1)
     {
@@ -548,30 +543,6 @@ private:
             throw;
         }
     }
-#else
-    template<typename Arg1>
-    real_pointer new_value(const Arg1& arg1)
-    {
-        rebind_alloc alloc(base());
-        real_pointer p(alloc.allocate(1));
-        try
-        {
-#ifndef BOND_NO_CXX11_ALLOCATOR
-            std::allocator_traits<rebind_alloc>::construct(alloc,
-                boost::addressof(*p),
-                arg1);
-#else
-            ::new(static_cast<void*>(p)) T(arg1);
-#endif
-            return p;
-        }
-        catch (...)
-        {
-            alloc.deallocate(p, 1);
-            throw;
-        }
-    }
-#endif
 
     real_pointer new_value()
     {

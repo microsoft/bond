@@ -25,7 +25,6 @@ public:
         : _nothing(true)
     {}
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     /// @brief Move constructor
     maybe(maybe&& that) BOND_NOEXCEPT_IF(bond::is_nothrow_move_constructible<T>::value)
         : _value(std::move(that._value)),
@@ -33,12 +32,9 @@ public:
     {
         that._nothing = true;
     }
-#endif
 
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
     maybe(const maybe& that) = default;
     maybe& operator=(const maybe& that) = default;
-#endif
 
     /// @brief Constructor from a value T
     explicit
