@@ -6,7 +6,7 @@
     <ProjectGuid>{618420F1-6465-4DF4-BD1B-747765F481FF}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>pingpong</RootNamespace>
-    <AssemblyName>pingpong</AssemblyName>
+    <AssemblyName>grpc-pingpong</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -46,9 +46,8 @@
     </BondCodegen>
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\pingpong_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\pingpong_grpc.cs" Condition="False" />
     <!-- End Resharper Workaround -->
-    <!-- TODO: edit the .targets to automatically include the grpc files -->
-    <Compile Include="$(IntermediateOutputPath)\pingpong_grpc.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Attributes">
@@ -66,7 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\cs\src\grpc\grpc.csproj">
-      <Project>{af03bae6-2470-4e1b-a683-3ebdcdc595fa}</Project>
+      <Project>{AF03BAE6-2470-4E1B-A683-3EBDCDC595FA}</Project>
       <Name>grpc</Name>
     </ProjectReference>
   </ItemGroup>

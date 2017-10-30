@@ -94,4 +94,20 @@ namespace Bond
             return x.TypeDef.CalculateHashCode();
         }
     }
+
+    /// <summary>
+    /// Contains helper methods for working with <see cref="Bond.Box{T}"/>.
+    /// </summary>
+    public static class Box
+    {
+        /// <summary>
+        /// Creates a new Box with the given value.
+        /// </summary>
+        /// <param name="value">The value to put in a Box</param>
+        /// <returns>A Box with <paramref name="value"/> in it.</returns>
+        public static Box<T> Create<T>(T value)
+        {
+            return new Box<T> {value = value};
+        }
+    }
 }

@@ -1,9 +1,10 @@
 #pragma once
 
+#include <boost/format.hpp>
 #include <boost/version.hpp>
 #include <boost/test/unit_test.hpp>
 
-#define UT_AssertIsTrue(...) BOOST_CHECK((__VA_ARGS__)) 
+#define UT_AssertIsTrue(...) BOOST_CHECK((__VA_ARGS__))
 
 #define UT_AssertIsFalse(...) BOOST_CHECK(!(__VA_ARGS__))
 
@@ -49,7 +50,7 @@
 // parameters) which in turn let's us disable individual test cases at compile
 // time such that they are not compiled at all.
 // The drawback is that we need to wrap test case definition in two macros (one
-// macro would be enough for non-generic tests but not for generic ones). 
+// macro would be enough for non-generic tests but not for generic ones).
 #define TEST_CASE_BEGIN(name) struct name{static void Run()
 #define TEST_CASE_END };
 
@@ -61,7 +62,7 @@
 // Test cases can be also defined conditionally based on a compile-time boolean
 // constant (usually derived from a condition on type parameters).
 #define KEY(x) ((x << 16) | __COUNTER__)
-#define TEST_ID(x) (true),KEY(x) 
+#define TEST_ID(x) (true),KEY(x)
 #define COND_TEST_ID(x, cond) (cond),KEY(x)
 
 #ifndef ENABLE_TEST_CASE
@@ -90,9 +91,9 @@ public:
 
     void Add(void (*func)(), uint32_t key, const std::string& test)
     {
-        char id[20];    
-        sprintf(id, "0x%x ", key);
-        AddTestCase(func, id + test);
+        AddTestCase(
+            func,
+            boost::str(boost::format("%#x %s") % key % test));
     }
 
     void AddTestCase(void (*func)(), const std::string& test)
@@ -100,7 +101,7 @@ public:
         if (!suite)
         {
             suite = BOOST_TEST_SUITE(name);
-            parent.add(suite);    
+            parent.add(suite);
         }
 
         suite->add(MAKE_BOOST_TEST_CASE(func, test));

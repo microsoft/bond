@@ -2,15 +2,17 @@
 
 set -eux
 
-BOOST_VERSIONS=(1.58.0 1.59.0 1.60.0 1.61.0 1.62.0 1.63.0 1.64.0 1.65.0)
+BOOST_VERSIONS=(1.58.0 1.59.0 1.60.0 1.61.0 1.62.0 1.63.0 1.64.0 1.65.1)
 BOOST_LIBRARIES="chrono,date_time,python,system,test,thread"
 
-BUILD_ROOT=/root/boosts
-INSTALL_ROOT=/opt
-OUT=/boosts
+BUILD_ROOT=/tmp/boosts
+INSTALL_ROOT=/opt/boosts
 
-mkdir -p $BUILD_ROOT $OUT
+mkdir -p $BUILD_ROOT
+
 NUMPROCS=`cat /proc/cpuinfo | grep model\ name | wc -l`
+TOOLSET=gcc
+COMPILER_VERSION=$TOOLSET-`$TOOLSET -dumpversion`
 
 for VERSION_DOTTED in $BOOST_VERSIONS; do
   VERSION=`echo $VERSION_DOTTED | tr . _`
@@ -25,6 +27,7 @@ for VERSION_DOTTED in $BOOST_VERSIONS; do
                  --includedir=$INSTALL_ROOT/boost_$VERSION/include \
                  --with-libraries=$BOOST_LIBRARIES \
                  --with-python=python2.7
-  ./b2 -j $NUMPROCS install
-  tar -cJf $OUT/boost-$VERSION_DOTTED.tar.xz $INSTALL_ROOT/boost_$VERSION
+  ./b2 -j $NUMPROCS install toolset=$TOOLSET cxxflags="-std=c++11" linkflags="-std=c++11"
 done
+
+rm -f -r $BUILD_ROOT

@@ -20,13 +20,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(IntermediateOutputPath)\pingpong_grpc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <BondCodegen Include="..\..\..\..\..\test\compat\grpc\pingpong.bond">
       <Options>--grpc</Options>
     </BondCodegen>
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\pingpong_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\pingpong_grpc.cs" Condition="False" />
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>

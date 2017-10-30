@@ -11,7 +11,8 @@ function (add_unit_test)
         bond
         unit_test_codegen1
         unit_test_codegen2
-        unit_test_codegen3)
+        unit_test_codegen3
+        unit_test_codegen4)
     target_include_directories (${name} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
@@ -34,7 +35,8 @@ add_target_to_folder (core_test_common)
 add_dependencies(core_test_common
     unit_test_codegen1
     unit_test_codegen2
-    unit_test_codegen3)
+    unit_test_codegen3
+    unit_test_codegen4)
 target_include_directories (core_test_common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
@@ -77,6 +79,14 @@ add_bond_codegen (TARGET unit_test_codegen3
         --header=\\\"allocators.h\\\"
         --allocator=TestAllocator)
 
+add_bond_codegen (TARGET unit_test_codegen4
+    allocator_test.bond
+    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/capped_allocator_tests_generated"
+    OPTIONS
+        --using=\"Vector=std::vector<{0}, bond::capped_allocator<std::allocator<{0}> > >\"
+        --header=\"<bond/core/capped_allocator.h>\"
+        --allocator=\"bond::capped_allocator<>\"
+        --namespace=\"allocator_test=capped_allocator_tests\")
 
 # Full unit test is too big, .pdb files exceed compiler limit;
 # Since debugging such large executable is not practical anyways,
@@ -92,6 +102,8 @@ add_unit_test (basic_type_lists.cpp)
 add_unit_test (basic_type_map.cpp)
 add_unit_test (blob_tests.cpp)
 add_unit_test (bonded_tests.cpp)
+add_unit_test (capped_allocator_tests.cpp)
+add_unit_test (checked_add_test.cpp)
 add_unit_test (cmdargs.cpp)
 add_unit_test (container_extensibility.cpp
     associative_container_extensibility.cpp)

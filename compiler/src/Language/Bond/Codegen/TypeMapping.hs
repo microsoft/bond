@@ -407,8 +407,8 @@ cppType (BT_UserDefined decl args) = declQualifiedTypeName decl <<>> (angles <$>
 
 -- C++ type mapping with custom allocator
 cppTypeCustomAlloc :: Builder -> Type -> TypeNameBuilder
-cppTypeCustomAlloc alloc BT_String = pure $ "std::basic_string<char, std::char_traits<char>, typename " <> alloc <> "::rebind<char>::other>"
-cppTypeCustomAlloc alloc BT_WString = pure $ "std::basic_string<wchar_t, std::char_traits<wchar_t>, typename " <> alloc <>  "::rebind<wchar_t>::other>"
+cppTypeCustomAlloc alloc BT_String = pure $ "std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<" <> alloc <> ">::template rebind_alloc<char> >"
+cppTypeCustomAlloc alloc BT_WString = pure $ "std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<" <> alloc <>  ">::template rebind_alloc<wchar_t> >"
 cppTypeCustomAlloc alloc BT_MetaName = cppTypeCustomAlloc alloc BT_String
 cppTypeCustomAlloc alloc BT_MetaFullName = cppTypeCustomAlloc alloc BT_String
 cppTypeCustomAlloc alloc (BT_List element) = "std::list<" <>> elementTypeName element <<>> ", " <>> allocator alloc element <<> ">"
@@ -424,11 +424,11 @@ comparer t = ", std::less<" <>> elementTypeName t <<> ">, "
 
 allocator :: Builder -> Type -> TypeNameBuilder
 allocator alloc element =
-    "typename " <>> alloc <>> "::rebind<" <>> elementTypeName element <<> ">::other"
+    "typename std::allocator_traits<" <>> alloc <>> ">::template rebind_alloc<" <>> elementTypeName element <<> ">"
 
 pairAllocator :: Builder -> Type -> Type -> TypeNameBuilder
 pairAllocator alloc key value =
-    "typename " <>> alloc <>> "::rebind<" <>> "std::pair<const " <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> "> >::other"
+    "typename std::allocator_traits<" <>> alloc <>> ">::template rebind_alloc<" <>> "std::pair<const " <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> "> >"
 
 cppSyntaxFix :: Builder -> Builder
 cppSyntaxFix = fromLazyText . snd . L.foldr fixInvalid (' ', mempty) . toLazyText

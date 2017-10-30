@@ -2,7 +2,7 @@
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 name:               bond
-version:            0.10.0.0
+version:            0.11.0.0
 cabal-version:      >= 1.8
 tested-with:        GHC>=7.4.1
 synopsis:           Bond schema compiler and code generator
@@ -25,7 +25,7 @@ homepage:           https://github.com/Microsoft/bond
 license:            MIT
 license-file:       LICENSE
 author:             Adam Sapek <adamsap@microsoft.com>
-maintainer:         Adam Sapek <adamsap@microsoft.com>
+maintainer:         Bond Development Team <bond-dev@microsoft.com>
 bug-reports:        https://github.com/Microsoft/bond/issues
 copyright:          Copyright (c) Microsoft. All rights reserved.
 category:           Language, Compiler, Code Generation
@@ -65,6 +65,7 @@ library
                     Language.Bond.Codegen.Cpp.Types_h
                     Language.Bond.Codegen.Cpp.Comm_cpp
                     Language.Bond.Codegen.Cpp.Comm_h
+                    Language.Bond.Codegen.Cpp.Grpc_cpp
                     Language.Bond.Codegen.Cpp.Grpc_h
                     Language.Bond.Codegen.Cs.Types_cs
                     Language.Bond.Codegen.Cs.Comm_cs
@@ -89,6 +90,12 @@ test-suite gbc-tests
                     Tests.Codegen.Util
                     Tests.Syntax
   ghc-options:      -threaded -Wall
+
+  if os(windows) && arch(i386)
+    ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
+  if os(windows) && arch(x86_64)
+    ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va
+
   build-depends:    bond,
                     aeson >= 0.7.0.6 && < 0.12.0.0,
                     aeson-pretty == 0.7.2,
@@ -115,6 +122,12 @@ executable gbc
   other-modules:    IO
                     Options
   ghc-options:      -threaded -Wall
+
+  if os(windows) && arch(i386)
+    ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
+  if os(windows) && arch(x86_64)
+    ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va
+
   build-depends:    bond,
                     aeson >= 0.7.0.6 && < 0.12.0.0,
                     async >= 2.0.1.0,

@@ -51,14 +51,14 @@ struct client_unary_call_data
     std::shared_ptr<TThreadPool> _threadPool;
     /// A response reader.
     std::unique_ptr<grpc::ClientAsyncResponseReader<bond::bonded<TResponse>>> _responseReader;
-    /// The arguments to pass back into the client callback. Also doubles as 
+    /// The arguments to pass back into the client callback. Also doubles as
     /// storage for the response, status, and context.
     unary_call_result<TResponse> _callbackArgs;
-    /// A pointer to ourselves used to keep us alive while waiting to receive
-    /// the response.
-    std::shared_ptr<client_unary_call_data> _self;
     /// The user code to invoke when a response is received.
     CallbackType _cb;
+    /// A pointer to ourselves used to keep us alive while waiting to
+    /// receive the response.
+    std::shared_ptr<client_unary_call_data> _self;
 
     client_unary_call_data(
         std::shared_ptr<grpc::ChannelInterface> channel,
@@ -71,8 +71,8 @@ struct client_unary_call_data
           _threadPool(std::move(threadPool)),
           _responseReader(),
           _callbackArgs(context),
-          _self(),
-          _cb(cb)
+          _cb(cb),
+          _self()
     {
         BOOST_ASSERT(_channel);
         BOOST_ASSERT(_ioManager);
@@ -133,6 +133,11 @@ struct client_unary_call_data
         _ioManager.reset();
         _threadPool.reset();
         _responseReader.reset();
+        _cb = {};
+
+        // In case we're the only reference keeping ourselves alive, we need
+        // to clear _self last so we don't attempt to access a local after
+        // this instance has been destroyed.
         _self.reset();
     }
 };

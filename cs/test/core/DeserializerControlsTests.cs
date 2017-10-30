@@ -118,7 +118,7 @@
                 Serialize.To(xmlWriter, obj);
                 xmlWriter.Flush();
 
-                var reader = new SimpleXmlReader(XmlReader.Create(new StringReader(xmlString.ToString())));
+                var reader = new SimpleXmlReader(new StringReader(xmlString.ToString()));
                 T obj2 = new Deserializer<SimpleXmlReader>(typeof(T)).Deserialize<T>(reader);
 
                 Assert.True(Comparer.Equal<T>(obj, obj2));

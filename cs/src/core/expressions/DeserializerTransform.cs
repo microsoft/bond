@@ -241,7 +241,7 @@ namespace Bond.Expressions
         Expression Nullable(IParser parser, Expression var, Type schemaType, bool initialize)
         {
             return parser.Container(schemaType.GetBondDataType(),
-                (valueParser, valueType, next, count) =>
+                (valueParser, valueType, next, count, arraySegment) =>
                 {
                     var body = new List<Expression>();
 
@@ -260,7 +260,7 @@ namespace Bond.Expressions
             var itemSchemaType = schemaType.GetValueType();
 
             return parser.Container(itemSchemaType.GetBondDataType(),
-                (valueParser, elementType, next, count) =>
+                (valueParser, elementType, next, count, arraySegment) =>
                 {
                     Expression addItem;
                     ParameterExpression[] parameters;

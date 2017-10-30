@@ -160,6 +160,7 @@ namespace bond
     };
 }
 
+
 namespace std
 {
     template <typename T, size_t N>
@@ -189,6 +190,7 @@ namespace std
     template<typename T, size_t N>
     void resize_string(std::array<T, N>& str, uint32_t size)
     {
+        BOOST_ASSERT(size < N);
         str[size] = T(0);
     }
 };

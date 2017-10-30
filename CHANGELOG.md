@@ -12,15 +12,56 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased  ##
-* `gbc` & compiler library: TBD
+* `gbc` & compiler library: (minor bump already done in bond.cabal)
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: TBD (bug fix bump needed)
-* C# NuGet version: TBD  (bug fix bump needed)
+* C++ version: (minor bump needed)
+* C# NuGet version: TBD
 * C# Comm NuGet version: TBD
+
+### `gbc` and Bond compiler library ###
+
+* C++ codegen now properly generates move assignment operator which was broken
+  for some cases.
+* C++ codegen no longer generates checks for C++11, except for MSVC 2013 workarounds.
 
 ### C++ ###
 
+* The CMake build now enforces a minimum Boost version of 1.58. The build
+  has required Boost 1.58 or later since version 5.2.0, but this was not
+  enforced.
+
+## 7.0.1: 2017-10-26 ##
+* `gbc` & compiler library: 0.10.1.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 7.0.0
+* C# NuGet version: 7.0.1
+* C# Comm NuGet version: 0.14.0
+
+### C# ###
+* Fixes a regression introduced in 7.0.0 that resulted in an exception during
+  generation of Serializer instances if the type contained an aliased
+  `required` blob field.
+
+## 7.0.0: 2017-10-24  ##
+* `gbc` & compiler library: 0.10.1.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 7.0.0
+* C# NuGet version: 7.0.0
+* C# Comm NuGet version: 0.13.0
+
+### `gbc` and Bond compiler library ###
+
+* Add service/method annotations in C# for Comm and gRPC.
+* Add service/method metadata support in C++ for gRPC.
+* C++ codegen now uses [`std::allocator_traits`](http://en.cppreference.com/w/cpp/memory/allocator_traits)
+  for rebinding allocator types.
+
+### C++ ###
+
+* Added `bond::make_box` helper function to create `bond::Box<T>` instances.
 * When Unicode conversion fails during JSON deserialization to wstring, a
   bond::CoreException is now thrown instead of a Boost exception.
 * When SimpleJSON deserializes a map key with no matching value, a
@@ -30,9 +71,48 @@ different versioning scheme, following the Haskell community's
 * Errors from some versions of G++ like "non-template type `Deserialize`
   used as a template" have been fixed.
   [Issue #538](https://github.com/Microsoft/bond/issues/538)
+* Guard against overflows in OutputMemoryStream, blob, and SimpleArray.
+* Use RapidJSON's iterative parser to handle deeply nested JSON data without
+  causing a stack overflow.
+* Guard against min/max being function-style macros in more places.
+* Allow Bond-generated C++ types to use non-default-constructable
+  allocators. (This works even on MSVC 2013 by only compiling the
+  generated-type's default constructor if it is used. The default
+  constructor is now a templated constructor that is invokable with zero
+  arguments.)
+* Fixed some macro uses that did not have sufficient parenthesis around
+  parameters and resulted in compiler errors.
+* Added the `bond::ext::gRPC::shared_unary_call` type. This type can be used
+  when shared ownership semantics are needed for `unary_call` instances.
+* Provide compile-time access to metadata about gRPC services and methods.
+* Using `bond::ext::gRPC::wait_callback` no longer causes a shared_ptr cycle
+  and the resulting resource leak.
+* Ensure that `bond_grpc.h` and `bond_const_grpc.h` are generated when the
+  CMake variable `BOND_ENABLE_GRPC` is set to that importing `bond.bond` and
+  `bond_const.bond` when defining a service works.
+* Added `bond::capped_allocator` adapter that will allow to limit the max
+  number of bytes to allocate during deserialization.
 
 ### C# ###
 
+* **Breaking change** The code generation MSBuild targets no longer support
+  Mono's xbuild: only MSBuild is supported. Mono has
+  [deprecated xbuild in favor of MSBuild](http://www.mono-project.com/docs/about-mono/releases/5.0.0/#msbuild)
+  now that
+  [MSBuild is open source and cross-platform](https://github.com/Microsoft/msbuild).
+* **Breaking change** The code generation MSBuild targets now automatically
+  compile the generated `_grpc.cs` files if `--grpc` is passed to `gbc`.
+  Explicit `<Compile Include="$(IntermediateOutputPath)foo_grpc.cs" />`
+  lines in MSBuild projects will need to be removed to fix error MSB3105
+  about duplicate items. See commit
+  [a120cd99](https://github.com/Microsoft/bond/commit/a120cd9995d74e11b75766c5195ea4587c304dd7#diff-3b0b4bed9029ae89dbfb824ce7eff5e8R54)
+  for an example of how to fix this.
+  [Issue #448](https://github.com/Microsoft/bond/issues/448)
+* **Breaking change** The low-level API `IParser.ContainerHandler` now has an
+  `arraySegment` parameter for the converted blob.
+* The code generation MSBuild targets will now skip compiling the
+  `_types.cs` files when `--structs=false` is passed to `gbc`.
+* Added `Bond.Box.Create` helper method to create `Bond.Box<T>` instances.
 * Reflection.IsBonded now recognizes custom IBonded implementations.
 * Use Newtonsoft's JSON.NET BigInteger support -- when available -- to
   handle the full range of uint64 values in the SimpleJson protocol (.NET
@@ -46,10 +126,22 @@ different versioning scheme, following the Haskell community's
 * Fix a bug in CompactBinaryWriter when using v2 that repeated first pass
   when a bonded field was serailized, resulting in extra work and extra
   state left in the CompactBinaryWriter.
+* Apply IDL annotations to services and methods for gRPC.
+  [Issue #617](https://github.com/Microsoft/bond/issues/617)
+* Fixed a bug that produced C# code that couldn't be compiled when using
+  Bond-over-gRPC with a generic type instantiated with a collection.
+  [Issue #623](https://github.com/Microsoft/bond/issues/623)
+* When targeting .NET 4.5, avoid resolving external entities when using
+  `SimpleXmlReader`.
+* Remove redundant conversions during serialization of aliased blobs.
 
 [msdn-gzipstream]: https://msdn.microsoft.com/en-us/library/system.io.compression.gzipstream(v=vs.110).aspx
 [msdn-stream-canseek]: https://msdn.microsoft.com/en-us/library/system.io.stream.canseek(v=vs.110).aspx
 [msdn-stream-seek]: https://msdn.microsoft.com/en-us/library/system.io.stream.seek(v=vs.110).aspx
+
+### C# Comm ###
+
+* Apply IDL annotations to services and methods for Comm.
 
 ## 6.0.1 ##
 

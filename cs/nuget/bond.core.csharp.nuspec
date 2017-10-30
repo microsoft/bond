@@ -33,9 +33,9 @@
         <file target="lib\net45" src="net45\Bond.Reflection.dll" />
         <file target="lib\net45" src="net45\Bond.Reflection.pdb" />
         <file target="lib\net45" src="net45\Bond.Reflection.xml" />
-        <file target="lib\net45" src="net45\Bond.dll" />
-        <file target="lib\net45" src="net45\Bond.pdb" />
-        <file target="lib\net45" src="net45\Bond.xml" />
+        <file target="lib\net45" src="net45-nonportable\Bond.dll" />
+        <file target="lib\net45" src="net45-nonportable\Bond.pdb" />
+        <file target="lib\net45" src="net45-nonportable\Bond.xml" />
 
         <file target="lib\netstandard1.0" src="netstandard1.0\Bond.Attributes.dll" />
         <file target="lib\netstandard1.0" src="netstandard1.0\Bond.Attributes.pdb" />

@@ -7,6 +7,7 @@
 #include "protocol.h"
 #include "runtime_schema.h"
 #include "bond_fwd.h"
+#include "select_protocol_fwd.h"
 #include "detail/double_pass.h"
 #include "detail/protocol_visitors.h"
 #include "detail/marshaled_bonded.h"
@@ -35,12 +36,6 @@ is_marshaled_bonded
         && is_bonded<T>::value> {};
 
 
-template <typename T, typename Protocols, typename Buffer, typename Transform>
-inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
-    Buffer& input,
-    const Transform& transform);
-
-
 /// @brief Represents data for a struct T known at compile-time
 ///
 /// See [User's Manual](../../manual/bond_cpp.html#understanding-bondedt)
@@ -62,7 +57,6 @@ public:
           _base(false)
     {}
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     /// @brief Move constructor
     bonded(bonded&& bonded) BOND_NOEXCEPT_IF(
         bond::is_nothrow_move_constructible<Reader>::value
@@ -74,11 +68,8 @@ public:
     {
         bonded._skip = false;
     }
-#endif
 
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
     bonded& operator=(const bonded& rhs) = default;
-#endif
 
     /// @brief Explicit up/down-casting from/to bonded of a derived type
     template <typename U, typename ReaderT>

@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup Condition="'$(BuildNonportable)' == 'true'">
     <BuildFramework>net45-nonportable</BuildFramework>
-    <DefineConstants>$(DefineConstants);SUPPORTS_BIGINTEGER</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_BIGINTEGER;SUPPORTS_XMLRESOLVER</DefineConstants>
   </PropertyGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
@@ -36,6 +36,7 @@
     <Compile Include="BondClass.cs" />
     <Compile Include="BondedTests.cs" />
     <Compile Include="CloningTests.cs" />
+    <Compile Include="ConvertTests.cs" />
     <Compile Include="CustomBondedTests.cs" />
     <Compile Include="DeserializerControlsTests.cs" />
     <Compile Include="EnumString.cs" />
@@ -104,7 +105,8 @@
       <HintPath>..\..\src\attributes\$(DependentOutputPath)\Bond.Attributes.dll</HintPath>
     </Reference>
     <Reference Include="Bond">
-      <HintPath>..\..\src\core\$(DependentOutputPath)\Bond.dll</HintPath>
+      <!-- Intentionally not DependentOutputPath to match BuildFramework-->
+      <HintPath>..\..\src\core\$(OrigOutputPath)\Bond.dll</HintPath>
     </Reference>
     <Reference Include="Bond.Reflection">
       <HintPath>..\..\src\reflection\$(DependentOutputPath)\Bond.Reflection.dll</HintPath>
@@ -113,7 +115,8 @@
       <HintPath>..\..\src\io\$(DependentOutputPath)\Bond.IO.dll</HintPath>
     </Reference>
     <Reference Include="Bond.JSON">
-      <HintPath>..\..\src\json\$(OrigOutputPath)\Bond.JSON.dll</HintPath> <!-- Intentionally not DependentOutputPath to match BuildFramework-->
+      <!-- Intentionally not DependentOutputPath to match BuildFramework-->
+      <HintPath>..\..\src\json\$(OrigOutputPath)\Bond.JSON.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

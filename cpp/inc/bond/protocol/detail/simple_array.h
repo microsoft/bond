@@ -3,6 +3,10 @@
 
 #pragma once
 
+#include <limits>
+#include <stdexcept>
+#include <boost/static_assert.hpp>
+
 namespace bond
 {
 namespace detail
@@ -16,7 +20,9 @@ public:
         : _size(0),
           _capacity(N),
           _data(_insitu)    
-    {}
+    {
+        BOOST_STATIC_ASSERT(N != 0);
+    }
 
     ~SimpleArray()
     {
@@ -35,6 +41,10 @@ public:
 
     T pop()
     {
+        if (_size == 0)
+        {
+            throw std::underflow_error("Can't pop empty array");
+        }
         return _data[--_size];
     }
 
@@ -54,6 +64,12 @@ public:
 private:
     void grow(T x)
     {
+        // cap elements to prevent overflow
+        if (_capacity >= ((std::numeric_limits<uint32_t>::max)() >> 1))
+        {
+            throw std::bad_alloc();
+        }
+
         T* new_data = new T[_capacity <<= 1];
         memcpy(new_data, _data, _size * sizeof(T));
         memfree();
@@ -63,7 +79,10 @@ private:
     void memfree()
     {
         if (_data != _insitu)
+        {
             delete [] _data;
+            _data = nullptr;
+        }
     }
 
     BOOST_STATIC_ASSERT(is_pod<T>::value);

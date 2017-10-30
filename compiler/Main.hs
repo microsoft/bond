@@ -95,7 +95,7 @@ cppCodegen options@Cpp {..} = do
     templates = concat $ map snd $ filter fst codegen_templates
     codegen_templates = [ (core_enabled, core_files)
                         , (comm_enabled, [comm_h export_attribute, comm_cpp])
-                        , (grpc_enabled, [grpc_h export_attribute])
+                        , (grpc_enabled, [grpc_h export_attribute, grpc_cpp])
                         ]
     core_files = [
           reflection_h export_attribute

@@ -8,6 +8,7 @@
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/client_callback.h>
 #include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/grpc/reflection.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 #include <bond/ext/grpc/detail/client_call_data.h>
@@ -39,6 +40,8 @@ namespace tests
 class Foo final
 {
 public:
+    struct Schema;
+
     template <typename TThreadPool>
     class ClientCore
     {
@@ -104,9 +107,9 @@ public:
 
             this->queue_receive(
                 0,
-                &_rd_foo->_receivedCall->_context,
-                &_rd_foo->_receivedCall->_request,
-                &_rd_foo->_receivedCall->_responder,
+                &_rd_foo->_receivedCall->context(),
+                &_rd_foo->_receivedCall->request(),
+                &_rd_foo->_receivedCall->responder(),
                 cq,
                 &_rd_foo.get());
         }
@@ -146,6 +149,31 @@ inline void Foo::ClientCore<TThreadPool>::Asyncfoo(
         cb);
     calldata->dispatch(rpcmethod_foo_, request);
 }
+
+struct Foo::Schema
+{
+    static const ::bond::Metadata metadata;
+
+    private: static const ::bond::Metadata s_foo_metadata;
+
+    public: struct service
+    {
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::Param>,
+                ::bond::bonded< ::tests::Result>,
+                &s_foo_metadata
+            > foo;
+    };
+
+    private: typedef boost::mpl::list<> methods0;
+    private: typedef boost::mpl::push_front<methods0, service::foo>::type methods1;
+
+    public: typedef methods1::type methods;
+
+    
+};
+
 
 
 } // namespace tests

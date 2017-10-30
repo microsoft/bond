@@ -181,6 +181,10 @@ tests = testGroup "Compiler tests"
                     [ "c#"
                     ]
                     "generic_service"
+                , verifyCsCommCodegen
+                    [ "c#"
+                    ]
+                    "service_attributes"
                 ]
             ]
         , testGroup "Java"

@@ -1191,6 +1191,454 @@
                 .Loop  {
                     .If ((System.Int32)$fieldType > 1) {
                         .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(51)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                .Block(System.ArraySegment`1[System.Byte] $Example._blobList_item) {
+                                                    .Default(System.Void);
+                                                    .Loop  {
+                                                        .If ($count-- > 0) {
+                                                            .Block() {
+                                                                .Block(
+                                                                    System.Int32 $count,
+                                                                    Bond.BondDataType $elementType) {
+                                                                    .Call $reader.ReadContainerBegin(
+                                                                        $count,
+                                                                        $elementType);
+                                                                    .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                        $Example._blobList_item = .Call $reader.ReadBytes($count)
+                                                                    } .Else {
+                                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                            .Constant<Bond.BondDataType>(BT_INT8),
+                                                                            $elementType)
+                                                                    };
+                                                                    .Call $reader.ReadContainerEnd()
+                                                                };
+                                                                .Call ($Example._blobList).Add($Example._blobList_item)
+                                                            }
+                                                        } .Else {
+                                                            .Break end { }
+                                                        }
+                                                    }
+                                                    .LabelTarget end:;
+                                                    .Default(System.Void)
+                                                }
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_LIST),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(51)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(51)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(52)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                .Block(System.ArraySegment`1[System.Byte] $Example._blobVector_item) {
+                                                    .Block(System.Int32 $Example._blobVector_count) {
+                                                        $Example._blobVector_count = $count;
+                                                        .If ($Example._blobVector_count > 65536) {
+                                                            $Example._blobVector_count = 65536
+                                                        } .Else {
+                                                            .Default(System.Void)
+                                                        };
+                                                        ($Example._blobVector).Capacity = $Example._blobVector_count
+                                                    };
+                                                    .Loop  {
+                                                        .If ($count-- > 0) {
+                                                            .Block() {
+                                                                .Block(
+                                                                    System.Int32 $count,
+                                                                    Bond.BondDataType $elementType) {
+                                                                    .Call $reader.ReadContainerBegin(
+                                                                        $count,
+                                                                        $elementType);
+                                                                    .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                        $Example._blobVector_item = .Call $reader.ReadBytes($count)
+                                                                    } .Else {
+                                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                            .Constant<Bond.BondDataType>(BT_INT8),
+                                                                            $elementType)
+                                                                    };
+                                                                    .Call $reader.ReadContainerEnd()
+                                                                };
+                                                                .Call ($Example._blobVector).Add($Example._blobVector_item)
+                                                            }
+                                                        } .Else {
+                                                            .Break end { }
+                                                        }
+                                                    }
+                                                    .LabelTarget end:;
+                                                    .Default(System.Void)
+                                                }
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_LIST),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(52)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(52)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(53)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_MAP)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $keyType,
+                                            Bond.BondDataType $valueType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $keyType,
+                                                $valueType);
+                                            .If ($keyType == .Constant<Bond.BondDataType>(BT_INT32)) {
+                                                .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                    .Block(
+                                                        System.Int32 $Example._blobMap_key,
+                                                        System.ArraySegment`1[System.Byte] $Example._blobMap_value) {
+                                                        .Default(System.Void);
+                                                        .Loop  {
+                                                            .If ($count-- > 0) {
+                                                                .Block() {
+                                                                    $Example._blobMap_key = .Call $reader.ReadInt32();
+                                                                    .Default(System.Void);
+                                                                    .Block(
+                                                                        System.Int32 $count,
+                                                                        Bond.BondDataType $elementType) {
+                                                                        .Call $reader.ReadContainerBegin(
+                                                                            $count,
+                                                                            $elementType);
+                                                                        .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                            $Example._blobMap_value = .Call $reader.ReadBytes($count)
+                                                                        } .Else {
+                                                                            .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                                .Constant<Bond.BondDataType>(BT_INT8),
+                                                                                $elementType)
+                                                                        };
+                                                                        .Call $reader.ReadContainerEnd()
+                                                                    };
+                                                                    ($Example._blobMap).Item[$Example._blobMap_key] = $Example._blobMap_value
+                                                                }
+                                                            } .Else {
+                                                                .Break end { }
+                                                            }
+                                                        }
+                                                        .LabelTarget end:
+                                                    }
+                                                } .Else {
+                                                    .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                        .Constant<Bond.BondDataType>(BT_LIST),
+                                                        $valueType)
+                                                }
+                                            } .Else {
+                                                .If ($keyType == .Constant<Bond.BondDataType>(BT_INT16)) {
+                                                    .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                        .Block(
+                                                            System.Int32 $Example._blobMap_key,
+                                                            System.ArraySegment`1[System.Byte] $Example._blobMap_value) {
+                                                            .Default(System.Void);
+                                                            .Loop  {
+                                                                .If ($count-- > 0) {
+                                                                    .Block() {
+                                                                        $Example._blobMap_key = (System.Int32).Call $reader.ReadInt16();
+                                                                        .Default(System.Void);
+                                                                        .Block(
+                                                                            System.Int32 $count,
+                                                                            Bond.BondDataType $elementType) {
+                                                                            .Call $reader.ReadContainerBegin(
+                                                                                $count,
+                                                                                $elementType);
+                                                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                                $Example._blobMap_value = .Call $reader.ReadBytes($count)
+                                                                            } .Else {
+                                                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8),
+                                                                                    $elementType)
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        };
+                                                                        ($Example._blobMap).Item[$Example._blobMap_key] = $Example._blobMap_value
+                                                                    }
+                                                                } .Else {
+                                                                    .Break end { }
+                                                                }
+                                                            }
+                                                            .LabelTarget end:
+                                                        }
+                                                    } .Else {
+                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                                            $valueType)
+                                                    }
+                                                } .Else {
+                                                    .If ($keyType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                        .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                            .Block(
+                                                                System.Int32 $Example._blobMap_key,
+                                                                System.ArraySegment`1[System.Byte] $Example._blobMap_value) {
+                                                                .Default(System.Void);
+                                                                .Loop  {
+                                                                    .If ($count-- > 0) {
+                                                                        .Block() {
+                                                                            $Example._blobMap_key = (System.Int32).Call $reader.ReadInt8();
+                                                                            .Default(System.Void);
+                                                                            .Block(
+                                                                                System.Int32 $count,
+                                                                                Bond.BondDataType $elementType) {
+                                                                                .Call $reader.ReadContainerBegin(
+                                                                                    $count,
+                                                                                    $elementType);
+                                                                                .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                                    $Example._blobMap_value = .Call $reader.ReadBytes($count)
+                                                                                } .Else {
+                                                                                    .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                                        .Constant<Bond.BondDataType>(BT_INT8),
+                                                                                        $elementType)
+                                                                                };
+                                                                                .Call $reader.ReadContainerEnd()
+                                                                            };
+                                                                            ($Example._blobMap).Item[$Example._blobMap_key] = $Example._blobMap_value
+                                                                        }
+                                                                    } .Else {
+                                                                        .Break end { }
+                                                                    }
+                                                                }
+                                                                .LabelTarget end:
+                                                            }
+                                                        } .Else {
+                                                            .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                .Constant<Bond.BondDataType>(BT_LIST),
+                                                                $valueType)
+                                                        }
+                                                    } .Else {
+                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                            .Constant<Bond.BondDataType>(BT_INT32),
+                                                            $keyType)
+                                                    }
+                                                }
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_MAP),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(53)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(53)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(54)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                .Block() {
+                                                    .Loop  {
+                                                        .If ($count-- > 0) {
+                                                            .Block(
+                                                                System.Int32 $count,
+                                                                Bond.BondDataType $elementType) {
+                                                                .Call $reader.ReadContainerBegin(
+                                                                    $count,
+                                                                    $elementType);
+                                                                .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                    $Example._blobNullable = .Call $reader.ReadBytes($count)
+                                                                } .Else {
+                                                                    .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                        .Constant<Bond.BondDataType>(BT_INT8),
+                                                                        $elementType)
+                                                                };
+                                                                .Call $reader.ReadContainerEnd()
+                                                            }
+                                                        } .Else {
+                                                            .Break end { }
+                                                        }
+                                                    }
+                                                    .LabelTarget end:
+                                                }
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_LIST),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(54)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(54)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
                             .If ($fieldId == .Constant<System.UInt16>(60)) {
                                 .Block() {
                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_MAP)) {
@@ -1377,6 +1825,1117 @@
                                 $fieldType,
                                 $fieldId);
                             .If ($fieldId > .Constant<System.UInt16>(60)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(70)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                $Example._decimal = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                    .Call $reader.ReadBytes($count),
+                                                    .Default(System.Decimal))
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_INT8),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(70)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(70)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(71)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                .Block(System.Decimal $Example._decList_item) {
+                                                    .Default(System.Void);
+                                                    .Loop  {
+                                                        .If ($count-- > 0) {
+                                                            .Block() {
+                                                                .Block(
+                                                                    System.Int32 $count,
+                                                                    Bond.BondDataType $elementType) {
+                                                                    .Call $reader.ReadContainerBegin(
+                                                                        $count,
+                                                                        $elementType);
+                                                                    .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                        $Example._decList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                            .Call $reader.ReadBytes($count),
+                                                                            .Default(System.Decimal))
+                                                                    } .Else {
+                                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                            .Constant<Bond.BondDataType>(BT_INT8),
+                                                                            $elementType)
+                                                                    };
+                                                                    .Call $reader.ReadContainerEnd()
+                                                                };
+                                                                .Call ($Example._decList).Add($Example._decList_item)
+                                                            }
+                                                        } .Else {
+                                                            .Break end { }
+                                                        }
+                                                    }
+                                                    .LabelTarget end:;
+                                                    .Default(System.Void)
+                                                }
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_LIST),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(71)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(71)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(72)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                .Block(System.Decimal $Example._decVector_item) {
+                                                    .Block(System.Int32 $Example._decVector_count) {
+                                                        $Example._decVector_count = $count;
+                                                        .If ($Example._decVector_count > 65536) {
+                                                            $Example._decVector_count = 65536
+                                                        } .Else {
+                                                            .Default(System.Void)
+                                                        };
+                                                        ($Example._decVector).Capacity = $Example._decVector_count
+                                                    };
+                                                    .Loop  {
+                                                        .If ($count-- > 0) {
+                                                            .Block() {
+                                                                .Block(
+                                                                    System.Int32 $count,
+                                                                    Bond.BondDataType $elementType) {
+                                                                    .Call $reader.ReadContainerBegin(
+                                                                        $count,
+                                                                        $elementType);
+                                                                    .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                        $Example._decVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                            .Call $reader.ReadBytes($count),
+                                                                            .Default(System.Decimal))
+                                                                    } .Else {
+                                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                            .Constant<Bond.BondDataType>(BT_INT8),
+                                                                            $elementType)
+                                                                    };
+                                                                    .Call $reader.ReadContainerEnd()
+                                                                };
+                                                                .Call ($Example._decVector).Add($Example._decVector_item)
+                                                            }
+                                                        } .Else {
+                                                            .Break end { }
+                                                        }
+                                                    }
+                                                    .LabelTarget end:;
+                                                    .Default(System.Void)
+                                                }
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_LIST),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(72)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(72)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(73)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_MAP)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $keyType,
+                                            Bond.BondDataType $valueType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $keyType,
+                                                $valueType);
+                                            .If ($keyType == .Constant<Bond.BondDataType>(BT_INT32)) {
+                                                .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                    .Block(
+                                                        System.Int32 $Example._decMap_key,
+                                                        System.Decimal $Example._decMap_value) {
+                                                        .Default(System.Void);
+                                                        .Loop  {
+                                                            .If ($count-- > 0) {
+                                                                .Block() {
+                                                                    $Example._decMap_key = .Call $reader.ReadInt32();
+                                                                    .Default(System.Void);
+                                                                    .Block(
+                                                                        System.Int32 $count,
+                                                                        Bond.BondDataType $elementType) {
+                                                                        .Call $reader.ReadContainerBegin(
+                                                                            $count,
+                                                                            $elementType);
+                                                                        .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                            $Example._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                .Call $reader.ReadBytes($count),
+                                                                                .Default(System.Decimal))
+                                                                        } .Else {
+                                                                            .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                                .Constant<Bond.BondDataType>(BT_INT8),
+                                                                                $elementType)
+                                                                        };
+                                                                        .Call $reader.ReadContainerEnd()
+                                                                    };
+                                                                    ($Example._decMap).Item[$Example._decMap_key] = $Example._decMap_value
+                                                                }
+                                                            } .Else {
+                                                                .Break end { }
+                                                            }
+                                                        }
+                                                        .LabelTarget end:
+                                                    }
+                                                } .Else {
+                                                    .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                        .Constant<Bond.BondDataType>(BT_LIST),
+                                                        $valueType)
+                                                }
+                                            } .Else {
+                                                .If ($keyType == .Constant<Bond.BondDataType>(BT_INT16)) {
+                                                    .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                        .Block(
+                                                            System.Int32 $Example._decMap_key,
+                                                            System.Decimal $Example._decMap_value) {
+                                                            .Default(System.Void);
+                                                            .Loop  {
+                                                                .If ($count-- > 0) {
+                                                                    .Block() {
+                                                                        $Example._decMap_key = (System.Int32).Call $reader.ReadInt16();
+                                                                        .Default(System.Void);
+                                                                        .Block(
+                                                                            System.Int32 $count,
+                                                                            Bond.BondDataType $elementType) {
+                                                                            .Call $reader.ReadContainerBegin(
+                                                                                $count,
+                                                                                $elementType);
+                                                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                                $Example._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                    .Call $reader.ReadBytes($count),
+                                                                                    .Default(System.Decimal))
+                                                                            } .Else {
+                                                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8),
+                                                                                    $elementType)
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        };
+                                                                        ($Example._decMap).Item[$Example._decMap_key] = $Example._decMap_value
+                                                                    }
+                                                                } .Else {
+                                                                    .Break end { }
+                                                                }
+                                                            }
+                                                            .LabelTarget end:
+                                                        }
+                                                    } .Else {
+                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                                            $valueType)
+                                                    }
+                                                } .Else {
+                                                    .If ($keyType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                        .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                            .Block(
+                                                                System.Int32 $Example._decMap_key,
+                                                                System.Decimal $Example._decMap_value) {
+                                                                .Default(System.Void);
+                                                                .Loop  {
+                                                                    .If ($count-- > 0) {
+                                                                        .Block() {
+                                                                            $Example._decMap_key = (System.Int32).Call $reader.ReadInt8();
+                                                                            .Default(System.Void);
+                                                                            .Block(
+                                                                                System.Int32 $count,
+                                                                                Bond.BondDataType $elementType) {
+                                                                                .Call $reader.ReadContainerBegin(
+                                                                                    $count,
+                                                                                    $elementType);
+                                                                                .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                                    $Example._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                        .Call $reader.ReadBytes($count),
+                                                                                        .Default(System.Decimal))
+                                                                                } .Else {
+                                                                                    .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                                        .Constant<Bond.BondDataType>(BT_INT8),
+                                                                                        $elementType)
+                                                                                };
+                                                                                .Call $reader.ReadContainerEnd()
+                                                                            };
+                                                                            ($Example._decMap).Item[$Example._decMap_key] = $Example._decMap_value
+                                                                        }
+                                                                    } .Else {
+                                                                        .Break end { }
+                                                                    }
+                                                                }
+                                                                .LabelTarget end:
+                                                            }
+                                                        } .Else {
+                                                            .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                .Constant<Bond.BondDataType>(BT_LIST),
+                                                                $valueType)
+                                                        }
+                                                    } .Else {
+                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                            .Constant<Bond.BondDataType>(BT_INT32),
+                                                            $keyType)
+                                                    }
+                                                }
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_MAP),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(73)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(73)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(74)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                .Block() {
+                                                    .Loop  {
+                                                        .If ($count-- > 0) {
+                                                            .Block(
+                                                                System.Int32 $count,
+                                                                Bond.BondDataType $elementType) {
+                                                                .Call $reader.ReadContainerBegin(
+                                                                    $count,
+                                                                    $elementType);
+                                                                .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                    $Example._decNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                        .Call $reader.ReadBytes($count),
+                                                                        .Default(System.Decimal))
+                                                                } .Else {
+                                                                    .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                        .Constant<Bond.BondDataType>(BT_INT8),
+                                                                        $elementType)
+                                                                };
+                                                                .Call $reader.ReadContainerEnd()
+                                                            }
+                                                        } .Else {
+                                                            .Break end { }
+                                                        }
+                                                    }
+                                                    .LabelTarget end:
+                                                }
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_LIST),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(74)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(74)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(75)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                $Example._decimal_req = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                    .Call $reader.ReadBytes($count),
+                                                    .Default(System.Decimal))
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_INT8),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(75)) {
+                                    .Block() {
+                                        .Invoke (.Lambda #Lambda3<System.Action`2[System.String,System.String]>)(
+                                            "Example",
+                                            "_decimal_req");
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(75)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Invoke (.Lambda #Lambda3<System.Action`2[System.String,System.String]>)(
+                                "Example",
+                                "_decimal_req");
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(80)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                $Example._reference = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                    .Call $reader.ReadBytes($count),
+                                                    .Default(ExpressionsTest.RefObject))
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_INT8),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(80)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(80)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(81)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                .Block(ExpressionsTest.RefObject $Example._refList_item) {
+                                                    .Default(System.Void);
+                                                    .Loop  {
+                                                        .If ($count-- > 0) {
+                                                            .Block() {
+                                                                .Block(
+                                                                    System.Int32 $count,
+                                                                    Bond.BondDataType $elementType) {
+                                                                    .Call $reader.ReadContainerBegin(
+                                                                        $count,
+                                                                        $elementType);
+                                                                    .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                        $Example._refList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                            .Call $reader.ReadBytes($count),
+                                                                            .Default(ExpressionsTest.RefObject))
+                                                                    } .Else {
+                                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                            .Constant<Bond.BondDataType>(BT_INT8),
+                                                                            $elementType)
+                                                                    };
+                                                                    .Call $reader.ReadContainerEnd()
+                                                                };
+                                                                .Call ($Example._refList).Add($Example._refList_item)
+                                                            }
+                                                        } .Else {
+                                                            .Break end { }
+                                                        }
+                                                    }
+                                                    .LabelTarget end:;
+                                                    .Default(System.Void)
+                                                }
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_LIST),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(81)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(81)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(82)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                .Block(ExpressionsTest.RefObject $Example._refVector_item) {
+                                                    .Block(System.Int32 $Example._refVector_count) {
+                                                        $Example._refVector_count = $count;
+                                                        .If ($Example._refVector_count > 65536) {
+                                                            $Example._refVector_count = 65536
+                                                        } .Else {
+                                                            .Default(System.Void)
+                                                        };
+                                                        ($Example._refVector).Capacity = $Example._refVector_count
+                                                    };
+                                                    .Loop  {
+                                                        .If ($count-- > 0) {
+                                                            .Block() {
+                                                                .Block(
+                                                                    System.Int32 $count,
+                                                                    Bond.BondDataType $elementType) {
+                                                                    .Call $reader.ReadContainerBegin(
+                                                                        $count,
+                                                                        $elementType);
+                                                                    .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                        $Example._refVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                            .Call $reader.ReadBytes($count),
+                                                                            .Default(ExpressionsTest.RefObject))
+                                                                    } .Else {
+                                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                            .Constant<Bond.BondDataType>(BT_INT8),
+                                                                            $elementType)
+                                                                    };
+                                                                    .Call $reader.ReadContainerEnd()
+                                                                };
+                                                                .Call ($Example._refVector).Add($Example._refVector_item)
+                                                            }
+                                                        } .Else {
+                                                            .Break end { }
+                                                        }
+                                                    }
+                                                    .LabelTarget end:;
+                                                    .Default(System.Void)
+                                                }
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_LIST),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(82)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(82)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(83)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_MAP)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $keyType,
+                                            Bond.BondDataType $valueType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $keyType,
+                                                $valueType);
+                                            .If ($keyType == .Constant<Bond.BondDataType>(BT_INT32)) {
+                                                .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                    .Block(
+                                                        System.Int32 $Example._refMap_key,
+                                                        ExpressionsTest.RefObject $Example._refMap_value) {
+                                                        .Default(System.Void);
+                                                        .Loop  {
+                                                            .If ($count-- > 0) {
+                                                                .Block() {
+                                                                    $Example._refMap_key = .Call $reader.ReadInt32();
+                                                                    .Default(System.Void);
+                                                                    .Block(
+                                                                        System.Int32 $count,
+                                                                        Bond.BondDataType $elementType) {
+                                                                        .Call $reader.ReadContainerBegin(
+                                                                            $count,
+                                                                            $elementType);
+                                                                        .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                            $Example._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                .Call $reader.ReadBytes($count),
+                                                                                .Default(ExpressionsTest.RefObject))
+                                                                        } .Else {
+                                                                            .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                                .Constant<Bond.BondDataType>(BT_INT8),
+                                                                                $elementType)
+                                                                        };
+                                                                        .Call $reader.ReadContainerEnd()
+                                                                    };
+                                                                    ($Example._refMap).Item[$Example._refMap_key] = $Example._refMap_value
+                                                                }
+                                                            } .Else {
+                                                                .Break end { }
+                                                            }
+                                                        }
+                                                        .LabelTarget end:
+                                                    }
+                                                } .Else {
+                                                    .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                        .Constant<Bond.BondDataType>(BT_LIST),
+                                                        $valueType)
+                                                }
+                                            } .Else {
+                                                .If ($keyType == .Constant<Bond.BondDataType>(BT_INT16)) {
+                                                    .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                        .Block(
+                                                            System.Int32 $Example._refMap_key,
+                                                            ExpressionsTest.RefObject $Example._refMap_value) {
+                                                            .Default(System.Void);
+                                                            .Loop  {
+                                                                .If ($count-- > 0) {
+                                                                    .Block() {
+                                                                        $Example._refMap_key = (System.Int32).Call $reader.ReadInt16();
+                                                                        .Default(System.Void);
+                                                                        .Block(
+                                                                            System.Int32 $count,
+                                                                            Bond.BondDataType $elementType) {
+                                                                            .Call $reader.ReadContainerBegin(
+                                                                                $count,
+                                                                                $elementType);
+                                                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                                $Example._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                    .Call $reader.ReadBytes($count),
+                                                                                    .Default(ExpressionsTest.RefObject))
+                                                                            } .Else {
+                                                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8),
+                                                                                    $elementType)
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        };
+                                                                        ($Example._refMap).Item[$Example._refMap_key] = $Example._refMap_value
+                                                                    }
+                                                                } .Else {
+                                                                    .Break end { }
+                                                                }
+                                                            }
+                                                            .LabelTarget end:
+                                                        }
+                                                    } .Else {
+                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                                            $valueType)
+                                                    }
+                                                } .Else {
+                                                    .If ($keyType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                        .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                            .Block(
+                                                                System.Int32 $Example._refMap_key,
+                                                                ExpressionsTest.RefObject $Example._refMap_value) {
+                                                                .Default(System.Void);
+                                                                .Loop  {
+                                                                    .If ($count-- > 0) {
+                                                                        .Block() {
+                                                                            $Example._refMap_key = (System.Int32).Call $reader.ReadInt8();
+                                                                            .Default(System.Void);
+                                                                            .Block(
+                                                                                System.Int32 $count,
+                                                                                Bond.BondDataType $elementType) {
+                                                                                .Call $reader.ReadContainerBegin(
+                                                                                    $count,
+                                                                                    $elementType);
+                                                                                .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                                    $Example._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                        .Call $reader.ReadBytes($count),
+                                                                                        .Default(ExpressionsTest.RefObject))
+                                                                                } .Else {
+                                                                                    .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                                        .Constant<Bond.BondDataType>(BT_INT8),
+                                                                                        $elementType)
+                                                                                };
+                                                                                .Call $reader.ReadContainerEnd()
+                                                                            };
+                                                                            ($Example._refMap).Item[$Example._refMap_key] = $Example._refMap_value
+                                                                        }
+                                                                    } .Else {
+                                                                        .Break end { }
+                                                                    }
+                                                                }
+                                                                .LabelTarget end:
+                                                            }
+                                                        } .Else {
+                                                            .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                .Constant<Bond.BondDataType>(BT_LIST),
+                                                                $valueType)
+                                                        }
+                                                    } .Else {
+                                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                            .Constant<Bond.BondDataType>(BT_INT32),
+                                                            $keyType)
+                                                    }
+                                                }
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_MAP),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(83)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(83)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(84)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                        .Block(
+                                            System.Int32 $count,
+                                            Bond.BondDataType $elementType) {
+                                            .Call $reader.ReadContainerBegin(
+                                                $count,
+                                                $elementType);
+                                            .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
+                                                .Block() {
+                                                    $Example._refNullable = .Default(ExpressionsTest.RefObject);
+                                                    .Loop  {
+                                                        .If ($count-- > 0) {
+                                                            .Block(
+                                                                System.Int32 $count,
+                                                                Bond.BondDataType $elementType) {
+                                                                .Call $reader.ReadContainerBegin(
+                                                                    $count,
+                                                                    $elementType);
+                                                                .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                    $Example._refNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                        .Call $reader.ReadBytes($count),
+                                                                        .Default(ExpressionsTest.RefObject))
+                                                                } .Else {
+                                                                    .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                        .Constant<Bond.BondDataType>(BT_INT8),
+                                                                        $elementType)
+                                                                };
+                                                                .Call $reader.ReadContainerEnd()
+                                                            }
+                                                        } .Else {
+                                                            .Break end { }
+                                                        }
+                                                    }
+                                                    .LabelTarget end:
+                                                }
+                                            } .Else {
+                                                .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                    .Constant<Bond.BondDataType>(BT_LIST),
+                                                    $elementType)
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(84)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(84)) {
                                 .Break end { }
                             } .Else {
                                 .Default(System.Void)

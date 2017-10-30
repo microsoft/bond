@@ -11,6 +11,7 @@ import Prelude
 import qualified Data.Text.Lazy as L
 import Data.Text.Lazy.Builder
 import Text.Shakespeare.Text
+import Language.Bond.Util
 import Language.Bond.Syntax.Types
 import Language.Bond.Codegen.Util
 import Language.Bond.Codegen.TypeMapping
@@ -20,7 +21,7 @@ import qualified Language.Bond.Codegen.Cpp.Util as CPP
 -- | Codegen template for generating /base_name/_grpc.h containing declarations of
 -- of service interface and proxy.
 grpc_h :: Maybe String -> MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
-grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
+grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 #pragma once
 
 #include "#{file}_reflection.h"
@@ -30,6 +31,7 @@ grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/client_callback.h>
 #include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/grpc/reflection.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 #include <bond/ext/grpc/detail/client_call_data.h>
@@ -81,6 +83,8 @@ grpc_h _ cpp file imports declarations = ("_grpc.h", [lt|
 #{template}class #{declName} final
 {
 public:
+    struct Schema;
+
     template <typename TThreadPool>
     class #{proxyName}
     {
@@ -141,10 +145,68 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
     { }
 
 #{doubleLineSep 0 methodDecl serviceMethods}
+
+#{template}struct #{className}::Schema
+{
+    #{export_attr}static const ::bond::Metadata metadata;
+
+    #{newlineSep 1 methodMetadata serviceMethods}
+
+    public: struct service
+    {
+        #{doubleLineSep 2 methodTemplate serviceMethods}
+    };
+
+    private: typedef boost::mpl::list<> methods0;
+    #{newlineSep 1 pushMethod indexedMethods}
+
+    public: typedef #{typename}methods#{length serviceMethods}::type methods;
+
+    #{constructor}
+};
+#{onlyTemplate $ CPP.schemaMetadata cpp s}
 |]
       where
         className = CPP.className s
         template = CPP.template s
+        onlyTemplate x = if null declParams then mempty else x
+        typename = onlyTemplate [lt|typename |]
+
+        export_attr = optional (\a -> [lt|#{a}
+        |]) export_attribute
+
+        methodMetadataVar m = [lt|s_#{methodName m}_metadata|]
+
+        methodMetadata m =
+            [lt|private: #{export_attr}static const ::bond::Metadata #{methodMetadataVar m};|]
+
+        -- reversed list of method names zipped with indexes
+        indexedMethods :: [(String, Int)]
+        indexedMethods = zipWith ((,) . methodName) (reverse serviceMethods) [0..]
+
+        pushMethod (method, i) =
+            [lt|private: typedef #{typename}boost::mpl::push_front<methods#{i}, #{typename}service::#{method}>::type methods#{i + 1};|]
+
+        -- constructor, generated only for service templates
+        constructor = onlyTemplate [lt|Schema()
+        {
+            // Force instantiation of template statics
+            (void)metadata;
+            #{newlineSep 3 static serviceMethods}
+        }|]
+          where
+            static m = [lt|(void)#{methodMetadataVar m};|]
+
+        methodTemplate m = [lt|typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                #{className},
+                #{bonded $ methodInput m},
+                #{result m},
+                &#{methodMetadataVar m}
+            > #{methodName m};|]
+          where
+            result Event{} = "void"
+            result Function{..} = bonded methodResult
+
         proxyName = "ClientCore" :: String
         serviceName = "ServiceCore" :: String
 
@@ -267,16 +329,16 @@ inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
                 std::bind(&#{serviceName}::#{methodName}, this, std::placeholders::_1));|]
                   queueReceive (index,Function{..}) = [lt|this->queue_receive(
                 #{index},
-                &#{serviceRdMember methodName}->_receivedCall->_context,
-                &#{serviceRdMember methodName}->_receivedCall->_request,
-                &#{serviceRdMember methodName}->_receivedCall->_responder,
+                &#{serviceRdMember methodName}->_receivedCall->context(),
+                &#{serviceRdMember methodName}->_receivedCall->request(),
+                &#{serviceRdMember methodName}->_receivedCall->responder(),
                 #{cqParam},
                 &#{serviceRdMember methodName}.get());|]
                   queueReceive (index,Event{..}) = [lt|this->queue_receive(
                 #{index},
-                &#{serviceRdMember methodName}->_receivedCall->_context,
-                &#{serviceRdMember methodName}->_receivedCall->_request,
-                &#{serviceRdMember methodName}->_receivedCall->_responder,
+                &#{serviceRdMember methodName}->_receivedCall->context(),
+                &#{serviceRdMember methodName}->_receivedCall->request(),
+                &#{serviceRdMember methodName}->_receivedCall->responder(),
                 #{cqParam},
                 &#{serviceRdMember methodName}.get());|]
 

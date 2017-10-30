@@ -18,6 +18,15 @@ if (BOND_GBC_PATH)
     message (STATUS "Existing GBC executable found: '${GBC_EXECUTABLE}'")
 endif()
 
+set (BOND_USE_CCACHE
+    "FALSE"
+    CACHE BOOL "If TRUE, then use ccache")
+
+if (BOND_USE_CCACHE)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif()
+
 if (MSVC)
     # MSVC needs this because of how template-heavy our code is.
     add_compile_options (/bigobj)
@@ -128,7 +137,7 @@ if (APPLE)
 endif()
 find_package (PythonLibs 2.7)
 
-find_package (Boost 1.53.0
+find_package (Boost 1.58.0
     OPTIONAL_COMPONENTS
         chrono
         date_time
@@ -178,7 +187,8 @@ cxx_add_compile_options(GNU
     --std=c++11
     -Wall
     -Werror
-    -Wno-unknown-warning-option
+    # Suppress warnings in Boost about using deprecated types like std::auto_ptr
+    -Wno-deprecated-declarations
     -Wno-unused-local-typedefs)
 
 include_directories (

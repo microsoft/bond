@@ -75,7 +75,9 @@ typeAttributes cs e@Enum {..} =
  <> generatedCodeAttr
 
 -- C# service attributes
-typeAttributes _ Service {..} = generatedCodeAttr
+typeAttributes cs s@Service {..} =
+    optionalTypeAttributes cs s
+    <> generatedCodeAttr
 
 typeAttributes _ _ = error "typeAttributes: impossible happened."
 

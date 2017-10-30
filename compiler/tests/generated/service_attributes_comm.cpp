@@ -1,7 +1,6 @@
 
 #include "service_attributes_reflection.h"
 #include "service_attributes_comm.h"
-#include <bond/core/exception.h>
 
 namespace tests
 {

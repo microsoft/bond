@@ -28,6 +28,8 @@ grpc_cs cs _ _ declarations = ("_grpc.cs", [lt|
 
 namespace #{csNamespace}
 {
+    using System.Collections.Generic;
+
     #{doubleLineSep 1 grpc declarations}
 } // #{csNamespace}
 |])
@@ -103,9 +105,9 @@ namespace #{csNamespace}
             global::Bond.Grpc.Marshaller<#{getMessageTypeName methodInput}>.Instance,
             global::Bond.Grpc.Marshaller<#{getMessageTypeName Nothing}>.Instance);|]
 
-        serverBaseMethods Function{..} = [lt|public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<#{getMessageTypeName methodResult}>> #{methodName}(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.ServerCallContext context);|]
+        serverBaseMethods Function{..} = [lt|#{CS.schemaAttributes 3 methodAttributes}public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<#{getMessageTypeName methodResult}>> #{methodName}(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.ServerCallContext context);|]
 
-        serverBaseMethods Event{..} = [lt|public abstract global::System.Threading.Tasks.Task #{methodName}(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.ServerCallContext context);
+        serverBaseMethods Event{..} = [lt|#{CS.schemaAttributes 3 methodAttributes}public abstract global::System.Threading.Tasks.Task #{methodName}(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.ServerCallContext context);
 
             internal global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<#{getMessageTypeName Nothing}>> #{uniqImplName methodName}(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.ServerCallContext context) {
                 return global::Bond.Grpc.Internal.NothingCallHandler.Handle(#{methodName}, request, context);
@@ -117,7 +119,7 @@ namespace #{csNamespace}
         requestOrVoidConstructor Nothing = [lt|global::Bond.Grpc.Message.Void|]
         requestOrVoidConstructor _ = [lt|global::Bond.Grpc.Message.From(request)|]
 
-        clientMethods Function{..} = [lt|public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<#{getMessageTypeName methodResult}>> #{methodName}Async(#{firstParam methodInput}global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        clientMethods Function{..} = [lt|#{CS.schemaAttributes 3 methodAttributes}public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<#{getMessageTypeName methodResult}>> #{methodName}Async(#{firstParam methodInput}global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
                 var message = #{requestOrVoidConstructor methodInput};
                 return #{methodName}Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
@@ -128,7 +130,7 @@ namespace #{csNamespace}
                 return CallInvoker.AsyncUnaryCall(Method_#{methodName}, null, options, request);
             }|]
 
-        clientMethods Event{..} = [lt|public virtual void #{methodName}Async(#{firstParam methodInput}global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+        clientMethods Event{..} = [lt|#{CS.schemaAttributes 3 methodAttributes}public virtual void #{methodName}Async(#{firstParam methodInput}global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
                 var message = #{requestOrVoidConstructor methodInput};
                 #{methodName}Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));

@@ -28,11 +28,6 @@ struct PingResponse
     0: string Payload;
 }
 
-struct PingLayerData
-{
-    0: int32 data;
-}
-
 service PingPong
 {
     PingResponse Ping(PingRequest);

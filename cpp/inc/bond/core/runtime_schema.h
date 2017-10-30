@@ -27,18 +27,14 @@ public:
           type(NULL)
     {}
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     RuntimeSchema(RuntimeSchema&& rhs) BOND_NOEXCEPT_IF(
         bond::is_nothrow_move_constructible<boost::shared_ptr<SchemaDef> >::value)
         : schema(rhs.schema),
           type(rhs.type),
           instance(std::move(rhs.instance))
     {}
-#endif
 
-#ifndef BOND_NO_CXX11_DEFAULTED_FUNCTIONS
     RuntimeSchema& operator=(const RuntimeSchema& that) = default;
-#endif
 
     /// @brief Construct from a share_ptr to a SchemaDef object
     RuntimeSchema(const boost::shared_ptr<SchemaDef>& schema);

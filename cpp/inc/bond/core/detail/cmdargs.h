@@ -518,7 +518,7 @@ public:
 protected:
     void Print(const std::string& arg, const std::string& abbr, const std::string& help) const
     {
-        int indent = std::max(30, static_cast<int>(arg.size()) + 5);
+        int indent = (std::max)(30, static_cast<int>(arg.size()) + 5);
         std::string formated = FormatHelp(help, indent);
         out << " ";
         out.width(2);

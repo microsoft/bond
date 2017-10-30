@@ -20,6 +20,9 @@
                 ValidationType = ValidationType.None,
                 ValidationFlags = XmlSchemaValidationFlags.None,
 #endif
+#if SUPPORTS_XMLRESOLVER
+                XmlResolver = null,
+#endif
             };
 
         [Test]

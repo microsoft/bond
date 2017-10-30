@@ -20,7 +20,6 @@ comm_cpp :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Te
 comm_cpp cpp file _imports declarations = ("_comm.cpp", [lt|
 #include "#{file}_reflection.h"
 #include "#{file}_comm.h"
-#include <bond/core/exception.h>
 
 #{CPP.openNamespace cpp}
     #{doubleLineSepEnd 1 statics declarations}

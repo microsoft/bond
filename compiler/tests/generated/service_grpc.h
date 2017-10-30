@@ -9,6 +9,7 @@
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/client_callback.h>
 #include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/grpc/reflection.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 #include <bond/ext/grpc/detail/client_call_data.h>
@@ -40,6 +41,8 @@ namespace tests
 class Foo final
 {
 public:
+    struct Schema;
+
     template <typename TThreadPool>
     class ClientCore
     {
@@ -462,142 +465,142 @@ public:
 
             this->queue_receive(
                 0,
-                &_rd_foo11->_receivedCall->_context,
-                &_rd_foo11->_receivedCall->_request,
-                &_rd_foo11->_receivedCall->_responder,
+                &_rd_foo11->_receivedCall->context(),
+                &_rd_foo11->_receivedCall->request(),
+                &_rd_foo11->_receivedCall->responder(),
                 cq0,
                 &_rd_foo11.get());
             this->queue_receive(
                 1,
-                &_rd_foo12->_receivedCall->_context,
-                &_rd_foo12->_receivedCall->_request,
-                &_rd_foo12->_receivedCall->_responder,
+                &_rd_foo12->_receivedCall->context(),
+                &_rd_foo12->_receivedCall->request(),
+                &_rd_foo12->_receivedCall->responder(),
                 cq0,
                 &_rd_foo12.get());
             this->queue_receive(
                 2,
-                &_rd_foo12_impl->_receivedCall->_context,
-                &_rd_foo12_impl->_receivedCall->_request,
-                &_rd_foo12_impl->_receivedCall->_responder,
+                &_rd_foo12_impl->_receivedCall->context(),
+                &_rd_foo12_impl->_receivedCall->request(),
+                &_rd_foo12_impl->_receivedCall->responder(),
                 cq0,
                 &_rd_foo12_impl.get());
             this->queue_receive(
                 3,
-                &_rd_foo13->_receivedCall->_context,
-                &_rd_foo13->_receivedCall->_request,
-                &_rd_foo13->_receivedCall->_responder,
+                &_rd_foo13->_receivedCall->context(),
+                &_rd_foo13->_receivedCall->request(),
+                &_rd_foo13->_receivedCall->responder(),
                 cq0,
                 &_rd_foo13.get());
             this->queue_receive(
                 4,
-                &_rd_foo14->_receivedCall->_context,
-                &_rd_foo14->_receivedCall->_request,
-                &_rd_foo14->_receivedCall->_responder,
+                &_rd_foo14->_receivedCall->context(),
+                &_rd_foo14->_receivedCall->request(),
+                &_rd_foo14->_receivedCall->responder(),
                 cq0,
                 &_rd_foo14.get());
             this->queue_receive(
                 5,
-                &_rd_foo15->_receivedCall->_context,
-                &_rd_foo15->_receivedCall->_request,
-                &_rd_foo15->_receivedCall->_responder,
+                &_rd_foo15->_receivedCall->context(),
+                &_rd_foo15->_receivedCall->request(),
+                &_rd_foo15->_receivedCall->responder(),
                 cq0,
                 &_rd_foo15.get());
             this->queue_receive(
                 6,
-                &_rd_foo21->_receivedCall->_context,
-                &_rd_foo21->_receivedCall->_request,
-                &_rd_foo21->_receivedCall->_responder,
+                &_rd_foo21->_receivedCall->context(),
+                &_rd_foo21->_receivedCall->request(),
+                &_rd_foo21->_receivedCall->responder(),
                 cq0,
                 &_rd_foo21.get());
             this->queue_receive(
                 7,
-                &_rd_foo22->_receivedCall->_context,
-                &_rd_foo22->_receivedCall->_request,
-                &_rd_foo22->_receivedCall->_responder,
+                &_rd_foo22->_receivedCall->context(),
+                &_rd_foo22->_receivedCall->request(),
+                &_rd_foo22->_receivedCall->responder(),
                 cq0,
                 &_rd_foo22.get());
             this->queue_receive(
                 8,
-                &_rd_foo23->_receivedCall->_context,
-                &_rd_foo23->_receivedCall->_request,
-                &_rd_foo23->_receivedCall->_responder,
+                &_rd_foo23->_receivedCall->context(),
+                &_rd_foo23->_receivedCall->request(),
+                &_rd_foo23->_receivedCall->responder(),
                 cq0,
                 &_rd_foo23.get());
             this->queue_receive(
                 9,
-                &_rd_foo24->_receivedCall->_context,
-                &_rd_foo24->_receivedCall->_request,
-                &_rd_foo24->_receivedCall->_responder,
+                &_rd_foo24->_receivedCall->context(),
+                &_rd_foo24->_receivedCall->request(),
+                &_rd_foo24->_receivedCall->responder(),
                 cq0,
                 &_rd_foo24.get());
             this->queue_receive(
                 10,
-                &_rd_foo31->_receivedCall->_context,
-                &_rd_foo31->_receivedCall->_request,
-                &_rd_foo31->_receivedCall->_responder,
+                &_rd_foo31->_receivedCall->context(),
+                &_rd_foo31->_receivedCall->request(),
+                &_rd_foo31->_receivedCall->responder(),
                 cq0,
                 &_rd_foo31.get());
             this->queue_receive(
                 11,
-                &_rd_foo32->_receivedCall->_context,
-                &_rd_foo32->_receivedCall->_request,
-                &_rd_foo32->_receivedCall->_responder,
+                &_rd_foo32->_receivedCall->context(),
+                &_rd_foo32->_receivedCall->request(),
+                &_rd_foo32->_receivedCall->responder(),
                 cq0,
                 &_rd_foo32.get());
             this->queue_receive(
                 12,
-                &_rd_foo330->_receivedCall->_context,
-                &_rd_foo330->_receivedCall->_request,
-                &_rd_foo330->_receivedCall->_responder,
+                &_rd_foo330->_receivedCall->context(),
+                &_rd_foo330->_receivedCall->request(),
+                &_rd_foo330->_receivedCall->responder(),
                 cq0,
                 &_rd_foo330.get());
             this->queue_receive(
                 13,
-                &_rd__rd_foo33->_receivedCall->_context,
-                &_rd__rd_foo33->_receivedCall->_request,
-                &_rd__rd_foo33->_receivedCall->_responder,
+                &_rd__rd_foo33->_receivedCall->context(),
+                &_rd__rd_foo33->_receivedCall->request(),
+                &_rd__rd_foo33->_receivedCall->responder(),
                 cq0,
                 &_rd__rd_foo33.get());
             this->queue_receive(
                 14,
-                &_rd_foo34->_receivedCall->_context,
-                &_rd_foo34->_receivedCall->_request,
-                &_rd_foo34->_receivedCall->_responder,
+                &_rd_foo34->_receivedCall->context(),
+                &_rd_foo34->_receivedCall->request(),
+                &_rd_foo34->_receivedCall->responder(),
                 cq0,
                 &_rd_foo34.get());
             this->queue_receive(
                 15,
-                &_rd_foo41->_receivedCall->_context,
-                &_rd_foo41->_receivedCall->_request,
-                &_rd_foo41->_receivedCall->_responder,
+                &_rd_foo41->_receivedCall->context(),
+                &_rd_foo41->_receivedCall->request(),
+                &_rd_foo41->_receivedCall->responder(),
                 cq0,
                 &_rd_foo41.get());
             this->queue_receive(
                 16,
-                &_rd_foo42->_receivedCall->_context,
-                &_rd_foo42->_receivedCall->_request,
-                &_rd_foo42->_receivedCall->_responder,
+                &_rd_foo42->_receivedCall->context(),
+                &_rd_foo42->_receivedCall->request(),
+                &_rd_foo42->_receivedCall->responder(),
                 cq0,
                 &_rd_foo42.get());
             this->queue_receive(
                 17,
-                &_rd_foo43->_receivedCall->_context,
-                &_rd_foo43->_receivedCall->_request,
-                &_rd_foo43->_receivedCall->_responder,
+                &_rd_foo43->_receivedCall->context(),
+                &_rd_foo43->_receivedCall->request(),
+                &_rd_foo43->_receivedCall->responder(),
                 cq0,
                 &_rd_foo43.get());
             this->queue_receive(
                 18,
-                &_rd_foo44->_receivedCall->_context,
-                &_rd_foo44->_receivedCall->_request,
-                &_rd_foo44->_receivedCall->_responder,
+                &_rd_foo44->_receivedCall->context(),
+                &_rd_foo44->_receivedCall->request(),
+                &_rd_foo44->_receivedCall->responder(),
                 cq0,
                 &_rd_foo44.get());
             this->queue_receive(
                 19,
-                &_rd_cq->_receivedCall->_context,
-                &_rd_cq->_receivedCall->_request,
-                &_rd_cq->_receivedCall->_responder,
+                &_rd_cq->_receivedCall->context(),
+                &_rd_cq->_receivedCall->request(),
+                &_rd_cq->_receivedCall->responder(),
                 cq0,
                 &_rd_cq.get());
         }
@@ -986,6 +989,202 @@ inline void Foo::ClientCore<TThreadPool>::Asynccq(
         cb);
     calldata->dispatch(rpcmethod_cq_, request);
 }
+
+struct Foo::Schema
+{
+    static const ::bond::Metadata metadata;
+
+    private: static const ::bond::Metadata s_foo11_metadata;
+    private: static const ::bond::Metadata s_foo12_metadata;
+    private: static const ::bond::Metadata s_foo12_impl_metadata;
+    private: static const ::bond::Metadata s_foo13_metadata;
+    private: static const ::bond::Metadata s_foo14_metadata;
+    private: static const ::bond::Metadata s_foo15_metadata;
+    private: static const ::bond::Metadata s_foo21_metadata;
+    private: static const ::bond::Metadata s_foo22_metadata;
+    private: static const ::bond::Metadata s_foo23_metadata;
+    private: static const ::bond::Metadata s_foo24_metadata;
+    private: static const ::bond::Metadata s_foo31_metadata;
+    private: static const ::bond::Metadata s_foo32_metadata;
+    private: static const ::bond::Metadata s_foo33_metadata;
+    private: static const ::bond::Metadata s__rd_foo33_metadata;
+    private: static const ::bond::Metadata s_foo34_metadata;
+    private: static const ::bond::Metadata s_foo41_metadata;
+    private: static const ::bond::Metadata s_foo42_metadata;
+    private: static const ::bond::Metadata s_foo43_metadata;
+    private: static const ::bond::Metadata s_foo44_metadata;
+    private: static const ::bond::Metadata s_cq_metadata;
+
+    public: struct service
+    {
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                void,
+                &s_foo11_metadata
+            > foo11;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                void,
+                &s_foo12_metadata
+            > foo12;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                void,
+                &s_foo12_impl_metadata
+            > foo12_impl;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::BasicTypes>,
+                void,
+                &s_foo13_metadata
+            > foo13;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::dummy>,
+                void,
+                &s_foo14_metadata
+            > foo14;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests2::OtherBasicTypes>,
+                void,
+                &s_foo15_metadata
+            > foo15;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::bond::Void>,
+                &s_foo21_metadata
+            > foo21;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::bond::Void>,
+                &s_foo22_metadata
+            > foo22;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::BasicTypes>,
+                ::bond::bonded< ::bond::Void>,
+                &s_foo23_metadata
+            > foo23;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::dummy>,
+                ::bond::bonded< ::bond::Void>,
+                &s_foo24_metadata
+            > foo24;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s_foo31_metadata
+            > foo31;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s_foo32_metadata
+            > foo32;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::BasicTypes>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s_foo33_metadata
+            > foo33;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::BasicTypes>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s__rd_foo33_metadata
+            > _rd_foo33;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::dummy>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s_foo34_metadata
+            > foo34;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::tests::dummy>,
+                &s_foo41_metadata
+            > foo41;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::tests::dummy>,
+                &s_foo42_metadata
+            > foo42;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::BasicTypes>,
+                ::bond::bonded< ::tests::dummy>,
+                &s_foo43_metadata
+            > foo43;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::dummy>,
+                ::bond::bonded< ::tests::dummy>,
+                &s_foo44_metadata
+            > foo44;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s_cq_metadata
+            > cq;
+    };
+
+    private: typedef boost::mpl::list<> methods0;
+    private: typedef boost::mpl::push_front<methods0, service::cq>::type methods1;
+    private: typedef boost::mpl::push_front<methods1, service::foo44>::type methods2;
+    private: typedef boost::mpl::push_front<methods2, service::foo43>::type methods3;
+    private: typedef boost::mpl::push_front<methods3, service::foo42>::type methods4;
+    private: typedef boost::mpl::push_front<methods4, service::foo41>::type methods5;
+    private: typedef boost::mpl::push_front<methods5, service::foo34>::type methods6;
+    private: typedef boost::mpl::push_front<methods6, service::_rd_foo33>::type methods7;
+    private: typedef boost::mpl::push_front<methods7, service::foo33>::type methods8;
+    private: typedef boost::mpl::push_front<methods8, service::foo32>::type methods9;
+    private: typedef boost::mpl::push_front<methods9, service::foo31>::type methods10;
+    private: typedef boost::mpl::push_front<methods10, service::foo24>::type methods11;
+    private: typedef boost::mpl::push_front<methods11, service::foo23>::type methods12;
+    private: typedef boost::mpl::push_front<methods12, service::foo22>::type methods13;
+    private: typedef boost::mpl::push_front<methods13, service::foo21>::type methods14;
+    private: typedef boost::mpl::push_front<methods14, service::foo15>::type methods15;
+    private: typedef boost::mpl::push_front<methods15, service::foo14>::type methods16;
+    private: typedef boost::mpl::push_front<methods16, service::foo13>::type methods17;
+    private: typedef boost::mpl::push_front<methods17, service::foo12_impl>::type methods18;
+    private: typedef boost::mpl::push_front<methods18, service::foo12>::type methods19;
+    private: typedef boost::mpl::push_front<methods19, service::foo11>::type methods20;
+
+    public: typedef methods20::type methods;
+
+    
+};
+
 
 
 } // namespace tests

@@ -1,6 +1,7 @@
 add_subdirectory (access_control)
 add_subdirectory (attributes)
 add_subdirectory (bf)
+add_subdirectory (capped_allocator)
 add_subdirectory (compile_time_schema)
 add_subdirectory (container_of_pointers)
 if (MSVC)

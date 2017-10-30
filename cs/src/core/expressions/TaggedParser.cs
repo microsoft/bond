@@ -139,7 +139,7 @@ namespace Bond.Expressions
             var loops = MatchOrCompatible(
                 elementType,
                 expectedType,
-                type => handler(this, type, next, count));
+                type => handler(this, type, next, count, null));
 
             return Expression.Block(
                 new[] { count, elementType },

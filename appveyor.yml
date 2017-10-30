@@ -17,6 +17,18 @@
     version: 1.0.{build}
     clone_depth: 15
 
+    skip_commits:
+      files:
+        # These files are high-churn, but don't affect the build.
+        #
+        # NB: README.md is NOT in this list; the documentation build
+        # consumes it.
+        - CHANGELOG.md
+        # These files are only used by the Travis CI builds and don't affect
+        # the Windows builds.
+        - .travis.yml
+        - tools/ci-scripts/linux/**
+    
     environment:
         global:
             STACK_ROOT: "c:\\sr"
@@ -303,7 +315,10 @@
                 nunit-console-x86 /framework:net-4.5 /labels "cs\test\core\bin\debug\net45-nonportable\${env:BOND_OUTPUT}\Bond.UnitTest.dll"
                 if (-not $?) { throw "tests failed" }
 
-                & examples\cs\grpc\pingpong\bin\Debug\pingpong.exe
+                & examples\cs\grpc\pingpong\bin\Debug\grpc-pingpong.exe
+                if (-not $?) { throw "tests failed" }
+
+                & examples\cs\grpc\scalar\bin\Debug\grpc-scalar.exe
                 if (-not $?) { throw "tests failed" }
 
                 # We need to investigate why these tests are failing in AppVeyor, but not locally.
