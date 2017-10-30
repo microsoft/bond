@@ -19,6 +19,10 @@ different versioning scheme, following the Haskell community's
 * C# NuGet version: TBD
 * C# Comm NuGet version: TBD
 
+### C++ ###
+* Fixed a memory leak when deserializing Bond-over-gRPC messages that were
+  stored as multiple slices.
+
 ## 7.0.1: 2017-10-26 ##
 * `gbc` & compiler library: 0.10.1.0
 * IDL core version: 2.0
