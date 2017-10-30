@@ -27,7 +27,7 @@
         # These files are only used by the Travis CI builds and don't affect
         # the Windows builds.
         - .travis.yml
-        - tools/image-builder/**
+        - tools/ci-scripts/linux/**
     
     environment:
         global:
