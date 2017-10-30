@@ -17,6 +17,18 @@
     version: 1.0.{build}
     clone_depth: 15
 
+    skip_commits:
+      files:
+        # These files are high-churn, but don't affect the build.
+        #
+        # NB: README.md is NOT in this list; the documentation build
+        # consumes it.
+        - CHANGELOG.md
+        # These files are only used by the Travis CI builds and don't affect
+        # the Windows builds.
+        - .travis.yml
+        - tools/image-builder/**
+    
     environment:
         global:
             STACK_ROOT: "c:\\sr"
