@@ -9,6 +9,7 @@
 #include <grpc++/impl/codegen/serialization_traits.h>
 #include <grpc++/impl/codegen/status.h>
 #include <grpc++/impl/codegen/status_code_enum.h>
+#include <grpc++/support/slice.h>
 #include <grpc/impl/codegen/byte_buffer_reader.h>
 #include <grpc/impl/codegen/slice.h>
 
@@ -71,7 +72,7 @@ namespace grpc {
 
             boost::shared_ptr<char[]> buff = boost::make_shared_noinit<char[]>(bufferSize);
 
-            // TODO: exception safety of reader, s, buffer
+            // TODO: exception safety of reader, buffer
             grpc_byte_buffer_reader reader;
             if (!grpc_byte_buffer_reader_init(&reader, buffer))
             {
@@ -81,16 +82,15 @@ namespace grpc {
 
             char* dest = buff.get();
 
-            grpc_slice s;
-            while (grpc_byte_buffer_reader_next(&reader, &s) != 0)
+            for (grpc_slice grpc_s; grpc_byte_buffer_reader_next(&reader, &grpc_s) != 0;)
             {
-                std::memcpy(dest, GRPC_SLICE_START_PTR(s), GRPC_SLICE_LENGTH(s));
-                dest += GRPC_SLICE_LENGTH(s);
+                grpc::Slice s{ grpc_s, grpc::Slice::STEAL_REF };
+                std::memcpy(dest, s.begin(), s.size());
+                dest += s.size();
             }
 
             BOOST_ASSERT(dest == buff.get() + bufferSize);
 
-            grpc_slice_unref(s);
             grpc_byte_buffer_reader_destroy(&reader);
             grpc_byte_buffer_destroy(buffer);
 
