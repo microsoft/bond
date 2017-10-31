@@ -11,7 +11,7 @@
 cmake_policy (SET CMP0012 NEW)
 
 execute_process (
-    COMMAND ${STACK_EXECUTABLE} setup
+    COMMAND ${STACK_EXECUTABLE} ${BOND_STACK_OPTIONS} setup
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error
     OUTPUT_QUIET
@@ -24,7 +24,7 @@ endif()
 set (buildGhcOptions "-O2")
 
 execute_process (
-    COMMAND ${STACK_EXECUTABLE} build :${target} --no-run-tests ${stack_options} --ghc-options=${buildGhcOptions}
+    COMMAND ${STACK_EXECUTABLE} ${BOND_STACK_OPTIONS} build :${target} --no-run-tests ${stack_options} --ghc-options=${buildGhcOptions}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 
@@ -34,7 +34,7 @@ endif()
 
 # Copy results to builddir
 execute_process (
-    COMMAND ${STACK_EXECUTABLE} path --dist-dir
+    COMMAND ${STACK_EXECUTABLE} ${BOND_STACK_OPTIONS} path --dist-dir
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     OUTPUT_VARIABLE dist_dir
     RESULT_VARIABLE error)
