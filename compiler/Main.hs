@@ -91,7 +91,7 @@ cppCodegen options@Cpp {..} = do
                         ]
     core_files = [
           reflection_h export_attribute
-        , types_h header enum_header allocator
+        , types_h header enum_header allocator alloc_ctors_enabled
         , types_cpp
         , apply_h applyProto export_attribute
         , apply_cpp applyProto

@@ -146,6 +146,12 @@ public:
           _hasvalue(src._hasvalue)
     {}
 
+    nullable(const nullable& src, const allocator_type& alloc)
+        : Allocator(alloc),
+          _value(src._value, alloc),
+          _hasvalue(src._hasvalue)
+    {}
+
     nullable& operator=(const nullable& src)
     {
         nullable(src).swap(*this);
@@ -231,6 +237,14 @@ public:
             && bond::is_nothrow_move_constructible<value_type>::value)
         : Allocator(std::move(src.base())),
           _value(std::move(src._value)),
+          _hasvalue(std::move(src._hasvalue))
+    {
+        src._hasvalue = false;
+    }
+
+    nullable(nullable&& src, const allocator_type& alloc)
+        : Allocator(alloc),
+          _value(std::move(src._value), alloc),
           _hasvalue(std::move(src._hasvalue))
     {
         src._hasvalue = false;
@@ -369,6 +383,11 @@ public:
           _value(src.hasvalue() ? new_value(src.value()) : real_pointer())
     {}
 
+    nullable(const nullable& src, const allocator_type& alloc)
+        : Allocator(alloc),
+          _value(src.hasvalue() ? new_value(src.value(), alloc) : real_pointer())
+    {}
+
     ~nullable()
     {
         reset();
@@ -485,6 +504,15 @@ public:
         src._value = real_pointer();
     }
 
+    nullable(nullable&& src, const allocator_type& alloc)
+        : Allocator(alloc),
+          _value(src.base() == alloc
+              ? std::move(src._value)
+              : (src.hasvalue() ? new_value(std::move(*src._value), alloc) : real_pointer()))
+    {
+        src._value = real_pointer();
+    }
+
     nullable& operator=(nullable&& src)
     {
         nullable(std::move(src)).swap(*this);
@@ -521,8 +549,8 @@ private:
         alloc.deallocate(_value, 1);
     }
 
-    template<typename Arg1>
-    real_pointer new_value(Arg1&& arg1)
+    template<typename... Args>
+    real_pointer new_value(Args&&... args)
     {
         rebind_alloc alloc(base());
         real_pointer p(alloc.allocate(1));
@@ -531,9 +559,9 @@ private:
 #ifndef BOND_NO_CXX11_ALLOCATOR
             std::allocator_traits<rebind_alloc>::construct(alloc,
                 boost::addressof(*p),
-                std::forward<Arg1>(arg1));
+                std::forward<Args>(args)...);
 #else
-            ::new(static_cast<void*>(p)) T(std::forward<Arg1>(arg1));
+            ::new(static_cast<void*>(p)) T(std::forward<Args>(args)...);
 #endif
             return p;
         }
