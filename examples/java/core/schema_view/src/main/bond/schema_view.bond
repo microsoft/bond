@@ -1,0 +1,17 @@
+namespace examples.schema_view
+
+
+struct Example
+{
+    0: uint32          num;
+    1: string          str;
+    2: vector<double>  items;
+}
+
+
+// ExampleView is a view of Example containing two fields: num and str.
+// In every other respect struct ExampleView will be identical to Example.
+struct ExampleView view_of Example
+{
+    num, str;
+}

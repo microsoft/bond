@@ -1,0 +1,17 @@
+namespace examples.nothing_default
+
+
+struct Struct_v1
+{
+    1: required int32 foo = nothing;
+    2: optional list<string> baz = nothing;
+}
+
+
+struct Struct_v2
+{
+    1: required int32 foo = nothing;
+    2: optional list<string> baz = nothing;
+    3: optional double bar = nothing;
+}
+

@@ -20,3 +20,30 @@ if (CSHARP_COMPAT)
         run (${CSHARP_COMPAT} ${TEST} compat.Compat.json compat.${TEST}.gbc.dat)
     endif()
 endif()
+
+if (JAVA_COMPAT)
+    if (${TEST} STREQUAL schema)
+        # gbc schema compat comes through here, so it isn't enough to avoid
+        # creating java schema tests in this directory's CMakeLists.txt.
+        return()
+    endif()
+
+    if (NOT JAVA_CORE)
+        message(FATAL_ERROR "Cannot run Java compat without setting JAVA_CORE")
+    endif()
+
+    if (WIN32)
+        set (PATHSEP "\\\;")
+    else()
+        set (PATHSEP ":")
+    endif()
+
+    run (java -classpath ${JAVA_CORE}${PATHSEP}${JAVA_COMPAT} org.bondlib.compat.CompatDriver
+        ${TEST} ${COMPAT_DATA}/compat.${TEST}.dat compat.${TEST}.java.dat ${TEST})
+    run (${BOND_COMPAT} ${TEST} -d compat.${TEST}.java.dat expected.java.${TEST} deserialized.java.${TEST})
+
+    if (${TEST} STREQUAL schema)
+        run (java -classpath ${JAVA_CORE}${PATHSEP}${JAVA_COMPAT} org.bondlib.compat.CompatDriver
+            ${TEST} compat.Compat.json compat.${TEST}.gbc.dat)
+    endif()
+endif()

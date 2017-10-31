@@ -1,0 +1,16 @@
+namespace org.bondlib.test
+
+struct RecordV1 {
+    0: string name;
+    1: uint32 tstamp;
+}
+
+struct RecordV2 {
+    0: string name;
+    1: uint32 tstamp;
+    2: string location;
+}
+
+struct FieldRemovedRecord {
+    1: uint32 tstamp;
+}

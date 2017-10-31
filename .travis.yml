@@ -26,6 +26,7 @@ env:
     - FLAVOR="cpp-grpc" BOOST="1.64.0" COMPILER="clang"
     - FLAVOR="cpp-grpc" BOOST="1.63.0" COMPILER="clang"
     - FLAVOR="hs"
+    - FLAVOR="java"
 
 before_install:
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi

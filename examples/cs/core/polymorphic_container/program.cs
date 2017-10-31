@@ -18,7 +18,7 @@
 
             var rectangle = new Rectangle
             {
-                Type = Type.Rectange,
+                Type = Type.Rectangle,
                 Width = 10,
                 Height = 5.5
             };
@@ -45,7 +45,7 @@
             var deserializers = new Dictionary<Type, Deserializer<CompactBinaryReader<InputBuffer>>>
             {
                 {Type.Circle, new Deserializer<CompactBinaryReader<InputBuffer>>(typeof(Circle))},
-                {Type.Rectange, new Deserializer<CompactBinaryReader<InputBuffer>>(typeof(Rectangle))}
+                {Type.Rectangle, new Deserializer<CompactBinaryReader<InputBuffer>>(typeof(Rectangle))}
             };
             
             foreach (var item in dst.Shapes)
@@ -73,7 +73,7 @@
                     Debug.Assert(Comparer.Equal(circle, c));
                 }
 
-                if (type == Type.Rectange)
+                if (type == Type.Rectangle)
                 {
                     var r = item.Deserialize<Rectangle>();
                     Debug.Assert(Comparer.Equal(rectangle, r));

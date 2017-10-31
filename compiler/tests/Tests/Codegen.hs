@@ -13,6 +13,7 @@ module Tests.Codegen
     , verifyExportsCodegen
     , verifyCsCodegen
     , verifyCsCommCodegen
+    , verifyJavaCodegen
     ) where
 
 import System.FilePath
@@ -22,13 +23,14 @@ import Data.Maybe
 import Prelude
 import Data.Algorithm.DiffContext
 import Data.Text.Lazy (Text, unpack)
+import qualified Data.Text.Lazy as LT
 import qualified Data.ByteString.Char8 as BS
 import Text.PrettyPrint (render, text)
 import Test.Tasty
 import Test.Tasty.Golden.Advanced
 import Language.Bond.Codegen.Templates
 import Language.Bond.Codegen.TypeMapping
-import Language.Bond.Syntax.Types (Bond(..), Import, Declaration)
+import Language.Bond.Syntax.Types (Bond(..), Import, Declaration(..))
 import Options
 import IO
 
@@ -39,6 +41,9 @@ verifyCppCodegen = verifyCodegen ["c++"]
 
 verifyCsCodegen :: FilePath -> TestTree
 verifyCsCodegen = verifyCodegen ["c#"]
+
+verifyJavaCodegen :: FilePath -> TestTree
+verifyJavaCodegen = verifyCodegen ["java"]
 
 verifyCodegen :: [String] -> FilePath -> TestTree
 verifyCodegen args baseName =
@@ -131,6 +136,7 @@ verifyFiles options baseName =
              else Properties
     typeMapping Cpp {..} = maybe cppTypeMapping cppCustomAllocTypeMapping allocator
     typeMapping Cs {} = csTypeMapping
+    typeMapping Java {} = javaTypeMapping
     templates Cpp {..} =
         [ (reflection_h export_attribute)
         , types_cpp
@@ -141,6 +147,9 @@ verifyFiles options baseName =
     templates Cs {..} =
         [ types_cs Class $ fieldMapping options
         ]
+    templates Java {} =
+        [ javaCatTemplate
+        ]
     extra Cs {} =
         [ testGroup "collection interfaces" $
             map (verify csCollectionInterfacesTypeMapping "collection-interfaces") (templates options)
@@ -150,6 +159,9 @@ verifyFiles options baseName =
             map (verify (cppCustomAllocTypeMapping "arena") "allocator")
                 (templates $ options { allocator = Just "arena" })
             | isNothing allocator
+        ]
+    extra Java {} =
+        [
         ]
 
 verifyFile :: Options -> FilePath -> TypeMapping -> FilePath -> Template -> TestTree
@@ -173,3 +185,14 @@ verifyFile options baseName typeMapping subfolder template =
                             (text "test output")
                             (text . BS.unpack)
                             (getContextDiff 3 (BS.lines x) (BS.lines y))
+
+javaCatTemplate :: MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
+javaCatTemplate mappingContext _ imports declarations =
+  (suffix, LT.concat $ mapMaybe codegenDecl declarations)
+    where
+      suffix = "_concatenated.java"
+      codegenDecl declaration =
+        case declaration of
+          Struct {} -> Just $ class_java mappingContext imports declaration
+          Enum {}   -> Just $ enum_java mappingContext declaration
+          _         -> Nothing
