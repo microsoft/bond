@@ -24,8 +24,8 @@ different versioning scheme, following the Haskell community's
 * C++ codegen now properly generates move assignment operator which was broken
   for some cases.
 * C++ codegen no longer generates checks for C++11, except for MSVC 2013 workarounds.
-* C++ codegen now generates copy and move constructors with an allocator argument
-  when a custom allocator is used.
+* C++ codegen now can generate copy and move constructors with an allocator argument
+  when a custom allocator is used and `--alloc-ctors` is passed to `gbc`.
 
 ### C++ ###
 
