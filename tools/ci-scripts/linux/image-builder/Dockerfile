@@ -39,5 +39,4 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E03280
 RUN nuget install NUnit.Runners -OutputDirectory /root -version 2.6.4
 
 # Build script
-ADD build_bond.zsh /root/
-ENTRYPOINT ["zsh", "/root/build_bond.zsh"]
+ENTRYPOINT ["zsh", "/root/bond/tools/ci-scripts/linux/build.zsh"]
