@@ -11,7 +11,7 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Unreleased  ##
+## Unreleased ##
 * `gbc` & compiler library: (minor bump already done in bond.cabal)
 * IDL core version: TBD
 * IDL comm version: TBD
@@ -31,6 +31,23 @@ different versioning scheme, following the Haskell community's
   has required Boost 1.58 or later since version 5.2.0, but this was not
   enforced.
 
+## 7.0.2: 2017-10-30 ##
+* `gbc` & compiler library: 0.10.1.0
+* IDL core version: 2.0
+* IDL comm version: 1.2
+* C++ version: 7.0.2
+* C# NuGet version: 7.0.1
+* C# Comm NuGet version: 0.14.0
+
+### C++ ###
+
+* Fixed a memory leak when deserializing Bond-over-gRPC messages that were
+  stored as multiple slices.
+
+### C# ###
+
+* There were no C# changes in this release.
+
 ## 7.0.1: 2017-10-26 ##
 * `gbc` & compiler library: 0.10.1.0
 * IDL core version: 2.0
@@ -40,11 +57,12 @@ different versioning scheme, following the Haskell community's
 * C# Comm NuGet version: 0.14.0
 
 ### C# ###
+
 * Fixes a regression introduced in 7.0.0 that resulted in an exception during
   generation of Serializer instances if the type contained an aliased
   `required` blob field.
 
-## 7.0.0: 2017-10-24  ##
+## 7.0.0: 2017-10-24 ##
 * `gbc` & compiler library: 0.10.1.0
 * IDL core version: 2.0
 * IDL comm version: 1.2
@@ -147,7 +165,7 @@ different versioning scheme, following the Haskell community's
 
 This version was not used.
 
-## 6.0.0: 2017-06-29  ##
+## 6.0.0: 2017-06-29 ##
 * `gbc` & compiler library: 0.10.0.0
 * IDL core version: 2.0
 * IDL comm version: 1.2

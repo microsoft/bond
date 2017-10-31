@@ -17,7 +17,9 @@ case "$COMPILER" in
     
     gcc)
         CXX_COMPILER=g++
+        CXX_FLAGS=
         CC_COMPILER=gcc
+        CC_FLAGS=
         ;;
     
     *) echo "Unknown compiler $COMPILER"; exit 1;;
