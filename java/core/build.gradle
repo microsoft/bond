@@ -28,6 +28,10 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
 compileBond {
     bondfiles '../../idl/bond/core/bond.bond',
               '../../idl/bond/core/bond_const.bond'
