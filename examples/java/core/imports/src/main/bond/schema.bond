@@ -1,0 +1,12 @@
+﻿import "common.bond"
+import "protocol/header.bond"
+
+namespace Examples
+
+struct Message
+{
+    // To use a type from a different namespace, use its fully qualified name.
+    0: Examples.Common.Protocol.Header Header;
+    1: Examples.Common.Priority Priority = Normal;
+    2: uint32 MessagePayload;
+}

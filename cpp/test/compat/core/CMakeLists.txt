@@ -26,6 +26,8 @@ function (add_interop_test interop test)
         COMMAND
             ${CMAKE_COMMAND}
                 -DCSHARP_COMPAT=${BOND_CSHARP_COMPAT_TEST}
+                -DJAVA_COMPAT=${BOND_JAVA_COMPAT_TEST}
+                -DJAVA_CORE=${BOND_JAVA_CORE}
                 -DBOND_COMPAT=$<TARGET_FILE:compatibility_test>
                 -DGBC=${GBC_EXECUTABLE}
                 -DCOMPAT_DATA=${BOND_COMPAT_TEST_DIR}/core/data
@@ -42,6 +44,12 @@ function (add_compat_test test)
 
     if (BOND_CSHARP_COMPAT_TEST)
         add_interop_test (cs ${test})
+    endif()
+
+    if (BOND_JAVA_COMPAT_TEST)
+        if (NOT (${test} MATCHES "(json|schema)"))
+            add_interop_test (java ${test})
+        endif()
     endif()
 endfunction()
 

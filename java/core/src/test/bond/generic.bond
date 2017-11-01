@@ -1,0 +1,59 @@
+import "common.bond"
+
+namespace org.bondlib.test
+
+struct GenericValueContainer<T> {
+    0: T valueField;
+}
+
+struct GenericNullableContainer<T> {
+    0: nullable<T> nullableField;
+}
+
+struct GenericVectorContainer<T> {
+    0: vector<T> vectorField;
+}
+
+struct GenericListContainer<T> {
+    0: list<T> listField;
+}
+
+struct GenericSetContainer<T> {
+    0: set<T> setField;
+}
+
+struct GenericMapContainer<T> {
+    0: map<T, T> mapField;
+}
+
+struct GenericBondedContainer<T> {
+    0: bonded<T> bondedField;
+}
+
+struct GenericContainerOfContainersForPrimitives<T> {
+    0: GenericValueContainer<T> valueContainer;
+    1: GenericNullableContainer<T> nullableContainer;
+    2: GenericVectorContainer<T> vectorContainer;
+    3: GenericListContainer<T> listContainer;
+    4: GenericSetContainer<T> setContainer;
+    5: GenericMapContainer<T> mapContainer;
+}
+
+struct GenericContainerOfContainersForStructs<T> {
+    0: GenericValueContainer<T> valueContainer;
+    1: GenericNullableContainer<T> nullableContainer;
+    2: GenericVectorContainer<T> vectorContainer;
+    3: GenericListContainer<T> listContainer;
+    4: GenericBondedContainer<T> bondedContainer;
+}
+
+struct GenericContainerOfContainersForCollections<T> {
+    0: GenericValueContainer<T> valueContainer;
+    1: GenericNullableContainer<T> nullableContainer;
+    2: GenericVectorContainer<T> vectorContainer;
+    3: GenericListContainer<T> listContainer;
+}
+
+struct ConcreteWithGenericField {
+    0: GenericValueContainer<Base> concreteContainerField;
+}

@@ -7,27 +7,30 @@ FLAVOR=$2
 BOOST=${3:-}
 COMPILER=${4:-clang}
 
+# We set our compilers and cflags in non-standard variables because Stack chokes
+# on some otherwise acceptable configurations. (e.g., CC="ccache gcc")
 case "$COMPILER" in
     clang)
-        CXX_COMPILER=clang++
-        CXX_FLAGS="-Qunused-arguments --system-header-prefix=boost/"
-        CC_COMPILER=clang
-        CC_FLAGS="-Qunused-arguments --system-header-prefix=boost/"
+        export CXX_COMPILER=clang++
+        export CXX_FLAGS="-Qunused-arguments --system-header-prefix=boost/"
+        export CC_COMPILER=clang
+        export CC_FLAGS="-Qunused-arguments --system-header-prefix=boost/"
         ;;
-    
+
     gcc)
-        CXX_COMPILER=g++
-        CXX_FLAGS=
-        CC_COMPILER=gcc
-        CC_FLAGS=
+        export CXX_COMPILER=g++
+        export CXX_FLAGS=
+        export CC_COMPILER=gcc
+        export CC_FLAGS=
         ;;
-    
+
     *) echo "Unknown compiler $COMPILER"; exit 1;;
 esac
 
-BOND_CMAKE_FLAGS="-DBOND_USE_CCACHE=TRUE"
+export BOND_CMAKE_FLAGS="-DBOND_USE_CCACHE=TRUE"
 
 BUILD_PATH=/root/build
+BUILD_SCRIPTS=/root/bond/tools/ci-scripts/linux
 
 mkdir -p $SYMLINKED_HOME $BUILD_PATH
 ln -s /root/.stack $SYMLINKED_HOME/.stack
@@ -78,6 +81,14 @@ case "$FLAVOR" in
             /root/bond/cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll \
             /root/bond/cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll \
             /root/bond/cs/test/internal/bin/debug/net45/Bond.InternalTest.dll
+        ;;
+
+    java)
+        # TODO: Remove build dependency on C++
+        export BOOST_ROOT=/opt/boosts/boost_1_63_0
+        export CXX=$CXX_COMPILER
+        export CC=$CC_COMPILER
+        exec $BUILD_SCRIPTS/build_java.zsh
         ;;
 
     hs)

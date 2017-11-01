@@ -12,6 +12,6 @@ IF (STACK_EXECUTABLE)
     string (STRIP ${stack_version} stack_version)
 
     MESSAGE(STATUS "Stack found at ${STACK_EXECUTABLE}. ${stack_version}")
-ELSE (STACK_EXECUTABLE)
+ELSE()
     MESSAGE(FATAL_ERROR "Stack was not found.")
-ENDIF (STACK_EXECUTABLE)
+ENDIF()

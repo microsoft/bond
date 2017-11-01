@@ -1,0 +1,13 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+group 'org.bondlib'
+version '1.0'
+
+dependencies {
+    compile localGroovy()
+    compile gradleApi()
+}
+
+jar {
+}
