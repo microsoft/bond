@@ -1,0 +1,26 @@
+namespace org.bondlib.test
+
+enum MonthOfYear {
+    January = 1,
+    February,
+    March,
+    April,
+    May,
+    June,
+    July,
+    August,
+    September,
+    October,
+    November,
+    December
+}
+
+struct Empty {}
+
+struct Base {
+    0: int32 baseInt;
+}
+
+struct Derived : Base {
+    0: int32 derivedInt;
+}

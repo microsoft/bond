@@ -104,6 +104,15 @@ if (WIN32)
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/client/bin/retail")
 endif()
 
+# find Java libraries and programs
+find_file (BOND_JAVA_CORE bond-5.0.0.jar
+    NO_DEFAULT_PATH
+    PATHS "${CMAKE_CURRENT_SOURCE_DIR}/java/core/build/libs")
+
+find_file (BOND_JAVA_COMPAT_TEST compat-1.0.jar
+    NO_DEFAULT_PATH
+    PATHS "${CMAKE_CURRENT_SOURCE_DIR}/java/compat/build/libs")
+
 # find python interpreter, library and boost python library.
 # to specify a different version, invoke cmake with:
 # -DPYTHON_EXECUTABLE=/path/to/python
@@ -207,6 +216,14 @@ set (BOND_SKIP_GBC_TESTS
 set (BOND_SKIP_CORE_TESTS
     "FALSE"
     CACHE BOOL "If TRUE, then skip Bond Core tests and examples")
+
+set (BOND_SKIP_COMPAT_TESTS
+    "FALSE"
+    CACHE BOOL "If TRUE, then skip Bond Compat tests")
+
+set (BOND_STACK_OPTIONS
+    ""
+    CACHE STRING "Options to pass to Haskell Stack")
 
 if (((BOND_ENABLE_COMM) OR (BOND_ENABLE_GRPC)) AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
     message(FATAL_ERROR "BOND_ENABLE_COMM and/or BOND_ENABLE_GRPC is TRUE but compiler specified does not support C++11 standard")

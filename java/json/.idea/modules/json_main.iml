@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id="json:main" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.bondlib" external.system.module.type="sourceSet" external.system.module.version="1.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6">
+    <output url="file://$MODULE_DIR$/../../out/production/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../core/build/libs/bond-5.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.9.1" level="project" />
+  </component>
+</module>

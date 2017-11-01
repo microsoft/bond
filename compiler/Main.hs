@@ -14,7 +14,8 @@ import Prelude
 import Control.Concurrent.Async
 import GHC.Conc (getNumProcessors, setNumCapabilities)
 import Data.Text.Lazy (Text)
-import qualified Data.Text.Lazy.IO as L
+import qualified Data.Text.Lazy as LT
+import qualified Data.Text.Lazy.IO as LTIO
 import Data.Aeson (encode)
 import qualified Data.ByteString.Lazy as BL
 import Language.Bond.Syntax.Types (Bond(..), Declaration(..), Import, Type(..))
@@ -36,6 +37,7 @@ main = do
     case options of
         Cpp {..}    -> cppCodegen options
         Cs {..}     -> csCodegen options
+        Java {..}   -> javaCodegen options
         Schema {..} -> writeSchema options
         _           -> print options
 
@@ -50,6 +52,12 @@ setJobs (Just n)
 
 concurrentlyFor_ :: [a] -> (a -> IO b) -> IO ()
 concurrentlyFor_ = (void .) . flip mapConcurrently
+
+
+createDir :: FilePath -> IO ()
+createDir path = do
+    -- recursive = True
+    createDirectoryIfMissing True path
 
 
 writeSchema :: Options -> IO()
@@ -140,5 +148,52 @@ codeGen options typeMapping templates file = do
                                     let (suffix, code) = template mappingContext baseName imports declarations
                                     let fileName = baseName ++ suffix
                                     createDirectoryIfMissing True outputDir
-                                    let content = if (no_banner options) then code else (commonHeader "//" fileName <> code)
-                                    L.writeFile (outputDir </> fileName) content
+                                    let content = if (no_banner options) then code else (commonHeader "//" file fileName <> code)
+                                    LTIO.writeFile (outputDir </> fileName) content
+
+-- Java's class-per-file and package-as-path requirements make it difficult to
+-- share code with languages where there is a known set of generated files for
+-- each bondfile.
+javaCodegen :: Options -> IO ()
+javaCodegen Java {..} = do
+    namespaceMapping <- parseNamespaceMappings namespace
+
+    concurrentlyFor_ files $ \bondFile -> do
+        (Bond imports namespaces declarations) <- parseFile import_dir bondFile
+        -- AliasMappings not implemented.
+        let mappingContext = MappingContext javaTypeMapping [] namespaceMapping namespaces
+
+        forM_ declarations $ \declaration -> do
+            let javaNamespace = getDeclNamespace mappingContext declaration
+            let packageDir =
+                  output_dir </> case javaNamespace of
+                    x:xs -> foldl (</>) x xs
+                    []   -> error "declaration " ++ declName declaration ++  " has no namespace"
+            let javaFile = declName declaration ++ ".java"
+
+            let code = case declaration of
+                  Struct {} -> class_java mappingContext imports declaration
+                  Enum {}   -> enum_java mappingContext declaration
+                  _         -> mempty
+
+            if LT.null code
+                then return ()
+                else do
+                    let content =
+                          if no_banner
+                          then code
+                          else (commonHeader "//" safeBondFile safeJavaFile <> code)
+                              where
+                                  -- javac will always treat "\u" as the start
+                                  -- of a unicode escape sequence, and will
+                                  -- error out if it isn't followed by a valid
+                                  -- code. This breaks compilation of generated
+                                  -- code if either path has components that
+                                  -- start with u.
+                                  backToForward s = map (\c -> if c == '\\' then '/' else c) s
+                                  safeBondFile = backToForward bondFile
+                                  safeJavaFile = backToForward javaFile
+
+                    createDir packageDir
+                    LTIO.writeFile (packageDir </> javaFile) content
+javaCodegen _ = error "javaCodegen: impossible happened."
