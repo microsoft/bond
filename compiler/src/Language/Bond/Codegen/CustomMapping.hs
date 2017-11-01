@@ -45,10 +45,7 @@ qualifiedName :: Parser [String]
 qualifiedName = sepBy1 identifier (char '.') <?> "qualified name"
 
 sc :: Parser ()
-sc = L.space space1 lineCmnt blockCmnt
-  where
-    lineCmnt  = L.skipLineComment "//"
-    blockCmnt = L.skipBlockComment "/*" "*/"
+sc = L.space space1 empty empty
 
 symbol :: String -> Parser String
 symbol = L.symbol sc
@@ -56,8 +53,24 @@ symbol = L.symbol sc
 equal :: Parser String
 equal = symbol "="
 
+-- consume whitespace after every lexeme
+lexeme :: Parser a -> Parser a
+lexeme = L.lexeme sc
+
+decimal :: Parser Integer
+decimal = lexeme L.decimal
+
+hexadecimal :: Parser Integer
+hexadecimal = lexeme . try $ char '0' >> char' 'x' >> L.hexadecimal
+
+octal :: Parser Integer
+octal = lexeme . try $ char '0' >> char' 'o' >> L.octal
+
+natural :: Parser Integer
+natural = hexadecimal <|> octal <|> decimal
+
 integer :: Parser Integer
-integer = L.decimal
+integer = natural <|> L.signed sc decimal
 
 -- | Parse a type alias mapping specification used in command-line arguments of
 -- <https://microsoft.github.io/bond/manual/compiler.html#command-line-options gbc>.
