@@ -19,6 +19,8 @@ public final class EnumType1 implements org.bondlib.BondEnum<EnumType1> {
         public static final int Int32Max = 2147483647;
         public static final int UInt32Min = 0;
         public static final int UInt32Max = -1;
+        public static final int HexNeg = -255;
+        public static final int OctNeg = -83;
     }
 
     private static final class EnumBondTypeImpl extends org.bondlib.EnumBondType<EnumType1> {
@@ -43,6 +45,8 @@ public final class EnumType1 implements org.bondlib.BondEnum<EnumType1> {
     public static final EnumType1 Int32Max = new EnumType1(Values.Int32Max, "Int32Max");
     public static final EnumType1 UInt32Min = new EnumType1(Values.UInt32Min, "UInt32Min");
     public static final EnumType1 UInt32Max = new EnumType1(Values.UInt32Max, "UInt32Max");
+    public static final EnumType1 HexNeg = new EnumType1(Values.HexNeg, "HexNeg");
+    public static final EnumType1 OctNeg = new EnumType1(Values.OctNeg, "OctNeg");
 
     public final int value;
 
@@ -82,6 +86,8 @@ public final class EnumType1 implements org.bondlib.BondEnum<EnumType1> {
             case Values.Int32Max: return Int32Max;
             case Values.UInt32Min: return UInt32Min;
             case Values.UInt32Max: return UInt32Max;
+            case Values.HexNeg: return HexNeg;
+            case Values.OctNeg: return OctNeg;
             default: return new EnumType1(value, null);
         }
     }
@@ -111,6 +117,10 @@ public final class EnumType1 implements org.bondlib.BondEnum<EnumType1> {
             return UInt32Min;
         } else if (str.equals("UInt32Max")) {
             return UInt32Max;
+        } else if (str.equals("HexNeg")) {
+            return HexNeg;
+        } else if (str.equals("OctNeg")) {
+            return OctNeg;
         } else {
             throw new java.lang.IllegalArgumentException("Invalid 'EnumType1' enum value: '" + str + "'.");
         }
@@ -213,6 +223,10 @@ public class Foo implements org.bondlib.BondSerializable {
 
         private org.bondlib.StructBondType.SomethingWStringStructField m_wstr_2;
 
+        private org.bondlib.StructBondType.Int64StructField m_int64_neg_hex;
+
+        private org.bondlib.StructBondType.Int64StructField m_int64_neg_oct;
+
         private StructBondTypeImpl(org.bondlib.GenericTypeSpecialization genericTypeSpecialization) {
             super(genericTypeSpecialization);
         }
@@ -255,7 +269,9 @@ public class Foo implements org.bondlib.BondSerializable {
             this.m_enum_uint32_max = new org.bondlib.StructBondType.EnumStructField<tests.EnumType1>(this, tests.EnumType1.BOND_TYPE, 33, "m_enum_uint32_max", org.bondlib.Modifier.Optional, tests.EnumType1.UInt32Max);
             this.m_wstr_1 = new org.bondlib.StructBondType.WStringStructField(this, 34, "m_wstr_1", org.bondlib.Modifier.Optional, "default wstring value");
             this.m_wstr_2 = new org.bondlib.StructBondType.SomethingWStringStructField(this, 35, "m_wstr_2", org.bondlib.Modifier.Optional);
-            super.initializeBaseAndFields(null, this.m_bool_1, this.m_bool_2, this.m_bool_3, this.m_str_1, this.m_str_2, this.m_int8_4, this.m_int8_5, this.m_int16_4, this.m_int16_5, this.m_int32_4, this.m_int32_max, this.m_int64_4, this.m_int64_max, this.m_uint8_2, this.m_uint8_3, this.m_uint16_2, this.m_uint16_3, this.m_uint32_3, this.m_uint32_max, this.m_uint64_3, this.m_uint64_max, this.m_double_3, this.m_double_4, this.m_double_5, this.m_float_3, this.m_float_4, this.m_float_7, this.m_enum1, this.m_enum2, this.m_enum3, this.m_enum_int32min, this.m_enum_int32max, this.m_enum_uint32_min, this.m_enum_uint32_max, this.m_wstr_1, this.m_wstr_2);
+            this.m_int64_neg_hex = new org.bondlib.StructBondType.Int64StructField(this, 36, "m_int64_neg_hex", org.bondlib.Modifier.Optional, -4095L);
+            this.m_int64_neg_oct = new org.bondlib.StructBondType.Int64StructField(this, 37, "m_int64_neg_oct", org.bondlib.Modifier.Optional, -83L);
+            super.initializeBaseAndFields(null, this.m_bool_1, this.m_bool_2, this.m_bool_3, this.m_str_1, this.m_str_2, this.m_int8_4, this.m_int8_5, this.m_int16_4, this.m_int16_5, this.m_int32_4, this.m_int32_max, this.m_int64_4, this.m_int64_max, this.m_uint8_2, this.m_uint8_3, this.m_uint16_2, this.m_uint16_3, this.m_uint32_3, this.m_uint32_max, this.m_uint64_3, this.m_uint64_max, this.m_double_3, this.m_double_4, this.m_double_5, this.m_float_3, this.m_float_4, this.m_float_7, this.m_enum1, this.m_enum2, this.m_enum3, this.m_enum_int32min, this.m_enum_int32max, this.m_enum_uint32_min, this.m_enum_uint32_max, this.m_wstr_1, this.m_wstr_2, this.m_int64_neg_hex, this.m_int64_neg_oct);
         }
 
         @Override
@@ -316,6 +332,8 @@ public class Foo implements org.bondlib.BondSerializable {
             this.m_enum_uint32_max.serialize(context, value.m_enum_uint32_max);
             this.m_wstr_1.serialize(context, value.m_wstr_1);
             this.m_wstr_2.serialize(context, value.m_wstr_2);
+            this.m_int64_neg_hex.serialize(context, value.m_int64_neg_hex);
+            this.m_int64_neg_oct.serialize(context, value.m_int64_neg_oct);
         }
         
         @Override
@@ -356,6 +374,8 @@ public class Foo implements org.bondlib.BondSerializable {
             boolean __has_m_enum_uint32_max = false;
             boolean __has_m_wstr_1 = false;
             boolean __has_m_wstr_2 = false;
+            boolean __has_m_int64_neg_hex = false;
+            boolean __has_m_int64_neg_oct = false;
             while (this.readField(context)) {
                 switch (context.readFieldResult.id) {
                     case 0:
@@ -502,6 +522,14 @@ public class Foo implements org.bondlib.BondSerializable {
                         value.m_wstr_2 = this.m_wstr_2.deserialize(context, __has_m_wstr_2);
                         __has_m_wstr_2 = true;
                         break;
+                    case 36:
+                        value.m_int64_neg_hex = this.m_int64_neg_hex.deserialize(context, __has_m_int64_neg_hex);
+                        __has_m_int64_neg_hex = true;
+                        break;
+                    case 37:
+                        value.m_int64_neg_oct = this.m_int64_neg_oct.deserialize(context, __has_m_int64_neg_oct);
+                        __has_m_int64_neg_oct = true;
+                        break;
                     default:
                         context.reader.skip(context.readFieldResult.type);
                         break;
@@ -543,6 +571,8 @@ public class Foo implements org.bondlib.BondSerializable {
             this.m_enum_uint32_max.verifyDeserialized(__has_m_enum_uint32_max);
             this.m_wstr_1.verifyDeserialized(__has_m_wstr_1);
             this.m_wstr_2.verifyDeserialized(__has_m_wstr_2);
+            this.m_int64_neg_hex.verifyDeserialized(__has_m_int64_neg_hex);
+            this.m_int64_neg_oct.verifyDeserialized(__has_m_int64_neg_oct);
         }
         
         @Override
@@ -583,6 +613,8 @@ public class Foo implements org.bondlib.BondSerializable {
             boolean __has_m_enum_uint32_max = false;
             boolean __has_m_wstr_1 = false;
             boolean __has_m_wstr_2 = false;
+            boolean __has_m_int64_neg_hex = false;
+            boolean __has_m_int64_neg_oct = false;
             for (final org.bondlib.FieldDef field : structDef.fields) {
                 switch (field.id) {
                     case 0:
@@ -729,6 +761,14 @@ public class Foo implements org.bondlib.BondSerializable {
                         value.m_wstr_2 = this.m_wstr_2.deserialize(context, field.type);
                         __has_m_wstr_2 = true;
                         break;
+                    case 36:
+                        value.m_int64_neg_hex = this.m_int64_neg_hex.deserialize(context, field.type);
+                        __has_m_int64_neg_hex = true;
+                        break;
+                    case 37:
+                        value.m_int64_neg_oct = this.m_int64_neg_oct.deserialize(context, field.type);
+                        __has_m_int64_neg_oct = true;
+                        break;
                     default:
                         context.reader.skip(context.schema, field.type);
                         break;
@@ -770,6 +810,8 @@ public class Foo implements org.bondlib.BondSerializable {
             this.m_enum_uint32_max.verifyDeserialized(__has_m_enum_uint32_max);
             this.m_wstr_1.verifyDeserialized(__has_m_wstr_1);
             this.m_wstr_2.verifyDeserialized(__has_m_wstr_2);
+            this.m_int64_neg_hex.verifyDeserialized(__has_m_int64_neg_hex);
+            this.m_int64_neg_oct.verifyDeserialized(__has_m_int64_neg_oct);
         }
         
         @Override
@@ -810,6 +852,8 @@ public class Foo implements org.bondlib.BondSerializable {
             value.m_enum_uint32_max = this.m_enum_uint32_max.initialize();
             value.m_wstr_1 = this.m_wstr_1.initialize();
             value.m_wstr_2 = this.m_wstr_2.initialize();
+            value.m_int64_neg_hex = this.m_int64_neg_hex.initialize();
+            value.m_int64_neg_oct = this.m_int64_neg_oct.initialize();
         }
         
         @Override
@@ -850,6 +894,8 @@ public class Foo implements org.bondlib.BondSerializable {
             toValue.m_enum_uint32_max = this.m_enum_uint32_max.clone(fromValue.m_enum_uint32_max);
             toValue.m_wstr_1 = this.m_wstr_1.clone(fromValue.m_wstr_1);
             toValue.m_wstr_2 = this.m_wstr_2.clone(fromValue.m_wstr_2);
+            toValue.m_int64_neg_hex = this.m_int64_neg_hex.clone(fromValue.m_int64_neg_hex);
+            toValue.m_int64_neg_oct = this.m_int64_neg_oct.clone(fromValue.m_int64_neg_oct);
         }
     }
 
@@ -969,6 +1015,10 @@ public class Foo implements org.bondlib.BondSerializable {
     public java.lang.String m_wstr_1;
 
     public org.bondlib.SomethingObject<java.lang.String> m_wstr_2;
+
+    public long m_int64_neg_hex;
+
+    public long m_int64_neg_oct;
     
     public Foo() {
         super();
@@ -1016,6 +1066,8 @@ public class Foo implements org.bondlib.BondSerializable {
         if (!((this.m_enum_uint32_max == null && other.m_enum_uint32_max == null) || (this.m_enum_uint32_max != null && this.m_enum_uint32_max.equals(other.m_enum_uint32_max)))) return false;
         if (!((this.m_wstr_1 == null && other.m_wstr_1 == null) || (this.m_wstr_1 != null && this.m_wstr_1.equals(other.m_wstr_1)))) return false;
         if (!((this.m_wstr_2 == null && other.m_wstr_2 == null) || (this.m_wstr_2 != null && this.m_wstr_2.equals(other.m_wstr_2)))) return false;
+        if (!(this.m_int64_neg_hex == other.m_int64_neg_hex)) return false;
+        if (!(this.m_int64_neg_oct == other.m_int64_neg_oct)) return false;
         return true;
     }
 
@@ -1128,6 +1180,12 @@ public class Foo implements org.bondlib.BondSerializable {
         result *= 0xeadbeef;
         result ^= result >> 16;
         result += m_wstr_2 == null ? 0 : m_wstr_2.hashCode();
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += m_int64_neg_hex ^ (m_int64_neg_hex >>> 32);
+        result *= 0xeadbeef;
+        result ^= result >> 16;
+        result += m_int64_neg_oct ^ (m_int64_neg_oct >>> 32);
         result *= 0xeadbeef;
         result ^= result >> 16;
         return result;

@@ -22,7 +22,9 @@ namespace tests
                 ("Int32Min", Int32Min)
                 ("Int32Max", Int32Max)
                 ("UInt32Min", UInt32Min)
-                ("UInt32Max", UInt32Max);
+                ("UInt32Max", UInt32Max)
+                ("HexNeg", HexNeg)
+                ("OctNeg", OctNeg);
 
         const
         std::map<enum EnumType1, std::string> _value_to_name_EnumType1 =
@@ -158,6 +160,12 @@ namespace tests
     
     const ::bond::Metadata Foo::Schema::s_m_wstr_2_metadata
         = ::bond::reflection::MetadataInit(::bond::nothing, "m_wstr_2");
+    
+    const ::bond::Metadata Foo::Schema::s_m_int64_neg_hex_metadata
+        = ::bond::reflection::MetadataInit(static_cast<int64_t>(-4095LL), "m_int64_neg_hex");
+    
+    const ::bond::Metadata Foo::Schema::s_m_int64_neg_oct_metadata
+        = ::bond::reflection::MetadataInit(static_cast<int64_t>(-83LL), "m_int64_neg_oct");
 
     
 } // namespace tests

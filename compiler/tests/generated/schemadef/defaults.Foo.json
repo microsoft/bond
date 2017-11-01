@@ -433,6 +433,30 @@
           "type": {
             "id": 18
           }
+        },
+        {
+          "id": 36,
+          "metadata": {
+            "default_value": {
+              "int_value": -4095
+            },
+            "name": "m_int64_neg_hex"
+          },
+          "type": {
+            "id": 17
+          }
+        },
+        {
+          "id": 37,
+          "metadata": {
+            "default_value": {
+              "int_value": -83
+            },
+            "name": "m_int64_neg_oct"
+          },
+          "type": {
+            "id": 17
+          }
         }
       ],
       "metadata": {

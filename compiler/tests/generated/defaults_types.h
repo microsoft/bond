@@ -35,7 +35,9 @@ namespace tests
             Int32Min = static_cast<int32_t>(-2147483647-1),
             Int32Max = static_cast<int32_t>(2147483647),
             UInt32Min = static_cast<int32_t>(0),
-            UInt32Max = static_cast<int32_t>(4294967295)
+            UInt32Max = static_cast<int32_t>(4294967295),
+            HexNeg = static_cast<int32_t>(-255),
+            OctNeg = static_cast<int32_t>(-83)
         };
         
         extern const std::map<enum EnumType1, std::string> _value_to_name_EnumType1;
@@ -141,6 +143,8 @@ namespace tests
         ::tests::EnumType1 m_enum_uint32_max;
         std::wstring m_wstr_1;
         ::bond::maybe<std::wstring> m_wstr_2;
+        int64_t m_int64_neg_hex;
+        int64_t m_int64_neg_oct;
         
         Foo()
           : m_bool_1(true),
@@ -164,7 +168,9 @@ namespace tests
             m_enum_int32max(::tests::_bond_enumerators::EnumType1::Int32Max),
             m_enum_uint32_min(::tests::_bond_enumerators::EnumType1::UInt32Min),
             m_enum_uint32_max(::tests::_bond_enumerators::EnumType1::UInt32Max),
-            m_wstr_1(L"default wstring value")
+            m_wstr_1(L"default wstring value"),
+            m_int64_neg_hex(-4095LL),
+            m_int64_neg_oct(-83LL)
         {
         }
 
@@ -209,7 +215,9 @@ namespace tests
             m_enum_uint32_min(std::move(other.m_enum_uint32_min)),
             m_enum_uint32_max(std::move(other.m_enum_uint32_max)),
             m_wstr_1(std::move(other.m_wstr_1)),
-            m_wstr_2(std::move(other.m_wstr_2))
+            m_wstr_2(std::move(other.m_wstr_2)),
+            m_int64_neg_hex(std::move(other.m_int64_neg_hex)),
+            m_int64_neg_oct(std::move(other.m_int64_neg_oct))
         {
         }
 #else
@@ -267,7 +275,9 @@ namespace tests
                 && (m_enum_uint32_min == other.m_enum_uint32_min)
                 && (m_enum_uint32_max == other.m_enum_uint32_max)
                 && (m_wstr_1 == other.m_wstr_1)
-                && (m_wstr_2 == other.m_wstr_2);
+                && (m_wstr_2 == other.m_wstr_2)
+                && (m_int64_neg_hex == other.m_int64_neg_hex)
+                && (m_int64_neg_oct == other.m_int64_neg_oct);
         }
 
         bool operator!=(const Foo& other) const
@@ -314,6 +324,8 @@ namespace tests
             swap(m_enum_uint32_max, other.m_enum_uint32_max);
             swap(m_wstr_1, other.m_wstr_1);
             swap(m_wstr_2, other.m_wstr_2);
+            swap(m_int64_neg_hex, other.m_int64_neg_hex);
+            swap(m_int64_neg_oct, other.m_int64_neg_oct);
         }
 
         struct Schema;
