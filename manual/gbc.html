@@ -10,7 +10,6 @@
 <tr><td style='padding-left:2ex; white-space:nowrap;'>-i</td><td style='padding-left:1ex; white-space:nowrap;'>--import-dir=DIR</td><td style='padding-left:2ex;'>Add the directory to import search path</td></tr>
 <tr><td style='padding-left:2ex; white-space:nowrap;'>-o</td><td style='padding-left:1ex; white-space:nowrap;'>--output-dir=DIR</td><td style='padding-left:2ex;'>Output generated files into the specified directory</td></tr>
 <tr><td style='padding-left:2ex; white-space:nowrap;'>-j</td><td style='padding-left:1ex; white-space:nowrap;'>--jobs[=NUM]</td><td style='padding-left:2ex;'>Run NUM jobs simultaneously (or '$ncpus' if no NUM is not given)</td></tr>
-<tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--enable-service-inheritance</td><td style='padding-left:2ex;'>Enable service inheritance syntax in IDL</td></tr>
 <tr><td style='padding-left:2ex; white-space:nowrap;'>-?</td><td style='padding-left:1ex; white-space:nowrap;'>--help</td><td style='padding-left:2ex;'>Display help message</td></tr>
 <tr><td style='padding-left:2ex; white-space:nowrap;'>-V</td><td style='padding-left:1ex; white-space:nowrap;'>--version</td><td style='padding-left:2ex;'>Print version information</td></tr>
 <tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--numeric-version</td><td style='padding-left:2ex;'>Print just the version number</td></tr>
@@ -29,6 +28,7 @@
 <tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--core</td><td style='padding-left:2ex;'>Generate core serialization definitions (true by default, --core=false to disable)</td></tr>
 <tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--comm</td><td style='padding-left:2ex;'>Generate comm definitions</td></tr>
 <tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--grpc</td><td style='padding-left:2ex;'>Generate gRPC definitions</td></tr>
+<tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--enable-service-inheritance</td><td style='padding-left:2ex;'>Enable service inheritance syntax in IDL</td></tr>
 <tr><td colspan='3'>&nbsp;</tr>
 <tr><td colspan='3'>gbc c# [OPTIONS] [FILE]</td></tr>
 <tr><td colspan='3' style='padding-left:2ex;'>Generate C# code</td></tr>
@@ -42,9 +42,18 @@
 <tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--structs</td><td style='padding-left:2ex;'>Generate C# types for Bond structs and enums (true by default, use "--structs=false" to disable)</td></tr>
 <tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--comm</td><td style='padding-left:2ex;'>Generate C# services and proxies for Bond Comm</td></tr>
 <tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--grpc</td><td style='padding-left:2ex;'>Generate C# services and proxies for gRPC</td></tr>
+<tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--enable-service-inheritance</td><td style='padding-left:2ex;'>Enable service inheritance syntax in IDL</td></tr>
+<tr><td colspan='3'>&nbsp;</tr>
+<tr><td colspan='3'>gbc java [OPTIONS] [FILE]</td></tr>
+<tr><td colspan='3' style='padding-left:2ex;'>Generate Java code</td></tr>
+<tr><td colspan='3'>&nbsp;</tr>
+<tr><td style='padding-left:2ex; white-space:nowrap;'>-u</td><td style='padding-left:1ex; white-space:nowrap;'>--using=MAPPING</td><td style='padding-left:2ex;'>Currently unimplemented and ignored for Java</td></tr>
+<tr><td style='padding-left:2ex; white-space:nowrap;'>-n</td><td style='padding-left:1ex; white-space:nowrap;'>--namespace=MAPPING</td><td style='padding-left:2ex;'>Custom namespace mapping in the form bond_namespace=language_namespace</td></tr>
+<tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--no-banner</td><td style='padding-left:2ex;'>Omit the banner at the top of generated files</td></tr>
 <tr><td colspan='3'>&nbsp;</tr>
 <tr><td colspan='3'>gbc schema [OPTIONS] [FILE]</td></tr>
 <tr><td colspan='3' style='padding-left:2ex;'>Output the JSON representation of the schema</td></tr>
 <tr><td colspan='3'>&nbsp;</tr>
 <tr><td style='padding-left:2ex; white-space:nowrap;'>-r</td><td style='padding-left:1ex; white-space:nowrap;'>--runtime-schema</td><td style='padding-left:2ex;'>Generate Simple JSON representation of runtime schema, aka SchemaDef</td></tr>
+<tr><td style='padding-left:2ex;'>&nbsp;<td style='padding-left:1ex; white-space:nowrap;'>--enable-service-inheritance</td><td style='padding-left:2ex;'>Enable service inheritance syntax in IDL</td></tr>
 </table>
