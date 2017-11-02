@@ -148,7 +148,6 @@ namespace test
     }
 } // namespace test
 
-#if !defined(BOND_NO_CXX11_ALLOCATOR)
 namespace std
 {
     template <typename _Alloc>
@@ -156,5 +155,4 @@ namespace std
         : is_convertible<_Alloc, arena>
     {};
 }
-#endif
 

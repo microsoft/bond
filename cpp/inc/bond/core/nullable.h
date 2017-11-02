@@ -317,13 +317,9 @@ public:
     typedef Allocator   allocator_type;
 
 private:
-    typedef typename detail::rebind_allocator<allocator_type, value_type>::type rebind_alloc;
+    typedef typename std::allocator_traits<allocator_type>::template rebind_alloc<value_type> rebind_alloc;
 
-#ifndef BOND_NO_CXX11_ALLOCATOR
     typedef typename std::allocator_traits<rebind_alloc>::pointer real_pointer;
-#else
-    typedef pointer real_pointer;
-#endif
 
 public:
     bool hasvalue() const
@@ -513,11 +509,7 @@ private:
     void delete_value()
     {
         rebind_alloc alloc(base());
-#ifndef BOND_NO_CXX11_ALLOCATOR
         std::allocator_traits<rebind_alloc>::destroy(alloc, boost::addressof(*_value));
-#else
-        _value->~T();
-#endif
         alloc.deallocate(_value, 1);
     }
 
@@ -528,13 +520,9 @@ private:
         real_pointer p(alloc.allocate(1));
         try
         {
-#ifndef BOND_NO_CXX11_ALLOCATOR
             std::allocator_traits<rebind_alloc>::construct(alloc,
                 boost::addressof(*p),
                 std::forward<Arg1>(arg1));
-#else
-            ::new(static_cast<void*>(p)) T(std::forward<Arg1>(arg1));
-#endif
             return p;
         }
         catch (...)
@@ -550,12 +538,8 @@ private:
         real_pointer p(alloc.allocate(1));
         try
         {
-#ifndef BOND_NO_CXX11_ALLOCATOR
             std::allocator_traits<rebind_alloc>::construct(alloc,
                 boost::addressof(*p));
-#else
-            ::new(static_cast<void*>(p)) T();
-#endif
             return p;
         }
         catch (...)

@@ -143,29 +143,11 @@ use_container_allocator_for_elements
     : false_type {};
 
 
-#if defined(BOND_NO_CXX11_ALLOCATOR)
-
-template <typename T> struct
-use_container_allocator_for_elements<T, typename boost::enable_if<
-    is_same<typename T::allocator_type::template rebind<int>::other,
-    typename element_type<T>::type::allocator_type::template rebind<int>::other> >::type>
-    : std::integral_constant<bool,
-        !detail::is_default_allocator<typename T::allocator_type>::value> {};
-
-template <typename T> struct
-use_container_allocator_for_elements<T, typename boost::enable_if_c<
-    has_schema<typename element_type<T>::type>::value
- && !detail::is_default_allocator<typename T::allocator_type>::value>::type>
-    : true_type {};
-
-#else
-
 template <typename T> struct
 use_container_allocator_for_elements<T, typename boost::enable_if_c<
     std::uses_allocator<typename element_type<T>::type, typename T::allocator_type>::value>::type>
     : true_type {};
 
-#endif
 
 // make_element
 template <typename T>
@@ -267,8 +249,8 @@ use_map_allocator_for_keys
 template <typename T> struct
 use_map_allocator_for_keys
 <T, typename boost::enable_if<
-    is_same<typename detail::rebind_allocator<typename T::allocator_type, int>::type,
-    typename detail::rebind_allocator<typename element_type<T>::type::first_type::allocator_type, int>::type> >::type>
+    is_same<typename std::allocator_traits<typename T::allocator_type>::template rebind_alloc<int>,
+    typename std::allocator_traits<typename element_type<T>::type::first_type::allocator_type>::template rebind_alloc<int> > >::type>
     : std::integral_constant<bool,
         !detail::is_default_allocator<typename T::allocator_type>::value> {};
 
@@ -298,30 +280,12 @@ use_map_allocator_for_values
     : false_type {};
 
 
-#if defined(BOND_NO_CXX11_ALLOCATOR)
-
-template <typename T> struct
-use_map_allocator_for_values<T, typename boost::enable_if<
-    is_same<typename T::allocator_type::template rebind<int>::other,
-    typename element_type<T>::type::second_type::allocator_type::template rebind<int>::other> >::type>
-    : std::integral_constant<bool,
-        !detail::is_default_allocator<typename T::allocator_type>::value> {};
-
-template <typename T> struct
-use_map_allocator_for_values<T, typename boost::enable_if_c<
-    has_schema<typename element_type<T>::type::second_type>::value
- && !detail::is_default_allocator<typename T::allocator_type>::value>::type>
-    : true_type {};
-
-#else
-
 template <typename T> struct
 use_map_allocator_for_values<T, typename boost::enable_if_c<
     std::uses_allocator<typename element_type<T>::type::second_type,
     typename T::allocator_type>::value>::type>
     : true_type {};
 
-#endif
 
 // make_value
 template <typename T>

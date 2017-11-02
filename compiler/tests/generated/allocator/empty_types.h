@@ -21,10 +21,8 @@ namespace tests
     
 } // namespace tests
 
-#if !defined(BOND_NO_CXX11_ALLOCATOR)
 namespace std
 {
     
 }
-#endif
 
