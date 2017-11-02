@@ -40,10 +40,13 @@ if (NOT BOND_GBC_PATH)
 endif()
 
 add_subdirectory (cpp)
-add_subdirectory (java)
 add_subfolder (doc "doc")
 add_python_subdirectory (python)
 add_subdirectory (examples)
+
+if (BOND_ENABLE_JAVA)
+    add_subdirectory (java)
+endif()
 
 
 install (DIRECTORY

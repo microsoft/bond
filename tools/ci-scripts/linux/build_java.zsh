@@ -6,6 +6,7 @@ BOND_ROOT=/root/bond
 
 # Install gbc.
 cmake \
+    -DBOND_ENABLE_JAVA=True \
     -DBOND_STACK_OPTIONS="--allow-different-user" \
     -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DCMAKE_C_FLAGS="$CC_FLAGS" \
     ${=BOND_CMAKE_FLAGS} \
@@ -19,6 +20,7 @@ make java
 # Re-run cmake to pick up the paths to the core and compat jars, then run
 # compat tests.
 cmake \
+    -DBOND_ENABLE_JAVA=True \
     -DBOND_STACK_OPTIONS="--allow-different-user" \
     -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DCMAKE_C_FLAGS="$CC_FLAGS" \
     ${=BOND_CMAKE_FLAGS} \
