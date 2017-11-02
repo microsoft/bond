@@ -29,14 +29,6 @@ use_value
         || !is_class<T>::value> {};
 
 template<typename T, typename E = void> struct
-has_compare
-    : false_type {};
-
-template<typename T> struct
-has_compare<T, typename boost::enable_if<is_class<typename T::key_compare> >::type>
-    : true_type {};
-
-template<typename T, typename E = void> struct
 has_allocator
     : false_type {};
 
@@ -122,16 +114,6 @@ public:
           _hasvalue(false)
     {
     }
-
-    // deprecated!
-    template <typename Compare>
-    explicit
-    nullable(const Compare&,
-             const allocator_type& alloc)
-        : Allocator(alloc),
-          _value(make_value<value_type>()),
-          _hasvalue(false)
-    {}
 
     explicit
     nullable(const value_type& value)
@@ -269,29 +251,17 @@ private:
     }
 
     template<typename ValueType>
-    typename boost::enable_if_c<detail::has_allocator<ValueType>::value &&
-                                detail::has_compare<ValueType>::value, ValueType>::type
+    typename boost::enable_if<detail::has_allocator<ValueType>, ValueType>::type
     make_value()
     {
-        ValueType value(typename ValueType::key_compare(), base());
-        return value;
-    }
-
-    template<typename ValueType>
-    typename boost::enable_if_c<detail::has_allocator<ValueType>::value &&
-                                !detail::has_compare<ValueType>::value, ValueType>::type
-    make_value()
-    {
-        ValueType value(base());
-        return value;
+        return ValueType(base());
     }
 
     template<typename ValueType>
     typename boost::disable_if<detail::has_allocator<ValueType>, ValueType>::type
     make_value()
     {
-        ValueType value = ValueType();
-        return value;
+        return ValueType();
     }
 
 private:

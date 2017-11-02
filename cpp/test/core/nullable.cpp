@@ -240,7 +240,7 @@ TEST_CASE_BEGIN(NullableAllocators)
 
     NullableTests(x, y, s1, l1);
 
-    bond::nullable<std::set<bool, std::less<bool>, detail::TestAllocator<bool> > > n1(std::less<bool>(), a1);
+    bond::nullable<std::set<bool, std::less<bool>, detail::TestAllocator<bool> > > n1(a1);
     UT_AssertIsTrue(n1.empty());
 
     // VS10SP1 is a joke and does not support swap on map/set with different allocators

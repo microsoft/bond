@@ -46,8 +46,8 @@ namespace test
         
         explicit
         foo(const arena& allocator)
-          : m(std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >>(), allocator),
-            s(std::less<int32_t>(), allocator)
+          : m(allocator),
+            s(allocator)
         {
         }
         

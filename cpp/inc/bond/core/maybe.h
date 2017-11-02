@@ -50,12 +50,6 @@ public:
           _nothing(true)
     {}
 
-    template <typename Compare, typename Allocator>
-    explicit maybe(const Compare& comp, Allocator& alloc)
-        : _value(comp, alloc),
-          _nothing(true)
-    {}
-
     /// @brief Swap this object with that object
     void swap(maybe& that)
     {

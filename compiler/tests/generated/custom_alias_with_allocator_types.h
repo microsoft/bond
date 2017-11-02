@@ -72,14 +72,14 @@ namespace test
         foo(const arena& allocator)
           : l(allocator),
             v(allocator),
-            s(std::less<bool>(), allocator),
-            m(std::less<my::string<arena>>(), allocator),
+            s(allocator),
+            m(allocator),
             st(allocator),
             d("foo", allocator),
             l1(allocator),
             v1(allocator),
-            s1(std::less<bool>(), allocator),
-            m1(std::less<my::string<arena>>(), allocator),
+            s1(allocator),
+            m1(allocator),
             st1(allocator)
         {
         }

@@ -127,11 +127,11 @@ namespace tests
         explicit
         ComplexTypes(const arena& allocator)
           : li8(allocator),
-            sb(std::less<bool>(), allocator),
+            sb(allocator),
             vb(allocator),
             nf(),
-            msws(std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >>(), allocator),
-            m(std::less<double>(), allocator)
+            msws(allocator),
+            m(allocator)
         {
         }
         
