@@ -4,4 +4,6 @@ set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 
 include (Java)
 
-add_gradle_build (java-core DEPENDS gradle-plugin-install)
+add_gradle_build (java-core
+    GRADLE_TARGET install
+    DEPENDS gradle-plugin)

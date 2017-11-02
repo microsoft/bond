@@ -47,8 +47,7 @@ RUN add-apt-repository ppa:cwchien/gradle && \
     apt-get update && \
     apt-get -y install \
     gradle \
-    openjdk-8-jdk \
-    maven
+    openjdk-8-jdk
 
 # Build script
 ENTRYPOINT ["zsh", "/root/bond/tools/ci-scripts/linux/build.zsh"]

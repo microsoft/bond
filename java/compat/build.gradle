@@ -1,5 +1,8 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 group 'org.bondlib'
-version '1.0'
+version '0.0'
 
 buildscript {
     repositories {
@@ -18,11 +21,12 @@ apply plugin: 'org.bondlib.gradle'
 sourceCompatibility = 1.8
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    compile files('../core/build/libs/bond-5.0.0.jar')
+    compile 'org.bondlib:bond:+'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
