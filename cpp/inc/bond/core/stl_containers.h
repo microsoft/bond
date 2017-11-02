@@ -127,16 +127,6 @@ uint32_t container_size(const T& list)
 }
 
 
-template <typename T, typename Enable = void> struct
-has_key_compare
-    : false_type {};
-
-
-template <typename T> struct
-has_key_compare<T, typename boost::enable_if<is_class<typename T::key_compare> >::type>
-    : true_type {};
-
-
 // use_container_allocator_for_elements
 template <typename T, typename Enable = void> struct
 use_container_allocator_for_elements
@@ -179,21 +169,10 @@ make_element(T& /*container*/)
 
 template <typename T>
 inline
-typename boost::enable_if_c<use_container_allocator_for_elements<T>::value
-                         && !has_key_compare<typename element_type<T>::type>::value, typename element_type<T>::type>::type
+typename boost::enable_if<use_container_allocator_for_elements<T>, typename element_type<T>::type>::type
 make_element(T& container)
 {
     return typename element_type<T>::type(container.get_allocator());
-}
-
-
-template <typename T>
-inline
-typename boost::enable_if_c<use_container_allocator_for_elements<T>::value
-                         && has_key_compare<typename element_type<T>::type>::value, typename element_type<T>::type>::type
-make_element(T& container)
-{
-    return typename element_type<T>::type(typename element_type<T>::type::key_compare(), container.get_allocator());
 }
 
 
@@ -336,23 +315,10 @@ make_value(T& /*map*/)
 
 template <typename T>
 inline
-typename boost::enable_if_c<use_map_allocator_for_values<T>::value
-                         && !has_key_compare<typename element_type<T>::type::second_type>::value,
-    typename element_type<T>::type::second_type>::type
+typename boost::enable_if<use_map_allocator_for_values<T>, typename element_type<T>::type::second_type>::type
 make_value(T& map)
 {
     return typename element_type<T>::type::second_type(map.get_allocator());
-}
-
-
-template <typename T>
-inline
-typename boost::enable_if_c<use_map_allocator_for_values<T>::value
-                         && has_key_compare<typename element_type<T>::type::second_type>::value,
-    typename element_type<T>::type::second_type>::type
-make_value(T& map)
-{
-    return typename element_type<T>::type::second_type(typename element_type<T>::type::second_type::key_compare(), map.get_allocator());
 }
 
 
