@@ -58,8 +58,8 @@ namespace test
         
         explicit
         foo(const arena& allocator)
-          : m(std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >>(), allocator),
-            s(std::less<int32_t>(), allocator)
+          : m(allocator),
+            s(allocator)
         {
         }
         
@@ -109,7 +109,6 @@ namespace test
     }
 } // namespace test
 
-#if !defined(BOND_NO_CXX11_ALLOCATOR)
 namespace std
 {
     template <typename _Alloc>
@@ -117,5 +116,4 @@ namespace std
         : is_convertible<_Alloc, arena>
     {};
 }
-#endif
 
