@@ -29,14 +29,6 @@ use_value
         || !is_class<T>::value> {};
 
 template<typename T, typename E = void> struct
-has_compare
-    : false_type {};
-
-template<typename T> struct
-has_compare<T, typename boost::enable_if<is_class<typename T::key_compare> >::type>
-    : true_type {};
-
-template<typename T, typename E = void> struct
 has_allocator
     : false_type {};
 
@@ -122,16 +114,6 @@ public:
           _hasvalue(false)
     {
     }
-
-    // deprecated!
-    template <typename Compare>
-    explicit
-    nullable(const Compare&,
-             const allocator_type& alloc)
-        : Allocator(alloc),
-          _value(make_value<value_type>()),
-          _hasvalue(false)
-    {}
 
     explicit
     nullable(const value_type& value)
@@ -283,29 +265,17 @@ private:
     }
 
     template<typename ValueType>
-    typename boost::enable_if_c<detail::has_allocator<ValueType>::value &&
-                                detail::has_compare<ValueType>::value, ValueType>::type
+    typename boost::enable_if<detail::has_allocator<ValueType>, ValueType>::type
     make_value()
     {
-        ValueType value(typename ValueType::key_compare(), base());
-        return value;
-    }
-
-    template<typename ValueType>
-    typename boost::enable_if_c<detail::has_allocator<ValueType>::value &&
-                                !detail::has_compare<ValueType>::value, ValueType>::type
-    make_value()
-    {
-        ValueType value(base());
-        return value;
+        return ValueType(base());
     }
 
     template<typename ValueType>
     typename boost::disable_if<detail::has_allocator<ValueType>, ValueType>::type
     make_value()
     {
-        ValueType value = ValueType();
-        return value;
+        return ValueType();
     }
 
 private:
@@ -331,13 +301,9 @@ public:
     typedef Allocator   allocator_type;
 
 private:
-    typedef typename detail::rebind_allocator<allocator_type, value_type>::type rebind_alloc;
+    typedef typename std::allocator_traits<allocator_type>::template rebind_alloc<value_type> rebind_alloc;
 
-#ifndef BOND_NO_CXX11_ALLOCATOR
     typedef typename std::allocator_traits<rebind_alloc>::pointer real_pointer;
-#else
-    typedef pointer real_pointer;
-#endif
 
 public:
     bool hasvalue() const
@@ -541,11 +507,7 @@ private:
     void delete_value()
     {
         rebind_alloc alloc(base());
-#ifndef BOND_NO_CXX11_ALLOCATOR
         std::allocator_traits<rebind_alloc>::destroy(alloc, boost::addressof(*_value));
-#else
-        _value->~T();
-#endif
         alloc.deallocate(_value, 1);
     }
 
@@ -556,13 +518,9 @@ private:
         real_pointer p(alloc.allocate(1));
         try
         {
-#ifndef BOND_NO_CXX11_ALLOCATOR
             std::allocator_traits<rebind_alloc>::construct(alloc,
                 boost::addressof(*p),
                 std::forward<Args>(args)...);
-#else
-            ::new(static_cast<void*>(p)) T(std::forward<Args>(args)...);
-#endif
             return p;
         }
         catch (...)
@@ -578,12 +536,8 @@ private:
         real_pointer p(alloc.allocate(1));
         try
         {
-#ifndef BOND_NO_CXX11_ALLOCATOR
             std::allocator_traits<rebind_alloc>::construct(alloc,
                 boost::addressof(*p));
-#else
-            ::new(static_cast<void*>(p)) T();
-#endif
             return p;
         }
         catch (...)

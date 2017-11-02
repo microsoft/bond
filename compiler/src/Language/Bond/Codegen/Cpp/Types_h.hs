@@ -93,12 +93,10 @@ types_h userHeaders enumHeader allocator alloc_ctors_enabled cpp file imports de
         (have anyBlob, "<bond/core/blob.h>")]
 
     usesAllocatorSpecialization alloc = [lt|
-#if !defined(BOND_NO_CXX11_ALLOCATOR)
 namespace std
 {
     #{doubleLineSep 1 usesAllocator declarations}
 }
-#endif
 |]
       where
         usesAllocator s@Struct {..} = [lt|template <typename _Alloc#{sepBeginBy ", typename " paramName declParams}>
@@ -249,13 +247,8 @@ namespace std
             allocInitValue t (Just d)
                 | isString t = Just [lt|#{cppDefaultValue t d}, allocator|]
             allocInitValue t Nothing
-                | isList t || isMetaName t || isString t || isStruct t = Just "allocator"
-                | isAssociative t = Just [lt|std::less<#{keyType t}>(), allocator|]
+                | isContainer t || isMetaName t || isString t || isStruct t = Just "allocator"
             allocInitValue t d = initValue t d
-            keyType (BT_Set key) = cppType key
-            keyType (BT_Map key _) = cppType key
-            keyType (BT_UserDefined a@Alias {} args) = keyType $ resolveAlias a args
-            keyType _ = error "allocatorCtor/keyType: impossible happened."
 
         -- copy constructor
         copyCtor = if hasMetaFields then define else implicitlyDeclared

@@ -15,7 +15,7 @@ different versioning scheme, following the Haskell community's
 * `gbc` & compiler library: (minor bump already done in bond.cabal)
 * IDL core version: TBD
 * IDL comm version: TBD
-* C++ version: (minor bump needed)
+* C++ version: (major bump needed)
 * C# NuGet version: TBD
 * C# Comm NuGet version: TBD
 
@@ -24,6 +24,8 @@ different versioning scheme, following the Haskell community's
 * C++ codegen now properly generates move assignment operator which was broken
   for some cases.
 * C++ codegen no longer generates checks for C++11, except for MSVC 2013 workarounds.
+* C++ codegen no longer generates data member initialization that invokes a constructor
+  accepting `Comparer` for associative containers.
 * C++ codegen now can generate copy and move constructors with an allocator argument
   when a custom allocator is used and `--alloc-ctors` is passed to `gbc`.
 
@@ -32,6 +34,8 @@ different versioning scheme, following the Haskell community's
 * The CMake build now enforces a minimum Boost version of 1.58. The build
   has required Boost 1.58 or later since version 5.2.0, but this was not
   enforced.
+* **Breaking change** Constructors accepting a `Comparer` have been removed from
+  `bond::maybe` and `bond::nullable` types.
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0

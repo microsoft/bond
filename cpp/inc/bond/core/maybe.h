@@ -58,12 +58,6 @@ public:
           _nothing(true)
     {}
 
-    template <typename Compare, typename Allocator>
-    maybe(const Compare& comp, const Allocator& alloc)
-        : _value(comp, alloc),
-          _nothing(true)
-    {}
-
     template <typename Allocator>
     maybe(const maybe& that, const Allocator& alloc)
         : _value(that._value, alloc),

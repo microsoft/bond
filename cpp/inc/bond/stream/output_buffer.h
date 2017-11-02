@@ -359,7 +359,7 @@ protected:
     char* _rangePtr;
 
     // list of blobs
-    std::vector<blob, typename detail::rebind_allocator<A, blob>::type> _blobs;
+    std::vector<blob, typename std::allocator_traits<A>::template rebind_alloc<blob> > _blobs;
 
 
     friend OutputMemoryStream CreateOutputBuffer(const OutputMemoryStream& other)
