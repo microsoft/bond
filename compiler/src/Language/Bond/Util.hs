@@ -20,6 +20,7 @@ module Language.Bond.Util
     , sepEndBy
     , sepBeginBy
     , optional
+    , ifThenElse
     , angles
     , brackets
     , braces
@@ -69,6 +70,11 @@ sepBy s f (x:xs)
 -- to the value inside 'Just' and returns the result.
 optional :: (Monoid m) => (a -> m) -> Maybe a -> m
 optional = maybe mempty
+
+-- takes a predicate and two items and outputs one based on predicate
+ifThenElse :: Bool -> a -> a -> a
+ifThenElse True thenCondition _ = thenCondition
+ifThenElse False _ elseCondition = elseCondition
 
 -- | If the 3rd argument is not 'mempty' the function wraps it between the
 -- first and second argument using 'mappend', otherwise it return 'mempty'.

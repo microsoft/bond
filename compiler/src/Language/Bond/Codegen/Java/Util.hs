@@ -10,7 +10,6 @@ module Language.Bond.Codegen.Java.Util
     , isPrimitiveNonEnumBondType
     , isPrimitiveBondType
     , isGenericBondStructType
-    , ifThenElse
     , twosComplement
     ) where
 
@@ -66,11 +65,6 @@ isPrimitiveBondType t = isPrimitiveNonEnumBondType t
 isGenericBondStructType :: Type -> Bool
 isGenericBondStructType (BT_UserDefined Struct {..} _) = not (null declParams)
 isGenericBondStructType _ = False
-
--- takes a predicate and two texts and outputs one based on predicate
-ifThenElse :: Bool -> Text -> Text -> Text
-ifThenElse True thenCondition _ = thenCondition
-ifThenElse False _ elseCondition = elseCondition
 
 -- takes a bit count and a number and returns its two's complement
 twosComplement :: Integer -> Integer -> Integer

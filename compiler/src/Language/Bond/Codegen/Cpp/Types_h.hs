@@ -119,8 +119,8 @@ namespace std
     {
         #{newlineSepEnd 2 field structFields}#{defaultCtor}
 
-        #{copyCtor}#{optional allocatorCopyCtor allocator}
-        #{moveCtor}#{optional allocatorMoveCtor allocator}
+        #{copyCtor}#{ifThenElse alloc_ctors_enabled (optional allocatorCopyCtor allocator) mempty}
+        #{moveCtor}#{ifThenElse alloc_ctors_enabled (optional allocatorMoveCtor allocator) mempty}
         #{optional allocatorCtor allocator}
         #{assignmentOp}
 
@@ -278,7 +278,7 @@ namespace std
                 getAllocator _ = mempty
 
         -- copy/move constructor with allocator
-        allocatorCopyOrMoveCtor otherParamDecl otherParamValue alloc = if not alloc_ctors_enabled then mempty else [lt|
+        allocatorCopyOrMoveCtor otherParamDecl otherParamValue alloc = [lt|
 
         #{declName}(#{otherParamDecl declName}#{otherParam}, const #{alloc}&#{allocParam})#{initList}#{ctorBody}|]
           where
