@@ -96,7 +96,7 @@ cpp = Cpp
     , core_enabled = True &= explicit &= name "core" &= help "Generate core serialization definitions (true by default, --core=false to disable)"
     , comm_enabled = False &= explicit &= name "comm" &= help "Generate comm definitions"
     , grpc_enabled = False &= explicit &= name "grpc" &= help "Generate gRPC definitions"
-    , alloc_ctors_enabled = False &= explicit &= name "alloc_ctors" &= help "Generate constructors with allocator argument"
+    , alloc_ctors_enabled = False &= explicit &= name "alloc-ctors" &= help "Generate constructors with allocator argument"
     , service_inheritance_enabled = False &= explicit &= name "enable-service-inheritance" &= help "Enable service inheritance syntax in IDL"
     } &=
     name "c++" &=

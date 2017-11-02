@@ -71,7 +71,7 @@ sepBy s f (x:xs)
 optional :: (Monoid m) => (a -> m) -> Maybe a -> m
 optional = maybe mempty
 
--- takes a predicate and two items and outputs one based on predicate
+-- if-then-else as a function
 ifThenElse :: Bool -> a -> a -> a
 ifThenElse True thenCondition _ = thenCondition
 ifThenElse False _ elseCondition = elseCondition

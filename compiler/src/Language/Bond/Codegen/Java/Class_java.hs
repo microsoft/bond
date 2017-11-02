@@ -235,7 +235,7 @@ makeStructBondTypeMember_StructBondTypeBuilderImpl declName declParams = [lt|
 
             @Override
             protected final #{typeDescriptorName declName} buildNewInstance(org.bondlib.BondType[] genericTypeArguments) {
-                return new StructBondTypeImpl(#{ifThenElse (null declParams) nullStr "new org.bondlib.GenericTypeSpecialization(genericTypeArguments)"});
+                return new StructBondTypeImpl(#{ifThenElse (null declParams) nullText "new org.bondlib.GenericTypeSpecialization(genericTypeArguments)"});
             }
 
             static void register() {
@@ -243,8 +243,7 @@ makeStructBondTypeMember_StructBondTypeBuilderImpl declName declParams = [lt|
             }
         }|]
     where
-        nullStr :: Text
-        nullStr = "null"
+        nullText = "null" :: Text
 
 
 -- given generic type parameters, struct fields, and base type, builds text for implementation of
@@ -634,7 +633,6 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
                     then publicConstructorDeclForNonGenericStruct java declName structBase
                     else publicConstructorDeclForGenericStruct java declName declParams structBase
 
-                thisText :: Text
-                thisText = "this"
+                thisText = "this" :: Text
 
         typeDefinition _ = mempty
