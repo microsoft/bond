@@ -92,12 +92,10 @@ types_h userHeaders enumHeader allocator cpp file imports declarations = ("_type
         (have anyBlob, "<bond/core/blob.h>")]
 
     usesAllocatorSpecialization alloc = [lt|
-#if !defined(BOND_NO_CXX11_ALLOCATOR)
 namespace std
 {
     #{doubleLineSep 1 usesAllocator declarations}
 }
-#endif
 |]
       where
         usesAllocator s@Struct {..} = [lt|template <typename _Alloc#{sepBeginBy ", typename " paramName declParams}>

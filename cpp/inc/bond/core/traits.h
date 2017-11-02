@@ -19,10 +19,7 @@
 #   define BOND_TYPE_TRAITS_NAMESPACE ::boost
 #endif
 
-#ifndef BOND_NO_CXX11_ALLOCATOR
 #include <memory>
-#endif
-
 #include <utility>
 
 namespace bond
@@ -216,16 +213,6 @@ unique_buffer_magic_check;
 
 namespace detail
 {
-
-template<typename A, typename T>
-struct rebind_allocator {
-#ifndef BOND_NO_CXX11_ALLOCATOR
-    typedef typename std::allocator_traits<A>::template rebind_alloc<T> type;
-#else
-    typedef typename A::template rebind<T>::other type;
-#endif
-};
-
 
 template<typename A>
 struct is_default_allocator
