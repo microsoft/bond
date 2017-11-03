@@ -32,6 +32,7 @@ namespace test
         ::bond::maybe<my::set<bool, arena> > s1;
         ::bond::maybe<my::map<my::string<arena>, bool, arena> > m1;
         ::bond::maybe<my::string<arena> > st1;
+        my::set<my::list<my::map<int32_t, my::string<arena>, arena>, arena>, arena> na;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
@@ -41,7 +42,8 @@ namespace test
             s(),
             m(),
             st(),
-            d("foo")
+            d("foo"),
+            na()
         {
         }
 
@@ -61,7 +63,8 @@ namespace test
             v1(std::move(other.v1)),
             s1(std::move(other.s1)),
             m1(std::move(other.m1)),
-            st1(std::move(other.st1))
+            st1(std::move(other.st1)),
+            na(std::move(other.na))
         {
         }
 #else
@@ -80,7 +83,8 @@ namespace test
             v1(allocator),
             s1(allocator),
             m1(allocator),
-            st1(allocator)
+            st1(allocator),
+            na(allocator)
         {
         }
         
@@ -110,7 +114,8 @@ namespace test
                 && (v1 == other.v1)
                 && (s1 == other.s1)
                 && (m1 == other.m1)
-                && (st1 == other.st1);
+                && (st1 == other.st1)
+                && (na == other.na);
         }
 
         bool operator!=(const foo& other) const
@@ -132,6 +137,7 @@ namespace test
             swap(s1, other.s1);
             swap(m1, other.m1);
             swap(st1, other.st1);
+            swap(na, other.na);
         }
 
         struct Schema;
