@@ -155,7 +155,7 @@ identifier = identifier' rws
 decimal :: Parser Integer
 decimal = lexeme L.decimal
 
-integer = natural <|> L.signed sc decimal
+integer = L.signed sc natural
 
 keyword :: String -> Parser ()
 keyword w = lexeme (string w *> notFollowedBy (alphaNumChar <|> char '_'))

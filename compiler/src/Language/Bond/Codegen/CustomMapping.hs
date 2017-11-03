@@ -70,7 +70,7 @@ natural :: Parser Integer
 natural = hexadecimal <|> octal <|> decimal
 
 integer :: Parser Integer
-integer = natural <|> L.signed sc decimal
+integer = L.signed sc natural
 
 -- | Parse a type alias mapping specification used in command-line arguments of
 -- <https://microsoft.github.io/bond/manual/compiler.html#command-line-options gbc>.
