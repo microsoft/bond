@@ -51,6 +51,8 @@ namespace tests
         private: static const ::bond::Metadata s_m_enum_uint32_max_metadata;
         private: static const ::bond::Metadata s_m_wstr_1_metadata;
         private: static const ::bond::Metadata s_m_wstr_2_metadata;
+        private: static const ::bond::Metadata s_m_int64_neg_hex_metadata;
+        private: static const ::bond::Metadata s_m_int64_neg_oct_metadata;
 
         public: struct var
         {
@@ -413,47 +415,69 @@ namespace tests
                 &Foo::m_wstr_2,
                 &s_m_wstr_2_metadata
             > {}  m_wstr_2;
+        
+            // m_int64_neg_hex
+            typedef struct : ::bond::reflection::FieldTemplate<
+                36,
+                ::bond::reflection::optional_field_modifier,
+                Foo,
+                int64_t,
+                &Foo::m_int64_neg_hex,
+                &s_m_int64_neg_hex_metadata
+            > {}  m_int64_neg_hex;
+        
+            // m_int64_neg_oct
+            typedef struct : ::bond::reflection::FieldTemplate<
+                37,
+                ::bond::reflection::optional_field_modifier,
+                Foo,
+                int64_t,
+                &Foo::m_int64_neg_oct,
+                &s_m_int64_neg_oct_metadata
+            > {}  m_int64_neg_oct;
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::m_wstr_2>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, var::m_wstr_1>::type fields2;
-        private: typedef boost::mpl::push_front<fields2, var::m_enum_uint32_max>::type fields3;
-        private: typedef boost::mpl::push_front<fields3, var::m_enum_uint32_min>::type fields4;
-        private: typedef boost::mpl::push_front<fields4, var::m_enum_int32max>::type fields5;
-        private: typedef boost::mpl::push_front<fields5, var::m_enum_int32min>::type fields6;
-        private: typedef boost::mpl::push_front<fields6, var::m_enum3>::type fields7;
-        private: typedef boost::mpl::push_front<fields7, var::m_enum2>::type fields8;
-        private: typedef boost::mpl::push_front<fields8, var::m_enum1>::type fields9;
-        private: typedef boost::mpl::push_front<fields9, var::m_float_7>::type fields10;
-        private: typedef boost::mpl::push_front<fields10, var::m_float_4>::type fields11;
-        private: typedef boost::mpl::push_front<fields11, var::m_float_3>::type fields12;
-        private: typedef boost::mpl::push_front<fields12, var::m_double_5>::type fields13;
-        private: typedef boost::mpl::push_front<fields13, var::m_double_4>::type fields14;
-        private: typedef boost::mpl::push_front<fields14, var::m_double_3>::type fields15;
-        private: typedef boost::mpl::push_front<fields15, var::m_uint64_max>::type fields16;
-        private: typedef boost::mpl::push_front<fields16, var::m_uint64_3>::type fields17;
-        private: typedef boost::mpl::push_front<fields17, var::m_uint32_max>::type fields18;
-        private: typedef boost::mpl::push_front<fields18, var::m_uint32_3>::type fields19;
-        private: typedef boost::mpl::push_front<fields19, var::m_uint16_3>::type fields20;
-        private: typedef boost::mpl::push_front<fields20, var::m_uint16_2>::type fields21;
-        private: typedef boost::mpl::push_front<fields21, var::m_uint8_3>::type fields22;
-        private: typedef boost::mpl::push_front<fields22, var::m_uint8_2>::type fields23;
-        private: typedef boost::mpl::push_front<fields23, var::m_int64_max>::type fields24;
-        private: typedef boost::mpl::push_front<fields24, var::m_int64_4>::type fields25;
-        private: typedef boost::mpl::push_front<fields25, var::m_int32_max>::type fields26;
-        private: typedef boost::mpl::push_front<fields26, var::m_int32_4>::type fields27;
-        private: typedef boost::mpl::push_front<fields27, var::m_int16_5>::type fields28;
-        private: typedef boost::mpl::push_front<fields28, var::m_int16_4>::type fields29;
-        private: typedef boost::mpl::push_front<fields29, var::m_int8_5>::type fields30;
-        private: typedef boost::mpl::push_front<fields30, var::m_int8_4>::type fields31;
-        private: typedef boost::mpl::push_front<fields31, var::m_str_2>::type fields32;
-        private: typedef boost::mpl::push_front<fields32, var::m_str_1>::type fields33;
-        private: typedef boost::mpl::push_front<fields33, var::m_bool_3>::type fields34;
-        private: typedef boost::mpl::push_front<fields34, var::m_bool_2>::type fields35;
-        private: typedef boost::mpl::push_front<fields35, var::m_bool_1>::type fields36;
+        private: typedef boost::mpl::push_front<fields0, var::m_int64_neg_oct>::type fields1;
+        private: typedef boost::mpl::push_front<fields1, var::m_int64_neg_hex>::type fields2;
+        private: typedef boost::mpl::push_front<fields2, var::m_wstr_2>::type fields3;
+        private: typedef boost::mpl::push_front<fields3, var::m_wstr_1>::type fields4;
+        private: typedef boost::mpl::push_front<fields4, var::m_enum_uint32_max>::type fields5;
+        private: typedef boost::mpl::push_front<fields5, var::m_enum_uint32_min>::type fields6;
+        private: typedef boost::mpl::push_front<fields6, var::m_enum_int32max>::type fields7;
+        private: typedef boost::mpl::push_front<fields7, var::m_enum_int32min>::type fields8;
+        private: typedef boost::mpl::push_front<fields8, var::m_enum3>::type fields9;
+        private: typedef boost::mpl::push_front<fields9, var::m_enum2>::type fields10;
+        private: typedef boost::mpl::push_front<fields10, var::m_enum1>::type fields11;
+        private: typedef boost::mpl::push_front<fields11, var::m_float_7>::type fields12;
+        private: typedef boost::mpl::push_front<fields12, var::m_float_4>::type fields13;
+        private: typedef boost::mpl::push_front<fields13, var::m_float_3>::type fields14;
+        private: typedef boost::mpl::push_front<fields14, var::m_double_5>::type fields15;
+        private: typedef boost::mpl::push_front<fields15, var::m_double_4>::type fields16;
+        private: typedef boost::mpl::push_front<fields16, var::m_double_3>::type fields17;
+        private: typedef boost::mpl::push_front<fields17, var::m_uint64_max>::type fields18;
+        private: typedef boost::mpl::push_front<fields18, var::m_uint64_3>::type fields19;
+        private: typedef boost::mpl::push_front<fields19, var::m_uint32_max>::type fields20;
+        private: typedef boost::mpl::push_front<fields20, var::m_uint32_3>::type fields21;
+        private: typedef boost::mpl::push_front<fields21, var::m_uint16_3>::type fields22;
+        private: typedef boost::mpl::push_front<fields22, var::m_uint16_2>::type fields23;
+        private: typedef boost::mpl::push_front<fields23, var::m_uint8_3>::type fields24;
+        private: typedef boost::mpl::push_front<fields24, var::m_uint8_2>::type fields25;
+        private: typedef boost::mpl::push_front<fields25, var::m_int64_max>::type fields26;
+        private: typedef boost::mpl::push_front<fields26, var::m_int64_4>::type fields27;
+        private: typedef boost::mpl::push_front<fields27, var::m_int32_max>::type fields28;
+        private: typedef boost::mpl::push_front<fields28, var::m_int32_4>::type fields29;
+        private: typedef boost::mpl::push_front<fields29, var::m_int16_5>::type fields30;
+        private: typedef boost::mpl::push_front<fields30, var::m_int16_4>::type fields31;
+        private: typedef boost::mpl::push_front<fields31, var::m_int8_5>::type fields32;
+        private: typedef boost::mpl::push_front<fields32, var::m_int8_4>::type fields33;
+        private: typedef boost::mpl::push_front<fields33, var::m_str_2>::type fields34;
+        private: typedef boost::mpl::push_front<fields34, var::m_str_1>::type fields35;
+        private: typedef boost::mpl::push_front<fields35, var::m_bool_3>::type fields36;
+        private: typedef boost::mpl::push_front<fields36, var::m_bool_2>::type fields37;
+        private: typedef boost::mpl::push_front<fields37, var::m_bool_1>::type fields38;
 
-        public: typedef fields36::type fields;
+        public: typedef fields38::type fields;
         
         
         static ::bond::Metadata GetMetadata()

@@ -13,6 +13,8 @@ enum EnumType1
     Int32Max = 2147483647,
     UInt32Min = 0,
     UInt32Max = 0xFFFFFFFF,
+    HexNeg = -0xFF,
+    OctNeg = -0o123,
 }
 
 struct Foo
@@ -66,4 +68,7 @@ struct Foo
 
     34: wstring m_wstr_1 = L"default wstring value";
     35: wstring m_wstr_2 = nothing;
+
+    36: int64 m_int64_neg_hex = -0xFFF;
+    37: int64 m_int64_neg_oct = - 0o123;
 }
