@@ -209,6 +209,10 @@ set (BOND_ENABLE_COMM
     "FALSE"
     CACHE BOOL "If FALSE, then do not build Comm")
 
+set (BOND_ENABLE_JAVA
+    "FALSE"
+    CACHE BOOL "If TRUE, then build Java libraries")
+
 set (BOND_SKIP_GBC_TESTS
     "FALSE"
     CACHE BOOL "If TRUE, then skip gbc tests")
