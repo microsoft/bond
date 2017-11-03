@@ -33,6 +33,14 @@ public:
         that._nothing = true;
     }
 
+    template <typename Allocator>
+    maybe(maybe&& that, const Allocator& alloc)
+        : _value(std::move(that._value), alloc),
+          _nothing(that._nothing)
+    {
+        that._nothing = true;
+    }
+
     maybe(const maybe& that) = default;
     maybe& operator=(const maybe& that) = default;
 
@@ -45,9 +53,15 @@ public:
     }
 
     template <typename Allocator>
-    explicit maybe(Allocator& alloc)
+    explicit maybe(const Allocator& alloc)
         : _value(alloc),
           _nothing(true)
+    {}
+
+    template <typename Allocator>
+    maybe(const maybe& that, const Allocator& alloc)
+        : _value(that._value, alloc),
+          _nothing(that._nothing)
     {}
 
     /// @brief Swap this object with that object

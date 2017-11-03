@@ -29,8 +29,9 @@ import qualified Language.Bond.Codegen.Cpp.Util as CPP
 types_h :: [String]     -- ^ list of optional header files to be @#include@'ed by the generated code
         -> Bool         -- ^ 'True' to generate enum definitions into a separate file /base_name/_enum.h
         -> Maybe String -- ^ optional custom allocator to be used in the generated code
+        -> Bool         -- ^ 'True' to generate constructors with allocator
         -> MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
-types_h userHeaders enumHeader allocator cpp file imports declarations = ("_types.h", [lt|
+types_h userHeaders enumHeader allocator alloc_ctors_enabled cpp file imports declarations = ("_types.h", [lt|
 #pragma once
 #{newlineBeginSep 0 includeHeader userHeaders}
 #include <bond/core/bond_version.h>
@@ -116,8 +117,8 @@ namespace std
     {
         #{newlineSepEnd 2 field structFields}#{defaultCtor}
 
-        #{copyCtor}
-        #{moveCtor}
+        #{copyCtor}#{ifThenElse alloc_ctors_enabled (optional allocatorCopyCtor allocator) mempty}
+        #{moveCtor}#{ifThenElse alloc_ctors_enabled (optional allocatorMoveCtor allocator) mempty}
         #{optional allocatorCtor allocator}
         #{assignmentOp}
 
@@ -269,6 +270,35 @@ namespace std
                 getAllocator BT_MetaFullName =  [lt|.get_allocator()|]
                 getAllocator _ = mempty
 
+        -- copy/move constructor with allocator
+        allocatorCopyOrMoveCtor otherParamDecl otherParamValue alloc = [lt|
+
+        #{declName}(#{otherParamDecl declName}#{otherParam}, const #{alloc}&#{allocParam})#{initList}#{ctorBody}|]
+          where
+            allocParam = if needAlloc alloc then [lt| allocator|] else mempty
+
+            initList = initializeList
+                (optional baseInit structBase)
+                (commaLineSep 3 fieldInit structFields)
+            baseInit b = [lt|#{cppType b}(#{otherParamValue $ L.pack otherParamName}, allocator)|]
+
+            fieldRef fieldName = [lt|#{otherParamName}.#{fieldName}|]
+            fieldInit Field {..} = [lt|#{fieldName}(#{otherParamValue $ fieldRef fieldName}#{allocInitValueText fieldType})|]
+
+            allocInitValueText fieldType = optional (\x -> [lt|, #{x}|])
+                $ allocInitValue fieldType
+            allocInitValue t@(BT_UserDefined a@Alias {} args)
+                | allocParameterized alloc t = allocInitValue (resolveAlias a args)
+                | otherwise = Nothing
+            allocInitValue (BT_Nullable t) = allocInitValue t
+            allocInitValue (BT_Maybe t) = allocInitValue t
+            allocInitValue t
+                | isList t || isMetaName t || isString t || isStruct t || isAssociative t = Just [lt|allocator|]
+                | otherwise = Nothing
+
+        -- copy constructor with allocator
+        allocatorCopyCtor alloc = allocatorCopyOrMoveCtor (\f -> [lt|const #{f}&|]) id alloc
+
         -- move constructor
         moveCtor = if hasMetaFields then [lt|
         #{explicit}|]
@@ -293,6 +323,9 @@ namespace std
             baseMove b = [lt|#{cppType b}(std::move(#{otherParamName}))|]
             fieldMove Field {..} = [lt|#{fieldName}(std::move(#{otherParamName}.#{fieldName}))|]
             param = if initList == mempty then mempty else ' ':otherParamName
+
+        -- move constructor with allocator
+        allocatorMoveCtor alloc = (allocatorCopyOrMoveCtor (\f -> [lt|#{f}&&|]) (\f -> [lt|std::move(#{f})|]) alloc)
 
         -- operator=
         assignmentOp = if hasMetaFields then define else implicitlyDeclared

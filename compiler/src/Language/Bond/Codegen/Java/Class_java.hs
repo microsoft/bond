@@ -235,13 +235,15 @@ makeStructBondTypeMember_StructBondTypeBuilderImpl declName declParams = [lt|
 
             @Override
             protected final #{typeDescriptorName declName} buildNewInstance(org.bondlib.BondType[] genericTypeArguments) {
-                return new StructBondTypeImpl(#{ifThenElse (null declParams) "null" "new org.bondlib.GenericTypeSpecialization(genericTypeArguments)"});
+                return new StructBondTypeImpl(#{ifThenElse (null declParams) nullText "new org.bondlib.GenericTypeSpecialization(genericTypeArguments)"});
             }
 
             static void register() {
                 registerStructType(#{declName}.class, new StructBondTypeBuilderImpl());
             }
         }|]
+    where
+        nullText = "null" :: Text
 
 
 -- given generic type parameters, struct fields, and base type, builds text for implementation of
@@ -581,7 +583,7 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
 
         @Override
         public final #{typeNameWithParams declName declParams} newInstance() {
-            return new #{typeNameWithParams declName declParams}(#{ifThenElse (null declParams) mempty "this"});
+            return new #{typeNameWithParams declName declParams}(#{ifThenElse (null declParams) mempty thisText});
         }
         #{makeStructBondTypeMember_serializeStructFields declName declParams structFields}
         #{makeStructBondTypeMember_deserializeStructFields_tagged declName declParams structFields}
@@ -630,5 +632,7 @@ public class #{typeNameWithParams declName declParams}#{maybe interface baseClas
                 publicConstructorDecl = if null declParams
                     then publicConstructorDeclForNonGenericStruct java declName structBase
                     else publicConstructorDeclForGenericStruct java declName declParams structBase
+
+                thisText = "this" :: Text
 
         typeDefinition _ = mempty

@@ -141,7 +141,7 @@ verifyFiles options baseName =
         [ (reflection_h export_attribute)
         , types_cpp
         , comm_cpp
-        , types_h header enum_header allocator
+        , types_h header enum_header allocator alloc_ctors_enabled
         ] <>
         [ enum_h | enum_header]
     templates Cs {..} =
@@ -158,6 +158,12 @@ verifyFiles options baseName =
         [ testGroup "custom allocator" $
             map (verify (cppCustomAllocTypeMapping "arena") "allocator")
                 (templates $ options { allocator = Just "arena" })
+            | isNothing allocator
+        ] ++
+        [
+          testGroup "constructors with allocator argument" $
+            map (verify (cppCustomAllocTypeMapping "arena") "alloc_ctors")
+                (templates $ options { allocator = Just "arena", alloc_ctors_enabled = True })
             | isNothing allocator
         ]
     extra Java {} =

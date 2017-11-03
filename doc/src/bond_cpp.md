@@ -1532,7 +1532,7 @@ such that all containers are declared to use a custom allocator type:
 
     gbc c++ --allocator=my::arena example.bond
 
-If the allocator is stateful, the application can pass a pointer to an
+If the allocator is stateful, the application can pass a const reference to an
 allocator instance to the struct constructor. The allocator will then be passed
 to constructors of all container fields and nested structs. During
 deserialization Bond will also make sure that any container elements are
@@ -1540,6 +1540,9 @@ constructed using the same allocator.
 
 The generated structs can use any allocator which implements the C++ Standard
 Library allocator concept.
+
+Additionally `--alloc-ctors` flag can be passed in order to generate additional
+copy and move constructors for the struct that would accept an allocator argument.
 
 Bond APIs which allocate memory also allow use of custom allocators. In
 particular `bond::OutputMemoryStream`, which can be used as output stream for
