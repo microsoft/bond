@@ -1,0 +1,13 @@
+namespace examples.scoped_allocator
+
+struct Strings
+{
+    0: vector<string> strings;
+}
+
+struct Struct
+{
+    0: vector<int32>    ints;
+    1: Strings          strings;
+    2: vector<Strings>  strings_vector;
+}

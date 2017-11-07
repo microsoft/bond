@@ -134,14 +134,14 @@ verifyFiles options baseName =
         else if fields
              then PublicFields
              else Properties
-    typeMapping Cpp {..} = maybe cppTypeMapping cppCustomAllocTypeMapping allocator
+    typeMapping Cpp {..} = maybe cppTypeMapping (cppCustomAllocTypeMapping scoped_alloc_enabled) allocator
     typeMapping Cs {} = csTypeMapping
     typeMapping Java {} = javaTypeMapping
     templates Cpp {..} =
         [ (reflection_h export_attribute)
         , types_cpp
         , comm_cpp
-        , types_h header enum_header allocator alloc_ctors_enabled
+        , types_h header enum_header allocator alloc_ctors_enabled scoped_alloc_enabled
         ] <>
         [ enum_h | enum_header]
     templates Cs {..} =
@@ -156,14 +156,18 @@ verifyFiles options baseName =
         ]
     extra Cpp {..} =
         [ testGroup "custom allocator" $
-            map (verify (cppCustomAllocTypeMapping "arena") "allocator")
+            map (verify (cppCustomAllocTypeMapping False "arena") "allocator")
                 (templates $ options { allocator = Just "arena" })
             | isNothing allocator
         ] ++
-        [
-          testGroup "constructors with allocator argument" $
-            map (verify (cppCustomAllocTypeMapping "arena") "alloc_ctors")
+        [ testGroup "constructors with allocator argument" $
+            map (verify (cppCustomAllocTypeMapping False "arena") "alloc_ctors")
                 (templates $ options { allocator = Just "arena", alloc_ctors_enabled = True })
+            | isNothing allocator
+        ] ++
+        [ testGroup "scoped allocator" $
+            map (verify (cppCustomAllocTypeMapping True "arena") "scoped_allocator")
+                (templates $ options { allocator = Just "arena", scoped_alloc_enabled = True })
             | isNothing allocator
         ]
     extra Java {} =

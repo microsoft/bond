@@ -1543,6 +1543,8 @@ Library allocator concept.
 
 Additionally `--alloc-ctors` flag can be passed in order to generate additional
 copy and move constructors for the struct that would accept an allocator argument.
+In order to simplify the allocator instance propagation to string and container
+fields, `--scoped-alloc` flag will take advantage of [`std::scoped_allocator_adaptor`](http://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor).
 
 Bond APIs which allocate memory also allow use of custom allocators. In
 particular `bond::OutputMemoryStream`, which can be used as output stream for
