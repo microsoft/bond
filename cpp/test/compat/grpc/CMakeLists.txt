@@ -49,15 +49,6 @@ target_link_libraries (cpp_grpc_compat_client PRIVATE
     grpc++
     ${Boost_CHRONO_LIBRARY})
 
-# TODO: It feels like the grpc++ target should have this as part of its
-# interface... Perhaps a patch for upstream?
-target_include_directories(cpp_grpc_compat_server
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../../../thirdparty/grpc/include
-)
-target_include_directories(cpp_grpc_compat_client
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../../../thirdparty/grpc/include
-)
-
 # disable generation of debug symbols to speed up build
 no_pdb()
 
