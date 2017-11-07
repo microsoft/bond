@@ -38,6 +38,12 @@ ln -s /root/.stack $SYMLINKED_HOME/.stack
 cd $BUILD_PATH
 
 case "$FLAVOR" in
+    cache)
+        cd /root/bond/compiler
+        stack --allow-different-user setup
+        stack --allow-different-user build --only-dependencies
+        ;;
+
     cpp-*)
         case "$FLAVOR" in
             cpp-core) BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE";;

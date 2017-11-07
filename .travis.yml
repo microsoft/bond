@@ -13,30 +13,26 @@ cache:
 services:
     - docker
 env:
-    - FLAVOR="cs"
-    - FLAVOR="cpp-core" BOOST="1.65.1" COMPILER="gcc"
-    - FLAVOR="cpp-core" BOOST="1.64.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.63.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.62.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.61.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.60.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.59.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.58.0" COMPILER="clang"
-    - FLAVOR="cpp-comm" BOOST="1.63.0" COMPILER="clang"
-    - FLAVOR="cpp-grpc" BOOST="1.65.1" COMPILER="gcc"
-    - FLAVOR="cpp-grpc" BOOST="1.64.0" COMPILER="clang"
-    - FLAVOR="cpp-grpc" BOOST="1.63.0" COMPILER="clang"
-    - FLAVOR="hs"
-    - FLAVOR="java"
+    global:
+        - BUILD_SCRIPT=tools/ci-scripts/linux/build_travis.sh
+jobs:
+    include:
+        - stage: Cache warm-up
+          script: $BUILD_SCRIPT cache
 
-before_install:
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
-    - pushd $HOME/docker-images
-    - travis_retry wget -N https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial.tar.gz
-    - popd
-    - time docker load -i $HOME/docker-images/bond-xenial.tar.gz
-
-script:
-    - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond bond-xenial $HOME $FLAVOR $BOOST $COMPILER
-    # docker runs as root and may leave files in the following directories that are not readable by the travis user
-    - sudo chown -R travis:travis $HOME/.ccache $HOME/.stack `pwd`
+        - stage: Build
+          script: $BUILD_SCRIPT cs
+        - script: $BUILD_SCRIPT cpp-core 1.65.1 gcc
+        - script: $BUILD_SCRIPT cpp-core 1.64.0 clang
+        - script: $BUILD_SCRIPT cpp-core 1.63.0 clang
+        - script: $BUILD_SCRIPT cpp-core 1.62.0 clang
+        - script: $BUILD_SCRIPT cpp-core 1.61.0 clang
+        - script: $BUILD_SCRIPT cpp-core 1.60.0 clang
+        - script: $BUILD_SCRIPT cpp-core 1.59.0 clang
+        - script: $BUILD_SCRIPT cpp-core 1.58.0 clang
+        - script: $BUILD_SCRIPT cpp-comm 1.63.0 clang
+        - script: $BUILD_SCRIPT cpp-grpc 1.65.1 gcc
+        - script: $BUILD_SCRIPT cpp-grpc 1.64.0 clang
+        - script: $BUILD_SCRIPT cpp-grpc 1.63.0 clang
+        - script: $BUILD_SCRIPT hs
+        - script: $BUILD_SCRIPT java
