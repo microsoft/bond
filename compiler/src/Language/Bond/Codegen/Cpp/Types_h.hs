@@ -87,9 +87,7 @@ types_h userHeaders enumHeader allocator alloc_ctors_enabled scoped_alloc_enable
 
     anyNullable = Any . isNullable
 
-    anyStringOrContainer t
-        | isString t || isMetaName t || isContainer t = Any True
-        | otherwise = Any False
+    anyStringOrContainer f = Any (isString f || isMetaName f || isContainer f)
 
     bondHeaders :: [(Bool, String)]
     bondHeaders = [
