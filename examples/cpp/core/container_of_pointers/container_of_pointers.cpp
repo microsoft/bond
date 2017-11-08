@@ -1,6 +1,9 @@
 #include <list>
 #include <memory>
 #include <bond/core/container_interface.h>
+#include "container_of_pointers_types.h"
+
+using namespace examples::container_of_pointers;
 
 namespace bond
 {
@@ -10,18 +13,18 @@ namespace bond
     // - element_type
     // - const_enumerator
     // - enumerator
-    template <typename T, typename A, template <typename T1, typename A1> class Container>
+    template <typename T>
     inline
     std::shared_ptr<T>
-    make_element(Container<std::shared_ptr<T>, A>&)
+    make_element(PtrList<T>&)
     {
         return std::shared_ptr<T>();
     }
 
     
     // element_type
-    template <typename T, typename A, template <typename T1, typename A1> class Container> struct 
-    element_type<Container<std::shared_ptr<T>, A> >
+    template <typename T> struct 
+    element_type<PtrList<T> >
     {
         // Since Bond doesn't understand shared_ptr, we present this as a container of T
         typedef T type;
@@ -29,13 +32,11 @@ namespace bond
 
     
     // const_enumerator
-    template <typename T, typename A, template <typename T1, typename A1> class Container>
-    class const_enumerator<Container<std::shared_ptr<T>, A> >
+    template <typename T>
+    class const_enumerator<PtrList<T> >
     {
-        typedef Container<std::shared_ptr<T>, A> List;
-
     public:
-        const_enumerator(const List& list)
+        const_enumerator(const PtrList<T>& list)
             : it(list.begin()),
               end(list.end())
         {}
@@ -52,18 +53,16 @@ namespace bond
         }
 
     private:
-        typename List::const_iterator it, end;
+        typename PtrList<T>::const_iterator it, end;
     };
 
 
     // enumerator
-    template <typename T, typename A, template <typename T1, typename A1> class Container>
-    class enumerator<Container<std::shared_ptr<T>, A> >
+    template <typename T>
+    class enumerator<PtrList<T> >
     {
-        typedef Container<std::shared_ptr<T>, A> List;
-
     public:
-        enumerator(List& list)
+        enumerator(PtrList<T>& list)
             : alloc(list.get_allocator()),
               it(list.begin()),
               end(list.end())
@@ -85,29 +84,29 @@ namespace bond
         }
 
     private:
+        static
         std::shared_ptr<T> 
-        new_value(const std::allocator<std::shared_ptr<T> >&) const
+        new_value(const std::allocator<std::shared_ptr<T> >&)
         {
             return std::make_shared<T>();
         }
 
         template <typename Alloc>
+        static
         std::shared_ptr<T> 
-        new_value(const Alloc& alloc) const
+        new_value(const Alloc& a)
         {
-            return std::allocate_shared<T>(alloc, &alloc);
+            return std::allocate_shared<T>(a, a);
         }
 
-        A alloc;
-        typename List::iterator it, end;
+        typename PtrList<T>::allocator_type alloc;
+        typename PtrList<T>::iterator it, end;
     };
 }
 
 #include <bond/core/bond.h>
 #include <bond/stream/output_buffer.h>
 #include "container_of_pointers_reflection.h"
-
-using namespace examples::container_of_pointers;
 
 int main()
 {

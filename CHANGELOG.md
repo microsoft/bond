@@ -12,7 +12,7 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased ##
-* `gbc` & compiler library: (minor bump already done in bond.cabal)
+* `gbc` & compiler library: (major bump already done in bond.cabal)
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: (major bump needed)
