@@ -33,10 +33,7 @@ add_library (grpc_test_common EXCLUDE_FROM_ALL "main.cpp")
 add_target_to_folder (grpc_test_common)
 target_include_directories (grpc_test_common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-    # TODO: It feels like the grpc++ target should have this as part of its
-    # interface... Perhaps a patch for upstream?
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../thirdparty/grpc/include)
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
 target_link_libraries (grpc_test_common PUBLIC
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     grpc++)
