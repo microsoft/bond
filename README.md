@@ -53,9 +53,8 @@ Following are specific instructions for building on various platforms.
 
 ### Linux
 
-Bond can be built with Clang (3.4+) or GNU C++ (4.7+). We recommend the
-latest version of Clang as it's much faster with template-heavy code like
-Bond.
+Bond must be built with C++11 compiler. We test with Clang (3.8) and GNU C++
+(5.4). We recommend Clang as it's faster with template-heavy code like Bond.
 
 Run the following commands to install the minimal set of packages needed to
 build the core Bond library on Ubuntu 14.04:
