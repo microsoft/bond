@@ -1542,7 +1542,7 @@ C* string_data(T&amp; str);
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">gbc c++ --allocator=my::arena example.bond</code></pre></td></tr></table></div>
 <p>If the allocator is stateful, the application can pass a const reference to an allocator instance to the struct constructor. The allocator will then be passed to constructors of all container fields and nested structs. During deserialization Bond will also make sure that any container elements are constructed using the same allocator.</p>
 <p>The generated structs can use any allocator which implements the C++ Standard Library allocator concept.</p>
-<p>Additionally <code>--alloc-ctors</code> flag can be passed in order to generate additional copy and move constructors for the struct that would accept an allocator argument.</p>
+<p>Additionally <code>--alloc-ctors</code> flag can be passed in order to generate additional copy and move constructors for the struct that would accept an allocator argument. In order to simplify the allocator instance propagation to string and container fields, <code>--scoped-alloc</code> flag will take advantage of <a href="http://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor"><code>std::scoped_allocator_adaptor</code></a>.</p>
 <p>Bond APIs which allocate memory also allow use of custom allocators. In particular <code>bond::OutputMemoryStream</code>, which can be used as output stream for Bond serialization, can allocate the memory blobs for serialized payload with a user specified allocator.</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
