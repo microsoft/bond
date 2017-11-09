@@ -1272,6 +1272,7 @@ Field(<span class="dt">uint16_t</span>, <span class="at">const</span> bond::Meta
 <p>The above command will add the following statement at the top of the generated header file <code>time_types.h</code>:</p>
 <div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 </pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="pp">#include </span><span class="im">&lt;time_alias.h&gt;</span></code></pre></td></tr></table></div>
+<p>Additionally <code>--type-aliases</code> flag can be used to generate corresponding C++ <a href="http://en.cppreference.com/w/cpp/language/type_alias">type aliases</a> in <code>time_types.h</code>.</p>
 <h2 id="container-concept">Container concept</h2>
 <p>The custom container concept defined in <code>bond/core/container_interface.h</code> serves as an interface between a custom container type and Bond. The concept consists of compile-time meta-function (traits) that need to be specialized for the custom container type and overloaded free functions which implement the runtime interaction with the container instances. The concept forms a non-intrusive interface, which can be provided for any type without changes to its implementation.</p>
 <p>The first step is to identify a type as an appropriate container by specializing one of the following traits:</p>
