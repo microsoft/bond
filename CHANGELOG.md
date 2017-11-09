@@ -29,7 +29,10 @@ different versioning scheme, following the Haskell community's
 * C++ codegen now can generate copy and move constructors with an allocator argument
   when a custom allocator is used and `--alloc-ctors` is passed to `gbc`.
 * C++ codegen now can generate [type aliases](http://en.cppreference.com/w/cpp/language/type_alias)
- that correspond to ones in IDL when `--type-aliases` flag is passed to `gbc`.
+  that correspond to ones in IDL when `--type-aliases` flag is passed to `gbc`.
+* C++ codegen now can use [`std::scoped_allocator_adaptor`](http://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor)
+  for strings and containers when custom allocator is used and `--scoped-alloc` flag
+  is passed to `gbc`.
 
 ### C++ ###
 

@@ -31,8 +31,9 @@ types_h :: [String]     -- ^ list of optional header files to be @#include@'ed b
         -> Maybe String -- ^ optional custom allocator to be used in the generated code
         -> Bool         -- ^ 'True' to generate constructors with allocator
         -> Bool         -- ^ 'True' to generate type aliases
+        -> Bool         -- ^ 'True' to use std::scoped_allocator_adaptor for strings and containers
         -> MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
-types_h userHeaders enumHeader allocator alloc_ctors_enabled type_aliases_enabled cpp file imports declarations = ("_types.h", [lt|
+types_h userHeaders enumHeader allocator alloc_ctors_enabled type_aliases_enabled scoped_alloc_enabled cpp file imports declarations = ("_types.h", [lt|
 #pragma once
 #{newlineBeginSep 0 includeHeader userHeaders}
 #include <bond/core/bond_version.h>
@@ -95,11 +96,14 @@ types_h userHeaders enumHeader allocator alloc_ctors_enabled type_aliases_enable
 
     anyNullable = Any . isNullable
 
+    anyStringOrContainer f = Any (isString f || isMetaName f || isContainer f)
+
     bondHeaders :: [(Bool, String)]
     bondHeaders = [
         (have anyNullable, "<bond/core/nullable.h>"),
         (have anyBonded, "<bond/core/bonded.h>"),
-        (have anyBlob, "<bond/core/blob.h>")]
+        (have anyBlob, "<bond/core/blob.h>"),
+        (scoped_alloc_enabled && have anyStringOrContainer, "<scoped_allocator>")]
 
     usesAllocatorSpecialization alloc = [lt|
 namespace std
