@@ -12,7 +12,7 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased ##
-* `gbc` & compiler library: (minor bump already done in bond.cabal)
+* `gbc` & compiler library: (major bump already done in bond.cabal)
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: (major bump needed)
@@ -28,17 +28,20 @@ different versioning scheme, following the Haskell community's
   accepting `Comparer` for associative containers.
 * C++ codegen now can generate copy and move constructors with an allocator argument
   when a custom allocator is used and `--alloc-ctors` is passed to `gbc`.
+* C++ codegen now can generate [type aliases](http://en.cppreference.com/w/cpp/language/type_alias)
+  that correspond to ones in IDL when `--type-aliases` flag is passed to `gbc`.
 * C++ codegen now can use [`std::scoped_allocator_adaptor`](http://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor)
   for strings and containers when custom allocator is used and `--scoped-alloc` flag
   is passed to `gbc`.
 
 ### C++ ###
 
+* **Breaking change** Constructors accepting a `Comparer` have been removed from
+  `bond::maybe` and `bond::nullable` types.
 * The CMake build now enforces a minimum Boost version of 1.58. The build
   has required Boost 1.58 or later since version 5.2.0, but this was not
   enforced.
-* **Breaking change** Constructors accepting a `Comparer` have been removed from
-  `bond::maybe` and `bond::nullable` types.
+* gRPC v1.7.1 is now required to use Bond-over-gRPC.
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0

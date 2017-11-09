@@ -5,6 +5,7 @@ using Vector<T> = vector<T>;
 using Set<T> = set<T>;
 using Map<K, T> = map<K, T>;
 using String = string;
+using NestedAliases = Set<List<Map<int32, String>>>;
 
 struct foo
 {
@@ -19,6 +20,7 @@ struct foo
     12: Set<bool> s1 = nothing;
     13: Map<String, bool> m1 = nothing;
     14: String st1 = nothing;
+    15: NestedAliases na;
 }
 
 using TheFoo = foo;

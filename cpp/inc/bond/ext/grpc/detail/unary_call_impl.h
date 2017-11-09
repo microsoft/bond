@@ -5,7 +5,13 @@
 
 #ifdef _MSC_VER
     #pragma warning (push)
-    #pragma warning (disable: 4100 4702)
+    // warning C4100: unreferenced formal parameter
+    //
+    // warning C4291: no matching operator delete found; memory will not be
+    // freed if initialization throws an exception
+    //
+    // warning C4702: unreachable code
+    #pragma warning (disable: 4100 4291 4702)
 #endif
 
 #include <grpc++/grpc++.h>

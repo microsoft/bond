@@ -92,7 +92,8 @@ struct client_unary_call_data
                 _ioManager->cq(),
                 method,
                 _callbackArgs.context.get(),
-                request));
+                request,
+                /* start */ true));
 
         _self = this->shared_from_this();
 

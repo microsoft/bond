@@ -17,6 +17,8 @@ int main()
       "it 'and what is the use of a book' thought Alice 'without pictures or "
       "conversation?'";
 
+    using examples::string_ref::string_ref;
+
     // Create a vector of string_refs, each pointing to a word in the source
     // text. Using boost::string_ref instead of std::string avoid allocating
     // and coping memory.
@@ -26,7 +28,7 @@ int main()
     {
         if (*end == ' ' || *end == '\x0')
         {
-            obj.words.push_back(boost::string_ref(begin, end - begin));
+            obj.words.push_back(string_ref(begin, end - begin));
             begin = end + 1;
             if (*end == '\x0')
                 break;

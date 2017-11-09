@@ -30,9 +30,10 @@ types_h :: [String]     -- ^ list of optional header files to be @#include@'ed b
         -> Bool         -- ^ 'True' to generate enum definitions into a separate file /base_name/_enum.h
         -> Maybe String -- ^ optional custom allocator to be used in the generated code
         -> Bool         -- ^ 'True' to generate constructors with allocator
+        -> Bool         -- ^ 'True' to generate type aliases
         -> Bool         -- ^ 'True' to use std::scoped_allocator_adaptor for strings and containers
         -> MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
-types_h userHeaders enumHeader allocator alloc_ctors_enabled scoped_alloc_enabled cpp file imports declarations = ("_types.h", [lt|
+types_h userHeaders enumHeader allocator alloc_ctors_enabled type_aliases_enabled scoped_alloc_enabled cpp file imports declarations = ("_types.h", [lt|
 #pragma once
 #{newlineBeginSep 0 includeHeader userHeaders}
 #include <bond/core/bond_version.h>
@@ -51,13 +52,21 @@ types_h userHeaders enumHeader allocator alloc_ctors_enabled scoped_alloc_enable
 #{includeEnum}
 #{newlineSepEnd 0 includeImport imports}
 #{CPP.openNamespace cpp}
-    #{doubleLineSep 1 typeDeclaration declarations}
+    #{doubleLineSepEnd 1 id $ catMaybes $ aliasDeclarations}#{doubleLineSep 1 typeDeclaration declarations}
 #{CPP.closeNamespace cpp}
 #{optional usesAllocatorSpecialization allocator}
 |])
   where
+    aliasDeclarations = if type_aliases_enabled then map aliasDeclName declarations else []
+
+    aliasDeclName a@Alias {..} = Just [lt|#{CPP.template a}using #{declName} = #{getAliasDeclTypeName cpp a};|]
+    aliasDeclName _ = Nothing
+
     hexVersion (Version xs _) = foldr showHex "" xs
     cppType = getTypeName cpp
+
+    cppExpandAliases = if type_aliases_enabled then cpp { typeMapping = cppExpandAliasesTypeMapping $ typeMapping cpp } else cpp
+    cppTypeExpandAliases = getTypeName cppExpandAliases
 
     idl = MappingContext idlTypeMapping [] [] []
 
@@ -210,7 +219,7 @@ namespace std
         }|]
 
         needAlloc alloc = isJust structBase || any (allocParameterized alloc . fieldType) structFields
-        allocParameterized alloc t = (isStruct t) || (L.isInfixOf (L.pack alloc) . toLazyText $ cppType t)
+        allocParameterized alloc t = (isStruct t) || (L.isInfixOf (L.pack alloc) $ toLazyText $ cppTypeExpandAliases t)
 
         -- default constructor
         defaultCtor = [lt|

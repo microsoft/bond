@@ -42,6 +42,7 @@ data Options
         , comm_enabled :: Bool
         , grpc_enabled :: Bool
         , alloc_ctors_enabled :: Bool
+        , type_aliases_enabled :: Bool
         , scoped_alloc_enabled :: Bool
         , service_inheritance_enabled :: Bool
         }
@@ -98,6 +99,7 @@ cpp = Cpp
     , comm_enabled = False &= explicit &= name "comm" &= help "Generate comm definitions"
     , grpc_enabled = False &= explicit &= name "grpc" &= help "Generate gRPC definitions"
     , alloc_ctors_enabled = False &= explicit &= name "alloc-ctors" &= help "Generate constructors with allocator argument"
+    , type_aliases_enabled = False &= explicit &= name "type-aliases" &= help "Generate type aliases"
     , scoped_alloc_enabled = False &= explicit &= name "scoped-alloc" &= help "Use std::scoped_allocator_adaptor for strings and containers"
     , service_inheritance_enabled = False &= explicit &= name "enable-service-inheritance" &= help "Enable service inheritance syntax in IDL"
     } &=

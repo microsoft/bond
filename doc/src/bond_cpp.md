@@ -1313,6 +1313,9 @@ header file `time_types.h`:
 
     #include <time_alias.h>
 
+Additionally `--type-aliases` flag can be used to generate corresponding C++
+[type aliases](http://en.cppreference.com/w/cpp/language/type_alias) in `time_types.h`.
+
 Container concept
 -----------------
 
