@@ -170,7 +170,7 @@ verifyFiles options baseName =
                 (templates $ options { allocator = Just "arena", type_aliases_enabled = True })
         ] ++
         [ testGroup "scoped allocator" $
-            map (verify (cppCustomAllocTypeMapping True "arena") "scoped_allocator")
+            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping True "arena") "scoped_allocator")
                 (templates $ options { allocator = Just "arena", scoped_alloc_enabled = True })
             | isNothing allocator
         ]
