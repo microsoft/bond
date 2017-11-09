@@ -23,6 +23,7 @@ module Language.Bond.Codegen.TypeMapping
     , idlTypeMapping
     , cppTypeMapping
     , cppCustomAllocTypeMapping
+    , cppExpandAliasesTypeMapping
     , csTypeMapping
     , csCollectionInterfacesTypeMapping
     , javaTypeMapping
@@ -55,6 +56,7 @@ module Language.Bond.Codegen.TypeMapping
       -- * TypeMapping helper functions
     , elementTypeName
     , aliasTypeName
+    , getAliasDeclTypeName
     , declTypeName
     , declQualifiedTypeName
     ) where
@@ -122,6 +124,11 @@ getTypeName c t = fix' $ runReader (typeName t) c
   where
     fix' = fixSyntax $ typeMapping c
 
+getAliasDeclTypeName :: MappingContext -> Declaration -> Builder
+getAliasDeclTypeName c d = fix' $ runReader (aliasDeclTypeName d) c
+  where
+    fix' = fixSyntax $ typeMapping c
+
 -- | Builds the name to be used when instantiating a 'Type'. The instance type
 -- name may be different than the type name returned by 'getTypeName' when the
 -- latter is an interface.
@@ -179,6 +186,14 @@ cppCustomAllocTypeMapping alloc = TypeMapping
     (cppCustomAllocTypeMapping alloc)
     (cppCustomAllocTypeMapping alloc)
     (cppCustomAllocTypeMapping alloc)
+
+cppExpandAliasesTypeMapping :: TypeMapping -> TypeMapping
+cppExpandAliasesTypeMapping m = m
+    { mapType = cppTypeExpandAliases $ mapType m
+    , instanceMapping = cppExpandAliasesTypeMapping $ instanceMapping m
+    , elementMapping = cppExpandAliasesTypeMapping $ elementMapping m
+    , annotatedMapping = cppExpandAliasesTypeMapping $ annotatedMapping m
+    }
 
 -- | The default C# type name mapping.
 csTypeMapping :: TypeMapping
@@ -334,6 +349,17 @@ aliasTypeName a args = do
     fragment (Fragment s) = pureText s
     fragment (Placeholder i) = typeName $ args !! i
 
+aliasDeclTypeName :: Declaration -> TypeNameBuilder
+aliasDeclTypeName a@Alias {..} = do
+    ctx <- ask
+    case findAliasMapping ctx a of
+        Just AliasMapping {..} -> foldr ((<<>>) . fragment) (pure mempty) aliasTemplate
+        Nothing -> typeName aliasType
+  where
+    fragment (Fragment s) = pureText s
+    fragment (Placeholder i) = pureText $ paramName $ declParams !! i
+aliasDeclTypeName _ = error "aliasDeclTypeName: impossible happened."
+
 -- | Builder for the type alias element name in context of 'TypeNameBuilder' monad.
 aliasElementTypeName :: Declaration -> [Type] -> TypeNameBuilder
 aliasElementTypeName a args = do
@@ -402,7 +428,6 @@ cppType (BT_Set element) = "std::set<" <>> elementTypeName element <<> ">"
 cppType (BT_Map key value) = "std::map<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> ">"
 cppType (BT_Bonded type_) = "::bond::bonded<" <>> elementTypeName type_ <<> ">"
 cppType (BT_TypeParam param) = pureText $ paramName param
-cppType (BT_UserDefined a@Alias {..} args) = aliasTypeName a args
 cppType (BT_UserDefined decl args) = declQualifiedTypeName decl <<>> (angles <$> commaSepTypeNames args)
 
 -- C++ type mapping with custom allocator
@@ -418,6 +443,10 @@ cppTypeCustomAlloc alloc (BT_Vector element) = "std::vector<" <>> elementTypeNam
 cppTypeCustomAlloc alloc (BT_Set element) = "std::set<" <>> elementTypeName element <<>> comparer element <<>> allocator alloc element <<> ">"
 cppTypeCustomAlloc alloc (BT_Map key value) = "std::map<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<>> comparer key <<>> pairAllocator alloc key value <<> ">"
 cppTypeCustomAlloc _ t = cppType t
+
+cppTypeExpandAliases :: (Type -> TypeNameBuilder) -> Type -> TypeNameBuilder
+cppTypeExpandAliases _ (BT_UserDefined a@Alias {..} args) = aliasTypeName a args
+cppTypeExpandAliases m t = m t
 
 comparer :: Type -> TypeNameBuilder
 comparer t = ", std::less<" <>> elementTypeName t <<> ">, "

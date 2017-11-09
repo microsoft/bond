@@ -73,7 +73,7 @@ verifyApplyCodegen args baseName =
 verifyExportsCodegen :: [String] -> FilePath -> TestTree
 verifyExportsCodegen args baseName =
     testGroup baseName $
-        map (verifyFile options baseName cppTypeMapping "exports") templates
+        map (verifyFile options baseName (cppExpandAliases (type_aliases_enabled options) cppTypeMapping) "exports") templates
   where
     options = processOptions args
     templates =
@@ -84,7 +84,7 @@ verifyExportsCodegen args baseName =
 verifyCppCommCodegen :: [String] -> FilePath -> TestTree
 verifyCppCommCodegen args baseName =
     testGroup baseName $
-        map (verifyFile options baseName cppTypeMapping "") templates
+        map (verifyFile options baseName (cppExpandAliases (type_aliases_enabled options) cppTypeMapping) "") templates
   where
     options = processOptions args
     templates =
@@ -96,7 +96,7 @@ verifyCppCommCodegen args baseName =
 verifyCppGrpcCodegen :: [String] -> FilePath -> TestTree
 verifyCppGrpcCodegen args baseName =
     testGroup baseName $
-        map (verifyFile options baseName cppTypeMapping "") templates
+        map (verifyFile options baseName (cppExpandAliases (type_aliases_enabled options) cppTypeMapping) "") templates
   where
     options = processOptions args
     templates =
@@ -134,14 +134,14 @@ verifyFiles options baseName =
         else if fields
              then PublicFields
              else Properties
-    typeMapping Cpp {..} = maybe cppTypeMapping cppCustomAllocTypeMapping allocator
+    typeMapping Cpp {..} = cppExpandAliases type_aliases_enabled $ maybe cppTypeMapping cppCustomAllocTypeMapping allocator
     typeMapping Cs {} = csTypeMapping
     typeMapping Java {} = javaTypeMapping
     templates Cpp {..} =
         [ (reflection_h export_attribute)
         , types_cpp
         , comm_cpp
-        , types_h header enum_header allocator alloc_ctors_enabled
+        , types_h header enum_header allocator alloc_ctors_enabled type_aliases_enabled
         ] <>
         [ enum_h | enum_header]
     templates Cs {..} =
@@ -156,15 +156,18 @@ verifyFiles options baseName =
         ]
     extra Cpp {..} =
         [ testGroup "custom allocator" $
-            map (verify (cppCustomAllocTypeMapping "arena") "allocator")
+            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping "arena") "allocator")
                 (templates $ options { allocator = Just "arena" })
             | isNothing allocator
         ] ++
-        [
-          testGroup "constructors with allocator argument" $
-            map (verify (cppCustomAllocTypeMapping "arena") "alloc_ctors")
+        [ testGroup "constructors with allocator argument" $
+            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping "arena") "alloc_ctors")
                 (templates $ options { allocator = Just "arena", alloc_ctors_enabled = True })
             | isNothing allocator
+        ] ++
+        [ testGroup "type aliases" $
+            map (verify (cppCustomAllocTypeMapping "arena") "type_aliases")
+                (templates $ options { allocator = Just "arena", type_aliases_enabled = True })
         ]
     extra Java {} =
         [
@@ -202,3 +205,8 @@ javaCatTemplate mappingContext _ imports declarations =
           Struct {} -> Just $ class_java mappingContext imports declaration
           Enum {}   -> Just $ enum_java mappingContext declaration
           _         -> Nothing
+
+cppExpandAliases :: Bool -> TypeMapping -> TypeMapping
+cppExpandAliases type_aliases_enabled = if type_aliases_enabled
+    then id
+    else cppExpandAliasesTypeMapping

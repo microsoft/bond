@@ -12,7 +12,7 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased ##
-* `gbc` & compiler library: (minor bump already done in bond.cabal)
+* `gbc` & compiler library: (major bump already done in bond.cabal)
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: (major bump needed)
@@ -28,6 +28,8 @@ different versioning scheme, following the Haskell community's
   accepting `Comparer` for associative containers.
 * C++ codegen now can generate copy and move constructors with an allocator argument
   when a custom allocator is used and `--alloc-ctors` is passed to `gbc`.
+* C++ codegen now can generate [type aliases](http://en.cppreference.com/w/cpp/language/type_alias)
+ that correspond to ones in IDL when `--type-aliases` flag is passed to `gbc`.
 
 ### C++ ###
 

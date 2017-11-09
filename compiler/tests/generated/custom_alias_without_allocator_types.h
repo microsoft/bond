@@ -32,6 +32,7 @@ namespace test
         ::bond::maybe<my::set<bool> > s1;
         ::bond::maybe<my::map<my::string, bool> > m1;
         ::bond::maybe<my::string> st1;
+        my::set<my::list<my::map<int32_t, my::string> > > na;
         
         foo()
           : l(),
@@ -39,7 +40,8 @@ namespace test
             s(),
             m(),
             st(),
-            d("foo")
+            d("foo"),
+            na()
         {
         }
 
@@ -59,7 +61,8 @@ namespace test
             v1(std::move(other.v1)),
             s1(std::move(other.s1)),
             m1(std::move(other.m1)),
-            st1(std::move(other.st1))
+            st1(std::move(other.st1)),
+            na(std::move(other.na))
         {
         }
 #else
@@ -78,7 +81,8 @@ namespace test
             v1(),
             s1(),
             m1(),
-            st1()
+            st1(),
+            na()
         {
         }
         
@@ -108,7 +112,8 @@ namespace test
                 && (v1 == other.v1)
                 && (s1 == other.s1)
                 && (m1 == other.m1)
-                && (st1 == other.st1);
+                && (st1 == other.st1)
+                && (na == other.na);
         }
 
         bool operator!=(const foo& other) const
@@ -130,6 +135,7 @@ namespace test
             swap(s1, other.s1);
             swap(m1, other.m1);
             swap(st1, other.st1);
+            swap(na, other.na);
         }
 
         struct Schema;
