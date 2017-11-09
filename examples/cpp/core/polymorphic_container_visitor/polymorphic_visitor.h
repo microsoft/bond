@@ -2,6 +2,9 @@
 
 #include <bond/core/bond.h>
 
+#include <boost/mpl/map.hpp>
+#include <type_traits>
+
 namespace polymorphic
 {
 
@@ -18,16 +21,16 @@ namespace detail
               _visitor(visitor)
         {}
 
-        template <typename U>
-        void operator()(const U*) const
+        Resolver& operator=(const Resolver&) = delete;
+
+        template <typename Pair>
+        void operator()(Pair) const
         {
-            if (U::Schema::metadata.qualified_name == Field::GetVariable(_base))
-                _visitor(bond::bonded<U>(_polymorphic));
+            if (Pair::first::value == Field::GetVariable(_base))
+                _visitor(bond::bonded<typename Pair::second>(_polymorphic));
         }
 
     private:
-        Resolver& operator=(const Resolver&);
-
         const T&                _base;
         const bond::bonded<T>&  _polymorphic;
         const Visitor&          _visitor;
@@ -38,22 +41,21 @@ namespace detail
 
 
 
-// Generic function which resolves a polymorphic object to one of the specified
-// Types using a bond_meta field Field and calls visitor with bonded<T> casted 
-// to the resolved type.
-template <typename Types, typename Field, typename T, typename Visitor>
-void Apply(const Visitor& visitor, const bond::bonded<T>& polymorphic)
+// Generic function which resolves a polymorphic object to one of the
+// specified types in TypeMap using an enum Field and calls visitor with
+// bonded<T> casted to the resolved type.
+//
+// TypeMap is expected to be a Boost MPL map of
+// std::integral_constant<Field::FieldType> to Type.
+template <typename TypeMap, typename Field, typename Visitor, typename Base>
+void Apply(const Visitor& visitor, const bond::bonded<Base>& polymorphic)
 {
-    using boost::mpl::_;
-
-    T base;
-    detail::Resolver<Field, T, Visitor> resolver(base, polymorphic, visitor);
-
-    typedef typename boost::mpl::transform<Types, boost::add_pointer<_> >::type TypePtr;
+    Base base;
+    detail::Resolver<Field, Base, Visitor> resolver(base, polymorphic, visitor);
 
     polymorphic.Deserialize(base);
-    boost::mpl::for_each<TypePtr>(resolver);
+    boost::mpl::for_each<TypeMap>(resolver);
 }
- 
+
 
 } // namespace polymorphic
