@@ -9,14 +9,14 @@ namespace bond
     {
         template <typename Transform, typename Enable = void> struct 
         need_double_pass
-            : false_type {};
+            : std::false_type {};
 
         template <typename Transform> struct 
         need_double_pass<
             Transform, 
-            typename boost::enable_if_c<!is_same<typename Transform::writer_type, 
+            typename boost::enable_if_c<!std::is_same<typename Transform::writer_type, 
                                                  typename Transform::writer_type::Pass0>::value>::type
-        > : true_type {};
+        > : std::true_type {};
 
         template <typename Protocols, typename Transform, typename T>
         inline bool DoublePassApply(const Transform& transform, const T& value)

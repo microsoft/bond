@@ -18,27 +18,6 @@
 namespace bond
 {
 
-using std::false_type;
-using std::is_arithmetic;
-using std::is_base_of;
-using std::is_class;
-using std::is_enum;
-using std::is_floating_point;
-using std::is_integral;
-using std::is_nothrow_move_constructible;
-using std::is_object;
-using std::is_pod;
-using std::is_reference;
-using std::is_same;
-using std::is_signed;
-using std::is_unsigned;
-using std::is_void;
-using std::make_signed;
-using std::make_unsigned;
-using std::remove_const;
-using std::remove_reference;
-using std::true_type;
-
 // version of is_nothrow_copy_constructible/has_nothrow_copy_constructor
 // that works across C++03 and C++11 and later: we just delegate to Boost,
 // but use the modern name and put it in the bond namespace
@@ -50,9 +29,9 @@ struct is_nothrow_copy_constructible : boost::has_nothrow_copy_constructor<T> {}
 template <typename T> struct
 is_signed_int
     : std::integral_constant<bool,
-        is_signed<T>::value
-        && !is_floating_point<T>::value
-        && !is_enum<T>::value> {};
+        std::is_signed<T>::value
+        && !std::is_floating_point<T>::value
+        && !std::is_enum<T>::value> {};
 
 
 // is_signed_int_or_enum
@@ -60,7 +39,7 @@ template <typename T> struct
 is_signed_int_or_enum
     : std::integral_constant<bool,
         is_signed_int<T>::value
-        || is_enum<T>::value> {};
+        || std::is_enum<T>::value> {};
 
 
 // schema
@@ -68,7 +47,7 @@ template <typename T, typename Enable = void> struct
 schema;
 
 template <typename T> struct
-schema<T, typename boost::enable_if<is_class<typename T::Schema::fields> >::type>
+schema<T, typename boost::enable_if<std::is_class<typename T::Schema::fields> >::type>
 {
     typedef typename T::Schema type;
 };
@@ -77,34 +56,34 @@ schema<T, typename boost::enable_if<is_class<typename T::Schema::fields> >::type
 // has_schema
 template <typename T, typename Enable = void> struct
 has_schema
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct
-has_schema<T, typename boost::enable_if<is_class<typename schema<T>::type> >::type>
-    : true_type {};
+has_schema<T, typename boost::enable_if<std::is_class<typename schema<T>::type> >::type>
+    : std::true_type {};
 
 
 // is_protocol_same
 template <typename Reader, typename Writer> struct
 is_protocol_same
-    : false_type {};
+    : std::false_type {};
 
 
 template <template <typename T> class Reader, typename Input, template <typename T> class Writer, typename Output> struct
 is_protocol_same<Reader<Input>, Writer<Output> >
-    : is_same<typename Reader<Output>::Writer, Writer<Output> > {};
+    : std::is_same<typename Reader<Output>::Writer, Writer<Output> > {};
 
 
 template <template <typename T, typename U> class Reader, typename Input, typename MarshaledBondedProtocols, template <typename T> class Writer, typename Output> struct
 is_protocol_same<Reader<Input, MarshaledBondedProtocols>, Writer<Output> >
-    : is_same<typename Reader<Output, MarshaledBondedProtocols>::Writer, Writer<Output> > {};
+    : std::is_same<typename Reader<Output, MarshaledBondedProtocols>::Writer, Writer<Output> > {};
 
 
 // For protocols that have multiple versions, specialize this template...
 template <typename Reader> struct
 protocol_has_multiple_versions
-    : false_type {};
+    : std::false_type {};
 
 
 // ... and overload this function.
@@ -122,7 +101,7 @@ bool is_protocol_version_same(const Reader&, const Writer&)
 // optimizations, e.g. fast pass-through w/o checking version at runtime.
 template <typename Reader> struct
 enable_protocol_versions
-    : true_type {};
+    : std::true_type {};
 
 
 // get_protocol_writer
@@ -144,17 +123,17 @@ get_protocol_writer<Reader<Input, MarshaledBondedProtocols>, Output>
 
 template <typename T, T> struct
 check_method
-    : true_type {};
+    : std::true_type {};
 
 
 template <typename T> struct
 is_bonded
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T, typename Reader> struct
 is_bonded<bonded<T, Reader> >
-    : true_type {};
+    : std::true_type {};
 
 
 template <typename Reader, typename Unused = void> struct
@@ -164,21 +143,21 @@ uses_marshaled_bonded;
 // is_type_alias
 template <typename T> struct
 is_type_alias
-    : is_object<typename aliased_type<T>::type> {};
+    : std::is_object<typename aliased_type<T>::type> {};
 
 
 // is_reader
 template <typename Input, typename T = void, typename Enable = void> struct
 is_reader
-    : false_type {};
+    : std::false_type {};
 
 template <typename Input, typename T> struct
 is_reader<Input&, T>
     : is_reader<Input, T> {};
 
 template <typename Input, typename T> struct
-is_reader<Input, T, typename boost::enable_if<is_class<typename Input::Parser> >::type>
-    : true_type {};
+is_reader<Input, T, typename boost::enable_if<std::is_class<typename Input::Parser> >::type>
+    : std::true_type {};
 
 
 template <typename T> struct
@@ -207,11 +186,11 @@ namespace detail
 
 template<typename A>
 struct is_default_allocator
-    : false_type { };
+    : std::false_type { };
 
 template<typename T>
 struct is_default_allocator<std::allocator<T> >
-    : true_type { };
+    : std::true_type { };
 
 } // namespace detail
 

@@ -224,7 +224,7 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
 
 
 template <typename Protocols, typename T, typename Reader>
-typename boost::enable_if<is_same<bool, typename element_type<T>::type> >::type
+typename boost::enable_if<std::is_same<bool, typename element_type<T>::type> >::type
 inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t size)
 {
     switch (type)
@@ -281,7 +281,7 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
 
 
 template <typename Protocols, typename T, typename Reader>
-typename boost::enable_if<is_floating_point<typename element_type<T>::type> >::type
+typename boost::enable_if<std::is_floating_point<typename element_type<T>::type> >::type
 inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t size)
 {
     switch (type)
@@ -383,7 +383,7 @@ inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& 
 
 
 template <typename Protocols, typename T, typename E, typename Reader>
-typename boost::enable_if<is_same<bool, typename element_type<T>::type::first_type> >::type
+typename boost::enable_if<std::is_same<bool, typename element_type<T>::type::first_type> >::type
 inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& input, uint32_t size)
 {
     switch (keyType)
@@ -449,7 +449,7 @@ inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& 
 
 
 template <typename Protocols, typename T, typename E, typename Reader>
-typename boost::enable_if<is_floating_point<typename element_type<T>::type::first_type> >::type
+typename boost::enable_if<std::is_floating_point<typename element_type<T>::type::first_type> >::type
 inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& input, uint32_t size)
 {
     switch (keyType)
@@ -684,7 +684,7 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
 
 
 template <typename Protocols, typename T, typename Reader>
-typename boost::enable_if<is_same<bool, typename element_type<T>::type::second_type> >::type
+typename boost::enable_if<std::is_same<bool, typename element_type<T>::type::second_type> >::type
 inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementType, Reader& input, uint32_t size)
 {
     switch (elementType)
@@ -750,7 +750,7 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
 
 
 template <typename Protocols, typename T, typename Reader>
-typename boost::enable_if<is_floating_point<typename element_type<T>::type::second_type> >::type
+typename boost::enable_if<std::is_floating_point<typename element_type<T>::type::second_type> >::type
 inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementType, Reader& input, uint32_t size)
 {
     switch (elementType)

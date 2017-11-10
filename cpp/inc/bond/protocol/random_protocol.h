@@ -81,12 +81,7 @@ public:
     typename boost::disable_if<is_string_type<T> >::type
     Read(T& value)
     {
-        // T needs to be trivially copyable to use std::memcpy.
-        // std::is_trivially_copyable isn't available until C++11, so we use
-        // bond::is_arithmetic instead. This works, because we only ever
-        // read arithmetic types in this version of Read(), so we don't need
-        // the full generality.
-        BOOST_STATIC_ASSERT(bond::is_arithmetic<T>::value);
+        BOOST_STATIC_ASSERT(std::is_trivially_copyable<T>::value);
         // We only have 64 bits of randomness, so T needs to fit in that.
         BOOST_STATIC_ASSERT(sizeof(T) <= sizeof(uint64_t));
 
@@ -219,10 +214,10 @@ private:
 
 template <typename Unused> struct
 uses_marshaled_bonded<RandomProtocolReader, Unused>
-    : boost::false_type {};
+    : std::false_type {};
 
 template <typename Unused> struct
 uses_marshaled_bonded<RandomProtocolReader&, Unused>
-    : boost::false_type {};
+    : std::false_type {};
 
 }

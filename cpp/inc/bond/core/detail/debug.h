@@ -29,7 +29,7 @@ public:
 
     template <typename Field>
     typename boost::enable_if_c<!is_bond_type<typename Field::field_type>::value
-                             && is_same<typename Field::field_modifier, 
+                             && std::is_same<typename Field::field_modifier, 
                                         reflection::optional_field_modifier>::value>::type
     operator()(const Field&)
     {
@@ -39,7 +39,7 @@ public:
 
     template <typename Field>
     typename boost::disable_if_c<!is_bond_type<typename Field::field_type>::value
-                              && is_same<typename Field::field_modifier, 
+                              && std::is_same<typename Field::field_modifier, 
                                          reflection::optional_field_modifier>::value>::type
     operator()(const Field&)
     {}

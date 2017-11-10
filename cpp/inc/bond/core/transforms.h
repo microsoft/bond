@@ -356,8 +356,8 @@ protected:
     }
         
     template <typename Head>
-    typename boost::enable_if<is_same<typename Head::field_modifier, 
-                                      reflection::required_field_modifier> >::type
+    typename boost::enable_if<std::is_same<typename Head::field_modifier, 
+                                           reflection::required_field_modifier> >::type
     Validate() const
     {
         if (_required == Head::id)
@@ -378,8 +378,8 @@ protected:
 
 
     template <typename Head>
-    typename boost::disable_if<is_same<typename Head::field_modifier, 
-                                       reflection::required_field_modifier> >::type
+    typename boost::disable_if<std::is_same<typename Head::field_modifier, 
+                                            reflection::required_field_modifier> >::type
     Validate() const
     {}
 

@@ -122,14 +122,14 @@ private:
 
     template <typename T>
     typename boost::disable_if_c<bond::is_list_container<T>::value
-        || is_enum<T>::value, std::string>::type
+        || std::is_enum<T>::value, std::string>::type
     HelpFromType() const
     {
             return "";
     }
 
     template <typename T>
-    typename boost::enable_if<is_enum<T>, std::string>::type
+    typename boost::enable_if<std::is_enum<T>, std::string>::type
     HelpFromType() const
     {
             std::string enums;
@@ -371,7 +371,7 @@ public:
 private:
     // Parse enum
     template <typename T>
-    typename boost::enable_if<is_enum<T> >::type
+    typename boost::enable_if<std::is_enum<T> >::type
     Parse(const std::string& value, T& var) const 
     {
         if (!ToEnum(var, value.c_str()))
@@ -380,7 +380,7 @@ private:
 
     // Parse number
     template <typename T>
-    typename boost::enable_if<boost::is_arithmetic<T> >::type
+    typename boost::enable_if<std::is_arithmetic<T> >::type
     Parse(const std::string& value, T& var) const
     {
         try

@@ -36,7 +36,7 @@ public:
 
     
     template <typename Reader>
-    typename boost::enable_if<is_protocol_enabled<typename remove_const<Reader>::type>, bool>::type
+    typename boost::enable_if<is_protocol_enabled<typename std::remove_const<Reader>::type>, bool>::type
     operator()(Reader& reader) const
     {
         // Apply transform to serialized data 
@@ -44,7 +44,7 @@ public:
     }
 
     template <typename Reader>
-    typename boost::disable_if<is_protocol_enabled<typename remove_const<Reader>::type>, bool>::type
+    typename boost::disable_if<is_protocol_enabled<typename std::remove_const<Reader>::type>, bool>::type
     operator()(Reader& /*reader*/) const
     {
         // Don't instantiate deserialization code for disabled protocol to speed up build
@@ -129,7 +129,7 @@ public:
 
 
 template <typename T, typename Schema, typename Transform>
-class Parser<T, Schema, Transform, typename boost::enable_if_c<is_serializing_transform<Transform>::value && !is_same<T, void>::value>::type>
+class Parser<T, Schema, Transform, typename boost::enable_if_c<is_serializing_transform<Transform>::value && !std::is_same<T, void>::value>::type>
     : public _Parser<T, Schema, Transform>
 {
 public:
@@ -254,7 +254,7 @@ public:
 
     
     template <typename Reader>
-    typename boost::enable_if<is_protocol_enabled<typename remove_const<Reader>::type> >::type
+    typename boost::enable_if<is_protocol_enabled<typename std::remove_const<Reader>::type> >::type
     operator()(Reader& reader) const
     {
         Buffer merged;
@@ -266,7 +266,7 @@ public:
     }
 
     template <typename Reader>
-    typename boost::disable_if<is_protocol_enabled<typename remove_const<Reader>::type> >::type
+    typename boost::disable_if<is_protocol_enabled<typename std::remove_const<Reader>::type> >::type
     operator()(Reader& /*reader*/) const
     {
         // Don't instantiate code for disabled protocol to speed up build

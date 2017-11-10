@@ -197,13 +197,13 @@ public:
     {
         // skip the value if it has not been read
         if (_skip)
-            bond::Skip<T, typename remove_reference<Reader>::type>(_input, std::nothrow);
+            bond::Skip<T, typename std::remove_reference<Reader>::type>(_input, std::nothrow);
     }
 
     void Skip() const
     {
         _skip = false;
-        bond::Skip<T, typename remove_reference<Reader>::type>(_input);
+        bond::Skip<T, typename std::remove_reference<Reader>::type>(_input);
     }
 
     // skip value of non-matching type
@@ -233,7 +233,7 @@ public:
     {}
 
     value(value&& rhs) BOND_NOEXCEPT_IF((
-        bond::is_nothrow_move_constructible<value_common<T, Reader> >::value))
+        std::is_nothrow_move_constructible<value_common<T, Reader> >::value))
         : value_common<T, Reader>(std::move(rhs))
     {}
 
@@ -253,7 +253,7 @@ public:
     template <typename Protocols = BuiltInProtocols>
     void Deserialize(blob& var, uint32_t size) const
     {
-        BOOST_STATIC_ASSERT((is_same<T, blob::value_type>::value));
+        BOOST_STATIC_ASSERT((std::is_same<T, blob::value_type>::value));
         _skip = false;
         _input.Read(var, size);
     }
@@ -264,7 +264,7 @@ public:
     typename boost::enable_if_c<is_matching_basic<T, X>::value && !is_string_type<T>::value>::type
     Deserialize(X& var) const
     {
-        typename boost::mpl::if_c<is_enum<X>::value && sizeof(X) == sizeof(T), X, T>::type data;
+        typename std::conditional<std::is_enum<X>::value && sizeof(X) == sizeof(T), X, T>::type data;
 
         _skip = false;
         _input.Read(data);
@@ -301,7 +301,7 @@ public:
     {}
 
     value(value&& rhs) BOND_NOEXCEPT_IF((
-        bond::is_nothrow_move_constructible<value_common<T, Reader> >::value))
+        std::is_nothrow_move_constructible<value_common<T, Reader> >::value))
         : value_common<T, Reader>(std::move(rhs))
     {}
 
@@ -334,7 +334,7 @@ public:
     {}
 
     value(value&& rhs) BOND_NOEXCEPT_IF((
-        bond::is_nothrow_move_constructible<value_common<T, Reader> >::value))
+        std::is_nothrow_move_constructible<value_common<T, Reader> >::value))
         : value_common<T, Reader>(std::move(rhs))
     {}
 
@@ -405,7 +405,7 @@ public:
     {}
 
     value(value&& rhs) BOND_NOEXCEPT_IF((
-        bond::is_nothrow_move_constructible<value_common<T, Reader> >::value))
+        std::is_nothrow_move_constructible<value_common<T, Reader> >::value))
         : value_common<T, Reader>(std::move(rhs))
     {}
 
@@ -472,9 +472,9 @@ public:
     }
 
     value(value&& rhs) BOND_NOEXCEPT_IF(
-        bond::is_nothrow_move_constructible<Reader>::value
-        && bond::is_nothrow_move_constructible<SchemaDef>::value
-        && bond::is_nothrow_move_constructible<RuntimeSchema>::value)
+        std::is_nothrow_move_constructible<Reader>::value
+        && std::is_nothrow_move_constructible<SchemaDef>::value
+        && std::is_nothrow_move_constructible<RuntimeSchema>::value)
         : _input(rhs._input),
           _schemaDef(std::move(rhs._schemaDef)),
           _schema(std::move(rhs._schema)),

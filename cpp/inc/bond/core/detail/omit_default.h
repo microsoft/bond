@@ -45,7 +45,7 @@ is_default(const T& value, const Metadata& metadata)
 // compare string fields with default value from metadata
 template <typename T>
 inline
-typename boost::enable_if<is_string<typename remove_const<T>::type>, bool>::type
+typename boost::enable_if<is_string<typename std::remove_const<T>::type>, bool>::type
 is_default(const T& value, const Metadata& metadata)
 {
     BOOST_ASSERT(!metadata.default_value.nothing);
@@ -55,7 +55,7 @@ is_default(const T& value, const Metadata& metadata)
 
 template <typename T>
 inline
-typename boost::enable_if<is_wstring<typename remove_const<T>::type>, bool>::type
+typename boost::enable_if<is_wstring<typename std::remove_const<T>::type>, bool>::type
 is_default(const T& value, const Metadata& metadata)
 {
     BOOST_ASSERT(!metadata.default_value.nothing);
@@ -91,7 +91,7 @@ omit_field(const Metadata& metadata, const T& value)
 {
     // Validate that all compilation units in a program use the same 
     // specialization of may_omit_fields<Writer>
-    (void)one_definition<may_omit_fields<Writer>, true_type>::value;
+    (void)one_definition<may_omit_fields<Writer>, std::true_type>::value;
 
     // omit the field if it's optional and has default value
     return metadata.modifier == Optional
@@ -106,7 +106,7 @@ omit_field(const Metadata& /*metadata*/, const T& /*value*/)
 {
     // Validate that all compilation units in a program use the same 
     // specialization of may_omit_fields<Writer>
-    (void)one_definition<may_omit_fields<Writer>, false_type>::value;
+    (void)one_definition<may_omit_fields<Writer>, std::false_type>::value;
 
     // protocol doesn't allow omitting fields
     return false;
@@ -124,7 +124,7 @@ bool omit_field(const Metadata& /*metadata*/, const value<T, Reader>& /*value*/)
 
 template <typename T, typename Enable = void> struct
 implements_field_omitting 
-    : false_type {};
+    : std::false_type {};
 
 
 // WriteFieldOmitted is an optional protocol writer method which is called for 
@@ -133,7 +133,7 @@ implements_field_omitting
 template <typename Writer> struct
 implements_field_omitting<Writer, 
     typename boost::enable_if<bond::check_method<void (Writer::*)(BondDataType, uint16_t, const Metadata&), &Writer::WriteFieldOmitted> >::type>
-    : true_type {};
+    : std::true_type {};
 
 
 // ReadFieldOmitted is an optional protocol reader method which MUST be implemented 
@@ -141,7 +141,7 @@ implements_field_omitting<Writer,
 template <typename Input> struct
 implements_field_omitting<Input, 
     typename boost::enable_if<bond::check_method<bool (Input::*)(), &Input::ReadFieldOmitted> >::type>
-    : true_type {};
+    : std::true_type {};
 
 
 // WriteFieldOmitted
@@ -179,26 +179,26 @@ ReadFieldOmitted(Input& /*input*/)
 // ReadStructBegin and ReadStructEnd are optional methods for protocol 
 template <typename T, typename Enable = void> struct
 implements_struct_begin 
-    : false_type {};
+    : std::false_type {};
 
 
 // Intially ReadStructBegin/End methods had no parameters but later were extended
 // to take a bool parameter indicating deserialization of base part of a struct.
 template <typename T, typename Enable = void> struct
 implements_struct_begin_with_base
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename Input> struct
 implements_struct_begin<Input, 
     typename boost::enable_if<bond::check_method<void (Input::*)(), &Input::ReadStructBegin> >::type>
-    : true_type {};
+    : std::true_type {};
 
 
 template <typename Input> struct
 implements_struct_begin_with_base<Input, 
     typename boost::enable_if<bond::check_method<void (Input::*)(bool), &Input::ReadStructBegin> >::type>
-    : true_type {};
+    : std::true_type {};
 
 
 // StructBegin

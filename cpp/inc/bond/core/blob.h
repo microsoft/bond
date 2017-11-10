@@ -104,7 +104,7 @@ public:
 
     /// @brief Move constructor
     blob(blob&& that) BOND_NOEXCEPT_IF(
-        bond::is_nothrow_move_constructible<boost::shared_ptr<const char[]> >::value)
+        std::is_nothrow_move_constructible<boost::shared_ptr<const char[]> >::value)
         : _buffer(std::move(that._buffer)),
           _content(std::move(that._content)),
           _length(std::move(that._length))
@@ -375,7 +375,7 @@ inline blob merge(t_It begin, t_It end)
 
 template <> struct
 is_list_container<blob>
-    : true_type {};
+    : std::true_type {};
 
 
 template <typename T>
@@ -397,6 +397,6 @@ inline T blob_cast(const blob& from)
 
 template <> struct
 is_blob<blob>
-    : true_type {};
+    : std::true_type {};
 
 } // namespace bond

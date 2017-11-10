@@ -140,7 +140,7 @@ public:
     template <typename T>
     void Read(T& value)
     {
-        BOOST_STATIC_ASSERT(bond::is_arithmetic<T>::value || bond::is_enum<T>::value);
+        BOOST_STATIC_ASSERT(std::is_arithmetic<T>::value || std::is_enum<T>::value);
 
         if (sizeof(T) > _blob.length() - _pointer)
         {

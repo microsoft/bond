@@ -85,7 +85,7 @@ private:
         }
     }
 
-    BOOST_STATIC_ASSERT(is_pod<T>::value);
+    BOOST_STATIC_ASSERT(std::is_pod<T>::value);
 
     uint32_t _size;
     uint32_t _capacity;
