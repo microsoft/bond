@@ -42,17 +42,19 @@ The Bond repository uses Git submodules and should be cloned with the
 git clone --recursive https://github.com/Microsoft/bond.git
 ```
 
-In order to build Bond you will need CMake (3.1+), [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install) and
-Boost (1.58+). Bond's C++ library requires some C++11 features (currently
-limited to those supported bv Visual C++ 2013). (Note: Boost 1.59 may not
-work with Bond Comm due to some bugs in that version of the Boost ASIO library).
+Bond C++ library requires some C++11 features (currently limited to those
+supported bv Visual C++ 2013); a C++11 compiler is required. Additionally,
+to build Bond you will need CMake (3.1+),
+[Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
+and Boost (1.58+). (Note: Boost 1.59 may not work with Bond Comm due to some
+bugs in that version of the Boost ASIO library).
 
 Following are specific instructions for building on various platforms.
 
 ### Linux
 
-Bond can be built with Clang (3.4+) or GNU C++ (4.7+). We recommend the latest
-version of Clang as it's much faster with template-heavy code like Bond.
+Bond must be built with C++11 compiler. We test with Clang (3.8) and GNU C++
+(5.4). We recommend Clang as it's faster with template-heavy code like Bond.
 
 Run the following commands to install the minimal set of packages needed to
 build the core Bond library on Ubuntu 14.04:
@@ -77,12 +79,11 @@ make
 sudo make install
 ```
 
-The `build` directory is just an example. Any directory can be used as the build
-destination.
+The `build` directory is just an example. Any directory can be used as the
+build destination.
 
-In order to build all the C++ and Python tests and examples, as well as
-Bond-over-gRPC, a few more packages are needed, and CMake needs to be run with
-different options:
+In order to build the Bond Python module, all the C++/Python tests and
+examples, and Bond-over-gRPC, a few more packages are needed.
 
 ```bash
 sudo apt-get install \
@@ -94,7 +95,13 @@ sudo apt-get install \
     libboost-test-dev \
     libtool \
     python2.7-dev
+```
 
+CMake needs to be re-run with different options. This can be done after
+building just the core libraries: the build tree will simply be updated with
+the new options.
+
+```bash
 cd build # or wherever you ran CMake before
 cmake -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package ..
 ```
@@ -104,6 +111,7 @@ the tests and examples:
 
 ```bash
 make --jobs 8 check
+sudo make install # To install the other libraries just built
 ```
 
 (The unit tests are large so you may want to run 4-8 build jobs in parallel,
