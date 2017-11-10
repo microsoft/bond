@@ -20,8 +20,8 @@ int main()
     BOOST_VERIFY(id == 1);
 
     // Assert at compile time that field Struct1::n is optional
-    BOOST_STATIC_ASSERT((bond::is_same<Struct1::Schema::var::n::field_modifier, 
-                                       bond::reflection::optional_field_modifier>::value));
+    BOOST_STATIC_ASSERT((std::is_same<Struct1::Schema::var::n::field_modifier, 
+                                      bond::reflection::optional_field_modifier>::value));
 
     return 0;    
 }

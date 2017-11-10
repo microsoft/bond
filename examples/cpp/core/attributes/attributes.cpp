@@ -26,7 +26,7 @@ public:
     }
 
     template <typename T>
-    typename boost::enable_if<bond::is_integral<T>, bool>::type
+    typename boost::enable_if<std::is_integral<T>, bool>::type
     Field(uint16_t /*id*/, const bond::Metadata& metadata, const T& value) const
     {
         // If Min and/or Max attribute is defined for the field, we check if
@@ -61,7 +61,7 @@ public:
     }
     
     template <typename T>
-    typename boost::disable_if_c<bond::is_integral<T>::value
+    typename boost::disable_if_c<std::is_integral<T>::value
                               || bond::is_bond_type<T>::value, bool>::type
     Field(uint16_t /*id*/, const bond::Metadata& /*metadata*/, const T& /*value*/) const
     {
