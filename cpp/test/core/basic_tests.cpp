@@ -219,11 +219,9 @@ struct CopyMoveTest
         X x(src);
         UT_Compare(x, src);
 
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
         X y(std::move(x)); 
         UT_Compare(y, src);
         UT_AssertIsTrue(moved(x));    
-#endif
     }
 };
 

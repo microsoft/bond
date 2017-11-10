@@ -11,42 +11,33 @@
 #include <boost/utility/enable_if.hpp>
 #include <boost/static_assert.hpp>
 
-#ifndef BOND_NO_CXX11_HDR_TYPE_TRAITS
-#   include <type_traits>
-#   define BOND_TYPE_TRAITS_NAMESPACE ::std
-#else
-#   include <boost/type_traits.hpp>
-#   define BOND_TYPE_TRAITS_NAMESPACE ::boost
-#endif
-
+#include <type_traits>
 #include <memory>
 #include <utility>
 
 namespace bond
 {
 
-using BOND_TYPE_TRAITS_NAMESPACE::false_type;
-using BOND_TYPE_TRAITS_NAMESPACE::is_arithmetic;
-using BOND_TYPE_TRAITS_NAMESPACE::is_base_of;
-using BOND_TYPE_TRAITS_NAMESPACE::is_class;
-using BOND_TYPE_TRAITS_NAMESPACE::is_enum;
-using BOND_TYPE_TRAITS_NAMESPACE::is_floating_point;
-using BOND_TYPE_TRAITS_NAMESPACE::is_integral;
-using BOND_TYPE_TRAITS_NAMESPACE::is_nothrow_move_constructible;
-using BOND_TYPE_TRAITS_NAMESPACE::is_object;
-using BOND_TYPE_TRAITS_NAMESPACE::is_pod;
-using BOND_TYPE_TRAITS_NAMESPACE::is_reference;
-using BOND_TYPE_TRAITS_NAMESPACE::is_same;
-using BOND_TYPE_TRAITS_NAMESPACE::is_signed;
-using BOND_TYPE_TRAITS_NAMESPACE::is_unsigned;
-using BOND_TYPE_TRAITS_NAMESPACE::is_void;
-using BOND_TYPE_TRAITS_NAMESPACE::make_signed;
-using BOND_TYPE_TRAITS_NAMESPACE::make_unsigned;
-using BOND_TYPE_TRAITS_NAMESPACE::remove_const;
-using BOND_TYPE_TRAITS_NAMESPACE::remove_reference;
-using BOND_TYPE_TRAITS_NAMESPACE::true_type;
-
-#undef BOND_TYPE_TRAITS_NAMESPACE
+using std::false_type;
+using std::is_arithmetic;
+using std::is_base_of;
+using std::is_class;
+using std::is_enum;
+using std::is_floating_point;
+using std::is_integral;
+using std::is_nothrow_move_constructible;
+using std::is_object;
+using std::is_pod;
+using std::is_reference;
+using std::is_same;
+using std::is_signed;
+using std::is_unsigned;
+using std::is_void;
+using std::make_signed;
+using std::make_unsigned;
+using std::remove_const;
+using std::remove_reference;
+using std::true_type;
 
 // version of is_nothrow_copy_constructible/has_nothrow_copy_constructor
 // that works across C++03 and C++11 and later: we just delegate to Boost,
