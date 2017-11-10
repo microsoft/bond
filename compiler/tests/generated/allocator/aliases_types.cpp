@@ -20,8 +20,7 @@ namespace tests
 
         const std::string& ToString(enum EnumToWrap value)
         {
-            std::map<enum EnumToWrap, std::string>::const_iterator it =
-                GetValueToNameMap(value).find(value);
+            auto it = GetValueToNameMap(value).find(value);
 
             if (GetValueToNameMap(value).end() == it)
                 ::bond::InvalidEnumValueException(value, "EnumToWrap");
@@ -33,6 +32,30 @@ namespace tests
         {
             if (!ToEnum(value, name))
                 ::bond::InvalidEnumValueException(name.c_str(), "EnumToWrap");
+        }
+
+        bool ToEnum(enum EnumToWrap& value, const std::string& name)
+        {
+            auto it = _name_to_value_EnumToWrap.find(name);
+
+            if (_name_to_value_EnumToWrap.end() == it)
+                return false;
+
+            value = it->second;
+
+            return true;
+        }
+
+        bool FromEnum(std::string& name, enum EnumToWrap value)
+        {
+            auto it = _value_to_name_EnumToWrap.find(value);
+
+            if (_value_to_name_EnumToWrap.end() == it)
+                return false;
+
+            name = it->second;
+
+            return true;
         }
     } // namespace EnumToWrap
     } // namespace _bond_enumerators

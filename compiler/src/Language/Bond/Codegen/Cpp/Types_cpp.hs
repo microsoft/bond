@@ -51,8 +51,7 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 
         const std::string& ToString(enum #{declName} value)
         {
-            std::map<enum #{declName}, std::string>::const_iterator it =
-                GetValueToNameMap(value).find(value);
+            auto it = GetValueToNameMap(value).find(value);
 
             if (GetValueToNameMap(value).end() == it)
                 ::bond::InvalidEnumValueException(value, "#{declName}");
@@ -64,6 +63,30 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
         {
             if (!ToEnum(value, name))
                 ::bond::InvalidEnumValueException(name.c_str(), "#{declName}");
+        }
+
+        bool ToEnum(enum #{declName}& value, const std::string& name)
+        {
+            auto it = _name_to_value_#{declName}.find(name);
+
+            if (_name_to_value_#{declName}.end() == it)
+                return false;
+
+            value = it->second;
+
+            return true;
+        }
+
+        bool FromEnum(std::string& name, enum #{declName} value)
+        {
+            auto it = _value_to_name_#{declName}.find(value);
+
+            if (_value_to_name_#{declName}.end() == it)
+                return false;
+
+            name = it->second;
+
+            return true;
         }
     } // namespace #{declName}
     } // namespace _bond_enumerators|]
