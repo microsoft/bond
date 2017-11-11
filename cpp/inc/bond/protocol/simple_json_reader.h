@@ -195,7 +195,7 @@ BOND_CONSTEXPR_OR_CONST uint16_t SimpleJsonReader<Buffer>::magic;
 // Disable fast pass-through optimization for Simple JSON
 template <typename Input, typename Output> struct
 is_protocol_same<SimpleJsonReader<Input>, SimpleJsonWriter<Output> >
-    : false_type {};
+    : std::false_type {};
 
 
 } // namespace bond

@@ -85,7 +85,7 @@ DeserializeContainer(X& var, const T& element, SimpleJsonReader<Buffer>& reader)
 {
     detail::JsonTypeMatching type(get_type_id<typename element_type<X>::type>::value, 
                                   GetTypeId(element),
-                                  is_enum<typename element_type<X>::type>::value);
+                                  std::is_enum<typename element_type<X>::type>::value);
 
     rapidjson::Value::ConstValueIterator it = reader.ArrayBegin();
     resize_list(var, reader.ArraySize());
@@ -117,7 +117,7 @@ DeserializeContainer(X& var, const T& element, SimpleJsonReader<Buffer>& reader)
 {
     detail::JsonTypeMatching type(get_type_id<typename element_type<X>::type>::value, 
                                   GetTypeId(element),
-                                  is_enum<typename element_type<X>::type>::value);
+                                  std::is_enum<typename element_type<X>::type>::value);
     clear_set(var);
 
     typename element_type<X>::type e(make_element(var));
@@ -141,12 +141,12 @@ DeserializeMap(X& var, BondDataType keyType, const T& element, SimpleJsonReader<
     detail::JsonTypeMatching key_type(
         get_type_id<typename element_type<X>::type::first_type>::value, 
         keyType,
-        is_enum<typename element_type<X>::type::first_type>::value);
+        std::is_enum<typename element_type<X>::type::first_type>::value);
 
     detail::JsonTypeMatching value_type(
         get_type_id<typename element_type<X>::type::second_type>::value, 
         GetTypeId(element),
-        is_enum<typename element_type<X>::type::second_type>::value);
+        std::is_enum<typename element_type<X>::type::second_type>::value);
 
     clear_map(var);
 

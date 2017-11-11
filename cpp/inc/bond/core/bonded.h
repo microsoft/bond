@@ -59,8 +59,8 @@ public:
 
     /// @brief Move constructor
     bonded(bonded&& bonded) BOND_NOEXCEPT_IF(
-        bond::is_nothrow_move_constructible<Reader>::value
-        && bond::is_nothrow_move_constructible<RuntimeSchema>::value)
+        std::is_nothrow_move_constructible<Reader>::value
+        && std::is_nothrow_move_constructible<RuntimeSchema>::value)
         : _data(std::move(bonded._data)),
           _schema(std::move(bonded._schema)),
           _skip(std::move(bonded._skip)),
@@ -80,7 +80,7 @@ public:
           _skip(true),
           _base(false)
     {
-        BOOST_STATIC_ASSERT((is_base_of<U, T>::value || is_base_of<T, U>::value));
+        BOOST_STATIC_ASSERT((std::is_base_of<U, T>::value || std::is_base_of<T, U>::value));
     }
 
 
@@ -134,7 +134,7 @@ public:
     template <typename U, typename ReaderT>
     operator bonded<U, ReaderT>() const
     {
-        BOOST_STATIC_ASSERT((is_base_of<U, T>::value));
+        BOOST_STATIC_ASSERT((std::is_base_of<U, T>::value));
         return bonded<U, ReaderT>(*this);
     }
 

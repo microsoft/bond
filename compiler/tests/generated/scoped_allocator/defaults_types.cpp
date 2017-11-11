@@ -33,8 +33,7 @@ namespace tests
 
         const std::string& ToString(enum EnumType1 value)
         {
-            std::map<enum EnumType1, std::string>::const_iterator it =
-                GetValueToNameMap(value).find(value);
+            auto it = GetValueToNameMap(value).find(value);
 
             if (GetValueToNameMap(value).end() == it)
                 ::bond::InvalidEnumValueException(value, "EnumType1");
@@ -46,6 +45,30 @@ namespace tests
         {
             if (!ToEnum(value, name))
                 ::bond::InvalidEnumValueException(name.c_str(), "EnumType1");
+        }
+
+        bool ToEnum(enum EnumType1& value, const std::string& name)
+        {
+            auto it = _name_to_value_EnumType1.find(name);
+
+            if (_name_to_value_EnumType1.end() == it)
+                return false;
+
+            value = it->second;
+
+            return true;
+        }
+
+        bool FromEnum(std::string& name, enum EnumType1 value)
+        {
+            auto it = _value_to_name_EnumType1.find(value);
+
+            if (_value_to_name_EnumType1.end() == it)
+                return false;
+
+            name = it->second;
+
+            return true;
         }
     } // namespace EnumType1
     } // namespace _bond_enumerators

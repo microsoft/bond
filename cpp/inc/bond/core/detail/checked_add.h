@@ -6,9 +6,9 @@
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
+#include <type_traits>
 #include <boost/static_assert.hpp>
-#include <boost/type_traits.hpp>
-#include <boost/utility.hpp>
+#include <boost/utility/enable_if.hpp>
 
 namespace bond
 {
@@ -29,8 +29,8 @@ namespace detail
     }
 
     template <typename T, typename U>
-    typename boost::enable_if_c<boost::is_integral<T>::value && boost::is_unsigned<T>::value
-                                && boost::is_integral<U>::value && boost::is_unsigned<U>::value, T>::type
+    typename boost::enable_if_c<std::is_integral<T>::value && std::is_unsigned<T>::value
+                                && std::is_integral<U>::value && std::is_unsigned<U>::value, T>::type
     checked_add(T lhs, U rhs)
     {
         BOOST_STATIC_ASSERT(sizeof(T) >= sizeof(U));

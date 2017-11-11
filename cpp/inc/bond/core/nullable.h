@@ -26,15 +26,15 @@ use_value
         || is_map_container<T>::value
         || is_string<T>::value
         || is_wstring<T>::value
-        || !is_class<T>::value> {};
+        || !std::is_class<T>::value> {};
 
 template<typename T, typename E = void> struct
 has_allocator
-    : false_type {};
+    : std::false_type {};
 
 template<typename T> struct
-has_allocator<T, typename boost::enable_if<is_class<typename T::allocator_type> >::type>
-    : true_type {};
+has_allocator<T, typename boost::enable_if<std::is_class<typename T::allocator_type> >::type>
+    : std::true_type {};
 
 template<typename T, typename E = void> struct
 allocator_type
@@ -207,16 +207,16 @@ public:
 
     explicit
     nullable(value_type&& value) BOND_NOEXCEPT_IF(
-            bond::is_nothrow_move_constructible<Allocator>::value
-            && bond::is_nothrow_move_constructible<value_type>::value)
+            std::is_nothrow_move_constructible<Allocator>::value
+            && std::is_nothrow_move_constructible<value_type>::value)
         : Allocator(detail::get_allocator(value)),
           _value(std::move(value)),
           _hasvalue(true)
     {}
 
     nullable(nullable&& src) BOND_NOEXCEPT_IF(
-            bond::is_nothrow_move_constructible<Allocator>::value
-            && bond::is_nothrow_move_constructible<value_type>::value)
+            std::is_nothrow_move_constructible<Allocator>::value
+            && std::is_nothrow_move_constructible<value_type>::value)
         : Allocator(std::move(src.base())),
           _value(std::move(src._value)),
           _hasvalue(std::move(src._hasvalue))
@@ -233,8 +233,8 @@ public:
     }
 
     nullable& operator=(nullable&& src) BOND_NOEXCEPT_IF(
-        bond::is_nothrow_move_constructible<Allocator>::value
-        && bond::is_nothrow_move_constructible<value_type>::value)
+        std::is_nothrow_move_constructible<Allocator>::value
+        && std::is_nothrow_move_constructible<value_type>::value)
     {
         if (this != &src)
         {
@@ -247,7 +247,7 @@ public:
     }
 
     void set(value_type&& value) BOND_NOEXCEPT_IF(
-        bond::is_nothrow_move_constructible<value_type>::value)
+        std::is_nothrow_move_constructible<value_type>::value)
     {
         _value = std::move(value);
         _hasvalue = true;
@@ -461,8 +461,8 @@ public:
     {}
 
     nullable(nullable&& src) BOND_NOEXCEPT_IF(
-        bond::is_nothrow_move_constructible<Allocator>::value
-        && bond::is_nothrow_move_constructible<real_pointer>::value
+        std::is_nothrow_move_constructible<Allocator>::value
+        && std::is_nothrow_move_constructible<real_pointer>::value
         && BOND_NOEXCEPT(src._value = real_pointer()))
         : Allocator(std::move(src.base())),
           _value(std::move(src._value))
@@ -547,12 +547,12 @@ private:
         }
     }
 
-    real_pointer set_value(true_type)
+    real_pointer set_value(std::true_type)
     {
         return new_value(base());
     }
 
-    real_pointer set_value(false_type)
+    real_pointer set_value(std::false_type)
     {
         return new_value();
     }
@@ -672,11 +672,11 @@ private:
 
 template <typename T, typename Allocator, bool useValue> struct
 is_list_container<nullable<T, Allocator, useValue> >
-    : true_type {};
+    : std::true_type {};
 
 
 template <typename T, typename Allocator, bool useValue> struct
 is_nullable<nullable<T, Allocator, useValue> >
-    : true_type {};
+    : std::true_type {};
 
 } // namespace bond

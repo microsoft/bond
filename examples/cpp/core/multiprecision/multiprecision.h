@@ -22,7 +22,7 @@ namespace bond
         number<
             backends::cpp_int_backend<MinBits, MaxBits, SignType, Checked, Allocator>,
             ExpressionTemplates> >
-        : true_type
+        : std::true_type
     {};
 
     template <

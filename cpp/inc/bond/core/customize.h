@@ -11,7 +11,7 @@ namespace bond
 
 template <typename T> struct 
 is_protocol_enabled 
-    : false_type {};
+    : std::false_type {};
 
 
 }

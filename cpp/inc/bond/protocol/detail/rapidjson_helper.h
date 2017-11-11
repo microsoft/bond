@@ -227,7 +227,7 @@ inline void Read(const rapidjson::Value& value, bool& var)
 
 // enum
 template <typename T>
-typename boost::enable_if<is_enum<T> >::type
+typename boost::enable_if<std::is_enum<T> >::type
 Read(const rapidjson::Value& value, T& var)
 {
     if (value.IsString())
@@ -238,7 +238,7 @@ Read(const rapidjson::Value& value, T& var)
 
 // floating point
 template <typename T>
-typename boost::enable_if<is_floating_point<T> >::type
+typename boost::enable_if<std::is_floating_point<T> >::type
 Read(const rapidjson::Value& value, T& var)
 {
     var = static_cast<T>(value.GetDouble());
@@ -254,7 +254,7 @@ Read(const rapidjson::Value& value, T& var)
 
 // unsigned integer
 template <typename T>
-typename boost::enable_if<is_unsigned<T> >::type
+typename boost::enable_if<std::is_unsigned<T> >::type
 Read(const rapidjson::Value& value, T& var)
 {
     var = static_cast<T>(value.GetUint64());

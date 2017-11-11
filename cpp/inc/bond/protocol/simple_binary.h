@@ -390,7 +390,7 @@ protected:
 
 template <typename Input, typename MarshaledBondedProtocols> struct
 protocol_has_multiple_versions<SimpleBinaryReader<Input, MarshaledBondedProtocols> >
-    : true_type {};
+    : std::true_type {};
 
 
 template <typename Input, typename MarshaledBondedProtocols, typename Output>
@@ -402,6 +402,6 @@ bool is_protocol_version_same(const SimpleBinaryReader<Input, MarshaledBondedPro
 
 template <typename Output> struct
 may_omit_fields<SimpleBinaryWriter<Output> >
-    : false_type {};
+    : std::false_type {};
 
 } // namespace bond

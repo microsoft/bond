@@ -203,6 +203,20 @@ inline void BasicTypeContainer(T& var, BondDataType type, Reader& input, uint32_
 }
 
 
+template <typename E>
+inline void SkipElements(const E& element, uint32_t size)
+{
+    while (size--)
+        element.Skip();
+}
+
+template <typename Reader>
+inline void SkipElements(BondDataType type, Reader& input, uint32_t size)
+{
+    while (size--)
+        input.Skip(type);
+}
+
 // MatchingTypeContainer function are manually expended versions of BasicTypeContainer
 // using the type information about destination container. This helps with compilation speed.
 template <typename Protocols, typename T, typename Reader>
@@ -217,14 +231,13 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
     {
         BOOST_ASSERT(!IsMatching<typename element_type<T>::type>(type));
 
-        while (size--)
-            input.Skip(type);
+        SkipElements(type, input, size);
     }
 }
 
 
 template <typename Protocols, typename T, typename Reader>
-typename boost::enable_if<is_same<bool, typename element_type<T>::type> >::type
+typename boost::enable_if<std::is_same<bool, typename element_type<T>::type> >::type
 inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t size)
 {
     switch (type)
@@ -235,8 +248,7 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type>(type));
 
-            while (size--)
-                input.Skip(type);
+            SkipElements(type, input, size);
             break;
     }
 }
@@ -254,8 +266,7 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type>(type));
 
-            while (size--)
-                input.Skip(type);
+            SkipElements(type, input, size);
             break;
     }
 }
@@ -273,15 +284,14 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type>(type));
 
-            while (size--)
-                input.Skip(type);
+            SkipElements(type, input, size);
             break;
     }
 }
 
 
 template <typename Protocols, typename T, typename Reader>
-typename boost::enable_if<is_floating_point<typename element_type<T>::type> >::type
+typename boost::enable_if<std::is_floating_point<typename element_type<T>::type> >::type
 inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t size)
 {
     switch (type)
@@ -295,8 +305,7 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type>(type));
 
-            while (size--)
-                input.Skip(type);
+            SkipElements(type, input, size);
             break;
     }
 }
@@ -323,8 +332,7 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type>(type));
 
-            while (size--)
-                input.Skip(type);
+            SkipElements(type, input, size);
             break;
     }
 }
@@ -351,8 +359,7 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type>(type));
 
-            while (size--)
-                input.Skip(type);
+            SkipElements(type, input, size);
             break;
     }
 }
@@ -360,6 +367,16 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
 
 // MatchingMapByKey function are manually expended versions of MapByKey using the type 
 // information about destination container. This helps with compilation speed.
+
+template <typename E, typename Reader>
+inline void SkipElements(BondDataType keyType, const E& element, Reader& input, uint32_t size)
+{
+    while (size--)
+    {
+        input.Skip(keyType);
+        element.Skip();
+    }
+}
 
 template <typename Protocols, typename T, typename E, typename Reader>
 typename boost::enable_if<is_type_alias<typename element_type<T>::type::first_type> >::type
@@ -373,17 +390,13 @@ inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& 
     {
         BOOST_ASSERT(!IsMatching<typename element_type<T>::type::first_type>(keyType));
 
-        while (size--)
-        {
-            input.Skip(keyType);
-            element.Skip();
-        }
+        SkipElements(keyType, element, input, size);
     }
 }
 
 
 template <typename Protocols, typename T, typename E, typename Reader>
-typename boost::enable_if<is_same<bool, typename element_type<T>::type::first_type> >::type
+typename boost::enable_if<std::is_same<bool, typename element_type<T>::type::first_type> >::type
 inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& input, uint32_t size)
 {
     switch (keyType)
@@ -394,11 +407,7 @@ inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::first_type>(keyType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                element.Skip();
-            }
+            SkipElements(keyType, element, input, size);
             break;
     }
 }
@@ -416,11 +425,7 @@ inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::first_type>(keyType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                element.Skip();
-            }
+            SkipElements(keyType, element, input, size);
             break;
     }
 }
@@ -438,18 +443,14 @@ inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::first_type>(keyType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                element.Skip();
-            }
+            SkipElements(keyType, element, input, size);
             break;
     }
 }
 
 
 template <typename Protocols, typename T, typename E, typename Reader>
-typename boost::enable_if<is_floating_point<typename element_type<T>::type::first_type> >::type
+typename boost::enable_if<std::is_floating_point<typename element_type<T>::type::first_type> >::type
 inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& input, uint32_t size)
 {
     switch (keyType)
@@ -463,11 +464,7 @@ inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::first_type>(keyType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                element.Skip();
-            }
+            SkipElements(keyType, element, input, size);
             break;
     }
 }
@@ -494,11 +491,7 @@ inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::first_type>(keyType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                element.Skip();
-            }
+            SkipElements(keyType, element, input, size);
             break;
     }
 }
@@ -525,11 +518,7 @@ inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& 
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::first_type>(keyType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                element.Skip();
-            }
+            SkipElements(keyType, element, input, size);
             break;
     }
 }
@@ -662,6 +651,16 @@ inline void MapByElement(T& var, BondDataType keyType, BondDataType elementType,
 // MatchingMapByElement function are manually expended versions of MapByElement using 
 // the type information about destination container. This helps with compilation speed.
 
+template <typename Reader>
+inline void SkipElements(BondDataType keyType, BondDataType elementType, Reader& input, uint32_t size)
+{
+    while (size--)
+    {
+        input.Skip(keyType);
+        input.Skip(elementType);
+    }
+}
+
 template <typename Protocols, typename T, typename Reader>
 typename boost::enable_if<is_type_alias<typename element_type<T>::type::second_type> >::type
 inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementType, Reader& input, uint32_t size)
@@ -674,17 +673,13 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
     {
         BOOST_ASSERT(!IsMatching<typename element_type<T>::type::second_type>(elementType));
 
-        while (size--)
-        {
-            input.Skip(keyType);
-            input.Skip(elementType);
-        }
+        SkipElements(keyType, elementType, input, size);
     }
 }
 
 
 template <typename Protocols, typename T, typename Reader>
-typename boost::enable_if<is_same<bool, typename element_type<T>::type::second_type> >::type
+typename boost::enable_if<std::is_same<bool, typename element_type<T>::type::second_type> >::type
 inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementType, Reader& input, uint32_t size)
 {
     switch (elementType)
@@ -695,11 +690,7 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::second_type>(elementType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                input.Skip(elementType);
-            }
+            SkipElements(keyType, elementType, input, size);
             break;
     }
 }
@@ -717,11 +708,7 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::second_type>(elementType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                input.Skip(elementType);
-            }
+            SkipElements(keyType, elementType, input, size);
             break;
     }
 }
@@ -739,18 +726,14 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::second_type>(elementType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                input.Skip(elementType);
-            }
+            SkipElements(keyType, elementType, input, size);
             break;
     }
 }
 
 
 template <typename Protocols, typename T, typename Reader>
-typename boost::enable_if<is_floating_point<typename element_type<T>::type::second_type> >::type
+typename boost::enable_if<std::is_floating_point<typename element_type<T>::type::second_type> >::type
 inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementType, Reader& input, uint32_t size)
 {
     switch (elementType)
@@ -764,11 +747,7 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::second_type>(elementType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                input.Skip(elementType);
-            }
+            SkipElements(keyType, elementType, input, size);
             break;
     }
 }
@@ -795,11 +774,7 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::second_type>(elementType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                input.Skip(elementType);
-            }
+            SkipElements(keyType, elementType, input, size);
             break;
     }
 }
@@ -826,11 +801,7 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::second_type>(elementType));
 
-            while (size--)
-            {
-                input.Skip(keyType);
-                input.Skip(elementType);
-            }
+            SkipElements(keyType, elementType, input, size);
             break;
     }
 }

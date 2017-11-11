@@ -12,7 +12,6 @@ struct SimpleList
         : size(0)
     {}
     
-#ifndef BOND_NO_CXX11_RVALUE_REFERENCES
     SimpleList(SimpleList&& other)
         : size(std::move(other.size))
     {
@@ -22,12 +21,9 @@ struct SimpleList
             items[i] = std::move(other.items[i]);
         }
     }
-#endif
 
-#ifndef BOOST_NO_CXX11_DEFAULTED_FUNCTIONS
     SimpleList(const SimpleList&) = default;
     SimpleList& operator=(const SimpleList&) = default;
-#endif
 
     bool operator==(const SimpleList& rhs) const 
     {
