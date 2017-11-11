@@ -417,33 +417,10 @@ namespace std
 
         void FromString(const std::string& name, enum #{declName}& value);
 
-        inline
-        bool ToEnum(enum #{declName}& value, const std::string& name)
-        {
-            std::map<std::string, enum #{declName}>::const_iterator it =
-                _name_to_value_#{declName}.find(name);
+        bool ToEnum(enum #{declName}& value, const std::string& name);
 
-            if (_name_to_value_#{declName}.end() == it)
-                return false;
+        bool FromEnum(std::string& name, enum #{declName} value);
 
-            value = it->second;
-
-            return true;
-        }
-
-        inline
-        bool FromEnum(std::string& name, enum #{declName} value)
-        {
-            std::map<enum #{declName}, std::string>::const_iterator it =
-                _value_to_name_#{declName}.find(value);
-
-            if (_value_to_name_#{declName}.end() == it)
-                return false;
-
-            name = it->second;
-
-            return true;
-        }
     } // namespace #{declName}
     } // namespace _bond_enumerators
 

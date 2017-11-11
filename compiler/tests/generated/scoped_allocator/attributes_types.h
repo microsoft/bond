@@ -59,33 +59,10 @@ namespace tests
 
         void FromString(const std::string& name, enum Enum& value);
 
-        inline
-        bool ToEnum(enum Enum& value, const std::string& name)
-        {
-            std::map<std::string, enum Enum>::const_iterator it =
-                _name_to_value_Enum.find(name);
+        bool ToEnum(enum Enum& value, const std::string& name);
 
-            if (_name_to_value_Enum.end() == it)
-                return false;
+        bool FromEnum(std::string& name, enum Enum value);
 
-            value = it->second;
-
-            return true;
-        }
-
-        inline
-        bool FromEnum(std::string& name, enum Enum value)
-        {
-            std::map<enum Enum, std::string>::const_iterator it =
-                _value_to_name_Enum.find(value);
-
-            if (_value_to_name_Enum.end() == it)
-                return false;
-
-            name = it->second;
-
-            return true;
-        }
     } // namespace Enum
     } // namespace _bond_enumerators
 
