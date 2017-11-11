@@ -110,6 +110,22 @@
         string IDebugView.DebugView { get { return debugView; } }
     }
 
+    internal class CloneDebugView : IDebugView
+    {
+        readonly string debugView;
+        readonly Func<object, object>[] clone = null;
+
+        public CloneDebugView(Type type)
+        {
+            var parser = new ObjectParser(type);
+            var cloneTransform = new DeserializerTransform<object>((o, i) => clone[i](o));
+            var expressions = cloneTransform.Generate(parser, type);
+            debugView = DebugViewHelper.ToString(expressions);
+        }
+
+        string IDebugView.DebugView { get { return debugView; } }
+    }
+
     public class RefObject : IEquatable<RefObject>
     {
         public RefObject()
@@ -227,6 +243,8 @@
 
             Write("SerializeXml.expressions",
                 new SerializerDebugView<SimpleXmlWriter>(typeof(Example)));
+
+            Write("Clone.expressions", new CloneDebugView(typeof(Example)));
         }
     }
 }
