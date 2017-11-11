@@ -530,7 +530,7 @@ template <typename Input>
 class DOMParser
     : protected detail::ParserInheritance<Input, DOMParser<Input> >
 {
-    typedef typename remove_reference<Input>::type Reader;
+    typedef typename std::remove_reference<Input>::type Reader;
 
 public:
     DOMParser(Input input, bool base = false)
@@ -567,7 +567,7 @@ private:
                 Head::id,  
                 Head::metadata, 
                 get_type_id<typename Head::field_type>::value,
-                is_enum<typename Head::field_type>::value))
+                std::is_enum<typename Head::field_type>::value))
         {
             Reader input(_input, *field);
             NextField(Head(), transform, input);

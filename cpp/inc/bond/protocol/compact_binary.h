@@ -295,7 +295,7 @@ public:
 
     // Read for floating point
     template <typename T>
-    typename boost::enable_if<is_floating_point<T> >::type
+    typename boost::enable_if<std::is_floating_point<T> >::type
     Read(T& value)
     {
         _input.Read(value);
@@ -303,7 +303,7 @@ public:
 
     // Read for unsigned integers
     template <typename T>
-    typename boost::enable_if<is_unsigned<T> >::type
+    typename boost::enable_if<std::is_unsigned<T> >::type
     Read(T& value)
     {
         ReadVariableUnsigned(_input, value);
@@ -314,7 +314,7 @@ public:
     typename boost::enable_if<is_signed_int<T> >::type
     Read(T& value)
     {
-        typename make_unsigned<T>::type unsigned_value;
+        typename std::make_unsigned<T>::type unsigned_value;
 
         ReadVariableUnsigned(_input, unsigned_value);
         value = DecodeZigZag(unsigned_value);
@@ -323,7 +323,7 @@ public:
 
     // Read for enums
     template <typename T>
-    typename boost::enable_if<is_enum<T> >::type
+    typename boost::enable_if<std::is_enum<T> >::type
     Read(T& value)
     {
         BOOST_STATIC_ASSERT(sizeof(value) == sizeof(int32_t));
@@ -692,7 +692,7 @@ public:
 
     // Write for floating point
     template <typename T>
-    typename boost::enable_if<is_floating_point<T> >::type
+    typename boost::enable_if<std::is_floating_point<T> >::type
     Write(const T& value)
     {
         _output.Write(value);
@@ -700,7 +700,7 @@ public:
 
     // Write for unsigned integers
     template <typename T>
-    typename boost::enable_if<is_unsigned<T> >::type
+    typename boost::enable_if<std::is_unsigned<T> >::type
     Write(const T& value)
     {
         WriteVariableUnsigned(_output, value);
@@ -716,7 +716,7 @@ public:
 
     // Write for enums
     template <typename T>
-    typename boost::enable_if<is_enum<T> >::type
+    typename boost::enable_if<std::is_enum<T> >::type
     Write(const T& value)
     {
         BOOST_STATIC_ASSERT(sizeof(value) == sizeof(int32_t));

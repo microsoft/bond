@@ -93,7 +93,7 @@ private:
             = has_custom_converter<typename element_type<T>::type>::value;
 
         typedef typename boost::mpl::if_<
-                is_same<
+                std::is_same<
                     typename std::iterator_traits<typename T::iterator>::iterator_category,
                     std::random_access_iterator_tag>,
                 boost::python::vector_indexing_suite<T, NoProxy>,
@@ -169,7 +169,7 @@ private:
 
 
     template <typename T>
-    typename boost::enable_if<is_enum<T> >::type
+    typename boost::enable_if<std::is_enum<T> >::type
     def_type(T*) const
     {
         // Expose a Bond enum to Python
@@ -216,7 +216,7 @@ private:
 
     template <typename T>
     typename boost::enable_if_c<is_basic_type<T>::value
-                            && !is_enum<T>::value>::type
+                            && !std::is_enum<T>::value>::type
     def_type(T*) const
     {}
 

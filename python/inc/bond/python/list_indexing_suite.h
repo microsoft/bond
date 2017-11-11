@@ -42,8 +42,8 @@ public:
     typedef typename base::key_type key_type;
 
     static 
-    typename boost::mpl::if_<
-        boost::is_class<data_type>,
+    typename std::conditional<
+        std::is_class<data_type>::value,
         data_type&,
         data_type
     >::type

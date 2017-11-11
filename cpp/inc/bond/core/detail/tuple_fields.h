@@ -12,7 +12,7 @@ template <typename Tuple, uint16_t Id, typename T>
 struct tuple_field
 {
     typedef Tuple struct_type;
-    typedef typename remove_reference<T>::type value_type;
+    typedef typename std::remove_reference<T>::type value_type;
     typedef typename remove_maybe<value_type>::type field_type;
     typedef reflection::optional_field_modifier field_modifier;
 

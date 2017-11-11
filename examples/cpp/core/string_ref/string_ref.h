@@ -9,7 +9,7 @@ namespace bond
 {
     template <> struct 
     is_string<boost::string_ref>
-        : true_type {};
+        : std::true_type {};
 
     inline
     const char* string_data(const boost::string_ref& str)

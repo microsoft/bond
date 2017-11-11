@@ -26,7 +26,7 @@ public:
     {}
 
     /// @brief Move constructor
-    maybe(maybe&& that) BOND_NOEXCEPT_IF(bond::is_nothrow_move_constructible<T>::value)
+    maybe(maybe&& that) BOND_NOEXCEPT_IF(std::is_nothrow_move_constructible<T>::value)
         : _value(std::move(that._value)),
           _nothing(std::move(that._nothing))
     {

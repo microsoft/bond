@@ -10,7 +10,7 @@ namespace bond
 template <typename Input> 
 struct base_input
 {
-    BOOST_STATIC_ASSERT(is_reference<Input>::value);
+    BOOST_STATIC_ASSERT(std::is_reference<Input>::value);
     typedef Input type;
     static type from(type input)
     {
@@ -28,7 +28,7 @@ hierarchy_depth
 
 
 template <typename T> struct 
-hierarchy_depth<T, typename boost::enable_if<is_class<typename schema<typename T::base>::type> >::type>
+hierarchy_depth<T, typename boost::enable_if<std::is_class<typename schema<typename T::base>::type> >::type>
     : std::integral_constant<uint16_t, 1 + hierarchy_depth<typename schema<typename T::base>::type>::value> {};
 
 

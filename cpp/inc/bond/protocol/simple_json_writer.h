@@ -103,7 +103,7 @@ public:
     }
 
     template <typename T>
-    typename boost::enable_if<is_unsigned<T> >::type
+    typename boost::enable_if<std::is_unsigned<T> >::type
     Write(T value)
     {
         this->WriteUint64(value);
@@ -115,7 +115,7 @@ public:
     }
 
     template <typename T>
-    typename boost::enable_if<is_enum<T> >::type
+    typename boost::enable_if<std::is_enum<T> >::type
     Write(const T& value)
     {
         this->WriteInt(static_cast<int>(value));
@@ -223,7 +223,7 @@ private:
 
 template <typename Buffer> struct 
 is_writer<SimpleJsonWriter<Buffer>, void>
-    : true_type {};
+    : std::true_type {};
 
 
 template <typename Buffer, typename Protocols>

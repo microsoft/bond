@@ -24,13 +24,13 @@ BOND_NORETURN void ElementNotFoundException(const Key& key);
 // is_string<std::basic_string<char, T, A> >
 template<typename T, typename A> struct
 is_string<std::basic_string<char, T, A> >
-    : true_type {};
+    : std::true_type {};
 
 
 // is_wstring<std::basic_string<wchar_t, T, A> >
 template<typename T, typename A> struct
 is_wstring<std::basic_string<wchar_t, T, A> >
-    : true_type {};
+    : std::true_type {};
 
 
 // is_string_type
@@ -44,31 +44,31 @@ is_string_type
 // is_list_container<std::list<T, A> >
 template <typename T, typename A> struct
 is_list_container<std::list<T, A> >
-    : true_type {};
+    : std::true_type {};
 
 
 // is_list_container<std::vector<T, A> >
 template <typename T, typename A> struct
 is_list_container<std::vector<T, A> >
-    : true_type {};
+    : std::true_type {};
 
 
 // require_modify_element<std::vector<bool, A> >
 template <typename A> struct
 require_modify_element<std::vector<bool, A> >
-    : true_type {};
+    : std::true_type {};
 
 
 // is_set_container<std::set<T, C, A> >
 template <typename T, typename C, typename A> struct
 is_set_container<std::set<T, C, A> >
-    : true_type {};
+    : std::true_type {};
 
 
 // is_map_container<std::map<K, T, C, A> >
 template <typename K, typename T, typename C, typename A> struct
 is_map_container<std::map<K, T, C, A> >
-    : true_type {};
+    : std::true_type {};
 
 
 // specialize element_type for map becuase map::value_type is pair<const K, T>
@@ -130,13 +130,13 @@ uint32_t container_size(const T& list)
 // use_container_allocator_for_elements
 template <typename T, typename Enable = void> struct
 use_container_allocator_for_elements
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct
 use_container_allocator_for_elements<T, typename boost::enable_if_c<
     std::uses_allocator<typename element_type<T>::type, typename T::allocator_type>::value>::type>
-    : true_type {};
+    : std::true_type {};
 
 
 // make_element
@@ -222,13 +222,13 @@ void clear_map(std::map<K, T, C, A>& map)
 // use_map_allocator_for_keys
 template <typename T, typename Enable = void> struct
 use_map_allocator_for_keys
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct
 use_map_allocator_for_keys
 <T, typename boost::enable_if<
-    is_same<typename std::allocator_traits<typename T::allocator_type>::template rebind_alloc<int>,
+    std::is_same<typename std::allocator_traits<typename T::allocator_type>::template rebind_alloc<int>,
     typename std::allocator_traits<typename element_type<T>::type::first_type::allocator_type>::template rebind_alloc<int> > >::type>
     : std::integral_constant<bool,
         !detail::is_default_allocator<typename T::allocator_type>::value> {};
@@ -256,14 +256,14 @@ make_key(T& map)
 // use_map_allocator_for_values
 template <typename T, typename Enable = void> struct
 use_map_allocator_for_values
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct
 use_map_allocator_for_values<T, typename boost::enable_if_c<
     std::uses_allocator<typename element_type<T>::type::second_type,
     typename T::allocator_type>::value>::type>
-    : true_type {};
+    : std::true_type {};
 
 
 // make_value

@@ -28,7 +28,7 @@ public:
     {}
 
     RuntimeSchema(RuntimeSchema&& rhs) BOND_NOEXCEPT_IF(
-        bond::is_nothrow_move_constructible<boost::shared_ptr<SchemaDef> >::value)
+        std::is_nothrow_move_constructible<boost::shared_ptr<SchemaDef> >::value)
         : schema(rhs.schema),
           type(rhs.type),
           instance(std::move(rhs.instance))

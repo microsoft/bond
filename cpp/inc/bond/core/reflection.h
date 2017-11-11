@@ -346,12 +346,12 @@ struct no_base {};
 
 template <typename T, typename Enable = void> struct
 is_writer
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct
 is_writer<T, typename boost::enable_if<check_method<void (T::*)(const Metadata&, bool), &T::WriteStructBegin> >::type>
-     : true_type {};
+     : std::true_type {};
 
 
 template <typename T>
@@ -428,13 +428,13 @@ is_container
 
 template <typename Field, typename Transform, typename Enable = void> struct
 is_fast_path_field
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename Field, typename Transform> struct
-is_fast_path_field<Field, Transform, typename boost::enable_if<is_same<typename Field::struct_type,
-                                                                       typename Transform::FastPathType> >::type>
-     : true_type {};
+is_fast_path_field<Field, Transform, typename boost::enable_if<std::is_same<typename Field::struct_type,
+                                                                            typename Transform::FastPathType> >::type>
+     : std::true_type {};
 
 
 template <typename T> struct
@@ -449,7 +449,7 @@ is_struct_field
 
 template <typename T1, typename T2, typename Enable = void> struct
 is_matching_container
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T1, typename T2> struct
@@ -458,13 +458,13 @@ is_matching_basic
         (is_string<T1>::value && is_string<T2>::value)
         || (is_wstring<T1>::value && is_wstring<T2>::value)
         || ((sizeof(T1) <= sizeof(T2))
-            && ((is_unsigned<T1>::value && is_unsigned<T2>::value)
+            && ((std::is_unsigned<T1>::value && std::is_unsigned<T2>::value)
                 || (is_signed_int_or_enum<T1>::value && is_signed_int_or_enum<T2>::value)))> {};
 
 
 template <typename T> struct
 is_matching_basic<typename aliased_type<T>::type, T>
-    : boost::true_type {};
+    : std::true_type {};
 
 
 template <typename T1, typename T2> struct
@@ -477,27 +477,27 @@ is_matching
 
 template <typename T> struct
 is_matching_basic<T, T>
-    : true_type {};
+    : std::true_type {};
 
 
 template <> struct
 is_matching_basic<bool, bool>
-    : true_type {};
+    : std::true_type {};
 
 
 template <typename T> struct
 is_matching_basic<bool, T>
-    : false_type {};
+    : std::false_type {};
 
 
 template <> struct
 is_matching_basic<uint8_t, bool>
-    : false_type {};
+    : std::false_type {};
 
 
 template <> struct
 is_matching_basic<float, double>
-    : true_type {};
+    : std::true_type {};
 
 
 template <typename T, typename Enable> struct
@@ -522,7 +522,7 @@ is_matching<std::pair<T1, T2>, std::pair<U1, U2> >
 
 template <typename T1, typename T2> struct
 is_matching<std::pair<T1, T2>, std::pair<T1, T2> >
-    : true_type {};
+    : std::true_type {};
 
 
 // value<T> matches if type matches
@@ -539,7 +539,7 @@ is_matching<value<void, Reader>, T>
 
 template <typename T, typename X, typename Enable = void> struct
 is_element_matching
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T, typename X> struct
@@ -556,7 +556,7 @@ is_element_matching<value<void, Reader>, X, typename boost::enable_if<is_contain
 
 template <typename T, typename X, typename Enable = void> struct
 is_map_element_matching
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename X, typename T> struct
@@ -573,7 +573,7 @@ is_map_element_matching<value<void, Reader>, X, typename boost::enable_if<is_map
 
 template <typename T, typename X, typename Enable = void> struct
 is_map_key_matching
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T, typename X> struct
@@ -588,13 +588,13 @@ is_basic_type
 
 template <> struct
 is_basic_type<void>
-    : false_type {};
+    : std::false_type {};
 
 
 // is_nested_container
 template <typename T, typename Enable = void> struct
 is_nested_container
-    : false_type {};
+    : std::false_type {};
 
 template <typename T> struct
 is_nested_container<T, typename boost::enable_if<is_map_container<T> >::type>
@@ -610,7 +610,7 @@ is_nested_container<T, typename boost::enable_if<is_list_container<T> >::type>
 
 template <typename T, typename Enable = void> struct
 is_struct_container
-    : false_type {};
+    : std::false_type {};
 
 template <typename T> struct
 is_struct_container<T, typename boost::enable_if<is_map_container<T> >::type>
@@ -636,7 +636,7 @@ is_struct_container_field
 // is_basic_container
 template <typename T, typename Enable = void> struct
 is_basic_container
-    : false_type {};
+    : std::false_type {};
 
 template <typename T> struct
 is_basic_container<T, typename boost::enable_if<is_map_container<T> >::type>
@@ -648,7 +648,7 @@ is_basic_container<T, typename boost::enable_if<is_list_container<T> >::type>
 
 template <typename T> struct
 is_basic_container<T, typename boost::enable_if<is_set_container<T> >::type>
-    : true_type {};
+    : std::true_type {};
 
 
 template <typename T, typename F> struct
@@ -668,12 +668,12 @@ is_matching_basic_field
 
 template <typename T, typename Reader> struct
 is_basic_type<value<T, Reader> >
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T1, typename T2> struct
 is_basic_type<std::pair<T1, T2> >
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T, typename X, typename Enable = void> struct
@@ -749,7 +749,7 @@ get_type_id<std::pair<T1, T2> >
 template <typename T1, typename T2>
 const std::pair<BondDataType, BondDataType>
 get_type_id<std::pair<T1, T2> >::value = std::make_pair(
-    get_type_id<typename remove_const<T1>::type>::value,
+    get_type_id<typename std::remove_const<T1>::type>::value,
     get_type_id<T2>::value);
 
 template <> struct
@@ -838,11 +838,11 @@ get_list_sub_type_id
     : std::integral_constant<ListSubType, NO_SUBTYPE> {};
 
 template <typename T> struct
-get_list_sub_type_id<T, typename boost::enable_if<is_nullable<typename remove_const<T>::type> >::type>
+get_list_sub_type_id<T, typename boost::enable_if<is_nullable<typename std::remove_const<T>::type> >::type>
     : std::integral_constant<ListSubType, NULLABLE_SUBTYPE> {};
 
 template <typename T> struct
-get_list_sub_type_id<T, typename boost::enable_if<is_blob<typename remove_const<T>::type> >::type>
+get_list_sub_type_id<T, typename boost::enable_if<is_blob<typename std::remove_const<T>::type> >::type>
     : std::integral_constant<ListSubType, BLOB_SUBTYPE> {};
 
 

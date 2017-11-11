@@ -14,12 +14,12 @@ namespace bond
 
 template <typename Buffer, typename T, typename Enable = void> struct
 implements_varint_write
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename Buffer, typename T> struct
 implements_varint_write<Buffer, T, typename boost::enable_if<bond::check_method<void (Buffer::*)(T), &Buffer::WriteVariableUnsigned> >::type>
-    : true_type {};
+    : std::true_type {};
 
 
 template<typename Buffer, typename T>
@@ -27,7 +27,7 @@ inline
 typename boost::enable_if<implements_varint_write<Buffer, T> >::type
 WriteVariableUnsigned(Buffer& output, T value)
 {
-    BOOST_STATIC_ASSERT(is_unsigned<T>::value);
+    BOOST_STATIC_ASSERT(std::is_unsigned<T>::value);
 
     // Use Buffer's implementation of WriteVariableUnsigned
     output.WriteVariableUnsigned(value);
@@ -39,7 +39,7 @@ inline
 typename boost::disable_if<implements_varint_write<Buffer, T> >::type
 WriteVariableUnsigned(Buffer& output, T value)
 {
-    BOOST_STATIC_ASSERT(is_unsigned<T>::value);
+    BOOST_STATIC_ASSERT(std::is_unsigned<T>::value);
 
     // Use generic WriteVariableUnsigned
     GenericWriteVariableUnsigned(output, value);
@@ -66,12 +66,12 @@ void GenericWriteVariableUnsigned(Buffer& output, T value)
 
 template <typename Buffer, typename T, typename Enable = void> struct
 implements_varint_read
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename Buffer, typename T> struct
 implements_varint_read<Buffer, T, typename boost::enable_if<bond::check_method<void (Buffer::*)(T&), &Buffer::ReadVariableUnsigned> >::type>
-    : true_type {};
+    : std::true_type {};
 
 
 template<typename Buffer, typename T>
@@ -79,7 +79,7 @@ inline
 typename boost::enable_if<implements_varint_read<Buffer, T> >::type
 ReadVariableUnsigned(Buffer& input, T& value)
 {
-    BOOST_STATIC_ASSERT(is_unsigned<T>::value);
+    BOOST_STATIC_ASSERT(std::is_unsigned<T>::value);
 
     // Use Buffer's implementation of ReadVariableUnsigned
     input.ReadVariableUnsigned(value);
@@ -111,7 +111,7 @@ inline
 typename boost::disable_if<implements_varint_read<Buffer, T> >::type
 ReadVariableUnsigned(Buffer& input, T& value)
 {
-    BOOST_STATIC_ASSERT(is_unsigned<T>::value);
+    BOOST_STATIC_ASSERT(std::is_unsigned<T>::value);
 
     // Use generic ReadVariableUnsigned
     GenericReadVariableUnsigned(input, value);
@@ -121,7 +121,7 @@ ReadVariableUnsigned(Buffer& input, T& value)
 // ZigZag encoding
 template<typename T>
 inline
-typename make_unsigned<T>::type EncodeZigZag(T value)
+typename std::make_unsigned<T>::type EncodeZigZag(T value)
 {
     return (value << 1) ^ (value >> (sizeof(T) * 8 - 1));
 }
@@ -129,9 +129,9 @@ typename make_unsigned<T>::type EncodeZigZag(T value)
 // ZigZag decoding
 template<typename T>
 inline
-typename make_signed<T>::type DecodeZigZag(T value)
+typename std::make_signed<T>::type DecodeZigZag(T value)
 {
-    return (value >> 1) ^ (-static_cast<typename make_signed<T>::type>((value & 1)));
+    return (value >> 1) ^ (-static_cast<typename std::make_signed<T>::type>((value & 1)));
 }
 
 

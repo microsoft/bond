@@ -9,10 +9,6 @@
 #define BOND_NO_CXX11_NOEXCEPT
 #endif
 
-#if defined(BOOST_NO_CXX11_HDR_TYPE_TRAITS) && (_CPPLIB_VER < 520) && !defined(__GXX_EXPERIMENTAL_CXX0X__)
-#define BOND_NO_CXX11_HDR_TYPE_TRAITS
-#endif
-
 // std::once seems problematic on Linux (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=60662)
 // For now we use std::call_once only on MSVC and boost::call_once on GCC/Clang.
 #if defined(BOOST_NO_CXX11_HDR_MUTEX) || !defined(_MSC_VER)

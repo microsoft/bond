@@ -15,42 +15,42 @@ namespace bond
 
 template <typename T> struct 
 is_set_container 
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct 
 is_map_container 
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct 
 is_list_container 
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct
 require_modify_element
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct 
 is_string 
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct 
 is_wstring 
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct
 is_blob
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct
 is_nullable
-    : false_type {};
+    : std::false_type {};
 
 
 template <typename T> struct 

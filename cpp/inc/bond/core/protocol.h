@@ -37,36 +37,36 @@ namespace bond
 #ifdef BOND_COMPACT_BINARY_PROTOCOL
 template <typename Buffer> struct 
 is_protocol_enabled<CompactBinaryReader<Buffer> > 
-    : true_type {};
+    : std::true_type {};
 #endif 
 
 #ifdef BOND_SIMPLE_BINARY_PROTOCOL
 template <typename Buffer, typename MarshaledBondedProtocols> struct
 is_protocol_enabled<SimpleBinaryReader<Buffer, MarshaledBondedProtocols> >
-    : true_type {};
+    : std::true_type {};
 #endif 
 
 #ifdef BOND_SIMPLE_JSON_PROTOCOL
 template <typename Buffer> struct 
 is_protocol_enabled<SimpleJsonReader<Buffer> > 
-    : true_type {};
+    : std::true_type {};
 #endif 
 
 #ifdef BOND_FAST_BINARY_PROTOCOL
 template <typename Buffer> struct 
 is_protocol_enabled<FastBinaryReader<Buffer> > 
-    : true_type {};
+    : std::true_type {};
 #endif 
 
 // uses_static_parser
 template <typename Reader, typename Enable = void> struct
 uses_static_parser
-    : false_type {};
+    : std::false_type {};
 
 template <typename Reader> struct
 uses_static_parser<Reader, typename boost::enable_if<
-    is_same<typename Reader::Parser, StaticParser<Reader&> > >::type>
-    : true_type {};
+    std::is_same<typename Reader::Parser, StaticParser<Reader&> > >::type>
+    : std::true_type {};
 
 template <typename Reader> struct
 uses_static_parser<Reader&>
@@ -75,12 +75,12 @@ uses_static_parser<Reader&>
 // uses_dynamic_parser
 template <typename Reader, typename Enable = void> struct
 uses_dynamic_parser
-    : false_type {};
+    : std::false_type {};
 
 template <typename Reader> struct
 uses_dynamic_parser<Reader, typename boost::enable_if<
-    is_same<typename Reader::Parser, DynamicParser<Reader&> > >::type>
-    : true_type {};
+    std::is_same<typename Reader::Parser, DynamicParser<Reader&> > >::type>
+    : std::true_type {};
 
 template <typename Reader> struct
 uses_dynamic_parser<Reader&>
@@ -89,12 +89,12 @@ uses_dynamic_parser<Reader&>
 // uses_dom_parser
 template <typename Reader, typename Enable = void> struct
 uses_dom_parser
-    : false_type {};
+    : std::false_type {};
 
 template <typename Reader> struct
 uses_dom_parser<Reader, typename boost::enable_if<
-    is_same<typename Reader::Parser, DOMParser<Reader&> > >::type>
-    : true_type {};
+    std::is_same<typename Reader::Parser, DOMParser<Reader&> > >::type>
+    : std::true_type {};
 
 template <typename Reader> struct
 uses_dom_parser<Reader&>

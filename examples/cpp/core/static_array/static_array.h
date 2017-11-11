@@ -13,7 +13,7 @@ namespace bond
     //
     template <typename T, std::size_t N> struct
     is_list_container<std::array<T, N> >
-        : true_type
+        : std::true_type
     {};
 
     //
