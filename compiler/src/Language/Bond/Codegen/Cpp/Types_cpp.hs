@@ -8,8 +8,10 @@ module Language.Bond.Codegen.Cpp.Types_cpp (types_cpp) where
 import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
+import Data.List
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
+import Language.Bond.Syntax.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 import qualified Language.Bond.Codegen.Cpp.Util as CPP
@@ -40,21 +42,21 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
     {
     namespace #{declName}
     {
-        const
-        std::map<std::string, enum #{declName}> _name_to_value_#{declName}
+        const std::map<std::string, enum #{declName}> _name_to_value_#{declName}
             {
-                #{commaLineSep 4 constant enumConstants}
+                #{commaLineSep 4 nameValueConst $ enumConstByName}
             };
 
-        const
-        std::map<enum #{declName}, std::string> _value_to_name_#{declName} =
-            ::bond::reverse_map(_name_to_value_#{declName});
+        const std::map<enum #{declName}, std::string> _value_to_name_#{declName}
+            {
+                #{commaLineSep 4 valueNameConst $ enumConstByValue}
+            };
 
         const std::string& ToString(enum #{declName} value)
         {
-            auto it = GetValueToNameMap(value).find(value);
+            auto it = _value_to_name_#{declName}.find(value);
 
-            if (GetValueToNameMap(value).end() == it)
+            if (_value_to_name_#{declName}.end() == it)
                 ::bond::InvalidEnumValueException(value, "#{declName}");
 
             return it->second;
@@ -89,9 +91,13 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 
             return true;
         }
+
     } // namespace #{declName}
     } // namespace _bond_enumerators|]
       where
-        constant Constant {..} = [lt|{ "#{constantName}", #{constantName} }|]
+        nameValueConst Constant {..} = [lt|{ "#{constantName}", #{constantName} }|]
+        valueNameConst (name, _) = [lt|{ #{name}, "#{name}" }|]
+        enumConstByName = sortBy (\x y -> constantName x `compare` constantName y) enumConstants
+        enumConstByValue = sortBy (\x y -> snd x `compare` snd y) $ constNameValues enumConstants
 
     statics _ = mempty

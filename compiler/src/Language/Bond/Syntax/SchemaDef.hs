@@ -200,12 +200,7 @@ makeSchemaDef root = SchemaDef $ map structDef structs
         resolve (BT_UserDefined a@Alias{} args) = resolve $ resolveAlias a args
         resolve t = t
     -- resolve value of an enum constant
-    resolveEnum Enum{..} n = fromIntegral . snd . fromJust $ find ((n ==) . fst) $ nameValues 0 enumConstants
-      where
-        -- fill in values for constants w/o explicitly specified value
-        nameValues _ [] = []
-        nameValues _ ((Constant name (Just value)):xs) = (name, value) : nameValues (value + 1) xs
-        nameValues next ((Constant name Nothing):xs)   = (name, next) : nameValues (next + 1) xs
+    resolveEnum Enum{..} n = fromIntegral . snd . fromJust $ find ((n ==) . fst) $ constNameValues enumConstants
     resolveEnum _ _ = error "makeSchemaDef.resolveEnum: not a enum"
 
 $(deriveToJSON defaultOptions {omitNothingFields = True} ''SchemaDef)

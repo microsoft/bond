@@ -9,21 +9,21 @@ namespace tests
     {
     namespace EnumToWrap
     {
-        const
-        std::map<std::string, enum EnumToWrap> _name_to_value_EnumToWrap
+        const std::map<std::string, enum EnumToWrap> _name_to_value_EnumToWrap
             {
                 { "anEnumValue", anEnumValue }
             };
 
-        const
-        std::map<enum EnumToWrap, std::string> _value_to_name_EnumToWrap =
-            ::bond::reverse_map(_name_to_value_EnumToWrap);
+        const std::map<enum EnumToWrap, std::string> _value_to_name_EnumToWrap
+            {
+                { anEnumValue, "anEnumValue" }
+            };
 
         const std::string& ToString(enum EnumToWrap value)
         {
-            auto it = GetValueToNameMap(value).find(value);
+            auto it = _value_to_name_EnumToWrap.find(value);
 
-            if (GetValueToNameMap(value).end() == it)
+            if (_value_to_name_EnumToWrap.end() == it)
                 ::bond::InvalidEnumValueException(value, "EnumToWrap");
 
             return it->second;
@@ -58,6 +58,7 @@ namespace tests
 
             return true;
         }
+
     } // namespace EnumToWrap
     } // namespace _bond_enumerators
 

@@ -36,6 +36,7 @@ module Language.Bond.Syntax.Util
     , foldMapType
       -- * Helper functions
     , resolveAlias
+    , constNameValues
     ) where
 
 import Data.Maybe
@@ -231,3 +232,12 @@ resolveAlias Alias {..} args = fmapType resolveParam aliasType
     paramsArgs = zip declParams args
 resolveAlias _ _ = error "resolveAlias: impossible happened."
 
+
+
+-- | Fill in values for constants w/o explicitly specified value
+constNameValues :: [Constant] -> [(String, Int)]
+constNameValues constants = nameValues 0 constants
+  where
+    nameValues _ [] = []
+    nameValues _ ((Constant name (Just value)):xs) = (name, value) : nameValues (value + 1) xs
+    nameValues next ((Constant name Nothing):xs)   = (name, next) : nameValues (next + 1) xs
