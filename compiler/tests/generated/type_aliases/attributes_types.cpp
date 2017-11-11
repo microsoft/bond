@@ -10,9 +10,10 @@ namespace tests
     namespace Enum
     {
         const
-        std::map<std::string, enum Enum> _name_to_value_Enum =
-            boost::assign::map_list_of<std::string, enum Enum>
-                ("Value1", Value1);
+        std::map<std::string, enum Enum> _name_to_value_Enum
+            {
+                { "Value1", Value1 }
+            };
 
         const
         std::map<enum Enum, std::string> _value_to_name_Enum =

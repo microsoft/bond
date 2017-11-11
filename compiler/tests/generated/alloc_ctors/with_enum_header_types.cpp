@@ -10,19 +10,20 @@ namespace tests
     namespace EnumType1
     {
         const
-        std::map<std::string, enum EnumType1> _name_to_value_EnumType1 =
-            boost::assign::map_list_of<std::string, enum EnumType1>
-                ("EnumValue1", EnumValue1)
-                ("EnumValue2", EnumValue2)
-                ("EnumValue3", EnumValue3)
-                ("EnumValue4", EnumValue4)
-                ("Low", Low)
-                ("EnumValue5", EnumValue5)
-                ("EnumValue6", EnumValue6)
-                ("Int32Min", Int32Min)
-                ("Int32Max", Int32Max)
-                ("UInt32Min", UInt32Min)
-                ("UInt32Max", UInt32Max);
+        std::map<std::string, enum EnumType1> _name_to_value_EnumType1
+            {
+                { "EnumValue1", EnumValue1 },
+                { "EnumValue2", EnumValue2 },
+                { "EnumValue3", EnumValue3 },
+                { "EnumValue4", EnumValue4 },
+                { "Low", Low },
+                { "EnumValue5", EnumValue5 },
+                { "EnumValue6", EnumValue6 },
+                { "Int32Min", Int32Min },
+                { "Int32Max", Int32Max },
+                { "UInt32Min", UInt32Min },
+                { "UInt32Max", UInt32Max }
+            };
 
         const
         std::map<enum EnumType1, std::string> _value_to_name_EnumType1 =

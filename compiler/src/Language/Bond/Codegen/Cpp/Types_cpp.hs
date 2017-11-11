@@ -41,9 +41,10 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
     namespace #{declName}
     {
         const
-        std::map<std::string, enum #{declName}> _name_to_value_#{declName} =
-            boost::assign::map_list_of<std::string, enum #{declName}>
-                #{newlineSep 4 constant enumConstants};
+        std::map<std::string, enum #{declName}> _name_to_value_#{declName}
+            {
+                #{commaLineSep 4 constant enumConstants}
+            };
 
         const
         std::map<enum #{declName}, std::string> _value_to_name_#{declName} =
@@ -68,6 +69,6 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
     } // namespace #{declName}
     } // namespace _bond_enumerators|]
       where
-        constant Constant {..} = [lt|("#{constantName}", #{constantName})|]
+        constant Constant {..} = [lt|{ "#{constantName}", #{constantName} }|]
 
     statics _ = mempty

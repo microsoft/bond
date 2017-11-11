@@ -10,9 +10,10 @@ namespace tests
     namespace EnumToWrap
     {
         const
-        std::map<std::string, enum EnumToWrap> _name_to_value_EnumToWrap =
-            boost::assign::map_list_of<std::string, enum EnumToWrap>
-                ("anEnumValue", anEnumValue);
+        std::map<std::string, enum EnumToWrap> _name_to_value_EnumToWrap
+            {
+                { "anEnumValue", anEnumValue }
+            };
 
         const
         std::map<enum EnumToWrap, std::string> _value_to_name_EnumToWrap =
