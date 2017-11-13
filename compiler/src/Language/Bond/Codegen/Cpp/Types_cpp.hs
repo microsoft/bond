@@ -41,9 +41,20 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
     {
     namespace #{declName}
     {
+        namespace
+        {
+            struct _hash_#{declName}
+            {
+                std::underlying_type<enum #{declName}>::type operator()(enum #{declName} value) const
+                {
+                    return static_cast<std::underlying_type<enum #{declName}>::type>(value);
+                }
+            };
+        }
+
         const std::string& ToString(enum #{declName} value)
         {
-            const auto& map = GetValueToNameMap<std::unordered_map<enum #{declName}, std::string> >(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum #{declName}, std::string, _hash_#{declName}> >(value);
             auto it = map.find(value);
 
             if (map.end() == it)
@@ -73,7 +84,7 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 
         bool FromEnum(std::string& name, enum #{declName} value)
         {
-            const auto& map = GetValueToNameMap<std::unordered_map<enum #{declName}, std::string> >(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum #{declName}, std::string, _hash_#{declName}> >(value);
             auto it = map.find(value);
 
             if (map.end() == it)
