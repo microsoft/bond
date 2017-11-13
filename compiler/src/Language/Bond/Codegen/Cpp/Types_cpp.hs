@@ -45,9 +45,9 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
         {
             struct _hash_#{declName}
             {
-                std::underlying_type<enum #{declName}>::type operator()(enum #{declName} value) const
+                std::size_t operator()(enum #{declName} value) const
                 {
-                    return static_cast<std::underlying_type<enum #{declName}>::type>(value);
+                    return static_cast<std::size_t>(value);
                 }
             };
         }

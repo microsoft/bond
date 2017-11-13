@@ -10,9 +10,20 @@ namespace tests
     {
     namespace EnumToWrap
     {
+        namespace
+        {
+            struct _hash_EnumToWrap
+            {
+                std::size_t operator()(enum EnumToWrap value) const
+                {
+                    return static_cast<std::size_t>(value);
+                }
+            };
+        }
+
         const std::string& ToString(enum EnumToWrap value)
         {
-            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumToWrap, std::string> >(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumToWrap, std::string, _hash_EnumToWrap> >(value);
             auto it = map.find(value);
 
             if (map.end() == it)
@@ -42,7 +53,7 @@ namespace tests
 
         bool FromEnum(std::string& name, enum EnumToWrap value)
         {
-            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumToWrap, std::string> >(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumToWrap, std::string, _hash_EnumToWrap> >(value);
             auto it = map.find(value);
 
             if (map.end() == it)

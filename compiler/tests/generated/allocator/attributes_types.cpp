@@ -10,9 +10,20 @@ namespace tests
     {
     namespace Enum
     {
+        namespace
+        {
+            struct _hash_Enum
+            {
+                std::size_t operator()(enum Enum value) const
+                {
+                    return static_cast<std::size_t>(value);
+                }
+            };
+        }
+
         const std::string& ToString(enum Enum value)
         {
-            const auto& map = GetValueToNameMap<std::unordered_map<enum Enum, std::string> >(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum Enum, std::string, _hash_Enum> >(value);
             auto it = map.find(value);
 
             if (map.end() == it)
@@ -42,7 +53,7 @@ namespace tests
 
         bool FromEnum(std::string& name, enum Enum value)
         {
-            const auto& map = GetValueToNameMap<std::unordered_map<enum Enum, std::string> >(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum Enum, std::string, _hash_Enum> >(value);
             auto it = map.find(value);
 
             if (map.end() == it)
