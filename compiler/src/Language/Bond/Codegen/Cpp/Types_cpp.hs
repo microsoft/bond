@@ -43,7 +43,7 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
     {
         const std::string& ToString(enum #{declName} value)
         {
-            const auto& map = GetValueToNameMap<std::unordered_map<enum #{declName}, std::string>>(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum #{declName}, std::string> >(value);
             auto it = map.find(value);
 
             if (map.end() == it)

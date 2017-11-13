@@ -33,6 +33,8 @@ different versioning scheme, following the Haskell community's
 * C++ codegen now can use [`std::scoped_allocator_adaptor`](http://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor)
   for strings and containers when custom allocator is used and `--scoped-alloc` flag
   is passed to `gbc`.
+* C++ codegen now generates lazily constructible enum maps and accepts user-defined
+  map types. Default enum conversion functions now use `std::unordered_map`.
 
 ### C++ ###
 

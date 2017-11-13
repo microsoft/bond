@@ -12,7 +12,7 @@ namespace tests
     {
         const std::string& ToString(enum EnumType1 value)
         {
-            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumType1, std::string>>(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumType1, std::string> >(value);
             auto it = map.find(value);
 
             if (map.end() == it)
