@@ -1,6 +1,7 @@
 
 #include "with_enum_header_reflection.h"
 #include <bond/core/exception.h>
+#include <unordered_map>
 
 namespace tests
 {
@@ -9,41 +10,12 @@ namespace tests
     {
     namespace EnumType1
     {
-        const std::map<std::string, enum EnumType1> _name_to_value_EnumType1
-            {
-                { "EnumValue1", EnumValue1 },
-                { "EnumValue2", EnumValue2 },
-                { "EnumValue3", EnumValue3 },
-                { "EnumValue4", EnumValue4 },
-                { "EnumValue5", EnumValue5 },
-                { "EnumValue6", EnumValue6 },
-                { "Int32Max", Int32Max },
-                { "Int32Min", Int32Min },
-                { "Low", Low },
-                { "UInt32Max", UInt32Max },
-                { "UInt32Min", UInt32Min }
-            };
-
-        const std::map<enum EnumType1, std::string> _value_to_name_EnumType1
-            {
-                { Int32Min, "Int32Min" },
-                { EnumValue3, "EnumValue3" },
-                { EnumValue5, "EnumValue5" },
-                { UInt32Min, "UInt32Min" },
-                { Low, "Low" },
-                { EnumValue1, "EnumValue1" },
-                { EnumValue2, "EnumValue2" },
-                { EnumValue4, "EnumValue4" },
-                { Int32Max, "Int32Max" },
-                { EnumValue6, "EnumValue6" },
-                { UInt32Max, "UInt32Max" }
-            };
-
         const std::string& ToString(enum EnumType1 value)
         {
-            auto it = _value_to_name_EnumType1.find(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumType1, std::string>>(value);
+            auto it = map.find(value);
 
-            if (_value_to_name_EnumType1.end() == it)
+            if (map.end() == it)
                 ::bond::InvalidEnumValueException(value, "EnumType1");
 
             return it->second;
@@ -57,9 +29,10 @@ namespace tests
 
         bool ToEnum(enum EnumType1& value, const std::string& name)
         {
-            auto it = _name_to_value_EnumType1.find(name);
+            const auto& map = GetNameToValueMap<std::unordered_map<std::string, enum EnumType1> >(value);
+            auto it = map.find(name);
 
-            if (_name_to_value_EnumType1.end() == it)
+            if (map.end() == it)
                 return false;
 
             value = it->second;
@@ -69,9 +42,10 @@ namespace tests
 
         bool FromEnum(std::string& name, enum EnumType1 value)
         {
-            auto it = _value_to_name_EnumType1.find(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumType1, std::string> >(value);
+            auto it = map.find(value);
 
-            if (_value_to_name_EnumType1.end() == it)
+            if (map.end() == it)
                 return false;
 
             name = it->second;

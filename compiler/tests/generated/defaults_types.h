@@ -40,30 +40,57 @@ namespace tests
             OctNeg = static_cast<int32_t>(-83)
         };
         
-        extern const std::map<enum EnumType1, std::string> _value_to_name_EnumType1;
-        extern const std::map<std::string, enum EnumType1> _name_to_value_EnumType1;
-
-        inline
-        const char* GetTypeName(enum EnumType1)
+        inline const char* GetTypeName(enum EnumType1)
         {
             return "EnumType1";
         }
 
-        inline
-        const char* GetTypeName(enum EnumType1, const ::bond::qualified_name_tag&)
+        inline const char* GetTypeName(enum EnumType1, const ::bond::qualified_name_tag&)
         {
             return "tests.EnumType1";
         }
 
-        inline
-        const std::map<enum EnumType1, std::string>& GetValueToNameMap(enum EnumType1)
+        template <typename Map = std::map<enum EnumType1, std::string> >
+        inline const Map& GetValueToNameMap(enum EnumType1)
         {
+            static const Map _value_to_name_EnumType1
+                {
+                    { Int32Min, "Int32Min" },
+                    { HexNeg, "HexNeg" },
+                    { OctNeg, "OctNeg" },
+                    { EnumValue3, "EnumValue3" },
+                    { EnumValue5, "EnumValue5" },
+                    { UInt32Min, "UInt32Min" },
+                    { Low, "Low" },
+                    { EnumValue1, "EnumValue1" },
+                    { EnumValue2, "EnumValue2" },
+                    { EnumValue4, "EnumValue4" },
+                    { Int32Max, "Int32Max" },
+                    { EnumValue6, "EnumValue6" },
+                    { UInt32Max, "UInt32Max" }
+                };
             return _value_to_name_EnumType1;
         }
 
-        inline
-        const std::map<std::string, enum EnumType1>& GetNameToValueMap(enum EnumType1)
+        template <typename Map = std::map<std::string, enum EnumType1> >
+        inline const Map& GetNameToValueMap(enum EnumType1)
         {
+            static const Map _name_to_value_EnumType1
+                {
+                    { "EnumValue1", EnumValue1 },
+                    { "EnumValue2", EnumValue2 },
+                    { "EnumValue3", EnumValue3 },
+                    { "EnumValue4", EnumValue4 },
+                    { "EnumValue5", EnumValue5 },
+                    { "EnumValue6", EnumValue6 },
+                    { "HexNeg", HexNeg },
+                    { "Int32Max", Int32Max },
+                    { "Int32Min", Int32Min },
+                    { "Low", Low },
+                    { "OctNeg", OctNeg },
+                    { "UInt32Max", UInt32Max },
+                    { "UInt32Min", UInt32Min }
+                };
             return _name_to_value_EnumType1;
         }
 

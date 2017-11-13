@@ -6,6 +6,7 @@
 module Language.Bond.Codegen.Cpp.Types_h (types_h) where
 
 import System.FilePath
+import Data.List
 import Data.Maybe
 import Data.Monoid
 import Prelude
@@ -386,30 +387,33 @@ namespace std
     namespace #{declName}
     {
         #{enumDefinition}
-        extern const std::map<enum #{declName}, std::string> _value_to_name_#{declName};
-        extern const std::map<std::string, enum #{declName}> _name_to_value_#{declName};
-
-        inline
-        const char* GetTypeName(enum #{declName})
+        inline const char* GetTypeName(enum #{declName})
         {
             return "#{declName}";
         }
 
-        inline
-        const char* GetTypeName(enum #{declName}, const ::bond::qualified_name_tag&)
+        inline const char* GetTypeName(enum #{declName}, const ::bond::qualified_name_tag&)
         {
             return "#{getDeclTypeName idl e}";
         }
 
-        inline
-        const std::map<enum #{declName}, std::string>& GetValueToNameMap(enum #{declName})
+        template <typename Map = std::map<enum #{declName}, std::string> >
+        inline const Map& GetValueToNameMap(enum #{declName})
         {
+            static const Map _value_to_name_#{declName}
+                {
+                    #{commaLineSep 5 valueNameConst $ enumConstByValue}
+                };
             return _value_to_name_#{declName};
         }
 
-        inline
-        const std::map<std::string, enum #{declName}>& GetNameToValueMap(enum #{declName})
+        template <typename Map = std::map<std::string, enum #{declName}> >
+        inline const Map& GetNameToValueMap(enum #{declName})
         {
+            static const Map _name_to_value_#{declName}
+                {
+                    #{commaLineSep 5 nameValueConst $ enumConstByName}
+                };
             return _name_to_value_#{declName};
         }
 
@@ -430,5 +434,9 @@ namespace std
         |]
         enumUsing = if enumHeader then mempty else [lt|using namespace _bond_enumerators::#{declName};
     |]
+        nameValueConst Constant {..} = [lt|{ "#{constantName}", #{constantName} }|]
+        valueNameConst (name, _) = [lt|{ #{name}, "#{name}" }|]
+        enumConstByName = sortBy (\x y -> constantName x `compare` constantName y) enumConstants
+        enumConstByValue = sortBy (\x y -> snd x `compare` snd y) $ constNameValues enumConstants
 
     typeDeclaration _ = mempty

@@ -112,30 +112,33 @@ namespace tests
             anEnumValue
         };
         
-        extern const std::map<enum EnumToWrap, std::string> _value_to_name_EnumToWrap;
-        extern const std::map<std::string, enum EnumToWrap> _name_to_value_EnumToWrap;
-
-        inline
-        const char* GetTypeName(enum EnumToWrap)
+        inline const char* GetTypeName(enum EnumToWrap)
         {
             return "EnumToWrap";
         }
 
-        inline
-        const char* GetTypeName(enum EnumToWrap, const ::bond::qualified_name_tag&)
+        inline const char* GetTypeName(enum EnumToWrap, const ::bond::qualified_name_tag&)
         {
             return "tests.EnumToWrap";
         }
 
-        inline
-        const std::map<enum EnumToWrap, std::string>& GetValueToNameMap(enum EnumToWrap)
+        template <typename Map = std::map<enum EnumToWrap, std::string> >
+        inline const Map& GetValueToNameMap(enum EnumToWrap)
         {
+            static const Map _value_to_name_EnumToWrap
+                {
+                    { anEnumValue, "anEnumValue" }
+                };
             return _value_to_name_EnumToWrap;
         }
 
-        inline
-        const std::map<std::string, enum EnumToWrap>& GetNameToValueMap(enum EnumToWrap)
+        template <typename Map = std::map<std::string, enum EnumToWrap> >
+        inline const Map& GetNameToValueMap(enum EnumToWrap)
         {
+            static const Map _name_to_value_EnumToWrap
+                {
+                    { "anEnumValue", anEnumValue }
+                };
             return _name_to_value_EnumToWrap;
         }
 

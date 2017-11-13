@@ -28,30 +28,33 @@ namespace tests
             Value1
         };
         
-        extern const std::map<enum Enum, std::string> _value_to_name_Enum;
-        extern const std::map<std::string, enum Enum> _name_to_value_Enum;
-
-        inline
-        const char* GetTypeName(enum Enum)
+        inline const char* GetTypeName(enum Enum)
         {
             return "Enum";
         }
 
-        inline
-        const char* GetTypeName(enum Enum, const ::bond::qualified_name_tag&)
+        inline const char* GetTypeName(enum Enum, const ::bond::qualified_name_tag&)
         {
             return "tests.Enum";
         }
 
-        inline
-        const std::map<enum Enum, std::string>& GetValueToNameMap(enum Enum)
+        template <typename Map = std::map<enum Enum, std::string> >
+        inline const Map& GetValueToNameMap(enum Enum)
         {
+            static const Map _value_to_name_Enum
+                {
+                    { Value1, "Value1" }
+                };
             return _value_to_name_Enum;
         }
 
-        inline
-        const std::map<std::string, enum Enum>& GetNameToValueMap(enum Enum)
+        template <typename Map = std::map<std::string, enum Enum> >
+        inline const Map& GetNameToValueMap(enum Enum)
         {
+            static const Map _name_to_value_Enum
+                {
+                    { "Value1", Value1 }
+                };
             return _name_to_value_Enum;
         }
 

@@ -1,6 +1,7 @@
 
 #include "attributes_reflection.h"
 #include <bond/core/exception.h>
+#include <unordered_map>
 
 namespace tests
 {
@@ -9,21 +10,12 @@ namespace tests
     {
     namespace Enum
     {
-        const std::map<std::string, enum Enum> _name_to_value_Enum
-            {
-                { "Value1", Value1 }
-            };
-
-        const std::map<enum Enum, std::string> _value_to_name_Enum
-            {
-                { Value1, "Value1" }
-            };
-
         const std::string& ToString(enum Enum value)
         {
-            auto it = _value_to_name_Enum.find(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum Enum, std::string>>(value);
+            auto it = map.find(value);
 
-            if (_value_to_name_Enum.end() == it)
+            if (map.end() == it)
                 ::bond::InvalidEnumValueException(value, "Enum");
 
             return it->second;
@@ -37,9 +29,10 @@ namespace tests
 
         bool ToEnum(enum Enum& value, const std::string& name)
         {
-            auto it = _name_to_value_Enum.find(name);
+            const auto& map = GetNameToValueMap<std::unordered_map<std::string, enum Enum> >(value);
+            auto it = map.find(name);
 
-            if (_name_to_value_Enum.end() == it)
+            if (map.end() == it)
                 return false;
 
             value = it->second;
@@ -49,9 +42,10 @@ namespace tests
 
         bool FromEnum(std::string& name, enum Enum value)
         {
-            auto it = _value_to_name_Enum.find(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum Enum, std::string> >(value);
+            auto it = map.find(value);
 
-            if (_value_to_name_Enum.end() == it)
+            if (map.end() == it)
                 return false;
 
             name = it->second;

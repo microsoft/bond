@@ -1,6 +1,7 @@
 
 #include "aliases_reflection.h"
 #include <bond/core/exception.h>
+#include <unordered_map>
 
 namespace tests
 {
@@ -9,21 +10,12 @@ namespace tests
     {
     namespace EnumToWrap
     {
-        const std::map<std::string, enum EnumToWrap> _name_to_value_EnumToWrap
-            {
-                { "anEnumValue", anEnumValue }
-            };
-
-        const std::map<enum EnumToWrap, std::string> _value_to_name_EnumToWrap
-            {
-                { anEnumValue, "anEnumValue" }
-            };
-
         const std::string& ToString(enum EnumToWrap value)
         {
-            auto it = _value_to_name_EnumToWrap.find(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumToWrap, std::string>>(value);
+            auto it = map.find(value);
 
-            if (_value_to_name_EnumToWrap.end() == it)
+            if (map.end() == it)
                 ::bond::InvalidEnumValueException(value, "EnumToWrap");
 
             return it->second;
@@ -37,9 +29,10 @@ namespace tests
 
         bool ToEnum(enum EnumToWrap& value, const std::string& name)
         {
-            auto it = _name_to_value_EnumToWrap.find(name);
+            const auto& map = GetNameToValueMap<std::unordered_map<std::string, enum EnumToWrap> >(value);
+            auto it = map.find(name);
 
-            if (_name_to_value_EnumToWrap.end() == it)
+            if (map.end() == it)
                 return false;
 
             value = it->second;
@@ -49,9 +42,10 @@ namespace tests
 
         bool FromEnum(std::string& name, enum EnumToWrap value)
         {
-            auto it = _value_to_name_EnumToWrap.find(value);
+            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumToWrap, std::string> >(value);
+            auto it = map.find(value);
 
-            if (_value_to_name_EnumToWrap.end() == it)
+            if (map.end() == it)
                 return false;
 
             name = it->second;
