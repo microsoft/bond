@@ -54,6 +54,10 @@ set (generated_files_apply)
 list (APPEND generated_files_apply
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/core/bond_apply.cpp)
 
+set (precompiled_sources)
+list (APPEND precompiled_sources
+    "src/bond/protocol/detail/rapidjson_utils.cpp")
+
 list (APPEND headers
     ${core_headers}
     ${core_detail_headers}
@@ -140,6 +144,7 @@ add_library (bond
     STATIC
     ${schemas}
     ${generated_files_types}
+    ${precompiled_sources}
     ${headers})
 
 # Boost thread is only needed if the C++ standard library doesn't support
