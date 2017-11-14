@@ -387,12 +387,12 @@ namespace std
     namespace #{declName}
     {
         #{enumDefinition}
-        inline const char* GetTypeName(enum #{declName})
+        inline BOND_CONSTEXPR const char* GetTypeName(enum #{declName})
         {
             return "#{declName}";
         }
 
-        inline const char* GetTypeName(enum #{declName}, const ::bond::qualified_name_tag&)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum #{declName}, const ::bond::qualified_name_tag&)
         {
             return "#{getDeclTypeName idl e}";
         }
@@ -436,7 +436,7 @@ namespace std
     |]
         nameValueConst Constant {..} = [lt|{ "#{constantName}", #{constantName} }|]
         valueNameConst (name, _) = [lt|{ #{name}, "#{name}" }|]
-        enumConstByName = sortBy (\x y -> constantName x `compare` constantName y) enumConstants
-        enumConstByValue = sortBy (\x y -> snd x `compare` snd y) $ constNameValues enumConstants
+        enumConstByName = sortOn constantName enumConstants
+        enumConstByValue = sortOn snd $ reifyEnumValues enumConstants
 
     typeDeclaration _ = mempty
