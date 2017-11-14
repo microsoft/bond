@@ -97,7 +97,7 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
       where
         nameValueConst Constant {..} = [lt|{ "#{constantName}", #{constantName} }|]
         valueNameConst (name, _) = [lt|{ #{name}, "#{name}" }|]
-        enumConstByName = sortBy (\x y -> constantName x `compare` constantName y) enumConstants
-        enumConstByValue = sortBy (\x y -> snd x `compare` snd y) $ constNameValues enumConstants
+        enumConstByName = sortOn constantName enumConstants
+        enumConstByValue = sortOn snd $ reifyEnumValues enumConstants
 
     statics _ = mempty

@@ -36,7 +36,7 @@ module Language.Bond.Syntax.Util
     , foldMapType
       -- * Helper functions
     , resolveAlias
-    , constNameValues
+    , reifyEnumValues
     ) where
 
 import Data.Maybe
@@ -235,8 +235,8 @@ resolveAlias _ _ = error "resolveAlias: impossible happened."
 
 
 -- | Fill in values for constants w/o explicitly specified value
-constNameValues :: [Constant] -> [(String, Int)]
-constNameValues constants = nameValues 0 constants
+reifyEnumValues :: [Constant] -> [(String, Int)]
+reifyEnumValues constants = nameValues 0 constants
   where
     nameValues _ [] = []
     nameValues _ ((Constant name (Just value)):xs) = (name, value) : nameValues (value + 1) xs

@@ -200,7 +200,7 @@ makeSchemaDef root = SchemaDef $ map structDef structs
         resolve (BT_UserDefined a@Alias{} args) = resolve $ resolveAlias a args
         resolve t = t
     -- resolve value of an enum constant
-    resolveEnum Enum{..} n = fromIntegral . snd . fromJust $ find ((n ==) . fst) $ constNameValues enumConstants
+    resolveEnum Enum{..} n = fromIntegral . snd . fromJust $ find ((n ==) . fst) $ reifyEnumValues enumConstants
     resolveEnum _ _ = error "makeSchemaDef.resolveEnum: not a enum"
 
 $(deriveToJSON defaultOptions {omitNothingFields = True} ''SchemaDef)
