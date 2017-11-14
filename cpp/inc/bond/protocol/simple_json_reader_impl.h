@@ -31,7 +31,7 @@ SimpleJsonReader<BufferT>::FindField(uint16_t id, const Metadata& metadata, Bond
                 }
 
                 uint16_t parsedId;
-                if (try_lexical_convert(it->name.GetString(), parsedId) && id == parsedId)
+                if (detail::try_lexical_convert(it->name.GetString(), parsedId) && id == parsedId)
                 {
                     // string id match
                     return &it->value;
