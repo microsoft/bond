@@ -9,6 +9,7 @@ import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
 import Text.Shakespeare.Text
+import Language.Bond.Util
 import Language.Bond.Syntax.Types
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
@@ -20,16 +21,18 @@ types_cpp :: MappingContext -> String -> [Import] -> [Declaration] -> (String, T
 types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 #include "#{file}_reflection.h"
 #include <bond/core/exception.h>
-#include <unordered_map>
-
+#{ifThenElse (anyEnum declarations) unorderedMapInclude mempty}
 #{CPP.openNamespace cpp}
     #{doubleLineSepEnd 1 statics declarations}
 #{CPP.closeNamespace cpp}
 |])
   where
+    unorderedMapInclude = [lt|#include <unordered_map>
+|]
+
     -- definitions of Schema statics for non-generic structs
     statics s@Struct {..} =
-        if null declParams then CPP.schemaMetadata cpp s else mempty
+        ifThenElse (null declParams) (CPP.schemaMetadata cpp s) mempty
 
     -- global variables for enum name/value conversions
     --
@@ -99,3 +102,7 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
     } // namespace _bond_enumerators|]
 
     statics _ = mempty
+
+    anyEnum [] = False
+    anyEnum ((Enum {}):_) = True
+    anyEnum (_:xs) = anyEnum xs

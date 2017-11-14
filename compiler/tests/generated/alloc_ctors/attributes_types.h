@@ -28,12 +28,12 @@ namespace tests
             Value1
         };
         
-        inline const char* GetTypeName(enum Enum)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum Enum)
         {
             return "Enum";
         }
 
-        inline const char* GetTypeName(enum Enum, const ::bond::qualified_name_tag&)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum Enum, const ::bond::qualified_name_tag&)
         {
             return "tests.Enum";
         }

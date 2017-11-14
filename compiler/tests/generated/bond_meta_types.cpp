@@ -1,7 +1,6 @@
 
 #include "bond_meta_reflection.h"
 #include <bond/core/exception.h>
-#include <unordered_map>
 
 namespace deprecated
 {

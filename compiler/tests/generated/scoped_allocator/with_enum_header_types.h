@@ -24,12 +24,12 @@ namespace tests
     namespace EnumType1
     {
         
-        inline const char* GetTypeName(enum EnumType1)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum EnumType1)
         {
             return "EnumType1";
         }
 
-        inline const char* GetTypeName(enum EnumType1, const ::bond::qualified_name_tag&)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum EnumType1, const ::bond::qualified_name_tag&)
         {
             return "tests.EnumType1";
         }

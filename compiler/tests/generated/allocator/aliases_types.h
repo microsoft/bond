@@ -103,12 +103,12 @@ namespace tests
             anEnumValue
         };
         
-        inline const char* GetTypeName(enum EnumToWrap)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum EnumToWrap)
         {
             return "EnumToWrap";
         }
 
-        inline const char* GetTypeName(enum EnumToWrap, const ::bond::qualified_name_tag&)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum EnumToWrap, const ::bond::qualified_name_tag&)
         {
             return "tests.EnumToWrap";
         }
