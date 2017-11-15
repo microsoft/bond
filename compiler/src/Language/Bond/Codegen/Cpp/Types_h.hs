@@ -49,15 +49,20 @@ types_h userHeaders enumHeader allocator alloc_ctors_enabled type_aliases_enable
 
 #include <bond/core/config.h>
 #include <bond/core/containers.h>
-#{newlineSep 0 optionalHeader additionalHeaders}
+#{newlineSep 0 optionalHeader bondHeaders}
 #{includeEnum}
-#{newlineSepEnd 0 includeImport imports}
+#{callOnceInclude}#{newlineSepEnd 0 includeImport imports}
 #{CPP.openNamespace cpp}
     #{doubleLineSepEnd 1 id $ catMaybes $ aliasDeclarations}#{doubleLineSep 1 typeDeclaration declarations}
 #{CPP.closeNamespace cpp}
 #{optional usesAllocatorSpecialization allocator}
 |])
   where
+    callOnceInclude = if not (any CPP.isEnumDeclaration declarations) then mempty else [lt|#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#include <bond/core/detail/once.h>
+#endif
+|]
+
     aliasDeclarations = if type_aliases_enabled then map aliasDeclName declarations else []
 
     aliasDeclName a@Alias {..} = Just [lt|#{CPP.template a}using #{declName} = #{getAliasDeclTypeName cpp a};|]
@@ -99,13 +104,12 @@ types_h userHeaders enumHeader allocator alloc_ctors_enabled type_aliases_enable
 
     anyStringOrContainer f = Any (isString f || isMetaName f || isContainer f)
 
-    additionalHeaders :: [(Bool, String)]
-    additionalHeaders = [
+    bondHeaders :: [(Bool, String)]
+    bondHeaders = [
         (have anyNullable, "<bond/core/nullable.h>"),
         (have anyBonded, "<bond/core/bonded.h>"),
         (have anyBlob, "<bond/core/blob.h>"),
-        (scoped_alloc_enabled && have anyStringOrContainer, "<scoped_allocator>"),
-        (any CPP.isEnumDeclaration declarations, "<boost/thread/once.hpp>")]
+        (scoped_alloc_enabled && have anyStringOrContainer, "<scoped_allocator>")]
 
     usesAllocatorSpecialization alloc = [lt|
 namespace std
@@ -400,10 +404,10 @@ namespace std
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
         template <typename T>
-        struct _once_flag_holder_#{declName} { static boost::once_flag flag; };
+        struct _once_flag_holder_#{declName} { static ::bond::detail::once_flag flag; };
 
         template <typename T>
-        boost::once_flag _once_flag_holder_#{declName}<T>::flag = BOOST_ONCE_INIT;
+        ::bond::detail::once_flag _once_flag_holder_#{declName}<T>::flag;
 #endif
         template <typename Map = std::map<enum #{declName}, std::string> >
         inline const Map& GetValueToNameMap(enum #{declName})#{getEnumMapBody valueNameConst enumConstByValue}
@@ -437,7 +441,7 @@ namespace std
         {
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
             static const Map* _map_#{declName}_ptr;
-            boost::call_once(_once_flag_holder_#{declName}<Map>::flag, []{
+            ::bond::detail::call_once(_once_flag_holder_#{declName}<Map>::flag, []{
 #endif
             static const Map _map_#{declName}
                 {

@@ -13,8 +13,11 @@
 
 #include <bond/core/config.h>
 #include <bond/core/containers.h>
-#include <boost/thread/once.hpp>
 
+
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#include <bond/core/detail/once.h>
+#endif
 
 namespace tests
 {
@@ -40,17 +43,17 @@ namespace tests
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
         template <typename T>
-        struct _once_flag_holder_Enum { static boost::once_flag flag; };
+        struct _once_flag_holder_Enum { static ::bond::detail::once_flag flag; };
 
         template <typename T>
-        boost::once_flag _once_flag_holder_Enum<T>::flag = BOOST_ONCE_INIT;
+        ::bond::detail::once_flag _once_flag_holder_Enum<T>::flag;
 #endif
         template <typename Map = std::map<enum Enum, std::string> >
         inline const Map& GetValueToNameMap(enum Enum)
         {
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
             static const Map* _map_Enum_ptr;
-            boost::call_once(_once_flag_holder_Enum<Map>::flag, []{
+            ::bond::detail::call_once(_once_flag_holder_Enum<Map>::flag, []{
 #endif
             static const Map _map_Enum
                 {
@@ -70,7 +73,7 @@ namespace tests
         {
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
             static const Map* _map_Enum_ptr;
-            boost::call_once(_once_flag_holder_Enum<Map>::flag, []{
+            ::bond::detail::call_once(_once_flag_holder_Enum<Map>::flag, []{
 #endif
             static const Map _map_Enum
                 {
