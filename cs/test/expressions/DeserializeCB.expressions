@@ -1,8 +1,8 @@
 .Lambda #Lambda1<System.Func`2[Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream],System.Object]>(Bond.Protocols.CompactBinaryReader`1[Bond.IO.Unsafe.InputStream] $reader)
 {
-    .Block(ExpressionsTest.Example $Example) {
+    .Block(ExpressionsTest.Example $Example_result) {
         .Block() {
-            $Example = .New ExpressionsTest.Example();
+            $Example_result = .New ExpressionsTest.Example();
             .Block(
                 Bond.BondDataType $fieldType,
                 System.UInt16 $fieldId) {
@@ -31,15 +31,15 @@
                                                         $count,
                                                         $elementType);
                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
-                                                        .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example).vvb_item) {
-                                                            .Block(System.Int32 $Convert(Example).vvb_count) {
-                                                                $Convert(Example).vvb_count = $count;
-                                                                .If ($Convert(Example).vvb_count > 65536) {
-                                                                    $Convert(Example).vvb_count = 65536
+                                                        .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example_result).vvb_item) {
+                                                            .Block(System.Int32 $Convert(Example_result).vvb_count) {
+                                                                $Convert(Example_result).vvb_count = $count;
+                                                                .If ($Convert(Example_result).vvb_count > 65536) {
+                                                                    $Convert(Example_result).vvb_count = 65536
                                                                 } .Else {
                                                                     .Default(System.Void)
                                                                 };
-                                                                (((ExpressionsTest.Base)$Example).vvb).Capacity = $Convert(Example).vvb_count
+                                                                (((ExpressionsTest.Base)$Example_result).vvb).Capacity = $Convert(Example_result).vvb_count
                                                             };
                                                             .Loop  {
                                                                 .If ($count-- > 0) {
@@ -51,21 +51,21 @@
                                                                                 $count,
                                                                                 $elementType);
                                                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_UINT64)) {
-                                                                                .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                                                    .Block(System.Int32 $Convert(Example).vvb_item_count) {
-                                                                                        $Convert(Example).vvb_item_count = $count;
-                                                                                        .If ($Convert(Example).vvb_item_count > 65536) {
-                                                                                            $Convert(Example).vvb_item_count = 65536
+                                                                                .Block(System.UInt64 $Convert(Example_result).vvb_item_item) {
+                                                                                    .Block(System.Int32 $Convert(Example_result).vvb_item_count) {
+                                                                                        $Convert(Example_result).vvb_item_count = $count;
+                                                                                        .If ($Convert(Example_result).vvb_item_count > 65536) {
+                                                                                            $Convert(Example_result).vvb_item_count = 65536
                                                                                         } .Else {
                                                                                             .Default(System.Void)
                                                                                         };
-                                                                                        $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                                                        $Convert(Example_result).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example_result).vvb_item_count)
                                                                                     };
                                                                                     .Loop  {
                                                                                         .If ($count-- > 0) {
                                                                                             .Block() {
-                                                                                                $Convert(Example).vvb_item_item = .Call $reader.ReadUInt64();
-                                                                                                .Call $Convert(Example).vvb_item.Add($Convert(Example).vvb_item_item)
+                                                                                                $Convert(Example_result).vvb_item_item = .Call $reader.ReadUInt64();
+                                                                                                .Call $Convert(Example_result).vvb_item.Add($Convert(Example_result).vvb_item_item)
                                                                                             }
                                                                                         } .Else {
                                                                                             .Break end { }
@@ -76,21 +76,21 @@
                                                                                 }
                                                                             } .Else {
                                                                                 .If ($elementType == .Constant<Bond.BondDataType>(BT_UINT32)) {
-                                                                                    .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                                                        .Block(System.Int32 $Convert(Example).vvb_item_count) {
-                                                                                            $Convert(Example).vvb_item_count = $count;
-                                                                                            .If ($Convert(Example).vvb_item_count > 65536) {
-                                                                                                $Convert(Example).vvb_item_count = 65536
+                                                                                    .Block(System.UInt64 $Convert(Example_result).vvb_item_item) {
+                                                                                        .Block(System.Int32 $Convert(Example_result).vvb_item_count) {
+                                                                                            $Convert(Example_result).vvb_item_count = $count;
+                                                                                            .If ($Convert(Example_result).vvb_item_count > 65536) {
+                                                                                                $Convert(Example_result).vvb_item_count = 65536
                                                                                             } .Else {
                                                                                                 .Default(System.Void)
                                                                                             };
-                                                                                            $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                                                            $Convert(Example_result).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example_result).vvb_item_count)
                                                                                         };
                                                                                         .Loop  {
                                                                                             .If ($count-- > 0) {
                                                                                                 .Block() {
-                                                                                                    $Convert(Example).vvb_item_item = (System.UInt64).Call $reader.ReadUInt32();
-                                                                                                    .Call $Convert(Example).vvb_item.Add($Convert(Example).vvb_item_item)
+                                                                                                    $Convert(Example_result).vvb_item_item = (System.UInt64).Call $reader.ReadUInt32();
+                                                                                                    .Call $Convert(Example_result).vvb_item.Add($Convert(Example_result).vvb_item_item)
                                                                                                 }
                                                                                             } .Else {
                                                                                                 .Break end { }
@@ -101,21 +101,21 @@
                                                                                     }
                                                                                 } .Else {
                                                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_UINT16)) {
-                                                                                        .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                                                            .Block(System.Int32 $Convert(Example).vvb_item_count) {
-                                                                                                $Convert(Example).vvb_item_count = $count;
-                                                                                                .If ($Convert(Example).vvb_item_count > 65536) {
-                                                                                                    $Convert(Example).vvb_item_count = 65536
+                                                                                        .Block(System.UInt64 $Convert(Example_result).vvb_item_item) {
+                                                                                            .Block(System.Int32 $Convert(Example_result).vvb_item_count) {
+                                                                                                $Convert(Example_result).vvb_item_count = $count;
+                                                                                                .If ($Convert(Example_result).vvb_item_count > 65536) {
+                                                                                                    $Convert(Example_result).vvb_item_count = 65536
                                                                                                 } .Else {
                                                                                                     .Default(System.Void)
                                                                                                 };
-                                                                                                $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                                                                $Convert(Example_result).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example_result).vvb_item_count)
                                                                                             };
                                                                                             .Loop  {
                                                                                                 .If ($count-- > 0) {
                                                                                                     .Block() {
-                                                                                                        $Convert(Example).vvb_item_item = (System.UInt64).Call $reader.ReadUInt16();
-                                                                                                        .Call $Convert(Example).vvb_item.Add($Convert(Example).vvb_item_item)
+                                                                                                        $Convert(Example_result).vvb_item_item = (System.UInt64).Call $reader.ReadUInt16();
+                                                                                                        .Call $Convert(Example_result).vvb_item.Add($Convert(Example_result).vvb_item_item)
                                                                                                     }
                                                                                                 } .Else {
                                                                                                     .Break end { }
@@ -126,21 +126,21 @@
                                                                                         }
                                                                                     } .Else {
                                                                                         .If ($elementType == .Constant<Bond.BondDataType>(BT_UINT8)) {
-                                                                                            .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                                                                .Block(System.Int32 $Convert(Example).vvb_item_count) {
-                                                                                                    $Convert(Example).vvb_item_count = $count;
-                                                                                                    .If ($Convert(Example).vvb_item_count > 65536) {
-                                                                                                        $Convert(Example).vvb_item_count = 65536
+                                                                                            .Block(System.UInt64 $Convert(Example_result).vvb_item_item) {
+                                                                                                .Block(System.Int32 $Convert(Example_result).vvb_item_count) {
+                                                                                                    $Convert(Example_result).vvb_item_count = $count;
+                                                                                                    .If ($Convert(Example_result).vvb_item_count > 65536) {
+                                                                                                        $Convert(Example_result).vvb_item_count = 65536
                                                                                                     } .Else {
                                                                                                         .Default(System.Void)
                                                                                                     };
-                                                                                                    $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                                                                    $Convert(Example_result).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example_result).vvb_item_count)
                                                                                                 };
                                                                                                 .Loop  {
                                                                                                     .If ($count-- > 0) {
                                                                                                         .Block() {
-                                                                                                            $Convert(Example).vvb_item_item = (System.UInt64).Call $reader.ReadUInt8();
-                                                                                                            .Call $Convert(Example).vvb_item.Add($Convert(Example).vvb_item_item)
+                                                                                                            $Convert(Example_result).vvb_item_item = (System.UInt64).Call $reader.ReadUInt8();
+                                                                                                            .Call $Convert(Example_result).vvb_item.Add($Convert(Example_result).vvb_item_item)
                                                                                                         }
                                                                                                     } .Else {
                                                                                                         .Break end { }
@@ -159,7 +159,7 @@
                                                                             };
                                                                             .Call $reader.ReadContainerEnd()
                                                                         };
-                                                                        .Call (((ExpressionsTest.Base)$Example).vvb).Add($Convert(Example).vvb_item)
+                                                                        .Call (((ExpressionsTest.Base)$Example_result).vvb).Add($Convert(Example_result).vvb_item)
                                                                     }
                                                                 } .Else {
                                                                     .Break end { }
@@ -247,7 +247,7 @@
                             .If ($fieldId == .Constant<System.UInt16>(0)) {
                                 .Block() {
                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_BOOL)) {
-                                        $Example._bool = .Call $reader.ReadBool()
+                                        $Example_result._bool = .Call $reader.ReadBool()
                                     } .Else {
                                         .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                             .Constant<Bond.BondDataType>(BT_BOOL),
@@ -293,7 +293,7 @@
                             .If ($fieldId == .Constant<System.UInt16>(2)) {
                                 .Block() {
                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_STRING)) {
-                                        $Example._str = .Call $reader.ReadString()
+                                        $Example_result._str = .Call $reader.ReadString()
                                     } .Else {
                                         .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                             .Constant<Bond.BondDataType>(BT_STRING),
@@ -339,13 +339,13 @@
                             .If ($fieldId == .Constant<System.UInt16>(12)) {
                                 .Block() {
                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT32)) {
-                                        $Example._uint32 = .Call $reader.ReadUInt32()
+                                        $Example_result._uint32 = .Call $reader.ReadUInt32()
                                     } .Else {
                                         .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT16)) {
-                                            $Example._uint32 = (System.UInt32).Call $reader.ReadUInt16()
+                                            $Example_result._uint32 = (System.UInt32).Call $reader.ReadUInt16()
                                         } .Else {
                                             .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT8)) {
-                                                $Example._uint32 = (System.UInt32).Call $reader.ReadUInt8()
+                                                $Example_result._uint32 = (System.UInt32).Call $reader.ReadUInt8()
                                             } .Else {
                                                 .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                     .Constant<Bond.BondDataType>(BT_UINT32),
@@ -393,7 +393,7 @@
                             .If ($fieldId == .Constant<System.UInt16>(14)) {
                                 .Block() {
                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                        $Example._int8 = .Call $reader.ReadInt8()
+                                        $Example_result._int8 = .Call $reader.ReadInt8()
                                     } .Else {
                                         .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                             .Constant<Bond.BondDataType>(BT_INT8),
@@ -439,16 +439,16 @@
                             .If ($fieldId == .Constant<System.UInt16>(17)) {
                                 .Block() {
                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT64)) {
-                                        $Example._int64 = .Call $reader.ReadInt64()
+                                        $Example_result._int64 = .Call $reader.ReadInt64()
                                     } .Else {
                                         .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT32)) {
-                                            $Example._int64 = (System.Int64).Call $reader.ReadInt32()
+                                            $Example_result._int64 = (System.Int64).Call $reader.ReadInt32()
                                         } .Else {
                                             .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT16)) {
-                                                $Example._int64 = (System.Int64).Call $reader.ReadInt16()
+                                                $Example_result._int64 = (System.Int64).Call $reader.ReadInt16()
                                             } .Else {
                                                 .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                    $Example._int64 = (System.Int64).Call $reader.ReadInt8()
+                                                    $Example_result._int64 = (System.Int64).Call $reader.ReadInt8()
                                                 } .Else {
                                                     .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                         .Constant<Bond.BondDataType>(BT_INT64),
@@ -501,10 +501,10 @@
                             .If ($fieldId == .Constant<System.UInt16>(18)) {
                                 .Block() {
                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_DOUBLE)) {
-                                        $Example._double = .Call $reader.ReadDouble()
+                                        $Example_result._double = .Call $reader.ReadDouble()
                                     } .Else {
                                         .If ($fieldType == .Constant<Bond.BondDataType>(BT_FLOAT)) {
-                                            $Example._double = (System.Double).Call $reader.ReadFloat()
+                                            $Example_result._double = (System.Double).Call $reader.ReadFloat()
                                         } .Else {
                                             .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                 .Constant<Bond.BondDataType>(BT_DOUBLE),
@@ -567,13 +567,13 @@
                                                             .If ($fieldId == .Constant<System.UInt16>(0)) {
                                                                 .Block() {
                                                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT32)) {
-                                                                        ($Example.guid).Data1 = .Call $reader.ReadUInt32()
+                                                                        ($Example_result.guid).Data1 = .Call $reader.ReadUInt32()
                                                                     } .Else {
                                                                         .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT16)) {
-                                                                            ($Example.guid).Data1 = (System.UInt32).Call $reader.ReadUInt16()
+                                                                            ($Example_result.guid).Data1 = (System.UInt32).Call $reader.ReadUInt16()
                                                                         } .Else {
                                                                             .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT8)) {
-                                                                                ($Example.guid).Data1 = (System.UInt32).Call $reader.ReadUInt8()
+                                                                                ($Example_result.guid).Data1 = (System.UInt32).Call $reader.ReadUInt8()
                                                                             } .Else {
                                                                                 .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                                                     .Constant<Bond.BondDataType>(BT_UINT32),
@@ -621,10 +621,10 @@
                                                             .If ($fieldId == .Constant<System.UInt16>(1)) {
                                                                 .Block() {
                                                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT16)) {
-                                                                        ($Example.guid).Data2 = .Call $reader.ReadUInt16()
+                                                                        ($Example_result.guid).Data2 = .Call $reader.ReadUInt16()
                                                                     } .Else {
                                                                         .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT8)) {
-                                                                            ($Example.guid).Data2 = (System.UInt16).Call $reader.ReadUInt8()
+                                                                            ($Example_result.guid).Data2 = (System.UInt16).Call $reader.ReadUInt8()
                                                                         } .Else {
                                                                             .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                                                 .Constant<Bond.BondDataType>(BT_UINT16),
@@ -671,10 +671,10 @@
                                                             .If ($fieldId == .Constant<System.UInt16>(2)) {
                                                                 .Block() {
                                                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT16)) {
-                                                                        ($Example.guid).Data3 = .Call $reader.ReadUInt16()
+                                                                        ($Example_result.guid).Data3 = .Call $reader.ReadUInt16()
                                                                     } .Else {
                                                                         .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT8)) {
-                                                                            ($Example.guid).Data3 = (System.UInt16).Call $reader.ReadUInt8()
+                                                                            ($Example_result.guid).Data3 = (System.UInt16).Call $reader.ReadUInt8()
                                                                         } .Else {
                                                                             .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                                                 .Constant<Bond.BondDataType>(BT_UINT16),
@@ -721,16 +721,16 @@
                                                             .If ($fieldId == .Constant<System.UInt16>(3)) {
                                                                 .Block() {
                                                                     .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT64)) {
-                                                                        ($Example.guid).Data4 = .Call $reader.ReadUInt64()
+                                                                        ($Example_result.guid).Data4 = .Call $reader.ReadUInt64()
                                                                     } .Else {
                                                                         .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT32)) {
-                                                                            ($Example.guid).Data4 = (System.UInt64).Call $reader.ReadUInt32()
+                                                                            ($Example_result.guid).Data4 = (System.UInt64).Call $reader.ReadUInt32()
                                                                         } .Else {
                                                                             .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT16)) {
-                                                                                ($Example.guid).Data4 = (System.UInt64).Call $reader.ReadUInt16()
+                                                                                ($Example_result.guid).Data4 = (System.UInt64).Call $reader.ReadUInt16()
                                                                             } .Else {
                                                                                 .If ($fieldType == .Constant<Bond.BondDataType>(BT_UINT8)) {
-                                                                                    ($Example.guid).Data4 = (System.UInt64).Call $reader.ReadUInt8()
+                                                                                    ($Example_result.guid).Data4 = (System.UInt64).Call $reader.ReadUInt8()
                                                                                 } .Else {
                                                                                     .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                                                         .Constant<Bond.BondDataType>(BT_UINT64),
@@ -849,21 +849,21 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_INT32)) {
-                                                .Block(System.Int32 $Example._int32Vector_item) {
-                                                    .Block(System.Int32 $Example._int32Vector_count) {
-                                                        $Example._int32Vector_count = $count;
-                                                        .If ($Example._int32Vector_count > 65536) {
-                                                            $Example._int32Vector_count = 65536
+                                                .Block(System.Int32 $Example_result._int32Vector_item) {
+                                                    .Block(System.Int32 $Example_result._int32Vector_count) {
+                                                        $Example_result._int32Vector_count = $count;
+                                                        .If ($Example_result._int32Vector_count > 65536) {
+                                                            $Example_result._int32Vector_count = 65536
                                                         } .Else {
                                                             .Default(System.Void)
                                                         };
-                                                        ($Example._int32Vector).Capacity = $Example._int32Vector_count
+                                                        ($Example_result._int32Vector).Capacity = $Example_result._int32Vector_count
                                                     };
                                                     .Loop  {
                                                         .If ($count-- > 0) {
                                                             .Block() {
-                                                                $Example._int32Vector_item = .Call $reader.ReadInt32();
-                                                                .Call ($Example._int32Vector).Add($Example._int32Vector_item)
+                                                                $Example_result._int32Vector_item = .Call $reader.ReadInt32();
+                                                                .Call ($Example_result._int32Vector).Add($Example_result._int32Vector_item)
                                                             }
                                                         } .Else {
                                                             .Break end { }
@@ -874,21 +874,21 @@
                                                 }
                                             } .Else {
                                                 .If ($elementType == .Constant<Bond.BondDataType>(BT_INT16)) {
-                                                    .Block(System.Int32 $Example._int32Vector_item) {
-                                                        .Block(System.Int32 $Example._int32Vector_count) {
-                                                            $Example._int32Vector_count = $count;
-                                                            .If ($Example._int32Vector_count > 65536) {
-                                                                $Example._int32Vector_count = 65536
+                                                    .Block(System.Int32 $Example_result._int32Vector_item) {
+                                                        .Block(System.Int32 $Example_result._int32Vector_count) {
+                                                            $Example_result._int32Vector_count = $count;
+                                                            .If ($Example_result._int32Vector_count > 65536) {
+                                                                $Example_result._int32Vector_count = 65536
                                                             } .Else {
                                                                 .Default(System.Void)
                                                             };
-                                                            ($Example._int32Vector).Capacity = $Example._int32Vector_count
+                                                            ($Example_result._int32Vector).Capacity = $Example_result._int32Vector_count
                                                         };
                                                         .Loop  {
                                                             .If ($count-- > 0) {
                                                                 .Block() {
-                                                                    $Example._int32Vector_item = (System.Int32).Call $reader.ReadInt16();
-                                                                    .Call ($Example._int32Vector).Add($Example._int32Vector_item)
+                                                                    $Example_result._int32Vector_item = (System.Int32).Call $reader.ReadInt16();
+                                                                    .Call ($Example_result._int32Vector).Add($Example_result._int32Vector_item)
                                                                 }
                                                             } .Else {
                                                                 .Break end { }
@@ -899,21 +899,21 @@
                                                     }
                                                 } .Else {
                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                        .Block(System.Int32 $Example._int32Vector_item) {
-                                                            .Block(System.Int32 $Example._int32Vector_count) {
-                                                                $Example._int32Vector_count = $count;
-                                                                .If ($Example._int32Vector_count > 65536) {
-                                                                    $Example._int32Vector_count = 65536
+                                                        .Block(System.Int32 $Example_result._int32Vector_item) {
+                                                            .Block(System.Int32 $Example_result._int32Vector_count) {
+                                                                $Example_result._int32Vector_count = $count;
+                                                                .If ($Example_result._int32Vector_count > 65536) {
+                                                                    $Example_result._int32Vector_count = 65536
                                                                 } .Else {
                                                                     .Default(System.Void)
                                                                 };
-                                                                ($Example._int32Vector).Capacity = $Example._int32Vector_count
+                                                                ($Example_result._int32Vector).Capacity = $Example_result._int32Vector_count
                                                             };
                                                             .Loop  {
                                                                 .If ($count-- > 0) {
                                                                     .Block() {
-                                                                        $Example._int32Vector_item = (System.Int32).Call $reader.ReadInt8();
-                                                                        .Call ($Example._int32Vector).Add($Example._int32Vector_item)
+                                                                        $Example_result._int32Vector_item = (System.Int32).Call $reader.ReadInt8();
+                                                                        .Call ($Example_result._int32Vector).Add($Example_result._int32Vector_item)
                                                                     }
                                                                 } .Else {
                                                                     .Break end { }
@@ -983,13 +983,13 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_STRUCT)) {
-                                                .Block(ExpressionsTest.Nested $Example._nestedVector_item) {
+                                                .Block(ExpressionsTest.Nested $Example_result._nestedVector_item) {
                                                     .Default(System.Void);
                                                     .Loop  {
                                                         .If ($count-- > 0) {
                                                             .Block() {
                                                                 .Block() {
-                                                                    $Example._nestedVector_item = .New ExpressionsTest.Nested();
+                                                                    $Example_result._nestedVector_item = .New ExpressionsTest.Nested();
                                                                     .Block(
                                                                         Bond.BondDataType $fieldType,
                                                                         System.UInt16 $fieldId) {
@@ -1005,10 +1005,10 @@
                                                                                     .If ($fieldId == .Constant<System.UInt16>(0)) {
                                                                                         .Block() {
                                                                                             .If ($fieldType == .Constant<Bond.BondDataType>(BT_DOUBLE)) {
-                                                                                                $Example._nestedVector_item._double = .Call $reader.ReadDouble()
+                                                                                                $Example_result._nestedVector_item._double = .Call $reader.ReadDouble()
                                                                                             } .Else {
                                                                                                 .If ($fieldType == .Constant<Bond.BondDataType>(BT_FLOAT)) {
-                                                                                                    $Example._nestedVector_item._double = (System.Double).Call $reader.ReadFloat()
+                                                                                                    $Example_result._nestedVector_item._double = (System.Double).Call $reader.ReadFloat()
                                                                                                 } .Else {
                                                                                                     .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                                                                         .Constant<Bond.BondDataType>(BT_DOUBLE),
@@ -1073,7 +1073,7 @@
                                                                         .Default(System.Void)
                                                                     }
                                                                 };
-                                                                .Call ($Example._nestedVector).Add($Example._nestedVector_item)
+                                                                .Call ($Example_result._nestedVector).Add($Example_result._nestedVector_item)
                                                             }
                                                         } .Else {
                                                             .Break end { }
@@ -1141,7 +1141,7 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                $Example.b = .Call $reader.ReadBytes($count)
+                                                $Example_result.b = .Call $reader.ReadBytes($count)
                                             } .Else {
                                                 .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                     .Constant<Bond.BondDataType>(BT_INT8),
@@ -1201,7 +1201,7 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
-                                                .Block(System.ArraySegment`1[System.Byte] $Example._blobList_item) {
+                                                .Block(System.ArraySegment`1[System.Byte] $Example_result._blobList_item) {
                                                     .Default(System.Void);
                                                     .Loop  {
                                                         .If ($count-- > 0) {
@@ -1213,7 +1213,7 @@
                                                                         $count,
                                                                         $elementType);
                                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                        $Example._blobList_item = .Call $reader.ReadBytes($count)
+                                                                        $Example_result._blobList_item = .Call $reader.ReadBytes($count)
                                                                     } .Else {
                                                                         .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                                             .Constant<Bond.BondDataType>(BT_INT8),
@@ -1221,7 +1221,7 @@
                                                                     };
                                                                     .Call $reader.ReadContainerEnd()
                                                                 };
-                                                                .Call ($Example._blobList).Add($Example._blobList_item)
+                                                                .Call ($Example_result._blobList).Add($Example_result._blobList_item)
                                                             }
                                                         } .Else {
                                                             .Break end { }
@@ -1289,15 +1289,15 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
-                                                .Block(System.ArraySegment`1[System.Byte] $Example._blobVector_item) {
-                                                    .Block(System.Int32 $Example._blobVector_count) {
-                                                        $Example._blobVector_count = $count;
-                                                        .If ($Example._blobVector_count > 65536) {
-                                                            $Example._blobVector_count = 65536
+                                                .Block(System.ArraySegment`1[System.Byte] $Example_result._blobVector_item) {
+                                                    .Block(System.Int32 $Example_result._blobVector_count) {
+                                                        $Example_result._blobVector_count = $count;
+                                                        .If ($Example_result._blobVector_count > 65536) {
+                                                            $Example_result._blobVector_count = 65536
                                                         } .Else {
                                                             .Default(System.Void)
                                                         };
-                                                        ($Example._blobVector).Capacity = $Example._blobVector_count
+                                                        ($Example_result._blobVector).Capacity = $Example_result._blobVector_count
                                                     };
                                                     .Loop  {
                                                         .If ($count-- > 0) {
@@ -1309,7 +1309,7 @@
                                                                         $count,
                                                                         $elementType);
                                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                        $Example._blobVector_item = .Call $reader.ReadBytes($count)
+                                                                        $Example_result._blobVector_item = .Call $reader.ReadBytes($count)
                                                                     } .Else {
                                                                         .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                                             .Constant<Bond.BondDataType>(BT_INT8),
@@ -1317,7 +1317,7 @@
                                                                     };
                                                                     .Call $reader.ReadContainerEnd()
                                                                 };
-                                                                .Call ($Example._blobVector).Add($Example._blobVector_item)
+                                                                .Call ($Example_result._blobVector).Add($Example_result._blobVector_item)
                                                             }
                                                         } .Else {
                                                             .Break end { }
@@ -1389,13 +1389,13 @@
                                             .If ($keyType == .Constant<Bond.BondDataType>(BT_INT32)) {
                                                 .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
                                                     .Block(
-                                                        System.Int32 $Example._blobMap_key,
-                                                        System.ArraySegment`1[System.Byte] $Example._blobMap_value) {
+                                                        System.Int32 $Example_result._blobMap_key,
+                                                        System.ArraySegment`1[System.Byte] $Example_result._blobMap_value) {
                                                         .Default(System.Void);
                                                         .Loop  {
                                                             .If ($count-- > 0) {
                                                                 .Block() {
-                                                                    $Example._blobMap_key = .Call $reader.ReadInt32();
+                                                                    $Example_result._blobMap_key = .Call $reader.ReadInt32();
                                                                     .Default(System.Void);
                                                                     .Block(
                                                                         System.Int32 $count,
@@ -1404,7 +1404,7 @@
                                                                             $count,
                                                                             $elementType);
                                                                         .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                            $Example._blobMap_value = .Call $reader.ReadBytes($count)
+                                                                            $Example_result._blobMap_value = .Call $reader.ReadBytes($count)
                                                                         } .Else {
                                                                             .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                                                 .Constant<Bond.BondDataType>(BT_INT8),
@@ -1412,7 +1412,7 @@
                                                                         };
                                                                         .Call $reader.ReadContainerEnd()
                                                                     };
-                                                                    ($Example._blobMap).Item[$Example._blobMap_key] = $Example._blobMap_value
+                                                                    ($Example_result._blobMap).Item[$Example_result._blobMap_key] = $Example_result._blobMap_value
                                                                 }
                                                             } .Else {
                                                                 .Break end { }
@@ -1429,13 +1429,13 @@
                                                 .If ($keyType == .Constant<Bond.BondDataType>(BT_INT16)) {
                                                     .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
                                                         .Block(
-                                                            System.Int32 $Example._blobMap_key,
-                                                            System.ArraySegment`1[System.Byte] $Example._blobMap_value) {
+                                                            System.Int32 $Example_result._blobMap_key,
+                                                            System.ArraySegment`1[System.Byte] $Example_result._blobMap_value) {
                                                             .Default(System.Void);
                                                             .Loop  {
                                                                 .If ($count-- > 0) {
                                                                     .Block() {
-                                                                        $Example._blobMap_key = (System.Int32).Call $reader.ReadInt16();
+                                                                        $Example_result._blobMap_key = (System.Int32).Call $reader.ReadInt16();
                                                                         .Default(System.Void);
                                                                         .Block(
                                                                             System.Int32 $count,
@@ -1444,7 +1444,7 @@
                                                                                 $count,
                                                                                 $elementType);
                                                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                                $Example._blobMap_value = .Call $reader.ReadBytes($count)
+                                                                                $Example_result._blobMap_value = .Call $reader.ReadBytes($count)
                                                                             } .Else {
                                                                                 .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                                                     .Constant<Bond.BondDataType>(BT_INT8),
@@ -1452,7 +1452,7 @@
                                                                             };
                                                                             .Call $reader.ReadContainerEnd()
                                                                         };
-                                                                        ($Example._blobMap).Item[$Example._blobMap_key] = $Example._blobMap_value
+                                                                        ($Example_result._blobMap).Item[$Example_result._blobMap_key] = $Example_result._blobMap_value
                                                                     }
                                                                 } .Else {
                                                                     .Break end { }
@@ -1469,13 +1469,13 @@
                                                     .If ($keyType == .Constant<Bond.BondDataType>(BT_INT8)) {
                                                         .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
                                                             .Block(
-                                                                System.Int32 $Example._blobMap_key,
-                                                                System.ArraySegment`1[System.Byte] $Example._blobMap_value) {
+                                                                System.Int32 $Example_result._blobMap_key,
+                                                                System.ArraySegment`1[System.Byte] $Example_result._blobMap_value) {
                                                                 .Default(System.Void);
                                                                 .Loop  {
                                                                     .If ($count-- > 0) {
                                                                         .Block() {
-                                                                            $Example._blobMap_key = (System.Int32).Call $reader.ReadInt8();
+                                                                            $Example_result._blobMap_key = (System.Int32).Call $reader.ReadInt8();
                                                                             .Default(System.Void);
                                                                             .Block(
                                                                                 System.Int32 $count,
@@ -1484,7 +1484,7 @@
                                                                                     $count,
                                                                                     $elementType);
                                                                                 .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                                    $Example._blobMap_value = .Call $reader.ReadBytes($count)
+                                                                                    $Example_result._blobMap_value = .Call $reader.ReadBytes($count)
                                                                                 } .Else {
                                                                                     .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                                                         .Constant<Bond.BondDataType>(BT_INT8),
@@ -1492,7 +1492,7 @@
                                                                                 };
                                                                                 .Call $reader.ReadContainerEnd()
                                                                             };
-                                                                            ($Example._blobMap).Item[$Example._blobMap_key] = $Example._blobMap_value
+                                                                            ($Example_result._blobMap).Item[$Example_result._blobMap_key] = $Example_result._blobMap_value
                                                                         }
                                                                     } .Else {
                                                                         .Break end { }
@@ -1576,7 +1576,7 @@
                                                                     $count,
                                                                     $elementType);
                                                                 .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                    $Example._blobNullable = .Call $reader.ReadBytes($count)
+                                                                    $Example_result._blobNullable = .Call $reader.ReadBytes($count)
                                                                 } .Else {
                                                                     .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
                                                                         .Constant<Bond.BondDataType>(BT_INT8),
@@ -1653,16 +1653,16 @@
                                             .If ($keyType == .Constant<Bond.BondDataType>(BT_INT32)) {
                                                 .If ($valueType == .Constant<Bond.BondDataType>(BT_DOUBLE)) {
                                                     .Block(
-                                                        System.Int32 $Example._map_key,
-                                                        System.Double $Example._map_value) {
+                                                        System.Int32 $Example_result._map_key,
+                                                        System.Double $Example_result._map_value) {
                                                         .Default(System.Void);
                                                         .Loop  {
                                                             .If ($count-- > 0) {
                                                                 .Block() {
-                                                                    $Example._map_key = .Call $reader.ReadInt32();
+                                                                    $Example_result._map_key = .Call $reader.ReadInt32();
                                                                     .Default(System.Void);
-                                                                    $Example._map_value = .Call $reader.ReadDouble();
-                                                                    ($Example._map).Item[$Example._map_key] = $Example._map_value
+                                                                    $Example_result._map_value = .Call $reader.ReadDouble();
+                                                                    ($Example_result._map).Item[$Example_result._map_key] = $Example_result._map_value
                                                                 }
                                                             } .Else {
                                                                 .Break end { }
@@ -1673,16 +1673,16 @@
                                                 } .Else {
                                                     .If ($valueType == .Constant<Bond.BondDataType>(BT_FLOAT)) {
                                                         .Block(
-                                                            System.Int32 $Example._map_key,
-                                                            System.Double $Example._map_value) {
+                                                            System.Int32 $Example_result._map_key,
+                                                            System.Double $Example_result._map_value) {
                                                             .Default(System.Void);
                                                             .Loop  {
                                                                 .If ($count-- > 0) {
                                                                     .Block() {
-                                                                        $Example._map_key = .Call $reader.ReadInt32();
+                                                                        $Example_result._map_key = .Call $reader.ReadInt32();
                                                                         .Default(System.Void);
-                                                                        $Example._map_value = (System.Double).Call $reader.ReadFloat();
-                                                                        ($Example._map).Item[$Example._map_key] = $Example._map_value
+                                                                        $Example_result._map_value = (System.Double).Call $reader.ReadFloat();
+                                                                        ($Example_result._map).Item[$Example_result._map_key] = $Example_result._map_value
                                                                     }
                                                                 } .Else {
                                                                     .Break end { }
@@ -1700,16 +1700,16 @@
                                                 .If ($keyType == .Constant<Bond.BondDataType>(BT_INT16)) {
                                                     .If ($valueType == .Constant<Bond.BondDataType>(BT_DOUBLE)) {
                                                         .Block(
-                                                            System.Int32 $Example._map_key,
-                                                            System.Double $Example._map_value) {
+                                                            System.Int32 $Example_result._map_key,
+                                                            System.Double $Example_result._map_value) {
                                                             .Default(System.Void);
                                                             .Loop  {
                                                                 .If ($count-- > 0) {
                                                                     .Block() {
-                                                                        $Example._map_key = (System.Int32).Call $reader.ReadInt16();
+                                                                        $Example_result._map_key = (System.Int32).Call $reader.ReadInt16();
                                                                         .Default(System.Void);
-                                                                        $Example._map_value = .Call $reader.ReadDouble();
-                                                                        ($Example._map).Item[$Example._map_key] = $Example._map_value
+                                                                        $Example_result._map_value = .Call $reader.ReadDouble();
+                                                                        ($Example_result._map).Item[$Example_result._map_key] = $Example_result._map_value
                                                                     }
                                                                 } .Else {
                                                                     .Break end { }
@@ -1720,16 +1720,16 @@
                                                     } .Else {
                                                         .If ($valueType == .Constant<Bond.BondDataType>(BT_FLOAT)) {
                                                             .Block(
-                                                                System.Int32 $Example._map_key,
-                                                                System.Double $Example._map_value) {
+                                                                System.Int32 $Example_result._map_key,
+                                                                System.Double $Example_result._map_value) {
                                                                 .Default(System.Void);
                                                                 .Loop  {
                                                                     .If ($count-- > 0) {
                                                                         .Block() {
-                                                                            $Example._map_key = (System.Int32).Call $reader.ReadInt16();
+                                                                            $Example_result._map_key = (System.Int32).Call $reader.ReadInt16();
                                                                             .Default(System.Void);
-                                                                            $Example._map_value = (System.Double).Call $reader.ReadFloat();
-                                                                            ($Example._map).Item[$Example._map_key] = $Example._map_value
+                                                                            $Example_result._map_value = (System.Double).Call $reader.ReadFloat();
+                                                                            ($Example_result._map).Item[$Example_result._map_key] = $Example_result._map_value
                                                                         }
                                                                     } .Else {
                                                                         .Break end { }
@@ -1747,16 +1747,16 @@
                                                     .If ($keyType == .Constant<Bond.BondDataType>(BT_INT8)) {
                                                         .If ($valueType == .Constant<Bond.BondDataType>(BT_DOUBLE)) {
                                                             .Block(
-                                                                System.Int32 $Example._map_key,
-                                                                System.Double $Example._map_value) {
+                                                                System.Int32 $Example_result._map_key,
+                                                                System.Double $Example_result._map_value) {
                                                                 .Default(System.Void);
                                                                 .Loop  {
                                                                     .If ($count-- > 0) {
                                                                         .Block() {
-                                                                            $Example._map_key = (System.Int32).Call $reader.ReadInt8();
+                                                                            $Example_result._map_key = (System.Int32).Call $reader.ReadInt8();
                                                                             .Default(System.Void);
-                                                                            $Example._map_value = .Call $reader.ReadDouble();
-                                                                            ($Example._map).Item[$Example._map_key] = $Example._map_value
+                                                                            $Example_result._map_value = .Call $reader.ReadDouble();
+                                                                            ($Example_result._map).Item[$Example_result._map_key] = $Example_result._map_value
                                                                         }
                                                                     } .Else {
                                                                         .Break end { }
@@ -1767,16 +1767,16 @@
                                                         } .Else {
                                                             .If ($valueType == .Constant<Bond.BondDataType>(BT_FLOAT)) {
                                                                 .Block(
-                                                                    System.Int32 $Example._map_key,
-                                                                    System.Double $Example._map_value) {
+                                                                    System.Int32 $Example_result._map_key,
+                                                                    System.Double $Example_result._map_value) {
                                                                     .Default(System.Void);
                                                                     .Loop  {
                                                                         .If ($count-- > 0) {
                                                                             .Block() {
-                                                                                $Example._map_key = (System.Int32).Call $reader.ReadInt8();
+                                                                                $Example_result._map_key = (System.Int32).Call $reader.ReadInt8();
                                                                                 .Default(System.Void);
-                                                                                $Example._map_value = (System.Double).Call $reader.ReadFloat();
-                                                                                ($Example._map).Item[$Example._map_key] = $Example._map_value
+                                                                                $Example_result._map_value = (System.Double).Call $reader.ReadFloat();
+                                                                                ($Example_result._map).Item[$Example_result._map_key] = $Example_result._map_value
                                                                             }
                                                                         } .Else {
                                                                             .Break end { }
@@ -1851,7 +1851,7 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                $Example._decimal = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                $Example_result._decimal = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                     .Call $reader.ReadBytes($count),
                                                     .Default(System.Decimal))
                                             } .Else {
@@ -1913,7 +1913,7 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
-                                                .Block(System.Decimal $Example._decList_item) {
+                                                .Block(System.Decimal $Example_result._decList_item) {
                                                     .Default(System.Void);
                                                     .Loop  {
                                                         .If ($count-- > 0) {
@@ -1925,7 +1925,7 @@
                                                                         $count,
                                                                         $elementType);
                                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                        $Example._decList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                        $Example_result._decList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                             .Call $reader.ReadBytes($count),
                                                                             .Default(System.Decimal))
                                                                     } .Else {
@@ -1935,7 +1935,7 @@
                                                                     };
                                                                     .Call $reader.ReadContainerEnd()
                                                                 };
-                                                                .Call ($Example._decList).Add($Example._decList_item)
+                                                                .Call ($Example_result._decList).Add($Example_result._decList_item)
                                                             }
                                                         } .Else {
                                                             .Break end { }
@@ -2003,15 +2003,15 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
-                                                .Block(System.Decimal $Example._decVector_item) {
-                                                    .Block(System.Int32 $Example._decVector_count) {
-                                                        $Example._decVector_count = $count;
-                                                        .If ($Example._decVector_count > 65536) {
-                                                            $Example._decVector_count = 65536
+                                                .Block(System.Decimal $Example_result._decVector_item) {
+                                                    .Block(System.Int32 $Example_result._decVector_count) {
+                                                        $Example_result._decVector_count = $count;
+                                                        .If ($Example_result._decVector_count > 65536) {
+                                                            $Example_result._decVector_count = 65536
                                                         } .Else {
                                                             .Default(System.Void)
                                                         };
-                                                        ($Example._decVector).Capacity = $Example._decVector_count
+                                                        ($Example_result._decVector).Capacity = $Example_result._decVector_count
                                                     };
                                                     .Loop  {
                                                         .If ($count-- > 0) {
@@ -2023,7 +2023,7 @@
                                                                         $count,
                                                                         $elementType);
                                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                        $Example._decVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                        $Example_result._decVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                             .Call $reader.ReadBytes($count),
                                                                             .Default(System.Decimal))
                                                                     } .Else {
@@ -2033,7 +2033,7 @@
                                                                     };
                                                                     .Call $reader.ReadContainerEnd()
                                                                 };
-                                                                .Call ($Example._decVector).Add($Example._decVector_item)
+                                                                .Call ($Example_result._decVector).Add($Example_result._decVector_item)
                                                             }
                                                         } .Else {
                                                             .Break end { }
@@ -2105,13 +2105,13 @@
                                             .If ($keyType == .Constant<Bond.BondDataType>(BT_INT32)) {
                                                 .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
                                                     .Block(
-                                                        System.Int32 $Example._decMap_key,
-                                                        System.Decimal $Example._decMap_value) {
+                                                        System.Int32 $Example_result._decMap_key,
+                                                        System.Decimal $Example_result._decMap_value) {
                                                         .Default(System.Void);
                                                         .Loop  {
                                                             .If ($count-- > 0) {
                                                                 .Block() {
-                                                                    $Example._decMap_key = .Call $reader.ReadInt32();
+                                                                    $Example_result._decMap_key = .Call $reader.ReadInt32();
                                                                     .Default(System.Void);
                                                                     .Block(
                                                                         System.Int32 $count,
@@ -2120,7 +2120,7 @@
                                                                             $count,
                                                                             $elementType);
                                                                         .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                            $Example._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                            $Example_result._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                 .Call $reader.ReadBytes($count),
                                                                                 .Default(System.Decimal))
                                                                         } .Else {
@@ -2130,7 +2130,7 @@
                                                                         };
                                                                         .Call $reader.ReadContainerEnd()
                                                                     };
-                                                                    ($Example._decMap).Item[$Example._decMap_key] = $Example._decMap_value
+                                                                    ($Example_result._decMap).Item[$Example_result._decMap_key] = $Example_result._decMap_value
                                                                 }
                                                             } .Else {
                                                                 .Break end { }
@@ -2147,13 +2147,13 @@
                                                 .If ($keyType == .Constant<Bond.BondDataType>(BT_INT16)) {
                                                     .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
                                                         .Block(
-                                                            System.Int32 $Example._decMap_key,
-                                                            System.Decimal $Example._decMap_value) {
+                                                            System.Int32 $Example_result._decMap_key,
+                                                            System.Decimal $Example_result._decMap_value) {
                                                             .Default(System.Void);
                                                             .Loop  {
                                                                 .If ($count-- > 0) {
                                                                     .Block() {
-                                                                        $Example._decMap_key = (System.Int32).Call $reader.ReadInt16();
+                                                                        $Example_result._decMap_key = (System.Int32).Call $reader.ReadInt16();
                                                                         .Default(System.Void);
                                                                         .Block(
                                                                             System.Int32 $count,
@@ -2162,7 +2162,7 @@
                                                                                 $count,
                                                                                 $elementType);
                                                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                                $Example._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                $Example_result._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                     .Call $reader.ReadBytes($count),
                                                                                     .Default(System.Decimal))
                                                                             } .Else {
@@ -2172,7 +2172,7 @@
                                                                             };
                                                                             .Call $reader.ReadContainerEnd()
                                                                         };
-                                                                        ($Example._decMap).Item[$Example._decMap_key] = $Example._decMap_value
+                                                                        ($Example_result._decMap).Item[$Example_result._decMap_key] = $Example_result._decMap_value
                                                                     }
                                                                 } .Else {
                                                                     .Break end { }
@@ -2189,13 +2189,13 @@
                                                     .If ($keyType == .Constant<Bond.BondDataType>(BT_INT8)) {
                                                         .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
                                                             .Block(
-                                                                System.Int32 $Example._decMap_key,
-                                                                System.Decimal $Example._decMap_value) {
+                                                                System.Int32 $Example_result._decMap_key,
+                                                                System.Decimal $Example_result._decMap_value) {
                                                                 .Default(System.Void);
                                                                 .Loop  {
                                                                     .If ($count-- > 0) {
                                                                         .Block() {
-                                                                            $Example._decMap_key = (System.Int32).Call $reader.ReadInt8();
+                                                                            $Example_result._decMap_key = (System.Int32).Call $reader.ReadInt8();
                                                                             .Default(System.Void);
                                                                             .Block(
                                                                                 System.Int32 $count,
@@ -2204,7 +2204,7 @@
                                                                                     $count,
                                                                                     $elementType);
                                                                                 .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                                    $Example._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                    $Example_result._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                         .Call $reader.ReadBytes($count),
                                                                                         .Default(System.Decimal))
                                                                                 } .Else {
@@ -2214,7 +2214,7 @@
                                                                                 };
                                                                                 .Call $reader.ReadContainerEnd()
                                                                             };
-                                                                            ($Example._decMap).Item[$Example._decMap_key] = $Example._decMap_value
+                                                                            ($Example_result._decMap).Item[$Example_result._decMap_key] = $Example_result._decMap_value
                                                                         }
                                                                     } .Else {
                                                                         .Break end { }
@@ -2298,7 +2298,7 @@
                                                                     $count,
                                                                     $elementType);
                                                                 .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                    $Example._decNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                    $Example_result._decNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                         .Call $reader.ReadBytes($count),
                                                                         .Default(System.Decimal))
                                                                 } .Else {
@@ -2373,7 +2373,7 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                $Example._decimal_req = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                $Example_result._decimal_req = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                     .Call $reader.ReadBytes($count),
                                                     .Default(System.Decimal))
                                             } .Else {
@@ -2439,7 +2439,7 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                $Example._reference = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                $Example_result._reference = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                     .Call $reader.ReadBytes($count),
                                                     .Default(ExpressionsTest.RefObject))
                                             } .Else {
@@ -2501,7 +2501,7 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
-                                                .Block(ExpressionsTest.RefObject $Example._refList_item) {
+                                                .Block(ExpressionsTest.RefObject $Example_result._refList_item) {
                                                     .Default(System.Void);
                                                     .Loop  {
                                                         .If ($count-- > 0) {
@@ -2513,7 +2513,7 @@
                                                                         $count,
                                                                         $elementType);
                                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                        $Example._refList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                        $Example_result._refList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                             .Call $reader.ReadBytes($count),
                                                                             .Default(ExpressionsTest.RefObject))
                                                                     } .Else {
@@ -2523,7 +2523,7 @@
                                                                     };
                                                                     .Call $reader.ReadContainerEnd()
                                                                 };
-                                                                .Call ($Example._refList).Add($Example._refList_item)
+                                                                .Call ($Example_result._refList).Add($Example_result._refList_item)
                                                             }
                                                         } .Else {
                                                             .Break end { }
@@ -2591,15 +2591,15 @@
                                                 $count,
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
-                                                .Block(ExpressionsTest.RefObject $Example._refVector_item) {
-                                                    .Block(System.Int32 $Example._refVector_count) {
-                                                        $Example._refVector_count = $count;
-                                                        .If ($Example._refVector_count > 65536) {
-                                                            $Example._refVector_count = 65536
+                                                .Block(ExpressionsTest.RefObject $Example_result._refVector_item) {
+                                                    .Block(System.Int32 $Example_result._refVector_count) {
+                                                        $Example_result._refVector_count = $count;
+                                                        .If ($Example_result._refVector_count > 65536) {
+                                                            $Example_result._refVector_count = 65536
                                                         } .Else {
                                                             .Default(System.Void)
                                                         };
-                                                        ($Example._refVector).Capacity = $Example._refVector_count
+                                                        ($Example_result._refVector).Capacity = $Example_result._refVector_count
                                                     };
                                                     .Loop  {
                                                         .If ($count-- > 0) {
@@ -2611,7 +2611,7 @@
                                                                         $count,
                                                                         $elementType);
                                                                     .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                        $Example._refVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                        $Example_result._refVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                             .Call $reader.ReadBytes($count),
                                                                             .Default(ExpressionsTest.RefObject))
                                                                     } .Else {
@@ -2621,7 +2621,7 @@
                                                                     };
                                                                     .Call $reader.ReadContainerEnd()
                                                                 };
-                                                                .Call ($Example._refVector).Add($Example._refVector_item)
+                                                                .Call ($Example_result._refVector).Add($Example_result._refVector_item)
                                                             }
                                                         } .Else {
                                                             .Break end { }
@@ -2693,13 +2693,13 @@
                                             .If ($keyType == .Constant<Bond.BondDataType>(BT_INT32)) {
                                                 .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
                                                     .Block(
-                                                        System.Int32 $Example._refMap_key,
-                                                        ExpressionsTest.RefObject $Example._refMap_value) {
+                                                        System.Int32 $Example_result._refMap_key,
+                                                        ExpressionsTest.RefObject $Example_result._refMap_value) {
                                                         .Default(System.Void);
                                                         .Loop  {
                                                             .If ($count-- > 0) {
                                                                 .Block() {
-                                                                    $Example._refMap_key = .Call $reader.ReadInt32();
+                                                                    $Example_result._refMap_key = .Call $reader.ReadInt32();
                                                                     .Default(System.Void);
                                                                     .Block(
                                                                         System.Int32 $count,
@@ -2708,7 +2708,7 @@
                                                                             $count,
                                                                             $elementType);
                                                                         .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                            $Example._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                            $Example_result._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                 .Call $reader.ReadBytes($count),
                                                                                 .Default(ExpressionsTest.RefObject))
                                                                         } .Else {
@@ -2718,7 +2718,7 @@
                                                                         };
                                                                         .Call $reader.ReadContainerEnd()
                                                                     };
-                                                                    ($Example._refMap).Item[$Example._refMap_key] = $Example._refMap_value
+                                                                    ($Example_result._refMap).Item[$Example_result._refMap_key] = $Example_result._refMap_value
                                                                 }
                                                             } .Else {
                                                                 .Break end { }
@@ -2735,13 +2735,13 @@
                                                 .If ($keyType == .Constant<Bond.BondDataType>(BT_INT16)) {
                                                     .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
                                                         .Block(
-                                                            System.Int32 $Example._refMap_key,
-                                                            ExpressionsTest.RefObject $Example._refMap_value) {
+                                                            System.Int32 $Example_result._refMap_key,
+                                                            ExpressionsTest.RefObject $Example_result._refMap_value) {
                                                             .Default(System.Void);
                                                             .Loop  {
                                                                 .If ($count-- > 0) {
                                                                     .Block() {
-                                                                        $Example._refMap_key = (System.Int32).Call $reader.ReadInt16();
+                                                                        $Example_result._refMap_key = (System.Int32).Call $reader.ReadInt16();
                                                                         .Default(System.Void);
                                                                         .Block(
                                                                             System.Int32 $count,
@@ -2750,7 +2750,7 @@
                                                                                 $count,
                                                                                 $elementType);
                                                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                                $Example._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                $Example_result._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                     .Call $reader.ReadBytes($count),
                                                                                     .Default(ExpressionsTest.RefObject))
                                                                             } .Else {
@@ -2760,7 +2760,7 @@
                                                                             };
                                                                             .Call $reader.ReadContainerEnd()
                                                                         };
-                                                                        ($Example._refMap).Item[$Example._refMap_key] = $Example._refMap_value
+                                                                        ($Example_result._refMap).Item[$Example_result._refMap_key] = $Example_result._refMap_value
                                                                     }
                                                                 } .Else {
                                                                     .Break end { }
@@ -2777,13 +2777,13 @@
                                                     .If ($keyType == .Constant<Bond.BondDataType>(BT_INT8)) {
                                                         .If ($valueType == .Constant<Bond.BondDataType>(BT_LIST)) {
                                                             .Block(
-                                                                System.Int32 $Example._refMap_key,
-                                                                ExpressionsTest.RefObject $Example._refMap_value) {
+                                                                System.Int32 $Example_result._refMap_key,
+                                                                ExpressionsTest.RefObject $Example_result._refMap_value) {
                                                                 .Default(System.Void);
                                                                 .Loop  {
                                                                     .If ($count-- > 0) {
                                                                         .Block() {
-                                                                            $Example._refMap_key = (System.Int32).Call $reader.ReadInt8();
+                                                                            $Example_result._refMap_key = (System.Int32).Call $reader.ReadInt8();
                                                                             .Default(System.Void);
                                                                             .Block(
                                                                                 System.Int32 $count,
@@ -2792,7 +2792,7 @@
                                                                                     $count,
                                                                                     $elementType);
                                                                                 .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                                    $Example._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                    $Example_result._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                         .Call $reader.ReadBytes($count),
                                                                                         .Default(ExpressionsTest.RefObject))
                                                                                 } .Else {
@@ -2802,7 +2802,7 @@
                                                                                 };
                                                                                 .Call $reader.ReadContainerEnd()
                                                                             };
-                                                                            ($Example._refMap).Item[$Example._refMap_key] = $Example._refMap_value
+                                                                            ($Example_result._refMap).Item[$Example_result._refMap_key] = $Example_result._refMap_value
                                                                         }
                                                                     } .Else {
                                                                         .Break end { }
@@ -2877,7 +2877,7 @@
                                                 $elementType);
                                             .If ($elementType == .Constant<Bond.BondDataType>(BT_LIST)) {
                                                 .Block() {
-                                                    $Example._refNullable = .Default(ExpressionsTest.RefObject);
+                                                    $Example_result._refNullable = .Default(ExpressionsTest.RefObject);
                                                     .Loop  {
                                                         .If ($count-- > 0) {
                                                             .Block(
@@ -2887,7 +2887,7 @@
                                                                     $count,
                                                                     $elementType);
                                                                 .If ($elementType == .Constant<Bond.BondDataType>(BT_INT8)) {
-                                                                    $Example._refNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                    $Example_result._refNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                         .Call $reader.ReadBytes($count),
                                                                         .Default(ExpressionsTest.RefObject))
                                                                 } .Else {
@@ -2973,7 +2973,7 @@
                 .Default(System.Void)
             }
         };
-        (System.Object)$Example
+        (System.Object)$Example_result
     }
 }
 
