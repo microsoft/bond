@@ -20,7 +20,7 @@
 
           The C# documentation is available at https://microsoft.github.io/bond/manual/bond_cs.html
         </description>
-        <copyright>Copyright (c) Microsoft</copyright>
+        <copyright>© Microsoft Corporation. All rights reserved.</copyright>
         <tags>Bond .NET C# serialization grpc RPC messaging</tags>
         <dependencies>
             <dependency id="Bond.Core.CSharp" version ="[$version$] "/>

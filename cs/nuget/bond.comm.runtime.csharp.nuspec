@@ -18,7 +18,7 @@
 
             This package contains the Bond runtime assemblies for the communications library. The full Bond C# communications distribution is in the Bond.Comm.CSharp package.
         </description>
-        <copyright>Copyright (c) Microsoft</copyright>
+        <copyright>© Microsoft Corporation. All rights reserved.</copyright>
         <tags>Bond .NET C# RPC messaging network communication</tags>
         <dependencies>
             <dependency id="Bond.Core.CSharp" version ="[$coreversion$]" />
