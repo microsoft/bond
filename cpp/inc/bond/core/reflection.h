@@ -846,35 +846,4 @@ get_list_sub_type_id<T, typename boost::enable_if<is_blob<typename std::remove_c
     : std::integral_constant<ListSubType, BLOB_SUBTYPE> {};
 
 
-class PrimitiveTypes
-{
-    struct Init
-    {
-        Init(uint32_t* _sizeof)
-            : _sizeof(_sizeof)
-        {}
-
-        template <typename T>
-        void operator()(const T&)
-        {
-            _sizeof[get_type_id<T>::value] = sizeof(T);
-        }
-
-        uint32_t* _sizeof;
-    };
-
-public:
-    typedef boost::mpl::list
-    <
-        bool, float, double,
-        uint8_t, uint16_t, uint32_t, uint64_t,
-        int8_t,  int16_t,  int32_t,  int64_t
-    >type;
-
-    PrimitiveTypes(uint32_t* _sizeof)
-    {
-        boost::mpl::for_each<type>(Init(_sizeof));
-    }
-};
-
 } // namespace bond
