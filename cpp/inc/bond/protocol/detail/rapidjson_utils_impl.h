@@ -14,7 +14,7 @@ namespace bond
 namespace detail
 {
 
-BOND_HEADER_ONLY_INLINE
+BOND_DETAIL_HEADER_ONLY_INLINE
 std::basic_string<uint16_t> utf_to_utf(const char* begin, const char* end)
 {
     try
@@ -28,7 +28,7 @@ std::basic_string<uint16_t> utf_to_utf(const char* begin, const char* end)
 }
 
 
-BOND_HEADER_ONLY_INLINE
+BOND_DETAIL_HEADER_ONLY_INLINE
 bool try_lexical_convert(const char* str, uint16_t& result)
 {
     return boost::conversion::try_lexical_convert(str, result);
