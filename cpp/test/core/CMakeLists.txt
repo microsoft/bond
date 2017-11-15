@@ -62,6 +62,7 @@ target_compile_definitions (core_test_common PUBLIC
         -DBOND_FAST_BINARY_PROTOCOL
         -DBOND_SIMPLE_JSON_PROTOCOL)
 target_link_libraries (core_test_common PRIVATE
+    bond
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 
