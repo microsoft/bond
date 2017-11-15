@@ -16,6 +16,7 @@ module Language.Bond.Codegen.Cpp.Util
     , attributeInit
     , schemaMetadata
     , enumDefinition
+    , isEnumDeclaration
     ) where
 
 import Data.Monoid
@@ -153,3 +154,7 @@ enumDefinition Enum {..} = [lt|enum #{declName}
     value (-2147483648) = [lt| = static_cast<int32_t>(-2147483647-1)|]
     value x = [lt| = static_cast<int32_t>(#{x})|]
 enumDefinition _ = error "enumDefinition: impossible happened."
+
+isEnumDeclaration :: Declaration -> Bool
+isEnumDeclaration Enum {} = True
+isEnumDeclaration _ = False

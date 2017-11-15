@@ -49,7 +49,7 @@ types_h userHeaders enumHeader allocator alloc_ctors_enabled type_aliases_enable
 
 #include <bond/core/config.h>
 #include <bond/core/containers.h>
-#{newlineSep 0 optionalHeader bondHeaders}
+#{newlineSep 0 optionalHeader additionalHeaders}
 #{includeEnum}
 #{newlineSepEnd 0 includeImport imports}
 #{CPP.openNamespace cpp}
@@ -99,12 +99,13 @@ types_h userHeaders enumHeader allocator alloc_ctors_enabled type_aliases_enable
 
     anyStringOrContainer f = Any (isString f || isMetaName f || isContainer f)
 
-    bondHeaders :: [(Bool, String)]
-    bondHeaders = [
+    additionalHeaders :: [(Bool, String)]
+    additionalHeaders = [
         (have anyNullable, "<bond/core/nullable.h>"),
         (have anyBonded, "<bond/core/bonded.h>"),
         (have anyBlob, "<bond/core/blob.h>"),
-        (scoped_alloc_enabled && have anyStringOrContainer, "<scoped_allocator>")]
+        (scoped_alloc_enabled && have anyStringOrContainer, "<scoped_allocator>"),
+        (any CPP.isEnumDeclaration declarations, "<boost/thread/once.hpp>")]
 
     usesAllocatorSpecialization alloc = [lt|
 namespace std
@@ -397,25 +398,18 @@ namespace std
             return "#{getDeclTypeName idl e}";
         }
 
+#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
+        template <typename T>
+        struct _once_flag_holder_#{declName} { static boost::once_flag flag; };
+
+        template <typename T>
+        boost::once_flag _once_flag_holder_#{declName}<T>::flag = BOOST_ONCE_INIT;
+#endif
         template <typename Map = std::map<enum #{declName}, std::string> >
-        inline const Map& GetValueToNameMap(enum #{declName})
-        {
-            static const Map _value_to_name_#{declName}
-                {
-                    #{commaLineSep 5 valueNameConst $ enumConstByValue}
-                };
-            return _value_to_name_#{declName};
-        }
+        inline const Map& GetValueToNameMap(enum #{declName})#{getEnumMapBody valueNameConst enumConstByValue}
 
         template <typename Map = std::map<std::string, enum #{declName}> >
-        inline const Map& GetNameToValueMap(enum #{declName})
-        {
-            static const Map _name_to_value_#{declName}
-                {
-                    #{commaLineSep 5 nameValueConst $ enumConstByName}
-                };
-            return _name_to_value_#{declName};
-        }
+        inline const Map& GetNameToValueMap(enum #{declName})#{getEnumMapBody nameValueConst enumConstByName}
 
         const std::string& ToString(enum #{declName} value);
 
@@ -438,5 +432,24 @@ namespace std
         valueNameConst (name, _) = [lt|{ #{name}, "#{name}" }|]
         enumConstByName = sortOn constantName enumConstants
         enumConstByValue = sortOn snd $ reifyEnumValues enumConstants
+
+        getEnumMapBody f items = [lt|
+        {
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            static const Map* _map_#{declName}_ptr;
+            boost::call_once(_once_flag_holder_#{declName}<Map>::flag, []{
+#endif
+            static const Map _map_#{declName}
+                {
+                    #{commaLineSep 5 f items}
+                };
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            _map_#{declName}_ptr = &_map_#{declName}; });
+
+            return *_map_#{declName}_ptr;
+#else
+            return _map_#{declName};
+#endif
+        }|]
 
     typeDeclaration _ = mempty

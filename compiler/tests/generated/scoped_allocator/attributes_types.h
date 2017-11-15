@@ -14,6 +14,7 @@
 #include <bond/core/config.h>
 #include <bond/core/containers.h>
 #include <scoped_allocator>
+#include <boost/thread/once.hpp>
 
 
 namespace tests
@@ -38,24 +39,51 @@ namespace tests
             return "tests.Enum";
         }
 
+#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
+        template <typename T>
+        struct _once_flag_holder_Enum { static boost::once_flag flag; };
+
+        template <typename T>
+        boost::once_flag _once_flag_holder_Enum<T>::flag = BOOST_ONCE_INIT;
+#endif
         template <typename Map = std::map<enum Enum, std::string> >
         inline const Map& GetValueToNameMap(enum Enum)
         {
-            static const Map _value_to_name_Enum
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            static const Map* _map_Enum_ptr;
+            boost::call_once(_once_flag_holder_Enum<Map>::flag, []{
+#endif
+            static const Map _map_Enum
                 {
                     { Value1, "Value1" }
                 };
-            return _value_to_name_Enum;
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            _map_Enum_ptr = &_map_Enum; });
+
+            return *_map_Enum_ptr;
+#else
+            return _map_Enum;
+#endif
         }
 
         template <typename Map = std::map<std::string, enum Enum> >
         inline const Map& GetNameToValueMap(enum Enum)
         {
-            static const Map _name_to_value_Enum
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            static const Map* _map_Enum_ptr;
+            boost::call_once(_once_flag_holder_Enum<Map>::flag, []{
+#endif
+            static const Map _map_Enum
                 {
                     { "Value1", Value1 }
                 };
-            return _name_to_value_Enum;
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            _map_Enum_ptr = &_map_Enum; });
+
+            return *_map_Enum_ptr;
+#else
+            return _map_Enum;
+#endif
         }
 
         const std::string& ToString(enum Enum value);

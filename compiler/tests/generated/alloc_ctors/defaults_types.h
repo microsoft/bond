@@ -13,7 +13,7 @@
 
 #include <bond/core/config.h>
 #include <bond/core/containers.h>
-
+#include <boost/thread/once.hpp>
 
 
 namespace tests
@@ -50,10 +50,21 @@ namespace tests
             return "tests.EnumType1";
         }
 
+#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
+        template <typename T>
+        struct _once_flag_holder_EnumType1 { static boost::once_flag flag; };
+
+        template <typename T>
+        boost::once_flag _once_flag_holder_EnumType1<T>::flag = BOOST_ONCE_INIT;
+#endif
         template <typename Map = std::map<enum EnumType1, std::string> >
         inline const Map& GetValueToNameMap(enum EnumType1)
         {
-            static const Map _value_to_name_EnumType1
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            static const Map* _map_EnumType1_ptr;
+            boost::call_once(_once_flag_holder_EnumType1<Map>::flag, []{
+#endif
+            static const Map _map_EnumType1
                 {
                     { Int32Min, "Int32Min" },
                     { HexNeg, "HexNeg" },
@@ -69,13 +80,23 @@ namespace tests
                     { EnumValue6, "EnumValue6" },
                     { UInt32Max, "UInt32Max" }
                 };
-            return _value_to_name_EnumType1;
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            _map_EnumType1_ptr = &_map_EnumType1; });
+
+            return *_map_EnumType1_ptr;
+#else
+            return _map_EnumType1;
+#endif
         }
 
         template <typename Map = std::map<std::string, enum EnumType1> >
         inline const Map& GetNameToValueMap(enum EnumType1)
         {
-            static const Map _name_to_value_EnumType1
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            static const Map* _map_EnumType1_ptr;
+            boost::call_once(_once_flag_holder_EnumType1<Map>::flag, []{
+#endif
+            static const Map _map_EnumType1
                 {
                     { "EnumValue1", EnumValue1 },
                     { "EnumValue2", EnumValue2 },
@@ -91,7 +112,13 @@ namespace tests
                     { "UInt32Max", UInt32Max },
                     { "UInt32Min", UInt32Min }
                 };
-            return _name_to_value_EnumType1;
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            _map_EnumType1_ptr = &_map_EnumType1; });
+
+            return *_map_EnumType1_ptr;
+#else
+            return _map_EnumType1;
+#endif
         }
 
         const std::string& ToString(enum EnumType1 value);

@@ -13,7 +13,7 @@
 
 #include <bond/core/config.h>
 #include <bond/core/containers.h>
-
+#include <boost/thread/once.hpp>
 
 
 namespace tests
@@ -122,24 +122,51 @@ namespace tests
             return "tests.EnumToWrap";
         }
 
+#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
+        template <typename T>
+        struct _once_flag_holder_EnumToWrap { static boost::once_flag flag; };
+
+        template <typename T>
+        boost::once_flag _once_flag_holder_EnumToWrap<T>::flag = BOOST_ONCE_INIT;
+#endif
         template <typename Map = std::map<enum EnumToWrap, std::string> >
         inline const Map& GetValueToNameMap(enum EnumToWrap)
         {
-            static const Map _value_to_name_EnumToWrap
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            static const Map* _map_EnumToWrap_ptr;
+            boost::call_once(_once_flag_holder_EnumToWrap<Map>::flag, []{
+#endif
+            static const Map _map_EnumToWrap
                 {
                     { anEnumValue, "anEnumValue" }
                 };
-            return _value_to_name_EnumToWrap;
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            _map_EnumToWrap_ptr = &_map_EnumToWrap; });
+
+            return *_map_EnumToWrap_ptr;
+#else
+            return _map_EnumToWrap;
+#endif
         }
 
         template <typename Map = std::map<std::string, enum EnumToWrap> >
         inline const Map& GetNameToValueMap(enum EnumToWrap)
         {
-            static const Map _name_to_value_EnumToWrap
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            static const Map* _map_EnumToWrap_ptr;
+            boost::call_once(_once_flag_holder_EnumToWrap<Map>::flag, []{
+#endif
+            static const Map _map_EnumToWrap
                 {
                     { "anEnumValue", anEnumValue }
                 };
-            return _name_to_value_EnumToWrap;
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            _map_EnumToWrap_ptr = &_map_EnumToWrap; });
+
+            return *_map_EnumToWrap_ptr;
+#else
+            return _map_EnumToWrap;
+#endif
         }
 
         const std::string& ToString(enum EnumToWrap value);
