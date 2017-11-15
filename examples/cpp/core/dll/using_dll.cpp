@@ -29,10 +29,10 @@ int main()
     obj.items.resize(1);
     obj.items[0].numbers.push_back(13);
 
-    Item item;
+    Item<uint32_t> item;
 
     item.numbers.push_back(11);
-    obj.item = bond::bonded<Item>(item);
+    obj.item = bond::bonded<Item<uint32_t>>(item);
 
     // Serialize
     bond::OutputBuffer buffer;
@@ -47,7 +47,7 @@ int main()
     bond::CompactBinaryReader<bond::InputBuffer> reader(data);
     bond::Deserialize(reader, obj2);
 
-    Item item2;
+    Item<uint32_t> item2;
     
     obj2.item.Deserialize(item2);
 
