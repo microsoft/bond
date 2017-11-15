@@ -72,10 +72,11 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
 
         className = CPP.className s
 
-        export_attr = optional (\a -> [lt|#{a}
+        export_attr = onlyNonTemplate $ optional (\a -> [lt|#{a}
         |]) export_attribute
 
         onlyTemplate x = if null declParams then mempty else x
+        onlyNonTemplate x = if null declParams then x else mempty
 
         metadataInitArgs = onlyTemplate [lt|<boost::mpl::list#{classParams} >|]
 

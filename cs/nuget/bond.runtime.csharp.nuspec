@@ -20,7 +20,7 @@
 
             This package contains Bond runtime assemblies and can be specified as a dependency for other NuGet packages using Bond. The full Bond C# distribution is in the Bond.CSharp package.
         </description>
-        <copyright>Copyright (c) Microsoft</copyright>
+        <copyright>© Microsoft Corporation. All rights reserved.</copyright>
         <tags>Bond .NET C# serialization</tags>
         <dependencies>
             <dependency id="Newtonsoft.Json" version="9.0.1" />

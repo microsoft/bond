@@ -20,7 +20,7 @@
 
             This package contains the core Bond runtime assemblies that don't depend on any other Nuget packages. The full Bond C# distribution is in the Bond.CSharp package and the full runtime in Bond.Runtime.CSharp.
         </description>
-        <copyright>Copyright (c) Microsoft</copyright>
+        <copyright>© Microsoft Corporation. All rights reserved.</copyright>
         <tags>Bond .NET C# serialization</tags>
     </metadata>
     <files>

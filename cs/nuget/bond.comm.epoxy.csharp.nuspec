@@ -18,7 +18,7 @@
 
             This package contains the Bond C# Epoxy transport library.
         </description>
-        <copyright>Copyright (c) Microsoft</copyright>
+        <copyright>© Microsoft Corporation. All rights reserved.</copyright>
         <tags>Bond .NET C# RPC messaging network communication</tags>
         <dependencies>
             <dependency id="Bond.Comm.Runtime.CSharp" version ="[$version$]" />
