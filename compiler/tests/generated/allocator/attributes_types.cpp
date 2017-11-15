@@ -9,20 +9,21 @@ namespace tests
     {
     namespace Enum
     {
-        const
-        std::map<std::string, enum Enum> _name_to_value_Enum =
-            boost::assign::map_list_of<std::string, enum Enum>
-                ("Value1", Value1);
+        const std::map<std::string, enum Enum> _name_to_value_Enum
+            {
+                { "Value1", Value1 }
+            };
 
-        const
-        std::map<enum Enum, std::string> _value_to_name_Enum =
-            ::bond::reverse_map(_name_to_value_Enum);
+        const std::map<enum Enum, std::string> _value_to_name_Enum
+            {
+                { Value1, "Value1" }
+            };
 
         const std::string& ToString(enum Enum value)
         {
-            auto it = GetValueToNameMap(value).find(value);
+            auto it = _value_to_name_Enum.find(value);
 
-            if (GetValueToNameMap(value).end() == it)
+            if (_value_to_name_Enum.end() == it)
                 ::bond::InvalidEnumValueException(value, "Enum");
 
             return it->second;
@@ -57,6 +58,7 @@ namespace tests
 
             return true;
         }
+
     } // namespace Enum
     } // namespace _bond_enumerators
 

@@ -9,32 +9,45 @@ namespace tests
     {
     namespace EnumType1
     {
-        const
-        std::map<std::string, enum EnumType1> _name_to_value_EnumType1 =
-            boost::assign::map_list_of<std::string, enum EnumType1>
-                ("EnumValue1", EnumValue1)
-                ("EnumValue2", EnumValue2)
-                ("EnumValue3", EnumValue3)
-                ("EnumValue4", EnumValue4)
-                ("Low", Low)
-                ("EnumValue5", EnumValue5)
-                ("EnumValue6", EnumValue6)
-                ("Int32Min", Int32Min)
-                ("Int32Max", Int32Max)
-                ("UInt32Min", UInt32Min)
-                ("UInt32Max", UInt32Max)
-                ("HexNeg", HexNeg)
-                ("OctNeg", OctNeg);
+        const std::map<std::string, enum EnumType1> _name_to_value_EnumType1
+            {
+                { "EnumValue1", EnumValue1 },
+                { "EnumValue2", EnumValue2 },
+                { "EnumValue3", EnumValue3 },
+                { "EnumValue4", EnumValue4 },
+                { "EnumValue5", EnumValue5 },
+                { "EnumValue6", EnumValue6 },
+                { "HexNeg", HexNeg },
+                { "Int32Max", Int32Max },
+                { "Int32Min", Int32Min },
+                { "Low", Low },
+                { "OctNeg", OctNeg },
+                { "UInt32Max", UInt32Max },
+                { "UInt32Min", UInt32Min }
+            };
 
-        const
-        std::map<enum EnumType1, std::string> _value_to_name_EnumType1 =
-            ::bond::reverse_map(_name_to_value_EnumType1);
+        const std::map<enum EnumType1, std::string> _value_to_name_EnumType1
+            {
+                { Int32Min, "Int32Min" },
+                { HexNeg, "HexNeg" },
+                { OctNeg, "OctNeg" },
+                { EnumValue3, "EnumValue3" },
+                { EnumValue5, "EnumValue5" },
+                { UInt32Min, "UInt32Min" },
+                { Low, "Low" },
+                { EnumValue1, "EnumValue1" },
+                { EnumValue2, "EnumValue2" },
+                { EnumValue4, "EnumValue4" },
+                { Int32Max, "Int32Max" },
+                { EnumValue6, "EnumValue6" },
+                { UInt32Max, "UInt32Max" }
+            };
 
         const std::string& ToString(enum EnumType1 value)
         {
-            auto it = GetValueToNameMap(value).find(value);
+            auto it = _value_to_name_EnumType1.find(value);
 
-            if (GetValueToNameMap(value).end() == it)
+            if (_value_to_name_EnumType1.end() == it)
                 ::bond::InvalidEnumValueException(value, "EnumType1");
 
             return it->second;
@@ -69,6 +82,7 @@ namespace tests
 
             return true;
         }
+
     } // namespace EnumType1
     } // namespace _bond_enumerators
 
