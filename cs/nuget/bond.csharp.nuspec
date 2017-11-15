@@ -20,7 +20,7 @@
 
             This package rolls up the other Bond C# packages and includes the code generator (gbc) and MSBuild targets. If you need finer control of dependencies (e.g., excluding Bond's JSON support to get rid of a NewtonSoft.JSON dependency), you'll need to add the smaller packages individually.
         </description>
-        <copyright>Copyright (c) Microsoft</copyright>
+        <copyright>© Microsoft Corporation. All rights reserved.</copyright>
         <tags>Bond .NET C# serialization</tags>
         <dependencies>
             <dependency id="Bond.Core.CSharp" version ="[$version$]" />
