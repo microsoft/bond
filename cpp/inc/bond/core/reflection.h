@@ -10,8 +10,6 @@
 #include <boost/mpl/list.hpp>
 #include <boost/mpl/push_front.hpp>
 #include <boost/mpl/copy_if.hpp>
-#include <boost/assign.hpp>
-#include <boost/assign/list_of.hpp>
 
 #include <bond/core/bond_types.h>
 #include "bond_fwd.h"

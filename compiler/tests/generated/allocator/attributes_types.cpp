@@ -68,9 +68,10 @@ namespace tests
     
     const ::bond::Metadata Foo::Schema::s_f_metadata
         = ::bond::reflection::MetadataInit("f", ::bond::reflection::optional_field_modifier::value,
-                boost::assign::map_list_of<std::string, std::string>
-                    ("FieldAttribute1", "one")
-                    ("FieldAttribute2", "two"));
+                {
+                    { "FieldAttribute1", "one" },
+                    { "FieldAttribute2", "two" }
+                });
 
     
 } // namespace tests

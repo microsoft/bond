@@ -20,6 +20,7 @@ module Language.Bond.Codegen.Cpp.Util
 
 import Data.Monoid
 import Prelude
+import Data.List
 import Data.Text.Lazy (Text, unpack)
 import Data.Text.Lazy.Builder (toLazyText)
 import Text.Shakespeare.Text
@@ -63,10 +64,14 @@ template d = if null $ declParams d then mempty else [lt|template <typename #{pa
 -- attribute initializer
 attributeInit :: [Attribute] -> Text
 attributeInit [] = "::bond::reflection::Attributes()"
-attributeInit xs = [lt|boost::assign::map_list_of<std::string, std::string>#{newlineBeginSep 5 attrNameValue xs}|]
+attributeInit xs = [lt|{
+                    #{commaLineSep 5 attrNameValueText sortedAttributes}
+                }|]
   where
-    idl = MappingContext idlTypeMapping [] [] []  
-    attrNameValue Attribute {..} = [lt|("#{getQualifiedName idl attrName}", "#{attrValue}")|]
+    idl = MappingContext idlTypeMapping [] [] []
+    attrNameValue Attribute {..} = (getQualifiedName idl attrName, attrValue)
+    sortedAttributes = sortOn fst $ map attrNameValue xs
+    attrNameValueText (name, value) = [lt|{ "#{name}", "#{value}" }|]
 
 
 -- modifier tag type for a field
