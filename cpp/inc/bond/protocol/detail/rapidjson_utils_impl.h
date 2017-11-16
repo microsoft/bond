@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include <bond/protocol/detail/rapidjson_utils.h>
 #include <bond/core/exception.h>
 #include <boost/locale.hpp>
 #include <boost/lexical_cast.hpp>

@@ -22,6 +22,10 @@ bool try_lexical_convert(const char* str, uint16_t& result);
 } // namespace bond
 
 
-#ifdef BOND_HEADER_ONLY
+#ifdef BOND_LIB_TYPE
+#if BOND_LIB_TYPE == BOND_LIB_TYPE_HEADER
 #include "rapidjson_utils_impl.h"
+#endif
+#else
+#error BOND_LIB_TYPE is undefined
 #endif

@@ -203,7 +203,7 @@ set (BOND_LIBRARIES_ONLY
 
 set (BOND_LIBRARIES_INSTALL_CPP
     "FALSE"
-    CACHE BOOL "If TRUE, the generated .cpp files for the Bond libraries will be installed under src/ as part of the INSTALL target.")
+    CACHE BOOL "If TRUE, the .cpp files for the Bond libraries will be installed under src/ as part of the INSTALL target.")
 
 set (BOND_ENABLE_COMM
     "FALSE"
