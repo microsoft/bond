@@ -410,10 +410,10 @@ namespace std
         ::bond::detail::once_flag _once_flag_holder_#{declName}<T>::flag;
 #endif
         template <typename Map = std::map<enum #{declName}, std::string> >
-        inline const Map& GetValueToNameMap(enum #{declName})#{getEnumMapBody valueNameConst enumConstByValue}
+        inline const Map& GetValueToNameMap(enum #{declName}, ::bond::detail::mpl::identity<Map> = {})#{getEnumMapBody valueNameConst enumConstByValue}
 
         template <typename Map = std::map<std::string, enum #{declName}> >
-        inline const Map& GetNameToValueMap(enum #{declName})#{getEnumMapBody nameValueConst enumConstByName}
+        inline const Map& GetNameToValueMap(enum #{declName}, ::bond::detail::mpl::identity<Map> = {})#{getEnumMapBody nameValueConst enumConstByName}
 
         const std::string& ToString(enum #{declName} value);
 

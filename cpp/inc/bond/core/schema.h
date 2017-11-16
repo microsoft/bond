@@ -338,18 +338,18 @@ inline RuntimeSchema key_schema(const RuntimeSchema& schema)
 
 
 /// @brief Returns a const reference to a map of values for a user defined enum
-template<typename T>
-inline const std::map<T, std::string>& GetEnumValues()
+template <typename T, typename Map = std::map<T, std::string> >
+inline const Map& GetEnumValues()
 {
-    return GetValueToNameMap(T());
+    return GetValueToNameMap(T{}, detail::mpl::identity<Map>{});
 }
 
 
 /// @brief Returns a const reference to a map of names for a user defined enum
-template<typename T>
-inline const std::map<std::string, T>& GetEnumNames()
+template <typename T, typename Map = std::map<std::string, T> >
+inline const Map& GetEnumNames()
 {
-    return GetNameToValueMap(T());
+    return GetNameToValueMap(T{}, detail::mpl::identity<Map>{});
 }
 
 
