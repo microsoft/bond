@@ -39,9 +39,10 @@ namespace tests
         static ::bond::Metadata GetMetadata()
         {
             return ::bond::reflection::MetadataInit("Foo", "tests.Foo",
-                boost::assign::map_list_of<std::string, std::string>
-                    ("StructAttribute1", "one")
-                    ("StructAttribute2", "two")
+                {
+                    { "StructAttribute1", "one" },
+                    { "StructAttribute2", "two" }
+                }
             );
         }
     };
