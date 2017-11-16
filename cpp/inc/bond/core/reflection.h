@@ -300,7 +300,7 @@ bond::Metadata MetadataInit(const char* name, const char* qual_name, const Attri
     // boost::mpl::for_each instantiates object of each type in the sequence.
     // We transform the Params to a sequence of type pointers to avoid creating
     // actual complex types that might not even support default ctor.
-    typedef typename boost::mpl::transform<Params, boost::add_pointer<_> >::type ParamsPtr;
+    typedef typename boost::mpl::transform<Params, std::add_pointer<_> >::type ParamsPtr;
 
     boost::mpl::for_each<ParamsPtr>(detail::TypeListBuilder(params));
 
