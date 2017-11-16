@@ -7,35 +7,39 @@ FLAVOR=$2
 BOOST=${3:-}
 COMPILER=${4:-clang}
 
-# We set our compilers and cflags in non-standard variables because Stack chokes
-# on some otherwise acceptable configurations. (e.g., CC="ccache gcc")
+export BOND_ROOT=/root/bond
+export BUILD_ROOT=/root/build
+BUILD_SCRIPTS=$BOND_ROOT/tools/ci-scripts/linux
+
+# We set our cflags in non-standard variables because Stack chokes on some
+# otherwise acceptable configurations.
 case "$COMPILER" in
     clang)
-        export CXX_COMPILER=clang++
-        export CXX_FLAGS="-Qunused-arguments --system-header-prefix=boost/"
-        export CC_COMPILER=clang
-        export CC_FLAGS="-Qunused-arguments --system-header-prefix=boost/"
+        export CXX=clang++
+        export CC=clang
+        export BOND_CXX_FLAGS="-Qunused-arguments --system-header-prefix=boost/"
+        export BOND_CC_FLAGS="-Qunused-arguments --system-header-prefix=boost/"
         ;;
 
     gcc)
-        export CXX_COMPILER=g++
-        export CXX_FLAGS=
-        export CC_COMPILER=gcc
-        export CC_FLAGS=
+        export CXX=g++
+        export CC=gcc
+        export BOND_CXX_FLAGS=
+        export BOND_CC_FLAGS=
         ;;
 
     *) echo "Unknown compiler $COMPILER"; exit 1;;
 esac
 
 export BOND_CMAKE_FLAGS="-DBOND_USE_CCACHE=TRUE"
+# Default boost root. C++ requires a specific boost and will override this.
+export BOOST_ROOT=/opt/boosts/boost_1_63_0
 
-BUILD_PATH=/root/build
-BUILD_SCRIPTS=/root/bond/tools/ci-scripts/linux
-
-mkdir -p $SYMLINKED_HOME $BUILD_PATH
+mkdir -p $SYMLINKED_HOME $BUILD_ROOT
+ln -s /root/.ccache $SYMLINKED_HOME/.ccache
 ln -s /root/.stack $SYMLINKED_HOME/.stack
 
-cd $BUILD_PATH
+cd $BUILD_ROOT
 
 case "$FLAVOR" in
     cpp-*)
@@ -49,27 +53,17 @@ case "$FLAVOR" in
         if [ ! $BOOST ]; then echo "BOOST not specified"; exit 1; fi
 
         export BOOST_ROOT=/opt/boosts/boost_`echo $BOOST | tr . _`
-        export CXX=$CXX_COMPILER
-        export CC=$CC_COMPILER
 
-        ln -s /root/.ccache $SYMLINKED_HOME/.ccache
-
-        cmake -DBOND_STACK_OPTIONS="--allow-different-user" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DCMAKE_C_FLAGS="$CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
+        cmake -DBOND_STACK_OPTIONS="--allow-different-user" -DCMAKE_CXX_FLAGS="$BOND_CXX_FLAGS" -DCMAKE_C_FLAGS="$BOND_CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
 
         make --jobs 2 check
         ;;
 
     cs)
-        # TODO: Remove build dependency on C++
-        export BOOST_ROOT=/opt/boosts/boost_1_63_0
-        export CXX=$CXX_COMPILER
-        export CC=$CC_COMPILER
-        ln -s /root/.ccache $SYMLINKED_HOME/.ccache
-
         nuget restore /root/bond/cs/cs.sln
 
         BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"
-        cmake -DBOND_STACK_OPTIONS="--allow-different-user" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DCMAKE_C_FLAGS="$CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
+        cmake -DBOND_STACK_OPTIONS="--allow-different-user" -DCMAKE_BOND_CXX_FLAGS="$BOND_CXX_FLAGS" -DCMAKE_C_FLAGS="$BOND_CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
 
         make gbc
         make install
@@ -84,22 +78,12 @@ case "$FLAVOR" in
         ;;
 
     java)
-        # TODO: Remove build dependency on C++
-        export BOOST_ROOT=/opt/boosts/boost_1_63_0
-        export CXX=$CXX_COMPILER
-        export CC=$CC_COMPILER
         exec $BUILD_SCRIPTS/build_java.zsh
         ;;
 
     hs)
-        # TODO: Remove build dependency on C++
-        export BOOST_ROOT=/opt/boosts/boost_1_63_0
-        export CXX=$CXX_COMPILER
-        export CC=$CC_COMPILER
-        ln -s /root/.ccache $SYMLINKED_HOME/.ccache
-
         BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"
-        cmake -DBOND_STACK_OPTIONS="--allow-different-user" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DCMAKE_C_FLAGS="$CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
+        cmake -DBOND_STACK_OPTIONS="--allow-different-user" -DCMAKE_BOND_CXX_FLAGS="$BOND_CXX_FLAGS" -DCMAKE_C_FLAGS="$BOND_CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
 
         make gbc-tests
 
