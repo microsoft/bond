@@ -15,9 +15,6 @@
 #include <bond/core/containers.h>
 
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#include <bond/core/detail/once.h>
-#endif
 
 namespace tests
 {
@@ -126,52 +123,40 @@ namespace tests
         }
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
-        template <typename T>
-        struct _once_flag_holder_EnumToWrap { static ::bond::detail::once_flag flag; };
+        extern const std::map<enum EnumToWrap, std::string> _value_to_name_EnumToWrap;
 
-        template <typename T>
-        ::bond::detail::once_flag _once_flag_holder_EnumToWrap<T>::flag;
-#endif
-        template <typename Map = std::map<enum EnumToWrap, std::string> >
-        inline const Map& GetValueToNameMap(enum EnumToWrap)
+        inline const std::map<enum EnumToWrap, std::string>& GetValueToNameMap(enum EnumToWrap)
         {
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-            static const Map* _map_EnumToWrap_ptr;
-            ::bond::detail::call_once(_once_flag_holder_EnumToWrap<Map>::flag, []{
-#endif
+            return _value_to_name_EnumToWrap;
+        }
+
+        extern const std::map<std::string, enum EnumToWrap> _name_to_value_EnumToWrap;
+
+        inline const std::map<std::string, enum EnumToWrap>& GetNameToValueMap(enum EnumToWrap)
+        {
+            return _name_to_value_EnumToWrap;
+        }
+#else
+        template <typename Map = std::map<enum EnumToWrap, std::string> >
+        inline const Map& GetValueToNameMap(enum EnumToWrap, ::bond::detail::mpl::identity<Map> = {})
+        {
             static const Map _map_EnumToWrap
                 {
                     { anEnumValue, "anEnumValue" }
                 };
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-            _map_EnumToWrap_ptr = &_map_EnumToWrap; });
-
-            return *_map_EnumToWrap_ptr;
-#else
             return _map_EnumToWrap;
-#endif
         }
 
         template <typename Map = std::map<std::string, enum EnumToWrap> >
-        inline const Map& GetNameToValueMap(enum EnumToWrap)
+        inline const Map& GetNameToValueMap(enum EnumToWrap, ::bond::detail::mpl::identity<Map> = {})
         {
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-            static const Map* _map_EnumToWrap_ptr;
-            ::bond::detail::call_once(_once_flag_holder_EnumToWrap<Map>::flag, []{
-#endif
             static const Map _map_EnumToWrap
                 {
                     { "anEnumValue", anEnumValue }
                 };
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-            _map_EnumToWrap_ptr = &_map_EnumToWrap; });
-
-            return *_map_EnumToWrap_ptr;
-#else
             return _map_EnumToWrap;
-#endif
         }
-
+#endif
         const std::string& ToString(enum EnumToWrap value);
 
         void FromString(const std::string& name, enum EnumToWrap& value);

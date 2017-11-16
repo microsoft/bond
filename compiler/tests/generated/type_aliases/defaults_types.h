@@ -15,9 +15,6 @@
 #include <bond/core/containers.h>
 
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#include <bond/core/detail/once.h>
-#endif
 
 namespace tests
 {
@@ -54,19 +51,23 @@ namespace tests
         }
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
-        template <typename T>
-        struct _once_flag_holder_EnumType1 { static ::bond::detail::once_flag flag; };
+        extern const std::map<enum EnumType1, std::string> _value_to_name_EnumType1;
 
-        template <typename T>
-        ::bond::detail::once_flag _once_flag_holder_EnumType1<T>::flag;
-#endif
-        template <typename Map = std::map<enum EnumType1, std::string> >
-        inline const Map& GetValueToNameMap(enum EnumType1)
+        inline const std::map<enum EnumType1, std::string>& GetValueToNameMap(enum EnumType1)
         {
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-            static const Map* _map_EnumType1_ptr;
-            ::bond::detail::call_once(_once_flag_holder_EnumType1<Map>::flag, []{
-#endif
+            return _value_to_name_EnumType1;
+        }
+
+        extern const std::map<std::string, enum EnumType1> _name_to_value_EnumType1;
+
+        inline const std::map<std::string, enum EnumType1>& GetNameToValueMap(enum EnumType1)
+        {
+            return _name_to_value_EnumType1;
+        }
+#else
+        template <typename Map = std::map<enum EnumType1, std::string> >
+        inline const Map& GetValueToNameMap(enum EnumType1, ::bond::detail::mpl::identity<Map> = {})
+        {
             static const Map _map_EnumType1
                 {
                     { Int32Min, "Int32Min" },
@@ -83,22 +84,12 @@ namespace tests
                     { EnumValue6, "EnumValue6" },
                     { UInt32Max, "UInt32Max" }
                 };
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-            _map_EnumType1_ptr = &_map_EnumType1; });
-
-            return *_map_EnumType1_ptr;
-#else
             return _map_EnumType1;
-#endif
         }
 
         template <typename Map = std::map<std::string, enum EnumType1> >
-        inline const Map& GetNameToValueMap(enum EnumType1)
+        inline const Map& GetNameToValueMap(enum EnumType1, ::bond::detail::mpl::identity<Map> = {})
         {
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-            static const Map* _map_EnumType1_ptr;
-            ::bond::detail::call_once(_once_flag_holder_EnumType1<Map>::flag, []{
-#endif
             static const Map _map_EnumType1
                 {
                     { "EnumValue1", EnumValue1 },
@@ -115,15 +106,9 @@ namespace tests
                     { "UInt32Max", UInt32Max },
                     { "UInt32Min", UInt32Min }
                 };
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-            _map_EnumType1_ptr = &_map_EnumType1; });
-
-            return *_map_EnumType1_ptr;
-#else
             return _map_EnumType1;
-#endif
         }
-
+#endif
         const std::string& ToString(enum EnumType1 value);
 
         void FromString(const std::string& name, enum EnumType1& value);

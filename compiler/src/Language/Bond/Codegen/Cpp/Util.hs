@@ -17,8 +17,12 @@ module Language.Bond.Codegen.Cpp.Util
     , schemaMetadata
     , enumDefinition
     , isEnumDeclaration
+    , enumValueToNameInitList
+    , enumNameToValueInitList
     ) where
 
+import Data.Int (Int64)
+import Data.List (sortOn)
 import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text, unpack)
@@ -158,3 +162,18 @@ enumDefinition _ = error "enumDefinition: impossible happened."
 isEnumDeclaration :: Declaration -> Bool
 isEnumDeclaration Enum {} = True
 isEnumDeclaration _ = False
+
+
+enumValueToNameInitList :: Int64 -> Declaration -> Text
+enumValueToNameInitList n Enum {..} = commaLineSep n valueNameConst enumConstByValue
+  where
+    valueNameConst (name, _) = [lt|{ #{name}, "#{name}" }|]
+    enumConstByValue = sortOn snd $ reifyEnumValues enumConstants
+enumValueToNameInitList _ _ = error "enumValueToNameInitList: impossible happened."
+
+enumNameToValueInitList :: Int64 -> Declaration -> Text
+enumNameToValueInitList n Enum {..} = commaLineSep n nameValueConst enumConstByName
+  where
+    nameValueConst Constant {..} = [lt|{ "#{constantName}", #{constantName} }|]
+    enumConstByName = sortOn constantName enumConstants
+enumNameToValueInitList _ _ = error "enumNameToValueInitList: impossible happened."

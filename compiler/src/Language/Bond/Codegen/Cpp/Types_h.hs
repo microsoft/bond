@@ -6,7 +6,6 @@
 module Language.Bond.Codegen.Cpp.Types_h (types_h) where
 
 import System.FilePath
-import Data.List
 import Data.Maybe
 import Data.Monoid
 import Prelude
@@ -51,18 +50,13 @@ types_h userHeaders enumHeader allocator alloc_ctors_enabled type_aliases_enable
 #include <bond/core/containers.h>
 #{newlineSep 0 optionalHeader bondHeaders}
 #{includeEnum}
-#{callOnceInclude}#{newlineSepEnd 0 includeImport imports}
+#{newlineSepEnd 0 includeImport imports}
 #{CPP.openNamespace cpp}
     #{doubleLineSepEnd 1 id $ catMaybes $ aliasDeclarations}#{doubleLineSep 1 typeDeclaration declarations}
 #{CPP.closeNamespace cpp}
 #{optional usesAllocatorSpecialization allocator}
 |])
   where
-    callOnceInclude = if not (any CPP.isEnumDeclaration declarations) then mempty else [lt|#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#include <bond/core/detail/once.h>
-#endif
-|]
-
     aliasDeclarations = if type_aliases_enabled then map aliasDeclName declarations else []
 
     aliasDeclName a@Alias {..} = Just [lt|#{CPP.template a}using #{declName} = #{getAliasDeclTypeName cpp a};|]
@@ -403,18 +397,40 @@ namespace std
         }
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
-        template <typename T>
-        struct _once_flag_holder_#{declName} { static ::bond::detail::once_flag flag; };
+        extern const std::map<enum #{declName}, std::string> _value_to_name_#{declName};
 
-        template <typename T>
-        ::bond::detail::once_flag _once_flag_holder_#{declName}<T>::flag;
-#endif
+        inline const std::map<enum #{declName}, std::string>& GetValueToNameMap(enum #{declName})
+        {
+            return _value_to_name_#{declName};
+        }
+
+        extern const std::map<std::string, enum #{declName}> _name_to_value_#{declName};
+
+        inline const std::map<std::string, enum #{declName}>& GetNameToValueMap(enum #{declName})
+        {
+            return _name_to_value_#{declName};
+        }
+#else
         template <typename Map = std::map<enum #{declName}, std::string> >
-        inline const Map& GetValueToNameMap(enum #{declName}, ::bond::detail::mpl::identity<Map> = {})#{getEnumMapBody valueNameConst enumConstByValue}
+        inline const Map& GetValueToNameMap(enum #{declName}, ::bond::detail::mpl::identity<Map> = {})
+        {
+            static const Map _map_#{declName}
+                {
+                    #{CPP.enumValueToNameInitList 5 e}
+                };
+            return _map_#{declName};
+        }
 
         template <typename Map = std::map<std::string, enum #{declName}> >
-        inline const Map& GetNameToValueMap(enum #{declName}, ::bond::detail::mpl::identity<Map> = {})#{getEnumMapBody nameValueConst enumConstByName}
-
+        inline const Map& GetNameToValueMap(enum #{declName}, ::bond::detail::mpl::identity<Map> = {})
+        {
+            static const Map _map_#{declName}
+                {
+                    #{CPP.enumNameToValueInitList 5 e}
+                };
+            return _map_#{declName};
+        }
+#endif
         const std::string& ToString(enum #{declName} value);
 
         void FromString(const std::string& name, enum #{declName}& value);
@@ -432,28 +448,5 @@ namespace std
         |]
         enumUsing = if enumHeader then mempty else [lt|using namespace _bond_enumerators::#{declName};
     |]
-        nameValueConst Constant {..} = [lt|{ "#{constantName}", #{constantName} }|]
-        valueNameConst (name, _) = [lt|{ #{name}, "#{name}" }|]
-        enumConstByName = sortOn constantName enumConstants
-        enumConstByValue = sortOn snd $ reifyEnumValues enumConstants
-
-        getEnumMapBody f items = [lt|
-        {
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-            static const Map* _map_#{declName}_ptr;
-            ::bond::detail::call_once(_once_flag_holder_#{declName}<Map>::flag, []{
-#endif
-            static const Map _map_#{declName}
-                {
-                    #{commaLineSep 5 f items}
-                };
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-            _map_#{declName}_ptr = &_map_#{declName}; });
-
-            return *_map_#{declName}_ptr;
-#else
-            return _map_#{declName};
-#endif
-        }|]
 
     typeDeclaration _ = mempty
