@@ -1775,9 +1775,9 @@ to reuse the pre-instantiated code. The one exception are applications using
 custom protocols - by definition templates pre-instantiated at the time Bond
 library was built can't support custom protocols.
 
-If header-only consumption of the library is not required, then defining `BOND_LIB_TYPE`
-macro to `BOND_LIB_TYPE_STATIC` will pre-compile more common code into `bond`
-library and will reduce the number of included headers.
+If header-only consumption of the library is not required, then defining the
+`BOND_LIB_TYPE` macro to `BOND_LIB_TYPE_STATIC` will pre-compile more common
+code into the `bond.lib`/`libbond.a` library and will reduce the number of included headers.
 
 When using the Microsoft Visual Studio toolchain there are two important things
 to be aware related to build time. First, always use 64-bit tools. In

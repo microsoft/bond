@@ -49,7 +49,7 @@
 #ifndef BOND_LIB_TYPE
 #define BOND_LIB_TYPE BOND_LIB_TYPE_HEADER
 #elif (BOND_LIB_TYPE != BOND_LIB_TYPE_HEADER) && (BOND_LIB_TYPE != BOND_LIB_TYPE_STATIC)
-#error Unknown library type is defined for BOND_LIB_TYPE
+#error Unsupported library type is defined for BOND_LIB_TYPE
 #endif
 
 #ifndef BOND_DETAIL_HEADER_ONLY_INLINE
