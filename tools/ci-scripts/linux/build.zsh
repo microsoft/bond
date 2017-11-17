@@ -59,34 +59,6 @@ case "$FLAVOR" in
         make --jobs 2 check
         ;;
 
-    cs)
-        nuget restore /root/bond/cs/cs.sln
-
-        BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"
-        cmake -DBOND_STACK_OPTIONS="--allow-different-user" -DCMAKE_BOND_CXX_FLAGS="$BOND_CXX_FLAGS" -DCMAKE_C_FLAGS="$BOND_CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
-
-        make gbc
-        make install
-
-        msbuild /p:Configuration=Debug /m /root/bond/cs/cs.sln
-        msbuild /p:Configuration=Fields /m /root/bond/cs/cs.sln
-
-        mono /root/NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels \
-            /root/bond/cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll \
-            /root/bond/cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll \
-            /root/bond/cs/test/internal/bin/debug/net45/Bond.InternalTest.dll
-        ;;
-
-    hs)
-        BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"
-        cmake -DBOND_STACK_OPTIONS="--allow-different-user" -DCMAKE_BOND_CXX_FLAGS="$BOND_CXX_FLAGS" -DCMAKE_C_FLAGS="$BOND_CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
-
-        make gbc-tests
-
-        cd /root/bond/compiler
-        $BUILD_PATH/compiler/build/gbc-tests/gbc-tests
-        ;;
-
     *)
         # Flavors that have separate scripts.
         local SCRIPT_PATH="$BUILD_SCRIPTS/build_$FLAVOR.zsh"
