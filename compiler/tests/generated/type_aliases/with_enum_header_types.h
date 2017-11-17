@@ -24,33 +24,71 @@ namespace tests
     namespace EnumType1
     {
         
-        extern const std::map<enum EnumType1, std::string> _value_to_name_EnumType1;
-        extern const std::map<std::string, enum EnumType1> _name_to_value_EnumType1;
-
-        inline
-        const char* GetTypeName(enum EnumType1)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum EnumType1)
         {
             return "EnumType1";
         }
 
-        inline
-        const char* GetTypeName(enum EnumType1, const ::bond::qualified_name_tag&)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum EnumType1, const ::bond::qualified_name_tag&)
         {
             return "tests.EnumType1";
         }
 
-        inline
-        const std::map<enum EnumType1, std::string>& GetValueToNameMap(enum EnumType1)
+#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
+        extern const std::map<enum EnumType1, std::string> _value_to_name_EnumType1;
+
+        inline const std::map<enum EnumType1, std::string>& GetValueToNameMap(enum EnumType1)
         {
             return _value_to_name_EnumType1;
         }
 
-        inline
-        const std::map<std::string, enum EnumType1>& GetNameToValueMap(enum EnumType1)
+        extern const std::map<std::string, enum EnumType1> _name_to_value_EnumType1;
+
+        inline const std::map<std::string, enum EnumType1>& GetNameToValueMap(enum EnumType1)
         {
             return _name_to_value_EnumType1;
         }
+#else
+        template <typename Map = std::map<enum EnumType1, std::string> >
+        inline const Map& GetValueToNameMap(enum EnumType1, ::bond::detail::mpl::identity<Map> = {})
+        {
+            static const Map s_valueToNameMap
+                {
+                    { Int32Min, "Int32Min" },
+                    { EnumValue3, "EnumValue3" },
+                    { EnumValue5, "EnumValue5" },
+                    { UInt32Min, "UInt32Min" },
+                    { Low, "Low" },
+                    { EnumValue1, "EnumValue1" },
+                    { EnumValue2, "EnumValue2" },
+                    { EnumValue4, "EnumValue4" },
+                    { Int32Max, "Int32Max" },
+                    { EnumValue6, "EnumValue6" },
+                    { UInt32Max, "UInt32Max" }
+                };
+            return s_valueToNameMap;
+        }
 
+        template <typename Map = std::map<std::string, enum EnumType1> >
+        inline const Map& GetNameToValueMap(enum EnumType1, ::bond::detail::mpl::identity<Map> = {})
+        {
+            static const Map s_nameToValueMap
+                {
+                    { "EnumValue1", EnumValue1 },
+                    { "EnumValue2", EnumValue2 },
+                    { "EnumValue3", EnumValue3 },
+                    { "EnumValue4", EnumValue4 },
+                    { "EnumValue5", EnumValue5 },
+                    { "EnumValue6", EnumValue6 },
+                    { "Int32Max", Int32Max },
+                    { "Int32Min", Int32Min },
+                    { "Low", Low },
+                    { "UInt32Max", UInt32Max },
+                    { "UInt32Min", UInt32Min }
+                };
+            return s_nameToValueMap;
+        }
+#endif
         const std::string& ToString(enum EnumType1 value);
 
         void FromString(const std::string& name, enum EnumType1& value);

@@ -8,10 +8,8 @@ module Language.Bond.Codegen.Cpp.Types_cpp (types_cpp) where
 import Data.Monoid
 import Prelude
 import Data.Text.Lazy (Text)
-import Data.List
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
-import Language.Bond.Syntax.Util
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Codegen.Util
 import qualified Language.Bond.Codegen.Cpp.Util as CPP
@@ -22,12 +20,15 @@ types_cpp :: MappingContext -> String -> [Import] -> [Declaration] -> (String, T
 types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 #include "#{file}_reflection.h"
 #include <bond/core/exception.h>
-
+#{unorderedMapInclude}
 #{CPP.openNamespace cpp}
     #{doubleLineSepEnd 1 statics declarations}
 #{CPP.closeNamespace cpp}
 |])
   where
+    unorderedMapInclude = if not (any CPP.isEnumDeclaration declarations) then mempty else [lt|#include <unordered_map>
+|]
+
     -- definitions of Schema statics for non-generic structs
     statics s@Struct {..} =
         if null declParams then CPP.schemaMetadata cpp s else mempty
@@ -37,26 +38,43 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
     -- ToString is intentionally not implemented in terms of FromEnum, as
     -- ToString returns a reference to the name stored in the map. FromEnum
     -- copies this name into the output paramater.
-    statics Enum {..} = [lt|
+    statics e@Enum {..} = [lt|
     namespace _bond_enumerators
     {
     namespace #{declName}
     {
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
         const std::map<std::string, enum #{declName}> _name_to_value_#{declName}
             {
-                #{commaLineSep 4 nameValueConst $ enumConstByName}
+                #{CPP.enumNameToValueInitList 4 e}
             };
 
         const std::map<enum #{declName}, std::string> _value_to_name_#{declName}
             {
-                #{commaLineSep 4 valueNameConst $ enumConstByValue}
+                #{CPP.enumValueToNameInitList 4 e}
             };
-
+#else
+        namespace
+        {
+            struct _hash_#{declName}
+            {
+                std::size_t operator()(enum #{declName} value) const
+                {
+                    return static_cast<std::size_t>(value);
+                }
+            };
+        }
+#endif
         const std::string& ToString(enum #{declName} value)
         {
-            auto it = _value_to_name_#{declName}.find(value);
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            const auto& map = GetValueToNameMap(value);
+#else
+            const auto& map = GetValueToNameMap<std::unordered_map<enum #{declName}, std::string, _hash_#{declName}> >(value);
+#endif
+            auto it = map.find(value);
 
-            if (_value_to_name_#{declName}.end() == it)
+            if (map.end() == it)
                 ::bond::InvalidEnumValueException(value, "#{declName}");
 
             return it->second;
@@ -70,9 +88,14 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 
         bool ToEnum(enum #{declName}& value, const std::string& name)
         {
-            auto it = _name_to_value_#{declName}.find(name);
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            const auto& map = GetNameToValueMap(value);
+#else
+            const auto& map = GetNameToValueMap<std::unordered_map<std::string, enum #{declName}> >(value);
+#endif
+            auto it = map.find(name);
 
-            if (_name_to_value_#{declName}.end() == it)
+            if (map.end() == it)
                 return false;
 
             value = it->second;
@@ -82,9 +105,14 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 
         bool FromEnum(std::string& name, enum #{declName} value)
         {
-            auto it = _value_to_name_#{declName}.find(value);
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            const auto& map = GetValueToNameMap(value);
+#else
+            const auto& map = GetValueToNameMap<std::unordered_map<enum #{declName}, std::string, _hash_#{declName}> >(value);
+#endif
+            auto it = map.find(value);
 
-            if (_value_to_name_#{declName}.end() == it)
+            if (map.end() == it)
                 return false;
 
             name = it->second;
@@ -94,10 +122,5 @@ types_cpp cpp file _imports declarations = ("_types.cpp", [lt|
 
     } // namespace #{declName}
     } // namespace _bond_enumerators|]
-      where
-        nameValueConst Constant {..} = [lt|{ "#{constantName}", #{constantName} }|]
-        valueNameConst (name, _) = [lt|{ #{name}, "#{name}" }|]
-        enumConstByName = sortOn constantName enumConstants
-        enumConstByValue = sortOn snd $ reifyEnumValues enumConstants
 
     statics _ = mempty

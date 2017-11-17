@@ -95,33 +95,51 @@ namespace tests
             anEnumValue
         };
         
-        extern const std::map<enum EnumToWrap, std::string> _value_to_name_EnumToWrap;
-        extern const std::map<std::string, enum EnumToWrap> _name_to_value_EnumToWrap;
-
-        inline
-        const char* GetTypeName(enum EnumToWrap)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum EnumToWrap)
         {
             return "EnumToWrap";
         }
 
-        inline
-        const char* GetTypeName(enum EnumToWrap, const ::bond::qualified_name_tag&)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum EnumToWrap, const ::bond::qualified_name_tag&)
         {
             return "tests.EnumToWrap";
         }
 
-        inline
-        const std::map<enum EnumToWrap, std::string>& GetValueToNameMap(enum EnumToWrap)
+#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
+        extern const std::map<enum EnumToWrap, std::string> _value_to_name_EnumToWrap;
+
+        inline const std::map<enum EnumToWrap, std::string>& GetValueToNameMap(enum EnumToWrap)
         {
             return _value_to_name_EnumToWrap;
         }
 
-        inline
-        const std::map<std::string, enum EnumToWrap>& GetNameToValueMap(enum EnumToWrap)
+        extern const std::map<std::string, enum EnumToWrap> _name_to_value_EnumToWrap;
+
+        inline const std::map<std::string, enum EnumToWrap>& GetNameToValueMap(enum EnumToWrap)
         {
             return _name_to_value_EnumToWrap;
         }
+#else
+        template <typename Map = std::map<enum EnumToWrap, std::string> >
+        inline const Map& GetValueToNameMap(enum EnumToWrap, ::bond::detail::mpl::identity<Map> = {})
+        {
+            static const Map s_valueToNameMap
+                {
+                    { anEnumValue, "anEnumValue" }
+                };
+            return s_valueToNameMap;
+        }
 
+        template <typename Map = std::map<std::string, enum EnumToWrap> >
+        inline const Map& GetNameToValueMap(enum EnumToWrap, ::bond::detail::mpl::identity<Map> = {})
+        {
+            static const Map s_nameToValueMap
+                {
+                    { "anEnumValue", anEnumValue }
+                };
+            return s_nameToValueMap;
+        }
+#endif
         const std::string& ToString(enum EnumToWrap value);
 
         void FromString(const std::string& name, enum EnumToWrap& value);

@@ -386,33 +386,51 @@ namespace std
     namespace #{declName}
     {
         #{enumDefinition}
-        extern const std::map<enum #{declName}, std::string> _value_to_name_#{declName};
-        extern const std::map<std::string, enum #{declName}> _name_to_value_#{declName};
-
-        inline
-        const char* GetTypeName(enum #{declName})
+        inline BOND_CONSTEXPR const char* GetTypeName(enum #{declName})
         {
             return "#{declName}";
         }
 
-        inline
-        const char* GetTypeName(enum #{declName}, const ::bond::qualified_name_tag&)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum #{declName}, const ::bond::qualified_name_tag&)
         {
             return "#{getDeclTypeName idl e}";
         }
 
-        inline
-        const std::map<enum #{declName}, std::string>& GetValueToNameMap(enum #{declName})
+#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
+        extern const std::map<enum #{declName}, std::string> _value_to_name_#{declName};
+
+        inline const std::map<enum #{declName}, std::string>& GetValueToNameMap(enum #{declName})
         {
             return _value_to_name_#{declName};
         }
 
-        inline
-        const std::map<std::string, enum #{declName}>& GetNameToValueMap(enum #{declName})
+        extern const std::map<std::string, enum #{declName}> _name_to_value_#{declName};
+
+        inline const std::map<std::string, enum #{declName}>& GetNameToValueMap(enum #{declName})
         {
             return _name_to_value_#{declName};
         }
+#else
+        template <typename Map = std::map<enum #{declName}, std::string> >
+        inline const Map& GetValueToNameMap(enum #{declName}, ::bond::detail::mpl::identity<Map> = {})
+        {
+            static const Map s_valueToNameMap
+                {
+                    #{CPP.enumValueToNameInitList 5 e}
+                };
+            return s_valueToNameMap;
+        }
 
+        template <typename Map = std::map<std::string, enum #{declName}> >
+        inline const Map& GetNameToValueMap(enum #{declName}, ::bond::detail::mpl::identity<Map> = {})
+        {
+            static const Map s_nameToValueMap
+                {
+                    #{CPP.enumNameToValueInitList 5 e}
+                };
+            return s_nameToValueMap;
+        }
+#endif
         const std::string& ToString(enum #{declName} value);
 
         void FromString(const std::string& name, enum #{declName}& value);

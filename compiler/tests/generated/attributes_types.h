@@ -28,33 +28,51 @@ namespace tests
             Value1
         };
         
-        extern const std::map<enum Enum, std::string> _value_to_name_Enum;
-        extern const std::map<std::string, enum Enum> _name_to_value_Enum;
-
-        inline
-        const char* GetTypeName(enum Enum)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum Enum)
         {
             return "Enum";
         }
 
-        inline
-        const char* GetTypeName(enum Enum, const ::bond::qualified_name_tag&)
+        inline BOND_CONSTEXPR const char* GetTypeName(enum Enum, const ::bond::qualified_name_tag&)
         {
             return "tests.Enum";
         }
 
-        inline
-        const std::map<enum Enum, std::string>& GetValueToNameMap(enum Enum)
+#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
+        extern const std::map<enum Enum, std::string> _value_to_name_Enum;
+
+        inline const std::map<enum Enum, std::string>& GetValueToNameMap(enum Enum)
         {
             return _value_to_name_Enum;
         }
 
-        inline
-        const std::map<std::string, enum Enum>& GetNameToValueMap(enum Enum)
+        extern const std::map<std::string, enum Enum> _name_to_value_Enum;
+
+        inline const std::map<std::string, enum Enum>& GetNameToValueMap(enum Enum)
         {
             return _name_to_value_Enum;
         }
+#else
+        template <typename Map = std::map<enum Enum, std::string> >
+        inline const Map& GetValueToNameMap(enum Enum, ::bond::detail::mpl::identity<Map> = {})
+        {
+            static const Map s_valueToNameMap
+                {
+                    { Value1, "Value1" }
+                };
+            return s_valueToNameMap;
+        }
 
+        template <typename Map = std::map<std::string, enum Enum> >
+        inline const Map& GetNameToValueMap(enum Enum, ::bond::detail::mpl::identity<Map> = {})
+        {
+            static const Map s_nameToValueMap
+                {
+                    { "Value1", Value1 }
+                };
+            return s_nameToValueMap;
+        }
+#endif
         const std::string& ToString(enum Enum value);
 
         void FromString(const std::string& name, enum Enum& value);

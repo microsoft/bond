@@ -1,6 +1,7 @@
 
 #include "aliases_reflection.h"
 #include <bond/core/exception.h>
+#include <unordered_map>
 
 namespace tests
 {
@@ -9,6 +10,7 @@ namespace tests
     {
     namespace EnumToWrap
     {
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
         const std::map<std::string, enum EnumToWrap> _name_to_value_EnumToWrap
             {
                 { "anEnumValue", anEnumValue }
@@ -18,12 +20,28 @@ namespace tests
             {
                 { anEnumValue, "anEnumValue" }
             };
-
+#else
+        namespace
+        {
+            struct _hash_EnumToWrap
+            {
+                std::size_t operator()(enum EnumToWrap value) const
+                {
+                    return static_cast<std::size_t>(value);
+                }
+            };
+        }
+#endif
         const std::string& ToString(enum EnumToWrap value)
         {
-            auto it = _value_to_name_EnumToWrap.find(value);
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            const auto& map = GetValueToNameMap(value);
+#else
+            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumToWrap, std::string, _hash_EnumToWrap> >(value);
+#endif
+            auto it = map.find(value);
 
-            if (_value_to_name_EnumToWrap.end() == it)
+            if (map.end() == it)
                 ::bond::InvalidEnumValueException(value, "EnumToWrap");
 
             return it->second;
@@ -37,9 +55,14 @@ namespace tests
 
         bool ToEnum(enum EnumToWrap& value, const std::string& name)
         {
-            auto it = _name_to_value_EnumToWrap.find(name);
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            const auto& map = GetNameToValueMap(value);
+#else
+            const auto& map = GetNameToValueMap<std::unordered_map<std::string, enum EnumToWrap> >(value);
+#endif
+            auto it = map.find(name);
 
-            if (_name_to_value_EnumToWrap.end() == it)
+            if (map.end() == it)
                 return false;
 
             value = it->second;
@@ -49,9 +72,14 @@ namespace tests
 
         bool FromEnum(std::string& name, enum EnumToWrap value)
         {
-            auto it = _value_to_name_EnumToWrap.find(value);
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+            const auto& map = GetValueToNameMap(value);
+#else
+            const auto& map = GetValueToNameMap<std::unordered_map<enum EnumToWrap, std::string, _hash_EnumToWrap> >(value);
+#endif
+            auto it = map.find(value);
 
-            if (_value_to_name_EnumToWrap.end() == it)
+            if (map.end() == it)
                 return false;
 
             name = it->second;
