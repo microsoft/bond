@@ -1,0 +1,817 @@
+.Lambda #Lambda1<System.Func`2[System.Object,System.Object]>(System.Object $obj) {
+    .Block(ExpressionsTest.Example $Example_result) {
+        .Block() {
+            $Example_result = .New ExpressionsTest.Example();
+            .Block(ExpressionsTest.Example $Example_obj) {
+                $Example_obj = (ExpressionsTest.Example)$obj;
+                .Default(System.Void);
+                .Block() {
+                    .Block(ExpressionsTest.Base $Base_obj) {
+                        $Base_obj = (ExpressionsTest.Base)$obj;
+                        .Default(System.Void);
+                        .If (($Base_obj.vvb).Count != 0) {
+                            .Block(
+                                System.Int32 $index,
+                                System.Int32 $count) {
+                                $index = -1;
+                                $count = ($Base_obj.vvb).Count;
+                                .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example_result).vvb_item) {
+                                    .Block(System.Int32 $Convert(Example_result).vvb_count) {
+                                        $Convert(Example_result).vvb_count = $count;
+                                        .If ($Convert(Example_result).vvb_count > 65536) {
+                                            $Convert(Example_result).vvb_count = 65536
+                                        } .Else {
+                                            .Default(System.Void)
+                                        };
+                                        (((ExpressionsTest.Base)$Example_result).vvb).Capacity = $Convert(Example_result).vvb_count
+                                    };
+                                    .Loop  {
+                                        .If (++$index < $count) {
+                                            .Block() {
+                                                .Block(
+                                                    System.Int32 $index,
+                                                    System.Int32 $count) {
+                                                    $index = -1;
+                                                    $count = (($Base_obj.vvb).Item[$index]).Count;
+                                                    .Block(System.UInt64 $Convert(Example_result).vvb_item_item) {
+                                                        .Block(System.Int32 $Convert(Example_result).vvb_item_count) {
+                                                            $Convert(Example_result).vvb_item_count = $count;
+                                                            .If ($Convert(Example_result).vvb_item_count > 65536) {
+                                                                $Convert(Example_result).vvb_item_count = 65536
+                                                            } .Else {
+                                                                .Default(System.Void)
+                                                            };
+                                                            $Convert(Example_result).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example_result).vvb_item_count)
+                                                        };
+                                                        .Loop  {
+                                                            .If (++$index < $count) {
+                                                                .Block() {
+                                                                    $Convert(Example_result).vvb_item_item = (($Base_obj.vvb).Item[$index]).Item[$index];
+                                                                    .Call $Convert(Example_result).vvb_item.Add($Convert(Example_result).vvb_item_item)
+                                                                }
+                                                            } .Else {
+                                                                .Break end { }
+                                                            }
+                                                        }
+                                                        .LabelTarget end:;
+                                                        .Default(System.Void)
+                                                    }
+                                                };
+                                                .Call (((ExpressionsTest.Base)$Example_result).vvb).Add($Convert(Example_result).vvb_item)
+                                            }
+                                        } .Else {
+                                            .Break end { }
+                                        }
+                                    }
+                                    .LabelTarget end:;
+                                    .Default(System.Void)
+                                }
+                            }
+                        } .Else {
+                            .Default(System.Void)
+                        };
+                        .Default(System.Void)
+                    }
+                };
+                .If ($Example_obj._bool != False) {
+                    $Example_result._bool = $Example_obj._bool
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If ($Example_obj._str != "") {
+                    $Example_result._str = $Example_obj._str
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If ($Example_obj._uint32 != 0U) {
+                    $Example_result._uint32 = $Example_obj._uint32
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If ($Example_obj._int8 != .Constant<System.SByte>(0)) {
+                    $Example_result._int8 = $Example_obj._int8
+                } .Else {
+                    .Default(System.Void)
+                };
+                $Example_result._int64 = $Example_obj._int64;
+                .If ($Example_obj._double != 0D) {
+                    $Example_result._double = $Example_obj._double
+                } .Else {
+                    .Default(System.Void)
+                };
+                .Block(System.Object $obj) {
+                    $obj = (System.Object)$Example_obj.guid;
+                    .Block() {
+                        .Block(Bond.GUID $GUID_obj) {
+                            $GUID_obj = (Bond.GUID)$obj;
+                            .Default(System.Void);
+                            .If ($GUID_obj.Data1 != 0U) {
+                                ($Example_result.guid).Data1 = $GUID_obj.Data1
+                            } .Else {
+                                .Default(System.Void)
+                            };
+                            .If ($GUID_obj.Data2 != .Constant<System.UInt16>(0)) {
+                                ($Example_result.guid).Data2 = $GUID_obj.Data2
+                            } .Else {
+                                .Default(System.Void)
+                            };
+                            .If ($GUID_obj.Data3 != .Constant<System.UInt16>(0)) {
+                                ($Example_result.guid).Data3 = $GUID_obj.Data3
+                            } .Else {
+                                .Default(System.Void)
+                            };
+                            .If ($GUID_obj.Data4 != 0UL) {
+                                ($Example_result.guid).Data4 = $GUID_obj.Data4
+                            } .Else {
+                                .Default(System.Void)
+                            };
+                            .Default(System.Void)
+                        }
+                    }
+                };
+                .If (($Example_obj._int32Vector).Count != 0) {
+                    .Block(
+                        System.Int32 $index,
+                        System.Int32 $count) {
+                        $index = -1;
+                        $count = ($Example_obj._int32Vector).Count;
+                        .Block(System.Int32 $Example_result._int32Vector_item) {
+                            .Block(System.Int32 $Example_result._int32Vector_count) {
+                                $Example_result._int32Vector_count = $count;
+                                .If ($Example_result._int32Vector_count > 65536) {
+                                    $Example_result._int32Vector_count = 65536
+                                } .Else {
+                                    .Default(System.Void)
+                                };
+                                ($Example_result._int32Vector).Capacity = $Example_result._int32Vector_count
+                            };
+                            .Loop  {
+                                .If (++$index < $count) {
+                                    .Block() {
+                                        $Example_result._int32Vector_item = ($Example_obj._int32Vector).Item[$index];
+                                        .Call ($Example_result._int32Vector).Add($Example_result._int32Vector_item)
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:;
+                            .Default(System.Void)
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If (($Example_obj._nestedVector).Count != 0) {
+                    .Block(System.Collections.Generic.LinkedListNode`1[ExpressionsTest.Nested] $node) {
+                        $node = null;
+                        .Block(ExpressionsTest.Nested $Example_result._nestedVector_item) {
+                            .Default(System.Void);
+                            .Loop  {
+                                .If (.If ($node == null) {
+                                    $node = ($Example_obj._nestedVector).First
+                                } .Else {
+                                    $node = $node.Next
+                                } != null) {
+                                    .Block() {
+                                        .Block(System.Object $obj) {
+                                            $obj = (System.Object)$node.Value;
+                                            .Block() {
+                                                $Example_result._nestedVector_item = .New ExpressionsTest.Nested();
+                                                .Block(ExpressionsTest.Nested $Nested_obj) {
+                                                    $Nested_obj = (ExpressionsTest.Nested)$obj;
+                                                    .Default(System.Void);
+                                                    .If ($Nested_obj._double != 0D) {
+                                                        $Example_result._nestedVector_item._double = $Nested_obj._double
+                                                    } .Else {
+                                                        .Default(System.Void)
+                                                    };
+                                                    .Default(System.Void)
+                                                }
+                                            }
+                                        };
+                                        .Call ($Example_result._nestedVector).Add($Example_result._nestedVector_item)
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:;
+                            .Default(System.Void)
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .Block(System.ArraySegment`1[System.Byte] $convertedBlob) {
+                    $convertedBlob = $Example_obj.b;
+                    .If ($convertedBlob != .Default(System.ArraySegment`1[System.Byte])) {
+                        .Block(
+                            System.ArraySegment`1[System.Byte] $arraySegment,
+                            System.Int32 $count,
+                            System.Int32 $index,
+                            System.Int32 $end) {
+                            $arraySegment = $Example_obj.b;
+                            $index = $arraySegment.Offset;
+                            $count = $arraySegment.Count;
+                            $end = $index + $count;
+                            $Example_result.b = $Example_obj.b
+                        }
+                    } .Else {
+                        .Default(System.Void)
+                    }
+                };
+                .If (($Example_obj._blobList).Count != 0) {
+                    .Block(System.Collections.Generic.LinkedListNode`1[System.ArraySegment`1[System.Byte]] $node) {
+                        $node = null;
+                        .Block(System.ArraySegment`1[System.Byte] $Example_result._blobList_item) {
+                            .Default(System.Void);
+                            .Loop  {
+                                .If (.If ($node == null) {
+                                    $node = ($Example_obj._blobList).First
+                                } .Else {
+                                    $node = $node.Next
+                                } != null) {
+                                    .Block() {
+                                        .Block(
+                                            System.ArraySegment`1[System.Byte] $arraySegment,
+                                            System.Int32 $count,
+                                            System.Int32 $index,
+                                            System.Int32 $end) {
+                                            $arraySegment = $node.Value;
+                                            $index = $arraySegment.Offset;
+                                            $count = $arraySegment.Count;
+                                            $end = $index + $count;
+                                            $Example_result._blobList_item = $node.Value
+                                        };
+                                        .Call ($Example_result._blobList).Add($Example_result._blobList_item)
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:;
+                            .Default(System.Void)
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If (($Example_obj._blobVector).Count != 0) {
+                    .Block(
+                        System.Int32 $index,
+                        System.Int32 $count) {
+                        $index = -1;
+                        $count = ($Example_obj._blobVector).Count;
+                        .Block(System.ArraySegment`1[System.Byte] $Example_result._blobVector_item) {
+                            .Block(System.Int32 $Example_result._blobVector_count) {
+                                $Example_result._blobVector_count = $count;
+                                .If ($Example_result._blobVector_count > 65536) {
+                                    $Example_result._blobVector_count = 65536
+                                } .Else {
+                                    .Default(System.Void)
+                                };
+                                ($Example_result._blobVector).Capacity = $Example_result._blobVector_count
+                            };
+                            .Loop  {
+                                .If (++$index < $count) {
+                                    .Block() {
+                                        .Block(
+                                            System.ArraySegment`1[System.Byte] $arraySegment,
+                                            System.Int32 $count,
+                                            System.Int32 $index,
+                                            System.Int32 $end) {
+                                            $arraySegment = ($Example_obj._blobVector).Item[$index];
+                                            $index = $arraySegment.Offset;
+                                            $count = $arraySegment.Count;
+                                            $end = $index + $count;
+                                            $Example_result._blobVector_item = ($Example_obj._blobVector).Item[$index]
+                                        };
+                                        .Call ($Example_result._blobVector).Add($Example_result._blobVector_item)
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:;
+                            .Default(System.Void)
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If (($Example_obj._blobMap).Count != 0) {
+                    .Block(System.Collections.Generic.IEnumerator`1[System.Collections.Generic.KeyValuePair`2[System.Int32,System.ArraySegment`1[System.Byte]]] $enumerator)
+                     {
+                        $enumerator = .Call ($Example_obj._blobMap).GetEnumerator();
+                        .Block(
+                            System.Int32 $Example_result._blobMap_key,
+                            System.ArraySegment`1[System.Byte] $Example_result._blobMap_value) {
+                            .Default(System.Void);
+                            .Loop  {
+                                .If (
+                                    .Call $enumerator.MoveNext()
+                                ) {
+                                    .Block() {
+                                        $Example_result._blobMap_key = ($enumerator.Current).Key;
+                                        .Default(System.Void);
+                                        .Block(
+                                            System.ArraySegment`1[System.Byte] $arraySegment,
+                                            System.Int32 $count,
+                                            System.Int32 $index,
+                                            System.Int32 $end) {
+                                            $arraySegment = ($enumerator.Current).Value;
+                                            $index = $arraySegment.Offset;
+                                            $count = $arraySegment.Count;
+                                            $end = $index + $count;
+                                            $Example_result._blobMap_value = ($enumerator.Current).Value
+                                        };
+                                        ($Example_result._blobMap).Item[$Example_result._blobMap_key] = $Example_result._blobMap_value
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If ($Example_obj._blobNullable != .Constant<System.ArraySegment`1[System.Byte]>(System.ArraySegment`1[System.Byte])) {
+                    .Block(
+                        System.ArraySegment`1[System.Byte] $convertedBlob,
+                        System.Int32 $count) {
+                        $convertedBlob = $Example_obj._blobNullable;
+                        $count = .If ($convertedBlob.Array != null) {
+                            1
+                        } .Else {
+                            0
+                        };
+                        .Block() {
+                            .Loop  {
+                                .If ($count-- != 0) {
+                                    .Block(
+                                        System.ArraySegment`1[System.Byte] $arraySegment,
+                                        System.Int32 $count,
+                                        System.Int32 $index,
+                                        System.Int32 $end) {
+                                        $arraySegment = $convertedBlob;
+                                        $index = $arraySegment.Offset;
+                                        $count = $arraySegment.Count;
+                                        $end = $index + $count;
+                                        $Example_result._blobNullable = $convertedBlob
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If (($Example_obj._map).Count != 0) {
+                    .Block(System.Collections.Generic.IEnumerator`1[System.Collections.Generic.KeyValuePair`2[System.Int32,System.Double]] $enumerator)
+                     {
+                        $enumerator = .Call ($Example_obj._map).GetEnumerator();
+                        .Block(
+                            System.Int32 $Example_result._map_key,
+                            System.Double $Example_result._map_value) {
+                            .Default(System.Void);
+                            .Loop  {
+                                .If (
+                                    .Call $enumerator.MoveNext()
+                                ) {
+                                    .Block() {
+                                        $Example_result._map_key = ($enumerator.Current).Key;
+                                        .Default(System.Void);
+                                        $Example_result._map_value = ($enumerator.Current).Value;
+                                        ($Example_result._map).Item[$Example_result._map_key] = $Example_result._map_value
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .Block(System.ArraySegment`1[System.Byte] $convertedBlob) {
+                    $convertedBlob = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                        $Example_obj._decimal,
+                        .Default(System.ArraySegment`1[System.Byte]));
+                    .If ($convertedBlob != .Default(System.ArraySegment`1[System.Byte])) {
+                        .Block(
+                            System.ArraySegment`1[System.Byte] $arraySegment,
+                            System.Int32 $count,
+                            System.Int32 $index,
+                            System.Int32 $end) {
+                            $arraySegment = $convertedBlob;
+                            $index = $arraySegment.Offset;
+                            $count = $arraySegment.Count;
+                            $end = $index + $count;
+                            $Example_result._decimal = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                $convertedBlob,
+                                .Default(System.Decimal))
+                        }
+                    } .Else {
+                        .Default(System.Void)
+                    }
+                };
+                .If (($Example_obj._decList).Count != 0) {
+                    .Block(System.Collections.Generic.LinkedListNode`1[System.Decimal] $node) {
+                        $node = null;
+                        .Block(System.Decimal $Example_result._decList_item) {
+                            .Default(System.Void);
+                            .Loop  {
+                                .If (.If ($node == null) {
+                                    $node = ($Example_obj._decList).First
+                                } .Else {
+                                    $node = $node.Next
+                                } != null) {
+                                    .Block() {
+                                        .Block(
+                                            System.ArraySegment`1[System.Byte] $arraySegment,
+                                            System.Int32 $count,
+                                            System.Int32 $index,
+                                            System.Int32 $end) {
+                                            $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                $node.Value,
+                                                .Default(System.ArraySegment`1[System.Byte]));
+                                            $index = $arraySegment.Offset;
+                                            $count = $arraySegment.Count;
+                                            $end = $index + $count;
+                                            $Example_result._decList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                    $node.Value,
+                                                    .Default(System.ArraySegment`1[System.Byte])),
+                                                .Default(System.Decimal))
+                                        };
+                                        .Call ($Example_result._decList).Add($Example_result._decList_item)
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:;
+                            .Default(System.Void)
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If (($Example_obj._decVector).Count != 0) {
+                    .Block(
+                        System.Int32 $index,
+                        System.Int32 $count) {
+                        $index = -1;
+                        $count = ($Example_obj._decVector).Count;
+                        .Block(System.Decimal $Example_result._decVector_item) {
+                            .Block(System.Int32 $Example_result._decVector_count) {
+                                $Example_result._decVector_count = $count;
+                                .If ($Example_result._decVector_count > 65536) {
+                                    $Example_result._decVector_count = 65536
+                                } .Else {
+                                    .Default(System.Void)
+                                };
+                                ($Example_result._decVector).Capacity = $Example_result._decVector_count
+                            };
+                            .Loop  {
+                                .If (++$index < $count) {
+                                    .Block() {
+                                        .Block(
+                                            System.ArraySegment`1[System.Byte] $arraySegment,
+                                            System.Int32 $count,
+                                            System.Int32 $index,
+                                            System.Int32 $end) {
+                                            $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                ($Example_obj._decVector).Item[$index],
+                                                .Default(System.ArraySegment`1[System.Byte]));
+                                            $index = $arraySegment.Offset;
+                                            $count = $arraySegment.Count;
+                                            $end = $index + $count;
+                                            $Example_result._decVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                    ($Example_obj._decVector).Item[$index],
+                                                    .Default(System.ArraySegment`1[System.Byte])),
+                                                .Default(System.Decimal))
+                                        };
+                                        .Call ($Example_result._decVector).Add($Example_result._decVector_item)
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:;
+                            .Default(System.Void)
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If (($Example_obj._decMap).Count != 0) {
+                    .Block(System.Collections.Generic.IEnumerator`1[System.Collections.Generic.KeyValuePair`2[System.Int32,System.Decimal]] $enumerator)
+                     {
+                        $enumerator = .Call ($Example_obj._decMap).GetEnumerator();
+                        .Block(
+                            System.Int32 $Example_result._decMap_key,
+                            System.Decimal $Example_result._decMap_value) {
+                            .Default(System.Void);
+                            .Loop  {
+                                .If (
+                                    .Call $enumerator.MoveNext()
+                                ) {
+                                    .Block() {
+                                        $Example_result._decMap_key = ($enumerator.Current).Key;
+                                        .Default(System.Void);
+                                        .Block(
+                                            System.ArraySegment`1[System.Byte] $arraySegment,
+                                            System.Int32 $count,
+                                            System.Int32 $index,
+                                            System.Int32 $end) {
+                                            $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                ($enumerator.Current).Value,
+                                                .Default(System.ArraySegment`1[System.Byte]));
+                                            $index = $arraySegment.Offset;
+                                            $count = $arraySegment.Count;
+                                            $end = $index + $count;
+                                            $Example_result._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                    ($enumerator.Current).Value,
+                                                    .Default(System.ArraySegment`1[System.Byte])),
+                                                .Default(System.Decimal))
+                                        };
+                                        ($Example_result._decMap).Item[$Example_result._decMap_key] = $Example_result._decMap_value
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If ($Example_obj._decNullable != 0M) {
+                    .Block(
+                        System.ArraySegment`1[System.Byte] $convertedBlob,
+                        System.Int32 $count) {
+                        $convertedBlob = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                            $Example_obj._decNullable,
+                            .Default(System.ArraySegment`1[System.Byte]));
+                        $count = .If ($convertedBlob.Array != null) {
+                            1
+                        } .Else {
+                            0
+                        };
+                        .Block() {
+                            .Loop  {
+                                .If ($count-- != 0) {
+                                    .Block(
+                                        System.ArraySegment`1[System.Byte] $arraySegment,
+                                        System.Int32 $count,
+                                        System.Int32 $index,
+                                        System.Int32 $end) {
+                                        $arraySegment = $convertedBlob;
+                                        $index = $arraySegment.Offset;
+                                        $count = $arraySegment.Count;
+                                        $end = $index + $count;
+                                        $Example_result._decNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                            $convertedBlob,
+                                            .Default(System.Decimal))
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .Block(System.ArraySegment`1[System.Byte] $convertedBlob) {
+                    $convertedBlob = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                        $Example_obj._decimal_req,
+                        .Default(System.ArraySegment`1[System.Byte]));
+                    .Block(
+                        System.ArraySegment`1[System.Byte] $arraySegment,
+                        System.Int32 $count,
+                        System.Int32 $index,
+                        System.Int32 $end) {
+                        $arraySegment = $convertedBlob;
+                        $index = $arraySegment.Offset;
+                        $count = $arraySegment.Count;
+                        $end = $index + $count;
+                        $Example_result._decimal_req = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                            $convertedBlob,
+                            .Default(System.Decimal))
+                    }
+                };
+                .Block(System.ArraySegment`1[System.Byte] $convertedBlob) {
+                    $convertedBlob = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                        $Example_obj._reference,
+                        .Default(System.ArraySegment`1[System.Byte]));
+                    .If ($convertedBlob != .Default(System.ArraySegment`1[System.Byte])) {
+                        .Block(
+                            System.ArraySegment`1[System.Byte] $arraySegment,
+                            System.Int32 $count,
+                            System.Int32 $index,
+                            System.Int32 $end) {
+                            $arraySegment = $convertedBlob;
+                            $index = $arraySegment.Offset;
+                            $count = $arraySegment.Count;
+                            $end = $index + $count;
+                            $Example_result._reference = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                $convertedBlob,
+                                .Default(ExpressionsTest.RefObject))
+                        }
+                    } .Else {
+                        .Default(System.Void)
+                    }
+                };
+                .If (($Example_obj._refList).Count != 0) {
+                    .Block(System.Collections.Generic.LinkedListNode`1[ExpressionsTest.RefObject] $node) {
+                        $node = null;
+                        .Block(ExpressionsTest.RefObject $Example_result._refList_item) {
+                            .Default(System.Void);
+                            .Loop  {
+                                .If (.If ($node == null) {
+                                    $node = ($Example_obj._refList).First
+                                } .Else {
+                                    $node = $node.Next
+                                } != null) {
+                                    .Block() {
+                                        .Block(
+                                            System.ArraySegment`1[System.Byte] $arraySegment,
+                                            System.Int32 $count,
+                                            System.Int32 $index,
+                                            System.Int32 $end) {
+                                            $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                $node.Value,
+                                                .Default(System.ArraySegment`1[System.Byte]));
+                                            $index = $arraySegment.Offset;
+                                            $count = $arraySegment.Count;
+                                            $end = $index + $count;
+                                            $Example_result._refList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                    $node.Value,
+                                                    .Default(System.ArraySegment`1[System.Byte])),
+                                                .Default(ExpressionsTest.RefObject))
+                                        };
+                                        .Call ($Example_result._refList).Add($Example_result._refList_item)
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:;
+                            .Default(System.Void)
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If (($Example_obj._refVector).Count != 0) {
+                    .Block(
+                        System.Int32 $index,
+                        System.Int32 $count) {
+                        $index = -1;
+                        $count = ($Example_obj._refVector).Count;
+                        .Block(ExpressionsTest.RefObject $Example_result._refVector_item) {
+                            .Block(System.Int32 $Example_result._refVector_count) {
+                                $Example_result._refVector_count = $count;
+                                .If ($Example_result._refVector_count > 65536) {
+                                    $Example_result._refVector_count = 65536
+                                } .Else {
+                                    .Default(System.Void)
+                                };
+                                ($Example_result._refVector).Capacity = $Example_result._refVector_count
+                            };
+                            .Loop  {
+                                .If (++$index < $count) {
+                                    .Block() {
+                                        .Block(
+                                            System.ArraySegment`1[System.Byte] $arraySegment,
+                                            System.Int32 $count,
+                                            System.Int32 $index,
+                                            System.Int32 $end) {
+                                            $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                ($Example_obj._refVector).Item[$index],
+                                                .Default(System.ArraySegment`1[System.Byte]));
+                                            $index = $arraySegment.Offset;
+                                            $count = $arraySegment.Count;
+                                            $end = $index + $count;
+                                            $Example_result._refVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                    ($Example_obj._refVector).Item[$index],
+                                                    .Default(System.ArraySegment`1[System.Byte])),
+                                                .Default(ExpressionsTest.RefObject))
+                                        };
+                                        .Call ($Example_result._refVector).Add($Example_result._refVector_item)
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:;
+                            .Default(System.Void)
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If (($Example_obj._refMap).Count != 0) {
+                    .Block(System.Collections.Generic.IEnumerator`1[System.Collections.Generic.KeyValuePair`2[System.Int32,ExpressionsTest.RefObject]] $enumerator)
+                     {
+                        $enumerator = .Call ($Example_obj._refMap).GetEnumerator();
+                        .Block(
+                            System.Int32 $Example_result._refMap_key,
+                            ExpressionsTest.RefObject $Example_result._refMap_value) {
+                            .Default(System.Void);
+                            .Loop  {
+                                .If (
+                                    .Call $enumerator.MoveNext()
+                                ) {
+                                    .Block() {
+                                        $Example_result._refMap_key = ($enumerator.Current).Key;
+                                        .Default(System.Void);
+                                        .Block(
+                                            System.ArraySegment`1[System.Byte] $arraySegment,
+                                            System.Int32 $count,
+                                            System.Int32 $index,
+                                            System.Int32 $end) {
+                                            $arraySegment = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                ($enumerator.Current).Value,
+                                                .Default(System.ArraySegment`1[System.Byte]));
+                                            $index = $arraySegment.Offset;
+                                            $count = $arraySegment.Count;
+                                            $end = $index + $count;
+                                            $Example_result._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                    ($enumerator.Current).Value,
+                                                    .Default(System.ArraySegment`1[System.Byte])),
+                                                .Default(ExpressionsTest.RefObject))
+                                        };
+                                        ($Example_result._refMap).Item[$Example_result._refMap_key] = $Example_result._refMap_value
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .If ($Example_obj._refNullable != null) {
+                    .Block(
+                        System.ArraySegment`1[System.Byte] $convertedBlob,
+                        System.Int32 $count) {
+                        $convertedBlob = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                            $Example_obj._refNullable,
+                            .Default(System.ArraySegment`1[System.Byte]));
+                        $count = .If ($convertedBlob.Array != null) {
+                            1
+                        } .Else {
+                            0
+                        };
+                        .Block() {
+                            $Example_result._refNullable = .Default(ExpressionsTest.RefObject);
+                            .Loop  {
+                                .If ($count-- != 0) {
+                                    .Block(
+                                        System.ArraySegment`1[System.Byte] $arraySegment,
+                                        System.Int32 $count,
+                                        System.Int32 $index,
+                                        System.Int32 $end) {
+                                        $arraySegment = $convertedBlob;
+                                        $index = $arraySegment.Offset;
+                                        $count = $arraySegment.Count;
+                                        $end = $index + $count;
+                                        $Example_result._refNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                            $convertedBlob,
+                                            .Default(ExpressionsTest.RefObject))
+                                    }
+                                } .Else {
+                                    .Break end { }
+                                }
+                            }
+                            .LabelTarget end:
+                        }
+                    }
+                } .Else {
+                    .Default(System.Void)
+                };
+                .Default(System.Void)
+            }
+        };
+        (System.Object)$Example_result
+    }
+}

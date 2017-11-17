@@ -1,8 +1,8 @@
 .Lambda #Lambda1<System.Func`2[Bond.Protocols.SimpleBinaryReader`1[Bond.IO.Unsafe.InputStream],System.Object]>(Bond.Protocols.SimpleBinaryReader`1[Bond.IO.Unsafe.InputStream] $reader)
 {
-    .Block(ExpressionsTest.Example $Example) {
+    .Block(ExpressionsTest.Example $Example_result) {
         .Block() {
-            $Example = .New ExpressionsTest.Example();
+            $Example_result = .New ExpressionsTest.Example();
             .Block() {
                 .Default(System.Void);
                 .Block() {
@@ -15,36 +15,36 @@
                         } .Else {
                             .Block(System.Int32 $count) {
                                 $count = .Call $reader.ReadContainerBegin();
-                                .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example).vvb_item) {
-                                    .Block(System.Int32 $Convert(Example).vvb_count) {
-                                        $Convert(Example).vvb_count = $count;
-                                        .If ($Convert(Example).vvb_count > 65536) {
-                                            $Convert(Example).vvb_count = 65536
+                                .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example_result).vvb_item) {
+                                    .Block(System.Int32 $Convert(Example_result).vvb_count) {
+                                        $Convert(Example_result).vvb_count = $count;
+                                        .If ($Convert(Example_result).vvb_count > 65536) {
+                                            $Convert(Example_result).vvb_count = 65536
                                         } .Else {
                                             .Default(System.Void)
                                         };
-                                        (((ExpressionsTest.Base)$Example).vvb).Capacity = $Convert(Example).vvb_count
+                                        (((ExpressionsTest.Base)$Example_result).vvb).Capacity = $Convert(Example_result).vvb_count
                                     };
                                     .Loop  {
                                         .If ($count-- > 0) {
                                             .Block() {
                                                 .Block(System.Int32 $count) {
                                                     $count = .Call $reader.ReadContainerBegin();
-                                                    .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                        .Block(System.Int32 $Convert(Example).vvb_item_count) {
-                                                            $Convert(Example).vvb_item_count = $count;
-                                                            .If ($Convert(Example).vvb_item_count > 65536) {
-                                                                $Convert(Example).vvb_item_count = 65536
+                                                    .Block(System.UInt64 $Convert(Example_result).vvb_item_item) {
+                                                        .Block(System.Int32 $Convert(Example_result).vvb_item_count) {
+                                                            $Convert(Example_result).vvb_item_count = $count;
+                                                            .If ($Convert(Example_result).vvb_item_count > 65536) {
+                                                                $Convert(Example_result).vvb_item_count = 65536
                                                             } .Else {
                                                                 .Default(System.Void)
                                                             };
-                                                            $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                            $Convert(Example_result).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example_result).vvb_item_count)
                                                         };
                                                         .Loop  {
                                                             .If ($count-- > 0) {
                                                                 .Block() {
-                                                                    $Convert(Example).vvb_item_item = .Call $reader.ReadUInt64();
-                                                                    .Call $Convert(Example).vvb_item.Add($Convert(Example).vvb_item_item)
+                                                                    $Convert(Example_result).vvb_item_item = .Call $reader.ReadUInt64();
+                                                                    .Call $Convert(Example_result).vvb_item.Add($Convert(Example_result).vvb_item_item)
                                                                 }
                                                             } .Else {
                                                                 .Break end { }
@@ -55,7 +55,7 @@
                                                     };
                                                     .Call $reader.ReadContainerEnd()
                                                 };
-                                                .Call (((ExpressionsTest.Base)$Example).vvb).Add($Convert(Example).vvb_item)
+                                                .Call (((ExpressionsTest.Base)$Example_result).vvb).Add($Convert(Example_result).vvb_item)
                                             }
                                         } .Else {
                                             .Break end { }
@@ -75,28 +75,28 @@
                 ) {
                     .Default(System.Void)
                 } .Else {
-                    $Example._bool = .Call $reader.ReadBool()
+                    $Example_result._bool = .Call $reader.ReadBool()
                 };
                 .If (
                     .Call $reader.ReadFieldOmitted()
                 ) {
                     .Default(System.Void)
                 } .Else {
-                    $Example._str = .Call $reader.ReadString()
+                    $Example_result._str = .Call $reader.ReadString()
                 };
                 .If (
                     .Call $reader.ReadFieldOmitted()
                 ) {
                     .Default(System.Void)
                 } .Else {
-                    $Example._uint32 = .Call $reader.ReadUInt32()
+                    $Example_result._uint32 = .Call $reader.ReadUInt32()
                 };
                 .If (
                     .Call $reader.ReadFieldOmitted()
                 ) {
                     .Default(System.Void)
                 } .Else {
-                    $Example._int8 = .Call $reader.ReadInt8()
+                    $Example_result._int8 = .Call $reader.ReadInt8()
                 };
                 .If (
                     .Call $reader.ReadFieldOmitted()
@@ -105,14 +105,14 @@
                         "Example",
                         "_int64")
                 } .Else {
-                    $Example._int64 = .Call $reader.ReadInt64()
+                    $Example_result._int64 = .Call $reader.ReadInt64()
                 };
                 .If (
                     .Call $reader.ReadFieldOmitted()
                 ) {
                     .Default(System.Void)
                 } .Else {
-                    $Example._double = .Call $reader.ReadDouble()
+                    $Example_result._double = .Call $reader.ReadDouble()
                 };
                 .If (
                     .Call $reader.ReadFieldOmitted()
@@ -127,28 +127,28 @@
                             ) {
                                 .Default(System.Void)
                             } .Else {
-                                ($Example.guid).Data1 = .Call $reader.ReadUInt32()
+                                ($Example_result.guid).Data1 = .Call $reader.ReadUInt32()
                             };
                             .If (
                                 .Call $reader.ReadFieldOmitted()
                             ) {
                                 .Default(System.Void)
                             } .Else {
-                                ($Example.guid).Data2 = .Call $reader.ReadUInt16()
+                                ($Example_result.guid).Data2 = .Call $reader.ReadUInt16()
                             };
                             .If (
                                 .Call $reader.ReadFieldOmitted()
                             ) {
                                 .Default(System.Void)
                             } .Else {
-                                ($Example.guid).Data3 = .Call $reader.ReadUInt16()
+                                ($Example_result.guid).Data3 = .Call $reader.ReadUInt16()
                             };
                             .If (
                                 .Call $reader.ReadFieldOmitted()
                             ) {
                                 .Default(System.Void)
                             } .Else {
-                                ($Example.guid).Data4 = .Call $reader.ReadUInt64()
+                                ($Example_result.guid).Data4 = .Call $reader.ReadUInt64()
                             };
                             .Default(System.Void)
                         }
@@ -161,21 +161,21 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        .Block(System.Int32 $Example._int32Vector_item) {
-                            .Block(System.Int32 $Example._int32Vector_count) {
-                                $Example._int32Vector_count = $count;
-                                .If ($Example._int32Vector_count > 65536) {
-                                    $Example._int32Vector_count = 65536
+                        .Block(System.Int32 $Example_result._int32Vector_item) {
+                            .Block(System.Int32 $Example_result._int32Vector_count) {
+                                $Example_result._int32Vector_count = $count;
+                                .If ($Example_result._int32Vector_count > 65536) {
+                                    $Example_result._int32Vector_count = 65536
                                 } .Else {
                                     .Default(System.Void)
                                 };
-                                ($Example._int32Vector).Capacity = $Example._int32Vector_count
+                                ($Example_result._int32Vector).Capacity = $Example_result._int32Vector_count
                             };
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
-                                        $Example._int32Vector_item = .Call $reader.ReadInt32();
-                                        .Call ($Example._int32Vector).Add($Example._int32Vector_item)
+                                        $Example_result._int32Vector_item = .Call $reader.ReadInt32();
+                                        .Call ($Example_result._int32Vector).Add($Example_result._int32Vector_item)
                                     }
                                 } .Else {
                                     .Break end { }
@@ -194,13 +194,13 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        .Block(ExpressionsTest.Nested $Example._nestedVector_item) {
+                        .Block(ExpressionsTest.Nested $Example_result._nestedVector_item) {
                             .Default(System.Void);
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
                                         .Block() {
-                                            $Example._nestedVector_item = .New ExpressionsTest.Nested();
+                                            $Example_result._nestedVector_item = .New ExpressionsTest.Nested();
                                             .Block() {
                                                 .Default(System.Void);
                                                 .If (
@@ -208,12 +208,12 @@
                                                 ) {
                                                     .Default(System.Void)
                                                 } .Else {
-                                                    $Example._nestedVector_item._double = .Call $reader.ReadDouble()
+                                                    $Example_result._nestedVector_item._double = .Call $reader.ReadDouble()
                                                 };
                                                 .Default(System.Void)
                                             }
                                         };
-                                        .Call ($Example._nestedVector).Add($Example._nestedVector_item)
+                                        .Call ($Example_result._nestedVector).Add($Example_result._nestedVector_item)
                                     }
                                 } .Else {
                                     .Break end { }
@@ -232,7 +232,7 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        $Example.b = .Call $reader.ReadBytes($count);
+                        $Example_result.b = .Call $reader.ReadBytes($count);
                         .Call $reader.ReadContainerEnd()
                     }
                 };
@@ -243,17 +243,17 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        .Block(System.ArraySegment`1[System.Byte] $Example._blobList_item) {
+                        .Block(System.ArraySegment`1[System.Byte] $Example_result._blobList_item) {
                             .Default(System.Void);
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
                                         .Block(System.Int32 $count) {
                                             $count = .Call $reader.ReadContainerBegin();
-                                            $Example._blobList_item = .Call $reader.ReadBytes($count);
+                                            $Example_result._blobList_item = .Call $reader.ReadBytes($count);
                                             .Call $reader.ReadContainerEnd()
                                         };
-                                        .Call ($Example._blobList).Add($Example._blobList_item)
+                                        .Call ($Example_result._blobList).Add($Example_result._blobList_item)
                                     }
                                 } .Else {
                                     .Break end { }
@@ -272,25 +272,25 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        .Block(System.ArraySegment`1[System.Byte] $Example._blobVector_item) {
-                            .Block(System.Int32 $Example._blobVector_count) {
-                                $Example._blobVector_count = $count;
-                                .If ($Example._blobVector_count > 65536) {
-                                    $Example._blobVector_count = 65536
+                        .Block(System.ArraySegment`1[System.Byte] $Example_result._blobVector_item) {
+                            .Block(System.Int32 $Example_result._blobVector_count) {
+                                $Example_result._blobVector_count = $count;
+                                .If ($Example_result._blobVector_count > 65536) {
+                                    $Example_result._blobVector_count = 65536
                                 } .Else {
                                     .Default(System.Void)
                                 };
-                                ($Example._blobVector).Capacity = $Example._blobVector_count
+                                ($Example_result._blobVector).Capacity = $Example_result._blobVector_count
                             };
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
                                         .Block(System.Int32 $count) {
                                             $count = .Call $reader.ReadContainerBegin();
-                                            $Example._blobVector_item = .Call $reader.ReadBytes($count);
+                                            $Example_result._blobVector_item = .Call $reader.ReadBytes($count);
                                             .Call $reader.ReadContainerEnd()
                                         };
-                                        .Call ($Example._blobVector).Add($Example._blobVector_item)
+                                        .Call ($Example_result._blobVector).Add($Example_result._blobVector_item)
                                     }
                                 } .Else {
                                     .Break end { }
@@ -310,20 +310,20 @@
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
                         .Block(
-                            System.Int32 $Example._blobMap_key,
-                            System.ArraySegment`1[System.Byte] $Example._blobMap_value) {
+                            System.Int32 $Example_result._blobMap_key,
+                            System.ArraySegment`1[System.Byte] $Example_result._blobMap_value) {
                             .Default(System.Void);
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
-                                        $Example._blobMap_key = .Call $reader.ReadInt32();
+                                        $Example_result._blobMap_key = .Call $reader.ReadInt32();
                                         .Default(System.Void);
                                         .Block(System.Int32 $count) {
                                             $count = .Call $reader.ReadContainerBegin();
-                                            $Example._blobMap_value = .Call $reader.ReadBytes($count);
+                                            $Example_result._blobMap_value = .Call $reader.ReadBytes($count);
                                             .Call $reader.ReadContainerEnd()
                                         };
-                                        ($Example._blobMap).Item[$Example._blobMap_key] = $Example._blobMap_value
+                                        ($Example_result._blobMap).Item[$Example_result._blobMap_key] = $Example_result._blobMap_value
                                     }
                                 } .Else {
                                     .Break end { }
@@ -346,7 +346,7 @@
                                 .If ($count-- > 0) {
                                     .Block(System.Int32 $count) {
                                         $count = .Call $reader.ReadContainerBegin();
-                                        $Example._blobNullable = .Call $reader.ReadBytes($count);
+                                        $Example_result._blobNullable = .Call $reader.ReadBytes($count);
                                         .Call $reader.ReadContainerEnd()
                                     }
                                 } .Else {
@@ -366,16 +366,16 @@
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
                         .Block(
-                            System.Int32 $Example._map_key,
-                            System.Double $Example._map_value) {
+                            System.Int32 $Example_result._map_key,
+                            System.Double $Example_result._map_value) {
                             .Default(System.Void);
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
-                                        $Example._map_key = .Call $reader.ReadInt32();
+                                        $Example_result._map_key = .Call $reader.ReadInt32();
                                         .Default(System.Void);
-                                        $Example._map_value = .Call $reader.ReadDouble();
-                                        ($Example._map).Item[$Example._map_key] = $Example._map_value
+                                        $Example_result._map_value = .Call $reader.ReadDouble();
+                                        ($Example_result._map).Item[$Example_result._map_key] = $Example_result._map_value
                                     }
                                 } .Else {
                                     .Break end { }
@@ -393,7 +393,7 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        $Example._decimal = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                        $Example_result._decimal = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                             .Call $reader.ReadBytes($count),
                             .Default(System.Decimal));
                         .Call $reader.ReadContainerEnd()
@@ -406,19 +406,19 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        .Block(System.Decimal $Example._decList_item) {
+                        .Block(System.Decimal $Example_result._decList_item) {
                             .Default(System.Void);
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
                                         .Block(System.Int32 $count) {
                                             $count = .Call $reader.ReadContainerBegin();
-                                            $Example._decList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                            $Example_result._decList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                 .Call $reader.ReadBytes($count),
                                                 .Default(System.Decimal));
                                             .Call $reader.ReadContainerEnd()
                                         };
-                                        .Call ($Example._decList).Add($Example._decList_item)
+                                        .Call ($Example_result._decList).Add($Example_result._decList_item)
                                     }
                                 } .Else {
                                     .Break end { }
@@ -437,27 +437,27 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        .Block(System.Decimal $Example._decVector_item) {
-                            .Block(System.Int32 $Example._decVector_count) {
-                                $Example._decVector_count = $count;
-                                .If ($Example._decVector_count > 65536) {
-                                    $Example._decVector_count = 65536
+                        .Block(System.Decimal $Example_result._decVector_item) {
+                            .Block(System.Int32 $Example_result._decVector_count) {
+                                $Example_result._decVector_count = $count;
+                                .If ($Example_result._decVector_count > 65536) {
+                                    $Example_result._decVector_count = 65536
                                 } .Else {
                                     .Default(System.Void)
                                 };
-                                ($Example._decVector).Capacity = $Example._decVector_count
+                                ($Example_result._decVector).Capacity = $Example_result._decVector_count
                             };
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
                                         .Block(System.Int32 $count) {
                                             $count = .Call $reader.ReadContainerBegin();
-                                            $Example._decVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                            $Example_result._decVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                 .Call $reader.ReadBytes($count),
                                                 .Default(System.Decimal));
                                             .Call $reader.ReadContainerEnd()
                                         };
-                                        .Call ($Example._decVector).Add($Example._decVector_item)
+                                        .Call ($Example_result._decVector).Add($Example_result._decVector_item)
                                     }
                                 } .Else {
                                     .Break end { }
@@ -477,22 +477,22 @@
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
                         .Block(
-                            System.Int32 $Example._decMap_key,
-                            System.Decimal $Example._decMap_value) {
+                            System.Int32 $Example_result._decMap_key,
+                            System.Decimal $Example_result._decMap_value) {
                             .Default(System.Void);
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
-                                        $Example._decMap_key = .Call $reader.ReadInt32();
+                                        $Example_result._decMap_key = .Call $reader.ReadInt32();
                                         .Default(System.Void);
                                         .Block(System.Int32 $count) {
                                             $count = .Call $reader.ReadContainerBegin();
-                                            $Example._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                            $Example_result._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                 .Call $reader.ReadBytes($count),
                                                 .Default(System.Decimal));
                                             .Call $reader.ReadContainerEnd()
                                         };
-                                        ($Example._decMap).Item[$Example._decMap_key] = $Example._decMap_value
+                                        ($Example_result._decMap).Item[$Example_result._decMap_key] = $Example_result._decMap_value
                                     }
                                 } .Else {
                                     .Break end { }
@@ -515,7 +515,7 @@
                                 .If ($count-- > 0) {
                                     .Block(System.Int32 $count) {
                                         $count = .Call $reader.ReadContainerBegin();
-                                        $Example._decNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                        $Example_result._decNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                             .Call $reader.ReadBytes($count),
                                             .Default(System.Decimal));
                                         .Call $reader.ReadContainerEnd()
@@ -538,7 +538,7 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        $Example._decimal_req = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                        $Example_result._decimal_req = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                             .Call $reader.ReadBytes($count),
                             .Default(System.Decimal));
                         .Call $reader.ReadContainerEnd()
@@ -551,7 +551,7 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        $Example._reference = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                        $Example_result._reference = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                             .Call $reader.ReadBytes($count),
                             .Default(ExpressionsTest.RefObject));
                         .Call $reader.ReadContainerEnd()
@@ -564,19 +564,19 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        .Block(ExpressionsTest.RefObject $Example._refList_item) {
+                        .Block(ExpressionsTest.RefObject $Example_result._refList_item) {
                             .Default(System.Void);
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
                                         .Block(System.Int32 $count) {
                                             $count = .Call $reader.ReadContainerBegin();
-                                            $Example._refList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                            $Example_result._refList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                 .Call $reader.ReadBytes($count),
                                                 .Default(ExpressionsTest.RefObject));
                                             .Call $reader.ReadContainerEnd()
                                         };
-                                        .Call ($Example._refList).Add($Example._refList_item)
+                                        .Call ($Example_result._refList).Add($Example_result._refList_item)
                                     }
                                 } .Else {
                                     .Break end { }
@@ -595,27 +595,27 @@
                 } .Else {
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
-                        .Block(ExpressionsTest.RefObject $Example._refVector_item) {
-                            .Block(System.Int32 $Example._refVector_count) {
-                                $Example._refVector_count = $count;
-                                .If ($Example._refVector_count > 65536) {
-                                    $Example._refVector_count = 65536
+                        .Block(ExpressionsTest.RefObject $Example_result._refVector_item) {
+                            .Block(System.Int32 $Example_result._refVector_count) {
+                                $Example_result._refVector_count = $count;
+                                .If ($Example_result._refVector_count > 65536) {
+                                    $Example_result._refVector_count = 65536
                                 } .Else {
                                     .Default(System.Void)
                                 };
-                                ($Example._refVector).Capacity = $Example._refVector_count
+                                ($Example_result._refVector).Capacity = $Example_result._refVector_count
                             };
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
                                         .Block(System.Int32 $count) {
                                             $count = .Call $reader.ReadContainerBegin();
-                                            $Example._refVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                            $Example_result._refVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                 .Call $reader.ReadBytes($count),
                                                 .Default(ExpressionsTest.RefObject));
                                             .Call $reader.ReadContainerEnd()
                                         };
-                                        .Call ($Example._refVector).Add($Example._refVector_item)
+                                        .Call ($Example_result._refVector).Add($Example_result._refVector_item)
                                     }
                                 } .Else {
                                     .Break end { }
@@ -635,22 +635,22 @@
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
                         .Block(
-                            System.Int32 $Example._refMap_key,
-                            ExpressionsTest.RefObject $Example._refMap_value) {
+                            System.Int32 $Example_result._refMap_key,
+                            ExpressionsTest.RefObject $Example_result._refMap_value) {
                             .Default(System.Void);
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block() {
-                                        $Example._refMap_key = .Call $reader.ReadInt32();
+                                        $Example_result._refMap_key = .Call $reader.ReadInt32();
                                         .Default(System.Void);
                                         .Block(System.Int32 $count) {
                                             $count = .Call $reader.ReadContainerBegin();
-                                            $Example._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                            $Example_result._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                 .Call $reader.ReadBytes($count),
                                                 .Default(ExpressionsTest.RefObject));
                                             .Call $reader.ReadContainerEnd()
                                         };
-                                        ($Example._refMap).Item[$Example._refMap_key] = $Example._refMap_value
+                                        ($Example_result._refMap).Item[$Example_result._refMap_key] = $Example_result._refMap_value
                                     }
                                 } .Else {
                                     .Break end { }
@@ -669,12 +669,12 @@
                     .Block(System.Int32 $count) {
                         $count = .Call $reader.ReadContainerBegin();
                         .Block() {
-                            $Example._refNullable = .Default(ExpressionsTest.RefObject);
+                            $Example_result._refNullable = .Default(ExpressionsTest.RefObject);
                             .Loop  {
                                 .If ($count-- > 0) {
                                     .Block(System.Int32 $count) {
                                         $count = .Call $reader.ReadContainerBegin();
-                                        $Example._refNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                        $Example_result._refNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                             .Call $reader.ReadBytes($count),
                                             .Default(ExpressionsTest.RefObject));
                                         .Call $reader.ReadContainerEnd()
@@ -691,7 +691,7 @@
                 .Default(System.Void)
             }
         };
-        (System.Object)$Example
+        (System.Object)$Example_result
     }
 }
 

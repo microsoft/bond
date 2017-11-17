@@ -64,7 +64,7 @@ namespace Bond.Expressions
 
         public Expression Apply(ITransform transform)
         {
-            var structVar = Expression.Variable(objectType, objectType.Name);
+            var structVar = Expression.Variable(objectType, $"{objectType.Name}_obj");
             var body = new List<Expression>
             {
                 Expression.Assign(structVar, Expression.Convert(objParam, objectType)),

@@ -1,7 +1,7 @@
 .Lambda #Lambda1<System.Func`2[Bond.Protocols.SimpleXmlReader,System.Object]>(Bond.Protocols.SimpleXmlReader $reader) {
-    .Block(ExpressionsTest.Example $Example) {
+    .Block(ExpressionsTest.Example $Example_result) {
         .Block() {
-            $Example = .New ExpressionsTest.Example();
+            $Example_result = .New ExpressionsTest.Example();
             .Block() {
                 .Call $reader.Read();
                 .Block(
@@ -48,11 +48,11 @@
                                                     .Block() {
                                                         .Block(System.Boolean $isEmpty) {
                                                             $isEmpty = $reader.IsEmptyElement;
-                                                            .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example).vvb_item) {
-                                                                .Block(System.Int32 $Convert(Example).vvb_count) {
-                                                                    $Convert(Example).vvb_count = 0;
+                                                            .Block(System.Collections.Generic.List`1[System.UInt64] $Convert(Example_result).vvb_item) {
+                                                                .Block(System.Int32 $Convert(Example_result).vvb_count) {
+                                                                    $Convert(Example_result).vvb_count = 0;
                                                                     .Default(System.Void);
-                                                                    (((ExpressionsTest.Base)$Example).vvb).Capacity = $Convert(Example).vvb_count
+                                                                    (((ExpressionsTest.Base)$Example_result).vvb).Capacity = $Convert(Example_result).vvb_count
                                                                 };
                                                                 .Loop  {
                                                                     .If (
@@ -101,11 +101,11 @@
                                                                         .Block() {
                                                                             .Block(System.Boolean $isEmpty) {
                                                                                 $isEmpty = $reader.IsEmptyElement;
-                                                                                .Block(System.UInt64 $Convert(Example).vvb_item_item) {
-                                                                                    .Block(System.Int32 $Convert(Example).vvb_item_count) {
-                                                                                        $Convert(Example).vvb_item_count = 0;
+                                                                                .Block(System.UInt64 $Convert(Example_result).vvb_item_item) {
+                                                                                    .Block(System.Int32 $Convert(Example_result).vvb_item_count) {
+                                                                                        $Convert(Example_result).vvb_item_count = 0;
                                                                                         .Default(System.Void);
-                                                                                        $Convert(Example).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example).vvb_item_count)
+                                                                                        $Convert(Example_result).vvb_item = .New System.Collections.Generic.List`1[System.UInt64]($Convert(Example_result).vvb_item_count)
                                                                                     };
                                                                                     .Loop  {
                                                                                         .If (
@@ -192,11 +192,11 @@
                                                                                                             }
                                                                                                         }
                                                                                                     };
-                                                                                                    $Convert(Example).vvb_item_item = .Call System.Convert.ToUInt64(
+                                                                                                    $Convert(Example_result).vvb_item_item = .Call System.Convert.ToUInt64(
                                                                                                         $valueAsString,
                                                                                                         System.Globalization.CultureInfo.InvariantCulture)
                                                                                                 };
-                                                                                                .Call $Convert(Example).vvb_item.Add($Convert(Example).vvb_item_item)
+                                                                                                .Call $Convert(Example_result).vvb_item.Add($Convert(Example_result).vvb_item_item)
                                                                                             }
                                                                                         } .Else {
                                                                                             .Break end { }
@@ -206,7 +206,7 @@
                                                                                     .Default(System.Void)
                                                                                 }
                                                                             };
-                                                                            .Call (((ExpressionsTest.Base)$Example).vvb).Add($Convert(Example).vvb_item)
+                                                                            .Call (((ExpressionsTest.Base)$Example_result).vvb).Add($Convert(Example_result).vvb_item)
                                                                         }
                                                                     } .Else {
                                                                         .Break end { }
@@ -235,7 +235,7 @@
                                                             .Block(System.Boolean $isEmpty) {
                                                                 $isEmpty = $reader.IsEmptyElement;
                                                                 .Block() {
-                                                                    $Example._refNullable = .Default(ExpressionsTest.RefObject);
+                                                                    $Example_result._refNullable = .Default(ExpressionsTest.RefObject);
                                                                     .Loop  {
                                                                         .If (
                                                                             .If (
@@ -285,12 +285,12 @@
                                                                                 .Block(
                                                                                     System.Int32 $index,
                                                                                     System.Byte[] $array) {
-                                                                                    .Block(System.Int32 $Example._refNullable_count) {
-                                                                                        $Example._refNullable_count = 0;
+                                                                                    .Block(System.Int32 $Example_result._refNullable_count) {
+                                                                                        $Example_result._refNullable_count = 0;
                                                                                         .Default(System.Void);
                                                                                         .Block() {
                                                                                             $index = 0;
-                                                                                            $array = .NewArray System.Byte[$Example._refNullable_count]
+                                                                                            $array = .NewArray System.Byte[$Example_result._refNullable_count]
                                                                                         }
                                                                                     };
                                                                                     .Loop  {
@@ -399,7 +399,7 @@
                                                                                         }
                                                                                     }
                                                                                     .LabelTarget end:;
-                                                                                    $Example._refNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                    $Example_result._refNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                         .New System.ArraySegment`1[System.Byte](
                                                                                             $array,
                                                                                             0,
@@ -433,8 +433,8 @@
                                                                 .Block(System.Boolean $isEmpty) {
                                                                     $isEmpty = $reader.IsEmptyElement;
                                                                     .Block(
-                                                                        System.Int32 $Example._refMap_key,
-                                                                        ExpressionsTest.RefObject $Example._refMap_value) {
+                                                                        System.Int32 $Example_result._refMap_key,
+                                                                        ExpressionsTest.RefObject $Example_result._refMap_value) {
                                                                         .Default(System.Void);
                                                                         .Loop  {
                                                                             .If (
@@ -521,7 +521,7 @@
                                                                                                 }
                                                                                             }
                                                                                         };
-                                                                                        $Example._refMap_key = .Call System.Convert.ToInt32(
+                                                                                        $Example_result._refMap_key = .Call System.Convert.ToInt32(
                                                                                             $valueAsString,
                                                                                             System.Globalization.CultureInfo.InvariantCulture)
                                                                                     };
@@ -571,12 +571,12 @@
                                                                                         .Block(
                                                                                             System.Int32 $index,
                                                                                             System.Byte[] $array) {
-                                                                                            .Block(System.Int32 $Example._refMap_value_count) {
-                                                                                                $Example._refMap_value_count = 0;
+                                                                                            .Block(System.Int32 $Example_result._refMap_value_count) {
+                                                                                                $Example_result._refMap_value_count = 0;
                                                                                                 .Default(System.Void);
                                                                                                 .Block() {
                                                                                                     $index = 0;
-                                                                                                    $array = .NewArray System.Byte[$Example._refMap_value_count]
+                                                                                                    $array = .NewArray System.Byte[$Example_result._refMap_value_count]
                                                                                                 }
                                                                                             };
                                                                                             .Loop  {
@@ -685,7 +685,7 @@
                                                                                                 }
                                                                                             }
                                                                                             .LabelTarget end:;
-                                                                                            $Example._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                            $Example_result._refMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                                 .New System.ArraySegment`1[System.Byte](
                                                                                                     $array,
                                                                                                     0,
@@ -693,7 +693,7 @@
                                                                                                 .Default(ExpressionsTest.RefObject))
                                                                                         }
                                                                                     };
-                                                                                    ($Example._refMap).Item[$Example._refMap_key] = $Example._refMap_value
+                                                                                    ($Example_result._refMap).Item[$Example_result._refMap_key] = $Example_result._refMap_value
                                                                                 }
                                                                             } .Else {
                                                                                 .Break end { }
@@ -720,11 +720,11 @@
                                                                 .Block() {
                                                                     .Block(System.Boolean $isEmpty) {
                                                                         $isEmpty = $reader.IsEmptyElement;
-                                                                        .Block(ExpressionsTest.RefObject $Example._refVector_item) {
-                                                                            .Block(System.Int32 $Example._refVector_count) {
-                                                                                $Example._refVector_count = 0;
+                                                                        .Block(ExpressionsTest.RefObject $Example_result._refVector_item) {
+                                                                            .Block(System.Int32 $Example_result._refVector_count) {
+                                                                                $Example_result._refVector_count = 0;
                                                                                 .Default(System.Void);
-                                                                                ($Example._refVector).Capacity = $Example._refVector_count
+                                                                                ($Example_result._refVector).Capacity = $Example_result._refVector_count
                                                                             };
                                                                             .Loop  {
                                                                                 .If (
@@ -776,12 +776,12 @@
                                                                                             .Block(
                                                                                                 System.Int32 $index,
                                                                                                 System.Byte[] $array) {
-                                                                                                .Block(System.Int32 $Example._refVector_item_count) {
-                                                                                                    $Example._refVector_item_count = 0;
+                                                                                                .Block(System.Int32 $Example_result._refVector_item_count) {
+                                                                                                    $Example_result._refVector_item_count = 0;
                                                                                                     .Default(System.Void);
                                                                                                     .Block() {
                                                                                                         $index = 0;
-                                                                                                        $array = .NewArray System.Byte[$Example._refVector_item_count]
+                                                                                                        $array = .NewArray System.Byte[$Example_result._refVector_item_count]
                                                                                                     }
                                                                                                 };
                                                                                                 .Loop  {
@@ -890,7 +890,7 @@
                                                                                                     }
                                                                                                 }
                                                                                                 .LabelTarget end:;
-                                                                                                $Example._refVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                                $Example_result._refVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                                     .New System.ArraySegment`1[System.Byte](
                                                                                                         $array,
                                                                                                         0,
@@ -898,7 +898,7 @@
                                                                                                     .Default(ExpressionsTest.RefObject))
                                                                                             }
                                                                                         };
-                                                                                        .Call ($Example._refVector).Add($Example._refVector_item)
+                                                                                        .Call ($Example_result._refVector).Add($Example_result._refVector_item)
                                                                                     }
                                                                                 } .Else {
                                                                                     .Break end { }
@@ -926,7 +926,7 @@
                                                                     .Block() {
                                                                         .Block(System.Boolean $isEmpty) {
                                                                             $isEmpty = $reader.IsEmptyElement;
-                                                                            .Block(ExpressionsTest.RefObject $Example._refList_item) {
+                                                                            .Block(ExpressionsTest.RefObject $Example_result._refList_item) {
                                                                                 .Default(System.Void);
                                                                                 .Loop  {
                                                                                     .If (
@@ -978,12 +978,12 @@
                                                                                                 .Block(
                                                                                                     System.Int32 $index,
                                                                                                     System.Byte[] $array) {
-                                                                                                    .Block(System.Int32 $Example._refList_item_count) {
-                                                                                                        $Example._refList_item_count = 0;
+                                                                                                    .Block(System.Int32 $Example_result._refList_item_count) {
+                                                                                                        $Example_result._refList_item_count = 0;
                                                                                                         .Default(System.Void);
                                                                                                         .Block() {
                                                                                                             $index = 0;
-                                                                                                            $array = .NewArray System.Byte[$Example._refList_item_count]
+                                                                                                            $array = .NewArray System.Byte[$Example_result._refList_item_count]
                                                                                                         }
                                                                                                     };
                                                                                                     .Loop  {
@@ -1092,7 +1092,7 @@
                                                                                                         }
                                                                                                     }
                                                                                                     .LabelTarget end:;
-                                                                                                    $Example._refList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                                    $Example_result._refList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                                         .New System.ArraySegment`1[System.Byte](
                                                                                                             $array,
                                                                                                             0,
@@ -1100,7 +1100,7 @@
                                                                                                         .Default(ExpressionsTest.RefObject))
                                                                                                 }
                                                                                             };
-                                                                                            .Call ($Example._refList).Add($Example._refList_item)
+                                                                                            .Call ($Example_result._refList).Add($Example_result._refList_item)
                                                                                         }
                                                                                     } .Else {
                                                                                         .Break end { }
@@ -1131,12 +1131,12 @@
                                                                                 .Block(
                                                                                     System.Int32 $index,
                                                                                     System.Byte[] $array) {
-                                                                                    .Block(System.Int32 $Example._reference_count) {
-                                                                                        $Example._reference_count = 0;
+                                                                                    .Block(System.Int32 $Example_result._reference_count) {
+                                                                                        $Example_result._reference_count = 0;
                                                                                         .Default(System.Void);
                                                                                         .Block() {
                                                                                             $index = 0;
-                                                                                            $array = .NewArray System.Byte[$Example._reference_count]
+                                                                                            $array = .NewArray System.Byte[$Example_result._reference_count]
                                                                                         }
                                                                                     };
                                                                                     .Loop  {
@@ -1245,7 +1245,7 @@
                                                                                         }
                                                                                     }
                                                                                     .LabelTarget end:;
-                                                                                    $Example._reference = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                    $Example_result._reference = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                         .New System.ArraySegment`1[System.Byte](
                                                                                             $array,
                                                                                             0,
@@ -1274,12 +1274,12 @@
                                                                                     .Block(
                                                                                         System.Int32 $index,
                                                                                         System.Byte[] $array) {
-                                                                                        .Block(System.Int32 $Example._decimal_req_count) {
-                                                                                            $Example._decimal_req_count = 0;
+                                                                                        .Block(System.Int32 $Example_result._decimal_req_count) {
+                                                                                            $Example_result._decimal_req_count = 0;
                                                                                             .Default(System.Void);
                                                                                             .Block() {
                                                                                                 $index = 0;
-                                                                                                $array = .NewArray System.Byte[$Example._decimal_req_count]
+                                                                                                $array = .NewArray System.Byte[$Example_result._decimal_req_count]
                                                                                             }
                                                                                         };
                                                                                         .Loop  {
@@ -1388,7 +1388,7 @@
                                                                                             }
                                                                                         }
                                                                                         .LabelTarget end:;
-                                                                                        $Example._decimal_req = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                        $Example_result._decimal_req = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                             .New System.ArraySegment`1[System.Byte](
                                                                                                 $array,
                                                                                                 0,
@@ -1467,12 +1467,12 @@
                                                                                                         .Block(
                                                                                                             System.Int32 $index,
                                                                                                             System.Byte[] $array) {
-                                                                                                            .Block(System.Int32 $Example._decNullable_count) {
-                                                                                                                $Example._decNullable_count = 0;
+                                                                                                            .Block(System.Int32 $Example_result._decNullable_count) {
+                                                                                                                $Example_result._decNullable_count = 0;
                                                                                                                 .Default(System.Void);
                                                                                                                 .Block() {
                                                                                                                     $index = 0;
-                                                                                                                    $array = .NewArray System.Byte[$Example._decNullable_count]
+                                                                                                                    $array = .NewArray System.Byte[$Example_result._decNullable_count]
                                                                                                                 }
                                                                                                             };
                                                                                                             .Loop  {
@@ -1581,7 +1581,7 @@
                                                                                                                 }
                                                                                                             }
                                                                                                             .LabelTarget end:;
-                                                                                                            $Example._decNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                                            $Example_result._decNullable = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                                                 .New System.ArraySegment`1[System.Byte](
                                                                                                                     $array,
                                                                                                                     0,
@@ -1615,8 +1615,8 @@
                                                                                         .Block(System.Boolean $isEmpty) {
                                                                                             $isEmpty = $reader.IsEmptyElement;
                                                                                             .Block(
-                                                                                                System.Int32 $Example._decMap_key,
-                                                                                                System.Decimal $Example._decMap_value) {
+                                                                                                System.Int32 $Example_result._decMap_key,
+                                                                                                System.Decimal $Example_result._decMap_value) {
                                                                                                 .Default(System.Void);
                                                                                                 .Loop  {
                                                                                                     .If (
@@ -1703,7 +1703,7 @@
                                                                                                                         }
                                                                                                                     }
                                                                                                                 };
-                                                                                                                $Example._decMap_key = .Call System.Convert.ToInt32(
+                                                                                                                $Example_result._decMap_key = .Call System.Convert.ToInt32(
                                                                                                                     $valueAsString,
                                                                                                                     System.Globalization.CultureInfo.InvariantCulture)
                                                                                                             };
@@ -1753,12 +1753,12 @@
                                                                                                                 .Block(
                                                                                                                     System.Int32 $index,
                                                                                                                     System.Byte[] $array) {
-                                                                                                                    .Block(System.Int32 $Example._decMap_value_count) {
-                                                                                                                        $Example._decMap_value_count = 0;
+                                                                                                                    .Block(System.Int32 $Example_result._decMap_value_count) {
+                                                                                                                        $Example_result._decMap_value_count = 0;
                                                                                                                         .Default(System.Void);
                                                                                                                         .Block() {
                                                                                                                             $index = 0;
-                                                                                                                            $array = .NewArray System.Byte[$Example._decMap_value_count]
+                                                                                                                            $array = .NewArray System.Byte[$Example_result._decMap_value_count]
                                                                                                                         }
                                                                                                                     };
                                                                                                                     .Loop  {
@@ -1867,7 +1867,7 @@
                                                                                                                         }
                                                                                                                     }
                                                                                                                     .LabelTarget end:;
-                                                                                                                    $Example._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                                                    $Example_result._decMap_value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                                                         .New System.ArraySegment`1[System.Byte](
                                                                                                                             $array,
                                                                                                                             0,
@@ -1875,7 +1875,7 @@
                                                                                                                         .Default(System.Decimal))
                                                                                                                 }
                                                                                                             };
-                                                                                                            ($Example._decMap).Item[$Example._decMap_key] = $Example._decMap_value
+                                                                                                            ($Example_result._decMap).Item[$Example_result._decMap_key] = $Example_result._decMap_value
                                                                                                         }
                                                                                                     } .Else {
                                                                                                         .Break end { }
@@ -1902,11 +1902,11 @@
                                                                                         .Block() {
                                                                                             .Block(System.Boolean $isEmpty) {
                                                                                                 $isEmpty = $reader.IsEmptyElement;
-                                                                                                .Block(System.Decimal $Example._decVector_item) {
-                                                                                                    .Block(System.Int32 $Example._decVector_count) {
-                                                                                                        $Example._decVector_count = 0;
+                                                                                                .Block(System.Decimal $Example_result._decVector_item) {
+                                                                                                    .Block(System.Int32 $Example_result._decVector_count) {
+                                                                                                        $Example_result._decVector_count = 0;
                                                                                                         .Default(System.Void);
-                                                                                                        ($Example._decVector).Capacity = $Example._decVector_count
+                                                                                                        ($Example_result._decVector).Capacity = $Example_result._decVector_count
                                                                                                     };
                                                                                                     .Loop  {
                                                                                                         .If (
@@ -1958,12 +1958,12 @@
                                                                                                                     .Block(
                                                                                                                         System.Int32 $index,
                                                                                                                         System.Byte[] $array) {
-                                                                                                                        .Block(System.Int32 $Example._decVector_item_count) {
-                                                                                                                            $Example._decVector_item_count = 0;
+                                                                                                                        .Block(System.Int32 $Example_result._decVector_item_count) {
+                                                                                                                            $Example_result._decVector_item_count = 0;
                                                                                                                             .Default(System.Void);
                                                                                                                             .Block() {
                                                                                                                                 $index = 0;
-                                                                                                                                $array = .NewArray System.Byte[$Example._decVector_item_count]
+                                                                                                                                $array = .NewArray System.Byte[$Example_result._decVector_item_count]
                                                                                                                             }
                                                                                                                         };
                                                                                                                         .Loop  {
@@ -2072,7 +2072,7 @@
                                                                                                                             }
                                                                                                                         }
                                                                                                                         .LabelTarget end:;
-                                                                                                                        $Example._decVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                                                        $Example_result._decVector_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                                                             .New System.ArraySegment`1[System.Byte](
                                                                                                                                 $array,
                                                                                                                                 0,
@@ -2080,7 +2080,7 @@
                                                                                                                             .Default(System.Decimal))
                                                                                                                     }
                                                                                                                 };
-                                                                                                                .Call ($Example._decVector).Add($Example._decVector_item)
+                                                                                                                .Call ($Example_result._decVector).Add($Example_result._decVector_item)
                                                                                                             }
                                                                                                         } .Else {
                                                                                                             .Break end { }
@@ -2108,7 +2108,7 @@
                                                                                             .Block() {
                                                                                                 .Block(System.Boolean $isEmpty) {
                                                                                                     $isEmpty = $reader.IsEmptyElement;
-                                                                                                    .Block(System.Decimal $Example._decList_item) {
+                                                                                                    .Block(System.Decimal $Example_result._decList_item) {
                                                                                                         .Default(System.Void);
                                                                                                         .Loop  {
                                                                                                             .If (
@@ -2160,12 +2160,12 @@
                                                                                                                         .Block(
                                                                                                                             System.Int32 $index,
                                                                                                                             System.Byte[] $array) {
-                                                                                                                            .Block(System.Int32 $Example._decList_item_count) {
-                                                                                                                                $Example._decList_item_count = 0;
+                                                                                                                            .Block(System.Int32 $Example_result._decList_item_count) {
+                                                                                                                                $Example_result._decList_item_count = 0;
                                                                                                                                 .Default(System.Void);
                                                                                                                                 .Block() {
                                                                                                                                     $index = 0;
-                                                                                                                                    $array = .NewArray System.Byte[$Example._decList_item_count]
+                                                                                                                                    $array = .NewArray System.Byte[$Example_result._decList_item_count]
                                                                                                                                 }
                                                                                                                             };
                                                                                                                             .Loop  {
@@ -2274,7 +2274,7 @@
                                                                                                                                 }
                                                                                                                             }
                                                                                                                             .LabelTarget end:;
-                                                                                                                            $Example._decList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                                                            $Example_result._decList_item = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                                                                 .New System.ArraySegment`1[System.Byte](
                                                                                                                                     $array,
                                                                                                                                     0,
@@ -2282,7 +2282,7 @@
                                                                                                                                 .Default(System.Decimal))
                                                                                                                         }
                                                                                                                     };
-                                                                                                                    .Call ($Example._decList).Add($Example._decList_item)
+                                                                                                                    .Call ($Example_result._decList).Add($Example_result._decList_item)
                                                                                                                 }
                                                                                                             } .Else {
                                                                                                                 .Break end { }
@@ -2313,12 +2313,12 @@
                                                                                                         .Block(
                                                                                                             System.Int32 $index,
                                                                                                             System.Byte[] $array) {
-                                                                                                            .Block(System.Int32 $Example._decimal_count) {
-                                                                                                                $Example._decimal_count = 0;
+                                                                                                            .Block(System.Int32 $Example_result._decimal_count) {
+                                                                                                                $Example_result._decimal_count = 0;
                                                                                                                 .Default(System.Void);
                                                                                                                 .Block() {
                                                                                                                     $index = 0;
-                                                                                                                    $array = .NewArray System.Byte[$Example._decimal_count]
+                                                                                                                    $array = .NewArray System.Byte[$Example_result._decimal_count]
                                                                                                                 }
                                                                                                             };
                                                                                                             .Loop  {
@@ -2427,7 +2427,7 @@
                                                                                                                 }
                                                                                                             }
                                                                                                             .LabelTarget end:;
-                                                                                                            $Example._decimal = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                                            $Example_result._decimal = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                                                                                                 .New System.ArraySegment`1[System.Byte](
                                                                                                                     $array,
                                                                                                                     0,
@@ -2454,8 +2454,8 @@
                                                                                                         .Block(System.Boolean $isEmpty) {
                                                                                                             $isEmpty = $reader.IsEmptyElement;
                                                                                                             .Block(
-                                                                                                                System.Int32 $Example._map_key,
-                                                                                                                System.Double $Example._map_value) {
+                                                                                                                System.Int32 $Example_result._map_key,
+                                                                                                                System.Double $Example_result._map_value) {
                                                                                                                 .Default(System.Void);
                                                                                                                 .Loop  {
                                                                                                                     .If (
@@ -2542,7 +2542,7 @@
                                                                                                                                         }
                                                                                                                                     }
                                                                                                                                 };
-                                                                                                                                $Example._map_key = .Call System.Convert.ToInt32(
+                                                                                                                                $Example_result._map_key = .Call System.Convert.ToInt32(
                                                                                                                                     $valueAsString,
                                                                                                                                     System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                             };
@@ -2627,11 +2627,11 @@
                                                                                                                                         }
                                                                                                                                     }
                                                                                                                                 };
-                                                                                                                                $Example._map_value = .Call System.Convert.ToDouble(
+                                                                                                                                $Example_result._map_value = .Call System.Convert.ToDouble(
                                                                                                                                     $valueAsString,
                                                                                                                                     System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                             };
-                                                                                                                            ($Example._map).Item[$Example._map_key] = $Example._map_value
+                                                                                                                            ($Example_result._map).Item[$Example_result._map_key] = $Example_result._map_value
                                                                                                                         }
                                                                                                                     } .Else {
                                                                                                                         .Break end { }
@@ -2708,12 +2708,12 @@
                                                                                                                                 .Block(
                                                                                                                                     System.Int32 $index,
                                                                                                                                     System.Byte[] $array) {
-                                                                                                                                    .Block(System.Int32 $Example._blobNullable_count) {
-                                                                                                                                        $Example._blobNullable_count = 0;
+                                                                                                                                    .Block(System.Int32 $Example_result._blobNullable_count) {
+                                                                                                                                        $Example_result._blobNullable_count = 0;
                                                                                                                                         .Default(System.Void);
                                                                                                                                         .Block() {
                                                                                                                                             $index = 0;
-                                                                                                                                            $array = .NewArray System.Byte[$Example._blobNullable_count]
+                                                                                                                                            $array = .NewArray System.Byte[$Example_result._blobNullable_count]
                                                                                                                                         }
                                                                                                                                     };
                                                                                                                                     .Loop  {
@@ -2822,7 +2822,7 @@
                                                                                                                                         }
                                                                                                                                     }
                                                                                                                                     .LabelTarget end:;
-                                                                                                                                    $Example._blobNullable = .New System.ArraySegment`1[System.Byte](
+                                                                                                                                    $Example_result._blobNullable = .New System.ArraySegment`1[System.Byte](
                                                                                                                                         $array,
                                                                                                                                         0,
                                                                                                                                         $index)
@@ -2854,8 +2854,8 @@
                                                                                                                 .Block(System.Boolean $isEmpty) {
                                                                                                                     $isEmpty = $reader.IsEmptyElement;
                                                                                                                     .Block(
-                                                                                                                        System.Int32 $Example._blobMap_key,
-                                                                                                                        System.ArraySegment`1[System.Byte] $Example._blobMap_value) {
+                                                                                                                        System.Int32 $Example_result._blobMap_key,
+                                                                                                                        System.ArraySegment`1[System.Byte] $Example_result._blobMap_value) {
                                                                                                                         .Default(System.Void);
                                                                                                                         .Loop  {
                                                                                                                             .If (
@@ -2942,7 +2942,7 @@
                                                                                                                                                 }
                                                                                                                                             }
                                                                                                                                         };
-                                                                                                                                        $Example._blobMap_key = .Call System.Convert.ToInt32(
+                                                                                                                                        $Example_result._blobMap_key = .Call System.Convert.ToInt32(
                                                                                                                                             $valueAsString,
                                                                                                                                             System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                     };
@@ -2992,12 +2992,12 @@
                                                                                                                                         .Block(
                                                                                                                                             System.Int32 $index,
                                                                                                                                             System.Byte[] $array) {
-                                                                                                                                            .Block(System.Int32 $Example._blobMap_value_count) {
-                                                                                                                                                $Example._blobMap_value_count = 0;
+                                                                                                                                            .Block(System.Int32 $Example_result._blobMap_value_count) {
+                                                                                                                                                $Example_result._blobMap_value_count = 0;
                                                                                                                                                 .Default(System.Void);
                                                                                                                                                 .Block() {
                                                                                                                                                     $index = 0;
-                                                                                                                                                    $array = .NewArray System.Byte[$Example._blobMap_value_count]
+                                                                                                                                                    $array = .NewArray System.Byte[$Example_result._blobMap_value_count]
                                                                                                                                                 }
                                                                                                                                             };
                                                                                                                                             .Loop  {
@@ -3106,13 +3106,13 @@
                                                                                                                                                 }
                                                                                                                                             }
                                                                                                                                             .LabelTarget end:;
-                                                                                                                                            $Example._blobMap_value = .New System.ArraySegment`1[System.Byte](
+                                                                                                                                            $Example_result._blobMap_value = .New System.ArraySegment`1[System.Byte](
                                                                                                                                                 $array,
                                                                                                                                                 0,
                                                                                                                                                 $index)
                                                                                                                                         }
                                                                                                                                     };
-                                                                                                                                    ($Example._blobMap).Item[$Example._blobMap_key] = $Example._blobMap_value
+                                                                                                                                    ($Example_result._blobMap).Item[$Example_result._blobMap_key] = $Example_result._blobMap_value
                                                                                                                                 }
                                                                                                                             } .Else {
                                                                                                                                 .Break end { }
@@ -3139,11 +3139,11 @@
                                                                                                                 .Block() {
                                                                                                                     .Block(System.Boolean $isEmpty) {
                                                                                                                         $isEmpty = $reader.IsEmptyElement;
-                                                                                                                        .Block(System.ArraySegment`1[System.Byte] $Example._blobVector_item) {
-                                                                                                                            .Block(System.Int32 $Example._blobVector_count) {
-                                                                                                                                $Example._blobVector_count = 0;
+                                                                                                                        .Block(System.ArraySegment`1[System.Byte] $Example_result._blobVector_item) {
+                                                                                                                            .Block(System.Int32 $Example_result._blobVector_count) {
+                                                                                                                                $Example_result._blobVector_count = 0;
                                                                                                                                 .Default(System.Void);
-                                                                                                                                ($Example._blobVector).Capacity = $Example._blobVector_count
+                                                                                                                                ($Example_result._blobVector).Capacity = $Example_result._blobVector_count
                                                                                                                             };
                                                                                                                             .Loop  {
                                                                                                                                 .If (
@@ -3195,12 +3195,12 @@
                                                                                                                                             .Block(
                                                                                                                                                 System.Int32 $index,
                                                                                                                                                 System.Byte[] $array) {
-                                                                                                                                                .Block(System.Int32 $Example._blobVector_item_count) {
-                                                                                                                                                    $Example._blobVector_item_count = 0;
+                                                                                                                                                .Block(System.Int32 $Example_result._blobVector_item_count) {
+                                                                                                                                                    $Example_result._blobVector_item_count = 0;
                                                                                                                                                     .Default(System.Void);
                                                                                                                                                     .Block() {
                                                                                                                                                         $index = 0;
-                                                                                                                                                        $array = .NewArray System.Byte[$Example._blobVector_item_count]
+                                                                                                                                                        $array = .NewArray System.Byte[$Example_result._blobVector_item_count]
                                                                                                                                                     }
                                                                                                                                                 };
                                                                                                                                                 .Loop  {
@@ -3309,13 +3309,13 @@
                                                                                                                                                     }
                                                                                                                                                 }
                                                                                                                                                 .LabelTarget end:;
-                                                                                                                                                $Example._blobVector_item = .New System.ArraySegment`1[System.Byte](
+                                                                                                                                                $Example_result._blobVector_item = .New System.ArraySegment`1[System.Byte](
                                                                                                                                                     $array,
                                                                                                                                                     0,
                                                                                                                                                     $index)
                                                                                                                                             }
                                                                                                                                         };
-                                                                                                                                        .Call ($Example._blobVector).Add($Example._blobVector_item)
+                                                                                                                                        .Call ($Example_result._blobVector).Add($Example_result._blobVector_item)
                                                                                                                                     }
                                                                                                                                 } .Else {
                                                                                                                                     .Break end { }
@@ -3343,7 +3343,7 @@
                                                                                                                     .Block() {
                                                                                                                         .Block(System.Boolean $isEmpty) {
                                                                                                                             $isEmpty = $reader.IsEmptyElement;
-                                                                                                                            .Block(System.ArraySegment`1[System.Byte] $Example._blobList_item) {
+                                                                                                                            .Block(System.ArraySegment`1[System.Byte] $Example_result._blobList_item) {
                                                                                                                                 .Default(System.Void);
                                                                                                                                 .Loop  {
                                                                                                                                     .If (
@@ -3395,12 +3395,12 @@
                                                                                                                                                 .Block(
                                                                                                                                                     System.Int32 $index,
                                                                                                                                                     System.Byte[] $array) {
-                                                                                                                                                    .Block(System.Int32 $Example._blobList_item_count) {
-                                                                                                                                                        $Example._blobList_item_count = 0;
+                                                                                                                                                    .Block(System.Int32 $Example_result._blobList_item_count) {
+                                                                                                                                                        $Example_result._blobList_item_count = 0;
                                                                                                                                                         .Default(System.Void);
                                                                                                                                                         .Block() {
                                                                                                                                                             $index = 0;
-                                                                                                                                                            $array = .NewArray System.Byte[$Example._blobList_item_count]
+                                                                                                                                                            $array = .NewArray System.Byte[$Example_result._blobList_item_count]
                                                                                                                                                         }
                                                                                                                                                     };
                                                                                                                                                     .Loop  {
@@ -3509,13 +3509,13 @@
                                                                                                                                                         }
                                                                                                                                                     }
                                                                                                                                                     .LabelTarget end:;
-                                                                                                                                                    $Example._blobList_item = .New System.ArraySegment`1[System.Byte](
+                                                                                                                                                    $Example_result._blobList_item = .New System.ArraySegment`1[System.Byte](
                                                                                                                                                         $array,
                                                                                                                                                         0,
                                                                                                                                                         $index)
                                                                                                                                                 }
                                                                                                                                             };
-                                                                                                                                            .Call ($Example._blobList).Add($Example._blobList_item)
+                                                                                                                                            .Call ($Example_result._blobList).Add($Example_result._blobList_item)
                                                                                                                                         }
                                                                                                                                     } .Else {
                                                                                                                                         .Break end { }
@@ -3546,12 +3546,12 @@
                                                                                                                                 .Block(
                                                                                                                                     System.Int32 $index,
                                                                                                                                     System.Byte[] $array) {
-                                                                                                                                    .Block(System.Int32 $Example.b_count) {
-                                                                                                                                        $Example.b_count = 0;
+                                                                                                                                    .Block(System.Int32 $Example_result.b_count) {
+                                                                                                                                        $Example_result.b_count = 0;
                                                                                                                                         .Default(System.Void);
                                                                                                                                         .Block() {
                                                                                                                                             $index = 0;
-                                                                                                                                            $array = .NewArray System.Byte[$Example.b_count]
+                                                                                                                                            $array = .NewArray System.Byte[$Example_result.b_count]
                                                                                                                                         }
                                                                                                                                     };
                                                                                                                                     .Loop  {
@@ -3660,7 +3660,7 @@
                                                                                                                                         }
                                                                                                                                     }
                                                                                                                                     .LabelTarget end:;
-                                                                                                                                    $Example.b = .New System.ArraySegment`1[System.Byte](
+                                                                                                                                    $Example_result.b = .New System.ArraySegment`1[System.Byte](
                                                                                                                                         $array,
                                                                                                                                         0,
                                                                                                                                         $index)
@@ -3684,7 +3684,7 @@
                                                                                                                             .Block() {
                                                                                                                                 .Block(System.Boolean $isEmpty) {
                                                                                                                                     $isEmpty = $reader.IsEmptyElement;
-                                                                                                                                    .Block(ExpressionsTest.Nested $Example._nestedVector_item) {
+                                                                                                                                    .Block(ExpressionsTest.Nested $Example_result._nestedVector_item) {
                                                                                                                                         .Default(System.Void);
                                                                                                                                         .Loop  {
                                                                                                                                             .If (
@@ -3732,7 +3732,7 @@
                                                                                                                                             ) {
                                                                                                                                                 .Block() {
                                                                                                                                                     .Block() {
-                                                                                                                                                        $Example._nestedVector_item = .New ExpressionsTest.Nested();
+                                                                                                                                                        $Example_result._nestedVector_item = .New ExpressionsTest.Nested();
                                                                                                                                                         .Block() {
                                                                                                                                                             .Call $reader.Read();
                                                                                                                                                             .Block(
@@ -3817,7 +3817,7 @@
                                                                                                                                                                                                                 }
                                                                                                                                                                                                             }
                                                                                                                                                                                                         };
-                                                                                                                                                                                                        $Example._nestedVector_item._double = .Call System.Convert.ToDouble(
+                                                                                                                                                                                                        $Example_result._nestedVector_item._double = .Call System.Convert.ToDouble(
                                                                                                                                                                                                             $valueAsString,
                                                                                                                                                                                                             System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                                                                                     };
@@ -3886,7 +3886,7 @@
                                                                                                                                                             }
                                                                                                                                                         }
                                                                                                                                                     };
-                                                                                                                                                    .Call ($Example._nestedVector).Add($Example._nestedVector_item)
+                                                                                                                                                    .Call ($Example_result._nestedVector).Add($Example_result._nestedVector_item)
                                                                                                                                                 }
                                                                                                                                             } .Else {
                                                                                                                                                 .Break end { }
@@ -3914,11 +3914,11 @@
                                                                                                                                 .Block() {
                                                                                                                                     .Block(System.Boolean $isEmpty) {
                                                                                                                                         $isEmpty = $reader.IsEmptyElement;
-                                                                                                                                        .Block(System.Int32 $Example._int32Vector_item) {
-                                                                                                                                            .Block(System.Int32 $Example._int32Vector_count) {
-                                                                                                                                                $Example._int32Vector_count = 0;
+                                                                                                                                        .Block(System.Int32 $Example_result._int32Vector_item) {
+                                                                                                                                            .Block(System.Int32 $Example_result._int32Vector_count) {
+                                                                                                                                                $Example_result._int32Vector_count = 0;
                                                                                                                                                 .Default(System.Void);
-                                                                                                                                                ($Example._int32Vector).Capacity = $Example._int32Vector_count
+                                                                                                                                                ($Example_result._int32Vector).Capacity = $Example_result._int32Vector_count
                                                                                                                                             };
                                                                                                                                             .Loop  {
                                                                                                                                                 .If (
@@ -4005,11 +4005,11 @@
                                                                                                                                                                     }
                                                                                                                                                                 }
                                                                                                                                                             };
-                                                                                                                                                            $Example._int32Vector_item = .Call System.Convert.ToInt32(
+                                                                                                                                                            $Example_result._int32Vector_item = .Call System.Convert.ToInt32(
                                                                                                                                                                 $valueAsString,
                                                                                                                                                                 System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                                         };
-                                                                                                                                                        .Call ($Example._int32Vector).Add($Example._int32Vector_item)
+                                                                                                                                                        .Call ($Example_result._int32Vector).Add($Example_result._int32Vector_item)
                                                                                                                                                     }
                                                                                                                                                 } .Else {
                                                                                                                                                     .Break end { }
@@ -4120,7 +4120,7 @@
                                                                                                                                                                                                     }
                                                                                                                                                                                                 }
                                                                                                                                                                                             };
-                                                                                                                                                                                            ($Example.guid).Data4 = .Call System.Convert.ToUInt64(
+                                                                                                                                                                                            ($Example_result.guid).Data4 = .Call System.Convert.ToUInt64(
                                                                                                                                                                                                 $valueAsString,
                                                                                                                                                                                                 System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                                                                         };
@@ -4180,7 +4180,7 @@
                                                                                                                                                                                                         }
                                                                                                                                                                                                     }
                                                                                                                                                                                                 };
-                                                                                                                                                                                                ($Example.guid).Data3 = .Call System.Convert.ToUInt16(
+                                                                                                                                                                                                ($Example_result.guid).Data3 = .Call System.Convert.ToUInt16(
                                                                                                                                                                                                     $valueAsString,
                                                                                                                                                                                                     System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                                                                             };
@@ -4240,7 +4240,7 @@
                                                                                                                                                                                                             }
                                                                                                                                                                                                         }
                                                                                                                                                                                                     };
-                                                                                                                                                                                                    ($Example.guid).Data2 = .Call System.Convert.ToUInt16(
+                                                                                                                                                                                                    ($Example_result.guid).Data2 = .Call System.Convert.ToUInt16(
                                                                                                                                                                                                         $valueAsString,
                                                                                                                                                                                                         System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                                                                                 };
@@ -4300,7 +4300,7 @@
                                                                                                                                                                                                                 }
                                                                                                                                                                                                             }
                                                                                                                                                                                                         };
-                                                                                                                                                                                                        ($Example.guid).Data1 = .Call System.Convert.ToUInt32(
+                                                                                                                                                                                                        ($Example_result.guid).Data1 = .Call System.Convert.ToUInt32(
                                                                                                                                                                                                             $valueAsString,
                                                                                                                                                                                                             System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                                                                                     };
@@ -4428,7 +4428,7 @@
                                                                                                                                                         }
                                                                                                                                                     }
                                                                                                                                                 };
-                                                                                                                                                $Example._double = .Call System.Convert.ToDouble(
+                                                                                                                                                $Example_result._double = .Call System.Convert.ToDouble(
                                                                                                                                                     $valueAsString,
                                                                                                                                                     System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                             };
@@ -4488,7 +4488,7 @@
                                                                                                                                                             }
                                                                                                                                                         }
                                                                                                                                                     };
-                                                                                                                                                    $Example._int64 = .Call System.Convert.ToInt64(
+                                                                                                                                                    $Example_result._int64 = .Call System.Convert.ToInt64(
                                                                                                                                                         $valueAsString,
                                                                                                                                                         System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                                 };
@@ -4551,7 +4551,7 @@
                                                                                                                                                                 }
                                                                                                                                                             }
                                                                                                                                                         };
-                                                                                                                                                        $Example._int8 = .Call System.Convert.ToSByte(
+                                                                                                                                                        $Example_result._int8 = .Call System.Convert.ToSByte(
                                                                                                                                                             $valueAsString,
                                                                                                                                                             System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                                     };
@@ -4611,7 +4611,7 @@
                                                                                                                                                                     }
                                                                                                                                                                 }
                                                                                                                                                             };
-                                                                                                                                                            $Example._uint32 = .Call System.Convert.ToUInt32(
+                                                                                                                                                            $Example_result._uint32 = .Call System.Convert.ToUInt32(
                                                                                                                                                                 $valueAsString,
                                                                                                                                                                 System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                                         };
@@ -4671,7 +4671,7 @@
                                                                                                                                                                         }
                                                                                                                                                                     }
                                                                                                                                                                 };
-                                                                                                                                                                $Example._str = $valueAsString
+                                                                                                                                                                $Example_result._str = $valueAsString
                                                                                                                                                             };
                                                                                                                                                             $state = .Constant<System.Byte>(3)
                                                                                                                                                         }
@@ -4729,7 +4729,7 @@
                                                                                                                                                                             }
                                                                                                                                                                         }
                                                                                                                                                                     };
-                                                                                                                                                                    $Example._bool = .Call System.Convert.ToBoolean(
+                                                                                                                                                                    $Example_result._bool = .Call System.Convert.ToBoolean(
                                                                                                                                                                         $valueAsString,
                                                                                                                                                                         System.Globalization.CultureInfo.InvariantCulture)
                                                                                                                                                                 };
@@ -4835,7 +4835,7 @@
                 }
             }
         };
-        (System.Object)$Example
+        (System.Object)$Example_result
     }
 }
 
