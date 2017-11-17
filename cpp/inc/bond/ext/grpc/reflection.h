@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <bond/core/reflection.h>
 
 namespace bond { namespace ext { namespace gRPC { namespace reflection {

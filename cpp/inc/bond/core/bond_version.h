@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "config.h"
+#include <bond/core/config.h>
+
 #include <stdint.h>
 #include <type_traits>
 

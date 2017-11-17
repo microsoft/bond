@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "bond.h"
 #include "detail/cmdargs.h"
 

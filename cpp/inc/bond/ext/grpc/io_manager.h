@@ -3,6 +3,11 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include <bond/ext/detail/event.h>
+#include <bond/ext/grpc/detail/io_manager_tag.h>
+
 #ifdef _MSC_VER
     #pragma warning (push)
     #pragma warning (disable: 4100 4702)
@@ -14,9 +19,6 @@
 #ifdef _MSC_VER
     #pragma warning (pop)
 #endif
-
-#include <bond/ext/detail/event.h>
-#include <bond/ext/grpc/detail/io_manager_tag.h>
 
 #include <boost/assert.hpp>
 

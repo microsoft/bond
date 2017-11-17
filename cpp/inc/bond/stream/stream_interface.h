@@ -3,11 +3,14 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <bond/core/blob.h>
 #include <bond/core/detail/mpl.h>
-#include <boost/static_assert.hpp>
-#include <type_traits>
 
+#include <boost/static_assert.hpp>
+
+#include <type_traits>
 
 namespace bond
 {

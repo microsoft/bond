@@ -3,10 +3,14 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include "output_buffer.h"
+
+#include <bond/core/blob.h>
+
 #include <stdio.h>
 #include <stdint.h>
-#include <bond/core/blob.h>
-#include "output_buffer.h"
 
 namespace bond
 {

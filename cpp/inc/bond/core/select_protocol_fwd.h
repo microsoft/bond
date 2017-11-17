@@ -3,8 +3,9 @@
 
 #pragma once
 
-#include "bond_fwd.h"
+#include <bond/core/config.h>
 
+#include "bond_fwd.h"
 
 namespace bond
 {

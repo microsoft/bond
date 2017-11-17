@@ -3,8 +3,12 @@
 
 #pragma once
 
-#include <bond/core/bond_types.h>
+#include <bond/core/config.h>
+
 #include "detail/nonassignable.h"
+
+#include <bond/core/bond_types.h>
+
 #include <boost/shared_ptr.hpp>
 
 namespace bond

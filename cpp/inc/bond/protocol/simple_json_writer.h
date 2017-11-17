@@ -3,8 +3,11 @@
 
 #pragma once
 
-#include "encoding.h"
+#include <bond/core/config.h>
+
 #include "detail/rapidjson_helper.h"
+#include "encoding.h"
+
 #include <bond/core/transforms.h>
 
 namespace bond

@@ -1,5 +1,9 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #pragma once
+
+#include <bond/core/config.h>
 
 #include <bond/comm/detail/logging.h>
 #include <bond/comm/services.h>
@@ -54,7 +58,7 @@ class LayerStack<Data, Layer, Layers...>
     , public Layer
 {
 public:
-    
+
     LayerStack()
     {}
 
@@ -90,7 +94,7 @@ public:
 //
 // Layer extension for transports.
 //
-template <typename BaseTransport, 
+template <typename BaseTransport,
           typename LayerProtocol>
 class LayerTransport
     : public BaseTransport
@@ -243,7 +247,7 @@ private:
                        const std::string& service_name,
                        const std::string& method_name,
                        LayerData& data,
-                       std::vector<blob>& buffers) 
+                       std::vector<blob>& buffers)
         {
             _service_name = service_name;
             _method_name = method_name;

@@ -3,10 +3,14 @@
 
 #pragma once
 
-#include <bond/core/containers.h>
+#include <bond/core/config.h>
+
 #include <bond/core/blob.h>
+#include <bond/core/containers.h>
 #include <bond/core/traits.h>
+
 #include <boost/static_assert.hpp>
+
 #include <cstring>
 
 namespace bond

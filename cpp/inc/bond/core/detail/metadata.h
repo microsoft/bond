@@ -3,8 +3,12 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "sdl.h"
 #include "tags.h"
+
+#include <bond/core/bond_types.h>
 
 namespace bond
 {

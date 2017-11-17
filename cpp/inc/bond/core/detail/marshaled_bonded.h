@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include <bond/protocol/compact_binary.h>
 #include <bond/stream/stream_interface.h>
 
 namespace bond

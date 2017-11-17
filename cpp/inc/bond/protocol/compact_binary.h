@@ -3,14 +3,19 @@
 
 #pragma once
 
-#include "encoding.h"
+#include <bond/core/config.h>
+
 #include "detail/simple_array.h"
+#include "encoding.h"
+
 #include <bond/core/bond_version.h>
 #include <bond/core/traits.h>
 #include <bond/stream/output_counter.h>
+
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/static_assert.hpp>
+
 #include <cstring>
 
 /*

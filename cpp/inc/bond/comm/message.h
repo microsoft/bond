@@ -1,5 +1,9 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #pragma once
+
+#include <bond/core/config.h>
 
 #include "exception.h"
 
@@ -8,8 +12,8 @@
 #include <bond/core/traits.h>
 #include <bond/stream/output_buffer.h>
 
-#include <boost/variant.hpp>
 #include <boost/mpl/if.hpp>
+#include <boost/variant.hpp>
 
 namespace bond { namespace comm
 {

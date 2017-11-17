@@ -4,11 +4,14 @@
 /** @file */
 #pragma once
 
-#include "config.h"
+#include <bond/core/config.h>
+
 #include "container_interface.h"
 #include "detail/checked_add.h"
-#include <boost/shared_array.hpp>
+
 #include <boost/make_shared.hpp>
+#include <boost/shared_array.hpp>
+
 #include <stdint.h>
 #include <cstring>
 

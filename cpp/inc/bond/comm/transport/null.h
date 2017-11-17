@@ -1,8 +1,13 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #pragma once
 
-#include <bond/comm/address.h>
+#include <bond/core/config.h>
+
 #include "packet.h"
+
+#include <bond/comm/address.h>
 
 namespace bond { namespace comm
 {

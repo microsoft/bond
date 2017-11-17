@@ -1,6 +1,11 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 #pragma once
 
-#include <thread>
+#include <bond/core/config.h>
+
+#include <bond/comm/detail/logging.h>
 
 #if defined (__APPLE__)
     // Work-around: 'OSMemoryBarrier' has been explicitly marked deprecated
@@ -20,7 +25,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/thread.hpp>
 
-#include <bond/comm/detail/logging.h>
+#include <thread>
 
 namespace bond { namespace comm {
 

@@ -3,6 +3,14 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include <bond/core/bonded.h>
+#include <bond/ext/grpc/detail/service.h>
+#include <bond/ext/grpc/client_callback.h>
+#include <bond/ext/grpc/io_manager.h>
+#include <bond/ext/grpc/unary_call.h>
+
 #ifdef _MSC_VER
     #pragma warning (push)
     #pragma warning (disable: 4100 4702)
@@ -16,12 +24,6 @@
 #ifdef _MSC_VER
     #pragma warning (pop)
 #endif
-
-#include <bond/core/bonded.h>
-#include <bond/ext/grpc/detail/service.h>
-#include <bond/ext/grpc/client_callback.h>
-#include <bond/ext/grpc/io_manager.h>
-#include <bond/ext/grpc/unary_call.h>
 
 #include <boost/assert.hpp>
 #include <boost/optional.hpp>

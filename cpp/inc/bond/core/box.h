@@ -3,7 +3,10 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <bond/core/bond_types.h>
+
 #include <type_traits>
 
 

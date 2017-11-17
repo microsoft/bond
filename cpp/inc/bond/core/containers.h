@@ -3,6 +3,8 @@
 
 #pragma once
 
-#include "stl_containers.h"
-#include "maybe.h"
+#include <bond/core/config.h>
+
 #include "bond_fwd.h"
+#include "maybe.h"
+#include "stl_containers.h"

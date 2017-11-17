@@ -3,12 +3,15 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include "detail/once.h"
+#include "detail/tags.h"
 #include "reflection.h"
 #include "runtime_schema.h"
-#include "detail/tags.h"
-#include "detail/once.h"
-#include <boost/make_shared.hpp>
+
 #include <boost/bind.hpp>
+#include <boost/make_shared.hpp>
 
 namespace bond
 {

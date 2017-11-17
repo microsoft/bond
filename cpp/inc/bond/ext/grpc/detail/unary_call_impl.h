@@ -3,6 +3,11 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include <bond/core/bonded.h>
+#include <bond/ext/grpc/detail/io_manager_tag.h>
+
 #ifdef _MSC_VER
     #pragma warning (push)
     // warning C4100: unreferenced formal parameter
@@ -23,11 +28,9 @@
     #pragma warning (pop)
 #endif
 
-#include <bond/core/bonded.h>
-#include <bond/ext/grpc/detail/io_manager_tag.h>
-
 #include <boost/assert.hpp>
 #include <boost/smart_ptr/intrusive_ptr.hpp>
+
 #include <atomic>
 #include <utility>
 

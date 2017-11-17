@@ -1,4 +1,9 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 #pragma once
+
+#include <bond/core/config.h>
 
 #include <bond/comm/message.h>
 
@@ -29,7 +34,7 @@ namespace bond { namespace comm
                     _callback(error(ErrorCode::INVALID_INVOCATION, ex.what()));
                 }
             }
-        
+
         private:
             std::function<void (const message<T>&)> _callback;
         };

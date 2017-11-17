@@ -3,10 +3,12 @@
 
 #pragma once
 
-#include "exception.h"
-#include "schema.h"
+#include <bond/core/config.h>
+
 #include "apply.h"
 #include "detail/validate.h"
+#include "exception.h"
+#include "schema.h"
 
 namespace bond
 {
@@ -74,7 +76,7 @@ inline bool Validate(const RuntimeSchema& src,
 /// @param s1 Schema to compare
 /// @param s2 Schema to compare
 /// @return 'true' if schemas are wire-format equivalent, 'false' if schemas
-/// are different but payload in source can be deserialized as destination, 
+/// are different but payload in source can be deserialized as destination,
 /// and vice versa.
 /// @throw SchemaValidateException if payload in any one schema is incompatible
 /// with the other schema.

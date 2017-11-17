@@ -3,10 +3,12 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
+#include <bond/core/config.h>
+
 #include <stdint.h>
 #include <stdio.h>
+#include <string>
+#include <vector>
 
 namespace bond
 {

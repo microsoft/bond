@@ -1,5 +1,9 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #pragma once
+
+#include <bond/core/config.h>
 
 #include "service_table.h"
 
@@ -8,7 +12,7 @@ namespace bond { namespace comm
 
 typedef boost::shared_ptr<void> Server;
 
-template <typename Address_, 
+template <typename Address_,
           typename WireProtocol_,
           typename ConnectionContext_ = typename boost::call_traits<Address_>::param_type>
 class Transport

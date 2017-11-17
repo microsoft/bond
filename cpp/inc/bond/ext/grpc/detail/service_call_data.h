@@ -3,6 +3,12 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include <bond/ext/grpc/detail/io_manager_tag.h>
+#include <bond/ext/grpc/detail/service.h>
+#include <bond/ext/grpc/unary_call.h>
+
 #ifdef _MSC_VER
     #pragma warning (push)
     #pragma warning (disable: 4100 4702)
@@ -17,12 +23,9 @@
     #pragma warning (pop)
 #endif
 
-#include <bond/ext/grpc/detail/io_manager_tag.h>
-#include <bond/ext/grpc/detail/service.h>
-#include <bond/ext/grpc/unary_call.h>
-
 #include <boost/assert.hpp>
 #include <boost/smart_ptr/intrusive_ptr.hpp>
+
 #include <functional>
 #include <memory>
 #include <thread>

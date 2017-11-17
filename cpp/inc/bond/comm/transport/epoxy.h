@@ -1,4 +1,9 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 #pragma once
+
+#include <bond/core/config.h>
 
 #if defined(__APPLE__)
     // Work-around: 'OSMemoryBarrier' has been explicitly marked deprecated
@@ -15,19 +20,19 @@
     #include <boost/asio.hpp>
 #endif
 
-#include <bond/comm/layers.h>
 #include <bond/comm/address.h>
 #include <bond/comm/epoxy_transport_apply.h>
 #include <bond/comm/epoxy_transport_reflection.h>
+#include <bond/comm/layers.h>
 #include <bond/comm/transport/detail/epoxy_data_structs.h>
 #include <bond/comm/transport/detail/epoxy_protocol.h>
-#include <bond/comm/transport/thread_service.h>
 #include <bond/comm/transport/packet.h>
+#include <bond/comm/transport/thread_service.h>
 
 #include <boost/atomic/atomic.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/thread.hpp>
-#include <boost/range/adaptor/transformed.hpp>
 
 #include <thread>
 
@@ -832,7 +837,7 @@ private:
         }
 
         //
-        // Trigger connect of client connection 
+        // Trigger connect of client connection
         //
         void Connect()
         {
@@ -1118,7 +1123,7 @@ private:
                 const boost::shared_ptr<INetworkServerSink>& handler)
     override
     {
-        boost::shared_ptr<INetworkServer> server = 
+        boost::shared_ptr<INetworkServer> server =
             boost::make_shared<EpoxyServer>(m_allocator,
                                             address,
                                             handler,

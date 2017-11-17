@@ -3,10 +3,13 @@
 
 #pragma once
 
-#include <iostream>
+#include <bond/core/config.h>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
+
+#include <iostream>
 
 namespace bond
 {
@@ -14,7 +17,7 @@ namespace cmd
 {
 namespace detail
 {
-    
+
 // Enum types already have generated overload for ToString.
 // For other types we use boost::lexical_cast.
 template <typename T>
@@ -220,12 +223,12 @@ public:
             params.push_back(Param(name, value));
         }
     }
-    
+
     // GetFlag
     bool GetFlag(const std::string& flag, const std::string& abbr)
     {
         Params::iterator it = FindParam(flag, abbr);
-            
+
         if (it != params.end())
         {
             if (!it->value.empty())
@@ -247,7 +250,7 @@ public:
     bool GetParam(const std::string& flag, const std::string& abbr, std::string& value)
     {
         Params::iterator it = FindParam(flag, abbr);
-            
+
         if (it != params.end())
         {
             value = it->value;
@@ -309,7 +312,7 @@ private:
                 it->used = true;
                 break;
             }
-                
+
         return it;
     }
 
@@ -330,7 +333,7 @@ public:
     CmdArg(const boost::shared_ptr<Options>& options, bool partial = false)
         : options(options),
           partial(partial)
-    {}    
+    {}
 
     void Begin(const detail::Metadata& /*metadata*/) const
     {}
@@ -342,7 +345,7 @@ public:
             std::string leftovers = options->Leftovers();
 
             if (!leftovers.empty())
-                throw std::runtime_error("Invalid parameter(s):\n" + leftovers); 
+                throw std::runtime_error("Invalid parameter(s):\n" + leftovers);
         }
     }
 
@@ -372,7 +375,7 @@ private:
     // Parse enum
     template <typename T>
     typename boost::enable_if<std::is_enum<T> >::type
-    Parse(const std::string& value, T& var) const 
+    Parse(const std::string& value, T& var) const
     {
         if (!ToEnum(var, value.c_str()))
             throw std::runtime_error("Invalid parameter(s):\n    " + value);
@@ -407,11 +410,11 @@ private:
         typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
 
         tokenizer tok(value);
-        
+
         for(tokenizer::iterator it = tok.begin(); it != tok.end(); ++it)
         {
             typename bond::element_type<T>::type tmp;
-            
+
             Parse(*it, tmp);
             var.push_back(tmp);
         }
@@ -423,7 +426,7 @@ private:
         Parse(value, var.set_value());
     }
 
-    
+
     // bool param
     bool GetParam(const detail::Metadata& metadata, bool& var) const
     {
@@ -445,17 +448,17 @@ private:
             options->GetParam(value);
         else
             options->GetParam(metadata.Flag(), metadata.Abbr(), value);
-        
+
         if (value.empty())
         {
             if(!metadata.IsOptional())
                 throw std::runtime_error("Required parameter " + metadata.Param() + " missing.");
-            else    
+            else
                 return false;
         }
-        
+
         Parse(value, var);
-        
+
         return true;
     }
 

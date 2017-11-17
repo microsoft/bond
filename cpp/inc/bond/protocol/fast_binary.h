@@ -3,8 +3,12 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "encoding.h"
+
 #include <bond/core/bond_version.h>
+
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
 

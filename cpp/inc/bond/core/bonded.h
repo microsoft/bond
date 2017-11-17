@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "config.h"
+#include <bond/core/config.h>
+
+#include "bond_fwd.h"
+#include "detail/double_pass.h"
+#include "detail/marshaled_bonded.h"
+#include "detail/protocol_visitors.h"
 #include "protocol.h"
 #include "runtime_schema.h"
-#include "bond_fwd.h"
 #include "select_protocol_fwd.h"
-#include "detail/double_pass.h"
-#include "detail/protocol_visitors.h"
-#include "detail/marshaled_bonded.h"
-
 
 namespace bond
 {

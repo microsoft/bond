@@ -3,12 +3,15 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "bonded.h"
 #include "bonded_void.h"
-#include <bond/core/bond_reflection.h>
-#include "parser.h"
-#include "exception.h"
 #include "detail/double_pass.h"
+#include "exception.h"
+#include "parser.h"
+
+#include <bond/core/bond_reflection.h>
 
 namespace bond
 {
@@ -90,4 +93,3 @@ bool Apply(const Transform& transform, const T& value)
 }
 
 } // namespace bond
-

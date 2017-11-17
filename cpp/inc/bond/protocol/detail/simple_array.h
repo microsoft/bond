@@ -3,9 +3,13 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include <boost/static_assert.hpp>
+
 #include <limits>
 #include <stdexcept>
-#include <boost/static_assert.hpp>
+#include <string.h>
 
 namespace bond
 {
@@ -19,7 +23,7 @@ public:
     SimpleArray()
         : _size(0),
           _capacity(N),
-          _data(_insitu)    
+          _data(_insitu)
     {
         BOOST_STATIC_ASSERT(N != 0);
     }

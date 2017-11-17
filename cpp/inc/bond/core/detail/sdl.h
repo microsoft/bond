@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <boost/assert.hpp>
 #include <boost/core/ignore_unused.hpp>
 #include <iterator>

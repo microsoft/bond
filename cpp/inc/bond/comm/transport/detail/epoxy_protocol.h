@@ -1,16 +1,21 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 #pragma once
 
-#include <memory>
+#include <bond/core/config.h>
 
-#include <boost/optional.hpp>
+#include "epoxy_data_structs.h"
 
-#include <bond/core/blob.h>
-#include <bond/core/bond.h>
 #include <bond/comm/detail/logging.h>
 #include <bond/comm/epoxy_transport_types.h>
 #include <bond/comm/packet_types.h>
+#include <bond/core/blob.h>
+#include <bond/core/bond.h>
 
-#include "epoxy_data_structs.h"
+#include <boost/optional.hpp>
+
+#include <memory>
 
 namespace bond { namespace comm
 {

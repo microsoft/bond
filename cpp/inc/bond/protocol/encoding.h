@@ -3,9 +3,12 @@
 
 #pragma once
 
-#include <exception>
-#include <bond/core/containers.h>
+#include <bond/core/config.h>
+
 #include <bond/core/blob.h>
+#include <bond/core/containers.h>
+
+#include <exception>
 #include <stdio.h>
 
 namespace bond

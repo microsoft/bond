@@ -3,7 +3,10 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "traits.h"
+
 #include <stdint.h>
 
 namespace bond
@@ -13,18 +16,18 @@ namespace bond
 // container traits - specialize for custom containers
 //
 
-template <typename T> struct 
-is_set_container 
+template <typename T> struct
+is_set_container
     : std::false_type {};
 
 
-template <typename T> struct 
-is_map_container 
+template <typename T> struct
+is_map_container
     : std::false_type {};
 
 
-template <typename T> struct 
-is_list_container 
+template <typename T> struct
+is_list_container
     : std::false_type {};
 
 
@@ -33,13 +36,13 @@ require_modify_element
     : std::false_type {};
 
 
-template <typename T> struct 
-is_string 
+template <typename T> struct
+is_string
     : std::false_type {};
 
 
-template <typename T> struct 
-is_wstring 
+template <typename T> struct
+is_wstring
     : std::false_type {};
 
 
@@ -53,7 +56,7 @@ is_nullable
     : std::false_type {};
 
 
-template <typename T> struct 
+template <typename T> struct
 element_type
 {
     typedef typename T::value_type type;

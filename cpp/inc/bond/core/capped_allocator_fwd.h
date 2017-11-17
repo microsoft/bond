@@ -3,8 +3,10 @@
 
 #pragma once
 
-#include <memory>
+#include <bond/core/config.h>
+
 #include <cstdint>
+#include <memory>
 
 namespace bond
 {

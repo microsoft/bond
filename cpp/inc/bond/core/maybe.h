@@ -3,7 +3,10 @@
 
 #pragma once
 
-#include "config.h"
+#include <bond/core/config.h>
+
+#include <type_traits>
+#include <utility>
 
 namespace bond
 {

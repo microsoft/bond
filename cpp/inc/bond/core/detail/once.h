@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #if !defined(BOND_NO_CX11_HDR_MUTEX)
 
 // Use std::call_once when building with a sane compiler.

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <boost/assert.hpp>
 
 #include <chrono>

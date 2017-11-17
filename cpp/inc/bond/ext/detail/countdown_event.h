@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "event.h"
 
 #include <boost/assert.hpp>

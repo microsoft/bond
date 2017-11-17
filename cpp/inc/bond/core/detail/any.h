@@ -10,11 +10,16 @@
 
 #pragma once
 
-#include "mpl.h"
 #include <bond/core/config.h>
+
+#include "mpl.h"
+
+#include <bond/core/config.h>
+
 #include <boost/assert.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/utility/enable_if.hpp>
+
 #include <cstdint>
 #include <type_traits>
 

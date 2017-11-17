@@ -3,14 +3,17 @@
 
 #pragma once
 
-#include "config.h"
+#include <bond/core/config.h>
+
 #include "container_interface.h"
-#include <stdint.h>
+
 #include <boost/assert.hpp>
-#include <boost/static_assert.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/static_assert.hpp>
 #include <boost/utility/addressof.hpp>
 #include <boost/utility/enable_if.hpp>
+
+#include <stdint.h>
 
 namespace bond
 {

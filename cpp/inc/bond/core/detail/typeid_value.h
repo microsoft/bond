@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 namespace bond
 {
 
@@ -41,7 +43,7 @@ inline DeserializeElements(X&, const T& element, uint32_t size);
 template <typename Protocols, typename Transform, typename T>
 inline void DeserializeElements(const Transform& transform, const T& element, uint32_t size);
 
-namespace detail 
+namespace detail
 {
 
 
@@ -76,7 +78,7 @@ bool IsMatching(BondDataType type)
 
         case bond::BT_STRING:
             return is_matching<std::string, T>::value;
-            
+
         case bond::BT_WSTRING:
             return is_matching<std::wstring, T>::value;
 
@@ -118,7 +120,7 @@ inline bool BasicTypeField(uint16_t id, const Metadata& metadata, BondDataType t
 
         case bond::BT_UINT64:
             return transform.Field(id, metadata, value<uint64_t, Reader&>(input));
-            
+
         case bond::BT_FLOAT:
             return transform.Field(id, metadata, value<float, Reader&>(input));
 
@@ -180,7 +182,7 @@ inline void BasicTypeContainer(T& var, BondDataType type, Reader& input, uint32_
 
         case bond::BT_STRING:
             return DeserializeElements<Protocols>(var, value<std::string, Reader&>(input, false), size);
-            
+
         case bond::BT_WSTRING:
             return DeserializeElements<Protocols>(var, value<std::wstring, Reader&>(input, false), size);
 
@@ -262,7 +264,7 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
     {
         case bond::BT_STRING:
             return DeserializeElements<Protocols>(var, value<std::string, Reader&>(input, false), size);
-            
+
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type>(type));
 
@@ -365,7 +367,7 @@ inline MatchingTypeContainer(T& var, BondDataType type, Reader& input, uint32_t 
 }
 
 
-// MatchingMapByKey function are manually expended versions of MapByKey using the type 
+// MatchingMapByKey function are manually expended versions of MapByKey using the type
 // information about destination container. This helps with compilation speed.
 
 template <typename E, typename Reader>
@@ -526,7 +528,7 @@ inline MatchingMapByKey(T& var, BondDataType keyType, const E& element, Reader& 
 
 
 template <typename Protocols, typename T, typename E, typename Reader>
-typename boost::disable_if<is_map_container<T> >::type  
+typename boost::disable_if<is_map_container<T> >::type
 inline MapByKey(T& var, BondDataType keyType, const E& element, Reader& input, uint32_t size)
 {
     switch (keyType)
@@ -554,7 +556,7 @@ inline MapByKey(T& var, BondDataType keyType, const E& element, Reader& input, u
 
         case bond::BT_STRING:
             return DeserializeMapElements<Protocols>(var, value<std::string, Reader&>(input, false), element, size);
-            
+
         case bond::BT_WSTRING:
             return DeserializeMapElements<Protocols>(var, value<std::wstring, Reader&>(input, false), element, size);
 
@@ -578,7 +580,7 @@ inline MapByKey(T& var, BondDataType keyType, const E& element, Reader& input, u
 
 
 template <typename Protocols, typename T, typename E, typename Reader>
-typename boost::enable_if<is_map_element_matching<E, T> >::type  
+typename boost::enable_if<is_map_element_matching<E, T> >::type
 inline MapByKey(T& var, BondDataType keyType, const E& element, Reader& input, uint32_t size)
 {
     return MatchingMapByKey<Protocols>(var, keyType, element, input, size);
@@ -625,7 +627,7 @@ inline void MapByElement(T& var, BondDataType keyType, BondDataType elementType,
 
         case bond::BT_STRING:
             return MapByKey<Protocols>(var, keyType, value<std::string, Reader&>(input, false), input, size);
-            
+
         case bond::BT_WSTRING:
             return MapByKey<Protocols>(var, keyType, value<std::wstring, Reader&>(input, false), input, size);
 
@@ -643,12 +645,12 @@ inline void MapByElement(T& var, BondDataType keyType, BondDataType elementType,
 
         default:
             BOOST_ASSERT(false);
-            break; 
+            break;
     }
 }
 
 
-// MatchingMapByElement function are manually expended versions of MapByElement using 
+// MatchingMapByElement function are manually expended versions of MapByElement using
 // the type information about destination container. This helps with compilation speed.
 
 template <typename Reader>
@@ -704,7 +706,7 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
     {
         case bond::BT_STRING:
             return MapByKey<Protocols>(var, keyType, value<std::string, Reader&>(input, false), input, size);
-            
+
         default:
             BOOST_ASSERT(!IsMatching<typename element_type<T>::type::second_type>(elementType));
 

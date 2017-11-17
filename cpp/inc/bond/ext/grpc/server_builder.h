@@ -36,6 +36,12 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include <bond/ext/grpc/server.h>
+#include <bond/ext/grpc/thread_pool.h>
+#include <bond/ext/grpc/detail/service.h>
+
 #ifdef _MSC_VER
     #pragma warning (push)
     #pragma warning (disable: 4100 4702)
@@ -47,11 +53,8 @@
     #pragma warning (pop)
 #endif
 
-#include <bond/ext/grpc/server.h>
-#include <bond/ext/grpc/thread_pool.h>
-#include <bond/ext/grpc/detail/service.h>
-
 #include <boost/assert.hpp>
+
 #include <memory>
 #include <set>
 

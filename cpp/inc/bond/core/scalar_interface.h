@@ -3,12 +3,14 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 namespace bond
 {
 
 
 // Trait defining what built-it type is aliased by T
-template <typename T> struct 
+template <typename T> struct
 aliased_type
 {
     typedef void type;
@@ -16,7 +18,7 @@ aliased_type
 
 #if 0
 
-// Overloaded function to set variable to an aliased value 
+// Overloaded function to set variable to an aliased value
 template <typename T>
 void set_aliased_value(T& var, typename aliased_type<T>::type value);
 

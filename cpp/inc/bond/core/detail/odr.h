@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <boost/assert.hpp>
 
 namespace bond
@@ -19,7 +21,7 @@ struct counter
         // This assert indicates violation of One Definition Rule for T.
         BOOST_ASSERT(!value++);
     }
-    
+
     static int value;
 };
 

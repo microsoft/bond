@@ -3,18 +3,20 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include "rapidjson_utils.h"
+
+#include <bond/core/bond_const_enum.h>
+#include <bond/core/bond_types.h>
+#include <bond/core/detail/sdl.h>
+
 #define RAPIDJSON_NO_INT64DEFINE
 #define RAPIDJSON_ASSERT BOOST_ASSERT
 #define RAPIDJSON_PARSE_ERROR(err, offset) bond::RapidJsonException(rapidjson::GetParseError_En(err), offset)
 
-#include <bond/core/bond_const_enum.h>
-#include <bond/core/detail/sdl.h>
-#include <boost/call_traits.hpp>
-#include <boost/noncopyable.hpp>
-
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/error/en.h"
-#include "rapidjson_utils.h"
 
 // rapidjson/document.h v1.1 uses std::min/max in ways that conflict
 // with macros defined in windows. This works around the issue.
@@ -41,6 +43,10 @@
 #endif
 
 #include "rapidjson/writer.h"
+
+#include <boost/call_traits.hpp>
+#include <boost/noncopyable.hpp>
+
 #include <algorithm>
 
 namespace bond
