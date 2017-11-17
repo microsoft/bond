@@ -56,21 +56,21 @@ namespace tests
         template <typename Map = std::map<enum Enum, std::string> >
         inline const Map& GetValueToNameMap(enum Enum, ::bond::detail::mpl::identity<Map> = {})
         {
-            static const Map _map_Enum
+            static const Map s_valueToNameMap
                 {
                     { Value1, "Value1" }
                 };
-            return _map_Enum;
+            return s_valueToNameMap;
         }
 
         template <typename Map = std::map<std::string, enum Enum> >
         inline const Map& GetNameToValueMap(enum Enum, ::bond::detail::mpl::identity<Map> = {})
         {
-            static const Map _map_Enum
+            static const Map s_nameToValueMap
                 {
                     { "Value1", Value1 }
                 };
-            return _map_Enum;
+            return s_nameToValueMap;
         }
 #endif
         const std::string& ToString(enum Enum value);

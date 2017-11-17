@@ -140,21 +140,21 @@ namespace tests
         template <typename Map = std::map<enum EnumToWrap, std::string> >
         inline const Map& GetValueToNameMap(enum EnumToWrap, ::bond::detail::mpl::identity<Map> = {})
         {
-            static const Map _map_EnumToWrap
+            static const Map s_valueToNameMap
                 {
                     { anEnumValue, "anEnumValue" }
                 };
-            return _map_EnumToWrap;
+            return s_valueToNameMap;
         }
 
         template <typename Map = std::map<std::string, enum EnumToWrap> >
         inline const Map& GetNameToValueMap(enum EnumToWrap, ::bond::detail::mpl::identity<Map> = {})
         {
-            static const Map _map_EnumToWrap
+            static const Map s_nameToValueMap
                 {
                     { "anEnumValue", anEnumValue }
                 };
-            return _map_EnumToWrap;
+            return s_nameToValueMap;
         }
 #endif
         const std::string& ToString(enum EnumToWrap value);

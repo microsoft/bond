@@ -68,7 +68,7 @@ namespace tests
         template <typename Map = std::map<enum EnumType1, std::string> >
         inline const Map& GetValueToNameMap(enum EnumType1, ::bond::detail::mpl::identity<Map> = {})
         {
-            static const Map _map_EnumType1
+            static const Map s_valueToNameMap
                 {
                     { Int32Min, "Int32Min" },
                     { HexNeg, "HexNeg" },
@@ -84,13 +84,13 @@ namespace tests
                     { EnumValue6, "EnumValue6" },
                     { UInt32Max, "UInt32Max" }
                 };
-            return _map_EnumType1;
+            return s_valueToNameMap;
         }
 
         template <typename Map = std::map<std::string, enum EnumType1> >
         inline const Map& GetNameToValueMap(enum EnumType1, ::bond::detail::mpl::identity<Map> = {})
         {
-            static const Map _map_EnumType1
+            static const Map s_nameToValueMap
                 {
                     { "EnumValue1", EnumValue1 },
                     { "EnumValue2", EnumValue2 },
@@ -106,7 +106,7 @@ namespace tests
                     { "UInt32Max", UInt32Max },
                     { "UInt32Min", UInt32Min }
                 };
-            return _map_EnumType1;
+            return s_nameToValueMap;
         }
 #endif
         const std::string& ToString(enum EnumType1 value);

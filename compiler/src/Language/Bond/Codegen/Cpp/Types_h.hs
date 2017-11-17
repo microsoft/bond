@@ -414,21 +414,21 @@ namespace std
         template <typename Map = std::map<enum #{declName}, std::string> >
         inline const Map& GetValueToNameMap(enum #{declName}, ::bond::detail::mpl::identity<Map> = {})
         {
-            static const Map _map_#{declName}
+            static const Map s_valueToNameMap
                 {
                     #{CPP.enumValueToNameInitList 5 e}
                 };
-            return _map_#{declName};
+            return s_valueToNameMap;
         }
 
         template <typename Map = std::map<std::string, enum #{declName}> >
         inline const Map& GetNameToValueMap(enum #{declName}, ::bond::detail::mpl::identity<Map> = {})
         {
-            static const Map _map_#{declName}
+            static const Map s_nameToValueMap
                 {
                     #{CPP.enumNameToValueInitList 5 e}
                 };
-            return _map_#{declName};
+            return s_nameToValueMap;
         }
 #endif
         const std::string& ToString(enum #{declName} value);
