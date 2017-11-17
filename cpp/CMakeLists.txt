@@ -54,6 +54,10 @@ set (generated_files_apply)
 list (APPEND generated_files_apply
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/core/bond_apply.cpp)
 
+set (precompiled_sources)
+list (APPEND precompiled_sources
+    "src/bond/protocol/detail/rapidjson_utils.cpp")
+
 list (APPEND headers
     ${core_headers}
     ${core_detail_headers}
@@ -140,7 +144,10 @@ add_library (bond
     STATIC
     ${schemas}
     ${generated_files_types}
+    ${precompiled_sources}
     ${headers})
+
+target_compile_definitions (bond PUBLIC -DBOND_LIB_TYPE=BOND_LIB_TYPE_STATIC)
 
 # Boost thread is only needed if the C++ standard library doesn't support
 # std::call_once. However std::once seems problematic on Linux
@@ -176,6 +183,11 @@ if (BOND_LIBRARIES_INSTALL_CPP)
   install (
     DIRECTORY ${BOND_GENERATED}/bond/
     DESTINATION src/bond/generated
+    FILES_MATCHING PATTERN "*.cpp")
+
+  install (
+    DIRECTORY ${BOND_SOURCE_DIR}/
+    DESTINATION src/
     FILES_MATCHING PATTERN "*.cpp")
 endif()
 

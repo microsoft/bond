@@ -9,13 +9,12 @@
 
 #include <bond/core/bond_const_enum.h>
 #include <bond/core/detail/sdl.h>
-#include <bond/core/exception.h>
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/locale.hpp>
 
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/error/en.h"
+#include "rapidjson_utils.h"
 
 // rapidjson/document.h v1.1 uses std::min/max in ways that conflict
 // with macros defined in windows. This works around the issue.
@@ -279,26 +278,17 @@ template <typename T>
 typename boost::enable_if<is_wstring<T> >::type
 Read(const rapidjson::Value& value, T& var)
 {
-    try
-    {
-        const std::basic_string<uint16_t> str =
-            boost::locale::conv::utf_to_utf<uint16_t>(
-                value.GetString(),
-                value.GetString() + value.GetStringLength(),
-                boost::locale::conv::stop);
+    const std::basic_string<uint16_t> str = utf_to_utf(
+        value.GetString(),
+        value.GetString() + value.GetStringLength());
 
-        const size_t length = str.size();
-        resize_string(var, static_cast<uint32_t>(length));
+    const size_t length = str.size();
+    resize_string(var, static_cast<uint32_t>(length));
 
-        std::copy(
-            str.begin(),
-            str.end(),
-            make_checked_array_iterator(string_data(var), length));
-    }
-    catch (const boost::locale::conv::conversion_error &)
-    {
-        UnicodeConversionException();
-    }
+    std::copy(
+        str.begin(),
+        str.end(),
+        make_checked_array_iterator(string_data(var), length));
 }
 
 

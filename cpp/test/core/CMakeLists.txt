@@ -23,9 +23,7 @@ function (add_unit_test)
         -DBOND_FAST_BINARY_PROTOCOL
         -DBOND_SIMPLE_JSON_PROTOCOL)
     target_link_libraries (${name} PRIVATE
-      bond
-      core_test_common
-      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+      core_test_common)
 endfunction()
 
 
@@ -61,7 +59,8 @@ target_compile_definitions (core_test_common PUBLIC
         -DBOND_SIMPLE_BINARY_PROTOCOL
         -DBOND_FAST_BINARY_PROTOCOL
         -DBOND_SIMPLE_JSON_PROTOCOL)
-target_link_libraries (core_test_common PRIVATE
+target_link_libraries (core_test_common PUBLIC
+    bond
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 
