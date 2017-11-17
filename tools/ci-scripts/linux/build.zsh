@@ -77,10 +77,6 @@ case "$FLAVOR" in
             /root/bond/cs/test/internal/bin/debug/net45/Bond.InternalTest.dll
         ;;
 
-    java)
-        exec $BUILD_SCRIPTS/build_java.zsh
-        ;;
-
     hs)
         BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"
         cmake -DBOND_STACK_OPTIONS="--allow-different-user" -DCMAKE_BOND_CXX_FLAGS="$BOND_CXX_FLAGS" -DCMAKE_C_FLAGS="$BOND_CC_FLAGS" ${=BOND_CMAKE_FLAGS} /root/bond
@@ -92,7 +88,13 @@ case "$FLAVOR" in
         ;;
 
     *)
-        echo "Unknown FLAVOR=$FLAVOR"
-        exit 1
+        # Flavors that have separate scripts.
+        local SCRIPT_PATH="$BUILD_SCRIPTS/build_$FLAVOR.zsh"
+        if [[ -e "$SCRIPT_PATH" ]]; then
+            zsh "$SCRIPT_PATH"
+        else
+            echo "Unknown FLAVOR $FLAVOR"
+            exit 1
+        fi
         ;;
 esac
