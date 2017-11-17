@@ -25,7 +25,6 @@ import Data.Int (Int64)
 import Data.List (sortOn)
 import Data.Monoid
 import Prelude
-import Data.List
 import Data.Text.Lazy (Text, unpack)
 import Data.Text.Lazy.Builder (toLazyText)
 import Text.Shakespeare.Text
