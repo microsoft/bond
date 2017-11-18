@@ -101,4 +101,4 @@ combinedMessage err = id $ T.unpack $ T.intercalate (T.pack ", ") messages
     where
         -- parseErrorPretty returns a multi-line String.
         -- We need to break it up to make a useful one-line message.
-        messages = T.splitOn (T.pack "\n") $ T.strip $ T.pack $ parseErrorPretty err
+        messages = T.splitOn (T.pack "\n") $ T.strip $ T.pack $ parseErrorTextPretty err
