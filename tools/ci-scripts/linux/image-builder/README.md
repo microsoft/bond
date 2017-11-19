@@ -1,52 +1,75 @@
 # Image Builder
 
-This directory contains the source for a docker container that is used for building Bond.
-It contains binaries of a number of Boost versions for Ubuntu 16.04 (Xenial Xerus).
+This directory contains the source for a Docker container that is used for
+building Bond.
 
-# Pre-requisites
+The image is based on Ubuntu 16.04 (Xenial Xerus) and contains:
+
+* pre-installed build tools for the various languages Bond supports,
+* binaries of a number of Boost versions for the C++ and Python builds, and
+* an entrypoint that can be used to drive a build.
+
+# Automatic Builds
+
+![Docker Ubuntu image build status](https://msazure.visualstudio.com/_apis/public/build/definitions/b32aa71e-8ed2-41b2-9d77-5bc261222004/14573/badge)
+
+A new image is automatically built when the master branch of the main Bond
+repository (https://github.com/Microsoft/bond) is changed. These images are
+then pushed to the bondciimages.azurecr.io/ubuntu-1604 container repository.
+The Travis CI builds pull fixed versions of the image and use that as their
+basis.
+
+The image is built on a Microsoft VSTS instance. It's status is shown in the
+image above. Currently, access to the results of this build are limited to
+Microsoft employees. If you need details about a given build, please
+[open an issue](https://github.com/Microsoft/bond/issues/new) and one of the
+maintianers from Microsoft can get you the details.
+
+# Manual Builds
+
+You can build and use the image locally.
+
+## Pre-requisites
 
 Install the following pre-requisites:
 
-* [Azure CLI tools][azure-cli]
-* docker
+* Docker
 * zsh
 
-For deb-based distributions, docker and zsh can be installed via:
+For deb-based distributions, Docker and zsh can be installed via:
 
     $ sudo apt update && sudo apt install docker.io zsh
+    
+zsh is only needed to debug and work on `build_boost.zsh` locally.
 
-# Building the Image
+## Building the Image
 
-To create the image, start in the directory containing this README.
+To create the image, start in the directory containing this README and run:
 
-Run the `build_image.zsh` script which will make the docker image with all
-required dependencies and will compile all required versions of Boost (using
-the `build_boosts.zsh` script) that will become part of the image:
+    $ docker build -t bond-ubuntu-1604 .
 
-    $ ./build_image.zsh
+This will make the Docker image with all the required dependencies and will
+compile all the required versions of Boost (using the `build_boosts.zsh`
+script) that will become part of the image.
 
-The build takes about 50 minutes on a quad-core 2.4 GHz Xeon. When it finishes,
-there will be a `bond-xenial.tar.gz` archive in this directory.
+The build takes about 50 minutes on a quad-core 2.4 GHz Xeon. When it
+finishes, there will be a new Docker image with the tag `bond-ubuntu-1604`
+in your collection of Docker images:
 
-# Uploading the Image
+    $ docker images
 
-After the image archive has been created, it needs to be uploaded to the
-Azure storage account that the Travis CI builds use.
+## Using the Image
 
-## Credentials
+You can build Bond inside the container:
 
-Ensure the file `~/.azure/bondbinaries.sh` has the current Azure storage
-account details:
+    $ docker run \
+        -v path/to/your/bond/repository:/root/bond \
+        bond-ubuntu-1604 \
+        ~ \
+        cpp-core \
+        1.64.0 \
+        gcc
 
-    export AZURE_STORAGE_ACCOUNT="bondbinaries"
-    export AZURE_STORAGE_KEY="..."
-
-To get the `AZURE_STORAGE_KEY`, visit the [Azure Portal][azure-portal].
-
-## Uploading
-
-Run `./upload_image.zsh` to upload the `bond-xenial.tar.gz` archive
-produced from the build.
-
-[azure-cli]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
-[azure-portal]: https://portal.azure.com/
+Be sure to change `path/to/your/bond/repository`. The `FLAVOR`, `BOOST`, and
+`COMPILER` arguments (in this example `cpp-core`, `1.64.0`, and `gcc`,
+repsectively) can be adjusted as needed. See `build.zsh` for details.

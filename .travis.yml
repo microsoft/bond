@@ -9,7 +9,6 @@ cache:
         - cs/packages
         - $HOME/.ccache
         - $HOME/.stack
-        - $HOME/docker-images
 services:
     - docker
 env:
@@ -30,13 +29,13 @@ env:
     - FLAVOR="java"
 
 before_install:
+    - CI_BUILD_CONTAINER=bondciimages.azurecr.io/ubuntu-1604:build-7617946
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
-    - pushd $HOME/docker-images
-    - travis_retry wget -N https://bondbinaries.blob.core.windows.net/bondbinaries/docker-images/bond-xenial.tar.gz
-    - popd
-    - time docker load -i $HOME/docker-images/bond-xenial.tar.gz
+    - travis_retry docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" bondciimages.azurecr.io
+    - time travis_retry docker pull $CI_BUILD_CONTAINER
+    - docker images # Dump the image ID
 
 script:
-    - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond bond-xenial $HOME $FLAVOR $BOOST $COMPILER
+    - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond $CI_BUILD_CONTAINER $HOME $FLAVOR $BOOST $COMPILER
     # docker runs as root and may leave files in the following directories that are not readable by the travis user
     - sudo chown -R travis:travis $HOME/.ccache $HOME/.stack `pwd`
