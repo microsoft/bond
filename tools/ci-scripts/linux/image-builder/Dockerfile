@@ -49,5 +49,7 @@ RUN add-apt-repository ppa:cwchien/gradle && \
     gradle \
     openjdk-8-jdk
 
+RUN echo hi > /root/mark2
+
 # Build script
 ENTRYPOINT ["zsh", "/root/bond/tools/ci-scripts/linux/build.zsh"]
