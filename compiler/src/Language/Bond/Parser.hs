@@ -83,11 +83,11 @@ processImport (Import file) = do
 declaration :: Parser Declaration
 declaration = do
     decl <- try forward
-        <|> try struct
         <|> try view
-        <|> try enum
-        <|> try alias
         <|> try service
+        <|> struct
+        <|> enum
+        <|> alias
     updateSymbols decl <?> "declaration"
     return decl
 
@@ -190,7 +190,7 @@ attributes = many attribute <?> "attributes"
 -- struct view parser
 view :: Parser Declaration
 view = do
-    attr <- attributes
+    attr <- try (attributes <* lookAhead (keyword "struct"))
     name <- keyword "struct" *> identifier <?> "struct view definition"
     decl <- keyword "view_of" *> qualifiedName >>= findStruct
     fields <- braces $ semiOrCommaSepEnd1 identifier
@@ -203,7 +203,8 @@ view = do
 -- struct definition parser
 struct :: Parser Declaration
 struct = do
-    attr <- attributes
+    -- attr <- attributes
+    attr <- try (attributes <* lookAhead (keyword "struct"))
     name <- keyword "struct" *> identifier <?> "struct definition"
     params <- parameters
     namespaces <- asks currentNamespaces
@@ -356,7 +357,8 @@ ftype = keyword "bond_meta::name" *> pure BT_MetaName
 -- service definition parser
 service :: Parser Declaration
 service = do
-    attr <- attributes
+    attr <- try (attributes <* lookAhead (keyword "service"))
+    -- attr <- attributes
     name <- keyword "service" *> identifier <?> "service definition"
     params <- parameters
     namespaces <- asks currentNamespaces
