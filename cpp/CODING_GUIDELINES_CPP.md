@@ -64,13 +64,14 @@ line. Bond does not use include guards. This is followed by `#include
 <bond/core/config.h>`: all Bond headers--except config.h itself--must
 include config.h before anything else.
 
-Then there are a variable number `#include` sections. To help make each
-header stand on its own, the includes are done in reverse order of
-generality: first includes from the current module, then the rest of Bond,
-then other libraries we use, then Boost, then the standard library and OS
-headers.
+Then there are a variable number `#include` sections.
 
-Within each section the headers are sorted lexicographically.
+To help make each header stand on its own, each header should include the
+headers for what it uses. To help avoid implicit dependencies on indirectly
+included headers, the includes are done in reverse order of generality:
+first includes from the current module, then the rest of Bond, then other
+libraries we use, then Boost, then the standard library and OS headers.
+Additionally, within each section the headers are sorted lexicographically.
 
 If this results in errors, then the header likely needs to be fixed to
 include/forward declare what it uses.
