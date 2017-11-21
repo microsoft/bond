@@ -10,6 +10,7 @@
 #include <bond/core/bond_const_enum.h>
 #include <bond/core/bond_types.h>
 #include <bond/core/detail/sdl.h>
+#include <bond/core/exception.h>
 
 #define RAPIDJSON_NO_INT64DEFINE
 #define RAPIDJSON_ASSERT BOOST_ASSERT
