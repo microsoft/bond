@@ -3,10 +3,11 @@
 
 #pragma once
 
+#include <bond/core/config.h>
 #include <bond/core/exception.h>
-#include <boost/locale.hpp>
-#include <boost/lexical_cast.hpp>
 
+#include <boost/lexical_cast.hpp>
+#include <boost/locale.hpp>
 
 namespace bond
 {

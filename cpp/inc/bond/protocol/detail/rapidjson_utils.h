@@ -3,9 +3,10 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <string>
 #include <stdint.h>
-
 
 namespace bond
 {
