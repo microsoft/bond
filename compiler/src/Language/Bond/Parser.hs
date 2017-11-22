@@ -82,11 +82,20 @@ processImport (Import file) = do
 -- parser for struct, enum or type alias declaration/definition
 declaration :: Parser Declaration
 declaration = do
-    -- when adding a new Declaration parser, order matters in the following command
+    -- When adding a new Declaration parser, order matters in the following command.
+    -- Parsers must fail to consume ANY token for the next parser to be able to succesfully work
+    -- unless the parser is encapsulated in a try statement. For more info on try and <|> see:
+    -- https://hackage.haskell.org/package/megaparsec-6.2.0/docs/Text-Megaparsec.html#v:try
     decl <- try forward
         <|> alias
-        <|> (attributes >>= \a -> (service a <|> enum a <|> try (view a) <|> struct a))
+        <|> (attributes >>= \a -> (service a <|> enum a <|> structDeclaration a))
     updateSymbols decl <?> "declaration"
+    return decl
+
+structDeclaration :: [Attribute] -> Parser Declaration
+structDeclaration attr = do
+    name <- keyword "struct" *> identifier <?> "struct or struct view definition"
+    decl <- view attr name <|> struct attr name
     return decl
 
 updateSymbols :: Declaration -> Parser ()
@@ -186,10 +195,9 @@ attributes = many attribute <?> "attributes"
     attribute = brackets (Attribute <$> qualifiedName <*> parens stringLiteral <?> "attribute")
 
 -- struct view parser
-view :: [Attribute] -> Parser Declaration
-view attr = do
-    name <- keyword "struct" *> identifier <?> "struct view definition"
-    decl <- keyword "view_of" *> qualifiedName >>= findStruct
+view :: [Attribute] -> String -> Parser Declaration
+view attr name = do
+    decl <- try (keyword "view_of" *> qualifiedName) >>= findStruct <?> "struct view definition"
     fields <- braces $ semiOrCommaSepEnd1 identifier
     namespaces <- asks currentNamespaces
     Struct namespaces attr name (declParams decl) (structBase decl) (viewFields decl fields) <$ optional semi
@@ -198,9 +206,8 @@ view attr = do
     viewFields _           _      = error "view/viewFields: impossible happened."
 
 -- struct definition parser
-struct :: [Attribute] -> Parser Declaration
-struct attr = do
-    name <- keyword "struct" *> identifier <?> "struct definition"
+struct :: [Attribute] -> String -> Parser Declaration
+struct attr name = do
     params <- parameters
     namespaces <- asks currentNamespaces
     updateSymbols $ Forward namespaces name params
