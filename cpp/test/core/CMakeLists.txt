@@ -29,6 +29,7 @@ endfunction()
 
 # Build common code into its own library.
 add_library (core_test_common
+    EXCLUDE_FROM_ALL
     "main.cpp"
     "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/unit_test_types.cpp"
     "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/unit_test_core_types.cpp"
