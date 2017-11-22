@@ -1,4 +1,4 @@
-import "basic_types.bond"
+import "basic_types.bond";
 import "namespace_basic_types.bond"
 
 namespace tests

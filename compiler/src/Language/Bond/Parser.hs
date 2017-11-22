@@ -81,7 +81,7 @@ bond = do
 
 import_ :: Parser Import
 import_ = do
-    i <- Import <$ keyword "import" <*> unescapedStringLiteral <?> "import statement"
+    i <- Import <$ keyword "import" <*> unescapedStringLiteral <* optional semi <?> "import statement"
     src <- getInput
     pos <- getPosition
     processImport i
