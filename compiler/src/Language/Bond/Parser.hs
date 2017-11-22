@@ -82,12 +82,10 @@ processImport (Import file) = do
 -- parser for struct, enum or type alias declaration/definition
 declaration :: Parser Declaration
 declaration = do
+    -- when adding a new Declaration parser, order matters in the following command
     decl <- try forward
-        <|> try view
-        <|> try service
-        <|> struct
-        <|> enum
         <|> alias
+        <|> (attributes >>= \a -> (service a <|> enum a <|> try (view a) <|> struct a))
     updateSymbols decl <?> "declaration"
     return decl
 
@@ -168,7 +166,7 @@ parameters = option [] (angles $ commaSep1 param) <?> "type parameters"
 -- type alias
 alias :: Parser Declaration
 alias = do
-    name <- keyword "using" *> identifier <?> "alias definition"
+    name <- try (keyword "using" *> identifier) <?> "alias definition"
     params <- parameters
     namespaces <- asks currentNamespaces
     local (with params) $ Alias namespaces name params <$ equal <*> type_ <* semi
@@ -188,9 +186,8 @@ attributes = many attribute <?> "attributes"
     attribute = brackets (Attribute <$> qualifiedName <*> parens stringLiteral <?> "attribute")
 
 -- struct view parser
-view :: Parser Declaration
-view = do
-    attr <- try (attributes <* lookAhead (keyword "struct"))
+view :: [Attribute] -> Parser Declaration
+view attr = do
     name <- keyword "struct" *> identifier <?> "struct view definition"
     decl <- keyword "view_of" *> qualifiedName >>= findStruct
     fields <- braces $ semiOrCommaSepEnd1 identifier
@@ -201,10 +198,8 @@ view = do
     viewFields _           _      = error "view/viewFields: impossible happened."
 
 -- struct definition parser
-struct :: Parser Declaration
-struct = do
-    -- attr <- attributes
-    attr <- try (attributes <* lookAhead (keyword "struct"))
+struct :: [Attribute] -> Parser Declaration
+struct attr = do
     name <- keyword "struct" *> identifier <?> "struct definition"
     params <- parameters
     namespaces <- asks currentNamespaces
@@ -261,10 +256,10 @@ field = do
                                         else Left "Invalid default value for field"
 
 -- enum definition parser
-enum :: Parser Declaration
-enum = Enum <$> asks currentNamespaces <*> attributes <*> name <*> consts <* optional semi <?> "enum definition"
+enum :: [Attribute] -> Parser Declaration
+enum attr = Enum <$> asks currentNamespaces <*> pure attr <*> name <*> consts <* optional semi <?> "enum definition"
   where
-    name = keyword "enum" *> (identifier <?> "enum identifier")
+    name = try (keyword "enum" *> (identifier <?> "enum identifier"))
     consts = braces (semiOrCommaSepEnd1 constant <?> "enum constant")
     constant = Constant <$> identifier <*> optional value
     value = equal *> (fromIntegral <$> integer)
@@ -355,11 +350,9 @@ ftype = keyword "bond_meta::name" *> pure BT_MetaName
     <|> type_
 
 -- service definition parser
-service :: Parser Declaration
-service = do
-    attr <- try (attributes <* lookAhead (keyword "service"))
-    -- attr <- attributes
-    name <- keyword "service" *> identifier <?> "service definition"
+service :: [Attribute] -> Parser Declaration
+service attr = do
+    name <- try (keyword "service" *> identifier) <?> "service definition"
     params <- parameters
     namespaces <- asks currentNamespaces
     local (with params) $ Service namespaces attr name params <$> base <*> methods <* optional semi
