@@ -71,7 +71,8 @@ headers for what it uses. To help avoid implicit dependencies on indirectly
 included headers, the includes are done in reverse order of generality:
 first includes from the current module, then the rest of Bond, then other
 libraries we use, then Boost, then the standard library and OS headers.
-Additionally, within each section the headers are sorted lexicographically.
+Additionally, within each section the headers are sorted in lexicographical
+order.
 
 If this results in errors, then the header likely needs to be fixed to
 include/forward declare what it uses.
