@@ -3,11 +3,13 @@
 
 #pragma once
 
-namespace bond 
+#include <bond/core/config.h>
+
+namespace bond
 {
 namespace detail
 {
-    class nonassignable 
+    class nonassignable
     {
     protected:
         nonassignable() {}

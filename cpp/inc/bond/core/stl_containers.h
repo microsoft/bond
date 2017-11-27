@@ -3,15 +3,19 @@
 
 #pragma once
 
-#include <boost/utility/enable_if.hpp>
-#include <stdint.h>
-#include <string>
-#include <list>
-#include <vector>
-#include <map>
-#include <set>
+#include <bond/core/config.h>
+
 #include "container_interface.h"
 #include "traits.h"
+
+#include <boost/utility/enable_if.hpp>
+
+#include <list>
+#include <map>
+#include <set>
+#include <stdint.h>
+#include <string>
+#include <vector>
 
 // Bond container interface on top of STL container classes
 

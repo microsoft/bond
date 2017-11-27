@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <bond/ext/grpc/detail/unary_call_impl.h>
 #include <bond/ext/grpc/unary_call.h>
 

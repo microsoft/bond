@@ -3,10 +3,13 @@
 
 #pragma once
 
-#include "config.h"
+#include <bond/core/config.h>
+
 #include "detail/tags.h"
-#include <stdint.h>
+
 #include <boost/utility/enable_if.hpp>
+
+#include <stdint.h>
 
 namespace bond
 {
@@ -23,10 +26,10 @@ class bonded;
 template <typename Reader>
 class bonded<void, Reader>;
 
-template <typename V> struct 
+template <typename V> struct
 remove_bonded;
 
-template <typename V> struct 
+template <typename V> struct
 remove_bonded<bonded<V> >;
 
 template <typename T, typename Reader, typename Enable = void>
@@ -49,16 +52,16 @@ struct BuiltInProtocols;
 template <typename T, typename Protocols = BuiltInProtocols, typename Validator = RequiredFieldValiadator<T> >
 class To;
 
-template <typename T, typename Enable = void> struct 
+template <typename T, typename Enable = void> struct
 schema_for_passthrough;
 
 template<typename T, typename Enable = void> struct
 get_type_id;
 
-template <typename T> struct 
+template <typename T> struct
 may_omit_fields;
 
-template <typename Input> 
+template <typename Input>
 struct base_input;
 
 struct Metadata;
@@ -87,4 +90,3 @@ template <typename Protocols = BuiltInProtocols, typename Writer>
 Serializer<Writer, Protocols> SerializeTo(Writer& output);
 
 } // bond
-

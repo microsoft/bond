@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "exception.h"
 #include "protocol.h"
 #include "runtime_schema.h"
@@ -207,7 +209,7 @@ inline bool NextProtocol(const RuntimeSchema& schema, Buffer& input, const Trans
 }
 
 
-// Select protocol based on magic number and apply instance of serializing transform 
+// Select protocol based on magic number and apply instance of serializing transform
 template <template <typename Writer, typename ProtocolsT> class Transform, typename Protocols, typename T, typename Buffer>
 inline bool NextProtocol(const T& value, Buffer& output, uint16_t protocol)
 {
@@ -233,7 +235,7 @@ inline bool NextProtocol(const T& value, Buffer& output, uint16_t protocol)
 
 
 //
-// Apply transform to serialized data that was generated using Marshaler 
+// Apply transform to serialized data that was generated using Marshaler
 //
 
 
@@ -256,7 +258,7 @@ inline std::pair<ProtocolType, bool> SelectProtocolAndApply(
 }
 
 
-// Apply deserializing transform with a protocol specified by magic number 
+// Apply deserializing transform with a protocol specified by magic number
 // Use compile-time schema
 template <typename T, typename Protocols = BuiltInProtocols, typename Transform, typename Buffer>
 inline bool Apply(const Transform& transform, Buffer& input, uint16_t protocol)
@@ -282,4 +284,3 @@ inline bool Apply(const T& value, Buffer& output, uint16_t protocol)
 
 
 } // namespace bond
-

@@ -3,11 +3,12 @@
 
 #pragma once
 
-#include <boost/static_assert.hpp>
+#include <bond/core/config.h>
 
-#include "config.h"
 #include "protocol.h"
 #include "schema.h"
+
+#include <boost/static_assert.hpp>
 
 namespace bond
 {

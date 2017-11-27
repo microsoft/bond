@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 namespace bond
 {
 namespace detail
@@ -37,7 +39,7 @@ struct tuple_field
     }
 };
 
-using ignore_t = decltype(std::ignore); 
+using ignore_t = decltype(std::ignore);
 
 template <typename Tuple, uint16_t t_id, typename T>
 const Metadata tuple_field<Tuple, t_id, T>::metadata

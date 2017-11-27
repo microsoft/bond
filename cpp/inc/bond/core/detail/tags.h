@@ -3,8 +3,12 @@
 
 #pragma once
 
-#include <bond/core/bond_const_enum.h>
+#include <bond/core/config.h>
+
 #include "nonassignable.h"
+
+#include <bond/core/bond_const_enum.h>
+
 #include <type_traits>
 
 namespace bond
@@ -75,17 +79,17 @@ struct ModifyingTransform
 };
 
 
-template <typename T, typename Unused = void> struct 
+template <typename T, typename Unused = void> struct
 is_serializing_transform
     : std::is_base_of<SerializingTransform, T> {};
 
 
-template <typename T, typename Unused = void> struct 
+template <typename T, typename Unused = void> struct
 is_deserializing_transform
     : std::is_base_of<DeserializingTransform, T> {};
 
 
-template <typename T, typename Unused = void> struct 
+template <typename T, typename Unused = void> struct
 is_modifying_transform
     : std::is_base_of<ModifyingTransform, T> {};
 

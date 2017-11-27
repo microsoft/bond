@@ -3,9 +3,12 @@
 
 #pragma once
 
-#include <tuple>
+#include <bond/core/config.h>
+
 #include "bond.h"
 #include "detail/tuple_fields.h"
+
+#include <tuple>
 
 namespace bond
 {

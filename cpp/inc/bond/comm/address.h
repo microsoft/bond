@@ -1,10 +1,15 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 #pragma once
+
+#include <bond/core/config.h>
 
 #include "exception.h"
 
+#include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/find.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
 #include <boost/asio/ip/address.hpp>
 
 #if defined (__APPLE__)

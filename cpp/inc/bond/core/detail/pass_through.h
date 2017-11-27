@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <bond/core/traits.h>
 #include <bond/stream/stream_interface.h>
 

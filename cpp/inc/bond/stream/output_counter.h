@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <bond/core/blob.h>
 
 namespace bond
@@ -49,7 +51,7 @@ struct VariableUnsigned<uint16_t, 3>
     }
 };
 
-class OutputCounter 
+class OutputCounter
 {
 
     struct Buffer
@@ -79,7 +81,7 @@ public:
     }
 
     void Write(const void*, uint32_t size)
-    {    
+    {
         _count += size;
     }
 

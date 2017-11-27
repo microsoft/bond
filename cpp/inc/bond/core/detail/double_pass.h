@@ -3,18 +3,20 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 namespace bond
 {
     namespace detail
     {
-        template <typename Transform, typename Enable = void> struct 
+        template <typename Transform, typename Enable = void> struct
         need_double_pass
             : std::false_type {};
 
-        template <typename Transform> struct 
+        template <typename Transform> struct
         need_double_pass<
-            Transform, 
-            typename boost::enable_if_c<!std::is_same<typename Transform::writer_type, 
+            Transform,
+            typename boost::enable_if_c<!std::is_same<typename Transform::writer_type,
                                                  typename Transform::writer_type::Pass0>::value>::type
         > : std::true_type {};
 

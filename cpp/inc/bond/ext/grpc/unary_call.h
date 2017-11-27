@@ -3,9 +3,12 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <bond/ext/grpc/detail/unary_call_impl.h>
 
 #include <boost/smart_ptr/intrusive_ptr.hpp>
+
 #include <utility>
 
 namespace bond { namespace ext { namespace gRPC {

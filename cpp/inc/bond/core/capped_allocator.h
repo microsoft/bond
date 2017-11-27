@@ -3,11 +3,14 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "capped_allocator_fwd.h"
-#include "single_threaded_counter.h"
+#include "detail/value_or_reference.h"
 #include "multi_threaded_counter.h"
 #include "shared_counter.h"
-#include "detail/value_or_reference.h"
+#include "single_threaded_counter.h"
+
 #include <boost/utility/enable_if.hpp>
 
 

@@ -4,6 +4,8 @@
 /** @file */
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "apply.h"
 #include "select_protocol.h"
 
@@ -108,7 +110,7 @@ inline T Unmarshal(Buffer input, const RuntimeSchema& schema)
 }
 
 
-/// @brief Initialize a bonded<T> from data stream contained marshaled object 
+/// @brief Initialize a bonded<T> from data stream contained marshaled object
 /// using a runtime schema
 template <typename Protocols = BuiltInProtocols, typename Buffer, typename T>
 inline void Unmarshal(Buffer input, bonded<T>& obj, const RuntimeSchema& schema)
@@ -117,7 +119,7 @@ inline void Unmarshal(Buffer input, bonded<T>& obj, const RuntimeSchema& schema)
 }
 
 
-/// @brief Merge an object with serialize data and write the result using 
+/// @brief Merge an object with serialize data and write the result using
 /// a protocol writer
 template <typename Protocols = BuiltInProtocols, typename T, typename Reader, typename Writer>
 inline void Merge(const T& obj, Reader input, Writer& output)

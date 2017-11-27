@@ -3,12 +3,15 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "capped_allocator_fwd.h"
-#include <boost/intrusive_ptr.hpp>
+
 #include <boost/assert.hpp>
+#include <boost/intrusive_ptr.hpp>
+
 #include <atomic>
 #include <functional>
-
 
 namespace bond
 {
@@ -82,7 +85,7 @@ namespace bond
 
         protected:
             virtual ~internal_counter() = default;
-            
+
             /// @brief Destroys and deallocates current instance.
             virtual void delete_this()
             {

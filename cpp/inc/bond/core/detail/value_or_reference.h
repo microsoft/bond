@@ -3,12 +3,14 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include <boost/core/ref.hpp>
 #include <boost/optional.hpp>
 #include <boost/utility/enable_if.hpp>
-#include <boost/core/ref.hpp>
+
 #include <functional>
 #include <type_traits>
-
 
 namespace bond
 {

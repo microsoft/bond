@@ -3,12 +3,15 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include <boost/static_assert.hpp>
+#include <boost/utility/enable_if.hpp>
+
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
 #include <type_traits>
-#include <boost/static_assert.hpp>
-#include <boost/utility/enable_if.hpp>
 
 namespace bond
 {

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 namespace bond
 {
 
@@ -23,7 +25,7 @@ bool is_default(const maybe<T>& value, const Metadata& /*metadata*/)
 // compare basic fields with default value from metadata
 template <typename T>
 inline
-typename boost::enable_if_c<is_basic_type<T>::value 
+typename boost::enable_if_c<is_basic_type<T>::value
                         && !is_string_type<T>::value
                         && !is_type_alias<T>::value, bool>::type
 is_default(const T& value, const Metadata& metadata)
@@ -35,7 +37,7 @@ is_default(const T& value, const Metadata& metadata)
 // compare wire value of type alias fields with default value from metadata
 template <typename T>
 inline
-typename boost::enable_if<is_type_alias<T>, bool>::type 
+typename boost::enable_if<is_type_alias<T>, bool>::type
 is_default(const T& value, const Metadata& metadata)
 {
     return (metadata.default_value == get_aliased_value(value));
@@ -70,7 +72,7 @@ typename boost::enable_if<is_container<T>, bool>::type
 is_default(const T& value, const Metadata& /*metadata*/)
 {
     return (container_size(value) == 0);
-} 
+}
 
 
 // structs don't have default value
@@ -80,7 +82,7 @@ typename boost::enable_if<is_bond_type<T>, bool>::type
 is_default(const T& /*value*/, const Metadata& /*metadata*/)
 {
     return false;
-} 
+}
 
 
 // return true if the field may be omitted during serialization
@@ -89,7 +91,7 @@ inline
 typename boost::enable_if<may_omit_fields<Writer>, bool>::type
 omit_field(const Metadata& metadata, const T& value)
 {
-    // Validate that all compilation units in a program use the same 
+    // Validate that all compilation units in a program use the same
     // specialization of may_omit_fields<Writer>
     (void)one_definition<may_omit_fields<Writer>, std::true_type>::value;
 
@@ -104,7 +106,7 @@ inline
 typename boost::disable_if<may_omit_fields<Writer>, bool>::type
 omit_field(const Metadata& /*metadata*/, const T& /*value*/)
 {
-    // Validate that all compilation units in a program use the same 
+    // Validate that all compilation units in a program use the same
     // specialization of may_omit_fields<Writer>
     (void)one_definition<may_omit_fields<Writer>, std::false_type>::value;
 
@@ -123,23 +125,23 @@ bool omit_field(const Metadata& /*metadata*/, const value<T, Reader>& /*value*/)
 
 
 template <typename T, typename Enable = void> struct
-implements_field_omitting 
+implements_field_omitting
     : std::false_type {};
 
 
-// WriteFieldOmitted is an optional protocol writer method which is called for 
+// WriteFieldOmitted is an optional protocol writer method which is called for
 // omitted optional fields. It CAN be implemented by tagged protocols and MUST
 // be implemented by untagged protocols that allow omitting optional fields.
 template <typename Writer> struct
-implements_field_omitting<Writer, 
+implements_field_omitting<Writer,
     typename boost::enable_if<bond::check_method<void (Writer::*)(BondDataType, uint16_t, const Metadata&), &Writer::WriteFieldOmitted> >::type>
     : std::true_type {};
 
 
-// ReadFieldOmitted is an optional protocol reader method which MUST be implemented 
+// ReadFieldOmitted is an optional protocol reader method which MUST be implemented
 // by untagged protocols that allow omitting optional fields.
 template <typename Input> struct
-implements_field_omitting<Input, 
+implements_field_omitting<Input,
     typename boost::enable_if<bond::check_method<bool (Input::*)(), &Input::ReadFieldOmitted> >::type>
     : std::true_type {};
 
@@ -176,9 +178,9 @@ ReadFieldOmitted(Input& /*input*/)
 }
 
 
-// ReadStructBegin and ReadStructEnd are optional methods for protocol 
+// ReadStructBegin and ReadStructEnd are optional methods for protocol
 template <typename T, typename Enable = void> struct
-implements_struct_begin 
+implements_struct_begin
     : std::false_type {};
 
 
@@ -190,13 +192,13 @@ implements_struct_begin_with_base
 
 
 template <typename Input> struct
-implements_struct_begin<Input, 
+implements_struct_begin<Input,
     typename boost::enable_if<bond::check_method<void (Input::*)(), &Input::ReadStructBegin> >::type>
     : std::true_type {};
 
 
 template <typename Input> struct
-implements_struct_begin_with_base<Input, 
+implements_struct_begin_with_base<Input,
     typename boost::enable_if<bond::check_method<void (Input::*)(bool), &Input::ReadStructBegin> >::type>
     : std::true_type {};
 
@@ -252,9 +254,9 @@ StructEnd(Input& /*input*/, bool /*base*/)
 } // namespace detail
 
 
-// It is OK to omit optional fields with default values for all tagged protocols 
+// It is OK to omit optional fields with default values for all tagged protocols
 // and for untagged protocols which implement field omitting support.
-template <typename T> struct 
+template <typename T> struct
 may_omit_fields
     : std::integral_constant<bool,
         !uses_static_parser<typename T::Reader>::value

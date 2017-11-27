@@ -3,10 +3,12 @@
 
 #pragma once
 
-#include <grpc++/impl/codegen/status.h>
-#include <grpc++/client_context.h>
+#include <bond/core/config.h>
 
 #include <bond/core/bonded.h>
+
+#include <grpc++/impl/codegen/status.h>
+#include <grpc++/client_context.h>
 
 #include <memory>
 #include <utility>

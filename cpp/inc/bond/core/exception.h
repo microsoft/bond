@@ -3,8 +3,12 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "detail/string_stream.h"
+
 #include <bond/core/bond_types.h>
+
 #include <boost/locale/encoding_utf.hpp>
 #include <boost/utility/enable_if.hpp>
 

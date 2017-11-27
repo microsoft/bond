@@ -1,11 +1,16 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #pragma once
+
+#include <bond/core/config.h>
 
 #include <bond/comm/message.h>
 #include <bond/comm/thread_pool.h>
 
 #include <boost/asio/steady_timer.hpp>
 #include <boost/atomic/atomic.hpp>
+
 #include <chrono>
 #include <functional>
 #include <memory>

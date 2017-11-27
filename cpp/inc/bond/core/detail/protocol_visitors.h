@@ -3,12 +3,17 @@
 
 #pragma once
 
-#include "tags.h"
+#include <bond/core/config.h>
+
 #include "pass_through.h"
+#include "tags.h"
+
+#include <bond/core/customize.h>
+#include <bond/core/null.h>
+#include <bond/core/protocol.h>
+#include <bond/core/traits.h>
 #include <bond/stream/input_buffer.h>
 #include <bond/stream/output_buffer.h>
-#include <bond/core/traits.h>
-#include <bond/core/null.h>
 
 
 namespace bond
@@ -34,12 +39,12 @@ public:
           _schema(schema)
     {}
 
-    
+
     template <typename Reader>
     typename boost::enable_if<is_protocol_enabled<typename std::remove_const<Reader>::type>, bool>::type
     operator()(Reader& reader) const
     {
-        // Apply transform to serialized data 
+        // Apply transform to serialized data
         return Apply(_transform, reader, _schema, false);
     }
 
@@ -71,7 +76,7 @@ public:
     Apply(const Serializer<Writer, Protocols>& transform, Reader& reader, const Schema& schema, bool base)
     {
         BOOST_VERIFY(!base);
-        // Triggering the following assert means that bond::enable_protocol_versions trait is 
+        // Triggering the following assert means that bond::enable_protocol_versions trait is
         // defined/specialized inconsistently for the protocol in different compilation units.
         BOOST_ASSERT(is_protocol_version_same(reader, transform._output));
         return FastPassThrough(reader, transform._output, schema);
@@ -109,7 +114,7 @@ protected:
 
 
 template <typename T, typename Schema, typename Transform, typename Enable = void>
-class Parser 
+class Parser
     : public _Parser<T, Schema, Transform>
 {
 public:
@@ -141,9 +146,9 @@ public:
 
     bool operator()(ValueReader& value) const
     {
-        // Serializing bonded<T> containing a non-serialized instance of T 
+        // Serializing bonded<T> containing a non-serialized instance of T
         BOOST_ASSERT(value.pointer);
-        // NOTE TO USER: following assert may indicate that the generated file 
+        // NOTE TO USER: following assert may indicate that the generated file
         // _reflection.h was not included in compilation unit where T is serialized.
         BOOST_ASSERT(has_schema<T>::value);
         return StaticParser<const T&>(*static_cast<const T*>(value.pointer)).Apply(_transform, typename schema_for_passthrough<T>::type());
@@ -208,7 +213,7 @@ inline bool Parse(const Transform& transform, ProtocolReader reader, const Schem
     BOOST_VERIFY(!base);
 
     boost::optional<bool> result;
-    
+
     if (runtime_schema)
     {
         // Use named variable to avoid gcc silently copying objects (which
@@ -252,14 +257,14 @@ public:
           _reader(reader)
     {}
 
-    
+
     template <typename Reader>
     typename boost::enable_if<is_protocol_enabled<typename std::remove_const<Reader>::type> >::type
     operator()(Reader& reader) const
     {
         Buffer merged;
         typename get_protocol_writer<Reader, Buffer>::type writer(merged);
-        
+
         Merge(_var, reader, writer);
 
         _reader = Reader(merged.GetBuffer());
@@ -279,7 +284,7 @@ public:
         // Merge is undefined for non-serialized instance of T
         BOOST_VERIFY(false);
     }
-    
+
 private:
     const T& _var;
     ProtocolReader& _reader;

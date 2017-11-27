@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <bond/core/config.h>
 
 namespace bond
 {
@@ -23,7 +24,7 @@ inline bool ValidateType(BondDataType src, BondDataType dst)
                 case BT_UINT64:
                     return src <= dst;
                 default:
-                    break;  
+                    break;
             }
             break;
 
@@ -37,7 +38,7 @@ inline bool ValidateType(BondDataType src, BondDataType dst)
                 case BT_INT64:
                     return src <= dst;
                 default:
-                    break;  
+                    break;
             }
             break;
 
@@ -67,20 +68,20 @@ inline bool ValidateType(const RuntimeSchema& src,
                          const RuntimeSchema& dst,
                          const struct_list* list,
                          bool& identical)
-{        
+{
     if (dst.GetTypeId() != src.GetTypeId())
     {
         identical = false;
         return ValidateType(src.GetTypeId(), dst.GetTypeId());
     }
-    
+
     if (dst.GetType().bonded_type != src.GetType().bonded_type)
     {
         identical = false;
     }
-    
+
     if (dst.GetTypeId() == BT_STRUCT && !dst.GetType().bonded_type)
-    {        
+    {
         ValidateStruct(src, dst, list, identical);
         return true;
     }
@@ -88,8 +89,8 @@ inline bool ValidateType(const RuntimeSchema& src,
     if (!dst.GetType().element.empty())
     {
         RuntimeSchema r_dst(dst, *dst.GetType().element);
-        RuntimeSchema r_src(src, *src.GetType().element);        
-        
+        RuntimeSchema r_src(src, *src.GetType().element);
+
         if (!ValidateType(r_src, r_dst, list, identical))
         {
             return false;
@@ -100,7 +101,7 @@ inline bool ValidateType(const RuntimeSchema& src,
     {
         RuntimeSchema r_dst(dst, *dst.GetType().key);
         RuntimeSchema r_src(src, *src.GetType().key);
-        
+
         if (!ValidateType(r_src, r_dst, list, identical))
         {
             return false;
@@ -154,8 +155,8 @@ inline void ValidateFields(const RuntimeSchema& src,
             OptionalToRequiredException(s_src, s_dst, *f_src, *f_dst);
         }
 
-        if (!ValidateType(RuntimeSchema(src, *f_src), 
-                          RuntimeSchema(dst, *f_dst), 
+        if (!ValidateType(RuntimeSchema(src, *f_src),
+                          RuntimeSchema(dst, *f_dst),
                           list, identical))
         {
             FieldTypeIncompatibleException(s_src, s_dst, *f_src, *f_dst);
@@ -171,11 +172,11 @@ inline void ValidateStruct(const RuntimeSchema& src,
                            const struct_list* list,
                            bool& identical)
 {
-    struct_list next = { 
-        list, &dst.GetStruct(), &src.GetStruct() 
+    struct_list next = {
+        list, &dst.GetStruct(), &src.GetStruct()
     };
 
-    for (; list; list = list->last) 
+    for (; list; list = list->last)
     {
         if (list->dst == next.dst &&
             list->src == next.src)
@@ -211,7 +212,7 @@ template <typename Protocols>
 class SchemaValidator
     : public DeserializingTransform
 {
-public:    
+public:
     void Begin(const Metadata&) const
     {}
 

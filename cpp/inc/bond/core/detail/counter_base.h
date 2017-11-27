@@ -4,7 +4,9 @@
 #pragma once
 
 #include <bond/core/config.h>
+
 #include <boost/static_assert.hpp>
+
 #include <type_traits>
 
 

@@ -3,13 +3,17 @@
 
 #pragma once
 
-#include "reflection.h"
-#include "detail/typeid_value.h"
-#include "value.h"
-#include "transforms.h"
-#include "merge.h"
-#include "schema.h"
+#include <bond/core/config.h>
+
 #include "detail/inheritance.h"
+#include "detail/omit_default.h"
+#include "detail/typeid_value.h"
+#include "merge.h"
+#include "reflection.h"
+#include "schema.h"
+#include "transforms.h"
+#include "value.h"
+
 #include <bond/protocol/simple_binary_impl.h>
 #include <bond/protocol/simple_json_reader_impl.h>
 
@@ -76,10 +80,10 @@ protected:
 } // namespace detail
 
 //
-// StaticParser iterates serialized data using type schema and calls 
-// specified transform for each data field. 
-// The schema may be provided at compile-time (schema<T>::type::fields) or at runtime 
-// (const RuntimeSchema&). StaticParser is used with protocols which don't 
+// StaticParser iterates serialized data using type schema and calls
+// specified transform for each data field.
+// The schema may be provided at compile-time (schema<T>::type::fields) or at runtime
+// (const RuntimeSchema&). StaticParser is used with protocols which don't
 // tag fields in serialized format with ids or types, e.g. Apache Avro protocol.
 //
 template <typename Input>
@@ -92,11 +96,11 @@ public:
         : detail::ParserInheritance<Input, StaticParser<Input> >(input, base)
     {}
 
-    
+
     template <typename Schema, typename Transform>
     bool
     Apply(const Transform& transform, const Schema& schema)
-    {                                               
+    {
         detail::StructBegin(_input, _base);
         bool result = this->Read(schema, transform);
         detail::StructEnd(_input, _base);
@@ -131,7 +135,7 @@ private:
         else
             if (bool done = NextField(Head(), transform))
                 return done;
-        
+
         return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
     }
 
@@ -218,12 +222,12 @@ private:
 
 //
 // DynamicParser iterates serialized data using field tags included in the
-// data by the protocol and calls specified transform for each data field. 
-// DynamicParser uses schema only for auxiliary metadata, such as field 
-// names or modifiers, and determines what fields are present from the data itself. 
-// The schema may be provided at compile-time (schema<T>::type::fields) or at runtime 
-// (const RuntimeSchema&). 
-// DynamicParser is used with protocols which tag fields in serialized  
+// data by the protocol and calls specified transform for each data field.
+// DynamicParser uses schema only for auxiliary metadata, such as field
+// names or modifiers, and determines what fields are present from the data itself.
+// The schema may be provided at compile-time (schema<T>::type::fields) or at runtime
+// (const RuntimeSchema&).
+// DynamicParser is used with protocols which tag fields in serialized
 // format with ids and types, e.g. Mafia, Thrift or Protocol Buffers.
 //
 template <typename Input>
@@ -236,11 +240,11 @@ public:
         : detail::ParserInheritance<Input, DynamicParser<Input> >(input, base)
     {}
 
-    
+
     template <typename Schema, typename Transform>
     bool
     Apply(const Transform& transform, const Schema& schema)
-    {                                               
+    {
         detail::StructBegin(_input, _base);
         bool result = this->Read(schema, transform);
         detail::StructEnd(_input, _base);
@@ -255,9 +259,9 @@ protected:
     using detail::ParserInheritance<Input, DynamicParser<Input> >::_base;
 
 
-private:      
+private:
     template <typename Fields, typename Transform>
-    bool 
+    bool
     ReadFields(const Fields& fields, const Transform& transform)
     {
         uint16_t     id;
@@ -271,7 +275,7 @@ private:
         {
             // If we are not parsing a base class, and we still didn't get to
             // the end of the struct, it means that:
-            // 
+            //
             // 1) Actual data in the payload had deeper hierarchy than payload schema.
             //
             // or
@@ -280,7 +284,7 @@ private:
             //    the transform "expected".
             //
             // In both cases we emit remaining fields as unknown
-            
+
             for (; type != bond::BT_STOP; _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
             {
                 if (type == bond::BT_STOP_BASE)
@@ -295,7 +299,7 @@ private:
         return false;
     }
 
-    
+
     // use compile-time schema
     template <typename Fields, typename Transform>
     void
@@ -314,11 +318,11 @@ private:
             {
                 // Unknown field or non-exact type match
                 UnknownFieldOrTypeMismatch(
-                    Head::id, 
-                    is_basic_type<typename Head::field_type>::value, 
-                    Head::metadata, 
-                    id, 
-                    type, 
+                    Head::id,
+                    is_basic_type<typename Head::field_type>::value,
+                    Head::metadata,
+                    id,
+                    type,
                     transform);
             }
             else
@@ -349,7 +353,7 @@ private:
         }
     }
 
- 
+
     template <typename T, typename Transform>
     typename boost::enable_if_c<is_nested_field<T>::value
                             && !is_fast_path_field<T, Transform>::value, bool>::type
@@ -387,8 +391,8 @@ private:
 
 
     // This function is called only when payload has unknown field id or type is not
-    // matching exactly. This relativly rare so we don't inline the function to help 
-    // the compiler to optimize the common path. 
+    // matching exactly. This relativly rare so we don't inline the function to help
+    // the compiler to optimize the common path.
     template <typename Transform>
     BOND_NO_INLINE
     bool
@@ -434,7 +438,7 @@ private:
             {
                 break;
             }
-            
+
             if (it != end && it->id == id)
             {
                 const FieldDef& field = *it++;
@@ -469,7 +473,7 @@ private:
         {
             // If we are not parsing a base class, and we still didn't get to
             // the end of the struct, it means that:
-            // 
+            //
             // 1) Actual data in the payload had deeper hierarchy than payload schema.
             //
             // or
@@ -478,7 +482,7 @@ private:
             //    the transform "expected".
             //
             // In both cases we emit remaining fields as unknown
-            
+
             for (; type != bond::BT_STOP; _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
             {
                 if (type == bond::BT_STOP_BASE)
@@ -521,11 +525,11 @@ private:
 };
 
 
-// DOM parser works with protocol implementations using Document Object Model, 
-// e.g. JSON or XML. The parser assumes that fields in DOM are unordered and 
+// DOM parser works with protocol implementations using Document Object Model,
+// e.g. JSON or XML. The parser assumes that fields in DOM are unordered and
 // are identified by either ordinal or metadata. DOM based protocols may loosly
-// map to Bond meta-schema types thus the parser delegates to the protocol for 
-// field type match checking. 
+// map to Bond meta-schema types thus the parser delegates to the protocol for
+// field type match checking.
 template <typename Input>
 class DOMParser
     : protected detail::ParserInheritance<Input, DOMParser<Input> >
@@ -537,7 +541,7 @@ public:
         : detail::ParserInheritance<Input, DOMParser<Input> >(input, base)
     {}
 
-    
+
     template <typename Schema, typename Transform>
     bool Apply(const Transform& transform, const Schema& schema)
     {
@@ -564,15 +568,15 @@ private:
         typedef typename boost::mpl::deref<Fields>::type Head;
 
         if (const typename Reader::Field* field = _input.FindField(
-                Head::id,  
-                Head::metadata, 
+                Head::id,
+                Head::metadata,
                 get_type_id<typename Head::field_type>::value,
                 std::is_enum<typename Head::field_type>::value))
         {
             Reader input(_input, *field);
             NextField(Head(), transform, input);
         }
-        
+
         return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
     }
 
@@ -628,7 +632,7 @@ private:
         for (const_enumerator<std::vector<FieldDef> > enumerator(schema.GetStruct().fields); enumerator.more() && !done;)
         {
             const FieldDef& fieldDef = enumerator.next();
-            
+
             if (const typename Reader::Field* field = _input.FindField(fieldDef.id, fieldDef.metadata, fieldDef.type.id))
             {
                 Reader input(_input, *field);

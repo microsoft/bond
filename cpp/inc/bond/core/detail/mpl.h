@@ -8,7 +8,10 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <boost/static_assert.hpp>
+
 #include <initializer_list>
 #include <type_traits>
 #include <utility>

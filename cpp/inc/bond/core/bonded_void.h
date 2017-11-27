@@ -3,10 +3,12 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "bonded.h"
+#include "detail/nonassignable.h"
 #include "schema.h"
 #include "select_protocol.h"
-#include "detail/nonassignable.h"
 
 namespace bond
 {

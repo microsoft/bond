@@ -3,16 +3,18 @@
 
 #pragma once
 
-#include "config.h"
+#include <bond/core/config.h>
+
 #include "bond_fwd.h"
 #include "detail/mpl.h"
 #include "scalar_interface.h"
+
+#include <boost/static_assert.hpp>
 #include <boost/type_traits/has_nothrow_copy.hpp>
 #include <boost/utility/enable_if.hpp>
-#include <boost/static_assert.hpp>
 
-#include <type_traits>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 namespace bond

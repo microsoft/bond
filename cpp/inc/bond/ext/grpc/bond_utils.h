@@ -3,6 +3,13 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include <bond/core/bond.h>
+#include <bond/core/bonded.h>
+#include <bond/core/reflection.h>
+#include <bond/stream/output_buffer.h>
+
 #include <grpc++/impl/codegen/config.h>
 #include <grpc++/impl/codegen/core_codegen.h>
 #include <grpc++/impl/codegen/core_codegen_interface.h>
@@ -12,11 +19,6 @@
 #include <grpc++/support/slice.h>
 #include <grpc/impl/codegen/byte_buffer_reader.h>
 #include <grpc/impl/codegen/slice.h>
-
-#include <bond/core/bond.h>
-#include <bond/core/bonded.h>
-#include <bond/core/reflection.h>
-#include <bond/stream/output_buffer.h>
 
 #include <boost/assert.hpp>
 #include <boost/make_shared.hpp>

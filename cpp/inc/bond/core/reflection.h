@@ -3,17 +3,21 @@
 
 #pragma once
 
-#include <boost/static_assert.hpp>
-#include <boost/mpl/transform.hpp>
+#include <bond/core/config.h>
+
+#include "bond_fwd.h"
+#include "detail/metadata.h"
+
+#include <bond/core/bond_types.h>
+
+#include <boost/mpl/copy_if.hpp>
 #include <boost/mpl/find_if.hpp>
 #include <boost/mpl/for_each.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/mpl/push_front.hpp>
-#include <boost/mpl/copy_if.hpp>
+#include <boost/mpl/transform.hpp>
+#include <boost/static_assert.hpp>
 
-#include <bond/core/bond_types.h>
-#include "bond_fwd.h"
-#include "detail/metadata.h"
 #include <functional>
 
 namespace bond

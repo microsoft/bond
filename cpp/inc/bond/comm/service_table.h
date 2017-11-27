@@ -1,5 +1,9 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #pragma once
+
+#include <bond/core/config.h>
 
 #include "services.h"
 
@@ -11,7 +15,7 @@ namespace bond { namespace comm
 //
 class ServiceTable
     : public IService
-{    
+{
     template <typename WireProtocol>
     class Registrar
     {
@@ -64,7 +68,7 @@ public:
     {
         return Registrar<WireProtocol>(*this, wireProtocol);
     }
-    
+
     template <typename Service, typename WireProtocol>
     ServiceTable& Register(const boost::reference_wrapper<Service>& service,
                            const WireProtocol& wireProtocol,

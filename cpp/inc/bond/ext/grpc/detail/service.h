@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #ifdef _MSC_VER
     #pragma warning (push)
     #pragma warning (disable: 4100 4702)

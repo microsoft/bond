@@ -1,5 +1,9 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #pragma once
+
+#include <bond/core/config.h>
 
 #include <mutex>
 
@@ -19,22 +23,22 @@ public:
     {
         ::InitializeCriticalSection(&m_CS);
     }
-    
+
     ~critical_section()
     {
         ::DeleteCriticalSection(&m_CS);
     }
-    
+
     bool try_lock()
     {
         return ::TryEnterCriticalSection(&m_CS) != 0;
     }
-    
+
     void lock()
     {
         ::EnterCriticalSection(&m_CS);
     }
-    
+
     void unlock()
     {
         ::LeaveCriticalSection(&m_CS);
@@ -70,7 +74,7 @@ public:
         : std::unique_lock<Lock>(std::move(that))
         , m_object(that.m_object)
     {}
-    
+
     lockable_guard(T& _lockable)
         : std::unique_lock<Lock>(_lockable)
         , m_object(_lockable.m_object)

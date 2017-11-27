@@ -3,17 +3,20 @@
 
 #pragma once
 
-#include "traits.h"
+#include <bond/core/config.h>
+
 #include "customize.h"
 #include "detail/any.h"
 #include "detail/mpl.h"
 #include "detail/odr.h"
 #include "detail/visit_any.h"
-#include <bond/stream/input_buffer.h>
-#include <bond/protocol/simple_binary.h>
+#include "traits.h"
+
 #include <bond/protocol/compact_binary.h>
 #include <bond/protocol/fast_binary.h>
+#include <bond/protocol/simple_binary.h>
 #include <bond/protocol/simple_json_reader.h>
+#include <bond/stream/input_buffer.h>
 
 #include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
@@ -35,28 +38,28 @@ namespace bond
 {
 
 #ifdef BOND_COMPACT_BINARY_PROTOCOL
-template <typename Buffer> struct 
-is_protocol_enabled<CompactBinaryReader<Buffer> > 
+template <typename Buffer> struct
+is_protocol_enabled<CompactBinaryReader<Buffer> >
     : std::true_type {};
-#endif 
+#endif
 
 #ifdef BOND_SIMPLE_BINARY_PROTOCOL
 template <typename Buffer, typename MarshaledBondedProtocols> struct
 is_protocol_enabled<SimpleBinaryReader<Buffer, MarshaledBondedProtocols> >
     : std::true_type {};
-#endif 
+#endif
 
 #ifdef BOND_SIMPLE_JSON_PROTOCOL
-template <typename Buffer> struct 
-is_protocol_enabled<SimpleJsonReader<Buffer> > 
+template <typename Buffer> struct
+is_protocol_enabled<SimpleJsonReader<Buffer> >
     : std::true_type {};
-#endif 
+#endif
 
 #ifdef BOND_FAST_BINARY_PROTOCOL
-template <typename Buffer> struct 
-is_protocol_enabled<FastBinaryReader<Buffer> > 
+template <typename Buffer> struct
+is_protocol_enabled<FastBinaryReader<Buffer> >
     : std::true_type {};
-#endif 
+#endif
 
 // uses_static_parser
 template <typename Reader, typename Enable = void> struct
@@ -101,7 +104,7 @@ uses_dom_parser<Reader&>
     : uses_dom_parser<Reader> {};
 
 
-template <typename Reader, typename Unused> struct 
+template <typename Reader, typename Unused> struct
 uses_marshaled_bonded
     : uses_static_parser<Reader> {};
 
@@ -178,7 +181,7 @@ struct ValueReader
         : instance(boost::static_pointer_cast<const void>(value)),
           pointer(instance.get())
     {}
-    
+
     ValueReader(const ValueReader& value) BOND_NOEXCEPT
         : instance(value.instance),
           pointer(value.pointer)

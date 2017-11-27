@@ -1,15 +1,19 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #pragma once
 
+#include <bond/core/config.h>
+
+#include "detail/future.h"
 #include "message.h"
 #include "wire_protocol.h"
-#include "detail/future.h"
 
 #include <boost/assert.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <string>
 #include <map>
+#include <string>
 
 namespace bond { namespace comm
 {

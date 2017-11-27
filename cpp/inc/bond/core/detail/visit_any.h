@@ -3,10 +3,13 @@
 
 #pragma once
 
-#include "mpl.h"
-#include <boost/optional.hpp>
-#include <type_traits>
+#include <bond/core/config.h>
 
+#include "mpl.h"
+
+#include <boost/optional.hpp>
+
+#include <type_traits>
 
 namespace bond
 {

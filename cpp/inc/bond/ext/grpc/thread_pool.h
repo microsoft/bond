@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #if defined (__APPLE__)
     // Work-around: 'OSMemoryBarrier' has been explicitly marked deprecated
     #pragma GCC diagnostic push

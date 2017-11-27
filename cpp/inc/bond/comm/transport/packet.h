@@ -1,25 +1,27 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #pragma once
 
-#include <bond/comm/transport.h>
+#include <bond/core/config.h>
+
+#include <bond/comm/detail/callbacks.h>
+#include <bond/comm/detail/locks.h>
+#include <bond/comm/detail/logging.h>
 #include <bond/comm/packet_apply.h>
 #include <bond/comm/packet_reflection.h>
-
+#include <bond/comm/transport.h>
+#include <bond/core/bond.h>
 #include <bond/protocol/compact_binary.h>
 #include <bond/stream/output_buffer.h>
 
-#include <bond/core/bond.h>
-#include <bond/comm/detail/locks.h>
-#include <bond/comm/detail/logging.h>
-#include <bond/comm/detail/callbacks.h>
-
 #include <boost/atomic.hpp>
-#include <boost/foreach.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/foreach.hpp>
 #include <boost/weak_ptr.hpp>
 
-#include <unordered_set>
 #include <unordered_map>
+#include <unordered_set>
 
 
 namespace bond { namespace comm

@@ -3,9 +3,13 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "capped_allocator_fwd.h"
 #include "detail/counter_base.h"
+
 #include <boost/assert.hpp>
+
 #include <atomic>
 
 

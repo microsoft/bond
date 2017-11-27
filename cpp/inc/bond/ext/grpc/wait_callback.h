@@ -3,9 +3,12 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/exception.h>
 #include <bond/ext/grpc/client_callback.h>
+
 #include <grpc++/impl/codegen/status.h>
 
 #include <boost/optional.hpp>

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <bond/core/blob.h>
 #include <bond/core/exception.h>
 #include <bond/core/traits.h>

@@ -3,16 +3,18 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include "bond_fwd.h"
-#include "reflection.h"
-#include "exception.h"
-#include "null.h"
-#include "detail/tags.h"
-#include "detail/odr.h"
-#include "detail/omit_default.h"
 #include "detail/debug.h"
 #include "detail/double_pass.h"
 #include "detail/marshaled_bonded.h"
+#include "detail/odr.h"
+#include "detail/omit_default.h"
+#include "detail/tags.h"
+#include "exception.h"
+#include "null.h"
+#include "reflection.h"
 
 #include <boost/static_assert.hpp>
 
@@ -34,10 +36,10 @@ namespace detail
 
 
 //
-// Serializer writes input using provided protocol writer. 
-// When the input is comming from parsing a struct, applying this transform is  
-// equivalent to serialization using the specfied protocol. 
-// Applying this transform to input from parsing serialized data is equivalent  
+// Serializer writes input using provided protocol writer.
+// When the input is comming from parsing a struct, applying this transform is
+// equivalent to serialization using the specfied protocol.
+// Applying this transform to input from parsing serialized data is equivalent
 // to transcoding from one protocol to another.
 //
 template <typename Writer, typename Protocols>
@@ -54,7 +56,7 @@ public:
           _base(base)
     {}
 
-    
+
     bool NeedPass0() const
     {
         return _output.NeedPass0();
@@ -84,7 +86,7 @@ public:
     template <typename T>
     bool Base(const T& value) const
     {
-        // 'true' means that we are writing a base struct 
+        // 'true' means that we are writing a base struct
         Apply<Protocols>(Serializer(_output, true), value);
         return false;
     }
@@ -114,7 +116,7 @@ public:
         WriteField(id, metadata, value.value());
         return false;
     }
-    
+
     // unknown field
     template <typename T>
     bool UnknownField(uint16_t id, const T& value) const
@@ -133,7 +135,7 @@ public:
         return false;
     }
 
-    
+
     template <typename T>
     void Container(const T& element, uint32_t size) const
     {
@@ -141,7 +143,7 @@ public:
 
         while (size--)
             Write(element);
-    
+
         _output.WriteContainerEnd();
     }
 
@@ -156,7 +158,7 @@ public:
             Write(key);
             Write(value);
         }
-    
+
         _output.WriteContainerEnd();
     }
 
@@ -258,11 +260,11 @@ private:
     Write(const value<T, Reader>& value) const
     {
         T data = T();
-        
+
         value.template Deserialize<Protocols>(data);
         Write(data);
     }
-    
+
     template <typename Reader, typename T>
     typename boost::disable_if<is_basic_type<T> >::type
     Write(const value<T, Reader>& value) const
@@ -270,7 +272,7 @@ private:
         Apply<Protocols>(Serializer(_output), value);
     }
 
-    
+
     template <typename T, typename WriterT, typename ProtocolsT>
     friend class Merger;
 
@@ -307,7 +309,7 @@ public:
     Marshaler(Writer& output)
         : Serializer<Writer, Protocols>(output)
     {}
-    
+
     template <typename T>
     bool Marshal(const T& value) const
     {
@@ -329,7 +331,7 @@ ApplyTransform(const Marshaler<Writer, Protocols>& marshaler, const bonded<T, Re
 
 
 template <typename Protocols, typename Writer, typename T>
-bool inline 
+bool inline
 ApplyTransform(const Marshaler<Writer, Protocols>& marshaler, const T& value)
 {
     return marshaler.Marshal(value);
@@ -354,9 +356,9 @@ protected:
     {
         _required = next_required_field<typename schema<T>::type::fields>::value;
     }
-        
+
     template <typename Head>
-    typename boost::enable_if<std::is_same<typename Head::field_modifier, 
+    typename boost::enable_if<std::is_same<typename Head::field_modifier,
                                            reflection::required_field_modifier> >::type
     Validate() const
     {
@@ -368,7 +370,7 @@ protected:
 
 
     template <typename Schema>
-    typename boost::enable_if_c<next_required_field<typename Schema::fields>::value 
+    typename boost::enable_if_c<next_required_field<typename Schema::fields>::value
                              != invalid_field_id>::type
     Validate() const
     {
@@ -378,21 +380,21 @@ protected:
 
 
     template <typename Head>
-    typename boost::disable_if<std::is_same<typename Head::field_modifier, 
+    typename boost::disable_if<std::is_same<typename Head::field_modifier,
                                             reflection::required_field_modifier> >::type
     Validate() const
     {}
 
 
     template <typename Schema>
-    typename boost::disable_if_c<next_required_field<typename Schema::fields>::value 
+    typename boost::disable_if_c<next_required_field<typename Schema::fields>::value
                               != invalid_field_id>::type
     Validate() const
     {}
 
 private:
     BOND_NORETURN void MissingFieldException() const;
-    
+
     mutable uint16_t _required;
 };
 
@@ -474,7 +476,7 @@ public:
     void Begin(const Metadata& /*metadata*/) const
     {
         // Type T must be a Bond struct (i.e. struct generated by Bond codegen
-        // from a .bond file). If the assert fails for a Bond struct, the likely 
+        // from a .bond file). If the assert fails for a Bond struct, the likely
         // reason is that you didn't include the generated file *_reflection.h.
         BOOST_STATIC_ASSERT(has_schema<T>::value);
 
@@ -526,7 +528,7 @@ public:
 
 
     // Fast path for the common case when parser is using compile-time schema schema<T>::type
-    // and thus already knows schema type for each field.  
+    // and thus already knows schema type for each field.
     typedef T FastPathType;
 
     template <typename FieldT, typename X>
@@ -580,7 +582,7 @@ BOND_STATIC_CONSTEXPR uint16_t mapping_base = invalid_field_id;
 //
 // MapTo<T> maps the input fields onto an instance of a static bond type T,
 // using provided mappings from field path in the source to field path in
-// the type T. Field paths are expressed as a lists of field ids. 
+// the type T. Field paths are expressed as a lists of field ids.
 //
 namespace detail
 {
@@ -604,7 +606,7 @@ public:
     {
         return false;
     }
-    
+
 protected:
     struct PathView
         : boost::noncopyable
@@ -642,8 +644,8 @@ protected:
         else
             return AssignToNested(var, ids, value);
     }
-    
-    
+
+
     template <typename V, typename X>
     bool AssignToNested(V& var, const PathView& ids, const X& value) const
     {
@@ -651,14 +653,14 @@ protected:
     }
 
 
-    template <typename BaseT, typename V, typename X>    
+    template <typename BaseT, typename V, typename X>
     bool AssignToBase(const BaseT*, V& var, const PathView& ids, const X& value) const
     {
         return Assign(static_cast<BaseT&>(var), PathView(ids.path, ids.current + 1), value);
     }
 
-    
-    template <typename V, typename X>    
+
+    template <typename V, typename X>
     bool AssignToBase(const no_base*, V& /*var*/, const PathView& /*ids*/, const X& /*value*/) const
     {
         return false;
@@ -682,8 +684,8 @@ protected:
         return false;
     }
 
-    
-    // Separate AssignToField overloads for bonded<T>, basic types and containers allows us 
+
+    // Separate AssignToField overloads for bonded<T>, basic types and containers allows us
     // to use simpler predicates in boost::mpl::copy_if. This doesn't matter for runtime code
     // but compiles significantly faster.
     template <typename Reader, typename V, typename X>
@@ -692,7 +694,7 @@ protected:
         return AssignToField(typename boost::mpl::begin<typename nested_fields<V>::type>::type(), var, id, value);
     }
 
-    
+
     template <typename Reader, typename V, typename X>
     bool AssignToField(V& var, uint16_t id, const value<X, Reader>& value) const
     {
@@ -706,7 +708,7 @@ protected:
         return AssignToField(typename boost::mpl::begin<typename container_fields<V>::type>::type(), var, id, value);
     }
 
-    
+
     template <typename Fields, typename V, typename X>
     bool AssignToField(const Fields&, V& var, uint16_t id, const X& value) const
     {
@@ -723,7 +725,7 @@ protected:
         }
     }
 
-    
+
     template <typename V, typename X>
     bool AssignToField(const boost::mpl::l_iter<boost::mpl::l_end>&, V& /*var*/, uint16_t /*id*/, const X& /*value*/) const
     {
@@ -737,7 +739,7 @@ protected:
         value.template Deserialize<Protocols>(var);
     }
 
-    
+
     template <typename V, typename X>
     void AssignToVar(maybe<V>& var, const X& value) const
     {
@@ -760,7 +762,7 @@ public:
           _mappings(mappings)
     {}
 
-    
+
     template <typename X>
     bool Base(const X& value) const
     {
@@ -783,11 +785,11 @@ public:
         {
             if (!it->second.fields.empty())
                 return Apply(MapTo(_var, it->second.fields), value);
-            
+
             if (!it->second.path.empty())
                 return this->Assign(_var, it->second.path, value);
         }
-        
+
         return false;
     }
 
