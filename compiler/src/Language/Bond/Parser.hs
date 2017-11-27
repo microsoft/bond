@@ -175,7 +175,7 @@ parameters = option [] (angles $ commaSep1 param) <?> "type parameters"
 -- type alias
 alias :: Parser Declaration
 alias = do
-    name <- try (keyword "using" *> identifier) <?> "alias definition"
+    name <- try (keyword "using") *> identifier <?> "alias definition"
     params <- parameters
     namespaces <- asks currentNamespaces
     local (with params) $ Alias namespaces name params <$ equal <*> type_ <* semi
@@ -197,7 +197,7 @@ attributes = many attribute <?> "attributes"
 -- struct view parser
 view :: [Attribute] -> String -> Parser Declaration
 view attr name = do
-    decl <- try (keyword "view_of" *> qualifiedName) >>= findStruct <?> "struct view definition"
+    decl <- try (keyword "view_of") *> qualifiedName >>= findStruct <?> "struct view definition"
     fields <- braces $ semiOrCommaSepEnd1 identifier
     namespaces <- asks currentNamespaces
     Struct namespaces attr name (declParams decl) (structBase decl) (viewFields decl fields) <$ optional semi
@@ -266,7 +266,7 @@ field = do
 enum :: [Attribute] -> Parser Declaration
 enum attr = Enum <$> asks currentNamespaces <*> pure attr <*> name <*> consts <* optional semi <?> "enum definition"
   where
-    name = try (keyword "enum" *> (identifier <?> "enum identifier"))
+    name = try (keyword "enum") *> (identifier <?> "enum identifier")
     consts = braces (semiOrCommaSepEnd1 constant <?> "enum constant")
     constant = Constant <$> identifier <*> optional value
     value = equal *> (fromIntegral <$> integer)
@@ -359,7 +359,7 @@ ftype = keyword "bond_meta::name" *> pure BT_MetaName
 -- service definition parser
 service :: [Attribute] -> Parser Declaration
 service attr = do
-    name <- try (keyword "service" *> identifier) <?> "service definition"
+    name <- try (keyword "service") *> identifier <?> "service definition"
     params <- parameters
     namespaces <- asks currentNamespaces
     local (with params) $ Service namespaces attr name params <$> base <*> methods <* optional semi
