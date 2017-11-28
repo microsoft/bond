@@ -285,13 +285,7 @@ private:
             //
             // In both cases we emit remaining fields as unknown
 
-            for (; type != bond::BT_STOP; _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
-            {
-                if (type == bond::BT_STOP_BASE)
-                    transform.UnknownEnd();
-                else
-                    UnknownField(id, type, transform);
-            }
+            ReadUnknownFields(type, id, transform);
         }
 
         _input.ReadFieldEnd();
@@ -331,8 +325,7 @@ private:
                 goto NextSchemaField;
             }
 
-            _input.ReadFieldEnd();
-            _input.ReadFieldBegin(type, id);
+            ReadFieldEndBegin(type, id);
 
             if (Head::id < id || type == bond::BT_STOP || type == bond::BT_STOP_BASE)
             {
@@ -346,8 +339,7 @@ private:
     void
     ReadFields(const boost::mpl::l_iter<boost::mpl::l_end>&, uint16_t& id, BondDataType& type, const Transform& transform)
     {
-        for (; type != bond::BT_STOP && type != bond::BT_STOP_BASE;
-               _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
+        for (; type != bond::BT_STOP && type != bond::BT_STOP_BASE; ReadFieldEndBegin(type, id))
         {
             UnknownField(id, type, transform);
         }
@@ -416,17 +408,12 @@ private:
 
     // use runtime schema
     template <typename Transform>
-    bool
-    ReadFields(const RuntimeSchema& schema, const Transform& transform)
+    void
+    ReadFields(const RuntimeSchema& schema, uint16_t& id, BondDataType& type, const Transform& transform)
     {
-        uint16_t                                id;
-        BondDataType                            type;
-        std::vector<FieldDef>::const_iterator   it = schema.GetStruct().fields.begin(),
-                                                end = schema.GetStruct().fields.end();
+        const auto& fields = schema.GetStruct().fields;
 
-        _input.ReadFieldBegin(type, id);
-
-        for (;; _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
+        for (auto it = fields.begin(), end = fields.end(); ; ReadFieldEndBegin(type, id))
         {
             while (it != end && (it->id < id || type == bond::BT_STOP || type == bond::BT_STOP_BASE))
             {
@@ -468,37 +455,19 @@ private:
 
             UnknownField(id, type, transform);
         }
+    }
 
-        if (!_base)
+
+    template <typename Transform>
+    void ReadUnknownFields(BondDataType& type, uint16_t& id, const Transform& transform)
+    {
+        for (; type != bond::BT_STOP; ReadFieldEndBegin(type, id))
         {
-            // If we are not parsing a base class, and we still didn't get to
-            // the end of the struct, it means that:
-            //
-            // 1) Actual data in the payload had deeper hierarchy than payload schema.
-            //
-            // or
-            //
-            // 2) We parsed only part of the hierarchy because that was what
-            //    the transform "expected".
-            //
-            // In both cases we emit remaining fields as unknown
-
-            for (; type != bond::BT_STOP; _input.ReadFieldEnd(), _input.ReadFieldBegin(type, id))
-            {
-                if (type == bond::BT_STOP_BASE)
-                {
-                    transform.UnknownEnd();
-                }
-                else
-                {
-                    UnknownField(id, type, transform);
-                }
-            }
+            if (type == bond::BT_STOP_BASE)
+                transform.UnknownEnd();
+            else
+                UnknownField(id, type, transform);
         }
-
-        _input.ReadFieldEnd();
-
-        return false;
     }
 
 
@@ -521,6 +490,13 @@ private:
             return transform.UnknownField(id, value<void, Input>(_input, type));
         else
             return detail::BasicTypeField(id, schema<Unknown>::type::metadata, type, BindUnknownField(transform), _input);
+    }
+
+
+    void ReadFieldEndBegin(BondDataType& type, uint16_t& id)
+    {
+        _input.ReadFieldEnd();
+        _input.ReadFieldBegin(type, id);
     }
 };
 
