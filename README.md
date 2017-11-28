@@ -24,6 +24,7 @@ For details, see the User's Manuals:
 
 * [C++](https://Microsoft.github.io/bond/manual/bond_cpp.html)
 * [C#](https://Microsoft.github.io/bond/manual/bond_cs.html)
+* [Java](https://Microsoft.github.io/bond/manual/bond_java.html)
 * [Python](https://Microsoft.github.io/bond/manual/bond_py.html)
 * [Bond-over-gRPC](https://Microsoft.github.io/bond/manual/bond_over_grpc.html)
 * [`gbc`, the Bond compiler/codegen tool](https://microsoft.github.io/bond/manual/compiler.html)
@@ -117,7 +118,7 @@ sudo make install # To install the other libraries just built
 (The unit tests are large so you may want to run 4-8 build jobs in parallel,
 assuming you have enough memory.)
 
-### OS X
+### macOS
 
 Install Xcode and then run the following command to install the required
 packages using Homebrew ([http://brew.sh/](http://brew.sh/)):
@@ -132,7 +133,7 @@ brew install \
 
 (boost-python is optional and only needed for Python support.)
 
-Bond can be built on OS X using either standard \*nix makefiles or Xcode. In
+Bond can be built on macOS using either standard \*nix makefiles or Xcode. In
 order to generate and build from makefiles, in the root `bond` directory run:
 
 ```bash

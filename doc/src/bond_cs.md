@@ -1,4 +1,4 @@
-﻿% A Young Person's Guide to C# Bond
+% A Thorough Guide to Bond for C#
 
 About
 =====
@@ -14,7 +14,7 @@ data transform mechanism. The framework is highly extensible via pluggable
 serialization protocols, data streams, user defined type aliases and more.
 
 By design Bond is language and platform independent and is currently supported
-for C++, C#, and Python on Linux, OS X and Windows.
+for C++, C#, Java, and Python on Linux, macOS, and Windows.
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
@@ -86,12 +86,11 @@ Bond compiler [`gbc`](compiler.html). The compiler generates C# classes that
 represent the schema. By default schema fields are represented by public
 auto-properties initialized in the default constructor.
 
-The mapping between Bond and C# type systems is mostly obvious but it is worth
-noting that unlike C# reference types, Bond types are not nullable. This means,
-for a example, that while `string` in Bond IDL will be mapped to C# `string`,
-which is a reference type, the value `null` will not be valid. In order to allow
-`null` value a types must be declared as
-[`nullable`](bond_cpp.html#nullable-types), e.g.:
+The mapping between Bond and C# type systems is mostly obvious, but it is worth
+noting that, unlike C# reference types, Bond types are not nullable. This means
+that `string` in Bond IDL will be mapped to C# `string`, which is a reference
+type, but the value `null` will not be valid. In order to allow `null` values, a
+type must be declared as [`nullable`](bond_cpp.html#nullable-types), e.g.:
 
     struct Foo
     {
