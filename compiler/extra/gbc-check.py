@@ -2,7 +2,7 @@
 # Simple script to test easily multiple bond files and compare the
 # output of two versions of gbc. Output includes all codegen output,
 # stdout and stderr. Also compares quantity of codegen files generated
-# and exit code. A diff will be outputed per file.
+# and exit code. A diff will be output per file.
 
 import argparse
 import difflib
@@ -22,14 +22,12 @@ def get_bond_files(base_dir):
     return bond_files
 
 def generate_bond(gbc, gbc_flags, output_dir, bond_file):
-    bond_command = "{} {} -o {} {}".format(gbc, gbc_flags, output_dir, bond_file)
-
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
     with open(os.path.join(output_dir,"stdout.txt"), "w+") as stdout_file:
         with open(os.path.join(output_dir,"stderr.txt"), "w+") as stderr_file:
-            return_code = subprocess.call(bond_command, shell=True, stdout=stdout_file, stderr=stderr_file)
+            return_code = subprocess.call([gbc, gbc_flags, "-o", output_dir, bond_file], shell=False, stdout=stdout_file, stderr=stderr_file)
 
     return return_code
 
@@ -64,12 +62,12 @@ def compare_gbcs(stable_gbc, updated_gbc, gbc_flags, output_dir, bond_files):
                         fromfile='stable_gbc',
                         tofile='updated_gbc',
                     )
-                    lines = False
+                    anyDiffs = False
                     for line in diff:
-                        lines = True
+                        anyDiffs = True
                         print(line)
-                    if lines:
-                        print("ERROR File {}: has generated diff on generated file/output {}".format(bond_file, a))
+                    if anyDiffs:
+                        print("ERROR File {}: has different output on generated file/output {}".format(bond_file, a))
                         print("#########")
 
         shutil.rmtree(first_dir)
@@ -82,7 +80,7 @@ def main():
     parser.add_argument('--updated_gbc', required=True, help="Path to updated gbc")
     parser.add_argument('--output_dir', required=True, help="Directory where script will write to")
     parser.add_argument('--input_dir', required=True, help="Directory of bond files to be tested, can have nested dirs with bond files")
-    parser.add_argument('--gbc_args', required=True, help="Args to gbc i.e. 'cpp' or 'cs' to be appended on every gbc command")
+    parser.add_argument('--gbc_args', required=True, help="Args to gbc e.g. 'cpp' or 'cs' to be appended on every gbc command")
 
     args = parser.parse_args()
 

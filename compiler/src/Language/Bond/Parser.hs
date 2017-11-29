@@ -266,7 +266,7 @@ field = do
 enum :: [Attribute] -> Parser Declaration
 enum attr = Enum <$> asks currentNamespaces <*> pure attr <*> name <*> consts <* optional semi <?> "enum definition"
   where
-    name = try (keyword "enum") *> (identifier <?> "enum identifier")
+    name = try (keyword "enum") *> identifier <?> "enum identifier"
     consts = braces (semiOrCommaSepEnd1 constant <?> "enum constant")
     constant = Constant <$> identifier <*> optional value
     value = equal *> (fromIntegral <$> integer)
