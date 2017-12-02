@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title>A Young Person’s Guide to C# Bond</title>
+  <title>A Thorough Guide to Bond for C#</title>
   <style type="text/css">
 div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
@@ -209,12 +209,12 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="main">
 <div id="header">
-<h1 class="title">A Young Person’s Guide to C# Bond</h1>
+<h1 class="title">A Thorough Guide to Bond for C#</h1>
 </div>
 <h1 id="about">About</h1>
 <p>Bond is an extensible framework for working with schematized data. It is suitable for scenarios ranging from service communications to Big Data storage and processing.</p>
 <p>Bond defines a rich type system and <a href="#schema-evolution">schema evolution rules</a> which allow forward and backward compatibility. The core Bond features include high performance serialization/deserialization and a very powerful, generic data transform mechanism. The framework is highly extensible via pluggable serialization protocols, data streams, user defined type aliases and more.</p>
-<p>By design Bond is language and platform independent and is currently supported for C++, C#, and Python on Linux, OS X and Windows.</p>
+<p>By design Bond is language and platform independent and is currently supported for C++, C#, Java, and Python on Linux, macOS, and Windows.</p>
 <p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
 <p><strong>IMPORTANT NOTE: Bond Comm is deprecated. We recommend using <a href="bond_over_grpc.html">Bond-over-gRPC</a> for communication.</strong></p>
 <h1 id="basic-example">Basic example</h1>
@@ -301,7 +301,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 }</code></pre></td></tr></table></div>
 <h1 id="code-generation">Code generation</h1>
 <p>In order to use a Bond schema in a C# program, it needs to be compiled using the Bond compiler <a href="compiler.html"><code>gbc</code></a>. The compiler generates C# classes that represent the schema. By default schema fields are represented by public auto-properties initialized in the default constructor.</p>
-<p>The mapping between Bond and C# type systems is mostly obvious but it is worth noting that unlike C# reference types, Bond types are not nullable. This means, for a example, that while <code>string</code> in Bond IDL will be mapped to C# <code>string</code>, which is a reference type, the value <code>null</code> will not be valid. In order to allow <code>null</code> value a types must be declared as <a href="bond_cpp.html#nullable-types"><code>nullable</code></a>, e.g.:</p>
+<p>The mapping between Bond and C# type systems is mostly obvious, but it is worth noting that, unlike C# reference types, Bond types are not nullable. This means that <code>string</code> in Bond IDL will be mapped to C# <code>string</code>, which is a reference type, but the value <code>null</code> will not be valid. In order to allow <code>null</code> values, a type must be declared as <a href="bond_cpp.html#nullable-types"><code>nullable</code></a>, e.g.:</p>
 <div class="sourceCode"><table class="sourceCode cs numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
 2
 3

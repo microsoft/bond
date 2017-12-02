@@ -140,7 +140,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#bond">Bond</a><ul>
 <li><a href="#dependencies">Dependencies</a><ul>
 <li><a href="#linux">Linux</a></li>
-<li><a href="#os-x">OS X</a></li>
+<li><a href="#macos">macOS</a></li>
 <li><a href="#windows">Windows</a></li>
 </ul></li>
 <li><a href="#contributing">Contributing</a></li>
@@ -159,6 +159,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li><a href="https://Microsoft.github.io/bond/manual/bond_cpp.html">C++</a></li>
 <li><a href="https://Microsoft.github.io/bond/manual/bond_cs.html">C#</a></li>
+<li><a href="https://Microsoft.github.io/bond/manual/bond_java.html">Java</a></li>
 <li><a href="https://Microsoft.github.io/bond/manual/bond_py.html">Python</a></li>
 <li><a href="https://Microsoft.github.io/bond/manual/bond_over_grpc.html">Bond-over-gRPC</a></li>
 <li><a href="https://microsoft.github.io/bond/manual/compiler.html"><code>gbc</code>, the Bond compiler/codegen tool</a>
@@ -206,7 +207,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">make</span> --jobs 8 check
 <span class="fu">sudo</span> make install <span class="co"># To install the other libraries just built</span></code></pre></div>
 <p>(The unit tests are large so you may want to run 4-8 build jobs in parallel, assuming you have enough memory.)</p>
-<h3 id="os-x">OS X</h3>
+<h3 id="macos">macOS</h3>
 <p>Install Xcode and then run the following command to install the required packages using Homebrew (<a href="http://brew.sh/" class="uri">http://brew.sh/</a>):</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">brew</span> install \
     cmake \
@@ -214,7 +215,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
     boost \
     boost-python</code></pre></div>
 <p>(boost-python is optional and only needed for Python support.)</p>
-<p>Bond can be built on OS X using either standard *nix makefiles or Xcode. In order to generate and build from makefiles, in the root <code>bond</code> directory run:</p>
+<p>Bond can be built on macOS using either standard *nix makefiles or Xcode. In order to generate and build from makefiles, in the root <code>bond</code> directory run:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build
 <span class="fu">cmake</span> -DBOND_ENABLE_GRPC=FALSE ..
