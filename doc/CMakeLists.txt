@@ -110,6 +110,11 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
         OPTIONS --table-of-contents
         OUTPUT_DIR manual)
 
+    add_pandoc_markdown (src/bond_java.md
+        CODE "java,numberLines"
+        OPTIONS --table-of-contents
+        OUTPUT_DIR manual)
+
     add_pandoc_markdown (src/reference_index.md
         CODE cpp
         OPTIONS --self-contained "--title-prefix=Bond Reference Index"
