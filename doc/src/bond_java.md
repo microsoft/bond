@@ -639,6 +639,18 @@ To consume either component from your local maven repository, see the
 [`build.gradle`](https://github.com/Microsoft/bond/blob/master/examples/java/core/serialization/build.gradle)
 in any of our Java example projects.
 
+Build tooling
+=============
+We provide a plugin for the `gradle` build tool. Once you've completed all of
+the build and installation steps in the previous section, the `gradle` plugin
+will recursively discover and compile all Bond files in `src/main/bond` and
+`src/test/bond` and add the generated code as production and test sources,
+respectively. You can specify Bond files outside those directories and pass
+options to `gbc` by adding an explicit `compileBond` or `compileTestBond`
+container to your build file. You can see an example of this in the
+[`build.gradle`](https://github.com/Microsoft/bond/blob/master/java/core/build.gradle)
+of the Bond Core library itself.
+
 References
 ==========
 
