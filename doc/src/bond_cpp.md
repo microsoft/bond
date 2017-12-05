@@ -1896,6 +1896,8 @@ References
 
 [bond_cs]: bond_cs.html
 
+[bond_java]: bond_java.html
+
 [bond_comm]: bond_comm.html
 
 [bond_over_grpc]: bond_over_grpc.html
