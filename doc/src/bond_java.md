@@ -40,7 +40,7 @@ definition.
     gbc java example.bond
 
 Using the generated Java code, we can write a simple program that will
-serialize and deserialize an instance of the Record schema using [Compact
+serialize and deserialize an instance of the Record schema using the [Compact
 Binary](bond_cpp.html#compact-binary) protocol:
 
     package examples;
@@ -78,7 +78,7 @@ the Bond compiler [`gbc`](compiler.html). The compiler generates Java classes
 that represent the schema. Schema fields are represented by public fields, and
 collection fields will be automatically initialized to an empty instance.
 
-The mapping between Bond and Java type systems is mostly obvious, but it is
+The mapping between the Bond and Java type systems is mostly obvious, but it is
 worth noting that, unlike Java reference types, Bond types are not nullable.
 This means that `string` in Bond IDL will be mapped to `java.lang.String`, which
 is a reference type, but the value `null` will not be valid. In order to allow
@@ -116,9 +116,6 @@ information necessary to serialize the generated type:
 
     serializer.serialize(obj, writer);
 
-The object's type must be the same as the type passed to the `Serializer`
-constructor.
-
 Deserializer
 ============
 
@@ -136,9 +133,9 @@ the information necessary to deserialize the generated type:
 
     record = deserializer.deserialize(reader);
 
-Deserializing from a payload encoded in an untagged protocol like Simple usually
-requires specifying the schema of the payload. To address this scenario,
-`Deserializer.deserialize()` has an override that takes a
+Deserializing from a payload encoded in an untagged protocol like [Simple
+Binary](#simple-binary) requires specifying the schema of the payload. To
+address this scenario, `Deserializer.deserialize()` has an overload that takes a
 [`RuntimeSchema`](#runtime-schema) as an argument:
 
     RuntimeSchema schema;
@@ -159,7 +156,7 @@ protocol metadata in the payload. Marshaling APIs provide the standard way to do
 the latter by automatically adding a payload header with the protocol identifier
 and version.
 
-The `Marshal` and `Unmarshal` APIs are very similar to `Serializer` and
+The `Marshal` and `Unmarshal` APIs are similar to `Serializer` and
 `Deserializer`, except that when calling `Unmarshal` the application simply
 provides an input stream with payload data, rather than an instance of a
 particular protocol reader:
@@ -183,12 +180,14 @@ See also the following example:
 
 Generics
 ========
-Java type erasure makes it necessary to express the parameters of generic types
-separately from normal Java declarations. This information is carried in
-`BondType` instances, which are associated with generated classes or instances
-and are required for all serialization and deserialization calls. Concrete
-types can pass them in a boilerplate fashion, as in the examples above, but
-generic types must have their parameters passed to their instance constructors.
+Java type erasure makes it necessary to express the parameters of generic Bond
+types separately from normal Java declarations. This information is carried in
+`BondType` instances, which are  required for all serialization and
+deserialization calls. Concrete Bond-generated types provide their `BondType`
+instances in the static member `BOND_TYPE`, but generic Bond-generated types
+require their parameters to be explicitly passed to their constructors and then
+expose their `BondType` instances via the instance method `.getBondType()`.
+
 See the following example:
 
 - `examples/java/core/generics`
@@ -302,8 +301,9 @@ Setting a field's default to `nothing` doesn't affect the schema type of the
 field, but does change the generated Java type. Types that would be references
 in Java - structs, collections, bondeds, and anything nullable - become
 `Something<T>`, while primitives become one of several specializations (e.g.,
-`SomethingInt`). A field with a default of `nothing` that is not present in a
-payload will result in a `null` field of the appropriate `Something` type.
+`SomethingInteger`). A field with a default of `nothing` that is not present in
+a payload will result in a field of the appropriate `Something` type with a null
+value.
 
 The fact that setting the default value of a field to `nothing` doesn't
 affect the field's schema type has an important consequence: the default
@@ -343,10 +343,12 @@ additional value: `null`.
 The default value for a field of a nullable type is always implicitly set to
 `null`. Explicit default values for nullable fields are not supported.
 
-In Java, reference types already have a way to represent `null`: `null`. For
-these types `nullable<T>` and `T` will have the same type in the generated
-code. For Java value types such as `int`, the generated code will use the
-appropriate boxed reference type (in this case, Integer).
+Java reference types are always nullable, so a `nullable<T>` where `T` maps to a
+Java reference type will not change the output of code generation. Attemping to
+serialize a field whose Bond type is not nullable that has a null value will
+result in a runtime exception. Where `T` maps to a Java value type, such as
+Bond's `int32` and Java's `int`, code generation will produce a field of the
+appropriate boxed reference type (in this case, `Integer`).
 
 Since a nullable type must represent the additional value of `null`, its
 serialized representation necessarily incurs some overhead compared to the
@@ -429,8 +431,7 @@ scenarios.
 Implemented in `CompactBinaryReader` and `CompactBinaryWriter` classes.
 Version 2 of Compact Binary adds length prefix for structs. This enables
 deserialization of [`bonded<T>`](#understanding-bondedt) and skipping of
-unknown fields in constant time. The trade-off is double pass encoding,
-resulting in up to 30% slower serialization performance.
+unknown fields in constant time.
 
 See also [Compact Binary encoding reference][compact_binary_format_reference].
 
@@ -448,20 +449,15 @@ Simple Binary
 -------------
 
 A binary, untagged protocol which is a good choice for storage scenarios as it
-offers potential for big saving on payload size. Because Simple is an untagged
-protocol, it requires that the payload schema is available during
-deserialization. In typical storage scenario application would store [runtime
-schema](#runtime-schema) and use it during deserialization with `BondedVoid`.
-In some specific scenarios when it can be assumed that producer and consumer
-have exactly the same schema, SimpleProtocol can be used with compile-time
-schema, providing unparalleled deserialization performance. One example is
-marshaling objects between processes or between native and managed components.
+offers potential for big saving on payload size. Because Simple Binary is an
+untagged protocol, it requires that the payload schema is available during
+deserialization. In typical storage scenario application would store a [runtime
+schema](#runtime-schema) and pass it to any deserialization calls made later.
 
 Implemented in `SimpleBinaryReader` and `SimpleBinaryWriter` classes.
 
 Version 2 of Simple Protocol uses variable integer encoding for string and
-container lengths, resulting in more compact payload without measurable
-performance impact.
+container lengths, resulting in more compact payloads.
 
 See example: `examples/java/core/untagged_protocols`.
 
@@ -498,20 +494,20 @@ Understanding `bonded<T>`
 
 The generic type `bonded<T>` is a simple yet powerful abstraction which is a
 fundamental part of Bond APIs and enables such usage scenarios as lazy
-deserialization, pass-through and polymorphism.
+deserialization, pass-through, and polymorphism.
 
-In Java `bonded<T>` maps to the `Bonded<T>` abstract class, which supports four
+In Java, `bonded<T>` maps to the `Bonded<T>` abstract class, which supports four
 operations: `serialize`, `deserialize`, `convert`, and `cast`. Bond provides
 several implementations that represent delayed serialization backed by an
-instance or a stream. `Bonded<T>` exposes several static methods that allow
+instance or a stream. `Bonded<T>` exposes several static methods that allow the
 creation of bonded objects and streams.
 
 Lazy deserialization
 --------------------
 
-Because `bonded<T>` can store (or more accurately, refer to) data representing
-a serialized data, it can be used to de facto delay deserialization of some
-parts of payload:
+Because `bonded<T>` can store (or, more accurately, refer to) data representing
+a serialized object, it can be used to delay deserialization of some parts of a
+payload:
 
     struct Example
     {
@@ -521,57 +517,26 @@ parts of payload:
 
 The schema defined above contains two nested fields. When an object of type
 `Example` is deserialized, the field `always` will be fully instantiated and
-deserialized, but field `sometimes`, which is declared as `bonded<Sometimes>`,
+deserialized, but the field `sometimes`, which is declared as `bonded<Sometimes>`,
 will be merely initialized with a reference to its serialized representation.
-Application can then deserialize the object only when needed:
+Applications can then deserialize the object only when needed:
 
-    final Example example = deserializer.deserialize(reader);
+    final Example ex = deserializer.deserialize(reader);
 
     // Deserialize sometimes only when needed
     if (needSometimes) {
-        final Sometimes sometimes = example.sometimes.deserialize();
-    }
-
-Pass-through
-------------
-
-When a `bonded<T>` containing a payload is serialized, all the fields from the
-original payload are preserved. This property is very useful when building
-multi-stage service pipelines. Intermediary nodes often need to pass data
-through with full fidelity. At the same time, it is desirable that every schema
-change doesn't necessitate redeployment of all the nodes in a pipeline. Using
-`bonded<T>` for pass-through is often the right solution.
-
-Let's imagine a simple aggregator which receives responses from upstream
-services and aggregates top results:
-
-    struct Upstream
-    {
-        0: bonded<Response> response;
-        1: float ranking;
-    }
-
-    struct Aggregated
-    {
-        0: list<bonded<Response>> responses;
-    }
-
-Using `bonded<Response>` allows the intermediary to aggregate responses,
-preserving their full content, even if the aggregator doesn't use the same
-version of the `Response` schema as the upstream.
-
-    void processResponse(Upstream upstream) {
-        if (upstream.ranking > threshold) {
-            aggregated.responses.add(upstream.response);
-        }
+        final Sometimes sometimes = ex.sometimes.deserialize();
     }
 
 Polymorphism
 ------------
 
-The type parameter `T` in `Bonded<T>` interface is covariant which enables
-polymorphism. A `Bonded<Base>` can be initialized with an instance of
-`Bonded<Derived>`.
+The type parameter `T` in a `Bonded<T>` is invariant. The instance method
+`.cast(BondType)` can be used to upcast and `.convert(BondType)` can be used to
+downcast. In both cases, the data backing the `Bonded` is unmodified.
+
+**Warning**: instantiating a `Bonded<Base>` from an instance of `Derived` and then
+serializing it will serialize _only_ the `Base` fields.
 
 - `examples/java/core/polymorphic_container`
 
@@ -579,7 +544,7 @@ Codegen parameters
 ------------------
 
 `--namespace`: Allows mapping Bond namespaces into Java packages. If you have a
-bondfile containing a `namespace examples` declaration and want your classes
+Bond file containing a `namespace examples` declaration and want your classes
 generated into `org.bondlib.examples`, you can invoke gbc like this:
 
     gbc java --namespace="examples=org.bondlib.examples" example.bond
@@ -612,7 +577,7 @@ Java has two additional requirements:
     Bond into.
 
   * Windows: You must add the directory containing `gbc.exe` to your `PATH`
-    variable. You can do this from a `cmd` window with `setx /M PATH
+    variable. You can do this from a `cmd` window with `setx PATH
     "%PATH%;<bond repo>\build\compiler\build\gbc"`, where `<bond repo>` is the
     directory you cloned Bond into.
 
@@ -639,6 +604,20 @@ To consume either component from your local maven repository, see the
 [`build.gradle`](https://github.com/Microsoft/bond/blob/master/examples/java/core/serialization/build.gradle)
 in any of our Java example projects.
 
+Build tooling
+=============
+
+We provide a plugin for the `gradle` build tool. Once you've completed all of
+the build and installation steps in the [build
+instructions](#build-instructions) section, the `gradle` plugin will recursively
+discover and compile all Bond files in `src/main/bond` and `src/test/bond` and
+add the generated code as production and test sources, respectively. You can
+specify Bond files outside those directories and pass options to `gbc` by adding
+an explicit `compileBond` or `compileTestBond` container to your build file. You
+can see an example of this in the
+[`build.gradle`](https://github.com/Microsoft/bond/blob/master/java/core/build.gradle)
+of the Bond Core library itself.
+
 References
 ==========
 
@@ -652,12 +631,6 @@ References
 ---------------------------
 
 [Python User's Manual][bond_py]
-----------------------------
-
-[Bond Comm overview][bond_comm]
-----------------------------
-
-[Bond-over-gRPC overview][bond_over_grpc]
 ----------------------------
 
 [bond_cpp]: bond_cpp.html

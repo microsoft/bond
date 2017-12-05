@@ -1656,6 +1656,7 @@ References
 [bond_over_grpc]: bond_over_grpc.html
 [bond_comm]: bond_comm.html
 [bond_cpp]: bond_cpp.html
+[bond_java]: bond_java.html
 [bond_py]: bond_py.html
 [compiler]: compiler.html
 
