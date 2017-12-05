@@ -16,14 +16,13 @@ The image is based on Ubuntu 16.04 (Xenial Xerus) and contains:
 A new image is automatically built when the master branch of the main Bond
 repository (https://github.com/Microsoft/bond) is changed. These images are
 then pushed to the bondciimages.azurecr.io/ubuntu-1604 container repository.
-The Travis CI builds pull fixed versions of the image and use that as their
-basis.
+The Travis CI builds pull a fixed version of the image and use that.
 
-The image is built on a Microsoft VSTS instance. It's status is shown in the
+The image is built on a Microsoft VSTS instance. Its status is shown in the
 image above. Currently, access to the results of this build are limited to
 Microsoft employees. If you need details about a given build, please
 [open an issue](https://github.com/Microsoft/bond/issues/new) and one of the
-maintianers from Microsoft can get you the details.
+maintainers from Microsoft can get you the details.
 
 # Manual Builds
 
@@ -52,9 +51,9 @@ This will make the Docker image with all the required dependencies and will
 compile all the required versions of Boost (using the `build_boosts.zsh`
 script) that will become part of the image.
 
-The build takes about 50 minutes on a quad-core 2.4 GHz Xeon. When it
-finishes, there will be a new Docker image with the tag `bond-ubuntu-1604`
-in your collection of Docker images:
+The build takes about 20 minutes on a quad-core 3.3 GHz Skylake Xeon. When
+it finishes, there will be a new Docker image with the tag
+`bond-ubuntu-1604` in your collection of Docker images:
 
     $ docker images
 
