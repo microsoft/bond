@@ -1,0 +1,595 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>A Thorough Guide to Bond for Java</title>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+  body {
+      line-height: 1.5;
+      font-family: Helvetica, Arial, sans-serif;
+      color: #333333;
+      font-size: 1em;
+  }
+  code {
+      font-size: 1em;
+      font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace, serif;
+  }
+  td.lineNumbers { width: 40px; }
+  div#all {
+    max-width: 1120px;
+    background-color: #ffffff;
+    margin: 0 auto;
+    padding: 25px;
+    overflow: auto;
+  }
+  code > span.kw { color: #204a87; font-weight: normal; } /* Keyword */
+  code > span.co { color: #4E9A06; font-style: normal; }
+  code > span.st { color: #8A0303; font-style: normal; }
+  code > span.cf { color: #204a87; font-weight: normal; } /* ControlFlow */
+  code > span.op { color: #000000; font-weight: normal; } /* Operator */
+  code > span.pp { color: #8f5902; font-style: normal; } /* Preprocessor */
+  code > span.ex { } /* Extension */
+  code > span.at { color: #c4a000; } /* Attribute */
+  code > span.do { color: #8f5902; font-weight: normal; font-style: normal; } /* Documentation */
+  code > span.an { color: #8f5902; font-weight: normal; font-style: normal; } /* Annotation */
+  code > span.cv { color: #8f5902; font-weight: normal; font-style: normal; } /* CommentVar */
+  code > span.in { color: #8f5902; font-weight: normal; font-style: normal; } /* Information */
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    border-bottom: 1px solid black;
+  }
+
+  div.sourceCode {
+    overflow-x: auto;
+    max-height: 620px;
+  }
+
+  table.sourceCode {
+    line-height: 120%;
+  }
+
+  #toc {
+    width: 300px;
+    position:fixed;
+    overflow: auto;
+    height: 95%;
+  }
+
+  #main {
+    margin-left: 320px;
+    margin-rigth: auto;
+    max-width: 800px;
+  }
+  a {
+    text-decoration: none;
+  }
+  #toc a:visited {
+    color: #99c;
+  }
+  #main a:visited {
+    color: #36c;
+  }
+  a:link {
+    color: #36c;
+  }
+  @media screen and (max-width: 979px){
+  #main {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #toc {
+    left: -300px;
+  }
+  }
+  </style>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58775439-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
+<body>
+<nav id="TOC"></nav>
+<div id="all">
+<div id="toc">
+<p><img src="data:image/png;base64,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" alt="The Bond logo: a stylized glue gun" /></p>
+<ul>
+<li><a href="#about">About</a></li>
+<li><a href="#basic-example">Basic example</a></li>
+<li><a href="#code-generation">Code generation</a></li>
+<li><a href="#serializer">Serializer</a></li>
+<li><a href="#deserializer">Deserializer</a></li>
+<li><a href="#marshaling">Marshaling</a></li>
+<li><a href="#generics">Generics</a></li>
+<li><a href="#schema-evolution">Schema evolution</a></li>
+<li><a href="#default-values">Default values</a></li>
+<li><a href="#default-value-of-nothing">Default value of <code>nothing</code></a></li>
+<li><a href="#nullable-types">Nullable types</a></li>
+<li><a href="#protocols">Protocols</a><ul>
+<li><a href="#compact-binary">Compact Binary</a></li>
+<li><a href="#fast-binary">Fast Binary</a></li>
+<li><a href="#simple-binary">Simple Binary</a></li>
+</ul></li>
+<li><a href="#runtime-schema">Runtime schema</a></li>
+<li><a href="#understanding-bondedt">Understanding <code>bonded&lt;T&gt;</code></a><ul>
+<li><a href="#lazy-deserialization">Lazy deserialization</a></li>
+<li><a href="#polymorphism">Polymorphism</a></li>
+<li><a href="#codegen-parameters">Codegen parameters</a></li>
+</ul></li>
+<li><a href="#platform-limitations">Platform limitations</a></li>
+<li><a href="#build-instructions">Build instructions</a></li>
+<li><a href="#build-tooling">Build tooling</a></li>
+<li><a href="#references">References</a><ul>
+<li><a href="#bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></a></li>
+<li><a href="#c-users-manualbond_cpp"><a href="bond_cpp.html">C++ User’s Manual</a></a></li>
+<li><a href="#c-users-manualbond_cs"><a href="bond_cs.html">C# User’s Manual</a></a></li>
+<li><a href="#python-users-manualbond_py"><a href="bond_py.html">Python User’s Manual</a></a></li>
+</ul></li>
+</ul>
+</div>
+<div id="main">
+<div id="header">
+<h1 class="title">A Thorough Guide to Bond for Java</h1>
+</div>
+<h1 id="about">About</h1>
+<p>Bond is an extensible framework for working with schematized data. It is suitable for scenarios ranging from service communications to Big Data storage and processing.</p>
+<p>Bond defines a rich type system and <a href="#schema-evolution">schema evolution rules</a> which allow forward and backward compatibility. The core Bond features include high performance serialization/deserialization and a very powerful, generic data transform mechanism. The framework is highly extensible via pluggable serialization protocols, data streams, user defined type aliases and more.</p>
+<p>By design Bond is language and platform independent and is currently supported for C++, C#, Java, and Python on Linux, macOS, and Windows.</p>
+<p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
+<h1 id="basic-example">Basic example</h1>
+<p>In Bond data schemas are defined using idl-like <a href="compiler.html#idl-syntax">syntax</a>:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">namespace examples
+
+struct Record
+{
+    <span class="dv">0</span>: string name;
+    <span class="dv">1</span>: vector&lt;<span class="dt">double</span>&gt; constants;
+}</code></pre></td></tr></table></div>
+<p>In order to use the schema in a Java program, it needs to be compiled using the Bond compiler. This step is sometimes also referred to as code generation (or codegen) because the compilation generates Java code corresponding to the schema definition.</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">gbc java example.<span class="fu">bond</span></code></pre></td></tr></table></div>
+<p>Using the generated Java code, we can write a simple program that will serialize and deserialize an instance of the Record schema using the <a href="bond_cpp.html#compact-binary">Compact Binary</a> protocol:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java"><span class="kw">package</span><span class="im"> examples;</span>
+
+<span class="kw">import</span><span class="im"> org.bondlib.*;</span>
+
+<span class="kw">import</span><span class="im"> java.io.*;</span>
+
+<span class="kw">public</span> <span class="kw">class</span> Example {
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span>(<span class="bu">String</span>[] args) <span class="kw">throws</span> <span class="bu">IOException</span> {
+        <span class="dt">final</span> Record src = <span class="kw">new</span> <span class="fu">Record</span>();
+        src.<span class="fu">name</span> = <span class="st">&quot;FooBar&quot;</span>;
+        src.<span class="fu">constants</span>.<span class="fu">add</span>(<span class="fl">3.14</span>);
+        src.<span class="fu">constants</span>.<span class="fu">add</span>(<span class="fl">6.28</span>);
+
+        <span class="dt">final</span> <span class="bu">ByteArrayOutputStream</span> output = <span class="kw">new</span> <span class="bu">ByteArrayOutputStream</span>();
+        <span class="dt">final</span> CompactBinaryWriter writer = <span class="kw">new</span> <span class="fu">CompactBinaryWriter</span>(output, <span class="dv">1</span>);
+
+        <span class="dt">final</span> Serializer&lt;Record&gt; serializer = <span class="kw">new</span> Serializer&lt;&gt;();
+        serializer.<span class="fu">serialize</span>(src, writer);
+
+        <span class="dt">final</span> <span class="bu">ByteArrayInputStream</span> input = <span class="kw">new</span> <span class="bu">ByteArrayInputStream</span>(output.<span class="fu">toByteArray</span>());
+        <span class="dt">final</span> CompactBinaryReader reader = <span class="kw">new</span> <span class="fu">CompactBinaryReader</span>(input, <span class="dv">1</span>);
+
+        <span class="dt">final</span> Deserializer&lt;Record&gt; deserializer = <span class="kw">new</span> Deserializer&lt;&gt;(Record.<span class="fu">BOND_TYPE</span>);
+        <span class="dt">final</span> Record dst = deserializer.<span class="fu">deserialize</span>(reader);
+    }
+}</code></pre></td></tr></table></div>
+<h1 id="code-generation">Code generation</h1>
+<p>In order to use a Bond schema in a Java program, it needs to be compiled using the Bond compiler <a href="compiler.html"><code>gbc</code></a>. The compiler generates Java classes that represent the schema. Schema fields are represented by public fields, and collection fields will be automatically initialized to an empty instance.</p>
+<p>The mapping between the Bond and Java type systems is mostly obvious, but it is worth noting that, unlike Java reference types, Bond types are not nullable. This means that <code>string</code> in Bond IDL will be mapped to <code>java.lang.String</code>, which is a reference type, but the value <code>null</code> will not be valid. In order to allow <code>null</code> values, a type must be declared as <a href="bond_cpp.html#nullable-types"><code>nullable</code></a>, e.g.:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">struct Foo
+{
+    <span class="dv">0</span>: list&lt;nullable&lt;string&gt;&gt; listOfNullableStrings;
+}</code></pre></td></tr></table></div>
+<p>The value <code>null</code> is also legal for fields declared in Bond IDL to have a <a href="bond_cpp.html#default-value-of-nothing">default of <code>nothing</code></a>, e.g.:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">struct Bar
+{
+    <span class="dv">0</span>: string str = nothing;
+}</code></pre></td></tr></table></div>
+<h1 id="serializer">Serializer</h1>
+<p>The Bond serialization API is provided by the <code>Serializer</code> class. It is a generic class parameterized with a single Bond-generated type:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">Serializer&lt;Record&gt;</code></pre></td></tr></table></div>
+<p>The constructor of the <code>Serializer</code> class takes a <code>BondType</code>, which contains the information necessary to serialize the generated type:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java"><span class="kw">new</span> Serializer&lt;Record&gt;(Record.<span class="fu">BOND_TYPE</span>)
+<span class="co">// or</span>
+<span class="kw">new</span> Serializer&lt;Record&gt;(someRecord.<span class="fu">getBondType</span>())
+
+serializer.<span class="fu">serialize</span>(obj, writer);</code></pre></td></tr></table></div>
+<h1 id="deserializer">Deserializer</h1>
+<p>The Bond deserialization API is provided by the <code>Deserializer</code> class. It is a generic class parameterized with a single Bond-generated type:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">Deserializer&lt;Record&gt;</code></pre></td></tr></table></div>
+<p>The constructor of the <code>Deserializer</code> class takes a <code>BondType</code>, which contains the information necessary to deserialize the generated type:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">deserializer = <span class="kw">new</span> Deserializer&lt;Record&gt;(Record.<span class="fu">BOND_TYPE</span>)
+<span class="co">// or</span>
+deserializer = <span class="kw">new</span> Deserializer&lt;Record&gt;(someRecord.<span class="fu">getBondType</span>())
+
+record = deserializer.<span class="fu">deserialize</span>(reader);</code></pre></td></tr></table></div>
+<p>Deserializing from a payload encoded in an untagged protocol like <a href="#simple-binary">Simple Binary</a> requires specifying the schema of the payload. To address this scenario, <code>Deserializer.deserialize()</code> has an overload that takes a <a href="#runtime-schema"><code>RuntimeSchema</code></a> as an argument:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">RuntimeSchema schema;
+<span class="co">// ...</span>
+deserializer = <span class="kw">new</span> Deserializer&lt;Record&gt;(Record.<span class="fu">BOND_TYPE</span>);
+record = deserializer.<span class="fu">deserialize</span>(reader, schema);</code></pre></td></tr></table></div>
+<p>See also the following example:</p>
+<ul>
+<li><code>examples/java/core/untagged_protocols</code></li>
+</ul>
+<h1 id="marshaling">Marshaling</h1>
+<p>Since Bond supports multiple serialization <a href="bond_cpp.html#protocols">protocols</a>, application endpoints either have to agree on a particular protocol, or include protocol metadata in the payload. Marshaling APIs provide the standard way to do the latter by automatically adding a payload header with the protocol identifier and version.</p>
+<p>The <code>Marshal</code> and <code>Unmarshal</code> APIs are similar to <code>Serializer</code> and <code>Deserializer</code>, except that when calling <code>Unmarshal</code> the application simply provides an input stream with payload data, rather than an instance of a particular protocol reader:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java"><span class="dt">final</span> Record src = <span class="kw">new</span> <span class="fu">Record</span>();
+src.<span class="fu">foo</span> = <span class="st">&quot;foo&quot;</span>;
+src.<span class="fu">constants</span>.<span class="fu">add</span>(<span class="fl">3.14</span>);
+src.<span class="fu">constants</span>.<span class="fu">add</span>(<span class="fl">6.28</span>);
+
+<span class="dt">final</span> <span class="bu">ByteArrayOutputStream</span> output = <span class="kw">new</span> <span class="bu">ByteArrayOutputStream</span>();
+<span class="dt">final</span> CompactBinaryWriter writer = <span class="kw">new</span> <span class="fu">CompactBinaryWriter</span>(output, <span class="dv">1</span>);
+
+Marshal.<span class="fu">marshal</span>(src, writer);
+
+<span class="dt">final</span> <span class="bu">ByteArrayInputStream</span> input = <span class="kw">new</span> <span class="bu">ByteArrayInputStream</span>(output.<span class="fu">toByteArray</span>());
+<span class="dt">final</span> Record dst = Unmarshal.<span class="fu">unmarshal</span>(input, Record.<span class="fu">BOND_TYPE</span>);</code></pre></td></tr></table></div>
+<p>See also the following example:</p>
+<ul>
+<li><code>examples/java/core/marshaling</code></li>
+</ul>
+<h1 id="generics">Generics</h1>
+<p>Java type erasure makes it necessary to express the parameters of generic Bond types separately from normal Java declarations. This information is carried in <code>BondType</code> instances, which are required for all serialization and deserialization calls. Concrete Bond-generated types provide their <code>BondType</code> instances in the static member <code>BOND_TYPE</code>, but generic Bond-generated types require their parameters to be explicitly passed to their constructors and then expose their <code>BondType</code> instances via the instance method <code>.getBondType()</code>.</p>
+<p>See the following example:</p>
+<ul>
+<li><code>examples/java/core/generics</code></li>
+</ul>
+<h1 id="schema-evolution">Schema evolution</h1>
+<p>Bond does not use explicit versioning to deal with changes to schemas (and the resulting types) over time. Instead, Bond supports certain schema evolution operations which allow the producer and consumer of Bond types to evolve without lockstep coordination.</p>
+<p>The following changes to a schema will never break compatibility across the wire:</p>
+<ul>
+<li>Adding or removing an <code>optional</code> or <code>required_optional</code> field</li>
+<li>Changing a field’s type between <code>int32</code> and <code>enum</code></li>
+<li>Changing a field’s type between <code>vector&lt;T&gt;</code> and <code>list&lt;T&gt;</code></li>
+<li>Changing a field’s type between <code>blob</code> and <code>vector&lt;int8&gt;</code> or <code>blob</code> and <code>list&lt;int8&gt;</code></li>
+<li>Changing a field’s type between <code>T</code> and <code>bonded&lt;T&gt;</code></li>
+<li>Adding new enumeration constants that don’t alter existing constants (beware of implicit reordering)</li>
+</ul>
+<p>The following changes to a type are generally safe but require some consideration about how the change is rolled out:</p>
+<ul>
+<li>Changing a field between <code>optional</code> and <code>required_optional</code> or between <code>required_optional</code> and <code>required</code>. The <code>required_optional</code> modifier facilitates a two-step process for changing between <code>optional</code> and <code>required</code>, but the first step must be completed on both the producer and the consumer sides before the second step can be started on either side.</li>
+<li>Promoting a field with a numeric type from a smaller size to a larger size (e.g.: <code>float</code> to <code>double</code>, <code>uint8</code> to <code>uint16</code>, <code>uint8</code> to <code>uint32</code>, <code>int8</code> to <code>int16</code>, etc.). The consumer must get the change before the producer. Note that changing from unsigned to signed or vice versa is <em>not</em> compatible (e.g.: <code>uint8</code> to <code>int16</code>).</li>
+<li>Promoting from <code>int8</code> or <code>int16</code> to <code>enum</code>. The consumer must get the change before the producer.</li>
+</ul>
+<p>These following changes will break wire compatibility and are not recommended:</p>
+<ul>
+<li>Adding or removing <code>required</code> fields</li>
+<li>Incompatible change of field types (any type change <em>not</em> covered above); e.g.: <code>int32</code> to <code>string</code>, <code>string</code> to <code>wstring</code></li>
+<li>Changing of field ordinals</li>
+<li>Changing of inheritance hierarchy (add/remove/substituting base struct)</li>
+<li>Changing between <code>required</code> and <code>optional</code> directly</li>
+<li>Changing the default value of a field</li>
+<li>Changing existing enumeration constants in any way (including implicit renumbering)</li>
+</ul>
+<p>Some best practices and other considerations to keep in mind:</p>
+<ul>
+<li>When removing a field, comment it out rather than removing it altogether so that the field ordinal is not reused in future edits of the schema</li>
+<li>When working with untagged protocols like <a href="#simple-binary">SimpleBinaryProtocol</a>, great care must be taken to ensure the same <a href="#runtime-schema">schema</a> is used when deserializing the payload as was used to serialize it.</li>
+<li>Caution should be used when changing or reusing field names as this could break text-based protocols like <a href="#simple-json">SimpleJsonProtocol</a></li>
+<li><code>required</code> should be used sparingly and only with careful consideration</li>
+</ul>
+<h1 id="default-values">Default values</h1>
+<p>Fields of a Bond defined struct always have a default value, either explicitly specified in the .bond file, or the implicit default.</p>
+<p>The implicit default is</p>
+<ul>
+<li><code>false</code> for <code>bool</code> fields</li>
+<li>0 for arithmetic types</li>
+<li>empty for string/containers</li>
+<li><code>null</code> for <a href="#nullable-types">nullable type</a></li>
+<li>for struct and <code>bonded</code> fields, an instance of a struct in which all of the fields are initialized to their default values, recursively</li>
+</ul>
+<p>There is no implicit default for enum fields: they must have an explicit default value in the .bond file.</p>
+<p>Explicit default values (other than <a href="#default-value-of-nothing"><code>nothing</code></a>) may not be specified for <code>nullable</code> or container fields. Struct and <code>bonded</code> fields may not have an explicit default value. They always use their implicit default values.</p>
+<p>The default values of fields matter because this is what an application will see after deserialization for any optional field that wasn’t present in the payload (e.g. when the payload was created from an older version of the schema).</p>
+<p>Additionally, some protocols can omit <a href="bond_cpp.html#required-fields"><code>optional</code> non-struct fields</a> set to their default values, reducing payload size.</p>
+<h1 id="default-value-of-nothing">Default value of <code>nothing</code></h1>
+<p>Sometimes it is necessary to distinguish between any of the possible values of a field and absence of a value. To support such scenarios Bond allows non-struct fields’ default values to be explicitly set to <code>nothing</code> <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">struct AboutNothing
+{
+    <span class="dv">0</span>: uint16 n = nothing;
+    <span class="dv">1</span>: string name = nothing;
+    <span class="dv">2</span>: list&lt;<span class="dt">float</span>&gt; floats = nothing;
+}</code></pre></td></tr></table></div>
+<p>Setting a field’s default to <code>nothing</code> doesn’t affect the schema type of the field, but does change the generated Java type. Types that would be references in Java - structs, collections, bondeds, and anything nullable - become <code>Something&lt;T&gt;</code>, while primitives become one of several specializations (e.g., <code>SomethingInteger</code>). A field with a default of <code>nothing</code> that is not present in a payload will result in a field of the appropriate <code>Something</code> type with a null value.</p>
+<p>The fact that setting the default value of a field to <code>nothing</code> doesn’t affect the field’s schema type has an important consequence: the default value of the field doesn’t have a serialized representation. What this means in practice depends on whether the field is <code>optional</code> or <code>required</code>. Optional fields set to <code>nothing</code> are usually omitted during serialization <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>, just like for any other default values. <a href="bond_cpp.html#required-fields">Required fields</a>, by definition, can never be omitted. Since <code>nothing</code> has no serialized representation, an attempt to serialize an object with required fields set to <code>nothing</code> will result in a runtime exception. If a null value needs to be represented in the serialized form, then a default of <code>nothing</code> is the wrong choice and a <a href="#nullable-types">nullable type</a> should be used instead.</p>
+<h1 id="nullable-types">Nullable types</h1>
+<p>For any type in the Bond meta-schema, <code>nullable&lt;T&gt;</code> defines a nullable type. A nullable type can store all the same values as its base type plus one additional value: <code>null</code>.</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">struct Nullables
+{
+    <span class="dv">0</span>: nullable&lt;bool&gt;         b; <span class="co">// can be true, false, or null</span>
+    <span class="dv">1</span>: list&lt;nullable&lt;string&gt;&gt; l; <span class="co">// can be a (possibly empty) list or null</span>
+}</code></pre></td></tr></table></div>
+<p>The default value for a field of a nullable type is always implicitly set to <code>null</code>. Explicit default values for nullable fields are not supported.</p>
+<p>Java reference types are always nullable, so a <code>nullable&lt;T&gt;</code> where <code>T</code> maps to a Java reference type will not change the output of code generation. Attemping to serialize a field whose Bond type is not nullable that has a null value will result in a runtime exception. Where <code>T</code> maps to a Java value type, such as Bond’s <code>int32</code> and Java’s <code>int</code>, code generation will produce a field of the appropriate boxed reference type (in this case, <code>Integer</code>).</p>
+<p>Since a nullable type must represent the additional value of <code>null</code>, its serialized representation necessarily incurs some overhead compared to the base type. Often it is more efficient to avoid using a nullable type and instead to designate one of the normal values to handle the special case that otherwise would be represented by <code>null</code>. For example <em>empty</em> is usually a good choice for string and container types and 0 for arithmetic types. Another option that may sometimes be appropriate is setting the default value of a non-struct field to <a href="#default-value-of-nothing"><code>nothing</code></a>. Struct fields can have neither an explicit default value nor be set to <code>nothing</code>, so <code>nullable</code> needs to be used if <code>null</code> semantics are needed for these fields.</p>
+<p>The canonical scenario where a nullable type is the right choice is recursive structures. For example here’s how Bond <code>TypeDef</code> struct is defined:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">struct TypeDef
+{
+    <span class="co">// Type identifier</span>
+    <span class="dv">0</span>: BondDataType id = BT_STRUCT;
+
+    <span class="co">// Index of struct definition in SchemaDef.structs when id == BT_STRUCT</span>
+    <span class="dv">1</span>: uint16 struct_def = <span class="dv">0</span>;
+
+    <span class="co">// Type definition for:</span>
+    <span class="co">//  list elements (id == BT_LIST),</span>
+    <span class="co">//  set elements (id == BT_SET),</span>
+    <span class="co">//  or mapped value (id == BT_MAP)</span>
+    <span class="dv">2</span>: nullable&lt;TypeDef&gt; element;
+
+    <span class="co">// Type definition for map key when id == BT_MAP</span>
+    <span class="dv">3</span>: nullable&lt;TypeDef&gt; key;
+
+    <span class="co">// True if the type is bonded&lt;T&gt;; used only when id == BT_STRUCT</span>
+    <span class="dv">4</span>: bool bonded_type;
+}</code></pre></td></tr></table></div>
+<p>The <code>TypeDef</code> struct is used to represent the type of a field in a Bond schema. If the type is a container such as a list or map, the type definition becomes recursive. For example, a list type definition contains the type of the list element which of course itself can be a container of elements of some other type, and so on, until the recursion is terminated with a <code>null</code> value for the <code>element</code> and <code>key</code> fields.</p>
+<h1 id="protocols">Protocols</h1>
+<p>Bond protocols are pluggable, allowing application to choose the most appropriate encoding format. Bond supports three kinds of protocols:</p>
+<ul>
+<li><p>Tagged protocols</p>
+<p>Tagged protocols interleave schema metadata within the payload. This makes the payload self-describing, allowing consumers to interpret it even without knowing the schema used by the producer.</p></li>
+<li><p>Untagged protocols</p>
+<p>Untagged protocols serialize only data and thus require that consumers know the payload schema via some out-of-band mechanism. Untagged protocols are often used in storage scenarios because they allow storing a <a href="#runtime-schema">schema</a> once (e.g. in a system table in a database) and thus eliminating metadata overhead from many records using the same schema.</p></li>
+<li><p>DOM-based protocols</p>
+<p>DOM-based protocol parse whole payload into an in-memory Data Object Model which then is queried during deserialization. Typically this kind of protocol is used to implement text based encoding such as JSON or XML. (These protocols are not yet supported in Java.)</p></li>
+</ul>
+<h2 id="compact-binary">Compact Binary</h2>
+<p>A binary, tagged protocol using variable integer encoding and compact field header. A good choice, along with <a href="#fast-binary">Fast Binary</a>, for RPC scenarios.</p>
+<p>Implemented in <code>CompactBinaryReader</code> and <code>CompactBinaryWriter</code> classes. Version 2 of Compact Binary adds length prefix for structs. This enables deserialization of <a href="#understanding-bondedt"><code>bonded&lt;T&gt;</code></a> and skipping of unknown fields in constant time.</p>
+<p>See also <a href="../reference/cpp/compact__binary_8h_source.html">Compact Binary encoding reference</a>.</p>
+<h2 id="fast-binary">Fast Binary</h2>
+<p>A binary, tagged protocol similar to <a href="#compact-binary">Compact Binary</a> but optimized for deserialization speed rather than payload compactness.</p>
+<p>Implemented in <code>FastBinaryReader</code> and<code>FastBinaryWriter</code> classes.</p>
+<p>See also <a href="../reference/cpp/fast__binary_8h_source.html">Fast Binary encoding reference</a>.</p>
+<h2 id="simple-binary">Simple Binary</h2>
+<p>A binary, untagged protocol which is a good choice for storage scenarios as it offers potential for big saving on payload size. Because Simple Binary is an untagged protocol, it requires that the payload schema is available during deserialization. In typical storage scenario application would store a <a href="#runtime-schema">runtime schema</a> and pass it to any deserialization calls made later.</p>
+<p>Implemented in <code>SimpleBinaryReader</code> and <code>SimpleBinaryWriter</code> classes.</p>
+<p>Version 2 of Simple Protocol uses variable integer encoding for string and container lengths, resulting in more compact payloads.</p>
+<p>See example: <code>examples/java/core/untagged_protocols</code>.</p>
+<h1 id="runtime-schema">Runtime schema</h1>
+<p>Some generic applications may need to work with Bond schemas unknown at compile-time. In order to address such scenarios, Bond defines a type <code>SchemaDef</code> to represent schemas at runtime. Applications can obtain an instance of <code>SchemaDef</code> for a particular type through its <code>BondType</code>:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java"><span class="co">// from a concrete class:</span>
+<span class="dt">final</span> SchemaDef schema = Record.<span class="fu">BOND_TYPE</span>.<span class="fu">buildSchemaDef</span>();
+
+<span class="co">// from an instance of a concrete or generic type:</span>
+<span class="dt">final</span> SchemaDef schema = myInstance.<span class="fu">getBondType</span>().<span class="fu">buildSchemaDef</span>();</code></pre></td></tr></table></div>
+<p>The <code>SchemaDef</code> object is always self contained, including the runtime schema definitions for all nested types (if any). <code>SchemaDef</code> is a Bond type, defined in <code>bond.bond</code>, and as such can be de/serialized like any other Bond type:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">serializer.<span class="fu">serialize</span>(Record.<span class="fu">BOND_TYPE</span>.<span class="fu">buildSchemaDef</span>(), writer);</code></pre></td></tr></table></div>
+<p>A serialized representation of <code>SchemaDef</code> can be also obtained directly from a schema definition IDL file using the <a href="compiler.html#runtime-schema">bond compiler</a>.</p>
+<p>See also the following example:</p>
+<ul>
+<li><code>examples/java/core/runtime_schema</code></li>
+</ul>
+<h1 id="understanding-bondedt">Understanding <code>bonded&lt;T&gt;</code></h1>
+<p>The generic type <code>bonded&lt;T&gt;</code> is a simple yet powerful abstraction which is a fundamental part of Bond APIs and enables such usage scenarios as lazy deserialization, pass-through, and polymorphism.</p>
+<p>In Java, <code>bonded&lt;T&gt;</code> maps to the <code>Bonded&lt;T&gt;</code> abstract class, which supports four operations: <code>serialize</code>, <code>deserialize</code>, <code>convert</code>, and <code>cast</code>. Bond provides several implementations that represent delayed serialization backed by an instance or a stream. <code>Bonded&lt;T&gt;</code> exposes several static methods that allow the creation of bonded objects and streams.</p>
+<h2 id="lazy-deserialization">Lazy deserialization</h2>
+<p>Because <code>bonded&lt;T&gt;</code> can store (or, more accurately, refer to) data representing a serialized object, it can be used to delay deserialization of some parts of a payload:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">struct Example
+{
+    <span class="dv">0</span>: Always always;
+    <span class="dv">1</span>: bonded&lt;Sometimes&gt; sometimes;
+}</code></pre></td></tr></table></div>
+<p>The schema defined above contains two nested fields. When an object of type <code>Example</code> is deserialized, the field <code>always</code> will be fully instantiated and deserialized, but the field <code>sometimes</code>, which is declared as <code>bonded&lt;Sometimes&gt;</code>, will be merely initialized with a reference to its serialized representation. Applications can then deserialize the object only when needed:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java"><span class="dt">final</span> Example ex = deserializer.<span class="fu">deserialize</span>(reader);
+
+<span class="co">// Deserialize sometimes only when needed</span>
+<span class="kw">if</span> (needSometimes) {
+    <span class="dt">final</span> Sometimes sometimes = ex.<span class="fu">sometimes</span>.<span class="fu">deserialize</span>();
+}</code></pre></td></tr></table></div>
+<h2 id="polymorphism">Polymorphism</h2>
+<p>The type parameter <code>T</code> in a <code>Bonded&lt;T&gt;</code> is invariant. The instance method <code>.cast(BondType)</code> can be used to upcast and <code>.convert(BondType)</code> can be used to downcast. In both cases, the data backing the <code>Bonded</code> is unmodified.</p>
+<p><strong>Warning</strong>: instantiating a <code>Bonded&lt;Base&gt;</code> from an instance of <code>Derived</code> and then serializing it will serialize <em>only</em> the <code>Base</code> fields.</p>
+<ul>
+<li><code>examples/java/core/polymorphic_container</code></li>
+</ul>
+<h2 id="codegen-parameters">Codegen parameters</h2>
+<p><code>--namespace</code>: Allows mapping Bond namespaces into Java packages. If you have a Bond file containing a <code>namespace examples</code> declaration and want your classes generated into <code>org.bondlib.examples</code>, you can invoke gbc like this:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">gbc java --namespace=<span class="st">&quot;examples=org.bondlib.examples&quot;</span> example.<span class="fu">bond</span></code></pre></td></tr></table></div>
+<p>Multiple aliases may be given to a single <code>--namespace</code> option by separating them with semicolons.</p>
+<h1 id="platform-limitations">Platform limitations</h1>
+<p>Bond for Java currently targets JDK 1.6.</p>
+<h1 id="build-instructions">Build instructions</h1>
+<p>Bond for Java is currently only available in source form. You will need to clone the Bond repository, install the appropriate dependencies for your platform, and build and install the Bond compiler. Follow the instructions in the top-level <a href="https://github.com/Microsoft/bond/blob/master/README.md">README.md</a> to do all of this.</p>
+<p>Java has two additional requirements:</p>
+<ul>
+<li><p>The Bond compiler, <code>gbc</code>, must be in your <code>PATH</code>.</p></li>
+<li><p>Linux, macOS: The <code>make install</code> step in the <code>README</code> will take care of this. If you don’t want to install Bond into system directories, you can add <code>export PATH=&lt;bond repo&gt;/build/compiler/build/gbc</code> to your <code>.bashrc</code> or other shell config file, where <code>&lt;bond repo&gt;</code> is the directory you cloned Bond into.</p></li>
+<li><p>Windows: You must add the directory containing <code>gbc.exe</code> to your <code>PATH</code> variable. You can do this from a <code>cmd</code> window with <code>setx PATH &quot;%PATH%;&lt;bond repo&gt;\build\compiler\build\gbc&quot;</code>, where <code>&lt;bond repo&gt;</code> is the directory you cloned Bond into.</p></li>
+<li><p>You need the <code>gradle</code> build tool, and should get it from the package manager for your system. Accordingly:</p></li>
+<li><p>Ubuntu: <code>sudo apt install gradle</code></p></li>
+<li><p>macOS: <code>brew install gradle</code></p></li>
+<li><p>Windows: <code>choco install gradle</code></p></li>
+</ul>
+<p>With all of this done, you’re ready to build the Bond library and the Bond gradle plugin (optional, but strongly recommended). To build the plugin and install it to your local maven repository:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">cd java/gradle-plugin; gradle build install</code></pre></td></tr></table></div>
+<p>To build the library and install it to your local maven repository:</p>
+<div class="sourceCode"><table class="sourceCode java numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+</pre></td><td class="sourceCode"><pre><code class="sourceCode java">cd java/core; gradle build install</code></pre></td></tr></table></div>
+<p>To consume either component from your local maven repository, see the <a href="https://github.com/Microsoft/bond/blob/master/examples/java/core/serialization/build.gradle"><code>build.gradle</code></a> in any of our Java example projects.</p>
+<h1 id="build-tooling">Build tooling</h1>
+<p>We provide a plugin for the <code>gradle</code> build tool. Once you’ve completed all of the build and installation steps in the <a href="#build-instructions">build instructions</a> section, the <code>gradle</code> plugin will recursively discover and compile all Bond files in <code>src/main/bond</code> and <code>src/test/bond</code> and add the generated code as production and test sources, respectively. You can specify Bond files outside those directories and pass options to <code>gbc</code> by adding an explicit <code>compileBond</code> or <code>compileTestBond</code> container to your build file. You can see an example of this in the <a href="https://github.com/Microsoft/bond/blob/master/java/core/build.gradle"><code>build.gradle</code></a> of the Bond Core library itself.</p>
+<h1 id="references">References</h1>
+<h2 id="bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></h2>
+<h2 id="c-users-manualbond_cpp"><a href="bond_cpp.html">C++ User’s Manual</a></h2>
+<h2 id="c-users-manualbond_cs"><a href="bond_cs.html">C# User’s Manual</a></h2>
+<h2 id="python-users-manualbond_py"><a href="bond_py.html">Python User’s Manual</a></h2>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>In Bond there is no concept of a default value for structs and thus a default of <code>nothing</code> can’t be set for fields of struct types or <code>bonded&lt;T&gt;</code>.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Some protocols might not support omitting optional fields (e.g. Simple Protocol). In such cases an attempt to serialize an object with field(s) set to <code>nothing</code> will result in a runtime exception.<a href="#fnref2">↩</a></p></li>
+</ol>
+</div>
+</div>
+</div>
+</body>
+</html>
