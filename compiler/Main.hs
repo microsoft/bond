@@ -85,13 +85,13 @@ cppCodegen options@Cpp {..} = do
     applyProto = map snd $ filter (enabled apply) protocols
     enabled a p = null a || fst p `elem` a
     protocols =
-        [ (Compact, ProtocolReader " ::bond::CompactBinaryReader< ::bond::InputBuffer>")
-        , (Compact, ProtocolWriter " ::bond::CompactBinaryWriter< ::bond::OutputBuffer>")
-        , (Compact, ProtocolWriter " ::bond::CompactBinaryWriter< ::bond::CompactBinaryCounter::type>")
-        , (Fast,    ProtocolReader " ::bond::FastBinaryReader< ::bond::InputBuffer>")
-        , (Fast,    ProtocolWriter " ::bond::FastBinaryWriter< ::bond::OutputBuffer>")
-        , (Simple,  ProtocolReader " ::bond::SimpleBinaryReader< ::bond::InputBuffer>")
-        , (Simple,  ProtocolWriter " ::bond::SimpleBinaryWriter< ::bond::OutputBuffer>")
+        [ (Compact, ProtocolReader " ::bond::CompactBinaryReader<::bond::InputBuffer>")
+        , (Compact, ProtocolWriter " ::bond::CompactBinaryWriter<::bond::OutputBuffer>")
+        , (Compact, ProtocolWriter " ::bond::CompactBinaryWriter<::bond::OutputBuffer>::Pass0")
+        , (Fast,    ProtocolReader " ::bond::FastBinaryReader<::bond::InputBuffer>")
+        , (Fast,    ProtocolWriter " ::bond::FastBinaryWriter<::bond::OutputBuffer>")
+        , (Simple,  ProtocolReader " ::bond::SimpleBinaryReader<::bond::InputBuffer>")
+        , (Simple,  ProtocolWriter " ::bond::SimpleBinaryWriter<::bond::OutputBuffer>")
         ]
     templates = concat $ map snd $ filter fst codegen_templates
     codegen_templates = [ (core_enabled, core_files)
