@@ -38,8 +38,22 @@ target_link_libraries (grpc_test_common PUBLIC
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     grpc++)
 
+add_bond_codegen(TARGET grpc_test_services_codegen
+  services.bond
+  GRPC)
+
 add_unit_test (io_manager.cpp)
+
+add_unit_test (service_attributes.cpp
+    "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/services_types.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/services_grpc.cpp")
+target_include_directories(service_attributes
+    PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+add_dependencies(service_attributes grpc_test_services_codegen)
+
 add_unit_test (thread_pool.cpp)
+
 add_unit_test (unary_call.cpp)
+
 add_unit_test (wait_callback.cpp)
 target_link_libraries(wait_callback PRIVATE bond_apply)
