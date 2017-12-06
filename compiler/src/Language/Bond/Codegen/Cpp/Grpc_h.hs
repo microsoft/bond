@@ -6,6 +6,7 @@
 module Language.Bond.Codegen.Cpp.Grpc_h (grpc_h) where
 
 import System.FilePath
+import Data.Maybe(isNothing)
 import Data.Monoid
 import Prelude
 import qualified Data.Text.Lazy as L
@@ -27,6 +28,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 #include "#{file}_reflection.h"
 #include "#{file}_types.h"
 #{newlineSep 0 includeImport imports}
+#{includeBondReflection}
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/client_callback.h>
@@ -78,6 +80,14 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
           where
             paramsText = toLazyText params
             padLeft = if L.head paramsText == ':' then [lt| |] else mempty
+
+    includeBondReflection =
+      if usesBondVoid then [lt|#include <bond/core/bond_reflection.h>|] else mempty
+      where usesBondVoid = any declUses declarations
+            declUses Service {serviceMethods = methods} = any methodUses methods
+            declUses _ = False
+            methodUses Function {methodInput = input} = isNothing input
+            methodUses Event {} = True
 
     grpc s@Service{..} = [lt|
 #{template}class #{declName} final
