@@ -388,6 +388,12 @@ protected:
         _required = next_required_field<typename schema<T>::type::fields>::value;
     }
 
+    void Base(bool done) const
+    {
+        if (done)
+            UnexpectedStructStopException();
+    }
+
     template <typename Head>
     typename boost::enable_if<std::is_same<typename Head::field_modifier,
                                            reflection::required_field_modifier> >::type
@@ -426,6 +432,8 @@ protected:
 private:
     BOND_NORETURN void MissingFieldException() const;
 
+    BOND_NORETURN void UnexpectedStructStopException() const;
+
     mutable uint16_t _required;
 };
 
@@ -435,6 +443,14 @@ void RequiredFieldValiadator<T>::MissingFieldException() const
     BOND_THROW(CoreException,
           "De-serialization failed: required field " << _required <<
           " is missing from " << schema<T>::type::metadata.qualified_name);
+}
+
+template <typename T>
+void RequiredFieldValiadator<T>::UnexpectedStructStopException() const
+{
+    BOND_THROW(CoreException,
+        "De-serialization failed: unexpected struct stop is encountered for "
+        << schema<T>::type::metadata.qualified_name);
 }
 
 //
@@ -530,7 +546,9 @@ public:
     template <typename X>
     bool Base(const X& value) const
     {
-        return AssignToBase(_var, value);
+        bool done = AssignToBase(_var, value);
+        Validator::Base(done);
+        return done;
     }
 
 

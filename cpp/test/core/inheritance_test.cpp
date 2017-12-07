@@ -10,6 +10,34 @@ bool Compare(const ListWithBase& left, const ListOfBase& right)
         && Equal<Protocols>(left.v4, right.v4);
 }
 
+template <typename Reader, typename Writer>
+typename boost::enable_if<bond::uses_dynamic_parser<Reader> >::type
+DeserializeBaseToDerived()
+{
+    ListOfBondedBase obj;
+    GetBonded<Reader, Writer, ListOfBondedBase>(InitRandom<ListOfBondedBase>()).Deserialize(obj);
+
+    for (const auto& base : obj.l)
+    {
+        bond::bonded<StructWithBase> derived_bonded(base);
+        StructWithBase derived;
+        BOOST_CHECK_THROW(derived_bonded.Deserialize(derived), bond::CoreException);
+        BOOST_CHECK_THROW(bond::bonded<void>(derived_bonded).Deserialize(derived), bond::CoreException);
+    }
+}
+
+template <typename Reader, typename Writer>
+typename boost::disable_if<bond::uses_dynamic_parser<Reader> >::type
+DeserializeBaseToDerived()
+{}
+
+template <typename Reader, typename Writer>
+TEST_CASE_BEGIN(BaseToDerivedDeserializationTest)
+{
+    DeserializeBaseToDerived<Reader, Writer>();
+}
+TEST_CASE_END
+
 template <uint16_t N, typename Reader, typename Writer>
 void InheritanceTests(const char* name)
 {
@@ -50,6 +78,9 @@ void InheritanceTests(const char* name)
     // Deserialize as containers of base/partial hierarchy
     AddTestCase<TEST_ID(N),
         AllBindingAndMapping2, Reader, Writer, ListWithBase, ListOfBase>(suite, "Containers, partial hierarchy");
+
+    AddTestCase<TEST_ID(N),
+        BaseToDerivedDeserializationTest, Reader, Writer>(suite, "Base to derived deserialization");
 }
 
 
