@@ -1,0 +1,18 @@
+import "bond/core/bond.bond"
+
+namespace UnitTest;
+
+[SomeAttribute("service value")]
+service SimpleService
+{
+    [SomeAttribute("method value")]
+    [DifferentAttribute("")] // empty string, but present
+    bond.Box<int32> IntToInt(bond.Box<int32>);
+
+    [NothingToInt("no clash")]
+    bond.Box<int32> NothingToInt();
+
+    nothing IntToNothing(bond.Box<int32>);
+
+    nothing NothingToNothing();
+}

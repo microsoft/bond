@@ -125,7 +125,7 @@ namespace #{csNamespace}
                 return #{methodName}Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
-            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<#{getMessageTypeName methodResult}>> #{methodName}Async(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.CallOptions options)
+            #{CS.schemaAttributes 3 methodAttributes}public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<#{getMessageTypeName methodResult}>> #{methodName}Async(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.CallOptions options)
             {
                 return CallInvoker.AsyncUnaryCall(Method_#{methodName}, null, options, request);
             }|]
@@ -136,7 +136,7 @@ namespace #{csNamespace}
                 #{methodName}Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
-            public virtual void #{methodName}Async(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.CallOptions options)
+            #{CS.schemaAttributes 3 methodAttributes}public virtual void #{methodName}Async(global::Bond.Grpc.IMessage<#{getMessageTypeName methodInput}> request, global::Grpc.Core.CallOptions options)
             {
                 global::Bond.Grpc.Internal.NothingCallInvoker.NothingCall(CallInvoker, Method_#{methodName}, null, options, request);
             }|]
