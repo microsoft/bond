@@ -9,10 +9,10 @@ var namespacebond =
       ] ],
       [ "allocator_holder", "classbond_1_1detail_1_1allocator__holder.html", null ],
       [ "allocator_reference_type_workaround", "structbond_1_1detail_1_1allocator__reference__type__workaround.html", null ],
-      [ "allocator_reference_type_workaround< Alloc, typename boost::enable_if<                                                                                  std::is_void< typename Alloc::value_type > >::type >", "structbond_1_1detail_1_1allocator__reference__type__workaround_3_01_alloc_00_01typename_01boost_25519443c515ac092c3914bd9f87b022.html", null ],
+      [ "allocator_reference_type_workaround< Alloc, typename boost::enable_if< std::is_void< typename Alloc::value_type > >::type >", "structbond_1_1detail_1_1allocator__reference__type__workaround_3_01_alloc_00_01typename_01boost_1c8907f5e813ec3e3067fb497cd9e8e6.html", null ],
+      [ "allocator_reference_type_workaround< Alloc, typename boost::enable_if_c< !std::is_void< typename Alloc::value_type >::value &&!(std::is_void< typename Alloc::reference >::value||std::is_void< typename Alloc::const_reference >::value)>::type >", "structbond_1_1detail_1_1allocator__reference__type__workaround_3_01_alloc_00_01typename_01boost_157fea24a43257335e4830ffa385144e.html", null ],
+      [ "allocator_reference_type_workaround< Alloc, typename boost::enable_if_c< !std::is_void< typename Alloc::value_type >::value &&(std::is_void< typename Alloc::reference >::value||std::is_void< typename Alloc::const_reference >::value)>::type >", "structbond_1_1detail_1_1allocator__reference__type__workaround_3_01_alloc_00_01typename_01boost_284383f7ecb9c078f6fe82526fd4cc3a.html", null ],
       [ "counter_base", "classbond_1_1detail_1_1counter__base.html", null ],
-      [ "value", "structbond_1_1detail_1_1allocator__reference__type__workaround_3_01_alloc_00_01typename_01boost_dbe30e4f6269123284bd6e7833aae7e7.html", null ],
-      [ "value", "structbond_1_1detail_1_1allocator__reference__type__workaround_3_01_alloc_00_01typename_01boost_9fd9e6786b799fd7f41b8bae2c9d59c6.html", null ],
       [ "value_or_reference", "classbond_1_1detail_1_1value__or__reference.html", null ]
     ] ],
     [ "ext", null, [
