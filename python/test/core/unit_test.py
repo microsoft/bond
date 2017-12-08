@@ -389,11 +389,6 @@ class BondTest(unittest.TestCase):
         src2.n2 = self.randomSimpleWithBase()
         dst2 = test.Bonded()
         Deserialize(Serialize(src), dst2)
-        # downcast bonded<SimpleStruct> to bonded<SimpleWithBase>
-        bonded = test.bonded_unittest_SimpleWithBase_(dst2.n2)
-        obj3 = test.SimpleWithBase()
-        bonded.Deserialize(obj3)
-        self.assertTrue(obj3, src2.n2)
 
     def test_Polymorphism(self):
         src = test.Bonded()
