@@ -440,6 +440,8 @@ private:
 template <typename T>
 void RequiredFieldValiadator<T>::MissingFieldException() const
 {
+    (void)typename schema<T>::type();
+
     BOND_THROW(CoreException,
           "De-serialization failed: required field " << _required <<
           " is missing from " << schema<T>::type::metadata.qualified_name);
@@ -448,6 +450,8 @@ void RequiredFieldValiadator<T>::MissingFieldException() const
 template <typename T>
 void RequiredFieldValiadator<T>::UnexpectedStructStopException() const
 {
+    (void)typename schema<T>::type();
+
     BOND_THROW(CoreException,
         "De-serialization failed: unexpected struct stop is encountered for "
         << schema<T>::type::metadata.qualified_name);
