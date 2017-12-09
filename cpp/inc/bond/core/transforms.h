@@ -533,7 +533,7 @@ public:
     template <typename X>
     bool Base(const X& value) const
     {
-        if (bool done = AssignToBase(_var, value))
+        if (AssignToBase(_var, value))
         {
             UnexpectedStructStopException();
         }
