@@ -48,8 +48,8 @@ different versioning scheme, following the Haskell community's
 * gRPC v1.7.1 is now required to use Bond-over-gRPC.
 * Fixed includes for gRPC services with events or parameterless methods.
   [Issue #735](https://github.com/Microsoft/bond/issues/735)
-* Fixed a bug which would read unrelated struct's field(s) when deserializing base struct
-  [Issue #742](https://github.com/Microsoft/bond/issues/742).
+* Fixed a bug which would read an unrelated struct's field(s) when deserializing a
+  base struct. [Issue #742](https://github.com/Microsoft/bond/issues/742)
 
 ### C# ###
 
