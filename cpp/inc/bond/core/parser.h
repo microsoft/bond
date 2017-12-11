@@ -271,6 +271,8 @@ private:
 
         ReadFields(fields, id, type, transform);
 
+        bool done;
+
         if (!_base)
         {
             // If we are not parsing a base class, and we still didn't get to
@@ -292,11 +294,17 @@ private:
                 else
                     UnknownField(id, type, transform);
             }
+
+            done = false;
+        }
+        else
+        {
+            done = (type == bond::BT_STOP);
         }
 
         _input.ReadFieldEnd();
 
-        return false;
+        return done;
     }
 
 
@@ -469,6 +477,8 @@ private:
             UnknownField(id, type, transform);
         }
 
+        bool done;
+
         if (!_base)
         {
             // If we are not parsing a base class, and we still didn't get to
@@ -494,11 +504,17 @@ private:
                     UnknownField(id, type, transform);
                 }
             }
+
+            done = false;
+        }
+        else
+        {
+            done = (type == bond::BT_STOP);
         }
 
         _input.ReadFieldEnd();
 
-        return false;
+        return done;
     }
 
 
