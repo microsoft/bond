@@ -332,7 +332,7 @@ private:
                 goto NextSchemaField;
             }
 
-            ReadFieldEndBegin(type, id);
+            ReadSubsequentField(type, id);
 
             if (Head::id < id || type == bond::BT_STOP || type == bond::BT_STOP_BASE)
             {
@@ -346,7 +346,7 @@ private:
     void
     ReadFields(const boost::mpl::l_iter<boost::mpl::l_end>&, uint16_t& id, BondDataType& type, const Transform& transform)
     {
-        for (; type != bond::BT_STOP && type != bond::BT_STOP_BASE; ReadFieldEndBegin(type, id))
+        for (; type != bond::BT_STOP && type != bond::BT_STOP_BASE; ReadSubsequentField(type, id))
         {
             UnknownField(id, type, transform);
         }
@@ -420,7 +420,7 @@ private:
     {
         const auto& fields = schema.GetStruct().fields;
 
-        for (auto it = fields.begin(), end = fields.end(); ; ReadFieldEndBegin(type, id))
+        for (auto it = fields.begin(), end = fields.end(); ; ReadSubsequentField(type, id))
         {
             while (it != end && (it->id < id || type == bond::BT_STOP || type == bond::BT_STOP_BASE))
             {
@@ -468,7 +468,7 @@ private:
     template <typename Transform>
     void ReadUnknownFields(BondDataType& type, uint16_t& id, const Transform& transform)
     {
-        for (; type != bond::BT_STOP; ReadFieldEndBegin(type, id))
+        for (; type != bond::BT_STOP; ReadSubsequentField(type, id))
         {
             if (type == bond::BT_STOP_BASE)
                 transform.UnknownEnd();
@@ -500,7 +500,7 @@ private:
     }
 
 
-    void ReadFieldEndBegin(BondDataType& type, uint16_t& id)
+    void ReadSubsequentField(BondDataType& type, uint16_t& id)
     {
         _input.ReadFieldEnd();
         _input.ReadFieldBegin(type, id);
