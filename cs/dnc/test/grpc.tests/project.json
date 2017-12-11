@@ -4,7 +4,8 @@
     "buildOptions": {
         "compile": {
             "include": [
-                "../../../test/grpc/*.cs"
+                "../../../test/grpc/*.cs",
+                "gen/*.cs"
             ]
         },
         "debugType": "portable",

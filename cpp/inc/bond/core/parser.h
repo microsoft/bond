@@ -271,6 +271,8 @@ private:
 
         ReadFields(fields, id, type, transform);
 
+        bool done;
+
         if (!_base)
         {
             // If we are not parsing a base class, and we still didn't get to
@@ -286,11 +288,16 @@ private:
             // In both cases we emit remaining fields as unknown
 
             ReadUnknownFields(type, id, transform);
+            done = false;
+        }
+        else
+        {
+            done = (type == bond::BT_STOP);
         }
 
         _input.ReadFieldEnd();
 
-        return false;
+        return done;
     }
 
 

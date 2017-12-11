@@ -4,7 +4,7 @@
 name:               bond
 version:            0.11.0.0
 cabal-version:      >= 1.8
-tested-with:        GHC>=7.4.1
+tested-with:        GHC>=8.0.1
 synopsis:           Bond schema compiler and code generator
 description:        Bond is a cross-platform framework for handling schematized
                     data. It supports cross-language de/serialization and
@@ -38,11 +38,11 @@ source-repository head
 library
   hs-source-dirs:   src
   build-depends:    aeson >= 0.7.0.6 && < 0.12.0.0,
-                    base >= 4.5 && < 5,
+                    base >= 4.9 && < 5,
                     bytestring >= 0.10,
                     filepath >= 1.0,
                     mtl >= 2.1,
-                    parsec >= 3.1,
+                    megaparsec >= 6.2,
                     scientific >= 0.3.4.6,
                     shakespeare >= 2.0,
                     text >= 0.11
@@ -99,7 +99,7 @@ test-suite gbc-tests
   build-depends:    bond,
                     aeson >= 0.7.0.6 && < 0.12.0.0,
                     aeson-pretty == 0.7.2,
-                    base >= 4.5 && < 5,
+                    base >= 4.9 && < 5,
                     bytestring >= 0.10,
                     cmdargs >= 0.10.10,
                     directory >= 1.1,
@@ -115,7 +115,7 @@ test-suite gbc-tests
                     tasty-golden,
                     tasty-hunit,
                     tasty-quickcheck,
-                    parsec >= 3.1
+                    megaparsec >= 6.2
 
 executable gbc
   main-is:          Main.hs
@@ -131,7 +131,7 @@ executable gbc
   build-depends:    bond,
                     aeson >= 0.7.0.6 && < 0.12.0.0,
                     async >= 2.0.1.0,
-                    base >= 4.5 && < 5,
+                    base >= 4.9 && < 5,
                     bytestring >= 0.10,
                     cmdargs >= 0.10.10,
                     process < 1.5,
@@ -139,4 +139,4 @@ executable gbc
                     filepath >= 1.0,
                     monad-loops >= 0.4,
                     text >= 0.11,
-                    parsec >= 3.1
+                    megaparsec >= 6.2

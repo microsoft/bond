@@ -16,7 +16,7 @@ different versioning scheme, following the Haskell community's
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: (major bump needed)
-* C# NuGet version: TBD
+* C# NuGet version: (minor bump needed)
 * C# Comm NuGet version: TBD
 
 ### `gbc` and Bond compiler library ###
@@ -46,6 +46,19 @@ different versioning scheme, following the Haskell community's
   has required Boost 1.58 or later since version 5.2.0, but this was not
   enforced.
 * gRPC v1.7.1 is now required to use Bond-over-gRPC.
+* Fixed includes for gRPC services with events or parameterless methods.
+  [Issue #735](https://github.com/Microsoft/bond/issues/735)
+* Fixed a bug which would read an unrelated struct's field(s) when deserializing a
+  base struct. [Issue #742](https://github.com/Microsoft/bond/issues/742)
+
+### C# ###
+
+* The C# attribute `Bond.Attribute` can now be applied to methods. This
+  fixes broken codegen when attributes are used on service methods.
+  [Issue #617](https://github.com/Microsoft/bond/issues/617)
+* Bond Attributes on service methods are now present on all the client
+  overloads for the methods. Previously, just the "friendly" method had the
+  attributes.
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0

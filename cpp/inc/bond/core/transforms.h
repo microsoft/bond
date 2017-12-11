@@ -92,7 +92,8 @@ public:
     }
 
     template <typename T>
-    bool Field(uint16_t id, const Metadata& metadata, const T& value) const
+    typename boost::enable_if_c<may_omit_fields<Writer>::value && !is_bond_type<T>::value, bool>::type
+    Field(uint16_t id, const Metadata& metadata, const T& value) const
     {
         if (detail::omit_field<Writer>(metadata, value))
         {
@@ -105,13 +106,43 @@ public:
     }
 
     template <typename T>
-    bool Field(uint16_t id, const Metadata& metadata, const maybe<T>& value) const
+    typename boost::disable_if_c<may_omit_fields<Writer>::value && !is_bond_type<T>::value, bool>::type
+    Field(uint16_t id, const Metadata& metadata, const T& value) const
+    {
+        BOOST_ASSERT(!detail::omit_field<Writer>(metadata, value));
+
+        WriteField(id, metadata, value);
+        return false;
+    }
+
+    template <typename T, typename Reader>
+    bool Field(uint16_t id, const Metadata& metadata, const value<T, Reader>& value) const
+    {
+        BOOST_ASSERT(!detail::omit_field<Writer>(metadata, value));
+
+        WriteField(id, metadata, value);
+        return false;
+    }
+
+    template <typename T, typename W = Writer>
+    typename boost::enable_if<may_omit_fields<W>, bool>::type
+    Field(uint16_t id, const Metadata& metadata, const maybe<T>& value) const
     {
         if (detail::omit_field<Writer>(metadata, value))
         {
             detail::WriteFieldOmitted(_output, get_type_id<T>::value, id, metadata);
             return false;
         }
+
+        WriteField(id, metadata, value.value());
+        return false;
+    }
+
+    template <typename T, typename W = Writer>
+    typename boost::disable_if<may_omit_fields<W>, bool>::type
+    Field(uint16_t id, const Metadata& metadata, const maybe<T>& value) const
+    {
+        BOOST_ASSERT(!detail::omit_field<Writer>(metadata, value));
 
         WriteField(id, metadata, value.value());
         return false;
@@ -401,6 +432,9 @@ private:
 template <typename T>
 void RequiredFieldValiadator<T>::MissingFieldException() const
 {
+    // Force instantiation of template statics
+    (void)typename schema<T>::type();
+
     BOND_THROW(CoreException,
           "De-serialization failed: required field " << _required <<
           " is missing from " << schema<T>::type::metadata.qualified_name);
@@ -499,7 +533,12 @@ public:
     template <typename X>
     bool Base(const X& value) const
     {
-        return AssignToBase(_var, value);
+        if (AssignToBase(_var, value))
+        {
+            UnexpectedStructStopException();
+        }
+
+        return false;
     }
 
 
@@ -562,6 +601,16 @@ private:
     }
 
 private:
+    BOND_NORETURN void UnexpectedStructStopException() const
+    {
+        // Force instantiation of template statics
+        (void)typename schema<T>::type();
+
+        BOND_THROW(CoreException,
+            "De-serialization failed: unexpected struct stop encountered for "
+            << schema<T>::type::metadata.qualified_name);
+    }
+
     T& _var;
 };
 

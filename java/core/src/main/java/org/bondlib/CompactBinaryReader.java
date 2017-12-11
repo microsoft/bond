@@ -13,19 +13,19 @@ import java.io.InputStream;
 public final class CompactBinaryReader implements TaggedProtocolReader {
 
     private final BinaryStreamReader reader;
-    private final short version;
+    private final short protocolVersion;
 
-    public CompactBinaryReader(final InputStream inputStream, final int version) {
+    public CompactBinaryReader(final InputStream inputStream, final int protocolVersion) {
         if (inputStream == null) {
             throw new IllegalArgumentException("Argument stream must not be null");
         }
 
-        if (version != 1 && version != 2) {
-            throw new IllegalArgumentException("Invalid protocol version: " + version);
+        if (protocolVersion != 1 && protocolVersion != 2) {
+            throw new IllegalArgumentException("Invalid protocol version: " + protocolVersion);
         }
 
         this.reader = new BinaryStreamReader(inputStream);
-        this.version = (short) version;
+        this.protocolVersion = (short) protocolVersion;
     }
 
     private BondDataType readType() throws IOException {
@@ -34,7 +34,7 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
 
     @Override
     public void readStructBegin() throws IOException {
-        if (this.version == 2) {
+        if (this.protocolVersion == 2) {
             this.reader.readVarUInt32();
         }
     }
@@ -80,7 +80,7 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
         result.keyType = null;
         result.elementType = BondDataType.get(raw & 0x1F);
 
-        if (this.version == 2 && (raw & 0xE0) != 0) {
+        if (this.protocolVersion == 2 && (raw & 0xE0) != 0) {
             result.count = (raw >>> 5) - 1;
         } else {
             result.count = this.reader.readVarUInt32();
@@ -257,7 +257,7 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
         final BondDataType elementType = BondDataType.get(raw & 0x1F);
 
         int count;
-        if (this.version == 2 && (raw & 0xE0) != 0) {
+        if (this.protocolVersion == 2 && (raw & 0xE0) != 0) {
             count = (raw >>> 5) - 1;
         } else {
             count = this.reader.readVarUInt32();
@@ -293,7 +293,7 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
     }
 
     private void skipStruct() throws IOException {
-        if (this.version == 2) {
+        if (this.protocolVersion == 2) {
             // take advantage of the struct length stored in V2
             this.reader.skipBytes(this.reader.readVarUInt32());
         } else {
@@ -347,6 +347,6 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
     @Override
     public TaggedProtocolReader cloneProtocolReader() throws IOException {
         InputStream clonedInputStream = Cloning.cloneStream(this.reader.inputStream);
-        return new CompactBinaryReader(clonedInputStream, this.version);
+        return new CompactBinaryReader(clonedInputStream, this.protocolVersion);
     }
 }

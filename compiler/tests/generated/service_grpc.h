@@ -5,6 +5,7 @@
 #include "service_types.h"
 #include "basic_types_grpc.h"
 #include "namespace_basic_types_grpc.h"
+#include <bond/core/bond_reflection.h>
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/bond_utils.h>
 #include <bond/ext/grpc/client_callback.h>

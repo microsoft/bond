@@ -9,7 +9,7 @@ namespace Bond
     // ReSharper disable InconsistentNaming
     // ReSharper disable UnusedTypeParameter
     namespace Tag
-    { 
+    {
         /// <summary>
         /// Represents wstring Bond schema type
         /// </summary>
@@ -46,7 +46,7 @@ namespace Bond
     /// <summary>
     /// Specifies that a type represents Bond schema
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, 
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface,
         Inherited = false)]
     public sealed class SchemaAttribute : Attribute
     {
@@ -82,7 +82,7 @@ namespace Bond
     }
 
     /// <summary>
-    /// Specifies type of a field in Bond schema 
+    /// Specifies type of a field in Bond schema
     /// </summary>
     /// <remarks>
     /// If absent the type is inferred from C# type using the following rules:
@@ -142,8 +142,14 @@ namespace Bond
     /// <summary>
     /// Specifies user defined schema attribute
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | 
-        AttributeTargets.Interface | AttributeTargets.Field | AttributeTargets.Property, 
+    [AttributeUsage(
+        AttributeTargets.Class |
+        AttributeTargets.Enum |
+        AttributeTargets.Field |
+        AttributeTargets.Interface |
+        AttributeTargets.Method |
+        AttributeTargets.Property |
+        AttributeTargets.Struct ,
         AllowMultiple = true, Inherited = false)]
     public sealed class AttributeAttribute : Attribute
     {

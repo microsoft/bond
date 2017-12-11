@@ -1,4 +1,4 @@
-% A Young Person's Guide to C++ Bond
+% A Thorough Guide to Bond for C++
 
 About
 =====
@@ -14,7 +14,7 @@ data transform mechanism. The framework is highly extensible via pluggable
 serialization protocols, data streams, user defined type aliases and more.
 
 By design Bond is language and platform independent and is currently supported
-for C++, C#, and Python on Linux, OS X and Windows.
+for C++, C#, Java, and Python on Linux, macOS, and Windows.
 
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond).
 
@@ -1895,6 +1895,8 @@ References
 [bond_py]: bond_py.html
 
 [bond_cs]: bond_cs.html
+
+[bond_java]: bond_java.html
 
 [bond_comm]: bond_comm.html
 

@@ -2,7 +2,15 @@
 #
 # Some commonly used options have been documented as comments in this file.
 # For advanced use and comprehensive documentation of the format, please see:
-# http://docs.haskellstack.org/en/stable/yaml_configuration/
+# https://docs.haskellstack.org/en/stable/yaml_configuration/
+
+# A warning or info to be displayed to the user on config load.
+# user-message: ! 'Warning (added by new or init): Specified resolver could not satisfy
+#   all dependencies. Some external packages have been added as dependencies.
+#
+#   You can suppress this message by removing it from stack.yaml
+#
+# '
 
 # Resolver to choose a 'specific' stackage snapshot or a compiler version.
 # A snapshot resolver dictates the compiler version and the set of packages
@@ -15,7 +23,7 @@
 # resolver:
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
-resolver: lts-6.35
+resolver: lts-7.24
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -36,10 +44,18 @@ resolver: lts-6.35
 # non-dependency (i.e. a user package), and its test suites and benchmarks
 # will not be run. This is useful for tweaking upstream packages.
 packages:
-- '.'
+- .
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
-extra-deps: []
+extra-deps:
+- aeson-pretty-0.7.2
+- cpphs-1.20.8
+- integer-logarithms-1.0.2
+- megaparsec-6.2.0
+- parser-combinators-0.2.0
+- primitive-0.6.2.0
+- scientific-0.3.5.2
+- vector-0.12.0.1
 
 # Override default flag values for local packages and extra-deps
 flags: {}
@@ -52,7 +68,7 @@ extra-package-dbs: []
 #
 # Require a specific version of stack, using version ranges
 # require-stack-version: -any # Default
-# require-stack-version: ">=1.4"
+# require-stack-version: ">=1.5"
 #
 # Override the architecture used by stack, especially useful on Windows
 # arch: i386

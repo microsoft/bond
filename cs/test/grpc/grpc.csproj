@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
@@ -12,6 +12,7 @@
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
     <DependentOutputPath>$(OutputPath)</DependentOutputPath>
+    <BondOptions>--grpc</BondOptions>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <IntermediateOutputPath>$(IntermediateOutputPath)\Properties\</IntermediateOutputPath>
@@ -20,13 +21,18 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Fields' ">
     <IntermediateOutputPath>$(IntermediateOutputPath)\Fields\</IntermediateOutputPath>
     <OutputPath>$(OutputPath)\Fields\</OutputPath>
-    <BondOptions>--fields --collection-interfaces</BondOptions>
+    <BondOptions>--collection-interfaces --fields --grpc</BondOptions>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AttributesTests.cs" />
     <Compile Include="MarshallerTests.cs" />
     <Compile Include="MessageTests.cs" />
     <Compile Include="NothingCallsTests.cs" />
     <Compile Include="Schemas.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BondCodegen Include="services.bond" />
+    <Compile Include="$(IntermediateOutputPath)services_grpc.cs" Condition="false" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Grpc.Core">

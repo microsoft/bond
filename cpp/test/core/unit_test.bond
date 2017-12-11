@@ -97,6 +97,12 @@ struct ListOfBase
 };
 
 
+struct ListOfBondedBase
+{
+    1: list<bonded<SimpleBase>> l;
+}
+
+
 struct NestedStruct1OptionalBondedView
 {
     1: bonded<SimpleStruct> s;
