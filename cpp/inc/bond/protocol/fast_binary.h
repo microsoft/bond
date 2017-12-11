@@ -235,16 +235,15 @@ public:
     template <typename T>
     void Skip()
     {
-        Skip(get_type_id<T>::value);
+        SkipType<get_type_id<T>::value>();
     }
 
 
     template <typename T>
     void Skip(const bonded<T, FastBinaryReader&>&)
     {
-        SkipComplex(BT_STRUCT);
+        SkipType<BT_STRUCT>();
     }
-
 
     void Skip(BondDataType type)
     {
@@ -253,34 +252,54 @@ public:
             case BT_BOOL:
             case BT_UINT8:
             case BT_INT8:
-                _input.Skip(sizeof(uint8_t));
+                SkipType<BT_BOOL>();
                 break;
 
             case BT_UINT16:
             case BT_INT16:
-                _input.Skip(sizeof(uint16_t));
+                SkipType<BT_UINT16>();
                 break;
 
             case BT_UINT32:
             case BT_INT32:
-                _input.Skip(sizeof(uint32_t));
+                SkipType<BT_UINT32>();
                 break;
 
             case BT_UINT64:
             case BT_INT64:
-                _input.Skip(sizeof(uint64_t));
+                SkipType<BT_UINT64>();
                 break;
 
             case BT_FLOAT:
-                _input.Skip(sizeof(float));
+                SkipType<BT_FLOAT>();
                 break;
 
             case BT_DOUBLE:
-                _input.Skip(sizeof(double));
+                SkipType<BT_DOUBLE>();
+                break;
+
+            case BT_STRING:
+                SkipType<BT_STRING>();
+                break;
+
+            case BT_WSTRING:
+                SkipType<BT_WSTRING>();
+                break;
+
+            case BT_STRUCT:
+                SkipType<BT_STRUCT>();
+                break;
+
+            case BT_SET:
+            case BT_LIST:
+                SkipType<BT_SET>();
+                break;
+
+            case BT_MAP:
+                SkipType<BT_MAP>();
                 break;
 
             default:
-                SkipComplex(type);
                 break;
         }
     }
@@ -294,84 +313,284 @@ protected:
         type = static_cast<BondDataType>(byte);
     }
 
-    void SkipComplex(BondDataType type)
+    template <BondDataType>
+    void SkipType();
+
+    template <BondDataType T>
+    void SkipTypes(uint32_t size)
+    {
+        for (uint32_t i = 0; i < size; ++i)
+        {
+            SkipType<T>();
+        }
+    }
+
+    template <>
+    void SkipType<BT_BOOL>()
+    {
+        _input.Skip(sizeof(uint8_t));
+    }
+
+    template <>
+    void SkipTypes<BT_BOOL>(uint32_t size)
+    {
+        _input.Skip(size * sizeof(uint8_t));
+    }
+
+    template <>
+    void SkipType<BT_UINT8>()
+    {
+        SkipType<BT_BOOL>();
+    }
+
+    template <>
+    void SkipTypes<BT_UINT8>(uint32_t size)
+    {
+        SkipTypes<BT_BOOL>(size);
+    }
+
+    template <>
+    void SkipType<BT_INT8>()
+    {
+        SkipType<BT_BOOL>();
+    }
+
+    template <>
+    void SkipTypes<BT_INT8>(uint32_t size)
+    {
+        SkipTypes<BT_BOOL>(size);
+    }
+
+    template <>
+    void SkipType<BT_UINT16>()
+    {
+        _input.Skip(sizeof(uint16_t));
+    }
+
+    template <>
+    void SkipTypes<BT_UINT16>(uint32_t size)
+    {
+        _input.Skip(size * sizeof(uint16_t));
+    }
+
+    template <>
+    void SkipType<BT_INT16>()
+    {
+        SkipType<BT_UINT16>();
+    }
+
+    template <>
+    void SkipTypes<BT_INT16>(uint32_t size)
+    {
+        SkipTypes<BT_UINT16>(size);
+    }
+
+    template <>
+    void SkipType<BT_UINT32>()
+    {
+        _input.Skip(sizeof(uint32_t));
+    }
+
+    template <>
+    void SkipTypes<BT_UINT32>(uint32_t size)
+    {
+        _input.Skip(size * sizeof(uint32_t));
+    }
+
+    template <>
+    void SkipType<BT_INT32>()
+    {
+        SkipType<BT_UINT32>();
+    }
+
+    template <>
+    void SkipTypes<BT_INT32>(uint32_t size)
+    {
+        SkipTypes<BT_UINT32>(size);
+    }
+
+    template <>
+    void SkipType<BT_UINT64>()
+    {
+        _input.Skip(sizeof(uint64_t));
+    }
+
+    template <>
+    void SkipTypes<BT_UINT64>(uint32_t size)
+    {
+        _input.Skip(size * sizeof(uint64_t));
+    }
+
+    template <>
+    void SkipType<BT_INT64>()
+    {
+        SkipType<BT_UINT64>();
+    }
+
+    template <>
+    void SkipTypes<BT_INT64>(uint32_t size)
+    {
+        SkipTypes<BT_UINT64>(size);
+    }
+
+    template <>
+    void SkipType<BT_FLOAT>()
+    {
+        _input.Skip(sizeof(float));
+    }
+
+    template <>
+    void SkipTypes<BT_FLOAT>(uint32_t size)
+    {
+        _input.Skip(size * sizeof(float));
+    }
+
+    template <>
+    void SkipType<BT_DOUBLE>()
+    {
+        _input.Skip(sizeof(double));
+    }
+
+    template <>
+    void SkipTypes<BT_DOUBLE>(uint32_t size)
+    {
+        _input.Skip(size * sizeof(double));
+    }
+
+    template <>
+    void SkipType<BT_STRING>()
+    {
+        uint32_t size = 0;
+
+        ReadVariableUnsigned(_input, size);
+        _input.Skip(size);
+    }
+
+    template <>
+    void SkipType<BT_WSTRING>()
+    {
+        uint32_t size = 0;
+
+        ReadVariableUnsigned(_input, size);
+        _input.Skip(size * sizeof(uint16_t));
+    }
+
+    template <>
+    void SkipType<BT_STRUCT>()
+    {
+        for (;;)
+        {
+            ReadStructBegin();
+
+            uint16_t     id;
+            BondDataType field_type;
+
+            for (ReadFieldBegin(field_type, id);
+                    field_type != BT_STOP && field_type != BT_STOP_BASE;
+                    ReadFieldEnd(), ReadFieldBegin(field_type, id))
+            {
+                Skip(field_type);
+            }
+
+            ReadStructEnd();
+
+            if (field_type == BT_STOP)
+                break;
+        }
+    }
+
+    template <>
+    void SkipType<BT_SET>()
+    {
+        BondDataType element_type;
+        uint32_t size;
+
+        ReadContainerBegin(size, element_type);
+
+        Skip(element_type, size);
+
+        ReadContainerEnd();
+    }
+
+    template <>
+    void SkipType<BT_LIST>()
+    {
+        SkipType<BT_SET>();
+    }
+
+    template <>
+    void SkipType<BT_MAP>()
+    {
+        std::pair<BondDataType, BondDataType> element_type;
+        uint32_t size;
+
+        ReadContainerBegin(size, element_type);
+
+        for (uint32_t i = 0; i < size; i++)
+        {
+            Skip(element_type.first);
+            Skip(element_type.second);
+        }
+
+        ReadContainerEnd();
+    }
+
+    void Skip(BondDataType type, uint32_t size)
     {
         switch (type)
         {
-            case BT_STRING:
-            {
-                uint32_t size = 0;
+        case BT_BOOL:
+        case BT_UINT8:
+        case BT_INT8:
+            SkipTypes<BT_BOOL>(size);
+            break;
 
-                ReadVariableUnsigned(_input, size);
-                _input.Skip(size);
-                break;
-            }
-            case BT_WSTRING:
-            {
-                uint32_t size = 0;
+        case BT_UINT16:
+        case BT_INT16:
+            SkipTypes<BT_UINT16>(size);
+            break;
 
-                ReadVariableUnsigned(_input, size);
-                _input.Skip(size * sizeof(uint16_t));
-                break;
-            }
-            case BT_STRUCT:
-            {
-                for(;;)
-                {
-                    ReadStructBegin();
+        case BT_UINT32:
+        case BT_INT32:
+            SkipTypes<BT_UINT32>(size);
+            break;
 
-                    uint16_t     id;
-                    BondDataType field_type;
+        case BT_UINT64:
+        case BT_INT64:
+            SkipTypes<BT_UINT64>(size);
+            break;
 
-                    for (ReadFieldBegin(field_type, id);
-                            field_type != BT_STOP && field_type != BT_STOP_BASE;
-                            ReadFieldEnd(), ReadFieldBegin(field_type, id))
-                    {
-                        Skip(field_type);
-                    }
+        case BT_FLOAT:
+            SkipTypes<BT_FLOAT>(size);
+            break;
 
-                    ReadStructEnd();
+        case BT_DOUBLE:
+            SkipTypes<BT_DOUBLE>(size);
+            break;
 
-                    if (field_type == BT_STOP)
-                        break;
-                }
+        case BT_STRING:
+            SkipTypes<BT_STRING>(size);
+            break;
 
-                break;
-            }
-            case BT_SET:
-            case BT_LIST:
-            {
-                BondDataType element_type;
-                uint32_t size;
+        case BT_WSTRING:
+            SkipTypes<BT_WSTRING>(size);
+            break;
 
-                ReadContainerBegin(size, element_type);
+        case BT_STRUCT:
+            SkipTypes<BT_STRUCT>(size);
+            break;
 
-                for(uint32_t i = 0; i < size; i++)
-                {
-                    Skip(element_type);
-                }
+        case BT_SET:
+        case BT_LIST:
+            SkipTypes<BT_SET>(size);
+            break;
 
-                ReadContainerEnd();
-                break;
-            }
-            case BT_MAP:
-            {
-                std::pair<BondDataType, BondDataType> element_type;
-                uint32_t size;
+        case BT_MAP:
+            SkipTypes<BT_MAP>(size);
+            break;
 
-                ReadContainerBegin(size, element_type);
-
-                for(uint32_t i = 0; i < size; i++)
-                {
-                    Skip(element_type.first);
-                    Skip(element_type.second);
-                }
-
-                ReadContainerEnd();
-                break;
-            }
-            default:
-                break;
+        default:
+            break;
         }
     }
 
