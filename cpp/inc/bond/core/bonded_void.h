@@ -166,7 +166,7 @@ private:
         else
         {
             _skip = false;
-            return detail::Parse<Protocols>(transform, _data, _schema, _base);
+            return detail::Parse<void, Protocols>(transform, _data, _schema, nullptr, _base);
         }
     }
 
@@ -175,7 +175,7 @@ private:
     _Apply(const Transform& transform) const
     {
         _skip = false;
-        return detail::Parse<Protocols>(transform, _data, _schema, _base);
+        return detail::Parse<void, Protocols>(transform, _data, _schema, nullptr, _base);
     }
 
 

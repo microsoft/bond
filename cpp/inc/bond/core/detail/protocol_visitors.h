@@ -207,10 +207,10 @@ inline bool Parse(const Transform& transform, Reader& reader, const Schema& sche
     return Parser<T, Schema, Transform>::Apply(transform, reader, schema, base);
 }
 
-template <typename Protocols, typename Transform, typename Reader, typename Schema>
-inline bool Parse(const Transform& transform, Reader& reader, const RuntimeSchema& schema, bool base)
+template <typename T, typename Protocols, typename Transform, typename Reader, typename Schema>
+inline bool Parse(const Transform& transform, Reader& reader, const Schema& schema, std::nullptr_t, bool base)
 {
-    return Parser<void, RuntimeSchema, Transform>::Apply(transform, reader, schema, base);
+    return Parser<T, Schema, Transform>::Apply(transform, reader, schema, base);
 }
 
 template <typename T, typename Protocols, typename Transform, typename Schema>
@@ -247,12 +247,11 @@ inline bool Parse(const Transform& transform, ProtocolReader reader, const Schem
     }
 }
 
-
-template <typename Protocols, typename Transform>
-inline bool Parse(const Transform& transform, ProtocolReader reader, const RuntimeSchema& schema, bool base)
+template <typename T, typename Protocols, typename Transform, typename Schema>
+inline bool Parse(const Transform& transform, ProtocolReader reader, const Schema& schema, std::nullptr_t, bool base)
 {
     BOOST_VERIFY(!base);
-    return Parse<void, Protocols>(transform, reader, schema);
+    return Parse<T, Protocols>(transform, reader, schema);
 }
 
 
