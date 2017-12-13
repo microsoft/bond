@@ -15,6 +15,8 @@
 #include <bond/stream/input_buffer.h>
 #include <bond/stream/output_buffer.h>
 
+#include <cstddef>
+
 
 namespace bond
 {
