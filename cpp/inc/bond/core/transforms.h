@@ -566,7 +566,7 @@ private:
     typename boost::enable_if<has_base<U>, bool>::type
     AssignToBase(const X& value) const
     {
-        bool done = Apply<Protocols>(To<typename schema<T>::type::base, Protocols, Validator>(_var), value);
+        bool done = Apply<Protocols>(To<typename schema<T>::type::base, Protocols>(_var), value);
 
         if (done)
         {
