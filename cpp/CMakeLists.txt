@@ -56,6 +56,10 @@ list (APPEND generated_files_apply
 
 set (precompiled_sources)
 list (APPEND precompiled_sources
+    "src/bond/core/detail/typeid_value.cpp"
+    "src/bond/core/parser.cpp"
+    "src/bond/core/select_protocol.cpp"
+    "src/bond/core/value.cpp"
     "src/bond/protocol/detail/rapidjson_utils.cpp")
 
 list (APPEND headers

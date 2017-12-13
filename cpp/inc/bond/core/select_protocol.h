@@ -284,3 +284,12 @@ inline bool Apply(const T& value, Buffer& output, uint16_t protocol)
 
 
 } // namespace bond
+
+
+#ifdef BOND_LIB_TYPE
+#if BOND_LIB_TYPE != BOND_LIB_TYPE_HEADER
+#include "detail/select_protocol_extern.h"
+#endif
+#else
+#error BOND_LIB_TYPE is undefined
+#endif

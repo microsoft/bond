@@ -1000,3 +1000,12 @@ inline DeserializeMap(X& var, BondDataType keyType, const T& element, Reader& in
 
 
 } // namespace bond
+
+
+#ifdef BOND_LIB_TYPE
+#if BOND_LIB_TYPE != BOND_LIB_TYPE_HEADER
+#include "detail/value_extern.h"
+#endif
+#else
+#error BOND_LIB_TYPE is undefined
+#endif
