@@ -109,16 +109,10 @@ public:
 
     /// @brief Deserialize to a bonded<T>
     template <typename Protocols = BuiltInProtocols, typename T>
-    void Deserialize(bonded<T>& var) const
+    typename boost::enable_if<uses_marshaled_bonded<Reader, T> >::type
+    Deserialize(bonded<T>& var) const
     {
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4127) // C4127: conditional expression is constant
-#endif
-        if (uses_marshaled_bonded<Reader>::value && _schema.GetType().bonded_type)
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
+        if (_schema.GetType().bonded_type)
         {
             bonded<T> tmp;
             _SelectProtocolAndApply<Protocols>(boost::ref(tmp));
@@ -128,6 +122,15 @@ public:
         {
             var = bonded<T>(*this);
         }
+    }
+
+
+    /// @brief Deserialize to a bonded<T>
+    template <typename Protocols = BuiltInProtocols, typename T>
+    typename boost::disable_if<uses_marshaled_bonded<Reader, T> >::type
+    Deserialize(bonded<T>& var) const
+    {
+        var = bonded<T>(*this);
     }
 
 
@@ -153,43 +156,37 @@ public:
 private:
     // Apply transform to serialized data
     template <typename Protocols, typename Transform>
-    bool _Apply(const Transform& transform) const
+    typename boost::enable_if<uses_marshaled_bonded<Reader, Transform>, bool>::type
+    _Apply(const Transform& transform) const
     {
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4127) // C4127: conditional expression is constant
-#endif
-        if (uses_marshaled_bonded<Reader>::value && _schema.GetType().bonded_type)
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
+        if (_schema.GetType().bonded_type)
         {
             return _SelectProtocolAndApply<Protocols>(transform);
         }
         else
         {
             _skip = false;
-            return detail::Parse<void, Protocols>(transform, _data, _schema, NULL, _base);
+            return detail::Parse<void, Protocols>(transform, _data, _schema, nullptr, _base);
         }
     }
 
-
     template <typename Protocols, typename Transform>
-    typename boost::enable_if<uses_marshaled_bonded<Reader, Transform>, bool>::type
-    _SelectProtocolAndApply(const Transform& transform) const
+    typename boost::disable_if<uses_marshaled_bonded<Reader, Transform>, bool>::type
+    _Apply(const Transform& transform) const
     {
         _skip = false;
-        auto input = CreateInputBuffer(_data.GetBuffer(), detail::ReadBlob(_data));
-        return SelectProtocolAndApply<Protocols>(_schema, input, transform).second;
+        return detail::Parse<void, Protocols>(transform, _data, _schema, nullptr, _base);
     }
 
 
     template <typename Protocols, typename Transform>
-    typename boost::disable_if<uses_marshaled_bonded<Reader, Transform>, bool>::type
-    _SelectProtocolAndApply(const Transform&) const
+    bool _SelectProtocolAndApply(const Transform& transform) const
     {
-        BOOST_ASSERT(false);
-        return false;
+        BOOST_STATIC_ASSERT(uses_marshaled_bonded<Reader>::value);
+
+        _skip = false;
+        auto input = CreateInputBuffer(_data.GetBuffer(), detail::ReadBlob(_data));
+        return SelectProtocolAndApply<Protocols>(_schema, input, transform).second;
     }
 
 

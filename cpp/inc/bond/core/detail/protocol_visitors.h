@@ -15,6 +15,8 @@
 #include <bond/stream/input_buffer.h>
 #include <bond/stream/output_buffer.h>
 
+#include <cstddef>
+
 
 namespace bond
 {
@@ -207,42 +209,51 @@ inline bool Parse(const Transform& transform, Reader& reader, const Schema& sche
     return Parser<T, Schema, Transform>::Apply(transform, reader, schema, base);
 }
 
-template <typename T, typename Protocols, typename Transform, typename Schema>
-inline bool Parse(const Transform& transform, ProtocolReader reader, const Schema& schema, const RuntimeSchema* runtime_schema, bool base)
+template <typename T, typename Protocols, typename Transform, typename Reader, typename Schema>
+inline bool Parse(const Transform& transform, Reader& reader, const Schema& schema, std::nullptr_t, bool base)
 {
-    BOOST_VERIFY(!base);
+    return Parser<T, Schema, Transform>::Apply(transform, reader, schema, base);
+}
 
-    boost::optional<bool> result;
+template <typename T, typename Protocols, typename Transform, typename Schema>
+inline bool Parse(const Transform& transform, ProtocolReader& reader, const Schema& schema)
+{
+    // Use named variable to avoid gcc silently copying objects (which
+    // causes build break, because Parser<> is non-copyable).
+    Parser<T, Schema, Transform> parser(transform, schema);
 
-    if (runtime_schema)
-    {
-        // Use named variable to avoid gcc silently copying objects (which
-        // causes build break, because Parser<> is non-copyable).
-        Parser<void, RuntimeSchema, Transform> parser(transform, *runtime_schema);
-        result = reader.template Visit<Protocols
+    if (auto&& result = reader.template Visit<Protocols
 #if defined(BOND_NO_CXX14_RETURN_TYPE_DEDUCTION) || defined(BOND_NO_CXX14_GENERIC_LAMBDAS)
-            , bool
+        , bool
 #endif
-            >(parser);
-    }
-    else
-    {
-        // Use named variable to avoid gcc silently copying objects (which
-        // causes build break, because Parser<> is non-copyable).
-        Parser<T, Schema, Transform> parser(transform, schema);
-        result = reader.template Visit<Protocols
-#if defined(BOND_NO_CXX14_RETURN_TYPE_DEDUCTION) || defined(BOND_NO_CXX14_GENERIC_LAMBDAS)
-            , bool
-#endif
-            >(parser);
-    }
-
-    if (result)
+        >(parser))
     {
         return result.get();
     }
 
     UnknownProtocolException();
+}
+
+template <typename T, typename Protocols, typename Transform, typename Schema>
+inline bool Parse(const Transform& transform, ProtocolReader reader, const Schema& schema, const RuntimeSchema* runtime_schema, bool base)
+{
+    BOOST_VERIFY(!base);
+
+    if (runtime_schema)
+    {
+        return Parse<void, Protocols>(transform, reader, *runtime_schema);
+    }
+    else
+    {
+        return Parse<T, Protocols>(transform, reader, schema);
+    }
+}
+
+template <typename T, typename Protocols, typename Transform, typename Schema>
+inline bool Parse(const Transform& transform, ProtocolReader reader, const Schema& schema, std::nullptr_t, bool base)
+{
+    BOOST_VERIFY(!base);
+    return Parse<T, Protocols>(transform, reader, schema);
 }
 
 
