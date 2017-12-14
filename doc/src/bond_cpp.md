@@ -1705,6 +1705,12 @@ throw this exception to indicate an invalid string encoding.
 Integrating Bond into your build
 ================================
 
+To consume Bond, you will need to integrate it into your build somehow. If
+you are using one the following C++ package managers, Bond is available as a
+package that you can consume.
+
+* [Vcpkg](https://github.com/Microsoft/vcpkg)'s `bond` package
+
 What follows are build-system agnostic instructions for consuming C++ Bond.
 
 These instructions assume that you have used
