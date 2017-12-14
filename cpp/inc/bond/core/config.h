@@ -5,6 +5,17 @@
 
 #include <boost/config.hpp>
 
+#if !defined(BOND_COMPACT_BINARY_PROTOCOL) \
+ && !defined(BOND_SIMPLE_BINARY_PROTOCOL) \
+ && !defined(BOND_FAST_BINARY_PROTOCOL) \
+ && !defined(BOND_SIMPLE_JSON_PROTOCOL)
+
+#define BOND_COMPACT_BINARY_PROTOCOL
+#define BOND_SIMPLE_BINARY_PROTOCOL
+#define BOND_FAST_BINARY_PROTOCOL
+// BOND_SIMPLE_JSON_PROTOCOL disabled by default
+#endif
+
 #if defined(BOOST_NO_CXX11_NOEXCEPT) || defined(BOOST_NO_NOEXCEPT)
 #define BOND_NO_CXX11_NOEXCEPT
 #endif

@@ -812,3 +812,12 @@ inline MatchingMapByElement(T& var, BondDataType keyType, BondDataType elementTy
 } // namespace detail
 
 } // namespace bond
+
+
+#ifdef BOND_LIB_TYPE
+#if BOND_LIB_TYPE != BOND_LIB_TYPE_HEADER
+#include "typeid_value_extern.h"
+#endif
+#else
+#error BOND_LIB_TYPE is undefined
+#endif

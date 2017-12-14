@@ -641,3 +641,12 @@ private:
 
 
 } // namespace bond
+
+
+#ifdef BOND_LIB_TYPE
+#if BOND_LIB_TYPE != BOND_LIB_TYPE_HEADER
+#include "detail/parser_extern.h"
+#endif
+#else
+#error BOND_LIB_TYPE is undefined
+#endif
