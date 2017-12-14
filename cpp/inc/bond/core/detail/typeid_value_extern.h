@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <bond/core/config.h>
 #include "extern_macro.h"
 
 
