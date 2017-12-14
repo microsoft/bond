@@ -1706,8 +1706,8 @@ Integrating Bond into your build
 ================================
 
 To consume Bond, you will need to integrate it into your build somehow. If
-you are using one the following C++ package managers, Bond is available as a
-package that you can consume.
+you are using one of these C++ package managers, Bond is available as a
+package that you can consume:
 
 * [Vcpkg](https://github.com/Microsoft/vcpkg)'s `bond` package
 
@@ -1717,8 +1717,8 @@ These instructions assume that you have used
 [Bond's CMake-based build](https://github.com/Microsoft/bond/README.md) to
 compile and *install* (`make install`/`cmake --build . --target INSTALL`)
 Bond into your development environment somewhere. The CMake variable
-`CMAKE_INSTALL_PREFIX` can be used to control where the install target places
-the output fiels.
+`CMAKE_INSTALL_PREFIX` can be used to control where the install target
+places the output files.
 
 (The Bond CMake files can't currently be consumed by another CMake project
 via `add_directory`.
@@ -1753,7 +1753,7 @@ on platform/toolset.):
   <bond/core/bond_apply.h>`.
 
 See also the [Optimizing build time](#optimizing-build-time) section,
-particularly its discussion of ``BOND_LIB_TYPE`.
+particularly its discussion of `BOND_LIB_TYPE`.
 
 Optimizing build time
 =====================
