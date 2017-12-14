@@ -11,44 +11,32 @@ namespace bond
 namespace detail
 {
 
-#define BOND_DETAIL_INSTANTIATE_NextProtocol(Writer) \
-    template std::pair<ProtocolType, bool> NextProtocol<BuiltInProtocols>( \
+#define BOND_DETAIL_NextProtocol(Writer) \
+    std::pair<ProtocolType, bool> NextProtocol<BuiltInProtocols>( \
         const RuntimeSchema&, InputBuffer&, const Serializer<Writer>&);
 
-#define BOND_DETAIL_EXTERN_NextProtocol(Writer) \
-    extern BOND_DETAIL_INSTANTIATE_NextProtocol(Writer)
-
-BOND_DETAIL_PRECOMPILE_WRITERS(BOND_DETAIL_EXTERN_NextProtocol)
+BOND_DETAIL_EXTERN(BOND_DETAIL_NextProtocol, BOND_DETAIL_BUILTIN_WRITERS)
 
 
-#define BOND_DETAIL_INSTANTIATE_NextProtocol_Null() \
-    template std::pair<ProtocolType, bool> NextProtocol<BuiltInProtocols>( \
+#define BOND_DETAIL_NextProtocol_Null() \
+    std::pair<ProtocolType, bool> NextProtocol<BuiltInProtocols>( \
         const RuntimeSchema&, InputBuffer&, const Null&);
 
-#define BOND_DETAIL_EXTERN_NextProtocol_Null() \
-    extern BOND_DETAIL_INSTANTIATE_NextProtocol_Null()
-
-BOND_DETAIL_EXTERN_NextProtocol_Null()
+BOND_DETAIL_PREFIX_EXTERN(BOND_DETAIL_NextProtocol_Null)()
 
 
-#define BOND_DETAIL_INSTANTIATE_NextProtocol_Select(Writer) \
-    template bool NextProtocol<BuiltInProtocols>( \
+#define BOND_DETAIL_NextProtocol_Select(Writer) \
+    bool NextProtocol<BuiltInProtocols>( \
         const RuntimeSchema&, InputBuffer&, const Serializer<Writer>&, uint16_t);
 
-#define BOND_DETAIL_EXTERN_NextProtocol_Select(Writer) \
-    extern BOND_DETAIL_INSTANTIATE_NextProtocol_Select(Writer)
-
-BOND_DETAIL_PRECOMPILE_WRITERS(BOND_DETAIL_EXTERN_NextProtocol_Select)
+BOND_DETAIL_EXTERN(BOND_DETAIL_NextProtocol_Select, BOND_DETAIL_BUILTIN_WRITERS)
 
 
-#define BOND_DETAIL_INSTANTIATE_NextProtocol_Select_Null() \
-    template bool NextProtocol<BuiltInProtocols>( \
+#define BOND_DETAIL_NextProtocol_Select_Null() \
+    bool NextProtocol<BuiltInProtocols>( \
         const RuntimeSchema&, InputBuffer&, const Null&, uint16_t);
 
-#define BOND_DETAIL_EXTERN_NextProtocol_Select_Null() \
-    extern BOND_DETAIL_INSTANTIATE_NextProtocol_Select_Null()
-
-BOND_DETAIL_EXTERN_NextProtocol_Select_Null()
+BOND_DETAIL_PREFIX_EXTERN(BOND_DETAIL_NextProtocol_Select_Null)()
 
 
 } // namespace detail

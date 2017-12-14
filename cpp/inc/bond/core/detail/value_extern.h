@@ -9,13 +9,10 @@
 namespace bond
 {
 
-#define BOND_DETAIL_INSTANTIATE_ValueVoid_Apply(Reader, Writer) \
-    template void value<void, Reader&>::_Apply(const Serializer<Writer>&) const;
+#define BOND_DETAIL_ValueVoid_Apply(Reader, Writer) \
+    void value<void, Reader&>::_Apply(const Serializer<Writer>&) const;
 
-#define BOND_DETAIL_EXTERN_ValueVoid_Apply(Reader, Writer) \
-    extern BOND_DETAIL_INSTANTIATE_ValueVoid_Apply(Reader, Writer)
-
-BOND_DETAIL_PRECOMPILE_READERS_WRITERS(BOND_DETAIL_EXTERN_ValueVoid_Apply)
+BOND_DETAIL_EXTERN(BOND_DETAIL_ValueVoid_Apply, BOND_DETAIL_BUILTIN_READERS_WRITERS)
 
 
 } // namespace bond

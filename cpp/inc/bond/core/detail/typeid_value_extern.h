@@ -11,57 +11,41 @@ namespace bond
 namespace detail 
 {
 
-#define BOND_DETAIL_INSTANTIATE_BasicTypeField(Reader, Writer) \
-    template bool BasicTypeField(uint16_t, const Metadata&, BondDataType, const Serializer<Writer>&, Reader&);
+#define BOND_DETAIL_BasicTypeField(Reader, Writer) \
+    bool BasicTypeField(uint16_t, const Metadata&, BondDataType, const Serializer<Writer>&, Reader&);
 
-#define BOND_DETAIL_EXTERN_BasicTypeField(Reader, Writer) \
-    extern BOND_DETAIL_INSTANTIATE_BasicTypeField(Reader, Writer)
-
-BOND_DETAIL_PRECOMPILE_READERS_WRITERS(BOND_DETAIL_EXTERN_BasicTypeField)
+BOND_DETAIL_EXTERN(BOND_DETAIL_BasicTypeField, BOND_DETAIL_BUILTIN_READERS_WRITERS)
 
 
-#define BOND_DETAIL_INSTANTIATE_BasicTypeField_Null(Reader) \
-    template bool BasicTypeField(uint16_t, const Metadata&, BondDataType, const Null&, Reader&);
+#define BOND_DETAIL_BasicTypeField_Null(Reader) \
+    bool BasicTypeField(uint16_t, const Metadata&, BondDataType, const Null&, Reader&);
 
-#define BOND_DETAIL_EXTERN_BasicTypeField_Null(Reader) \
-    extern BOND_DETAIL_INSTANTIATE_BasicTypeField_Null(Reader)
-
-BOND_DETAIL_PRECOMPILE_READERS(BOND_DETAIL_EXTERN_BasicTypeField_Null)
+BOND_DETAIL_EXTERN(BOND_DETAIL_BasicTypeField_Null, BOND_DETAIL_BUILTIN_READERS)
 
 
-#define BOND_DETAIL_INSTANTIATE_BasicTypeContainer(Reader, Writer) \
-    template void BasicTypeContainer<BuiltInProtocols>(const Serializer<Writer>&, BondDataType, Reader&, uint32_t);
+#define BOND_DETAIL_BasicTypeContainer(Reader, Writer) \
+    void BasicTypeContainer<BuiltInProtocols>(const Serializer<Writer>&, BondDataType, Reader&, uint32_t);
 
-#define BOND_DETAIL_EXTERN_BasicTypeContainer(Reader, Writer) \
-    extern BOND_DETAIL_INSTANTIATE_BasicTypeContainer(Reader, Writer)
-
-BOND_DETAIL_PRECOMPILE_READERS_WRITERS(BOND_DETAIL_EXTERN_BasicTypeContainer)
+BOND_DETAIL_EXTERN(BOND_DETAIL_BasicTypeContainer, BOND_DETAIL_BUILTIN_READERS_WRITERS)
 
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
-#define BOND_DETAIL_INSTANTIATE_MapByKey(Reader, Writer, T) \
-    template void MapByKey<BuiltInProtocols, const Serializer<Writer>, value<T, Reader&> >( \
+#define BOND_DETAIL_MapByKey(Reader, Writer, T) \
+    void MapByKey<BuiltInProtocols, const Serializer<Writer>, value<T, Reader&> >( \
         const Serializer<Writer>&, BondDataType, const value<T, Reader&>&, Reader&, uint32_t);
 #else
-#define BOND_DETAIL_INSTANTIATE_MapByKey(Reader, Writer, T) \
-    template void MapByKey<BuiltInProtocols>( \
+#define BOND_DETAIL_MapByKey(Reader, Writer, T) \
+    void MapByKey<BuiltInProtocols>( \
         const Serializer<Writer>&, BondDataType, const value<T, Reader&>&, Reader&, uint32_t);
 #endif
 
-#define BOND_DETAIL_EXTERN_MapByKey(Reader, Writer, T) \
-    extern BOND_DETAIL_INSTANTIATE_MapByKey(Reader, Writer, T)
-
-BOND_DETAIL_PRECOMPILE_READERS_WRITERS_BASIC_TYPES(BOND_DETAIL_EXTERN_MapByKey)
+BOND_DETAIL_EXTERN(BOND_DETAIL_MapByKey, BOND_DETAIL_BUILTIN_READERS_WRITERS_BASIC_TYPES)
 
 
-#define BOND_DETAIL_INSTANTIATE_MapByElement(Reader, Writer) \
-    template void MapByElement<BuiltInProtocols>( \
-        const Serializer<Writer>&, BondDataType, BondDataType, Reader&, uint32_t);
+#define BOND_DETAIL_MapByElement(Reader, Writer) \
+    void MapByElement<BuiltInProtocols>(const Serializer<Writer>&, BondDataType, BondDataType, Reader&, uint32_t);
 
-#define BOND_DETAIL_EXTERN_MapByElement(Reader, Writer) \
-    extern BOND_DETAIL_INSTANTIATE_MapByElement(Reader, Writer)
-
-BOND_DETAIL_PRECOMPILE_READERS_WRITERS(BOND_DETAIL_EXTERN_MapByElement)
+BOND_DETAIL_EXTERN(BOND_DETAIL_MapByElement, BOND_DETAIL_BUILTIN_READERS_WRITERS)
 
 
 } // namespace detail
