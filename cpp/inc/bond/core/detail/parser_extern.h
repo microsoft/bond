@@ -17,7 +17,7 @@ namespace bond
 
 BOND_DETAIL_PRECOMPILE(
     BOND_DETAIL_EXTERN_StaticParser_ReadFields,
-    ((SimpleBinaryReader<InputBuffer>))
+    (BOND_DETAIL_BUILTIN_READER_SIMPLE_BINARY)
     (BOND_DETAIL_BUILTIN_WRITERS))
 
 
@@ -29,7 +29,7 @@ BOND_DETAIL_PRECOMPILE(
 
 BOND_DETAIL_PRECOMPILE(
     BOND_DETAIL_EXTERN_StaticParser_ReadFields_Null,
-    ((SimpleBinaryReader<InputBuffer>)))
+    (BOND_DETAIL_BUILTIN_READER_SIMPLE_BINARY))
 
 
 #define BOND_DETAIL_INSTANTIATE_DynamicParser_ReadFields(Reader, Writer) \
@@ -40,7 +40,7 @@ BOND_DETAIL_PRECOMPILE(
 
 BOND_DETAIL_PRECOMPILE(
     BOND_DETAIL_EXTERN_DynamicParser_ReadFields,
-    ((CompactBinaryReader<InputBuffer>)(FastBinaryReader<InputBuffer>))
+    (BOND_DETAIL_BUILTIN_READER_COMPACT_BINARY BOND_DETAIL_BUILTIN_READER_FAST_BINARY)
     (BOND_DETAIL_BUILTIN_WRITERS))
 
 
@@ -52,7 +52,7 @@ BOND_DETAIL_PRECOMPILE(
 
 BOND_DETAIL_PRECOMPILE(
     BOND_DETAIL_EXTERN_DynamicParser_ReadFields_Null,
-    ((CompactBinaryReader<InputBuffer>)(FastBinaryReader<InputBuffer>)))
+    (BOND_DETAIL_BUILTIN_READER_COMPACT_BINARY BOND_DETAIL_BUILTIN_READER_FAST_BINARY))
 
 
 } // namespace bond
