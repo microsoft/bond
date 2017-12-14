@@ -9,14 +9,14 @@
  && !defined(BOND_SIMPLE_BINARY_PROTOCOL) \
  && !defined(BOND_FAST_BINARY_PROTOCOL) \
  && !defined(BOND_SIMPLE_JSON_PROTOCOL)
-#error None of the built-in protocols is enabled
+#error None of the built-in protocols are enabled. Either enable one of them or set BOND_LIB_TYPE to BOND_LIB_TYPE_HEADER.
 #endif
 
-#include <boost/preprocessor/seq/seq.hpp>
-#include <boost/preprocessor/seq/pop_front.hpp>
-#include <boost/preprocessor/seq/to_tuple.hpp>
-#include <boost/preprocessor/seq/for_each_product.hpp>
 #include <boost/preprocessor/facilities/expand.hpp>
+#include <boost/preprocessor/seq/for_each_product.hpp>
+#include <boost/preprocessor/seq/pop_front.hpp>
+#include <boost/preprocessor/seq/seq.hpp>
+#include <boost/preprocessor/seq/to_tuple.hpp>
 
 
 #ifdef BOND_COMPACT_BINARY_PROTOCOL
@@ -56,13 +56,13 @@
     BOND_DETAIL_BUILTIN_READER_COMPACT_BINARY \
     BOND_DETAIL_BUILTIN_READER_SIMPLE_BINARY \
     BOND_DETAIL_BUILTIN_READER_FAST_BINARY \
-    BOND_DETAIL_BUILTIN_READER_SIMPLE_JSON
+    // BOND_DETAIL_BUILTIN_READER_SIMPLE_JSON
 
 #define BOND_DETAIL_BUILTIN_WRITERS \
     BOND_DETAIL_BUILTIN_WRITER_COMPACT_BINARY \
     BOND_DETAIL_BUILTIN_WRITER_SIMPLE_BINARY \
     BOND_DETAIL_BUILTIN_WRITER_FAST_BINARY \
-    BOND_DETAIL_BUILTIN_WRITER_SIMPLE_JSON
+    // BOND_DETAIL_BUILTIN_WRITER_SIMPLE_JSON
 
 #define BOND_DETAIL_BUILTIN_BASIC_TYPES \
     (void) \
