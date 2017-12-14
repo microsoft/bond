@@ -447,7 +447,6 @@ void RequiredFieldValiadator<T>::MissingFieldException() const
 namespace detail
 {
 
-template <typename Protocols>
 class To
     : public DeserializingTransform
 {
@@ -461,30 +460,16 @@ public:
     }
 
 protected:
-    template <typename V, typename X>
+    template <typename Protocols, typename V, typename X>
     void AssignToVar(V& var, const X& value) const
     {
         value.template Deserialize<Protocols>(var);
     }
 
-    template <typename V, typename X>
+    template <typename Protocols, typename V, typename X>
     void AssignToVar(maybe<V>& var, const X& value) const
     {
-        value.template Deserialize<Protocols>(var.set_value());
-    }
-
-    template <typename V, typename X>
-    typename boost::enable_if<has_base<V>, bool>::type
-    AssignToBase(V& var, const X& value) const
-    {
-        return Apply<Protocols>(bond::To<typename schema<V>::type::base, Protocols>(var), value);
-    }
-
-    template <typename V, typename X>
-    typename boost::disable_if<has_base<V>, bool>::type
-    AssignToBase(V& /*var*/, const X& /*value*/) const
-    {
-        return false;
+        AssignToVar<Protocols>(var.set_value(), value);
     }
 
     template <typename X>
@@ -499,7 +484,7 @@ protected:
 
 template <typename T, typename Protocols, typename Validator>
 class To
-    : public detail::To<Protocols>,
+    : public detail::To,
       protected Validator
 {
 public:
@@ -533,12 +518,7 @@ public:
     template <typename X>
     bool Base(const X& value) const
     {
-        if (AssignToBase(_var, value))
-        {
-            UnexpectedStructStopException();
-        }
-
-        return false;
+        return AssignToBase(value);
     }
 
 
@@ -574,14 +554,34 @@ public:
     bool Field(const FieldT&, const X& value) const
     {
         Validator::template Validate<FieldT>();
-        AssignToVar(FieldT::GetVariable(_var), value);
+        AssignToVar<Protocols>(FieldT::GetVariable(_var), value);
         return false;
     }
 
 private:
-    using detail::To<Protocols>::AssignToBase;
-    using detail::To<Protocols>::AssignToVar;
-    using detail::To<Protocols>::AssignToField;
+    using detail::To::AssignToVar;
+    using detail::To::AssignToField;
+
+    template <typename X, typename U = T>
+    typename boost::enable_if<has_base<U>, bool>::type
+    AssignToBase(const X& value) const
+    {
+        bool done = Apply<Protocols>(To<typename schema<T>::type::base, Protocols>(_var), value);
+
+        if (done)
+        {
+            UnexpectedStructStopException();
+        }
+
+        return false;
+    }
+
+    template <typename X, typename U = T>
+    typename boost::disable_if<has_base<U>, bool>::type
+    AssignToBase(const X& /*value*/) const
+    {
+        return false;
+    }
 
     template <typename Fields, typename X>
     bool AssignToField(const Fields&, uint16_t id, const X& value) const
@@ -590,9 +590,7 @@ private:
 
         if (id == Head::id)
         {
-            Validator::template Validate<Head>();
-            AssignToVar(Head::GetVariable(_var), value);
-            return false;
+            return Field(Head(), value);
         }
         else
         {
@@ -600,7 +598,6 @@ private:
         }
     }
 
-private:
     BOND_NORETURN void UnexpectedStructStopException() const
     {
         // Force instantiation of template statics
