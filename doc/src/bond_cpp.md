@@ -1702,6 +1702,59 @@ The standard library `std::wstring_convert::from_bytes` and
 `std::wstring_convert::to_bytes` which are used by Bond JSON de/serializer
 throw this exception to indicate an invalid string encoding.
 
+Integrating Bond into your build
+================================
+
+To consume Bond, you will need to integrate it into your build somehow. If
+you are using one of these C++ package managers, Bond is available as a
+package that you can consume:
+
+* [Vcpkg](https://github.com/Microsoft/vcpkg)'s `bond` package
+
+What follows are build-system agnostic instructions for consuming C++ Bond.
+
+These instructions assume that you have used
+[Bond's CMake-based build](https://github.com/Microsoft/bond/README.md) to
+compile and *install* (`make install`/`cmake --build . --target INSTALL`)
+Bond into your development environment somewhere. The CMake variable
+`CMAKE_INSTALL_PREFIX` can be used to control where the install target
+places the output files.
+
+(The Bond CMake files can't currently be consumed by another CMake project
+via `add_directory`.
+[Contributions encouraged](https://github.com/Microsoft/bond/blob/master/CONTRIBUTING.md)
+to help improve this situation.)
+
+After you've built and installed Bond, you can use whatever build system you
+need by
+
+1. teaching it how to automatically run code generation on .bond files;
+1. configuring your C++ compiler's `#include` search path to point at Boost
+   and Bond; and
+1. configuring your linker's library path to have the Boost and Bond
+   libraries on its search path.
+
+Step #1 is very build system dependent. Contributions of these build systems
+rules to the Bond repository will be happily accepted.
+
+When building the library/executable that is going to use Bond, you'll need
+to set your compiler's `#include` search path to point to:
+
+* where your version of Boost is installed
+* where your version of Bond is installed
+
+If you use any types from bond.bond (e.g., by using an `import` statement in
+your .bond file or by using the C++ `RuntimeSchema` APIs), you will also
+need to link the library/executable with Bond (The names may vary depending
+on platform/toolset.):
+
+* `libbond.a`/`bond.lib` and
+* optionally, `libbond_apply.a`/`bond_apply.lib`, if you plan to `#include
+  <bond/core/bond_apply.h>`.
+
+See also the [Optimizing build time](#optimizing-build-time) section,
+particularly its discussion of `BOND_LIB_TYPE`.
+
 Optimizing build time
 =====================
 
