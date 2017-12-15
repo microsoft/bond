@@ -129,6 +129,11 @@ implements_field_omitting
     : std::false_type {};
 
 
+template <typename T> struct
+implements_field_omitting<T&>
+    : implements_field_omitting<T> {};
+
+
 // WriteFieldOmitted is an optional protocol writer method which is called for
 // omitted optional fields. It CAN be implemented by tagged protocols and MUST
 // be implemented by untagged protocols that allow omitting optional fields.
