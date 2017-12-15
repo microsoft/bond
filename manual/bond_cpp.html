@@ -182,6 +182,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#stdlength_error"><code>std::length_error</code></a></li>
 <li><a href="#stdrange_error"><code>std::range_error</code></a></li>
 </ul></li>
+<li><a href="#integrating-bond-into-your-build">Integrating Bond into your build</a></li>
 <li><a href="#optimizing-build-time">Optimizing build time</a></li>
 <li><a href="#bond-comm">Bond Comm</a><ul>
 <li><a href="#defining-services">Defining services</a></li>
@@ -1689,6 +1690,32 @@ bond::CompactBinaryWriter&lt;Output&gt; writer(output);</code></pre></td></tr></
 <p>The standard library throws this exception to report errors that are consequence of attempt to exceed implementation-defined lengths for objects such as <code>std::string</code> or <code>std::vector</code>.</p>
 <h2 id="stdrange_error"><code>std::range_error</code></h2>
 <p>The standard library <code>std::wstring_convert::from_bytes</code> and <code>std::wstring_convert::to_bytes</code> which are used by Bond JSON de/serializer throw this exception to indicate an invalid string encoding.</p>
+<h1 id="integrating-bond-into-your-build">Integrating Bond into your build</h1>
+<p>To consume Bond, you will need to integrate it into your build somehow. If you are using one of these C++ package managers, Bond is available as a package that you can consume:</p>
+<ul>
+<li><a href="https://github.com/Microsoft/vcpkg">Vcpkg</a>’s <code>bond</code> package</li>
+</ul>
+<p>What follows are build-system agnostic instructions for consuming C++ Bond.</p>
+<p>These instructions assume that you have used <a href="https://github.com/Microsoft/bond/README.md">Bond’s CMake-based build</a> to compile and <em>install</em> (<code>make install</code>/<code>cmake --build . --target INSTALL</code>) Bond into your development environment somewhere. The CMake variable <code>CMAKE_INSTALL_PREFIX</code> can be used to control where the install target places the output files.</p>
+<p>(The Bond CMake files can’t currently be consumed by another CMake project via <code>add_directory</code>. <a href="https://github.com/Microsoft/bond/blob/master/CONTRIBUTING.md">Contributions encouraged</a> to help improve this situation.)</p>
+<p>After you’ve built and installed Bond, you can use whatever build system you need by</p>
+<ol style="list-style-type: decimal">
+<li>teaching it how to automatically run code generation on .bond files;</li>
+<li>configuring your C++ compiler’s <code>#include</code> search path to point at Boost and Bond; and</li>
+<li>configuring your linker’s library path to have the Boost and Bond libraries on its search path.</li>
+</ol>
+<p>Step #1 is very build system dependent. Contributions of these build systems rules to the Bond repository will be happily accepted.</p>
+<p>When building the library/executable that is going to use Bond, you’ll need to set your compiler’s <code>#include</code> search path to point to:</p>
+<ul>
+<li>where your version of Boost is installed</li>
+<li>where your version of Bond is installed</li>
+</ul>
+<p>If you use any types from bond.bond (e.g., by using an <code>import</code> statement in your .bond file or by using the C++ <code>RuntimeSchema</code> APIs), you will also need to link the library/executable with Bond (The names may vary depending on platform/toolset.):</p>
+<ul>
+<li><code>libbond.a</code>/<code>bond.lib</code> and</li>
+<li>optionally, <code>libbond_apply.a</code>/<code>bond_apply.lib</code>, if you plan to <code>#include   &lt;bond/core/bond_apply.h&gt;</code>.</li>
+</ul>
+<p>See also the <a href="#optimizing-build-time">Optimizing build time</a> section, particularly its discussion of <code>BOND_LIB_TYPE</code>.</p>
 <h1 id="optimizing-build-time">Optimizing build time</h1>
 <p>Extensive use of C++ templates in Bond may sometimes lead to long compilation times. In order to optimize build speed for projects using Bond, it is important to understand how the Bond implementation in particular, and C++ templates in general, affect compilation and linking time.</p>
 <p>At the high level, the cost of compiling template heavy C++ code comes from template instantiation. In Bond the most expensive templates to instantiate are related to deserialization. Deserialization APIs are usually instantiated for all enabled <a href="#protocols">protocols</a>. This leads to the first obvious way to optimize build speed: enable only the protocols that are needed.</p>
