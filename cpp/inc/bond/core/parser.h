@@ -124,8 +124,9 @@ private:
     }
 
     // use compile-time schema
-    template <typename Fields, typename Transform, typename I = Input>
-    typename boost::enable_if<detail::implements_field_omitting<I>, bool>::type
+    template <typename Fields, typename Transform, typename I = Input,
+        typename boost::enable_if<detail::implements_field_omitting<I> >::type* = nullptr>
+    bool
     ReadFields(const Fields&, const Transform& transform)
     {
         typedef typename boost::mpl::deref<Fields>::type Head;
@@ -139,8 +140,9 @@ private:
         return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
     }
 
-    template <typename Fields, typename Transform, typename I = Input>
-    typename boost::disable_if<detail::implements_field_omitting<I>, bool>::type
+    template <typename Fields, typename Transform, typename I = Input,
+        typename boost::disable_if<detail::implements_field_omitting<I> >::type* = nullptr>
+    bool
     ReadFields(const Fields&, const Transform& transform)
     {
         typedef typename boost::mpl::deref<Fields>::type Head;
