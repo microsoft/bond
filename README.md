@@ -47,8 +47,8 @@ Bond C++ library requires some C++11 features (currently limited to those
 supported bv Visual C++ 2013); a C++11 compiler is required. Additionally,
 to build Bond you will need CMake (3.1+),
 [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
-and Boost (1.58+). (Note: Boost 1.59 may not work with Bond Comm due to some
-bugs in that version of the Boost ASIO library).
+(1.5.1+) and Boost (1.58+). (Note: Boost 1.59 may not work with Bond Comm due to
+some bugs in that version of the Boost ASIO library).
 
 Following are specific instructions for building on various platforms.
 
