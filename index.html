@@ -171,7 +171,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <h2 id="dependencies">Dependencies</h2>
 <p>The Bond repository uses Git submodules and should be cloned with the <code>--recursive</code> flag:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> clone --recursive https://github.com/Microsoft/bond.git</code></pre></div>
-<p>Bond C++ library requires some C++11 features (currently limited to those supported bv Visual C++ 2013); a C++11 compiler is required. Additionally, to build Bond you will need CMake (3.1+), <a href="https://docs.haskellstack.org/en/stable/README/#how-to-install">Haskell Stack</a> and Boost (1.58+). (Note: Boost 1.59 may not work with Bond Comm due to some bugs in that version of the Boost ASIO library).</p>
+<p>Bond C++ library requires some C++11 features (currently limited to those supported bv Visual C++ 2013); a C++11 compiler is required. Additionally, to build Bond you will need CMake (3.1+), <a href="https://docs.haskellstack.org/en/stable/README/#how-to-install">Haskell Stack</a> (1.5.1+) and Boost (1.58+). (Note: Boost 1.59 may not work with Bond Comm due to some bugs in that version of the Boost ASIO library).</p>
 <p>Following are specific instructions for building on various platforms.</p>
 <h3 id="linux">Linux</h3>
 <p>Bond must be built with C++11 compiler. We test with Clang (3.8) and GNU C++ (5.4). We recommend Clang as it’s faster with template-heavy code like Bond.</p>
