@@ -830,7 +830,7 @@ public:
         if (it != _mappings.end())
         {
             if (!it->second.fields.empty())
-                return Apply(MapTo(_var, it->second.fields), value);
+                return Apply<Protocols>(MapTo(_var, it->second.fields), value);
 
             if (!it->second.path.empty())
                 return this->Assign(_var, it->second.path, value);

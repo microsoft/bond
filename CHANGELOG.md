@@ -50,6 +50,8 @@ different versioning scheme, following the Haskell community's
   [Issue #735](https://github.com/Microsoft/bond/issues/735)
 * Fixed a bug which would read an unrelated struct's field(s) when deserializing a
   base struct. [Issue #742](https://github.com/Microsoft/bond/issues/742)
+* Fixed a bug in `bond::MapTo<T>::Field` where `Protocols` type parameter was
+  not passed to `bond::Apply`.
 
 ### C# ###
 
