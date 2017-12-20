@@ -633,7 +633,6 @@ BOND_STATIC_CONSTEXPR uint16_t mapping_base = invalid_field_id;
 namespace detail
 {
 
-template <typename Protocols>
 class MapTo
     : public DeserializingTransform
 {
@@ -677,54 +676,54 @@ protected:
     };
 
 
-    template <typename V, typename X>
+    template <typename Protocols, typename V, typename X>
     bool Assign(V& var, const PathView& ids, const X& value) const
     {
         BOOST_ASSERT(ids.size() > 0);
 
         if (*ids.current == mapping_base)
-            return AssignToBase(base_class<typename schema<V>::type>(), var, ids, value);
+            return AssignToBase<Protocols>(base_class<typename schema<V>::type>(), var, ids, value);
 
         if (ids.size() == 1)
-            return AssignToField(var, *ids.current, value);
+            return AssignToField<Protocols>(var, *ids.current, value);
         else
-            return AssignToNested(var, ids, value);
+            return AssignToNested<Protocols>(var, ids, value);
     }
 
 
-    template <typename V, typename X>
+    template <typename Protocols, typename V, typename X>
     bool AssignToNested(V& var, const PathView& ids, const X& value) const
     {
-        return AssignToNested(typename boost::mpl::begin<typename struct_fields<V>::type>::type(), var, ids, value);
+        return AssignToNested<Protocols>(typename boost::mpl::begin<typename struct_fields<V>::type>::type(), var, ids, value);
     }
 
 
-    template <typename BaseT, typename V, typename X>
+    template <typename Protocols, typename BaseT, typename V, typename X>
     bool AssignToBase(const BaseT*, V& var, const PathView& ids, const X& value) const
     {
-        return Assign(static_cast<BaseT&>(var), PathView(ids.path, ids.current + 1), value);
+        return Assign<Protocols>(static_cast<BaseT&>(var), PathView(ids.path, ids.current + 1), value);
     }
 
 
-    template <typename V, typename X>
+    template <typename Protocols, typename V, typename X>
     bool AssignToBase(const no_base*, V& /*var*/, const PathView& /*ids*/, const X& /*value*/) const
     {
         return false;
     }
 
 
-    template <typename Nested, typename V, typename X>
+    template <typename Protocols, typename Nested, typename V, typename X>
     bool AssignToNested(const Nested&, V& var, const PathView& ids, const X& value) const
     {
         typedef typename boost::mpl::deref<Nested>::type Head;
 
         if (*ids.current == Head::id)
-            return Assign(Head::GetVariable(var), PathView(ids.path, ids.current + 1), value);
+            return Assign<Protocols>(Head::GetVariable(var), PathView(ids.path, ids.current + 1), value);
         else
-            return AssignToNested(typename boost::mpl::next<Nested>::type(), var, ids, value);
+            return AssignToNested<Protocols>(typename boost::mpl::next<Nested>::type(), var, ids, value);
     }
 
-    template <typename V, typename X>
+    template <typename Protocols, typename V, typename X>
     bool AssignToNested(const boost::mpl::l_iter<boost::mpl::l_end>&, V& /*var*/, const PathView& /*ids*/, const X& /*value*/) const
     {
         return false;
@@ -734,62 +733,62 @@ protected:
     // Separate AssignToField overloads for bonded<T>, basic types and containers allows us
     // to use simpler predicates in boost::mpl::copy_if. This doesn't matter for runtime code
     // but compiles significantly faster.
-    template <typename Reader, typename V, typename X>
+    template <typename Protocols, typename Reader, typename V, typename X>
     bool AssignToField(V& var, uint16_t id, const bonded<X, Reader>& value) const
     {
-        return AssignToField(typename boost::mpl::begin<typename nested_fields<V>::type>::type(), var, id, value);
+        return AssignToField<Protocols>(typename boost::mpl::begin<typename nested_fields<V>::type>::type(), var, id, value);
     }
 
 
-    template <typename Reader, typename V, typename X>
+    template <typename Protocols, typename Reader, typename V, typename X>
     bool AssignToField(V& var, uint16_t id, const value<X, Reader>& value) const
     {
-        return AssignToField(typename boost::mpl::begin<typename matching_fields<V, X>::type>::type(), var, id, value);
+        return AssignToField<Protocols>(typename boost::mpl::begin<typename matching_fields<V, X>::type>::type(), var, id, value);
     }
 
 
-    template <typename Reader, typename V>
+    template <typename Protocols, typename Reader, typename V>
     bool AssignToField(V& var, uint16_t id, const value<void, Reader>& value) const
     {
-        return AssignToField(typename boost::mpl::begin<typename container_fields<V>::type>::type(), var, id, value);
+        return AssignToField<Protocols>(typename boost::mpl::begin<typename container_fields<V>::type>::type(), var, id, value);
     }
 
 
-    template <typename Fields, typename V, typename X>
+    template <typename Protocols, typename Fields, typename V, typename X>
     bool AssignToField(const Fields&, V& var, uint16_t id, const X& value) const
     {
         typedef typename boost::mpl::deref<Fields>::type Head;
 
         if (id == Head::id)
         {
-            AssignToVar(Head::GetVariable(var), value);
+            AssignToVar<Protocols>(Head::GetVariable(var), value);
             return false;
         }
         else
         {
-            return AssignToField(typename boost::mpl::next<Fields>::type(), var, id, value);
+            return AssignToField<Protocols>(typename boost::mpl::next<Fields>::type(), var, id, value);
         }
     }
 
 
-    template <typename V, typename X>
+    template <typename Protocols, typename V, typename X>
     bool AssignToField(const boost::mpl::l_iter<boost::mpl::l_end>&, V& /*var*/, uint16_t /*id*/, const X& /*value*/) const
     {
         return false;
     }
 
 
-    template <typename V, typename X>
+    template <typename Protocols, typename V, typename X>
     void AssignToVar(V& var, const X& value) const
     {
         value.template Deserialize<Protocols>(var);
     }
 
 
-    template <typename V, typename X>
+    template <typename Protocols, typename V, typename X>
     void AssignToVar(maybe<V>& var, const X& value) const
     {
-        value.template Deserialize<Protocols>(var.set_value());
+        AssignToVar<Protocols>(var.set_value(), value);
     }
 };
 
@@ -798,7 +797,7 @@ protected:
 
 template <typename T, typename Protocols = BuiltInProtocols>
 class MapTo
-    : public detail::MapTo<Protocols>
+    : public detail::MapTo
 {
 public:
     BOOST_STATIC_ASSERT(has_schema<T>::value);
@@ -833,7 +832,7 @@ public:
                 return Apply<Protocols>(MapTo(_var, it->second.fields), value);
 
             if (!it->second.path.empty())
-                return this->Assign(_var, it->second.path, value);
+                return Assign<Protocols>(_var, it->second.path, value);
         }
 
         return false;
@@ -847,12 +846,14 @@ public:
         Mappings::const_iterator it = _mappings.find(id);
 
         if (it != _mappings.end() && !it->second.path.empty())
-            return this->Assign(_var, it->second.path, value);
+            return Assign<Protocols>(_var, it->second.path, value);
         else
             return false;
     }
 
 private:
+    using detail::MapTo::Assign;
+
     T&               _var;
     const Mappings&  _mappings;
 };
