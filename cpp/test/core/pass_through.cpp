@@ -1,4 +1,5 @@
 #include "precompiled.h"
+#include <pass_through_reflection.h>
 #include "serialization_test.h"
 #include "untagged_protocol.h"
 
