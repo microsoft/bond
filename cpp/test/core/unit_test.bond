@@ -63,9 +63,6 @@ struct NestedWithBase1BondedBaseView
 };
 
 
-struct ForwardDeclarationOnly;
-
-
 struct NestedWithBase1BaseView
 {
     1: required_optional  SimpleBase s1;
@@ -129,22 +126,6 @@ struct NestedMapsView
 {
     3: required_optional   map<string, SimpleListsStructView>   msSLS;
     4: required_optional   map<int32, list<NestedStructView>>   m32lNS;
-};
-
-
-struct NestedListsStructPassThrough
-{
-    1: required_optional   list<list<int8>>                                 ll8;
-    2: required_optional   list<vector<list<string>>>                       lvls;
-    3: required_optional   list<bonded<SimpleListsStructView>>              lSLS;
-    4: required_optional   vector<list<bonded<ForwardDeclarationOnly>>>     vlSLS;
-    5: required_optional   bonded<SimpleListsStructView>                    SLS;
-    6: required_optional   vector<float>                                    vf;
-    7: required_optional   vector<vector<bonded<NestedStruct1BondedView>>>  vvNS;
-    8: required_optional   vector<set<string>>                              vss;
-    9: required_optional   list<set<bool>>                                  lsb;
-    10: required_optional  map<int64, list<string>>                         m64ls;
-    11: required_optional  vector<map<double, string>>                      vmds;
 };
 
 
