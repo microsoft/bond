@@ -160,7 +160,9 @@
 
     cache:
         - cs\packages -> cs\test\core\packages.config
-        - "c:\\sr"
+        - 'c:\\sr -> compiler\stack.yaml'
+        - 'c:\\projects\\bond\\compiler\\.stack-work -> compiler\stack.yaml'
+        - '%LOCALAPPDATA%\\Programs\\stack -> compiler\stack.yaml'
 
     before_build:
         - ps: >-
