@@ -183,7 +183,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         grpc::ServerContext _context{};
         TRequest _request{};
         grpc::ServerAsyncResponseWriter<bond::bonded<TResponse>> _responder{ &_context };
-        std::atomic_flag _responseSentFlag{}; // Tracks whether any response has been sent yet.
+        std::atomic_flag _responseSentFlag = ATOMIC_FLAG_INIT; // Tracks whether any response has been sent yet.
         // The ref count intentionally starts at 1, because this instance
         // needs to keep itself alive until the response has finished being
         // sent, regardless of whether there are any outstanding user
