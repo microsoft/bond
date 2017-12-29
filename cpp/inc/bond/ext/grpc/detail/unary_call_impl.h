@@ -113,58 +113,50 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
             // The response has been sent, so we no longer need to keep
             // ourselves alive: release the implicit initial refcount that
             // this instance was constructed with.
-            Release(ReleaseTrySend::No);
+            Release();
         }
-
-        enum class ReleaseTrySend
-        {
-            No,
-            Yes
-        };
 
         void AddRef() noexcept
         {
             _refCount.fetch_add(1, std::memory_order_relaxed);
         }
 
-        void Release(ReleaseTrySend trySend)
+        void Release()
         {
-            auto oldCount  = _refCount.fetch_sub(1, std::memory_order_acq_rel);
-
-            switch (oldCount)
+            if (_refCount.fetch_sub(1, std::memory_order_acq_rel) == 1)
             {
-                case 2:
-                    // There are two possible cases when the old count can be 2.
-                    //
-                    // Case 2a (trySend == ReleaseTrySend::Yes): the last
-                    // user reference has just gone away, but Finish was not
-                    // called. In this case, we are responsible for sending
-                    // an error response and decrementing the final ref
-                    // count. FinishWithError will schedule the send of the
-                    // error response, and notification of completion of the
-                    // send via invoke() will decrement the final ref count.
-                    // Since we hold the ref count ourselves, we will not
-                    // get deleted until we're done sending.
-                    //
-                    // Case 2b (trySend == ReleaseTrySend::No): the user
-                    // called Finish/FinishWithError and completion of
-                    // sending that response has just happened via invoke(),
-                    // AND there is still ONE user reference. In this case,
-                    // the user reference could go away at any time and
-                    // delete us, so we can't touch any part of this object.
-                    // But we don't need to send anything anyway.
-                    if (trySend == ReleaseTrySend::Yes)
-                    {
-                        FinishWithError({ grpc::StatusCode::INTERNAL, "An internal server error has occurred." });
-                    }
-                    break;
+                delete this;
+            }
+        }
 
-                case 1:
-                    delete this;
-                    break;
+        void TryFinishWithError()
+        {
+            if (_refCount.load(std::memory_order::memory_order_acquire) == 2)
+            {
+                // There are two possible cases when the current count can be 2.
+                //
+                // Case 2a:
+                // the last user reference has just gone away, but Finish was
+                // not called. In this case, we are responsible for sending
+                // an error response and decrementing the final ref
+                // count. FinishWithError will schedule the send of the
+                // error response, and notification of completion of the
+                // send via invoke() will decrement the final ref count.
+                // Since we hold the ref count ourselves, we will not
+                // get deleted until we're done sending.
+                //
+                // Case 2b:
+                // the user called Finish/FinishWithError and completion of
+                // sending that response has just happened via invoke(),
+                // AND there is still ONE user reference. In this case,
+                // the user reference could go away at any time and
+                // delete us, so we can't touch any part of this object.
+                // But we don't need to send anything anyway.
+                //
+                // Even when multiple threads enter this case, at most one
+                // will succeed in sending error, thanks to _responseSentFlag.
 
-                default:
-                    break;
+                FinishWithError({ grpc::StatusCode::INTERNAL, "An internal server error has occurred." });
             }
         }
 
@@ -175,7 +167,8 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
 
         friend void intrusive_ptr_release(unary_call_impl* call)
         {
-            call->Release(ReleaseTrySend::Yes);
+            call->TryFinishWithError();
+            call->Release();
         }
 
         // A pointer to the context is passed to _responder when
