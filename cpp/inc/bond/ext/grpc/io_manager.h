@@ -191,7 +191,6 @@ namespace bond { namespace ext { namespace gRPC {
 
                 _threads.clear();
 
-                _cq.reset();
                 _shutdownCompleted.set();
             }
             else
