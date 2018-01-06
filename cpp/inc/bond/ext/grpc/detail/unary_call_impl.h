@@ -133,10 +133,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         {
             if (_refCount.load(std::memory_order::memory_order_acquire) == 2)
             {
-                // There are two possible cases when the current count can be 2.
-                //
-                // Case 2a:
-                // the last user reference has just gone away, but Finish was
+                // The last user reference has just gone away, but Finish was
                 // not called. In this case, we are responsible for sending
                 // an error response and decrementing the final ref
                 // count. FinishWithError will schedule the send of the
@@ -144,14 +141,6 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
                 // send via invoke() will decrement the final ref count.
                 // Since we hold the ref count ourselves, we will not
                 // get deleted until we're done sending.
-                //
-                // Case 2b:
-                // the user called Finish/FinishWithError and completion of
-                // sending that response has just happened via invoke(),
-                // AND there is still ONE user reference. In this case,
-                // the user reference could go away at any time and
-                // delete us, so we can't touch any part of this object.
-                // But we don't need to send anything anyway.
                 //
                 // Even when multiple threads enter this case, at most one
                 // will succeed in sending error, thanks to _responseSentFlag.
