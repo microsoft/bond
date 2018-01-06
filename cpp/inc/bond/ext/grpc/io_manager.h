@@ -5,7 +5,7 @@
 
 #include <bond/core/config.h>
 
-#include <bond/ext/detail/event.h>
+#include <bond/core/detail/once.h>
 #include <bond/ext/grpc/detail/io_manager_tag.h>
 
 #ifdef _MSC_VER
@@ -179,25 +179,18 @@ namespace bond { namespace ext { namespace gRPC {
         /// return.
         void wait()
         {
-            bool shouldShutdown = !_isShutdownInProgress.test_and_set();
-            if (shouldShutdown)
-            {
-                // borrow the current thread to clean up
-                for (auto& thread : _threads)
+            bond::detail::call_once(
+                _waitFlag,
+                [this]
                 {
-                    BOOST_ASSERT(thread.joinable());
-                    thread.join();
-                }
+                    for (auto& thread : _threads)
+                    {
+                        BOOST_ASSERT(thread.joinable());
+                        thread.join();
+                    }
 
-                _threads.clear();
-
-                _shutdownCompleted.set();
-            }
-            else
-            {
-                // some other thread is performing clean up, so wait for it
-                _shutdownCompleted.wait();
-            }
+                    _threads.clear();
+                });
         }
 
     private:
@@ -219,8 +212,7 @@ namespace bond { namespace ext { namespace gRPC {
         std::vector<std::thread> _threads;
 
         std::atomic_flag _isShutdownRequested = ATOMIC_FLAG_INIT;
-        std::atomic_flag _isShutdownInProgress = ATOMIC_FLAG_INIT;
-        bond::ext::detail::event _shutdownCompleted;
+        bond::detail::once_flag _waitFlag{};
     };
 
 } } } // namespace bond::ext::gRPC
