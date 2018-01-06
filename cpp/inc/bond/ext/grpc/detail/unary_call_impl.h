@@ -94,7 +94,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
             {
-                _responder.Finish(msg, status, static_cast<void*>(this));
+                _responder.Finish(msg, status, static_cast<void*>(static_cast<io_manager_tag*>(this)));
             }
         }
 
@@ -103,7 +103,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
             {
-                _responder.FinishWithError(status, static_cast<void*>(this));
+                _responder.FinishWithError(status, static_cast<void*>(static_cast<io_manager_tag*>(this)));
             }
         }
 
@@ -176,7 +176,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         grpc::ServerContext _context{};
         TRequest _request{};
         grpc::ServerAsyncResponseWriter<bond::bonded<TResponse>> _responder{ &_context };
-        std::atomic_flag _responseSentFlag{}; // Tracks whether any response has been sent yet.
+        std::atomic_flag _responseSentFlag = ATOMIC_FLAG_INIT; // Tracks whether any response has been sent yet.
         // The ref count intentionally starts at 1, because this instance
         // needs to keep itself alive until the response has finished being
         // sent, regardless of whether there are any outstanding user

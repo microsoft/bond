@@ -102,7 +102,7 @@ struct client_unary_call_data
         _responseReader->Finish(
             &_callbackArgs.response,
             &_callbackArgs.status,
-            static_cast<void*>(this));
+            static_cast<void*>(static_cast<io_manager_tag*>(this)));
     }
 
     /// @brief Invoked after the response has been received.

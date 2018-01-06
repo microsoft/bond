@@ -52,6 +52,8 @@ different versioning scheme, following the Haskell community's
   base struct. [Issue #742](https://github.com/Microsoft/bond/issues/742)
 * Fixed a bug in `bond::MapTo<T>::Field` where `Protocols` type parameter was
   not passed to `bond::Apply`.
+* Fixed a race condition when `bond::ext::gRPC::io_manager::shutdown` and
+  `bond::ext::gRPC::io_manager::wait` are called concurrently.
 * Fixed a race condition during `bond::ext::gRPC::unary_call` destruction.
 
 ### C# ###
