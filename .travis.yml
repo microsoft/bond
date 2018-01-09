@@ -13,7 +13,9 @@ services:
     - docker
 env:
     - FLAVOR="cs"
-    - FLAVOR="cpp-core" BOOST="1.65.1" COMPILER="gcc"
+    - FLAVOR="cpp-core" BOOST="1.66.0" COMPILER="gcc"
+    - FLAVOR="cpp-core" BOOST="1.66.0" COMPILER="clang"
+    - FLAVOR="cpp-core" BOOST="1.65.1" COMPILER="clang"
     - FLAVOR="cpp-core" BOOST="1.64.0" COMPILER="clang"
     - FLAVOR="cpp-core" BOOST="1.63.0" COMPILER="clang"
     - FLAVOR="cpp-core" BOOST="1.62.0" COMPILER="clang"
@@ -22,14 +24,15 @@ env:
     - FLAVOR="cpp-core" BOOST="1.59.0" COMPILER="clang"
     - FLAVOR="cpp-core" BOOST="1.58.0" COMPILER="clang"
     - FLAVOR="cpp-comm" BOOST="1.63.0" COMPILER="clang"
-    - FLAVOR="cpp-grpc" BOOST="1.65.1" COMPILER="gcc"
+    - FLAVOR="cpp-grpc" BOOST="1.66.0" COMPILER="gcc"
+    - FLAVOR="cpp-grpc" BOOST="1.65.1" COMPILER="clang"
     - FLAVOR="cpp-grpc" BOOST="1.64.0" COMPILER="clang"
     - FLAVOR="cpp-grpc" BOOST="1.63.0" COMPILER="clang"
     - FLAVOR="hs"
     - FLAVOR="java"
 
 before_install:
-    - CI_BUILD_CONTAINER=bondciimages.azurecr.io/ubuntu-1604:build-7617946
+    - CI_BUILD_CONTAINER=bondciimages.azurecr.io/ubuntu-1604:build-8695914
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
     - travis_retry docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" bondciimages.azurecr.io
     - time travis_retry docker pull $CI_BUILD_CONTAINER
