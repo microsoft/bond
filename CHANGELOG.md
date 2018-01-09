@@ -54,6 +54,7 @@ different versioning scheme, following the Haskell community's
   not passed to `bond::Apply`.
 * Fixed a race condition when `bond::ext::gRPC::io_manager::shutdown` and
   `bond::ext::gRPC::io_manager::wait` are called concurrently.
+* Fixed a race condition during `bond::ext::gRPC::unary_call` destruction.
 
 ### C# ###
 
