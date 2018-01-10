@@ -259,49 +259,56 @@ protected:
         type = static_cast<BondDataType>(byte);
     }
 
-    template <BondDataType T>
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+    // Using BondDataType directly in non-trivial boolean template checks fails on VC12.
+    using BT = std::underlying_type<BondDataType>::type;
+#else
+    using BT = BondDataType;
+#endif
+
+    template <BT T>
     typename boost::enable_if_c<(T == BT_BOOL || T == BT_UINT8 || T == BT_INT8)>::type
     SkipType(uint32_t size = 1)
     {
         _input.Skip(size * sizeof(uint8_t));
     }
 
-    template <BondDataType T>
+    template <BT T>
     typename boost::enable_if_c<(T == BT_UINT16 || T == BT_INT16)>::type
     SkipType(uint32_t size = 1)
     {
         _input.Skip(size * sizeof(uint16_t));
     }
 
-    template <BondDataType T>
+    template <BT T>
     typename boost::enable_if_c<(T == BT_UINT32 || T == BT_INT32)>::type
     SkipType(uint32_t size = 1)
     {
         _input.Skip(size * sizeof(uint32_t));
     }
 
-    template <BondDataType T>
+    template <BT T>
     typename boost::enable_if_c<(T == BT_UINT64 || T == BT_INT64)>::type
     SkipType(uint32_t size = 1)
     {
         _input.Skip(size * sizeof(uint64_t));
     }
 
-    template <BondDataType T>
+    template <BT T>
     typename boost::enable_if_c<(T == BT_FLOAT)>::type
     SkipType(uint32_t size = 1)
     {
         _input.Skip(size * sizeof(float));
     }
 
-    template <BondDataType T>
+    template <BT T>
     typename boost::enable_if_c<(T == BT_DOUBLE)>::type
     SkipType(uint32_t size = 1)
     {
         _input.Skip(size * sizeof(double));
     }
 
-    template <BondDataType T>
+    template <BT T>
     typename boost::enable_if_c<(T == BT_STRING)>::type
     SkipType()
     {
@@ -311,7 +318,7 @@ protected:
         _input.Skip(size);
     }
 
-    template <BondDataType T>
+    template <BT T>
     typename boost::enable_if_c<(T == BT_WSTRING)>::type
     SkipType()
     {
@@ -321,7 +328,7 @@ protected:
         _input.Skip(size * sizeof(uint16_t));
     }
 
-    template <BondDataType T>
+    template <BT T>
     typename boost::enable_if_c<(T == BT_STRUCT)>::type
     SkipType()
     {
@@ -346,7 +353,7 @@ protected:
         }
     }
 
-    template <BondDataType T>
+    template <BT T>
     typename boost::enable_if_c<(T == BT_SET || T == BT_LIST)>::type
     SkipType()
     {
@@ -354,13 +361,11 @@ protected:
         uint32_t size;
 
         ReadContainerBegin(size, element_type);
-
         SkipType(element_type, size);
-
         ReadContainerEnd();
     }
 
-    template <BondDataType T>
+    template <BT T>
     typename boost::enable_if_c<(T == BT_MAP)>::type
     SkipType()
     {
@@ -368,17 +373,15 @@ protected:
         uint32_t size;
 
         ReadContainerBegin(size, element_type);
-
         for (uint32_t i = 0; i < size; ++i)
         {
             SkipType(element_type.first);
             SkipType(element_type.second);
         }
-
         ReadContainerEnd();
     }
 
-    template <BondDataType T>
+    template <BT T>
     typename boost::enable_if_c<(T == BT_STRING || T == BT_WSTRING || T == BT_STRUCT
                                 || T == BT_SET || T == BT_LIST || T == BT_MAP)>::type
     SkipType(uint32_t size)
