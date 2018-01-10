@@ -13,6 +13,10 @@
 #include <boost/bind.hpp>
 #include <boost/make_shared.hpp>
 
+#include <limits>
+#include <algorithm>
+#include <iterator>
+
 namespace bond
 {
 
@@ -261,16 +265,26 @@ private:
     template <typename T>
     uint16_t GetStructDef() const
     {
-        size_t n;
+        const auto& structs = _schema.structs;
 
-        for (n = 0; n < _schema.structs.size(); ++n)
-            if (_schema.structs[n].metadata.qualified_name == schema<T>::type::metadata.qualified_name)
-                return static_cast<uint16_t>(n);
+        BOOST_ASSERT(structs.size() <= (std::numeric_limits<uint16_t>::max)());
 
-        detail::SchemaCache<T>::AppendStructDef(&_schema);
+        auto it = std::find_if(
+            std::cbegin(structs),
+            std::cend(structs),
+            [](const StructDef& def)
+            {
+                return def.metadata.qualified_name == schema<T>::type::metadata.qualified_name;
+            });
 
-        BOOST_ASSERT(n == static_cast<uint16_t>(n));
-        return static_cast<uint16_t>(n);
+        const auto index = static_cast<uint16_t>(std::distance(std::cbegin(structs), it));
+
+        if (it == std::cend(structs))
+        {
+            detail::SchemaCache<T>::AppendStructDef(&_schema);
+        }
+
+        return index;
     }
 
 

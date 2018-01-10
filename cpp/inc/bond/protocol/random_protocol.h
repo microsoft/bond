@@ -166,14 +166,15 @@ public:
         resize_string(value, length);
 
         typename element_type<T>::type* p = string_data(value);
+        typename element_type<T>::type* const p_end = p + length;
 
-        for (unsigned i = 0; i < length; ++i)
+        for (; p != p_end; ++p)
         {
             uint8_t c;
 
             Read(c);
 
-            p[i] = typename element_type<T>::type(' ') + c % ('z' - ' ');
+            *p = typename element_type<T>::type(' ') + c % ('z' - ' ');
         }
     }
 
@@ -181,9 +182,13 @@ public:
     void Read(blob& value, uint32_t size)
     {
         boost::shared_ptr<char[]> buffer(boost::make_shared_noinit<char[]>(size));
+        char* p = buffer.get();
+        char* const p_end = p + size;
 
-        for (unsigned i = 0; i < size; ++i)
-            Read(buffer[i]);
+        for (; p != p_end; ++p)
+        {
+            Read(*p);
+        }
 
         value.assign(buffer, size);
     }

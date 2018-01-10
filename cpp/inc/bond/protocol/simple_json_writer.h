@@ -455,10 +455,10 @@ private:
     {
         _output.WriteOpen('[');
 
-        for (uint32_t i = 0; i < value.size(); ++i)
+        for (const char& ch : value)
         {
             _output.WriteSeparator();
-            _output.Write(static_cast<int8_t>(value.content()[i]));
+            _output.Write(static_cast<int8_t>(ch));
         }
 
         _output.WriteClose(']');
