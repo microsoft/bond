@@ -270,16 +270,16 @@ private:
         BOOST_ASSERT(structs.size() <= (std::numeric_limits<uint16_t>::max)());
 
         auto it = std::find_if(
-            std::cbegin(structs),
-            std::cend(structs),
+            std::begin(structs),
+            std::end(structs),
             [](const StructDef& def)
             {
                 return def.metadata.qualified_name == schema<T>::type::metadata.qualified_name;
             });
 
-        const auto index = static_cast<uint16_t>(std::distance(std::cbegin(structs), it));
+        const auto index = static_cast<uint16_t>(std::distance(std::begin(structs), it));
 
-        if (it == std::cend(structs))
+        if (it == std::end(structs))
         {
             detail::SchemaCache<T>::AppendStructDef(&_schema);
         }
