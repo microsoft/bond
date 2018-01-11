@@ -187,11 +187,12 @@ inline ReadStringData(Buffer& input, T& value, uint32_t length)
 {
     resize_string(value, length);
     typename element_type<T>::type* data = string_data(value);
+    typename element_type<T>::type* const data_end = data + length;
     typename string_char_int_type<T>::type ch;
-    for (uint32_t i = 0; i < length; ++i)
+    for (; data != data_end; ++data)
     {
         input.Read(ch);
-        data[i] = static_cast<typename element_type<T>::type>(ch);
+        *data = static_cast<typename element_type<T>::type>(ch);
     }
 }
 
@@ -207,10 +208,11 @@ typename boost::enable_if_c<(sizeof(typename element_type<T>::type) > sizeof(typ
 inline WriteStringData(Buffer& output, const T& value, uint32_t length)
 {
     const typename element_type<T>::type* data = string_data(value);
+    const typename element_type<T>::type* const data_end = data + length;
     typename string_char_int_type<T>::type ch;
-    for (uint32_t i = 0; i < length; ++i)
+    for (; data != data_end; ++data)
     {
-        ch = static_cast<typename string_char_int_type<T>::type>(data[i]);
+        ch = static_cast<typename string_char_int_type<T>::type>(*data);
         output.Write(ch);
     }
 }

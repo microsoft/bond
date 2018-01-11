@@ -373,7 +373,7 @@ protected:
         uint32_t size;
 
         ReadContainerBegin(size, element_type);
-        for (uint32_t i = 0; i < size; ++i)
+        for (int64_t i = 0; i < size; ++i)
         {
             SkipType(element_type.first);
             SkipType(element_type.second);
@@ -386,7 +386,7 @@ protected:
                                 || T == BT_SET || T == BT_LIST || T == BT_MAP)>::type
     SkipType(uint32_t size)
     {
-        for (uint32_t i = 0; i < size; ++i)
+        for (int64_t i = 0; i < size; ++i)
         {
             SkipType<T>();
         }
