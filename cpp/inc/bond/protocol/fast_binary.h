@@ -8,6 +8,7 @@
 #include "encoding.h"
 
 #include <bond/core/bond_version.h>
+#include <bond/core/detail/checked.h>
 
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
@@ -270,42 +271,42 @@ protected:
     typename boost::enable_if_c<(T == BT_BOOL || T == BT_UINT8 || T == BT_INT8)>::type
     SkipType(uint32_t size = 1)
     {
-        _input.Skip(size * sizeof(uint8_t));
+        _input.Skip(detail::checked_multiply(size, sizeof(uint8_t)));
     }
 
     template <BT T>
     typename boost::enable_if_c<(T == BT_UINT16 || T == BT_INT16)>::type
     SkipType(uint32_t size = 1)
     {
-        _input.Skip(size * sizeof(uint16_t));
+        _input.Skip(detail::checked_multiply(size, sizeof(uint16_t)));
     }
 
     template <BT T>
     typename boost::enable_if_c<(T == BT_UINT32 || T == BT_INT32)>::type
     SkipType(uint32_t size = 1)
     {
-        _input.Skip(size * sizeof(uint32_t));
+        _input.Skip(detail::checked_multiply(size, sizeof(uint32_t)));
     }
 
     template <BT T>
     typename boost::enable_if_c<(T == BT_UINT64 || T == BT_INT64)>::type
     SkipType(uint32_t size = 1)
     {
-        _input.Skip(size * sizeof(uint64_t));
+        _input.Skip(detail::checked_multiply(size, sizeof(uint64_t)));
     }
 
     template <BT T>
     typename boost::enable_if_c<(T == BT_FLOAT)>::type
     SkipType(uint32_t size = 1)
     {
-        _input.Skip(size * sizeof(float));
+        _input.Skip(detail::checked_multiply(size, sizeof(float)));
     }
 
     template <BT T>
     typename boost::enable_if_c<(T == BT_DOUBLE)>::type
     SkipType(uint32_t size = 1)
     {
-        _input.Skip(size * sizeof(double));
+        _input.Skip(detail::checked_multiply(size, sizeof(double)));
     }
 
     template <BT T>
@@ -325,7 +326,7 @@ protected:
         uint32_t size = 0;
 
         ReadVariableUnsigned(_input, size);
-        _input.Skip(size * sizeof(uint16_t));
+        _input.Skip(detail::checked_multiply(size, sizeof(uint16_t)));
     }
 
     template <BT T>

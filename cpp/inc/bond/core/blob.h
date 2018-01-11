@@ -7,7 +7,7 @@
 #include <bond/core/config.h>
 
 #include "container_interface.h"
-#include "detail/checked_add.h"
+#include "detail/checked.h"
 
 #include <boost/make_shared.hpp>
 #include <boost/shared_array.hpp>
