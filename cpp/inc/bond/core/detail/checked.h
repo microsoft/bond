@@ -32,7 +32,7 @@ namespace detail
     }
 
     template <typename T, typename U>
-    typename boost::enable_if_c<std::is_unsigned<T>::value && std::is_unsigned<U>::value, T>::type
+    inline typename boost::enable_if_c<std::is_unsigned<T>::value && std::is_unsigned<U>::value, T>::type
     checked_add(T lhs, U rhs)
     {
         BOOST_STATIC_ASSERT(sizeof(T) >= sizeof(U));
@@ -45,7 +45,7 @@ namespace detail
     }
 
     template <typename T>
-    typename boost::enable_if_c<std::is_unsigned<T>::value && (sizeof(T) < sizeof(uint64_t)), T>::type
+    inline typename boost::enable_if_c<std::is_unsigned<T>::value && (sizeof(T) < sizeof(uint64_t)), T>::type
     checked_multiply(T lhs, uint8_t rhs)
     {
         uint64_t result = static_cast<uint64_t>(lhs) * static_cast<uint64_t>(rhs);
