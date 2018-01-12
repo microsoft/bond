@@ -39,7 +39,7 @@ var NAVTREEINDEX0 =
 "callbacks_8h_source.html":[3,0,0,0,0,0,0],
 "capped__allocator_8h_source.html":[3,0,0,0,1,9],
 "capped__allocator__fwd_8h_source.html":[3,0,0,0,1,10],
-"checked__add_8h_source.html":[3,0,0,0,1,0,1],
+"checked_8h_source.html":[3,0,0,0,1,0,1],
 "classbond_1_1_compact_binary_reader.html":[2,0,0,7],
 "classbond_1_1_compact_binary_reader.html#a1873c592aa23d5556d5f1832860492d5":[2,0,0,7,2],
 "classbond_1_1_compact_binary_reader.html#a1b65ecace3b0621f19625f11a7040a8e":[2,0,0,7,0],
