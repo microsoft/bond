@@ -77,9 +77,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CheckedMultiplyTests, T, all_small_unsigned_types)
     BOOST_CHECK_THROW(checked_multiply(max_t, max_uint8 / 2), std::overflow_error);
 
     BOOST_CHECK_EQUAL(checked_multiply(x, 1), x);
-    BOOST_CHECK_THROW(checked_multiply(x, 1 + max_t / x), std::overflow_error);
+    BOOST_CHECK_THROW(checked_multiply(x, 1 + uint8_t(max_t / x)), std::overflow_error);
     BOOST_CHECK_EQUAL(checked_multiply(T(max_t / max_uint8), max_uint8), max_t);
-    BOOST_CHECK_THROW(checked_multiply(T(1u + max_t / max_uint8), max_uint8), std::overflow_error);
+    BOOST_CHECK_THROW(checked_multiply(T(1 + max_t / max_uint8), max_uint8), std::overflow_error);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
