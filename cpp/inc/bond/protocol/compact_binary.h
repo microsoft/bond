@@ -9,6 +9,7 @@
 #include "encoding.h"
 
 #include <bond/core/bond_version.h>
+#include <bond/core/detail/checked.h>
 #include <bond/core/traits.h>
 #include <bond/stream/output_counter.h>
 
@@ -407,7 +408,7 @@ protected:
     typename boost::enable_if_c<(T == BT_BOOL || T == BT_UINT8 || T == BT_INT8)>::type
     SkipType(uint32_t size = 1)
     {
-        _input.Skip(size * sizeof(uint8_t));
+        _input.Skip(detail::checked_multiply(size, sizeof(uint8_t)));
     }
 
     template <BT T>
@@ -423,14 +424,14 @@ protected:
     typename boost::enable_if_c<(T == BT_FLOAT)>::type
     SkipType(uint32_t size = 1)
     {
-        _input.Skip(size * sizeof(float));
+        _input.Skip(detail::checked_multiply(size, sizeof(float)));
     }
 
     template <BT T>
     typename boost::enable_if_c<(T == BT_DOUBLE)>::type
     SkipType(uint32_t size = 1)
     {
-        _input.Skip(size * sizeof(double));
+        _input.Skip(detail::checked_multiply(size, sizeof(double)));
     }
 
     template <BT T>
@@ -450,7 +451,7 @@ protected:
         uint32_t length;
 
         Read(length);
-        _input.Skip(length * sizeof(uint16_t));
+        _input.Skip(detail::checked_multiply(length, sizeof(uint16_t)));
     }
 
     template <BT T>
