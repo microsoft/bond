@@ -628,27 +628,6 @@ A JSON object representing a forward declaration has the following properties:
       ]
     }
 
-### Service
-
-A JSON object representing a `Service` declaration has the following properties:
-
-    {
-      "tag": "Service",
-      "declNamespaces": [
-      ],
-      "declName": "ServiceName",
-      "declParams": [
-      ],
-      "declAttributes": [
-      ],
-      "serviceMethods": [
-      ]
-    }
-
-where:
-
-- `serviceMethods` is an array of zero or more [methods](#service-method).
-
 Qualified name
 --------------
 
@@ -836,78 +815,6 @@ Other complex types are:
     - `arguments` is an array of zero or more [types](#type) representing type 
     arguments for a generic user defined type. The property is optional and
     may be omitted for non-generic types.
-
-Service method
---------------
-
-A JSON object representing a `Method` has the following properties:
-
-    {
-      "tag": "Tag",
-      "methodName": "MethodName",
-      "methodAttributes": [
-      ],
-      "methodResult": {
-      },
-      "methodInput": {
-      }
-    }
-
-where
-
-- `tag` is one of the following string values:
-    - `"Sink"` to represent a one-way method that doesn't return any result.
-    - `"Function"` to represent a method that returns a result.
-- `methodName` is a string. 
-- `methodAttributes` is an array of zero or more [attributes](#attribute).
-- `methodResult` is an object representing [message](#message) returned from
-the method as the result. 
-- `methodInput` is an object representing [message](#message) accepted by the
-method as the input.
-
-### Message
-
-A JSON object representing a `Message` has the following properties:
-
-    {
-      "messagePayload": {
-      },
-      "messageService": {
-      }
-    }
-
-where
-
-- `messagePayload` is `null` or an object representing [type](#type) of data
-payload carried by the message. The type must be a user defined struct. 
-- `messageService` is `null` or an object representing [type of a service](#service-type)
-that can be passed in the message, e.g. as a callback.
-
-### Service type
-
-Service type can be specified using one of the following JSON objects:
-
-    {
-      "typeParam": {
-      }
-    }
-
-or
-
-    {
-      "declaration": {
-      },
-      "arguments": {
-      }
-    }
-
-where
-
-- `typeParam` is an object representing [type parameter](#type-parameter).
-- `declaration` is a [service declaration](#service).
-- `arguments` is an array of zero or more [types](#type) representing type
-arguments for a generic service. The property is optional and may be omitted
-for non-generic services.
 
 Runtime Schema
 ==============
