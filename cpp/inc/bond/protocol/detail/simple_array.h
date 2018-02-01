@@ -8,6 +8,7 @@
 #include <boost/static_assert.hpp>
 
 #include <limits>
+#include <new>
 #include <stdexcept>
 #include <string.h>
 
