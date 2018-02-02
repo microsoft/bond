@@ -1,0 +1,603 @@
+namespace unittest
+
+struct Box<T>
+{
+    1: T value;
+}
+
+struct BoxZigZag<T>
+{
+    [ProtoEncode("ZigZag")]
+    1: T value;
+}
+
+struct BoxFixed<T>
+{
+    [ProtoEncode("Fixed")]
+    1: T value;
+}
+
+struct BoxWrongEncoding<T>
+{
+    [ProtoEncode("WrongValue")]
+    1: T value;
+}
+
+struct BoxUnpacked<T>
+{
+    [ProtoPack("False")]
+    1: T value;
+}
+
+struct BoxWrongPacking<T>
+{
+    [ProtoPack("WrongValue")]
+    1: T value;
+}
+
+struct BoxWrongPackingWrongEncoding<T>
+{
+    [ProtoPack("WrongValue")]
+    [ProtoEncode("WrongValue")]
+    1: T value;
+}
+
+struct Derived : Box<int32>
+{}
+
+struct Field0
+{
+    0: int32 value;
+}
+
+struct Field19000
+{
+    19000: int32 value;
+}
+
+struct Field19111
+{
+    19111: int32 value;
+}
+
+struct Field19999
+{
+    19999: int32 value;
+}
+
+enum Enum
+{
+    Value0 = 0,
+    Value1 = 1
+}
+
+struct Integers
+{
+    1: int32 i32;
+
+    2: int64 i64;
+
+    3: uint32 ui32;
+
+    4: uint64 ui64;
+
+    [ProtoEncode("ZigZag")]
+    5: int32 si32;
+
+    [ProtoEncode("ZigZag")]
+    6: int64 si64;
+
+    [ProtoEncode("Fixed")]
+    7: uint32 f32;
+
+    [ProtoEncode("Fixed")]
+    8: int32 sf32;
+
+    [ProtoEncode("Fixed")]
+    9: uint64 f64;
+
+    [ProtoEncode("Fixed")]
+    10: int64 sf64;
+
+    11: Enum e = Value0;
+
+    [ProtoEncode("RandomValue")]
+    12: bool b;
+
+    [ProtoEncode("RandomValue")]
+    13: float f;
+
+    [ProtoEncode("RandomValue")]
+    14: double d;
+
+    15: int8 iv8;
+
+    [ProtoEncode("ZigZag")]
+    16: int8 iz8;
+
+    [ProtoEncode("Fixed")]
+    17: int8 if8;
+
+    18: int16 iv16;
+
+    [ProtoEncode("ZigZag")]
+    19: int16 iz16;
+
+    [ProtoEncode("Fixed")]
+    20: int16 if16;
+
+    21: uint8 uiv8;
+
+    [ProtoEncode("Fixed")]
+    22: uint8 uif8;
+
+    23: uint16 uiv16;
+
+    [ProtoEncode("Fixed")]
+    24: uint16 uif16;
+}
+
+struct IntegersContainer
+{
+    1: vector<int32> i32;
+
+    2: vector<int64> i64;
+
+    3: vector<uint32> ui32;
+
+    4: vector<uint64> ui64;
+
+    [ProtoEncode("ZigZag")]
+    5: vector<int32> si32;
+
+    [ProtoEncode("ZigZag")]
+    6: vector<int64> si64;
+
+    [ProtoEncode("Fixed")]
+    7: vector<uint32> f32;
+
+    [ProtoEncode("Fixed")]
+    8: vector<int32> sf32;
+
+    [ProtoEncode("Fixed")]
+    9: vector<uint64> f64;
+
+    [ProtoEncode("Fixed")]
+    10: vector<int64> sf64;
+
+    11: vector<Enum> e;
+
+    [ProtoEncode("RandomValue")]
+    12: vector<bool> b;
+
+    [ProtoEncode("RandomValue")]
+    13: vector<float> f;
+
+    [ProtoEncode("RandomValue")]
+    14: vector<double> d;
+
+    15: vector<int8> iv8;
+
+    [ProtoEncode("ZigZag")]
+    16: vector<int8> iz8;
+
+    [ProtoEncode("Fixed")]
+    17: vector<int8> if8;
+
+    18: vector<int16> iv16;
+
+    [ProtoEncode("ZigZag")]
+    19: vector<int16> iz16;
+
+    [ProtoEncode("Fixed")]
+    20: vector<int16> if16;
+
+    21: vector<uint8> uiv8;
+
+    [ProtoEncode("Fixed")]
+    22: vector<uint8> uif8;
+
+    23: vector<uint16> uiv16;
+
+    [ProtoEncode("Fixed")]
+    24: vector<uint16> uif16;
+}
+
+struct UnpackedIntegersContainer
+{
+    [ProtoPack("False")]
+    1: vector<int32> i32;
+
+    [ProtoPack("False")]
+    2: vector<int64> i64;
+
+    [ProtoPack("False")]
+    3: vector<uint32> ui32;
+
+    [ProtoPack("False")]
+    4: vector<uint64> ui64;
+
+    [ProtoPack("False")]
+    [ProtoEncode("ZigZag")]
+    5: vector<int32> si32;
+
+    [ProtoPack("False")]
+    [ProtoEncode("ZigZag")]
+    6: vector<int64> si64;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    7: vector<uint32> f32;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    8: vector<int32> sf32;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    9: vector<uint64> f64;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    10: vector<int64> sf64;
+
+    [ProtoPack("False")]
+    11: vector<Enum> e;
+
+    [ProtoPack("False")]
+    [ProtoEncode("RandomValue")]
+    12: vector<bool> b;
+
+    [ProtoPack("False")]
+    [ProtoEncode("RandomValue")]
+    13: vector<float> f;
+
+    [ProtoPack("False")]
+    [ProtoEncode("RandomValue")]
+    14: vector<double> d;
+
+    [ProtoPack("False")]
+    15: vector<int8> iv8;
+
+    [ProtoPack("False")]
+    [ProtoEncode("ZigZag")]
+    16: vector<int8> iz8;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    17: vector<int8> if8;
+
+    [ProtoPack("False")]
+    18: vector<int16> iv16;
+
+    [ProtoPack("False")]
+    [ProtoEncode("ZigZag")]
+    19: vector<int16> iz16;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    20: vector<int16> if16;
+
+    [ProtoPack("False")]
+    21: vector<uint8> uiv8;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    22: vector<uint8> uif8;
+
+    [ProtoPack("False")]
+    23: vector<uint16> uiv16;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    24: vector<uint16> uif16;
+}
+
+struct IntegersSetContainer
+{
+    1: set<int32> i32;
+
+    2: set<int64> i64;
+
+    3: set<uint32> ui32;
+
+    4: set<uint64> ui64;
+
+    [ProtoEncode("ZigZag")]
+    5: set<int32> si32;
+
+    [ProtoEncode("ZigZag")]
+    6: set<int64> si64;
+
+    [ProtoEncode("Fixed")]
+    7: set<uint32> f32;
+
+    [ProtoEncode("Fixed")]
+    8: set<int32> sf32;
+
+    [ProtoEncode("Fixed")]
+    9: set<uint64> f64;
+
+    [ProtoEncode("Fixed")]
+    10: set<int64> sf64;
+
+    11: set<Enum> e;
+
+    [ProtoEncode("RandomValue")]
+    12: set<bool> b;
+
+    [ProtoEncode("RandomValue")]
+    13: set<float> f;
+
+    [ProtoEncode("RandomValue")]
+    14: set<double> d;
+
+    15: set<int8> iv8;
+
+    [ProtoEncode("ZigZag")]
+    16: set<int8> iz8;
+
+    [ProtoEncode("Fixed")]
+    17: set<int8> if8;
+
+    18: set<int16> iv16;
+
+    [ProtoEncode("ZigZag")]
+    19: set<int16> iz16;
+
+    [ProtoEncode("Fixed")]
+    20: set<int16> if16;
+
+    21: set<uint8> uiv8;
+
+    [ProtoEncode("Fixed")]
+    22: set<uint8> uif8;
+
+    23: set<uint16> uiv16;
+
+    [ProtoEncode("Fixed")]
+    24: set<uint16> uif16;
+}
+
+struct UnpackedIntegersSetContainer
+{
+    [ProtoPack("False")]
+    1: set<int32> i32;
+
+    [ProtoPack("False")]
+    2: set<int64> i64;
+
+    [ProtoPack("False")]
+    3: set<uint32> ui32;
+
+    [ProtoPack("False")]
+    4: set<uint64> ui64;
+
+    [ProtoPack("False")]
+    [ProtoEncode("ZigZag")]
+    5: set<int32> si32;
+
+    [ProtoPack("False")]
+    [ProtoEncode("ZigZag")]
+    6: set<int64> si64;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    7: set<uint32> f32;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    8: set<int32> sf32;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    9: set<uint64> f64;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    10: set<int64> sf64;
+
+    [ProtoPack("False")]
+    11: set<Enum> e;
+
+    [ProtoPack("False")]
+    [ProtoEncode("RandomValue")]
+    12: set<bool> b;
+
+    [ProtoPack("False")]
+    [ProtoEncode("RandomValue")]
+    13: set<float> f;
+
+    [ProtoPack("False")]
+    [ProtoEncode("RandomValue")]
+    14: set<double> d;
+
+    [ProtoPack("False")]
+    15: set<int8> iv8;
+
+    [ProtoPack("False")]
+    [ProtoEncode("ZigZag")]
+    16: set<int8> iz8;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    17: set<int8> if8;
+
+    [ProtoPack("False")]
+    18: set<int16> iv16;
+
+    [ProtoPack("False")]
+    [ProtoEncode("ZigZag")]
+    19: set<int16> iz16;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    20: set<int16> if16;
+
+    [ProtoPack("False")]
+    21: set<uint8> uiv8;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    22: set<uint8> uif8;
+
+    [ProtoPack("False")]
+    23: set<uint16> uiv16;
+
+    [ProtoPack("False")]
+    [ProtoEncode("Fixed")]
+    24: set<uint16> uif16;
+}
+
+struct IntegerMapKeys
+{
+    1: map<int32, uint32> i32;
+
+    2: map<int64, uint32> i64;
+
+    3: map<uint32, uint32> ui32;
+
+    4: map<uint64, uint32> ui64;
+
+    [ProtoEncodeKey("ZigZag")]
+    5: map<int32, uint32> si32;
+
+    [ProtoEncodeKey("ZigZag")]
+    6: map<int64, uint32> si64;
+
+    [ProtoEncodeKey("Fixed")]
+    7: map<uint32, uint32> f32;
+
+    [ProtoEncodeKey("Fixed")]
+    8: map<int32, uint32> sf32;
+
+    [ProtoEncodeKey("Fixed")]
+    9: map<uint64, uint32> f64;
+
+    [ProtoEncodeKey("Fixed")]
+    10: map<int64, uint32> sf64;
+
+    [ProtoEncodeKey("RandomValue")]
+    11: map<bool, uint32> b;
+
+    12: map<int8, uint32> iv8;
+
+    [ProtoEncodeKey("ZigZag")]
+    13: map<int8, uint32> iz8;
+
+    [ProtoEncodeKey("Fixed")]
+    14: map<int8, uint32> if8;
+
+    15: map<int16, uint32> iv16;
+
+    [ProtoEncodeKey("ZigZag")]
+    16: map<int16, uint32> iz16;
+
+    [ProtoEncodeKey("Fixed")]
+    17: map<int16, uint32> if16;
+
+    18: map<uint8, uint32> uiv8;
+
+    [ProtoEncodeKey("Fixed")]
+    19: map<uint8, uint32> uif8;
+
+    20: map<uint16, uint32> uiv16;
+
+    [ProtoEncodeKey("Fixed")]
+    21: map<uint16, uint32> uif16;
+}
+
+struct IntegerMapValues
+{
+    1: map<uint32, int32> i32;
+
+    2: map<uint32, int64> i64;
+
+    3: map<uint32, uint32> ui32;
+
+    4: map<uint32, uint64> ui64;
+
+    [ProtoEncodeValue("ZigZag")]
+    5: map<uint32, int32> si32;
+
+    [ProtoEncodeValue("ZigZag")]
+    6: map<uint32, int64> si64;
+
+    [ProtoEncodeValue("Fixed")]
+    7: map<uint32, uint32> f32;
+
+    [ProtoEncodeValue("Fixed")]
+    8: map<uint32, int32> sf32;
+
+    [ProtoEncodeValue("Fixed")]
+    9: map<uint32, uint64> f64;
+
+    [ProtoEncodeValue("Fixed")]
+    10: map<uint32, int64> sf64;
+
+    [ProtoEncodeValue("RandomValue")]
+    11: map<uint32, bool> b;
+
+    [ProtoEncodeValue("RandomValue")]
+    12: map<uint32, float> f;
+
+    [ProtoEncodeValue("RandomValue")]
+    13: map<uint32, double> d;
+
+    14: map<uint32, Enum> e;
+
+    15: map<uint32, int8> iv8;
+
+    [ProtoEncodeValue("ZigZag")]
+    16: map<uint32, int8> iz8;
+
+    [ProtoEncodeValue("Fixed")]
+    17: map<uint32, int8> if8;
+
+    18: map<uint32, int16> iv16;
+
+    [ProtoEncodeValue("ZigZag")]
+    19: map<uint32, int16> iz16;
+
+    [ProtoEncodeValue("Fixed")]
+    20: map<uint32, int16> if16;
+
+    21: map<uint32, uint8> uiv8;
+
+    [ProtoEncodeValue("Fixed")]
+    22: map<uint32, uint8> uif8;
+
+    23: map<uint32, uint16> uiv16;
+
+    [ProtoEncodeValue("Fixed")]
+    24: map<uint32, uint16> uif16;
+}
+
+struct ComplexItem
+{
+    1: Integers s1;
+    2: IntegersContainer s2;
+    3: UnpackedIntegersContainer s3;
+    4: IntegerMapKeys s4;
+    5: string str;
+    6: map<string, uint32> mstr;
+    7: map<uint32, string> strm;
+    8: vector<string> strs;
+    9: blob b;
+    10: map<uint32, blob> mblob;
+    11: vector<blob> blobs;
+    12: vector<Integers> vs1;
+    13: vector<IntegersContainer> vs2;
+    14: vector<UnpackedIntegersContainer> vs3;
+    15: vector<IntegerMapKeys> vs4;
+}
+
+struct ComplexStruct
+{
+    1: ComplexItem item;
+
+    [ProtoEncodeKey("Fixed")]
+    2: map<uint64, ComplexItem> mitems;
+
+    3: vector<ComplexItem> items;
+}

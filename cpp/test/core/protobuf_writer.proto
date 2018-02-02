@@ -1,0 +1,220 @@
+syntax = "proto3";
+package unittest.proto;
+
+enum Enum
+{
+    Value0 = 0;
+    Value1 = 1;
+}
+
+message Integers
+{
+    int32 i32 = 1;
+    int64 i64 = 2;
+    uint32 ui32 = 3;
+    uint64 ui64 = 4;
+    sint32 si32 = 5;
+    sint64 si64 = 6;
+    fixed32 f32 = 7;
+    sfixed32 sf32 = 8;
+    fixed64 f64 = 9;
+    sfixed64 sf64 = 10;
+    Enum e = 11;
+    bool b = 12;
+    float f = 13;
+    double d = 14;
+    int32 iv8 = 15;
+    sint32 iz8 = 16;
+    sfixed32 if8 = 17;
+    int32 iv16 = 18;
+    sint32 iz16 = 19;
+    sfixed32 if16 = 20;
+    uint32 uiv8 = 21;
+    fixed32 uif8 = 22;
+    uint32 uiv16 = 23;
+    fixed32 uif16 = 24;
+}
+
+message String
+{
+    string value = 1;
+}
+
+message Blob
+{
+    bytes value = 1;
+}
+
+message IntegersContainer
+{
+    repeated int32 i32 = 1;
+    repeated int64 i64 = 2;
+    repeated uint32 ui32 = 3;
+    repeated uint64 ui64 = 4;
+    repeated sint32 si32 = 5;
+    repeated sint64 si64 = 6;
+    repeated fixed32 f32 = 7;
+    repeated sfixed32 sf32 = 8;
+    repeated fixed64 f64 = 9;
+    repeated sfixed64 sf64 = 10;
+    repeated Enum e = 11;
+    repeated bool b = 12;
+    repeated float f = 13;
+    repeated double d = 14;
+    repeated int32 iv8 = 15;
+    repeated sint32 iz8 = 16;
+    repeated sfixed32 if8 = 17;
+    repeated int32 iv16 = 18;
+    repeated sint32 iz16 = 19;
+    repeated sfixed32 if16 = 20;
+    repeated uint32 uiv8 = 21;
+    repeated fixed32 uif8 = 22;
+    repeated uint32 uiv16 = 23;
+    repeated fixed32 uif16 = 24;
+}
+
+message UnpackedIntegersContainer
+{
+    repeated int32 i32 = 1 [packed=false];
+    repeated int64 i64 = 2 [packed=false];
+    repeated uint32 ui32 = 3 [packed=false];
+    repeated uint64 ui64 = 4 [packed=false];
+    repeated sint32 si32 = 5 [packed=false];
+    repeated sint64 si64 = 6 [packed=false];
+    repeated fixed32 f32 = 7 [packed=false];
+    repeated sfixed32 sf32 = 8 [packed=false];
+    repeated fixed64 f64 = 9 [packed=false];
+    repeated sfixed64 sf64 = 10 [packed=false];
+    repeated Enum e = 11 [packed=false];
+    repeated bool b = 12 [packed=false];
+    repeated float f = 13 [packed=false];
+    repeated double d = 14 [packed=false];
+    repeated int32 iv8 = 15 [packed=false];
+    repeated sint32 iz8 = 16 [packed=false];
+    repeated sfixed32 if8 = 17 [packed=false];
+    repeated int32 iv16 = 18 [packed=false];
+    repeated sint32 iz16 = 19 [packed=false];
+    repeated sfixed32 if16 = 20 [packed=false];
+    repeated uint32 uiv8 = 21 [packed=false];
+    repeated fixed32 uif8 = 22 [packed=false];
+    repeated uint32 uiv16 = 23 [packed=false];
+    repeated fixed32 uif16 = 24 [packed=false];
+}
+
+message StringContainer
+{
+    repeated string value = 1;
+}
+
+message BlobContainer
+{
+    repeated bytes value = 1;
+}
+
+message StructContainer
+{
+    repeated Integers value = 1;
+}
+
+message NestedStruct
+{
+    Integers value = 1;
+}
+
+message IntegerMapKeys
+{
+    map<int32, uint32> i32 = 1;
+    map<int64, uint32> i64 = 2;
+    map<uint32, uint32> ui32 = 3;
+    map<uint64, uint32> ui64 = 4;
+    map<sint32, uint32> si32 = 5;
+    map<sint64, uint32> si64 = 6;
+    map<fixed32, uint32> f32 = 7;
+    map<sfixed32, uint32> sf32 = 8;
+    map<fixed64, uint32> f64 = 9;
+    map<sfixed64, uint32> sf64 = 10;
+    map<bool, uint32> b = 11;
+    map<int32, uint32> iv8 = 12;
+    map<sint32, uint32> iz8 = 13;
+    map<sfixed32, uint32> if8 = 14;
+    map<int32, uint32> iv16 = 15;
+    map<sint32, uint32> iz16 = 16;
+    map<sfixed32, uint32> if16 = 17;
+    map<uint32, uint32> uiv8 = 18;
+    map<fixed32, uint32> uif8 = 19;
+    map<uint32, uint32> uiv16 = 20;
+    map<fixed32, uint32> uif16 = 21;
+}
+
+message StringMapKey
+{
+    map<string, uint32> value = 1;
+}
+
+message IntegerMapValues
+{
+    map<uint32, int32> i32 = 1;
+    map<uint32, int64> i64 = 2;
+    map<uint32, uint32> ui32 = 3;
+    map<uint32, uint64> ui64 = 4;
+    map<uint32, sint32> si32 = 5;
+    map<uint32, sint64> si64 = 6;
+    map<uint32, fixed32> f32 = 7;
+    map<uint32, sfixed32> sf32 = 8;
+    map<uint32, fixed64> f64 = 9;
+    map<uint32, sfixed64> sf64 = 10;
+    map<uint32, bool> b = 11;
+    map<uint32, float> f = 12;
+    map<uint32, double> d = 13;
+    map<uint32, Enum> e = 14;
+    map<uint32, int32> iv8 = 15;
+    map<uint32, sint32> iz8 = 16;
+    map<uint32, sfixed32> if8 = 17;
+    map<uint32, int32> iv16 = 18;
+    map<uint32, sint32> iz16 = 19;
+    map<uint32, sfixed32> if16 = 20;
+    map<uint32, uint32> uiv8 = 21;
+    map<uint32, fixed32> uif8 = 22;
+    map<uint32, uint32> uiv16 = 23;
+    map<uint32, fixed32> uif16 = 24;
+}
+
+message StringMapValue
+{
+    map<uint32, string> value = 1;
+}
+
+message BlobMapValue
+{
+    map<uint32, bytes> value = 1;
+}
+message StructMapValue
+{
+    map<uint32, Integers> value = 1;
+}
+
+message ComplexItem
+{
+    Integers s1 = 1;
+    IntegersContainer s2 = 2;
+    UnpackedIntegersContainer s3 = 3;
+    IntegerMapKeys s4 = 4;
+    string str = 5;
+    map<string, uint32> mstr = 6;
+    map<uint32, string> strm = 7;
+    repeated string strs = 8;
+    bytes b = 9;
+    map<uint32, bytes> mblob = 10;
+    repeated bytes blobs = 11;
+    repeated Integers vs1 = 12;
+    repeated IntegersContainer vs2 = 13;
+    repeated UnpackedIntegersContainer vs3 = 14;
+    repeated IntegerMapKeys vs4 = 15;
+}
+
+message ComplexStruct
+{
+    ComplexItem item = 1;
+    map<fixed64, ComplexItem> mitems = 2;
+    repeated ComplexItem items = 3;
+}

@@ -27,6 +27,40 @@ function (add_unit_test)
 endfunction()
 
 
+#
+# add_protobuf_codegen_cpp file
+#
+function (add_protobuf_codegen_cpp file)
+    add_custom_command(
+      OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${file}.pb.cc
+             ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${file}.pb.h
+      DEPENDS protoc ${file}.proto
+      COMMAND protoc ${file}.proto
+          --cpp_out=${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+          -I${CMAKE_CURRENT_SOURCE_DIR}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endfunction()
+
+
+# Codegen for .proto files.
+add_protobuf_codegen_cpp (protobuf_writer)
+add_library (protobuf_test_codegen
+    "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/protobuf_writer.pb.cc")
+target_include_directories (protobuf_test_codegen PUBLIC
+    "${CMAKE_SOURCE_DIR}/thirdparty/protobuf/src"
+    "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+target_link_libraries(protobuf_test_codegen libprotobuf)
+if (MSVC)
+    # C4100: unreferenced formal parameter
+    # C4125: decimal digit terminates octal escape sequence
+    # C4456: declaration of 'size' hides previous local declaration
+    # C4505: unreferenced local function has been removed
+    # C4800: forcing value to bool 'true' or 'false' (performance warning)
+    target_compile_options(protobuf_test_codegen PUBLIC /wd4100 /wd4125 /wd4456 /wd4505 /wd4800)
+endif()
+add_target_to_folder (protobuf_test_codegen)
+
+
 # Build common code into its own library.
 add_library (core_test_common
     EXCLUDE_FROM_ALL
@@ -44,7 +78,9 @@ add_library (core_test_common
     "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/scope_test2_types.cpp"
     "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/cmdargs_types.cpp"
     "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/unit_test_core_apply.cpp"
-    "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/capped_allocator_tests_generated/allocator_test_types.cpp")
+    "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/capped_allocator_tests_generated/allocator_test_types.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/protobuf_writer_types.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/protobuf_writer_apply.cpp")
 add_target_to_folder (core_test_common)
 add_dependencies(core_test_common
     unit_test_codegen1
@@ -79,6 +115,7 @@ add_bond_codegen (TARGET unit_test_codegen2
     apply_test.bond
     import_test1.bond
     import_test2.bond
+    protobuf_writer.bond
     scope_test1.bond
     scope_test2.bond
     validation.bond
@@ -137,6 +174,11 @@ add_unit_test (metadata_tests.cpp)
 add_unit_test (nullable.cpp)
 add_unit_test (numeric_conversions.cpp)
 add_unit_test (pass_through.cpp)
+
+add_unit_test (protobuf_writer_test.cpp)
+add_dependencies(protobuf_writer_test protobuf_test_codegen)
+target_link_libraries(protobuf_writer_test PRIVATE protobuf_test_codegen)
+
 add_unit_test (protocol_test.cpp)
 add_unit_test (required_fields_tests.cpp)
 add_unit_test (serialization_test.cpp)
