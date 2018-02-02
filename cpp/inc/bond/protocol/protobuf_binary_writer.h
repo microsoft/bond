@@ -229,6 +229,7 @@ namespace bond
                         ? WireType::LengthDelimited
                         : detail::proto::GetWireType(type.second, info.element.value.encoding));
 
+                info.element.is_key = true;
                 info.has_element = true;
             }
         }
